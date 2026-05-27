@@ -1,26 +1,244 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-ai: var(--ai);
+  --color-ai-foreground: var(--ai-foreground);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --radius: 0.75rem;
+
+  --background: #f6f7f9;
+  --foreground: #0f172a;
+
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+
+  --muted: #f6f7f9;
+  --muted-foreground: #64748b;
+
+  --accent: #eff6ff;
+  --accent-foreground: #1e3a8a;
+
+  --destructive: #dc2626;
+  --success: #16a34a;
+  --warning: #d97706;
+
+  /* subtelniejsze */
+  --border: rgba(15, 23, 42, 0.08);
+  --input: #ffffff;
+  --ring: rgba(37, 99, 235, 0.18);
+
+  --sidebar: #f9fafb;
+  --sidebar-foreground: #0f172a;
+  --sidebar-border: rgba(15, 23, 42, 0.08);
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #0f172a;
+
+  --ai: #e0ecff;
+  --ai-foreground: #1e3a8a;
+}
+
+.dark {
+  --background: #060b16;
+  --foreground: #edf2ff;
+
+  --card: #0a1224;
+  --card-foreground: #edf2ff;
+
+  --popover: #0d172d;
+  --popover-foreground: #edf2ff;
+
+  --primary: #3b82f6;
+  --primary-foreground: #f8fbff;
+
+  --secondary: #101b33;
+  --secondary-foreground: #eaf0ff;
+
+  --muted: #0f1a30;
+  --muted-foreground: #8b9ab7;
+
+  --accent: #12213d;
+  --accent-foreground: #edf2ff;
+
+  --destructive: #ff6b6b;
+  --success: #3ecf8e;
+  --warning: #ffb547;
+
+  /* KLUCZOWE */
+  --border: #1a2a4a;
+  --input: #0f172b;
+  --ring: rgba(77, 124, 255, 0.45);
+
+  --sidebar: #091224;
+  --sidebar-foreground: #edf2ff;
+  --sidebar-border: #182847;
+  --sidebar-accent: #11203b;
+  --sidebar-accent-foreground: #edf2ff;
+
+  --ai: #6d98ff;
+  --ai-foreground: #081120;
+}
+
+* {
+  border-color: var(--border);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji",
+    "Segoe UI Emoji";
+}
+
+/* =========================
+   MINIMAL PREMIUM FIELDS
+========================= */
+
+.dark input,
+.dark textarea,
+.dark select {
+  background: rgba(14, 22, 38, 0.92);
+
+  /* BARDZO subtelny border */
+  border: 1px solid rgba(255, 255, 255, 0.055);
+
+  color: #edf2ff;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.015);
+
+  transition:
+    border-color 0.16s ease,
+    background 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+/* placeholder */
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: rgba(148, 163, 184, 0.72);
+}
+
+/* hover */
+.dark input:hover,
+.dark textarea:hover,
+.dark select:hover {
+  border-color: rgba(255, 255, 255, 0.09);
+  background: rgba(16, 25, 43, 0.96);
+}
+
+/* focus */
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus,
+.dark input:focus-visible,
+.dark textarea:focus-visible,
+.dark select:focus-visible {
+  outline: none;
+
+  /* bardzo delikatny focus */
+  border-color: rgba(90, 126, 255, 0.38);
+
+  background: rgba(17, 27, 46, 0.98);
+
+  /* cienki ring zamiast grubego */
+  box-shadow:
+    0 0 0 1px rgba(90, 126, 255, 0.12);
+}
+
+
+
+.surface-base {
+  @apply bg-background text-foreground;
+}
+
+.surface-card {
+  @apply bg-card text-card-foreground border rounded-xl shadow-sm;
+}
+
+.surface-sidebar {
+  @apply bg-sidebar text-sidebar-foreground border-r border-sidebar-border;
+}
+
+.surface-ai {
+  @apply bg-ai/12 text-foreground border border-ai/35 rounded-xl;
+}
+
+.layout-dashboard {
+  @apply grid gap-6 p-6 md:grid-cols-[240px_1fr];
+}
+
+.form-stack {
+  @apply space-y-4;
+}
+
+.table-operational {
+  @apply w-full text-sm;
+}
+
+.table-operational thead {
+  @apply sticky top-0 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80;
+}
+
+.table-operational th {
+  @apply h-10 px-3 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground;
+}
+
+.table-operational td {
+  @apply h-11 px-3 align-middle;
+}
+
+.table-operational tbody tr {
+  @apply border-b border-border/70 transition-colors hover:bg-accent/40;
+}
+
+.table-summary-sticky {
+  @apply sticky bottom-0 bg-card/95 border-t border-border/80;
 }
