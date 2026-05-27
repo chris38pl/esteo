@@ -17,7 +17,10 @@ export function SignInForm({ locale }: { locale: string }) {
   const c = useTranslations("common");
 
   return (
-    <SignIn.Root>
+    <SignIn.Root
+      routing="path"
+      path={`/${locale}/sign-in`}
+    >
       <Clerk.GlobalError className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive" />
 
       <SignIn.Step name="start">

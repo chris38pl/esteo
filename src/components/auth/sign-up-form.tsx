@@ -15,7 +15,10 @@ export function SignUpForm({ locale }: { locale: string }) {
   const c = useTranslations("common");
 
   return (
-    <SignUp.Root>
+    <SignUp.Root
+      routing="path"
+      path={`/${locale}/sign-up`}
+    >
       <Clerk.GlobalError className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive" />
 
       <SignUp.Step name="start">
