@@ -1,5 +1,7 @@
 "use client";
 
+// i18n-ignore-file (styleguide uses hardcoded demo labels intentionally)
+
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 

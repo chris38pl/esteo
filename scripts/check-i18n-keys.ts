@@ -1,4 +1,3 @@
-// scripts\check-i18n-keys.ts
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
@@ -38,11 +37,20 @@ function diff(a: string[], b: string[]): string[] {
 }
 
 const root = resolve(process.cwd());
-const plPath = resolve(root, "src/messages/pl.json");
-const enPath = resolve(root, "src/messages/en.json");
+const namespaces = ["common", "auth", "dashboard", "styleguide"] as const;
+type Namespace = (typeof namespaces)[number];
 
-const pl = readJson(plPath);
-const en = readJson(enPath);
+function readLocale(locale: "pl" | "en"): Json {
+  const merged: Json = {};
+  for (const ns of namespaces) {
+    const path = resolve(root, `src/messages/${locale}/${ns}.json`);
+    merged[ns] = readJson(path);
+  }
+  return merged;
+}
+
+const pl = readLocale("pl");
+const en = readLocale("en");
 
 const plKeys = flattenKeys(pl);
 const enKeys = flattenKeys(en);

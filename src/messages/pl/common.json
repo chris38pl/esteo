@@ -1,0 +1,22 @@
+{
+  "appName": "Esteo",
+  "localeLabel": "Język",
+  "status": {
+    "syncing": "Synchronizacja..."
+  },
+  "home": {
+    "signInHint": "Zaloguj się, aby zsynchronizować konto Clerk z bazą danych Esteo.",
+    "signInCta": "Zaloguj się",
+    "syncedUser": "Zsynchronizowany użytkownik",
+    "goToDashboard": "Przejdź do panelu"
+  },
+  "or": "lub",
+  "actions": {
+    "cancel": "Anuluj",
+    "continue": "Kontynuuj",
+    "back": "Wróć",
+    "open": "Otwórz",
+    "delete": "Usuń"
+  }
+}
+

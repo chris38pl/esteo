@@ -1,0 +1,19 @@
+{
+  "sidebar": {
+    "title": "Nawigacja",
+    "dashboard": "Panel",
+    "requests": "Zapytania",
+    "estimates": "Wyceny"
+  },
+  "title": "Panel",
+  "subtitle": "Zalogowano i zsynchronizowano z bazą danych.",
+  "fields": {
+    "userId": "ID użytkownika",
+    "email": "Email",
+    "clerkId": "ID Clerk"
+  },
+  "actions": {
+    "backHome": "Wróć na stronę główną"
+  }
+}
+

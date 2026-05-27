@@ -25,7 +25,10 @@ export function SignUpForm({ locale }: { locale: string }) {
               <Label>{t("fields.email")}</Label>
             </Clerk.Label>
             <Clerk.Input asChild type="email" required autoComplete="email">
-              <Input placeholder="chris38@gmail.com" className="h-10 rounded-lg" />
+              <Input
+                placeholder={t("fields.emailPlaceholder")}
+                className="h-10 rounded-lg"
+              />
             </Clerk.Input>
             <Clerk.FieldError className="text-xs text-destructive" />
           </Clerk.Field>

@@ -1,7 +1,14 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import createIntlMiddleware from "next-intl/middleware";
 import { NextResponse } from "next/server";
 
-import { defaultLocale, isLocale } from "@/lib/locale";
+import { defaultLocale, locales } from "./src/lib/locale";
+
+const intlMiddleware = createIntlMiddleware({
+  locales: [...locales],
+  defaultLocale,
+  localePrefix: "always",
+});
 
 const isPublicRoute = createRouteMatcher([
   "/",
@@ -12,22 +19,8 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
-  const { pathname } = request.nextUrl;
-  const firstSegment = pathname.split("/")[1];
-
-  if (
-    firstSegment &&
-    firstSegment.length === 2 &&
-    !isLocale(firstSegment)
-  ) {
-    return NextResponse.redirect(new URL(`/${defaultLocale}`, request.url));
-  }
-
-  if (firstSegment && !isLocale(firstSegment) && pathname !== "/") {
-    const url = request.nextUrl.clone();
-    url.pathname = `/${defaultLocale}${pathname}`;
-    return NextResponse.redirect(url);
-  }
+  const intlResponse = intlMiddleware(request);
+  if (intlResponse) return intlResponse;
 
   if (!isPublicRoute(request)) {
     await auth.protect();
@@ -42,3 +35,4 @@ export const config = {
     "/(api|trpc)(.*)",
   ],
 };
+

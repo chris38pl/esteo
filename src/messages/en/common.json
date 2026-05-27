@@ -1,0 +1,22 @@
+{
+  "appName": "Esteo",
+  "localeLabel": "Locale",
+  "status": {
+    "syncing": "Syncing..."
+  },
+  "home": {
+    "signInHint": "Sign in to sync your Clerk account with the Esteo database.",
+    "signInCta": "Sign in",
+    "syncedUser": "Synced user",
+    "goToDashboard": "Go to dashboard"
+  },
+  "or": "or",
+  "actions": {
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "back": "Back",
+    "open": "Open",
+    "delete": "Delete"
+  }
+}
+

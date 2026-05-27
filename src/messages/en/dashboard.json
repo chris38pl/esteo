@@ -1,0 +1,19 @@
+{
+  "sidebar": {
+    "title": "Navigation",
+    "dashboard": "Dashboard",
+    "requests": "Requests",
+    "estimates": "Estimates"
+  },
+  "title": "Dashboard",
+  "subtitle": "Signed in and synced to the database.",
+  "fields": {
+    "userId": "User ID",
+    "email": "Email",
+    "clerkId": "Clerk ID"
+  },
+  "actions": {
+    "backHome": "Back to home"
+  }
+}
+

@@ -4,7 +4,7 @@ globs:
   - "src/app/**/*"
   - "src/components/**/*"
   - "src/features/**/*"
-  - "src/messages/*.json"
+  - "src/messages/**/*.json"
 alwaysApply: false
 ---
 
@@ -17,12 +17,15 @@ Esteo supports two locales:
 ## Non-negotiable constraints
 
 - All user-facing UI strings must be translated using `next-intl`.
-- If you add/modify UI text, update **both** `src/messages/pl.json` and `src/messages/en.json`.
+- Avoid hardcoded UI strings in TS/TSX. Use translations for any user-facing text (including labels, placeholders, aria-labels, empty states, button text, toasts).
+- If you add/modify UI text, update **both** locales under `src/messages/` (pl/en).
 - New keys must follow feature namespaces (e.g. `auth.*`, `common.*`, `dashboard.*`, `estimateRequests.*`).
 - Never hardcode color names or locale-specific text inside feature components.
+- Translation namespaces must remain modular (e.g. `src/messages/pl/auth.json`, `src/messages/en/auth.json`), avoid a single giant JSON file.
 
 ## Preferred patterns
 
+- Prefer **namespace-scoped** translators: `useTranslations("auth")` and then `t("signIn.submit")`.
 - **Server Components**: use `getTranslations()` from `next-intl/server` for page-level strings.
 - **Client Components**: use `useTranslations()` from `next-intl`.
 - Keep translation keys stable. Prefer changing message values over renaming keys.
@@ -30,4 +33,5 @@ Esteo supports two locales:
 ## Validation
 
 - Run `npm run i18n:check` to ensure `pl.json` and `en.json` contain the same keys.
+- Run `npm run i18n` to validate keys and catch obvious hardcoded UI strings.
 
