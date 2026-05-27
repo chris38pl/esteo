@@ -1,0 +1,43 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "requests": "Requests",
+    "estimates": "Estimates",
+    "settings": "Settings"
+  },
+  "tooltips": {
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar",
+    "openNav": "Open navigation"
+  },
+  "meta": {
+    "appName": "Esteo"
+  },
+  "user": {
+    "placeholder": {
+      "name": "Chris Nowak",
+      "role": "Owner"
+    },
+    "menu": {
+      "account": "Account",
+      "billing": "Billing",
+      "settings": "Settings",
+      "logout": "Logout"
+    }
+  },
+  "workspace": {
+    "placeholderName": "Esteo Workspace",
+    "switch": "Switch workspace",
+    "settings": "Workspace settings",
+    "plan": {
+      "free": "Free",
+      "pro": "Pro"
+    }
+  },
+  "upgrade": {
+    "title": "Upgrade to Pro",
+    "body": "Unlock advanced estimates, exports and team workflows.",
+    "cta": "Upgrade"
+  }
+}
+

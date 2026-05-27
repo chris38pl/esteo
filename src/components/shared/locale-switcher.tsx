@@ -46,7 +46,7 @@ export function LocaleSwitcher({
             aria-label={`${ariaLabel}: ${labels[l]}`}
             aria-current={active ? "page" : undefined}
             className={[
-              "rounded-full px-2.5 py-1 text-xs font-medium transition",
+              "rounded-full px-2.5 py-1 text-xs font-medium transition cursor-pointer",
               active
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:text-foreground",

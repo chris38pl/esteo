@@ -51,6 +51,7 @@ function isLikelySafe(line: string): boolean {
   if (line.includes("useTranslations(")) return true;
   if (line.includes("getTranslations(")) return true;
   if (line.includes("{t(") || line.includes("t(")) return true;
+  if (line.includes('useTranslations("sidebar"')) return true;
   if (line.includes("href=") && (line.includes("http") || line.includes("/")))
     return true;
   if (line.trim().startsWith("import ")) return true;

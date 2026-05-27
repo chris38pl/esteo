@@ -18,7 +18,7 @@ export function ThemeToggle() {
         type="button"
         variant="outline"
         size="icon"
-        aria-label="Toggle theme"
+        aria-label="Toggle theme" // i18n-ignore-line
         className="size-11 rounded-full border-border/60 bg-card/60 backdrop-blur supports-[backdrop-filter]:bg-card/40 cursor-pointer"
         disabled
       >

@@ -1,0 +1,43 @@
+{
+  "nav": {
+    "dashboard": "Panel",
+    "requests": "Zapytania",
+    "estimates": "Wyceny",
+    "settings": "Ustawienia"
+  },
+  "tooltips": {
+    "collapse": "Zwiń pasek boczny",
+    "expand": "Rozwiń pasek boczny",
+    "openNav": "Otwórz nawigację"
+  },
+  "meta": {
+    "appName": "Esteo"
+  },
+  "user": {
+    "placeholder": {
+      "name": "Chris Nowak",
+      "role": "Właściciel"
+    },
+    "menu": {
+      "account": "Konto",
+      "billing": "Płatności",
+      "settings": "Ustawienia",
+      "logout": "Wyloguj"
+    }
+  },
+  "workspace": {
+    "placeholderName": "Esteo Workspace",
+    "switch": "Zmień workspace",
+    "settings": "Ustawienia workspace",
+    "plan": {
+      "free": "Free",
+      "pro": "Pro"
+    }
+  },
+  "upgrade": {
+    "title": "Przejdź na Pro",
+    "body": "Odblokuj zaawansowane wyceny, eksporty i pracę zespołową.",
+    "cta": "Upgrade"
+  }
+}
+
