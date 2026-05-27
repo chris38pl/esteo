@@ -3,6 +3,7 @@
 import * as Clerk from "@clerk/elements/common";
 import * as SignUp from "@clerk/elements/sign-up";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,9 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 
 export function SignUpForm({ locale }: { locale: string }) {
+  const t = useTranslations("auth");
+  const c = useTranslations("common");
+
   return (
     <SignUp.Root>
       <Clerk.GlobalError className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive" />
@@ -18,7 +22,7 @@ export function SignUpForm({ locale }: { locale: string }) {
         <div className="space-y-4">
           <Clerk.Field name="emailAddress" className="space-y-2">
             <Clerk.Label asChild>
-              <Label>Email</Label>
+              <Label>{t("fields.email")}</Label>
             </Clerk.Label>
             <Clerk.Input asChild type="email" required autoComplete="email">
               <Input placeholder="chris38@gmail.com" className="h-10 rounded-lg" />
@@ -28,7 +32,7 @@ export function SignUpForm({ locale }: { locale: string }) {
 
           <Clerk.Field name="password" className="space-y-2">
             <Clerk.Label asChild>
-              <Label>Hasło</Label>
+              <Label>{t("fields.password")}</Label>
             </Clerk.Label>
             <Clerk.Input asChild type="password" required autoComplete="new-password">
               <Input className="h-10 rounded-lg" />
@@ -38,13 +42,13 @@ export function SignUpForm({ locale }: { locale: string }) {
 
           <SignUp.Action submit asChild>
             <Button type="submit" className="h-11 w-full rounded-lg">
-              Załóż konto
+              {t("signUp.submit")}
             </Button>
           </SignUp.Action>
 
           <div className="flex items-center gap-3 pt-2">
             <Separator className="flex-1" />
-            <span className="text-xs text-muted-foreground">lub</span>
+            <span className="text-xs text-muted-foreground">{c("or")}</span>
             <Separator className="flex-1" />
           </div>
 
@@ -76,17 +80,17 @@ export function SignUpForm({ locale }: { locale: string }) {
                   d="M43.6 20.5H42V20H24v8h11.3c-1.1 3-3.4 5.4-6.3 6.9l.1.1 6.3 5.2C34.9 43 44 37.6 44 24c0-1.3-.1-2.2-.4-3.5z"
                 />
               </svg>
-              Zarejestruj się przez Google
+              {t("signUp.google")}
             </Button>
           </Clerk.Connection>
 
           <p className="text-center text-xs text-muted-foreground">
-            Masz już konto?{" "}
+            {t("signUp.haveAccount")}{" "}
             <Link
               href={`/${locale}/sign-in`}
               className="font-medium text-primary hover:underline"
             >
-              Zaloguj się
+              {t("signUp.signInLink")}
             </Link>
           </p>
         </div>
@@ -96,12 +100,12 @@ export function SignUpForm({ locale }: { locale: string }) {
         <SignUp.Strategy name="email_code">
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Wpisz kod wysłany na email.
+              {t("signUp.verifyEmailTitle")}
             </p>
 
             <Clerk.Field name="code" className="space-y-2">
               <Clerk.Label asChild>
-                <Label>Kod</Label>
+                <Label>{t("fields.code")}</Label>
               </Clerk.Label>
               <Clerk.Input asChild required>
                 <Input inputMode="numeric" autoComplete="one-time-code" />
@@ -111,7 +115,7 @@ export function SignUpForm({ locale }: { locale: string }) {
 
             <SignUp.Action submit asChild>
               <Button type="submit" className="w-full">
-                Potwierdź
+                {t("signUp.verifySubmit")}
               </Button>
             </SignUp.Action>
           </div>

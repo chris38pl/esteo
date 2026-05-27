@@ -1,8 +1,10 @@
+// src\components\auth\sign-in-form.tsx
 "use client";
 
 import * as Clerk from "@clerk/elements/common";
 import * as SignIn from "@clerk/elements/sign-in";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,6 +13,9 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 
 export function SignInForm({ locale }: { locale: string }) {
+  const t = useTranslations("auth");
+  const c = useTranslations("common");
+
   return (
     <SignIn.Root>
       <Clerk.GlobalError className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive" />
@@ -19,7 +24,7 @@ export function SignInForm({ locale }: { locale: string }) {
         <div className="space-y-4">
           <Clerk.Field name="identifier" className="space-y-2">
             <Clerk.Label asChild>
-              <Label>Email</Label>
+              <Label>{t("fields.email")}</Label>
             </Clerk.Label>
             <Clerk.Input asChild type="email" required autoComplete="email">
               <Input placeholder="chris38@gmail.com" className="h-10 rounded-lg" />
@@ -29,7 +34,7 @@ export function SignInForm({ locale }: { locale: string }) {
 
           <Clerk.Field name="password" className="space-y-2">
             <Clerk.Label asChild>
-              <Label>Hasło</Label>
+              <Label>{t("fields.password")}</Label>
             </Clerk.Label>
             <Clerk.Input asChild type="password" required autoComplete="current-password">
               <Input className="h-10 rounded-lg" />
@@ -40,7 +45,7 @@ export function SignInForm({ locale }: { locale: string }) {
           <div className="flex items-center justify-between">
             <label className="flex items-center gap-2 text-xs text-muted-foreground">
               <Checkbox id="remember" />
-              Zapamiętaj mnie
+              {t("signIn.rememberMe")}
             </label>
 
             <SignIn.Action asChild navigate="forgot-password">
@@ -48,20 +53,20 @@ export function SignInForm({ locale }: { locale: string }) {
                 type="button"
                 className="text-xs font-medium text-primary hover:underline"
               >
-                Nie pamiętasz hasła?
+                {t("signIn.forgotPassword")}
               </button>
             </SignIn.Action>
           </div>
 
           <SignIn.Action submit asChild>
             <Button type="submit" className="h-11 w-full rounded-lg">
-              Zaloguj się
+              {t("signIn.submit")}
             </Button>
           </SignIn.Action>
 
           <div className="flex items-center gap-3 pt-2">
             <Separator className="flex-1" />
-            <span className="text-xs text-muted-foreground">lub</span>
+            <span className="text-xs text-muted-foreground">{c("or")}</span>
             <Separator className="flex-1" />
           </div>
 
@@ -93,17 +98,17 @@ export function SignInForm({ locale }: { locale: string }) {
                   d="M43.6 20.5H42V20H24v8h11.3c-1.1 3-3.4 5.4-6.3 6.9l.1.1 6.3 5.2C34.9 43 44 37.6 44 24c0-1.3-.1-2.2-.4-3.5z"
                 />
               </svg>
-              Zaloguj się przez Google
+              {t("signIn.google")}
             </Button>
           </Clerk.Connection>
 
           <p className="text-center text-xs text-muted-foreground">
-            Nie masz konta?{" "}
+            {t("signIn.noAccount")}{" "}
             <Link
               href={`/${locale}/sign-up`}
               className="font-medium text-primary hover:underline"
             >
-              Załóż konto
+              {t("signIn.createAccount")}
             </Link>
           </p>
         </div>
@@ -112,12 +117,12 @@ export function SignInForm({ locale }: { locale: string }) {
       <SignIn.Step name="forgot-password">
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Podaj email, a wyślemy kod weryfikacyjny.
+            {t("forgotPassword.hint")}
           </p>
 
           <Clerk.Field name="identifier" className="space-y-2">
             <Clerk.Label asChild>
-              <Label>Email</Label>
+              <Label>{t("fields.email")}</Label>
             </Clerk.Label>
             <Clerk.Input asChild type="email" required autoComplete="email">
               <Input />
@@ -127,13 +132,13 @@ export function SignInForm({ locale }: { locale: string }) {
 
           <SignIn.Action submit asChild>
             <Button type="submit" className="w-full">
-              Wyślij kod
+              {t("forgotPassword.submit")}
             </Button>
           </SignIn.Action>
 
           <SignIn.Action asChild navigate="start">
             <Button type="button" variant="ghost" className="w-full">
-              Wróć
+              {c("actions.back")}
             </Button>
           </SignIn.Action>
         </div>

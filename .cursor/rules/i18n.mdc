@@ -1,0 +1,33 @@
+---
+description: i18n rules for pl/en (next-intl)
+globs:
+  - "src/app/**/*"
+  - "src/components/**/*"
+  - "src/features/**/*"
+  - "src/messages/*.json"
+alwaysApply: false
+---
+
+# i18n Rules (pl/en)
+
+Esteo supports two locales:
+- `pl` (default)
+- `en`
+
+## Non-negotiable constraints
+
+- All user-facing UI strings must be translated using `next-intl`.
+- If you add/modify UI text, update **both** `src/messages/pl.json` and `src/messages/en.json`.
+- New keys must follow feature namespaces (e.g. `auth.*`, `common.*`, `dashboard.*`, `estimateRequests.*`).
+- Never hardcode color names or locale-specific text inside feature components.
+
+## Preferred patterns
+
+- **Server Components**: use `getTranslations()` from `next-intl/server` for page-level strings.
+- **Client Components**: use `useTranslations()` from `next-intl`.
+- Keep translation keys stable. Prefer changing message values over renaming keys.
+
+## Validation
+
+- Run `npm run i18n:check` to ensure `pl.json` and `en.json` contain the same keys.
+

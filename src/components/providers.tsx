@@ -2,7 +2,7 @@
 
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark, experimental__simple } from "@clerk/themes";
-import { useTheme } from "next-themes";
+import { useTheme } from "@teispace/next-themes";
 import type { ReactNode } from "react";
 
 import { ThemeProvider } from "@/components/theme-provider";

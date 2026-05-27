@@ -1,12 +1,12 @@
+// src\components\auth\auth-shell.tsx
 "use client";
 
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { useTheme } from "next-themes";
+import { useTheme } from "@teispace/next-themes";
 import { useState } from "react";
-import { ThemeToggle } from "@/components/theme-toggle";
-
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { useTranslations } from "next-intl";
 
 export function AuthShell({
   title,
@@ -20,6 +20,7 @@ export function AuthShell({
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
   const [logoOk, setLogoOk] = useState(true);
+  const t = useTranslations("auth");
 
   return (
     <div className="min-h-[calc(100vh-1px)] bg-muted/25 px-4 sm:px-6 dark:bg-background">
@@ -71,12 +72,9 @@ export function AuthShell({
 
                   <CardFooter className="flex flex-col gap-4 px-0 pt-6">
                     <p className="text-center text-xs text-muted-foreground">
-                      Kontynuując, akceptujesz nasz Regulamin i Politykę prywatności.
+                      {t("termsNotice")}
                     </p>
                   </CardFooter>
-                  <div className="flex items-center justify-center pt-1">
-                    <ThemeToggle />
-                  </div>
                 </Card>
                 
               </div>

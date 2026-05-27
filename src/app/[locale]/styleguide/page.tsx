@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { AssistantSurface } from "@/components/ai/assistant-surface";
 import { DashboardFrame } from "@/components/layout/dashboard-frame";
@@ -49,6 +50,7 @@ const tokenPreview = [
 
 export default function StyleguidePage() {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const t = useTranslations("styleguide");
 
   return (
     <main className="surface-base min-h-screen px-6 py-8">
@@ -57,15 +59,16 @@ export default function StyleguidePage() {
           <div className="flex items-center justify-between gap-4">
             <div className="space-y-2">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Esteo Design System
+                {t("kicker")}
               </p>
-              <h1 className="text-3xl font-semibold tracking-tight">Styleguide</h1>
+              <h1 className="text-3xl font-semibold tracking-tight">
+                {t("title")}
+              </h1>
             </div>
             <ThemeToggle />
           </div>
           <p className="max-w-3xl text-sm text-muted-foreground">
-            Semantic theme tokens and reusable UI foundations for feature
-            modules, dashboards, forms, tables and AI surfaces.
+            {t("description")}
           </p>
         </section>
 
@@ -83,7 +86,7 @@ export default function StyleguidePage() {
         <section className="grid gap-6 lg:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle>Typography</CardTitle>
+              <CardTitle>{t("sections.typography")}</CardTitle>
               <CardDescription>Operational hierarchy preview</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -110,7 +113,7 @@ export default function StyleguidePage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Buttons, Inputs, Badges</CardTitle>
+              <CardTitle>{t("sections.buttonsInputsBadges")}</CardTitle>
               <CardDescription>Core interaction primitives</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -147,7 +150,7 @@ export default function StyleguidePage() {
         <section className="grid gap-6 lg:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle>Dialog Surface</CardTitle>
+              <CardTitle>{t("sections.dialog")}</CardTitle>
               <CardDescription>
                 Confirmations and destructive action pattern
               </CardDescription>
@@ -180,14 +183,16 @@ export default function StyleguidePage() {
             </CardContent>
           </Card>
 
-          <AssistantSurface title="AI Assistant Surface">
+          <AssistantSurface title={t("sections.ai")}>
             AI suggestions should stay contextual and subtle. Use this surface
             for estimate hints, extracted scope and actionable adjustments.
           </AssistantSurface>
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold tracking-tight">Table System</h2>
+          <h2 className="text-xl font-semibold tracking-tight">
+            {t("sections.table")}
+          </h2>
           <p className="text-sm text-muted-foreground">
             Dense operational table style for estimate editor and dashboard
             lists.
@@ -230,7 +235,7 @@ export default function StyleguidePage() {
 
         <section className="space-y-3">
           <h2 className="text-xl font-semibold tracking-tight">
-            Dashboard Layout Foundation
+            {t("sections.dashboard")}
           </h2>
           <DashboardFrame
             sidebar={
@@ -258,7 +263,9 @@ export default function StyleguidePage() {
         </section>
 
         <section className="space-y-2">
-          <h2 className="text-xl font-semibold tracking-tight">Spacing Scale</h2>
+          <h2 className="text-xl font-semibold tracking-tight">
+            {t("sections.spacing")}
+          </h2>
           <div className="flex flex-wrap items-end gap-4">
             {[4, 8, 12, 16, 24, 32, 48, 64].map((size) => (
               <div key={size} className="space-y-2 text-center">

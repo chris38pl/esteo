@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, setRequestLocale } from "next-intl/server";
 
 import { isLocale } from "@/lib/locale";
 
@@ -16,10 +18,15 @@ export default async function LocaleLayout({
     notFound();
   }
 
+  setRequestLocale(locale);
+  const messages = await getMessages({ locale });
+
   return (
-    <div data-locale={locale} className="flex min-h-full flex-col">
-      {children}
-    </div>
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <div data-locale={locale} className="flex min-h-full flex-col">
+        {children}
+      </div>
+    </NextIntlClientProvider>
   );
 }
 
