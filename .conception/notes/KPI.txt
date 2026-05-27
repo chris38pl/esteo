@@ -1,0 +1,15 @@
+1. Success Metrics
+
+Najważniejsze KPI dla Estimo:
+Product:
+time-to-first-estimate
+estimate generation success rate
+edit completion rate
+PDF export rate
+Business:
+free → paid conversion
+retention
+estimates per workspace
+AI usage per user
+
+

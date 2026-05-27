@@ -1,0 +1,352 @@
+Nazwa aplikacji: Esteo:
+Profil: Aplikacja SasS
+Tytuł: Szybki kosztorys Twojej usługi dzięki AI
+Hasła:
+- Twórz profesjonalne kosztorysy w minutę dzięki AI.
+- Zamień opis prac w gotową wycenę.
+- AI dla firm usługowych tworzących kosztorysy
+- Szybsze wyceny. Więcej klientów. Mniej chaosu
+- Esteo pomaga firmom usługowym tworzyć profesjonalne kosztorysy w kilka minut dzięki AI
+
+1. Dla kogo?
+- dla małych i średnich firm usługowych tworzących wyceny ręcznie
+- dla ekip wykończeniowych i instalatorów robiących 5–50 wycen miesięcznie
+
+ICP (Ideal Customer Profile):
+- mała firma oferująca usługi wykończenia mieszkań, która tworzy wyceny ręcznie w excelu lub innych aplikacjach i nie ma profesonalnego ksoztorysu który może przesłać klientowi.
+
+Branże startowe:
+- wykończenia wnętrz,
+- elektrycy,
+- stolarze
+- hydraulicy
+- monterzy
+
+2. Jaki problem rozwiązuje?
+- tworzenie wycen zajmuje za dużo czasu,
+- firmy nie odpisują szybko klientom,
+- firmy oferują małą transparentność klientom
+- kosztorysy są chaotyczne,
+- właściciele kopiują stare PDFy,
+- ceny są niespójne,
+- trudno policzyć robociznę i materiały,
+- brak profesjonalnego wyglądu ofert,
+- wyceny są robione po godzinach,
+- małe firmy tracą klientów przez wolne odpowiedzi.
+
+3. Jak to robi?
+
+Użytkownik daje:
+- Opis inwestycji / projektu / wyceny (jako free text)
+- zdjęcia / PDF z projektem
+- dane kontaktowe oraz adresowe danej inwestycji (np. mieszkanie)
+- kluczowe informacje specyficzne dla branży (np. metraż, kiedy rozpocząć usługę, typ nieruchomości)
+
+Co robi AI?
+- pomaga potencjalnemu klientowi wypełnić formularz wyceny (asystant AI sprawdza co jeszcze warto dopisać)
+- pomaga usługodawcy automatycznie stworzyć draft wyceny oraz wykryć zakres prac, podzielić na etapy, policzyć materiały, szacuje roboczogodziny, sugeruje ceny (lub na podstawie dodanych cenników)
+
+
+Co jest wynikiem?
+- usługodawca otrzymuje kosztorys, który może również modyfikować w oparciu o asystenta AI
+- kosztorys jest podzielony na sekcje konfigurowalne przez użytkownika lub domyślne (wygenerowane przez AI dla danego typu inwestycji)
+- usługodawca może wygenerować PDF z danego kosztorysu lub wysłać go mailem (lub w postaci linku url)
+- usługodawca może dodawać komentarze do ksoztorysu oraz modyfikować go ręcznie w prosty sposób
+
+4. Jaki ma pricing model?
+    a) free - 3 kosztorysy na miesiac, watermark na PDF, limitowane użycie asystenta AI przy modyfikacji kosztorysu (3 razy dla kosztorysu
+    b) pro (89zł na miesiąć) - możliwość tworzenia workspace i udostępniania go innym (limit to 1 workspace, udostępniony 3 użytkownikom), branding, PDF, zapisywanie nieograniczonej liczby kosztorysów, podpowiedzi AI
+    c) business (199 zł na miesiąc) - wiele workspace, nieograniczona ilość użytkowników którym jest udostępniony workpace, możliwość tworzenia szablonów, cenników, możliwość integracji z własną stroną (webhook dla API do tworzenia zapytania o wycene)
+
+Nie sprzedaje samego AI tylko:
+- oszczędność czasu,
+- szybsze zamykanie klientów,
+- profesjonalny wygląd,
+- mniej chaosu
+
+5. Kiedy klient dostrzega wartość aplikacji ("aha moment"):
+- po wygenerowaniu pierwszej wyceny w 20 sekund,
+- po pierwszym PDF,
+- po pierwszej zaakceptowanej ofercie
+
+6. Co sprawi, że Esteo będzie trudne do skopiowania / wygra z konkurencją?
+- szybkość i przystępność
+- dane kosztorysowe,
+- najlepszy UX,
+- AI fine-tuning,
+- szablony branżowe,
+
+7. Jak wygląda idealny flow użytkownika?
+a) Rejestracja
+b) Wybór branży i nazwanie swojego workspace (np. firma usługowa XYZ)
+c) Stworzenie zapytania o wycene - każdy użytkownik otrzymuje własny panel z formularzem kontaktowym dot. wyceny
+d) Po wysłaniu zapytania - AI generuje kosztorys jako draft oraz wyświetla go w aplikacji
+e) Edycja
+f) PDF
+g) Wysłanie klientowi
+
+8. Features
+
+8.1 Landing page (hero flow + CTA to sign-up)
+
+8.1. Signup:
+- Signup
+- Login
+- Forgot password
+- możliwość authentykacji via google
+
+8.2 Payments
+- prompt payment options
+- checking active subscription
+- allow/deny access
+
+8.3 Utilities
+- Account Management
+- Workspace Management (editing logo, info about the services + optional configurations for AI prompts -> adding addiitonal context, invites)
+- Subscription Management
+
+8.4 Zapytania o wycene
+- każdy zarejestrowany użytkownik otrzymuje podstronę dla swojego workpace (np. firmy budolwanej XYZ), który służu mu jako contact form dla potencjalnego klienta
+- formularz zawiera podstawowe informacje o kliencie, o inwestycji (np. adres / wojewodztwo,) oraz dane specyficzne dla branży (metraż, typ nieruchomości)
+- do formularza można dodać załączniki (obraz, PDF lub Word)
+- zapytanie o wycene jest wspeirane poprzez asystenta AI (możliwość sprawdzenia obecnego opisu oraz wypełnionych pół formularza przez AI oraz zwrócenie 3-5 podpowiedzi co jeszcze uwzględnić
+- zapytanie po wysłaniu jest zapisane w bazie danych
+- zapytanie jest wysłane również mailowo do klienta oraz usługodawcy
+- na bazie zapytania tworzony jest automatycznie draft wyceny (osobny obiekt w aplikacji: wycena jest z referencją do zapytania)
+
+8.5 Lista zapytań  
+- dashboard pokazujący liste zapytań od klientów oraz przypisane do nich wyceny
+- klaszyczny CRUD dla obiektu zapytań
+- możliwość dodawania komentarzy do zapytania
+
+8.6 Edycja kosztorysu
+- Dodawanie ręczne pozycji lub sekcji kosztorysu
+- Załączanie cennikó usług (wersja business)
+- asystent AI jako osobne okno czatu które pomaga modyfikować kosztorys (np. uwzględnij również koszt demontażu starych płytek oraz wyniesienia gruzu -> automatyczna edycja kosztorysu)
+- możliwość ręcznej edycji pozycji kosztorysu
+- Referencja do zapytania
+- Podgląd załączników
+- Historia zmian
+- Notatki
+- Płatności (wersja business)
+- możliwość tworzenia wielu wersji kosztorysu ()
+- możliwość eksportu do PDF (przycisk)
+- możliwość wysłania do klienta
+- możliwość udostępnienia 
+
+8.7 Lista kosztorysów  
+- dashboard pokazujący liste zapytań od klientów oraz przypisane do nich wyceny
+- klaszyczny CRUD dla obiektu kosztorysów
+
+8.8 Pulpit 
+- Podgląd na dany workpace oraz statystyki (top klienci, ostatnie kosztorysy, ostatnie zapytania lub otwarte zapytania w statusie nie przetworzonych)
+- wyszukiwanie plików (załączniki, zapytania, ksoztorysy -> możliwość filtrowania typu szukanego obiektu)
+- powiadomienia
+- dashboard
+
+Tutaj kończy się MVP
+
+8.8 Lista inwestycji (osobny obiekt) oraz edytowanie inwestycji, podląg danych finansowych dla inwestycji (może być wiele ksoztorysów, usług) dla danego workspace
+
+8.9 Lista klientów (osobny obiekt) dla danego workspace (podobne dane jak powyżej)
+
+8.10 Możliwość kupowania subskrypcji innym (np. swoim pracownikom)
+
+8.11 Zadania (osobny obiekt) oraz ich wyświetlanie oraz edycja dla danego workspace
+
+8.12 Tworzenie szablonów wycen
+- na podstawie poprzednich historycznych wycen tworzenie szablonu
+
+8.13 Konfiguracja
+- możliwość customizowanie usług AI (dodanie kontektu, wytycznych, reguł) -> na poziomie workspace można dodawać reguły. Dla lepszego UX można je aktywować/dezaktywować. Domyślnie w workspace są wpisane 3 reguły w języku locale, które są dezaktywowane -> ma to pokazać użytkownikowi szybkość dodawania reguł (wzór)
+- zarządzanie szablonami
+- zarządzanie cennikami
+- 
+
+8.14 Materiały 
+- tworzenie kartoteki materiałów
+- opcjonalna współpraca z dostawcami dla danej branży (np. Castorama, Leroy Merlin oraz pozycjonowanie ich produktów)
+
+Podsumowując:
+a) MVP 8.1 - 8.8
+b) POST MVP: 8.8+
+
+Pod kątem funckjonalnym:
+
+A. MUST HAVE (v1 launch)
+Absolutne minimum:
+- auth,
+- workspace,
+- formularz zapytania,
+- AI draft kosztorysu,
+- edycja kosztorysu,
+- PDF,
+- dashboard,
+- Stripe.
+
+B. SHOULD HAVE (v1.5)
+- komentarze,
+- historia zmian,
+- upload PDF/image,
+- AI assistant edit mode,
+- branding PDF,
+- share link.
+
+C. FUTURE / POST-MVP
+- inwestycje,
+- zadania,
+- marketplace materiałów,
+- integracje,
+- webhooki,
+- kartoteka materiałów,
+- AI custom rules,
+- analytics,
+- Typesense,
+- multi-workspace advanced.
+
+D. Legal (v1 launch)
+- Terms,
+- Privacy Policy,
+- AI disclaimer.
+
+9. Trust Layer - dlaczego użytkownik zaufa Esteo?
+9.1 Transparentności AI
+    - AI suggested
+    - Estimated labor
+9.2 Human-in-the-loop
+    - AI accelerates your workflow
+9.3 Focus on SPEED
+    - najszybszy sposób stworzenia profesjonalnej wyceny.
+
+9.4 Największa przewaga Esteo
+
+Nie konkuruje z
+- ilością funkcji,
+- enterprise ERP.
+
+Wygrywam dzięki:
+- UX,
+- szybkości,
+- prostocie,
+- AI workflow.
+
+
+10. UI
+- wersja light oraz dark
+- osobna podstrona z color pallete oraz wizualizacją elemtów UI (on top of shadcn)
+- react skeleton dla komponentow ladowanych asynchronicznie lub wymagajanych polaczenai z bazą danych
+- responsywność plus mobile
+
+11. Multi Language Support
+
+11.1 Język domyślny:
+- Polski jako default
+- English jako secondary locale
+
+11.2 URL Strategy
+/pl
+/en
+
+Router:
+app
+  /[locale]
+    /(marketing)
+    /(dashboard)
+
+Przykład:
+/pl/dashboard
+/en/dashboard
+
+Przykład tłumaczeń:
+
+en.json:
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel"
+  }
+}
+
+pl.json:
+{
+  "common": {
+    "save": "Zapisz",
+    "cancel": "Anuluj"
+  }
+}
+
+11.3 Język a integracja z AI
+AI prompts muszą znać locale
+Prompt powinien dostawać: locale: "pl" | "en"
+
+11.4 Język a Workspace
+Workspace ma domyślnie defaultLocale
+Można zmienić w ustwieniach workspace
+
+A EstimateRequest może mieć:
+outputLocale
+
+12. Stack Technologiczny:
+
+Frontend:
+- React
+- Next
+- Shadcn
+- React Hook Forms
+- Tailwind
+- Zod
+- motion dla animacji
+- Next.js App Router
+
+Backend:
+- Next.js Route Handlers / Server Actions
+- PostgreSQL
+- Prisma ORM
+- Neon
+
+Auth:
+- Clerk
+
+Storage
+- UploadThing (maybe later Cloudflare R2)
+
+Queue/Jobs
+- Trigger.dev
+
+Emails
+- Resend
+
+Multi Language:
+- next-intl
+
+Payments
+- Stripe
+
+Search (po MVP)
+- Typesense
+
+Monitoring
+- Sentry
+- Posthog
+
+Analytics
+- Posthog
+
+PDF:
+- HTML + Puppeteer
+
+
+
+Feature Flags
+- Flags SDK / Growthbook
+
+Później.
+
+Deployment: Vercel
+
+APIs:
+- OpenAI (ai-sdk)
+
+Libraries
+- ReactFlow (post MVP)
+

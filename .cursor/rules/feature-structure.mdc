@@ -1,0 +1,13 @@
+//.cursor\rules\feature-structure.mdc
+---
+description: Feature folder conventions and boundaries
+globs:
+  - "src/features/**/*"
+alwaysApply: false
+---
+
+- Features must be self-contained
+- Use flat server structure
+- Avoid deep nesting
+- Prefer local schemas
+- Prefer local feature components

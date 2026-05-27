@@ -1,0 +1,25 @@
+// .cursor\rules\product.mdc
+
+Esteo is an AI-powered SaaS for service businesses.
+
+Core goals:
+- speed
+- simplicity
+- professional estimates
+
+Esteo does NOT try to be:
+- ERP
+- CRM
+- project management platform
+
+Core workflow:
+1. Estimate request
+2. AI estimate draft
+3. Estimate editing
+4. PDF export
+5. Send to customer
+
+Target users:
+- small service companies
+- renovation crews
+- installers

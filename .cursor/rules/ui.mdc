@@ -1,0 +1,18 @@
+//.cursor\rules\ui.mdc
+---
+description: UI architecture, React patterns and shadcn/ui conventions
+globs:
+  - "src/components/**/*"
+  - "src/features/**/components/**/*"
+  - "src/app/**/*"
+alwaysApply: false
+---
+# UI Rules
+
+- Use Server Components by default
+- Prefer Server Components
+- Use Client Components only for interactivity
+- Use shadcn/ui
+- Use RHF + Zod for forms
+- Use skeletons for async loading
+- Application uses dark and light theme

@@ -1,0 +1,19 @@
+// .cursor\rules\database.mdc
+---
+description: Database architecture, Prisma patterns and multi-tenant rules
+globs:
+  - "src/db/**/*"
+  - "**/*.prisma"
+  - "src/features/**/server/repository.ts"
+alwaysApply: false
+---
+# Database Setup
+
+- Every business entity must contain:
+  - createdAt
+  - updatedAt
+- All workspace-scoped business entities must contain workspaceId
+
+- Use soft deletes with deletedAt
+- Use Prisma ORM
+- Never access Prisma directly from React components

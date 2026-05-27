@@ -1,0 +1,23 @@
+// .cursor\rules\architecture.mdc
+---
+description: AI architecture rules
+alwaysApply: true
+---
+
+# Architecture setup
+- Use feature-based architecture.
+- Keep business logic out of React components.
+- Keep business logic out of route handlers.
+- Use service layer for workflows/business rules.
+- Use repository layer for Prisma access.
+- Shared reusable code belongs in /components, /lib, /server.
+- Feature-specific code belongs inside /features.
+
+# Anti-Patterns
+
+Do not:
+- create giant files
+- inline AI prompts
+- duplicate validation schemas
+- Prefer simple implementations over premature abstractions
+

@@ -1,0 +1,17 @@
+// .cursor\rules\ai.mdc
+
+---
+description: AI architecture rules
+globs:
+  - "src/ai/**/*"
+  - "src/features/**/*"
+alwaysApply: false
+---
+
+# AI Rules
+
+- Always use structured outputs
+- Never parse markdown from LLMs
+- Store prompts inside /ai/prompts
+- AI workflows must be async
+- Never inline prompts in components

@@ -1,0 +1,191 @@
+1. Głowne encje systemu
+
+1.1 User
+- id
+- email
+- clerkId
+- account assignment
+
+1.2 Account:
+  userId: Types.ObjectId;
+  name: string;
+  image?: string;
+  password?: string;
+  provider: string;
+  providerAccountId: string;
+
+
+1.3 Workspace
+- id
+- ownerId
+- slug
+- branding
+- plan
+
+
+1.4 EstimateRequest (zapytanie)
+- customer data
+- project description
+- attachments
+- status
+- assigned estimate
+
+1.5 Estimate (kosztorys)
+- sections
+- items
+- totals
+- AI metadata
+- versions
+
+1.6 EstimateItem
+- name
+- material (for future to assign specific material from catalogue)
+- unit
+- quantity
+- cena jednostki
+- wartość netto
+- marża
+- VAT
+- wartość brutto
+
+
+1.7 Attachment
+- file
+- type
+- relation
+
+Comment
+Invite
+Subscription
+
+2. Permission model
+| Rola   | Możliwości         
+| ------ | ------------------ 
+| Owner  | wszystko           
+| Member | edycja kosztorysów 
+| Viewer | podgląd            
+| Admin  | dla zespołu adminów aplikacji Esteo -> mogą wszystko we wszystkich workspace
+
+3. AI Integration
+
+3.1 AI podpowiedzi w formularzu:
+- synchronous communication
+
+3.2 AI edit assistant
+
+3.3 Generowanie draftu kosztorysu po zapytaniu:
+- assynchronous communication
+- powinien być status (tworzenie kosztorysu) dla danego zapytania zanim go nie utworzy
+- po utworzeniu zmienia status
+
+3.4 Prompt system:
+- Base prompt: Same for all prompts in the entire application
+- Branch prompt: Dodaje kontekst danego workspace (np. dodajac inforamcje o firmie)
+- Workspace custom instructions (dodatkowe instrukcje które można dodać per workspace)
+- Uploaded files context 
+- User request
+
+3.5 AI Cost Strategy
+- model usage,
+- limity,
+- fallback models,
+- retries,
+- streaming,
+- caching.
+
+4. Monitoring
+- Logs
+- AI traces
+- Error tracking
+- Usage tracking
+- Cost tracking
+
+OpenAI cost visibility - AI SaaS bardzo łatwo przepala pieniądze.
+
+5. Rate Limits & Abuse Protection
+
+Ryzyko:
+- public forms,
+- AI,
+- uploads.
+
+To oznacza:
+- spam risk.
+
+Trzeba wdrożyć
+- rate limiting,
+- captcha,
+- upload limits,
+- AI limits,
+- token limits.
+
+6. Data Privacy / Legal
+
+Mega ważne przy:
+- danych klientów,
+- adresach,
+- projektach mieszkań,
+- PDFach.
+
+Musisz ustalić:
+Czy:
+- dane idą do OpenAI?
+- jak długo są przechowywane?
+- czy AI trainuje na danych?
+- gdzie są storage regions?
+
+Potrzebujesz:
+- Terms,
+- Privacy Policy,
+- AI disclaimer.
+
+7. Design Language / UI/UX pallete
+dodatkowa strona w której moge podejrzeć (/styleguide):
+- spacing,
+- typography,
+- colors,
+- table patterns,
+- forms,
+- modals,
+- AI assistant UI,
+- badges
+- empty states
+- loading states
+
+
+8. Database Strategy
+
+soft delete (np. deletedAt, DateTime?)
+audit logs
+versioning
+CUID
+timestamps (createdAt, updatedAt)
+
+
+
+9. File structure:
+
+/src
+  /app
+  /features
+  /components
+  /lib
+  /server
+  /db
+  /ai
+    /providers
+    /prompts
+    /services
+  /emails
+  /pdf
+  /types
+  /hooks
+  /config
+
+
+
+
+10. PDF creation
+
+osobny /pdf module,
+reusable templates.

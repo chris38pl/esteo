@@ -1,0 +1,30 @@
+// .cursor\rules\backend.mdc
+---
+description: Backend architecture, server patterns, actions, services and repositories
+globs:
+  - "src/features/**/server/**/*"
+  - "src/server/**/*"
+  - "src/app/api/**/*"
+alwaysApply: false
+---
+# Backend Architecture
+
+- Server Actions for mutations
+- Route Handlers for webhooks/public APIs
+- Keep business logic out of route handlers
+- Use service layer for workflows
+- Use repository layer for Prisma access
+- Trigger.dev for async jobs
+
+- business logic
+
+repository.ts:
+- Prisma queries only
+
+# Antipatterns - Do Not:
+- put Prisma inside components
+- put business logic inside UI
+- create giant files
+- inline AI prompts
+- duplicate validation schemas
+

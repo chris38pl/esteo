@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum WorkspaceRole {
+  OWNER
+  MEMBER
+  VIEWER
+}
+
+enum EstimateRequestStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  clerkId   String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ownedWorkspaces    Workspace[]       @relation("WorkspaceOwner")
+  workspaceMemberships WorkspaceMember[]
+}
+
+model Workspace {
+  id            String   @id @default(cuid())
+  ownerId       String
+  slug          String   @unique
+  defaultLocale String   @default("pl")
+  branding      Json?
+  plan          String   @default("free")
+  deletedAt     DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  owner          User              @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  members        WorkspaceMember[]
+  estimateRequests EstimateRequest[]
+  estimates      Estimate[]
+  estimateSections EstimateSection[]
+  estimateLineItems EstimateLineItem[]
+
+  @@index([ownerId])
+}
+
+model WorkspaceMember {
+  id          String        @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        WorkspaceRole @default(MEMBER)
+  deletedAt   DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+}
+
+model EstimateRequest {
+  id                 String               @id @default(cuid())
+  workspaceId         String
+  status             EstimateRequestStatus @default(PENDING)
+  customerData        Json?
+  address             Json?
+  projectDescription  String
+  attachments         Json?
+  aiMetadata          Json?
+  estimateId          String?              @unique
+  deletedAt           DateTime?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  estimate  Estimate? @relation("EstimateRequestEstimate", fields: [estimateId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, status])
+  @@index([workspaceId, deletedAt])
+}
+
+model Estimate {
+  id               String  @id @default(cuid())
+  workspaceId       String
+  aiMetadata        Json?
+  currency          String  @default("PLN")
+  deletedAt         DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  workspace       Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  estimateRequest EstimateRequest? @relation("EstimateRequestEstimate")
+  sections        EstimateSection[]
+
+  @@index([workspaceId])
+}
+
+model EstimateSection {
+  id         String   @id @default(cuid())
+  workspaceId String
+  estimateId  String
+  title      String
+  sortOrder  Int      @default(0)
+  deletedAt  DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  estimate  Estimate  @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  lineItems EstimateLineItem[]
+
+  @@index([estimateId, sortOrder])
+  @@index([workspaceId])
+  @@index([workspaceId, deletedAt])
+}
+
+model EstimateLineItem {
+  id          String   @id @default(cuid())
+  workspaceId String
+  sectionId   String
+  name        String
+  unit        String?
+  quantity    Decimal  @default(0)
+  unitPrice   Decimal  @default(0)
+  vatRate     Decimal  @default(0)
+  sortOrder   Int      @default(0)
+  deletedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  section   EstimateSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@index([sectionId, sortOrder])
+  @@index([workspaceId])
+}
+

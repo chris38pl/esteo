@@ -1,0 +1,41 @@
+.cursor/rules/product.mdc
+.cursor/rules/architecture.mdc
+.cursor/rules/ui.mdc
+
+Tam wpisujesz:
+stack,
+conventions,
+patterns,
+naming,
+architecture rules,
+forbidden patterns.
+
+
+Np.
+- Always use server actions for mutations
+- Use zod for validation
+- Use feature-based architecture
+- Never place business logic in components
+- Use React Query only when needed
+- Prefer optimistic UI
+- All DB access through repositories/services
+
+
+Final setup:
+/.cursor
+  /rules
+    architecture.mdc
+    backend.mdc
+    ai.mdc
+    ui.mdc
+    database.mdc
+    product.mdc
+
+/ARCHITECTURE.md
+
+/docs
+  /product
+  /features
+  /architecture
+  /standards
+  /adr
