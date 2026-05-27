@@ -1,13 +1,13 @@
 import type { User } from "@prisma/client";
+import { redirect } from "next/navigation";
 
-import { AuthError } from "@/server/auth/errors";
 import { syncUserFromClerk } from "@/server/auth/sync-user";
 
-export async function requireAuth(): Promise<User> {
+export async function requireAuth(locale: string = "pl"): Promise<User> {
   const user = await syncUserFromClerk();
 
   if (!user) {
-    throw new AuthError();
+    redirect(`/${locale}/sign-in`);
   }
 
   return user;

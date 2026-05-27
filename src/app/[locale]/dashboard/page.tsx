@@ -1,3 +1,4 @@
+//src\app\[locale]\dashboard\page.tsx
 import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -13,7 +14,7 @@ export default async function DashboardPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("dashboard");
-  const user = await requireAuth();
+  const user = await requireAuth(locale);
 
   return (
     <main className="flex-1">
