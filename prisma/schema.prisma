@@ -8,10 +8,51 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum PlatformRole {
+  NONE
+  PLATFORM_ADMIN
+}
+
+enum SubscriptionPlan {
+  FREE
+  PRO
+  BUSINESS
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  TRIAL
+  CANCELED
+  INACTIVE
+}
+
 enum WorkspaceRole {
   OWNER
   MEMBER
   VIEWER
+}
+
+enum InviteRole {
+  MEMBER
+  VIEWER
+}
+
+enum WorkspaceRuleType {
+  ESTIMATE
+  COMMUNICATION
+  CUSTOM
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+  EXPIRED
+}
+
+enum WorkspaceLocale {
+  PL
+  EN
 }
 
 enum EstimateRequestStatus {
@@ -22,35 +63,108 @@ enum EstimateRequestStatus {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  clerkId   String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String       @id @default(cuid())
+  email        String       @unique
+  clerkId      String       @unique
+  name         String?
+  avatarUrl    String?
+  platformRole PlatformRole @default(NONE)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
 
-  ownedWorkspaces    Workspace[]       @relation("WorkspaceOwner")
+  billingAccount       BillingAccount?
+  ownedWorkspaces      Workspace[]           @relation("WorkspaceOwner")
   workspaceMemberships WorkspaceMember[]
+  sentInvitations      WorkspaceInvitation[] @relation("InvitationSender")
+  memberInvites        WorkspaceMember[]     @relation("MemberInvitedBy")
+  auditLogs            AuditLog[]
+}
+
+model BillingAccount {
+  id               String   @id @default(cuid())
+  ownerUserId      String   @unique
+  stripeCustomerId String?  @unique
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  owner   User                        @relation(fields: [ownerUserId], references: [id], onDelete: Restrict)
+  subscription Subscription?
+  workspaces   Workspace[]
+  usagePeriods BillingAccountUsagePeriod[]
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  billingAccountId     String             @unique
+  plan                 SubscriptionPlan   @default(FREE)
+  /// MVP: FREE plans use ACTIVE. ACTIVE = usable subscription state, not necessarily paid.
+  status               SubscriptionStatus @default(ACTIVE)
+  stripeCustomerId     String?
+  stripeSubscriptionId String?            @unique
+  currentPeriodEnd     DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  billingAccount BillingAccount @relation(fields: [billingAccountId], references: [id], onDelete: Cascade)
 }
 
 model Workspace {
-  id            String   @id @default(cuid())
-  ownerId       String
-  slug          String   @unique
-  defaultLocale String   @default("pl")
-  branding      Json?
-  plan          String   @default("free")
-  deletedAt     DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id               String          @id @default(cuid())
+  billingAccountId String
+  ownerId          String
+  name             String
+  slug             String          @unique
+  /// Future: migrate to enum once industry verticals stabilize.
+  industry         String?
+  defaultLocale    WorkspaceLocale @default(PL)
+  deletedAt        DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 
-  owner          User              @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: Restrict)
-  members        WorkspaceMember[]
+  billingAccount   BillingAccount    @relation(fields: [billingAccountId], references: [id], onDelete: Restrict)
+  owner            User              @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  members          WorkspaceMember[]
+  invitations      WorkspaceInvitation[]
+  settings         WorkspaceSettings?
+  rules            WorkspaceRule[]
   estimateRequests EstimateRequest[]
-  estimates      Estimate[]
+  estimates        Estimate[]
   estimateSections EstimateSection[]
   estimateLineItems EstimateLineItem[]
+  auditLogs        AuditLog[]
 
+  @@index([billingAccountId])
   @@index([ownerId])
+  @@index([deletedAt])
+}
+
+model WorkspaceSettings {
+  id             String   @id @default(cuid())
+  workspaceId    String   @unique
+  branding       Json?
+  aiInstructions String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model WorkspaceRule {
+  id          String            @id @default(cuid())
+  workspaceId String
+  type        WorkspaceRuleType
+  locale      WorkspaceLocale?
+  title       String
+  content     String
+  active      Boolean           @default(true)
+  sortOrder   Int               @default(0)
+  deletedAt   DateTime?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, active, sortOrder])
 }
 
 model WorkspaceMember {
@@ -58,30 +172,89 @@ model WorkspaceMember {
   workspaceId String
   userId      String
   role        WorkspaceRole @default(MEMBER)
+  invitedById String?
   deletedAt   DateTime?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invitedBy User?     @relation("MemberInvitedBy", fields: [invitedById], references: [id], onDelete: SetNull)
 
   @@unique([workspaceId, userId])
   @@index([userId])
 }
 
+model WorkspaceInvitation {
+  id          String           @id @default(cuid())
+  workspaceId String
+  email       String
+  role        InviteRole
+  token       String           @unique
+  invitedById String
+  status      InvitationStatus @default(PENDING)
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  invitedBy User      @relation("InvitationSender", fields: [invitedById], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, email, status])
+}
+
+model BillingAccountUsagePeriod {
+  id                 String   @id @default(cuid())
+  billingAccountId   String
+  periodKey          String
+  estimatesCreated   Int      @default(0)
+  aiAssistantCalls   Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  billingAccount BillingAccount @relation(fields: [billingAccountId], references: [id], onDelete: Cascade)
+
+  @@unique([billingAccountId, periodKey])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String
+  workspaceId String?
+  entityType  String
+  entityId    String
+  action      String
+  diff        Json?
+  createdAt   DateTime @default(now())
+
+  actor     User       @relation(fields: [actorUserId], references: [id], onDelete: Restrict)
+  workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, createdAt])
+  @@index([entityType, entityId])
+}
+
+model StripeWebhookEvent {
+  id          String   @id @default(cuid())
+  stripeEventId String @unique
+  type        String
+  processedAt DateTime @default(now())
+}
+
 model EstimateRequest {
-  id                 String               @id @default(cuid())
-  workspaceId         String
+  id                 String                @id @default(cuid())
+  workspaceId        String
   status             EstimateRequestStatus @default(PENDING)
-  customerData        Json?
-  address             Json?
-  projectDescription  String
-  attachments         Json?
-  aiMetadata          Json?
-  estimateId          String?              @unique
-  deletedAt           DateTime?
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
+  customerData       Json?
+  address            Json?
+  projectDescription String
+  attachments        Json?
+  aiMetadata         Json?
+  estimateId         String?               @unique
+  deletedAt          DateTime?
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   estimate  Estimate? @relation("EstimateRequestEstimate", fields: [estimateId], references: [id], onDelete: SetNull)
@@ -91,15 +264,15 @@ model EstimateRequest {
 }
 
 model Estimate {
-  id               String  @id @default(cuid())
-  workspaceId       String
-  aiMetadata        Json?
-  currency          String  @default("PLN")
-  deletedAt         DateTime?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id          String    @id @default(cuid())
+  workspaceId String
+  aiMetadata  Json?
+  currency    String    @default("PLN")
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  workspace       Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspace       Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   estimateRequest EstimateRequest? @relation("EstimateRequestEstimate")
   sections        EstimateSection[]
 
@@ -107,17 +280,17 @@ model Estimate {
 }
 
 model EstimateSection {
-  id         String   @id @default(cuid())
+  id          String    @id @default(cuid())
   workspaceId String
   estimateId  String
-  title      String
-  sortOrder  Int      @default(0)
-  deletedAt  DateTime?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  title       String
+  sortOrder   Int       @default(0)
+  deletedAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  estimate  Estimate  @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  workspace Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  estimate  Estimate          @relation(fields: [estimateId], references: [id], onDelete: Cascade)
   lineItems EstimateLineItem[]
 
   @@index([estimateId, sortOrder])
@@ -126,23 +299,22 @@ model EstimateSection {
 }
 
 model EstimateLineItem {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   workspaceId String
   sectionId   String
   name        String
   unit        String?
-  quantity    Decimal  @default(0)
-  unitPrice   Decimal  @default(0)
-  vatRate     Decimal  @default(0)
-  sortOrder   Int      @default(0)
+  quantity    Decimal   @default(0)
+  unitPrice   Decimal   @default(0)
+  vatRate     Decimal   @default(0)
+  sortOrder   Int       @default(0)
   deletedAt   DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  workspace Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  workspace Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   section   EstimateSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 
   @@index([sectionId, sortOrder])
   @@index([workspaceId])
 }
-

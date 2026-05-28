@@ -1,6 +1,7 @@
 import { currentUser } from "@clerk/nextjs/server";
 import type { User } from "@prisma/client";
 
+import { ensureBillingAccount } from "@/features/billing/server/provision-billing-account";
 import { prisma } from "@/db/client";
 
 function getPrimaryEmail(
@@ -26,14 +27,26 @@ export async function syncUserFromClerk(): Promise<User | null> {
     throw new Error("Clerk user is missing a primary email address.");
   }
 
-  return prisma.user.upsert({
+  const name =
+    [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(" ") || null;
+  const avatarUrl = clerkUser.imageUrl ?? null;
+
+  const user = await prisma.user.upsert({
     where: { clerkId: clerkUser.id },
     create: {
       clerkId: clerkUser.id,
       email,
+      name,
+      avatarUrl,
     },
     update: {
       email,
+      name,
+      avatarUrl,
     },
   });
+
+  await ensureBillingAccount(user.id);
+
+  return user;
 }
