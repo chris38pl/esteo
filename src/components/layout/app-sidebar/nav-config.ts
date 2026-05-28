@@ -9,7 +9,7 @@ export type SidebarNavItem = {
   href: (locale: string) => string;
   labelKey: `nav.${NavItemKey}`;
   badge?: string;
-  premium?: boolean;
+  disabled?: boolean;
 };
 
 export const navItems: SidebarNavItem[] = [
@@ -22,9 +22,8 @@ export const navItems: SidebarNavItem[] = [
   {
     key: "requests",
     icon: FileText,
-    href: (locale) => `/${locale}/requests`,
+    href: (locale) => `/${locale}/dashboard?section=requests`,
     labelKey: "nav.requests",
-    badge: "Soon",
   },
   {
     key: "estimates",
@@ -32,6 +31,7 @@ export const navItems: SidebarNavItem[] = [
     href: (locale) => `/${locale}/estimates`,
     labelKey: "nav.estimates",
     badge: "Soon",
+    disabled: true,
   },
   {
     key: "settings",
@@ -39,6 +39,7 @@ export const navItems: SidebarNavItem[] = [
     href: (locale) => `/${locale}/settings`,
     labelKey: "nav.settings",
     badge: "Soon",
+    disabled: true,
   },
 ];
 

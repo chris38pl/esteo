@@ -26,7 +26,7 @@ export function SidebarCollapseButton({
       onClick={toggle}
       aria-label={label}
       className={cn(
-        "group inline-flex h-10 w-10 items-center justify-center rounded-full",
+        "group inline-flex size-8 items-center justify-center rounded-md",
         "text-muted-foreground transition hover:text-foreground focus-visible:outline-none cursor-pointer",
         className,
       )}
@@ -41,7 +41,7 @@ export function SidebarCollapseButton({
         transition={{ duration: 0.2 }}
         className="flex"
       >
-        <Icon className="size-4" />
+        <Icon className="size-3.5" strokeWidth={1.75} />
       </motion.span>
     </button>
   );

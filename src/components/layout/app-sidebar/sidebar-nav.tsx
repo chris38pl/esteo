@@ -1,14 +1,36 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { motion, useReducedMotion } from "framer-motion";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { navItems } from "./nav-config";
+import type { NavItemKey } from "./nav-config";
+import { sidebarInsetClass } from "./sidebar-layout";
+import { useSidebarLayout } from "./sidebar-layout-context";
 import { useSidebarStore } from "./sidebar-store";
+
+function isNavItemActive(
+  key: NavItemKey,
+  locale: string,
+  pathname: string,
+  section: string | null,
+  href: string,
+) {
+  const dashboardPath = `/${locale}/dashboard`;
+
+  if (key === "dashboard") {
+    return pathname === dashboardPath && section !== "requests";
+  }
+
+  if (key === "requests") {
+    return pathname === dashboardPath && section === "requests";
+  }
+
+  return pathname === href;
+}
 
 export function SidebarNav({
   locale,
@@ -18,20 +40,25 @@ export function SidebarNav({
   collapsedOverride?: boolean;
 }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const section = searchParams?.get("section");
   const t = useTranslations("sidebar");
-  const prefersReducedMotion = useReducedMotion();
   const collapsedFromStore = useSidebarStore((s) => s.collapsed);
   const collapsed = collapsedOverride ?? collapsedFromStore;
+  const { inDrawer } = useSidebarLayout();
 
   return (
     <TooltipProvider>
-      <nav aria-label="Primary" className="px-2 pt-4"> {/* i18n-ignore-line */}
-        <ul className="space-y-1">
+      <nav
+        aria-label="Primary" // i18n-ignore-line
+        className={cn(sidebarInsetClass(collapsed, inDrawer), "pb-1")}
+      >
+        <ul className="space-y-px">
           {navItems.map((item) => {
             const href = item.href(locale);
-            const active = pathname === href;
+            const active = isNavItemActive(item.key, locale, pathname, section, href);
             const label = t(item.labelKey);
-            const disabled = item.badge === "Soon";
+            const disabled = item.disabled === true;
 
             const row = collapsed ? (
               <Link
@@ -39,17 +66,14 @@ export function SidebarNav({
                 aria-current={active ? "page" : undefined}
                 aria-disabled={disabled || undefined}
                 tabIndex={disabled ? -1 : 0}
+                data-active={active ? "true" : "false"}
                 className={cn(
-                  "group relative mx-auto flex size-12 items-center justify-center rounded-2xl",
-                  "transition-colors",
-                  disabled && "pointer-events-none opacity-60",
-                  active
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                    : "text-muted-foreground hover:bg-accent/35 hover:text-foreground",
+                  "sidebar-nav-link mx-auto flex size-8 items-center justify-center rounded-lg transition-colors",
+                  disabled && "pointer-events-none opacity-45",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35",
                 )}
               >
-                <item.icon className="size-5" />
+                <item.icon className="size-3.5" strokeWidth={1.75} />
               </Link>
             ) : (
               <Link
@@ -57,42 +81,20 @@ export function SidebarNav({
                 aria-current={active ? "page" : undefined}
                 aria-disabled={disabled || undefined}
                 tabIndex={disabled ? -1 : 0}
+                data-active={active ? "true" : "false"}
                 className={cn(
-                  "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm",
-                  "transition-colors",
-                  disabled && "pointer-events-none opacity-60",
-                  active
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                    : "text-muted-foreground hover:bg-accent/35 hover:text-foreground",
+                  "sidebar-nav-link flex min-w-0 max-w-full items-center gap-2 rounded-lg px-2 py-1.5 text-[13px] leading-tight transition-colors",
+                  disabled && "pointer-events-none opacity-45",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35",
                 )}
               >
-                <span
-                  className={cn(
-                    "flex size-9 items-center justify-center rounded-lg",
-                    active
-                      ? "bg-background/6 text-foreground"
-                      : "bg-transparent text-inherit",
-                  )}
-                >
-                  <item.icon className="size-4" />
-                </span>
-
-                <motion.span
-                  initial={false}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={
-                    prefersReducedMotion
-                      ? { duration: 0 }
-                      : { duration: 0.18, ease: [0.22, 1, 0.36, 1] }
-                  }
-                  className={cn("min-w-0 flex-1 truncate")}
-                >
-                  {label}
-                </motion.span>
-
+                <item.icon
+                  className="size-3.5 shrink-0 opacity-80"
+                  strokeWidth={1.75}
+                />
+                <span className="min-w-0 flex-1 truncate">{label}</span>
                 {item.badge ? (
-                  <span className="rounded-full border border-border/60 bg-card/60 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                  <span className="shrink-0 rounded border border-sidebar-search-border bg-[var(--sidebar-search)] px-1 py-px text-[9px] font-medium text-[var(--sidebar-section)]">
                     {item.badge}
                   </span>
                 ) : null}
@@ -117,4 +119,3 @@ export function SidebarNav({
     </TooltipProvider>
   );
 }
-

@@ -1,12 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
 import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
 import { useSidebarStore } from "./sidebar-store";
 import { SidebarCollapseButton } from "./sidebar-collapse-button";
+import { sidebarInsetClass } from "./sidebar-layout";
+import { useSidebarLayout } from "./sidebar-layout-context";
 
 export function SidebarHeader({
   collapsedOverride,
@@ -16,46 +17,35 @@ export function SidebarHeader({
   showCollapseButton?: boolean;
 } = {}) {
   const t = useTranslations("sidebar");
-  const prefersReducedMotion = useReducedMotion();
   const collapsedFromStore = useSidebarStore((s) => s.collapsed);
   const collapsed = collapsedOverride ?? collapsedFromStore;
+  const { inDrawer } = useSidebarLayout();
 
   return (
-    <div className="px-3 pt-3">
+    <div
+      className={cn(
+        sidebarInsetClass(collapsed, inDrawer),
+        "pb-2.5 pt-4",
+        collapsed && "px-1.5 pb-2 pt-2",
+      )}
+    >
       {collapsed ? (
         <div className="flex items-center justify-center">
           {showCollapseButton ? <SidebarCollapseButton /> : null}
         </div>
       ) : (
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="relative size-10 overflow-hidden rounded-xl border border-border/60 bg-muted/40">
+        <div className="flex min-w-0 max-w-full items-center gap-2 px-2">
+          <div className="flex min-w-0 flex-1 items-center gap-2.5">
+            <div className="relative size-6 shrink-0 overflow-hidden rounded-md bg-[var(--sidebar-search)] ring-1 ring-sidebar-search-border">
               <Image src="/logo.png" alt="" fill className="object-cover" />
             </div>
-
-            <motion.div
-              initial={false}
-              animate={{ opacity: 1, x: 0 }}
-              transition={
-                prefersReducedMotion
-                  ? { duration: 0 }
-                  : { duration: 0.22, ease: [0.22, 1, 0.36, 1] }
-              }
-              className={cn("min-w-0")}
-            >
-              <p className="truncate text-sm font-semibold tracking-tight">
-                {t("workspace.placeholderName")}
-              </p>
-              <p className="truncate text-xs text-muted-foreground">
-                {t("workspace.plan.free")}
-              </p>
-            </motion.div>
+            <p className="sidebar-heading truncate text-[13px] font-semibold leading-none tracking-tight">
+              {t("meta.appName")}
+            </p>
           </div>
-
           {showCollapseButton ? <SidebarCollapseButton /> : null}
         </div>
       )}
     </div>
   );
 }
-

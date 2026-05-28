@@ -13,10 +13,44 @@
   "meta": {
     "appName": "Esteo"
   },
+  "search": {
+    "placeholder": "Search…",
+    "shortcut": "⌘K"
+  },
+  "team": {
+    "title": "Your team",
+    "invite": "Invite a member",
+    "expand": "Expand team section",
+    "collapse": "Collapse team section",
+    "members": {
+      "owner": "Owner",
+      "colleagueA": "Anna Kowalska",
+      "colleagueB": "Piotr Nowak"
+    }
+  },
+  "pinned": {
+    "title": "Pinned",
+    "add": "Pin estimate",
+    "expand": "Expand pinned section",
+    "collapse": "Collapse pinned section",
+    "drag": "Drag to reorder"
+  },
+  "settings": {
+    "title": "Settings"
+  },
+  "account": {
+    "workspaces": "Workspaces",
+    "createWorkspace": "Create workspace",
+    "workspaceUsage": "Workspace usage",
+    "workspaceSettings": "Workspace settings",
+    "workspaceMembers": "Workspace members",
+    "accountSettings": "Account settings"
+  },
   "user": {
     "placeholder": {
       "name": "Chris Nowak",
-      "role": "Owner"
+      "role": "Owner",
+      "email": "account@esteo.com"
     },
     "menu": {
       "account": "Account",

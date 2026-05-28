@@ -19,10 +19,12 @@ export function LocaleSwitcher({
   value,
   labels = { pl: "PL", en: "EN" },
   ariaLabel = "Switch language",
+  compact = false,
 }: {
   value: Locale;
   labels?: Record<Locale, string>;
   ariaLabel?: string;
+  compact?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -33,7 +35,13 @@ export function LocaleSwitcher({
   const href = query ? `${hrefBase}?${query}` : hrefBase;
 
   return (
-    <div className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-card/60 p-1 text-sm">
+    <div
+      className={
+        compact
+          ? "inline-flex items-center gap-0.5 rounded-md border border-border/50 bg-[var(--sidebar-search)] p-0.5"
+          : "inline-flex items-center gap-1 rounded-full border border-border/60 bg-card/60 p-1 text-sm"
+      }
+    >
       {locales.map((l) => {
         const nextBase = pathname ? withLocale(pathname, l) : `/${l}`;
         const next = query ? `${nextBase}?${query}` : nextBase;
@@ -46,7 +54,9 @@ export function LocaleSwitcher({
             aria-label={`${ariaLabel}: ${labels[l]}`}
             aria-current={active ? "page" : undefined}
             className={[
-              "rounded-full px-2.5 py-1 text-xs font-medium transition cursor-pointer",
+              compact
+                ? "rounded px-1.5 py-0.5 text-[10px] font-medium transition cursor-pointer"
+                : "rounded-full px-2.5 py-1 text-xs font-medium transition cursor-pointer",
               active
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:text-foreground",

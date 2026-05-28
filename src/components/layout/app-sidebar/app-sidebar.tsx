@@ -1,20 +1,20 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 import type { Locale } from "@/lib/locale";
 import { useSidebarStore } from "./sidebar-store";
 import { SidebarHeader } from "./sidebar-header";
+import { SidebarSearch } from "./sidebar-search";
+import { SidebarDivider } from "./sidebar-divider";
 import { SidebarNav } from "./sidebar-nav";
-import { SidebarUpgrade } from "./sidebar-upgrade";
-import { SidebarWorkspace } from "./sidebar-workspace";
-import { SidebarUser } from "./sidebar-user";
-import { SidebarFooter } from "./sidebar-footer";
+import { SidebarPinned } from "./sidebar-pinned";
+import { SidebarTeam } from "./sidebar-team";
+import { SidebarSettings } from "./sidebar-settings";
 
-const EXPANDED = 280;
-const COLLAPSED = 88;
+const EXPANDED = 232;
+const COLLAPSED = 64;
 
 export function AppSidebar({
   locale,
@@ -37,33 +37,30 @@ export function AppSidebar({
           : { duration: 0.38, ease: [0.22, 1, 0.36, 1] }
       }
       className={cn(
-        "surface-sidebar fixed inset-y-0 left-0 z-40 hidden flex-col",
+        "surface-sidebar fixed inset-y-0 left-0 z-40 hidden flex-col overflow-x-hidden",
         "border-r border-sidebar-border",
-        "bg-sidebar/95 backdrop-blur supports-[backdrop-filter]:bg-sidebar/85",
-        "shadow-[0_30px_120px_-70px_rgba(0,0,0,0.8)]",
+        "bg-sidebar text-sidebar-foreground",
+        "shadow-[inset_-1px_0_0_rgba(0,0,0,0.02)]",
+        "dark:shadow-[0_30px_120px_-70px_rgba(0,0,0,0.8)]",
         "md:flex",
         className,
       )}
       style={{ width: EXPANDED }}
     >
       <SidebarHeader />
+      <SidebarDivider />
+      <SidebarSearch />
 
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         <SidebarNav locale={locale} />
+        <SidebarDivider />
+        <SidebarPinned locale={locale} />
+        <SidebarDivider />
+        <SidebarTeam />
       </div>
 
-      <div
-        className={cn(
-          "space-y-3 px-3 pb-3",
-          collapsed && "flex flex-col items-center space-y-3 px-0",
-        )}
-      >
-        <SidebarUpgrade />
-        <SidebarWorkspace />
-        <SidebarUser />
-      </div>
-
-      <SidebarFooter locale={locale} />
+      <SidebarDivider />
+      <SidebarSettings locale={locale} />
     </motion.aside>
   );
 }
@@ -71,4 +68,3 @@ export function AppSidebar({
 export function sidebarWidth(collapsed: boolean) {
   return collapsed ? COLLAPSED : EXPANDED;
 }
-

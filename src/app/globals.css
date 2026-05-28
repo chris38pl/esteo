@@ -74,11 +74,20 @@
   --input: #ffffff;
   --ring: rgba(37, 99, 235, 0.18);
 
-  --sidebar: #f9fafb;
-  --sidebar-foreground: #0f172a;
-  --sidebar-border: rgba(15, 23, 42, 0.08);
-  --sidebar-accent: #f1f5f9;
-  --sidebar-accent-foreground: #0f172a;
+  --sidebar: #f4f4f5;
+  --sidebar-foreground: #6b7280;
+  --sidebar-heading: #374151;
+  --sidebar-border: rgba(24, 24, 27, 0.06);
+  --sidebar-divider: #e4e4e7;
+  --sidebar-accent: #ebe8ff;
+  --sidebar-accent-foreground: #4b5563;
+  --sidebar-search: #ffffff;
+  --sidebar-search-border: rgba(24, 24, 27, 0.08);
+  --sidebar-nav-hover: rgba(24, 24, 27, 0.045);
+  --sidebar-nav-active: rgba(99, 102, 241, 0.1);
+  --sidebar-nav-active-foreground: #4b5563;
+  --sidebar-section: #71717a;
+  --sidebar-item-description: #52525b;
 
   --ai: #e0ecff;
   --ai-foreground: #1e3a8a;
@@ -120,6 +129,15 @@
   --sidebar-border: #182847;
   --sidebar-accent: #11203b;
   --sidebar-accent-foreground: #edf2ff;
+  --sidebar-heading: #c8d4f0;
+  --sidebar-divider: #1a2a4a;
+  --sidebar-search: #0d172d;
+  --sidebar-search-border: #1a2a4a;
+  --sidebar-nav-hover: rgba(255, 255, 255, 0.04);
+  --sidebar-nav-active: rgba(109, 152, 255, 0.12);
+  --sidebar-nav-active-foreground: #e2e8ff;
+  --sidebar-section: #8b9ab7;
+  --sidebar-item-description: #9aa8c4;
 
   --ai: #6d98ff;
   --ai-foreground: #081120;
@@ -205,6 +223,52 @@ body {
 
 .surface-sidebar {
   @apply bg-sidebar text-sidebar-foreground border-r border-sidebar-border;
+}
+
+.sidebar-search-input {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  background: var(--sidebar-search);
+  border: 1px solid var(--sidebar-search-border);
+}
+
+.sidebar-nav-link {
+  color: var(--sidebar-foreground);
+}
+
+.sidebar-nav-link:hover:not([data-active="true"]) {
+  background: var(--sidebar-nav-hover);
+}
+
+.sidebar-nav-link[data-active="true"] {
+  background: var(--sidebar-nav-active);
+  color: var(--sidebar-nav-active-foreground);
+}
+
+.sidebar-divider {
+  background-color: var(--sidebar-divider);
+}
+
+.sidebar-section-label {
+  color: var(--sidebar-section);
+}
+
+.sidebar-heading {
+  color: var(--sidebar-heading);
+}
+
+.sidebar-item-description {
+  color: var(--sidebar-item-description);
+}
+
+.sidebar-drawer-panel {
+  box-sizing: border-box;
+}
+
+.sidebar-drawer-panel [data-slot="dialog-close"] {
+  top: 0.75rem;
+  right: 0.5rem;
 }
 
 .surface-ai {
