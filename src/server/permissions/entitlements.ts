@@ -57,6 +57,18 @@ export async function countInvitedSeats(workspaceId: string): Promise<number> {
   });
 }
 
+export async function canUserCreateWorkspace(userId: string): Promise<boolean> {
+  try {
+    await assertCanCreateWorkspace(userId);
+    return true;
+  } catch (error) {
+    if (error instanceof EntitlementError) {
+      return false;
+    }
+    throw error;
+  }
+}
+
 export async function assertCanCreateWorkspace(userId: string): Promise<void> {
   const subscription = await prisma.subscription.findFirst({
     where: { billingAccount: { ownerUserId: userId } },

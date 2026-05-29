@@ -72,6 +72,17 @@
     "title": "Upgrade to Pro",
     "body": "Unlock advanced estimates, exports and team workflows.",
     "cta": "Upgrade"
+  },
+  "upgradeBusiness": {
+    "title": "Upgrade to Business",
+    "body": "Unlock unlimited workspaces, seats, and estimates.",
+    "cta": "Upgrade"
+  },
+  "planStatus": {
+    "businessTitle": "Business plan",
+    "businessBody": "Everything unlocked.",
+    "manageBilling": "Manage billing",
+    "soon": "Soon"
   }
 }
 

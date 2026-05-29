@@ -72,6 +72,17 @@
     "title": "Przejdź na Pro",
     "body": "Odblokuj zaawansowane wyceny, eksporty i pracę zespołową.",
     "cta": "Upgrade"
+  },
+  "upgradeBusiness": {
+    "title": "Przejdź na Business",
+    "body": "Odblokuj nieograniczone workspace, miejsca i wyceny.",
+    "cta": "Upgrade"
+  },
+  "planStatus": {
+    "businessTitle": "Plan Business",
+    "businessBody": "Wszystko odblokowane.",
+    "manageBilling": "Zarządzaj płatnościami",
+    "soon": "Wkrótce"
   }
 }
 

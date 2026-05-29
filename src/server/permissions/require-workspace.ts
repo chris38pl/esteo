@@ -61,6 +61,36 @@ export async function requireWorkspace(
     };
   }
 
+  const workspace = await prisma.workspace.findFirst({
+    where: { id: workspaceId, deletedAt: null },
+  });
+
+  if (!workspace) {
+    throw new PermissionError("Workspace not found.");
+  }
+
+  if (workspace.ownerId === user.id) {
+    const membership = await getWorkspaceMembership(user.id, workspaceId);
+
+    if (membership) {
+      return { user, membership };
+    }
+
+    return {
+      user,
+      membership: {
+        id: "workspace-owner",
+        workspaceId,
+        userId: user.id,
+        role: "OWNER",
+        invitedById: null,
+        deletedAt: null,
+        createdAt: workspace.createdAt,
+        updatedAt: workspace.updatedAt,
+      },
+    };
+  }
+
   const membership = await getWorkspaceMembership(user.id, workspaceId);
 
   if (!membership) {

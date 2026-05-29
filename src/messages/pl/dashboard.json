@@ -7,13 +7,53 @@
   },
   "title": "Panel",
   "subtitle": "Zalogowano i zsynchronizowano z bazą danych.",
+  "sections": {
+    "user": "Użytkownik",
+    "billing": "Rozliczenia i subskrypcja",
+    "activeWorkspace": "Aktywna przestrzeń robocza",
+    "workspaces": "Dostępne przestrzenie robocze ({count})"
+  },
+  "labels": {
+    "active": "aktywna"
+  },
+  "empty": {
+    "workspaces": "Brak dostępnych przestrzeni roboczych."
+  },
   "fields": {
     "userId": "ID użytkownika",
     "email": "Email",
-    "clerkId": "ID Clerk"
+    "clerkId": "ID Clerk",
+    "name": "Imię i nazwisko",
+    "avatarUrl": "URL awatara",
+    "platformRole": "Rola platformy",
+    "lastActiveWorkspaceId": "ID ostatniej aktywnej przestrzeni",
+    "createdAt": "Utworzono",
+    "updatedAt": "Zaktualizowano",
+    "billingAccountId": "ID konta rozliczeniowego",
+    "stripeCustomerId": "ID klienta Stripe",
+    "subscriptionPlan": "Plan",
+    "subscriptionStatus": "Status",
+    "subscriptionId": "ID subskrypcji",
+    "stripeSubscriptionId": "ID subskrypcji Stripe",
+    "currentPeriodEnd": "Koniec bieżącego okresu",
+    "resolvedActiveWorkspaceId": "Rozwiązane ID aktywnej przestrzeni",
+    "activeWorkspaceName": "Nazwa",
+    "activeWorkspaceSlug": "Slug",
+    "workspaceId": "ID przestrzeni",
+    "workspaceSlug": "Slug",
+    "workspaceName": "Nazwa",
+    "workspaceIndustry": "Branża",
+    "workspaceDefaultLocale": "Domyślny język",
+    "workspaceOwnerId": "ID właściciela",
+    "workspaceBillingAccountId": "ID konta rozliczeniowego",
+    "accessRole": "Rola dostępu",
+    "isOwner": "Właściciel",
+    "membershipId": "ID członkostwa",
+    "membershipRole": "Rola członkostwa",
+    "workspaceCreatedAt": "Utworzono",
+    "workspaceUpdatedAt": "Zaktualizowano"
   },
   "actions": {
     "backHome": "Wróć na stronę główną"
   }
 }
-

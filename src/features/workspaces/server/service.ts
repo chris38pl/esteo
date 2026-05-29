@@ -42,6 +42,27 @@ export async function getWorkspace(workspaceId: string) {
   return findWorkspaceById(workspaceId);
 }
 
+const SLUG_RETRY_ATTEMPTS = 10;
+
+async function resolveAvailableSlug(name: string): Promise<string> {
+  const base = normalizeWorkspaceSlug(name);
+
+  if (!isValidWorkspaceSlug(base)) {
+    throw new WorkspaceError("Invalid workspace slug.");
+  }
+
+  for (let attempt = 0; attempt < SLUG_RETRY_ATTEMPTS; attempt += 1) {
+    const slug = attempt === 0 ? base : `${base}-${attempt + 1}`;
+    const existingSlug = await prisma.workspace.findUnique({ where: { slug } });
+
+    if (!existingSlug) {
+      return slug;
+    }
+  }
+
+  throw new WorkspaceError("Could not generate a unique workspace slug.");
+}
+
 export async function createWorkspace(
   user: User,
   input: {
@@ -56,16 +77,20 @@ export async function createWorkspace(
   await assertCanCreateWorkspace(user.id);
 
   const billingAccount = await ensureBillingAccount(user.id);
-  const slug = normalizeWorkspaceSlug(input.slug ?? input.name);
+  const slug = input.slug
+    ? normalizeWorkspaceSlug(input.slug)
+    : await resolveAvailableSlug(input.name);
 
   if (!isValidWorkspaceSlug(slug)) {
     throw new WorkspaceError("Invalid workspace slug.");
   }
 
-  const existingSlug = await prisma.workspace.findUnique({ where: { slug } });
+  if (input.slug) {
+    const existingSlug = await prisma.workspace.findUnique({ where: { slug } });
 
-  if (existingSlug) {
-    throw new WorkspaceError("Workspace slug is already taken.");
+    if (existingSlug) {
+      throw new WorkspaceError("Workspace slug is already taken.");
+    }
   }
 
   const branding = input.branding

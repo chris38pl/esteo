@@ -7,13 +7,53 @@
   },
   "title": "Dashboard",
   "subtitle": "Signed in and synced to the database.",
+  "sections": {
+    "user": "User",
+    "billing": "Billing & subscription",
+    "activeWorkspace": "Active workspace",
+    "workspaces": "Accessible workspaces ({count})"
+  },
+  "labels": {
+    "active": "active"
+  },
+  "empty": {
+    "workspaces": "No accessible workspaces."
+  },
   "fields": {
     "userId": "User ID",
     "email": "Email",
-    "clerkId": "Clerk ID"
+    "clerkId": "Clerk ID",
+    "name": "Name",
+    "avatarUrl": "Avatar URL",
+    "platformRole": "Platform role",
+    "lastActiveWorkspaceId": "Last active workspace ID",
+    "createdAt": "Created at",
+    "updatedAt": "Updated at",
+    "billingAccountId": "Billing account ID",
+    "stripeCustomerId": "Stripe customer ID",
+    "subscriptionPlan": "Plan",
+    "subscriptionStatus": "Status",
+    "subscriptionId": "Subscription ID",
+    "stripeSubscriptionId": "Stripe subscription ID",
+    "currentPeriodEnd": "Current period end",
+    "resolvedActiveWorkspaceId": "Resolved active workspace ID",
+    "activeWorkspaceName": "Name",
+    "activeWorkspaceSlug": "Slug",
+    "workspaceId": "Workspace ID",
+    "workspaceSlug": "Slug",
+    "workspaceName": "Name",
+    "workspaceIndustry": "Industry",
+    "workspaceDefaultLocale": "Default locale",
+    "workspaceOwnerId": "Owner ID",
+    "workspaceBillingAccountId": "Billing account ID",
+    "accessRole": "Access role",
+    "isOwner": "Is owner",
+    "membershipId": "Membership ID",
+    "membershipRole": "Membership role",
+    "workspaceCreatedAt": "Created at",
+    "workspaceUpdatedAt": "Updated at"
   },
   "actions": {
     "backHome": "Back to home"
   }
 }
-

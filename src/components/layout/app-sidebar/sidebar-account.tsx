@@ -11,9 +11,11 @@ import {
   Users,
 } from "lucide-react";
 import { SignOutButton, useUser } from "@clerk/nextjs";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { WorkspaceAvatar } from "@/components/avatars/workspace-avatar";
+import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,12 +35,23 @@ export function SidebarAccount({
   collapsedOverride?: boolean;
 } = {}) {
   const t = useTranslations("sidebar");
+  const tWorkspaces = useTranslations("workspaces");
   const collapsedFromStore = useSidebarStore((s) => s.collapsed);
   const collapsed = collapsedOverride ?? collapsedFromStore;
   const { inDrawer } = useSidebarLayout();
   const { user } = useUser();
+  const {
+    workspaces,
+    activeWorkspace,
+    canCreateWorkspace,
+    canCreateAdditionalWorkspace,
+    locale,
+    switchWorkspace,
+    isSwitching,
+  } = useWorkspaceContext();
 
-  const workspaceName = t("workspace.placeholderName");
+  const workspaceName =
+    activeWorkspace?.name ?? t("workspace.placeholderName");
   const userName = user?.fullName || user?.firstName || t("user.placeholder.name");
   const userEmail =
     user?.primaryEmailAddress?.emailAddress ?? t("user.placeholder.email");
@@ -47,6 +60,7 @@ export function SidebarAccount({
     <DropdownMenuTrigger asChild>
       <button
         type="button"
+        disabled={isSwitching}
         className={cn(
           "group flex w-full max-w-full min-w-0 items-center gap-2 overflow-hidden rounded-lg border border-sidebar-border bg-[var(--sidebar-search)]",
           "px-2 py-1.5 text-left transition hover:bg-accent/30",
@@ -81,15 +95,38 @@ export function SidebarAccount({
       <DropdownMenuLabel className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
         {t("account.workspaces")}
       </DropdownMenuLabel>
-      <DropdownMenuItem className="gap-2 text-xs">
-        <WorkspaceAvatar name={workspaceName} size={20} className="rounded-md ring-0" />
-        <span className="min-w-0 flex-1 truncate">{workspaceName}</span>
-        <Check className="size-3.5 shrink-0 text-primary" />
-      </DropdownMenuItem>
-      <DropdownMenuItem className="gap-2 text-xs">
-        <Plus className="size-3.5 text-muted-foreground" />
-        {t("account.createWorkspace")}
-      </DropdownMenuItem>
+      {canCreateAdditionalWorkspace ? (
+        <>
+          <DropdownMenuItem asChild className="gap-2 text-xs">
+            <Link href={`/${locale}/dashboard/workspaces/new`}>
+              <Plus className="size-3.5 text-muted-foreground" />
+              {tWorkspaces("switcher.newWorkspace")}
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+        </>
+      ) : null}
+      {canCreateWorkspace && workspaces.length === 0 ? (
+        <DropdownMenuItem asChild className="gap-2 text-xs">
+          <Link href={`/${locale}/dashboard/onboarding`}>
+            <Plus className="size-3.5 text-muted-foreground" />
+            {tWorkspaces("switcher.createWorkspace")}
+          </Link>
+        </DropdownMenuItem>
+      ) : null}
+      {workspaces.map((workspace) => (
+        <DropdownMenuItem
+          key={workspace.id}
+          className="gap-2 text-xs"
+          onSelect={() => switchWorkspace(workspace.id)}
+        >
+          <WorkspaceAvatar name={workspace.name} size={20} className="rounded-md ring-0" />
+          <span className="min-w-0 flex-1 truncate">{workspace.name}</span>
+          {workspace.id === activeWorkspace?.id ? (
+            <Check className="size-3.5 shrink-0 text-primary" />
+          ) : null}
+        </DropdownMenuItem>
+      ))}
 
       <DropdownMenuSeparator />
 

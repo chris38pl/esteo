@@ -2,6 +2,9 @@
   "name": "esteo",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,7 +14,11 @@
     "i18n:check": "node --experimental-strip-types scripts/check-i18n-keys.ts",
     "prisma:validate": "prisma validate",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev"
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:seed": "tsx prisma/seed.ts",
+    "prisma:seed:pro": "tsx prisma/seed.ts --plan PRO",
+    "prisma:seed:business": "tsx prisma/seed.ts --plan BUSINESS",
+    "prisma:reset": "prisma migrate reset --skip-seed"
   },
   "dependencies": {
     "@clerk/elements": "^0.24.13",
@@ -47,6 +54,7 @@
     "eslint-config-next": "16.2.6",
     "prisma": "^6",
     "tailwindcss": "^4",
+    "tsx": "^4.22.3",
     "typescript": "^5"
   }
 }

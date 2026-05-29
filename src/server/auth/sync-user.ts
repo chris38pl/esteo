@@ -48,5 +48,10 @@ export async function syncUserFromClerk(): Promise<User | null> {
 
   await ensureBillingAccount(user.id);
 
+  const { autoAcceptPendingInvitations } = await import(
+    "@/features/workspaces/server/auto-accept-invitations"
+  );
+  await autoAcceptPendingInvitations(user);
+
   return user;
 }

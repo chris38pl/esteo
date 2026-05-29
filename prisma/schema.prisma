@@ -63,16 +63,18 @@ enum EstimateRequestStatus {
 }
 
 model User {
-  id           String       @id @default(cuid())
-  email        String       @unique
-  clerkId      String       @unique
-  name         String?
-  avatarUrl    String?
-  platformRole PlatformRole @default(NONE)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  id                    String       @id @default(cuid())
+  email                 String       @unique
+  clerkId               String       @unique
+  name                  String?
+  avatarUrl             String?
+  platformRole          PlatformRole @default(NONE)
+  lastActiveWorkspaceId String?
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
 
   billingAccount       BillingAccount?
+  lastActiveWorkspace  Workspace?            @relation("UserLastActiveWorkspace", fields: [lastActiveWorkspaceId], references: [id], onDelete: SetNull)
   ownedWorkspaces      Workspace[]           @relation("WorkspaceOwner")
   workspaceMemberships WorkspaceMember[]
   sentInvitations      WorkspaceInvitation[] @relation("InvitationSender")
@@ -132,6 +134,7 @@ model Workspace {
   estimateSections EstimateSection[]
   estimateLineItems EstimateLineItem[]
   auditLogs        AuditLog[]
+  lastActiveUsers  User[]              @relation("UserLastActiveWorkspace")
 
   @@index([billingAccountId])
   @@index([ownerId])

@@ -1,0 +1,42 @@
+{
+  "onboarding": {
+    "title": "Utwórz przestrzeń roboczą",
+    "subtitle": "Skonfiguruj organizację, aby rozpocząć pracę w Esteo.",
+    "fields": {
+      "name": "Nazwa przestrzeni roboczej",
+      "namePlaceholder": "Acme Budownictwo",
+      "industry": "Branża (opcjonalnie)",
+      "industryPlaceholder": "Roboty budowlane"
+    },
+    "slugPreview": "Adres URL: {slug}",
+    "submit": "Utwórz przestrzeń roboczą",
+    "submitting": "Tworzenie…"
+  },
+  "new": {
+    "title": "Nowa przestrzeń robocza",
+    "subtitle": "Utwórz kolejną przestrzeń roboczą na swoim koncie.",
+    "fields": {
+      "name": "Nazwa przestrzeni roboczej",
+      "namePlaceholder": "Acme Budownictwo",
+      "industry": "Branża (opcjonalnie)",
+      "industryPlaceholder": "Roboty budowlane"
+    },
+    "slugPreview": "Adres URL: {slug}",
+    "submit": "Utwórz przestrzeń roboczą",
+    "submitting": "Tworzenie…",
+    "backToDashboard": "Wróć do panelu"
+  },
+  "pendingAccess": {
+    "title": "Zaproszenie oczekuje",
+    "description": "Twoje zaproszenie nie mogło zostać aktywowane, ponieważ przestrzeń robocza osiągnęła limit członków. Skontaktuj się z właścicielem przestrzeni roboczej.",
+    "signOutHint": "Możesz się wylogować i spróbować ponownie, gdy właściciel zwiększy limit.",
+    "signOut": "Wyloguj się"
+  },
+  "switcher": {
+    "createWorkspace": "Utwórz przestrzeń roboczą",
+    "newWorkspace": "Nowa przestrzeń robocza"
+  },
+  "errors": {
+    "generic": "Coś poszło nie tak. Spróbuj ponownie."
+  }
+}

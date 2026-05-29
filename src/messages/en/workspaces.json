@@ -1,0 +1,42 @@
+{
+  "onboarding": {
+    "title": "Create your workspace",
+    "subtitle": "Set up your organization to start using Esteo.",
+    "fields": {
+      "name": "Workspace name",
+      "namePlaceholder": "Acme Construction",
+      "industry": "Industry (optional)",
+      "industryPlaceholder": "General contracting"
+    },
+    "slugPreview": "Workspace URL: {slug}",
+    "submit": "Create workspace",
+    "submitting": "Creating…"
+  },
+  "new": {
+    "title": "New workspace",
+    "subtitle": "Create another organization workspace under your account.",
+    "fields": {
+      "name": "Workspace name",
+      "namePlaceholder": "Acme Construction",
+      "industry": "Industry (optional)",
+      "industryPlaceholder": "General contracting"
+    },
+    "slugPreview": "Workspace URL: {slug}",
+    "submit": "Create workspace",
+    "submitting": "Creating…",
+    "backToDashboard": "Back to dashboard"
+  },
+  "pendingAccess": {
+    "title": "Invitation pending",
+    "description": "Your invitation could not be activated because the workspace reached its member limit. Please contact the workspace owner.",
+    "signOutHint": "You can sign out and try again later once the owner adds capacity.",
+    "signOut": "Sign out"
+  },
+  "switcher": {
+    "createWorkspace": "Create workspace",
+    "newWorkspace": "New workspace"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again."
+  }
+}
