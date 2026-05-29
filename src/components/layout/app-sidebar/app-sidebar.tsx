@@ -59,7 +59,7 @@ export function AppSidebar({
         <SidebarTeam />
       </div>
 
-      <SidebarSettings locale={locale} />
+      <SidebarSettings />
     </motion.aside>
   );
 }

@@ -38,7 +38,7 @@ export function LocaleSwitcher({
     <div
       className={
         compact
-          ? "inline-flex items-center gap-0.5 rounded-md border border-border/50 bg-[var(--sidebar-search)] p-0.5"
+          ? "inline-flex items-center gap-0.5 rounded-lg border border-border/60 bg-card/40 p-0.5"
           : "inline-flex items-center gap-1 rounded-full border border-border/60 bg-card/60 p-1 text-sm"
       }
     >

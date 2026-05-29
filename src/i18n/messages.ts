@@ -4,6 +4,7 @@ import enAuth from "@/messages/en/auth.json";
 import enBilling from "@/messages/en/billing.json";
 import enCommon from "@/messages/en/common.json";
 import enDashboard from "@/messages/en/dashboard.json";
+import enNavbar from "@/messages/en/navbar.json";
 import enSidebar from "@/messages/en/sidebar.json";
 import enStyleguide from "@/messages/en/styleguide.json";
 import enWorkspaces from "@/messages/en/workspaces.json";
@@ -11,6 +12,7 @@ import plAuth from "@/messages/pl/auth.json";
 import plBilling from "@/messages/pl/billing.json";
 import plCommon from "@/messages/pl/common.json";
 import plDashboard from "@/messages/pl/dashboard.json";
+import plNavbar from "@/messages/pl/navbar.json";
 import plSidebar from "@/messages/pl/sidebar.json";
 import plStyleguide from "@/messages/pl/styleguide.json";
 import plWorkspaces from "@/messages/pl/workspaces.json";
@@ -31,6 +33,7 @@ type MessagesByNamespace = {
   auth: typeof enAuth;
   billing: typeof enBilling;
   dashboard: typeof enDashboard;
+  navbar: typeof enNavbar;
   sidebar: typeof enSidebar;
   styleguide: typeof enStyleguide;
   workspaces: typeof enWorkspaces;
@@ -47,6 +50,7 @@ function forLocale(locale: Locale): Messages {
         auth: plAuth,
         billing: plBilling,
         dashboard: plDashboard,
+        navbar: plNavbar,
         sidebar: plSidebar,
         styleguide: plStyleguide,
         workspaces: plWorkspaces,
@@ -56,6 +60,7 @@ function forLocale(locale: Locale): Messages {
         auth: enAuth,
         billing: enBilling,
         dashboard: enDashboard,
+        navbar: enNavbar,
         sidebar: enSidebar,
         styleguide: enStyleguide,
         workspaces: enWorkspaces,

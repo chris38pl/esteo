@@ -6,13 +6,21 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
-export function ThemeToggle({ compact = false }: { compact?: boolean }) {
+export function ThemeToggle({
+  compact = false,
+  className,
+}: {
+  compact?: boolean;
+  className?: string;
+}) {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  const buttonClass = compact
-    ? "size-7 rounded-md border-border/50 bg-sidebar-search p-0"
-    : "size-11 rounded-full border-border/60 bg-card/60 backdrop-blur supports-[backdrop-filter]:bg-card/40";
+  const buttonClass = className
+    ? className
+    : compact
+      ? "size-9 rounded-lg border-border/60 bg-card/40 p-0 shadow-none"
+      : "size-11 rounded-full border-border/60 bg-card/60 backdrop-blur supports-[backdrop-filter]:bg-card/40";
 
   const iconClass = compact ? "size-3.5" : "size-5";
 

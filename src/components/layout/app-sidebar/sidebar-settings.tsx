@@ -1,8 +1,5 @@
 "use client";
 
-import type { Locale } from "@/lib/locale";
-import { LocaleSwitcher } from "@/components/shared/locale-switcher";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 import { SidebarUpgrade } from "./sidebar-upgrade";
 import { SidebarAccount } from "./sidebar-account";
@@ -11,12 +8,10 @@ import { useSidebarLayout } from "./sidebar-layout-context";
 import { useSidebarStore } from "./sidebar-store";
 
 export function SidebarSettings({
-  locale,
   collapsedOverride,
 }: {
-  locale: Locale;
   collapsedOverride?: boolean;
-}) {
+} = {}) {
   const collapsedFromStore = useSidebarStore((s) => s.collapsed);
   const collapsed = collapsedOverride ?? collapsedFromStore;
   const { inDrawer } = useSidebarLayout();
@@ -37,13 +32,6 @@ export function SidebarSettings({
       >
         <SidebarUpgrade collapsedOverride={collapsedOverride} />
         <SidebarAccount collapsedOverride={collapsedOverride} />
-
-        {!collapsed ? (
-          <div className="flex items-center justify-between gap-1.5 pt-0.5">
-            <LocaleSwitcher value={locale} compact />
-            <ThemeToggle compact />
-          </div>
-        ) : null}
       </div>
     </div>
   );

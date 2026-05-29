@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  BarChart3,
-  Check,
-  ChevronUp,
-  LogOut,
-  Plus,
-  Settings,
-  User,
-  Users,
-} from "lucide-react";
-import { SignOutButton, useUser } from "@clerk/nextjs";
+import { BarChart3, Check, ChevronUp, Plus, Settings, Users } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -39,7 +29,6 @@ export function SidebarAccount({
   const collapsedFromStore = useSidebarStore((s) => s.collapsed);
   const collapsed = collapsedOverride ?? collapsedFromStore;
   const { inDrawer } = useSidebarLayout();
-  const { user } = useUser();
   const {
     workspaces,
     activeWorkspace,
@@ -52,10 +41,6 @@ export function SidebarAccount({
 
   const workspaceName =
     activeWorkspace?.name ?? t("workspace.placeholderName");
-  const userName = user?.fullName || user?.firstName || t("user.placeholder.name");
-  const userEmail =
-    user?.primaryEmailAddress?.emailAddress ?? t("user.placeholder.email");
-
   const trigger = (
     <DropdownMenuTrigger asChild>
       <button
@@ -71,13 +56,8 @@ export function SidebarAccount({
         <WorkspaceAvatar name={workspaceName} size={collapsed ? 28 : 26} className="ring-0" />
         {!collapsed ? (
           <>
-            <span className="min-w-0 flex-1">
-              <span className="sidebar-heading block truncate text-xs font-medium leading-tight">
-                {workspaceName}
-              </span>
-              <span className="block truncate text-[10px] leading-tight text-[var(--sidebar-section)]">
-                {userEmail}
-              </span>
+            <span className="sidebar-heading min-w-0 flex-1 truncate text-xs font-medium leading-tight">
+              {workspaceName}
             </span>
             <ChevronUp className="size-3.5 shrink-0 text-muted-foreground" />
           </>
@@ -143,30 +123,6 @@ export function SidebarAccount({
         {t("account.workspaceMembers")}
       </DropdownMenuItem>
 
-      <DropdownMenuSeparator />
-
-      <DropdownMenuItem className="gap-2 text-xs">
-        <User className="size-3.5 text-muted-foreground" />
-        <span className="min-w-0 flex-1">
-          <span className="block truncate font-medium">{userName}</span>
-          <span className="block truncate text-[10px] text-muted-foreground">{userEmail}</span>
-        </span>
-      </DropdownMenuItem>
-      <DropdownMenuItem className="gap-2 text-xs">
-        <Settings className="size-3.5 text-muted-foreground" />
-        {t("account.accountSettings")}
-      </DropdownMenuItem>
-
-      <DropdownMenuSeparator />
-
-      <DropdownMenuItem asChild className="gap-2 text-xs">
-        <SignOutButton>
-          <button type="button" className="flex w-full items-center gap-2">
-            <LogOut className="size-3.5 text-muted-foreground" />
-            {t("user.menu.logout")}
-          </button>
-        </SignOutButton>
-      </DropdownMenuItem>
     </DropdownMenuContent>
   );
 

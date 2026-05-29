@@ -1,0 +1,36 @@
+{
+  "breadcrumbs": {
+    "label": "Breadcrumb",
+    "dashboard": "Dashboard",
+    "workspace": "Workspace",
+    "requests": "Requests",
+    "billing": "Billing",
+    "onboarding": "Onboarding",
+    "newWorkspace": "New workspace",
+    "pendingAccess": "Pending access"
+  },
+  "notifications": {
+    "label": "Notifications",
+    "empty": "No notifications yet"
+  },
+  "userMenu": {
+    "openMenu": "Open account menu",
+    "myProfile": "My profile",
+    "accountSettings": "Account settings",
+    "logout": "Log out",
+    "language": "Language",
+    "theme": "Theme",
+    "yourPlan": "Your plan",
+    "updatePlan": "Update plan",
+    "plans": {
+      "free": "FREE",
+      "pro": "PRO",
+      "business": "BUSINESS"
+    },
+    "stats": {
+      "requests": "Requests",
+      "estimates": "Estimates",
+      "spaceUsage": "Space usage"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "breadcrumbs": {
+    "label": "Nawigacja okruszkowa",
+    "dashboard": "Panel",
+    "workspace": "Workspace",
+    "requests": "Zapytania",
+    "billing": "Płatności",
+    "onboarding": "Onboarding",
+    "newWorkspace": "Nowy workspace",
+    "pendingAccess": "Oczekujący dostęp"
+  },
+  "notifications": {
+    "label": "Powiadomienia",
+    "empty": "Brak powiadomień"
+  },
+  "userMenu": {
+    "openMenu": "Otwórz menu konta",
+    "myProfile": "Mój profil",
+    "accountSettings": "Ustawienia konta",
+    "logout": "Wyloguj się",
+    "language": "Język",
+    "theme": "Motyw",
+    "yourPlan": "Twój plan",
+    "updatePlan": "Aktualizuj plan",
+    "plans": {
+      "free": "FREE",
+      "pro": "PRO",
+      "business": "BUSINESS"
+    },
+    "stats": {
+      "requests": "Zapytania",
+      "estimates": "Wyceny",
+      "spaceUsage": "Użycie przestrzeni"
+    }
+  }
+}
