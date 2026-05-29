@@ -68,21 +68,42 @@
       "pro": "Pro"
     }
   },
-  "upgrade": {
-    "title": "Przejdź na Pro",
-    "body": "Odblokuj zaawansowane wyceny, eksporty i pracę zespołową.",
-    "cta": "Upgrade"
-  },
-  "upgradeBusiness": {
-    "title": "Przejdź na Business",
-    "body": "Odblokuj nieograniczone workspace, miejsca i wyceny.",
-    "cta": "Upgrade"
-  },
-  "planStatus": {
-    "businessTitle": "Plan Business",
-    "businessBody": "Wszystko odblokowane.",
-    "manageBilling": "Zarządzaj płatnościami",
-    "soon": "Wkrótce"
+  "planCards": {
+    "free": {
+      "badge": "Plan Free",
+      "title": "Więcej mocy. Więcej możliwości.",
+      "body": "Ulepsz do Pro lub Business i rozwijaj swój biznes.",
+      "features": {
+        "projects": "Więcej projektów i klientów",
+        "estimates": "Zaawansowane estymacje",
+        "support": "Priorytetowe wsparcie"
+      },
+      "ctaPrimary": "Przejdź na Pro",
+      "ctaSecondary": "Porównaj plany"
+    },
+    "pro": {
+      "badge": "Plan Pro",
+      "title": "Przenieś swój biznes na wyższy poziom.",
+      "body": "Odblokuj pełny potencjał z planem Business.",
+      "features": {
+        "projects": "Nieograniczona liczba projektów",
+        "team": "Zarządzanie zespołem i rolami",
+        "permissions": "Zaawansowane uprawnienia",
+        "support": "Dedykowane wsparcie"
+      },
+      "ctaPrimary": "Przejdź na Business"
+    },
+    "business": {
+      "badge": "Plan Business",
+      "title": "Wszystko odblokowane",
+      "body": "Korzystasz z pełni możliwości Esteo.",
+      "features": {
+        "allFeatures": "Wszystkie funkcje odblokowane",
+        "projects": "Nieograniczona liczba projektów",
+        "team": "Zarządzanie zespołem i rolami",
+        "support": "Priorytetowe wsparcie"
+      },
+      "thankYou": "Dziękujemy, że jesteś z nami! 💜"
+    }
   }
 }
-

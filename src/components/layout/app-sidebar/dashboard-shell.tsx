@@ -78,7 +78,6 @@ export function DashboardShell({
                   <SidebarDivider />
                   <SidebarTeam collapsedOverride={false} />
                 </div>
-                <SidebarDivider />
                 <SidebarSettings locale={locale} collapsedOverride={false} />
               </div>
             </SidebarLayoutProvider>

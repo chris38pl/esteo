@@ -29,8 +29,8 @@ export function SidebarSearch({
                 type="button"
                 aria-label={t("search.placeholder")}
                 className={cn(
-                  "sidebar-search-input mx-auto flex size-8 items-center justify-center rounded-lg",
-                  "text-muted-foreground transition hover:bg-[var(--sidebar-nav-hover)]",
+                  "sidebar-nav-link mx-auto flex size-8 items-center justify-center rounded-lg transition-colors",
+                  "text-muted-foreground",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35",
                 )}
               >
@@ -46,15 +46,14 @@ export function SidebarSearch({
 
   return (
     <div className={cn(sidebarInsetClass(false, inDrawer), "box-border pb-5 pt-3")}>
-      <label className="relative box-border block w-full min-w-0 max-w-full px-2">
+      <label className="relative box-border block w-full min-w-0 max-w-full">
         <span className="sr-only">{t("search.placeholder")}</span>
         <Search
-          className="pointer-events-none absolute top-1/2 left-4 size-3.5 -translate-y-1/2 text-[var(--sidebar-section)]"
+          className="pointer-events-none absolute top-1/2 left-3.5 size-3.5 -translate-y-1/2 text-[var(--sidebar-section)]"
           strokeWidth={1.75}
         />
         <input
           type="search"
-          readOnly
           placeholder={t("search.placeholder")}
           className={cn(
             "sidebar-search-input box-border block h-8 w-full max-w-full min-w-0 rounded-lg py-1.5 pr-2.5 pl-8 text-xs",

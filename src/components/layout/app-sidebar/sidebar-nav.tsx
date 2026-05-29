@@ -53,7 +53,7 @@ export function SidebarNav({
         aria-label="Primary" // i18n-ignore-line
         className={cn(sidebarInsetClass(collapsed, inDrawer), "pb-1")}
       >
-        <ul className="space-y-px">
+        <ul className="space-y-1">
           {navItems.map((item) => {
             const href = item.href(locale);
             const active = isNavItemActive(item.key, locale, pathname, section, href);
@@ -83,7 +83,7 @@ export function SidebarNav({
                 tabIndex={disabled ? -1 : 0}
                 data-active={active ? "true" : "false"}
                 className={cn(
-                  "sidebar-nav-link flex min-w-0 max-w-full items-center gap-2 rounded-lg px-2 py-1.5 text-[13px] leading-tight transition-colors",
+                  "sidebar-nav-link flex min-w-0 max-w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] leading-tight transition-colors",
                   disabled && "pointer-events-none opacity-45",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35",
                 )}

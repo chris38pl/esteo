@@ -68,21 +68,42 @@
       "pro": "Pro"
     }
   },
-  "upgrade": {
-    "title": "Upgrade to Pro",
-    "body": "Unlock advanced estimates, exports and team workflows.",
-    "cta": "Upgrade"
-  },
-  "upgradeBusiness": {
-    "title": "Upgrade to Business",
-    "body": "Unlock unlimited workspaces, seats, and estimates.",
-    "cta": "Upgrade"
-  },
-  "planStatus": {
-    "businessTitle": "Business plan",
-    "businessBody": "Everything unlocked.",
-    "manageBilling": "Manage billing",
-    "soon": "Soon"
+  "planCards": {
+    "free": {
+      "badge": "Free plan",
+      "title": "More power. More possibilities.",
+      "body": "Upgrade to Pro or Business and grow your business.",
+      "features": {
+        "projects": "More projects and clients",
+        "estimates": "Advanced estimates",
+        "support": "Priority support"
+      },
+      "ctaPrimary": "Upgrade to Pro",
+      "ctaSecondary": "Compare plans"
+    },
+    "pro": {
+      "badge": "Pro plan",
+      "title": "Take your business to the next level.",
+      "body": "Unlock the full potential with the Business plan.",
+      "features": {
+        "projects": "Unlimited projects",
+        "team": "Team and role management",
+        "permissions": "Advanced permissions",
+        "support": "Dedicated support"
+      },
+      "ctaPrimary": "Upgrade to Business"
+    },
+    "business": {
+      "badge": "Business plan",
+      "title": "Everything unlocked",
+      "body": "You are using the full potential of Esteo.",
+      "features": {
+        "allFeatures": "All features unlocked",
+        "projects": "Unlimited projects",
+        "team": "Team and role management",
+        "support": "Priority support"
+      },
+      "thankYou": "Thank you for being with us! 💜"
+    }
   }
 }
-

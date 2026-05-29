@@ -306,3 +306,59 @@ body {
 .table-summary-sticky {
   @apply sticky bottom-0 bg-card/95 border-t border-border/80;
 }
+
+/* Sidebar plan / upgrade cards (full-bleed artwork + bottom fade into sidebar) */
+.sidebar-plan-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid color-mix(in oklab, var(--sidebar-border) 70%, transparent);
+  background: var(--sidebar);
+}
+
+.sidebar-plan-card-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Full card artwork — contain + top-right keeps icon uncropped */
+.sidebar-plan-card-bg-frame {
+  position: absolute;
+  inset: 0;
+}
+
+.sidebar-plan-card-bg-image {
+  object-fit: contain;
+  object-position: right top;
+}
+
+.sidebar-plan-card-fade-bottom {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  height: 52%;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    color-mix(in oklab, var(--sidebar) 18%, transparent) 32%,
+    color-mix(in oklab, var(--sidebar) 72%, transparent) 62%,
+    var(--sidebar) 100%
+  );
+}
+
+.sidebar-plan-card-body {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+  padding: 0.875rem;
+}

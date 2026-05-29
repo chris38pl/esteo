@@ -59,7 +59,6 @@ export function AppSidebar({
         <SidebarTeam />
       </div>
 
-      <SidebarDivider />
       <SidebarSettings locale={locale} />
     </motion.aside>
   );
