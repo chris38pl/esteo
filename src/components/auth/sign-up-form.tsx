@@ -20,6 +20,7 @@ export function SignUpForm({ locale }: { locale: string }) {
       path={`/${locale}/sign-up`}
     >
       <Clerk.GlobalError className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive" />
+      <div id="clerk-captcha" />
 
       <SignUp.Step name="start">
         <div className="space-y-4">

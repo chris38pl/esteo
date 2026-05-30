@@ -1,5 +1,6 @@
 import { currentUser } from "@clerk/nextjs/server";
 import type { User } from "@prisma/client";
+import { cache } from "react";
 
 import { ensureBillingAccount } from "@/features/billing/server/provision-billing-account";
 import { prisma } from "@/db/client";
@@ -14,7 +15,7 @@ function getPrimaryEmail(
   return primary?.emailAddress ?? clerkUser.emailAddresses[0]?.emailAddress ?? "";
 }
 
-export async function syncUserFromClerk(): Promise<User | null> {
+export const syncUserFromClerk = cache(async (): Promise<User | null> => {
   const clerkUser = await currentUser();
 
   if (!clerkUser) {
@@ -54,4 +55,4 @@ export async function syncUserFromClerk(): Promise<User | null> {
   await autoAcceptPendingInvitations(user);
 
   return user;
-}
+});

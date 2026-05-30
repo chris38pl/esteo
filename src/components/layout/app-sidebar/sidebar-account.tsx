@@ -32,12 +32,15 @@ export function SidebarAccount({
   const {
     workspaces,
     activeWorkspace,
-    canCreateWorkspace,
     canCreateAdditionalWorkspace,
     locale,
     switchWorkspace,
     isSwitching,
   } = useWorkspaceContext();
+
+  if (workspaces.length === 0) {
+    return null;
+  }
 
   const workspaceName =
     activeWorkspace?.name ?? t("workspace.placeholderName");
@@ -85,14 +88,6 @@ export function SidebarAccount({
           </DropdownMenuItem>
           <DropdownMenuSeparator />
         </>
-      ) : null}
-      {canCreateWorkspace && workspaces.length === 0 ? (
-        <DropdownMenuItem asChild className="gap-2 text-xs">
-          <Link href={`/${locale}/dashboard/onboarding`}>
-            <Plus className="size-3.5 text-muted-foreground" />
-            {tWorkspaces("switcher.createWorkspace")}
-          </Link>
-        </DropdownMenuItem>
       ) : null}
       {workspaces.map((workspace) => (
         <DropdownMenuItem

@@ -3,16 +3,9 @@ import type { BillingAccount } from "@prisma/client";
 import { prisma } from "@/db/client";
 
 export async function ensureBillingAccount(userId: string): Promise<BillingAccount> {
-  const existing = await prisma.billingAccount.findUnique({
+  return prisma.billingAccount.upsert({
     where: { ownerUserId: userId },
-  });
-
-  if (existing) {
-    return existing;
-  }
-
-  return prisma.billingAccount.create({
-    data: {
+    create: {
       ownerUserId: userId,
       subscription: {
         create: {
@@ -22,6 +15,7 @@ export async function ensureBillingAccount(userId: string): Promise<BillingAccou
         },
       },
     },
+    update: {},
   });
 }
 
