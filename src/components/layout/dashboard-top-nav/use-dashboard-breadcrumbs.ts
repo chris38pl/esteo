@@ -16,7 +16,8 @@ type PageLabelKey =
   | "onboarding"
   | "newWorkspace"
   | "pendingAccess"
-  | "requests";
+  | "requests"
+  | "accountInspector";
 
 function resolvePageLabelKey(
   pathname: string,
@@ -37,6 +38,9 @@ function resolvePageLabelKey(
   if (pathname === `${base}/pending-access`) {
     return "pendingAccess";
   }
+  if (pathname === `${base}/admin/account-inspector`) {
+    return "accountInspector";
+  }
   if (pathname === base && section === "requests") {
     return "requests";
   }
@@ -56,14 +60,20 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
 
   const dashboardHref = `/${locale}/dashboard`;
   const pageKey = resolvePageLabelKey(pathname, locale, section);
+  const isAdminPath = pathname.startsWith(`/${locale}/dashboard/admin`);
 
   const workspaceLabel =
     activeWorkspace?.name?.trim() || t("workspace");
 
   const crumbs: BreadcrumbItem[] = [
     { label: t("dashboard"), href: dashboardHref },
-    { label: workspaceLabel },
   ];
+
+  if (isAdminPath) {
+    crumbs.push({ label: t("admin") });
+  } else {
+    crumbs.push({ label: workspaceLabel });
+  }
 
   if (pageKey) {
     crumbs.push({ label: t(pageKey) });

@@ -1,5 +1,6 @@
 import type { Locale } from "@/lib/locale";
 
+import enAdmin from "@/messages/en/admin.json";
 import enAuth from "@/messages/en/auth.json";
 import enBilling from "@/messages/en/billing.json";
 import enCommon from "@/messages/en/common.json";
@@ -8,6 +9,7 @@ import enNavbar from "@/messages/en/navbar.json";
 import enSidebar from "@/messages/en/sidebar.json";
 import enStyleguide from "@/messages/en/styleguide.json";
 import enWorkspaces from "@/messages/en/workspaces.json";
+import plAdmin from "@/messages/pl/admin.json";
 import plAuth from "@/messages/pl/auth.json";
 import plBilling from "@/messages/pl/billing.json";
 import plCommon from "@/messages/pl/common.json";
@@ -19,6 +21,7 @@ import plWorkspaces from "@/messages/pl/workspaces.json";
 
 export const namespaces = [
   "common",
+  "admin",
   "auth",
   "billing",
   "dashboard",
@@ -30,6 +33,7 @@ export type Namespace = (typeof namespaces)[number];
 
 type MessagesByNamespace = {
   common: typeof enCommon;
+  admin: typeof enAdmin;
   auth: typeof enAuth;
   billing: typeof enBilling;
   dashboard: typeof enDashboard;
@@ -47,6 +51,7 @@ function forLocale(locale: Locale): Messages {
   return locale === "pl"
     ? {
         common: plCommon,
+        admin: plAdmin,
         auth: plAuth,
         billing: plBilling,
         dashboard: plDashboard,
@@ -57,6 +62,7 @@ function forLocale(locale: Locale): Messages {
       }
     : {
         common: enCommon,
+        admin: enAdmin,
         auth: enAuth,
         billing: enBilling,
         dashboard: enDashboard,

@@ -9,6 +9,7 @@ import { getBillingSidebarState } from "@/features/billing/server/get-billing-si
 import { getAccessibleWorkspaces } from "@/features/workspaces/server/accessible-workspaces";
 import { requireAuth } from "@/server/auth/require-auth";
 import { canUserCreateWorkspace, countOwnedWorkspaces } from "@/server/permissions/entitlements";
+import { isPlatformAdmin } from "@/server/permissions/require-workspace";
 import { resolveActiveWorkspace } from "@/server/workspaces/active-workspace";
 
 export default async function DashboardLayout({
@@ -46,6 +47,7 @@ export default async function DashboardLayout({
       canCreateWorkspace={canCreateWorkspace}
       canCreateAdditionalWorkspace={canCreateAdditionalWorkspace}
       billingSidebarState={billingSidebarState}
+      isPlatformAdmin={isPlatformAdmin(user)}
       locale={resolvedLocale}
     >
       <DashboardShell locale={resolvedLocale}>{children}</DashboardShell>

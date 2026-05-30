@@ -20,6 +20,7 @@ type WorkspaceContextValue = {
   canCreateWorkspace: boolean;
   canCreateAdditionalWorkspace: boolean;
   billingSidebarState: BillingSidebarState;
+  isPlatformAdmin: boolean;
   locale: Locale;
   switchWorkspace: (workspaceId: string) => void;
   isSwitching: boolean;
@@ -33,6 +34,7 @@ export function WorkspaceProvider({
   canCreateWorkspace,
   canCreateAdditionalWorkspace,
   billingSidebarState,
+  isPlatformAdmin,
   locale,
   children,
 }: {
@@ -41,6 +43,7 @@ export function WorkspaceProvider({
   canCreateWorkspace: boolean;
   canCreateAdditionalWorkspace: boolean;
   billingSidebarState: BillingSidebarState;
+  isPlatformAdmin: boolean;
   locale: Locale;
   children: ReactNode;
 }) {
@@ -60,6 +63,7 @@ export function WorkspaceProvider({
       canCreateWorkspace,
       canCreateAdditionalWorkspace,
       billingSidebarState,
+      isPlatformAdmin,
       locale,
       isSwitching,
       switchWorkspace(workspaceId: string) {
@@ -82,6 +86,7 @@ export function WorkspaceProvider({
       canCreateWorkspace,
       canCreateAdditionalWorkspace,
       billingSidebarState,
+      isPlatformAdmin,
       locale,
       isSwitching,
       router,

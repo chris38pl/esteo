@@ -28,6 +28,14 @@
       "colleagueB": "Piotr Nowak"
     }
   },
+  "admin": {
+    "title": "Admin",
+    "expand": "Expand admin section",
+    "collapse": "Collapse admin section",
+    "nav": {
+      "accountInspector": "Account inspector"
+    }
+  },
   "pinned": {
     "title": "Pinned",
     "add": "Pin estimate",

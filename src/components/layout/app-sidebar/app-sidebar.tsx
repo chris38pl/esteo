@@ -9,6 +9,7 @@ import { SidebarHeader } from "./sidebar-header";
 import { SidebarSearch } from "./sidebar-search";
 import { SidebarDivider } from "./sidebar-divider";
 import { SidebarNav } from "./sidebar-nav";
+import { SidebarAdmin } from "./sidebar-admin";
 import { SidebarPinned } from "./sidebar-pinned";
 import { SidebarTeam } from "./sidebar-team";
 import { SidebarSettings } from "./sidebar-settings";
@@ -53,7 +54,7 @@ export function AppSidebar({
 
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         <SidebarNav locale={locale} />
-        <SidebarDivider />
+        <SidebarAdmin locale={locale} />
         <SidebarPinned locale={locale} />
         <SidebarDivider />
         <SidebarTeam />

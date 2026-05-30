@@ -1,4 +1,5 @@
 import {
+  PlatformRole,
   PrismaClient,
   SubscriptionPlan,
   SubscriptionStatus,
@@ -90,11 +91,13 @@ async function main() {
     update: {
       name: DEV_OWNER.name,
       clerkId: DEV_OWNER.clerkId,
+      platformRole: PlatformRole.PLATFORM_ADMIN,
     },
     create: {
       email: DEV_OWNER.email,
       clerkId: DEV_OWNER.clerkId,
       name: DEV_OWNER.name,
+      platformRole: PlatformRole.PLATFORM_ADMIN,
     },
   });
 
@@ -161,6 +164,7 @@ async function main() {
 
   console.log("Seed completed.");
   console.log(`  Owner:        ${owner.email} (${owner.id})`);
+  console.log(`  Platform role: ${owner.platformRole}`);
   console.log(`  Workspace:    ${workspace.name} /${workspace.slug} (${workspace.id})`);
   console.log(`  Subscription: ${subscriptionPlan} (ACTIVE, local seed — not from Stripe)`);
 }

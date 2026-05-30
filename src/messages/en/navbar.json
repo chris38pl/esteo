@@ -7,7 +7,9 @@
     "billing": "Billing",
     "onboarding": "Onboarding",
     "newWorkspace": "New workspace",
-    "pendingAccess": "Pending access"
+    "pendingAccess": "Pending access",
+    "admin": "Admin",
+    "accountInspector": "Account inspector"
   },
   "notifications": {
     "label": "Notifications",

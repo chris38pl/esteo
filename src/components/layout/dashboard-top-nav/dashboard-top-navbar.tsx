@@ -19,6 +19,7 @@ import { SidebarLayoutProvider } from "@/components/layout/app-sidebar/sidebar-l
 import { SidebarHeader } from "@/components/layout/app-sidebar/sidebar-header";
 import { SidebarSearch } from "@/components/layout/app-sidebar/sidebar-search";
 import { SidebarNav } from "@/components/layout/app-sidebar/sidebar-nav";
+import { SidebarAdmin } from "@/components/layout/app-sidebar/sidebar-admin";
 import { SidebarDivider } from "@/components/layout/app-sidebar/sidebar-divider";
 import { SidebarPinned } from "@/components/layout/app-sidebar/sidebar-pinned";
 import { SidebarTeam } from "@/components/layout/app-sidebar/sidebar-team";
@@ -69,7 +70,7 @@ export function DashboardTopNavbar({ locale }: { locale: Locale }) {
                 <SidebarSearch collapsedOverride={false} />
                 <div className="flex min-h-0 min-w-0 max-w-full flex-1 flex-col overflow-x-hidden overflow-y-auto">
                   <SidebarNav locale={locale} collapsedOverride={false} />
-                  <SidebarDivider />
+                  <SidebarAdmin locale={locale} collapsedOverride={false} />
                   <SidebarPinned locale={locale} collapsedOverride={false} />
                   <SidebarDivider />
                   <SidebarTeam collapsedOverride={false} />

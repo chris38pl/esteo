@@ -28,6 +28,14 @@
       "colleagueB": "Piotr Nowak"
     }
   },
+  "admin": {
+    "title": "Admin",
+    "expand": "Rozwiń sekcję admin",
+    "collapse": "Zwiń sekcję admin",
+    "nav": {
+      "accountInspector": "Inspektor konta"
+    }
+  },
   "pinned": {
     "title": "Przypięte",
     "add": "Przypnij wycenę",

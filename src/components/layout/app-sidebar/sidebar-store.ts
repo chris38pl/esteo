@@ -5,7 +5,7 @@ import { persist } from "zustand/middleware";
 
 import { DEFAULT_PINNED_ORDER } from "./pinned-config";
 
-export type SidebarSectionId = "pinned" | "team";
+export type SidebarSectionId = "pinned" | "team" | "admin";
 
 type SidebarState = {
   collapsed: boolean;
@@ -25,6 +25,7 @@ export const useSidebarStore = create<SidebarState>()(
       sectionsOpen: {
         pinned: true,
         team: true,
+        admin: true,
       },
       pinnedOrder: DEFAULT_PINNED_ORDER,
       setCollapsed: (collapsed) => set({ collapsed }),

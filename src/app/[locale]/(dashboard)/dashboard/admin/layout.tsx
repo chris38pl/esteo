@@ -1,17 +1,18 @@
-import { setRequestLocale } from "next-intl/server";
-
+import { assertPlatformAdminAccess } from "@/server/auth/require-platform-admin";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 
-export default async function DashboardPage({
+export default async function DashboardAdminLayout({
+  children,
   params,
 }: {
+  children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
   const resolvedLocale: Locale = isLocale(locale) ? locale : "pl";
 
-  setRequestLocale(resolvedLocale);
+  await assertPlatformAdminAccess(resolvedLocale);
 
-  return null;
+  return children;
 }

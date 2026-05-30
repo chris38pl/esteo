@@ -63,7 +63,7 @@ export async function DashboardDebugPanel({
   const activeWorkspace = workspaces.find((workspace) => workspace.id === activeWorkspaceId);
 
   return (
-    <div className="mt-6 space-y-6">
+    <div className="space-y-6">
       <DebugSection title={t("sections.user")}>
         <DebugField label={t("fields.userId")} value={user.id} mono />
         <DebugField label={t("fields.clerkId")} value={user.clerkId} mono />

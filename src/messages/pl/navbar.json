@@ -7,7 +7,9 @@
     "billing": "Płatności",
     "onboarding": "Onboarding",
     "newWorkspace": "Nowy workspace",
-    "pendingAccess": "Oczekujący dostęp"
+    "pendingAccess": "Oczekujący dostęp",
+    "admin": "Admin",
+    "accountInspector": "Inspektor konta"
   },
   "notifications": {
     "label": "Powiadomienia",
