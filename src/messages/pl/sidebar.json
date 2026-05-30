@@ -78,6 +78,7 @@
     }
   },
   "planCards": {
+    "dismiss": "Zamknij kartę planu",
     "free": {
       "badge": "Plan Free",
       "title": "Więcej mocy. Więcej możliwości.",

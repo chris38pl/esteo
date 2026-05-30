@@ -78,6 +78,7 @@
     }
   },
   "planCards": {
+    "dismiss": "Close upgrade card",
     "free": {
       "badge": "Free plan",
       "title": "More power. More possibilities.",

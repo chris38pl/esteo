@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, Check, Crown, Sparkles } from "lucide-react";
+import { ArrowRight, BadgeCheck, Check, Crown, Sparkles, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
@@ -44,10 +44,12 @@ export function SidebarPlanCard({
   variant,
   locale,
   className,
+  onDismiss,
 }: {
   variant: PlanCardVariant;
   locale: string;
   className?: string;
+  onDismiss?: () => void;
 }) {
   const t = useTranslations("sidebar.planCards");
   const billingHref = `/${locale}/dashboard/billing`;
@@ -63,6 +65,22 @@ export function SidebarPlanCard({
       )}
       style={{ backgroundColor: PLAN_CARD_SURFACE }}
     >
+      {onDismiss ? (
+        <button
+          type="button"
+          onClick={onDismiss}
+          aria-label={t("dismiss")}
+          className={cn(
+            "absolute top-2 right-2 z-20 flex size-7 items-center justify-center rounded-md",
+            "text-white/35 transition-colors duration-200",
+            "hover:bg-white/10 hover:text-white/70",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/25",
+          )}
+        >
+          <X className="size-3.5" strokeWidth={2} aria-hidden />
+        </button>
+      ) : null}
+
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
         <div className="absolute inset-0">
           <Image
