@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
 
 import type { DashboardDebugData } from "@/features/dashboard/server/get-dashboard-debug-data";
+import { formatWorkspaceIndustry } from "@/features/workspaces/lib/industries";
 import type { Locale } from "@/lib/locale";
 
 function formatValue(value: unknown, locale: Locale): string {
@@ -155,6 +156,13 @@ export async function DashboardDebugPanel({
                 <DebugField label={t("fields.workspaceName")} value={workspace.name} />
                 <DebugField
                   label={t("fields.workspaceIndustry")}
+                  value={formatValue(
+                    formatWorkspaceIndustry(workspace.industry, workspace.industryOtherText),
+                    locale,
+                  )}
+                />
+                <DebugField
+                  label={t("fields.workspaceIndustryEnum")}
                   value={formatValue(workspace.industry, locale)}
                 />
                 <DebugField label={t("fields.workspaceDefaultLocale")} value={workspace.defaultLocale} />

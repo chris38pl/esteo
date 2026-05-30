@@ -5,8 +5,9 @@
     "fields": {
       "name": "Workspace name",
       "namePlaceholder": "Acme Construction",
-      "industry": "Industry (optional)",
-      "industryPlaceholder": "General contracting"
+      "industry": "Industry",
+      "industryOther": "Describe your industry",
+      "industryOtherPlaceholder": "e.g. Landscaping"
     },
     "slugPreview": "Workspace URL: {slug}",
     "submit": "Create workspace",
@@ -18,13 +19,21 @@
     "fields": {
       "name": "Workspace name",
       "namePlaceholder": "Acme Construction",
-      "industry": "Industry (optional)",
-      "industryPlaceholder": "General contracting"
+      "industry": "Industry",
+      "industryOther": "Describe your industry",
+      "industryOtherPlaceholder": "e.g. Landscaping"
     },
     "slugPreview": "Workspace URL: {slug}",
     "submit": "Create workspace",
     "submitting": "Creating…",
     "backToDashboard": "Back to dashboard"
+  },
+  "industries": {
+    "CONSTRUCTION": "Construction",
+    "ELECTRICAL": "Electrical",
+    "CARPENTRY": "Carpentry",
+    "PLUMBING": "Plumbing",
+    "OTHER": "Other"
   },
   "pendingAccess": {
     "title": "Invitation pending",

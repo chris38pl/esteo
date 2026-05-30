@@ -62,6 +62,27 @@ enum EstimateRequestStatus {
   FAILED
 }
 
+enum WorkspaceIndustry {
+  CONSTRUCTION
+  ELECTRICAL
+  CARPENTRY
+  PLUMBING
+  OTHER
+}
+
+enum BusinessDocumentType {
+  ESTIMATE_REQUEST
+  ESTIMATE
+}
+
+enum IndustryFieldValueType {
+  TEXT
+  NUMBER
+  DATE
+  BOOLEAN
+  SELECT
+}
+
 model User {
   id                    String       @id @default(cuid())
   email                 String       @unique
@@ -114,11 +135,11 @@ model Workspace {
   id               String          @id @default(cuid())
   billingAccountId String
   ownerId          String
-  name             String
-  slug             String          @unique
-  /// Future: migrate to enum once industry verticals stabilize.
-  industry         String?
-  defaultLocale    WorkspaceLocale @default(PL)
+  name              String
+  slug              String           @unique
+  industry          WorkspaceIndustry
+  industryOtherText String?
+  defaultLocale     WorkspaceLocale  @default(PL)
   deletedAt        DateTime?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
@@ -133,8 +154,9 @@ model Workspace {
   estimates        Estimate[]
   estimateSections EstimateSection[]
   estimateLineItems EstimateLineItem[]
-  auditLogs        AuditLog[]
-  lastActiveUsers  User[]              @relation("UserLastActiveWorkspace")
+  auditLogs           AuditLog[]
+  lastActiveUsers     User[]              @relation("UserLastActiveWorkspace")
+  documentFieldValues DocumentFieldValue[]
 
   @@index([billingAccountId])
   @@index([ownerId])
@@ -320,4 +342,58 @@ model EstimateLineItem {
 
   @@index([sectionId, sortOrder])
   @@index([workspaceId])
+}
+
+model IndustryFieldDefinition {
+  id           String                 @id @default(cuid())
+  industry     WorkspaceIndustry
+  documentType BusinessDocumentType
+  key          String
+  valueType    IndustryFieldValueType
+  sortOrder    Int                    @default(0)
+  required     Boolean                @default(false)
+  options      Json?
+  active       Boolean                @default(true)
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+
+  translations IndustryFieldTranslation[]
+
+  @@unique([industry, documentType, key])
+  @@index([industry, documentType, active])
+}
+
+model IndustryFieldTranslation {
+  id          String          @id @default(cuid())
+  fieldId     String
+  locale      WorkspaceLocale
+  label       String
+  description String?
+  placeholder String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  field IndustryFieldDefinition @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+
+  @@unique([fieldId, locale])
+}
+
+model DocumentFieldValue {
+  id           String               @id @default(cuid())
+  workspaceId  String
+  documentType BusinessDocumentType
+  documentId   String
+  fieldKey     String
+  valueText    String?
+  valueNumber  Decimal?             @db.Decimal(18, 4)
+  valueDate    DateTime?            @db.Date
+  valueBoolean Boolean?
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([documentType, documentId, fieldKey])
+  @@index([workspaceId, documentType, documentId])
+  @@index([documentType, fieldKey, valueNumber])
 }

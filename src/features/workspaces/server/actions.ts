@@ -1,6 +1,6 @@
 "use server";
 
-import type { InviteRole, WorkspaceLocale, WorkspaceRuleType } from "@prisma/client";
+import type { InviteRole, WorkspaceIndustry, WorkspaceLocale, WorkspaceRuleType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 import type { WorkspaceBranding } from "@/features/workspaces/schemas/branding";
@@ -79,7 +79,8 @@ export async function createWorkspaceAction(
   input: {
     name: string;
     slug?: string;
-    industry?: string;
+    industry: WorkspaceIndustry;
+    industryOtherText?: string;
     locale?: Locale;
     branding?: WorkspaceBranding;
     aiInstructions?: string;
@@ -100,7 +101,6 @@ export async function updateWorkspaceAction(
   workspaceId: string,
   input: {
     name?: string;
-    industry?: string | null;
     defaultLocale?: WorkspaceLocale;
   },
   locale: Locale = "pl",

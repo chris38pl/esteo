@@ -97,7 +97,8 @@ Switch: `setActiveWorkspaceAction` in `src/server/workspaces/actions.ts`
 ## Workspace creation (onboarding)
 
 - Route: `/dashboard/onboarding`
-- Fields: name (required), industry (optional)
+- Fields: name (required), industry (required enum), industryOtherText (required when industry = Other)
+- Industry is **immutable** after workspace creation
 - Slug: auto-generated from name, not editable
 - Slug collision: silent suffix retry (`acme`, `acme-2`, `acme-3`, …) in `createWorkspace`
 

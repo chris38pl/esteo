@@ -1,40 +1,49 @@
 {
   "onboarding": {
-    "title": "Utwórz przestrzeń roboczą",
+    "title": "Utwórz przestrzeń",
     "subtitle": "Skonfiguruj organizację, aby rozpocząć pracę w Esteo.",
     "fields": {
-      "name": "Nazwa przestrzeni roboczej",
+      "name": "Nazwa przestrzeni",
       "namePlaceholder": "Acme Budownictwo",
-      "industry": "Branża (opcjonalnie)",
-      "industryPlaceholder": "Roboty budowlane"
+      "industry": "Branża",
+      "industryOther": "Opisz swoją branżę",
+      "industryOtherPlaceholder": "np. Ogrodnictwo"
     },
-    "slugPreview": "Adres URL: {slug}",
-    "submit": "Utwórz przestrzeń roboczą",
+    "slugPreview": "Adres przestrzeni: {slug}",
+    "submit": "Utwórz przestrzeń",
     "submitting": "Tworzenie…"
   },
   "new": {
-    "title": "Nowa przestrzeń robocza",
-    "subtitle": "Utwórz kolejną przestrzeń roboczą na swoim koncie.",
+    "title": "Nowa przestrzeń",
+    "subtitle": "Utwórz kolejną przestrzeń organizacji na swoim koncie.",
     "fields": {
-      "name": "Nazwa przestrzeni roboczej",
+      "name": "Nazwa przestrzeni",
       "namePlaceholder": "Acme Budownictwo",
-      "industry": "Branża (opcjonalnie)",
-      "industryPlaceholder": "Roboty budowlane"
+      "industry": "Branża",
+      "industryOther": "Opisz swoją branżę",
+      "industryOtherPlaceholder": "np. Ogrodnictwo"
     },
-    "slugPreview": "Adres URL: {slug}",
-    "submit": "Utwórz przestrzeń roboczą",
+    "slugPreview": "Adres przestrzeni: {slug}",
+    "submit": "Utwórz przestrzeń",
     "submitting": "Tworzenie…",
     "backToDashboard": "Wróć do panelu"
   },
+  "industries": {
+    "CONSTRUCTION": "Budownictwo",
+    "ELECTRICAL": "Elektryka",
+    "CARPENTRY": "Stolarstwo",
+    "PLUMBING": "Hydraulika",
+    "OTHER": "Inna"
+  },
   "pendingAccess": {
     "title": "Zaproszenie oczekuje",
-    "description": "Twoje zaproszenie nie mogło zostać aktywowane, ponieważ przestrzeń robocza osiągnęła limit członków. Skontaktuj się z właścicielem przestrzeni roboczej.",
-    "signOutHint": "Możesz się wylogować i spróbować ponownie, gdy właściciel zwiększy limit.",
+    "description": "Twoje zaproszenie nie mogło zostać aktywowane, ponieważ przestrzeń osiągnęła limit członków. Skontaktuj się z właścicielem przestrzeni.",
+    "signOutHint": "Możesz się wylogować i spróbować ponownie później, gdy właściciel zwiększy limit.",
     "signOut": "Wyloguj się"
   },
   "switcher": {
-    "createWorkspace": "Utwórz przestrzeń roboczą",
-    "newWorkspace": "Nowa przestrzeń robocza"
+    "createWorkspace": "Utwórz przestrzeń",
+    "newWorkspace": "Nowa przestrzeń"
   },
   "errors": {
     "generic": "Coś poszło nie tak. Spróbuj ponownie."

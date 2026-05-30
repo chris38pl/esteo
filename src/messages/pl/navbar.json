@@ -2,11 +2,11 @@
   "breadcrumbs": {
     "label": "Nawigacja okruszkowa",
     "dashboard": "Panel",
-    "workspace": "Workspace",
+    "workspace": "Przestrzeń",
     "requests": "Zapytania",
     "billing": "Płatności",
     "onboarding": "Onboarding",
-    "newWorkspace": "Nowy workspace",
+    "newWorkspace": "Nowa przestrzeń",
     "pendingAccess": "Oczekujący dostęp",
     "admin": "Admin",
     "accountInspector": "Inspektor konta"

@@ -1,4 +1,4 @@
-import type { InviteRole, User, WorkspaceLocale, WorkspaceRuleType } from "@prisma/client";
+import type { InviteRole, User, WorkspaceIndustry, WorkspaceLocale, WorkspaceRuleType } from "@prisma/client";
 import { randomUUID } from "crypto";
 
 import { ensureBillingAccount } from "@/features/billing/server/provision-billing-account";
@@ -68,7 +68,8 @@ export async function createWorkspace(
   input: {
     name: string;
     slug?: string;
-    industry?: string;
+    industry: WorkspaceIndustry;
+    industryOtherText?: string;
     locale?: Locale;
     branding?: WorkspaceBranding;
     aiInstructions?: string;
@@ -103,6 +104,7 @@ export async function createWorkspace(
     name: input.name.trim(),
     slug,
     industry: input.industry,
+    industryOtherText: input.industryOtherText,
     defaultLocale: appLocaleToWorkspaceLocale(input.locale ?? "pl"),
     branding,
     aiInstructions: input.aiInstructions,
@@ -124,7 +126,6 @@ export async function updateWorkspaceDetails(
   workspaceId: string,
   input: {
     name?: string;
-    industry?: string | null;
     defaultLocale?: WorkspaceLocale;
   },
 ) {
@@ -132,16 +133,11 @@ export async function updateWorkspaceDetails(
 
   const data: {
     name?: string;
-    industry?: string | null;
     defaultLocale?: WorkspaceLocale;
   } = {};
 
   if (input.name !== undefined) {
     data.name = input.name.trim();
-  }
-
-  if (input.industry !== undefined) {
-    data.industry = input.industry;
   }
 
   if (input.defaultLocale !== undefined) {

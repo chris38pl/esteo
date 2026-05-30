@@ -1,36 +1,34 @@
 "use client";
 
+import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import { cn } from "@/lib/utils";
-import { SidebarUpgrade } from "./sidebar-upgrade";
+import { SidebarAccount } from "./sidebar-account";
 import { sidebarInsetClass } from "./sidebar-layout";
 import { useSidebarLayout } from "./sidebar-layout-context";
 import { useSidebarStore } from "./sidebar-store";
 
-export function SidebarSettings({
+export function SidebarWorkspace({
   collapsedOverride,
 }: {
   collapsedOverride?: boolean;
 } = {}) {
+  const { workspaces } = useWorkspaceContext();
   const collapsedFromStore = useSidebarStore((s) => s.collapsed);
   const collapsed = collapsedOverride ?? collapsedFromStore;
   const { inDrawer } = useSidebarLayout();
+
+  if (workspaces.length === 0) {
+    return null;
+  }
 
   return (
     <div
       className={cn(
         sidebarInsetClass(collapsed, inDrawer),
-        "pb-3 pt-3",
-        collapsed && "flex flex-col items-center gap-2",
+        collapsed ? "pb-1 pt-2" : "pb-1 pt-2",
       )}
     >
-      <div
-        className={cn(
-          "min-w-0 max-w-full",
-          collapsed ? "flex flex-col items-center gap-2" : "flex flex-col gap-4",
-        )}
-      >
-        <SidebarUpgrade collapsedOverride={collapsedOverride} />
-      </div>
+      <SidebarAccount collapsedOverride={collapsedOverride} />
     </div>
   );
 }

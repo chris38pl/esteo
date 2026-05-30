@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import type { Locale } from "@/lib/locale";
 import { useSidebarStore } from "./sidebar-store";
 import { SidebarHeader } from "./sidebar-header";
+import { SidebarWorkspace } from "./sidebar-workspace";
 import { SidebarSearch } from "./sidebar-search";
 import { SidebarDivider } from "./sidebar-divider";
 import { SidebarNav } from "./sidebar-nav";
@@ -49,10 +50,10 @@ export function AppSidebar({
       style={{ width: EXPANDED }}
     >
       <SidebarHeader />
-      <SidebarDivider />
+      <SidebarWorkspace />
       <SidebarSearch />
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+      <div className="sidebar-scroll flex min-h-0 flex-1 flex-col overflow-y-auto">
         <SidebarNav locale={locale} />
         <SidebarAdmin locale={locale} />
         <SidebarPinned locale={locale} />

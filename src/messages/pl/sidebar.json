@@ -33,7 +33,8 @@
     "expand": "Rozwiń sekcję admin",
     "collapse": "Zwiń sekcję admin",
     "nav": {
-      "accountInspector": "Inspektor konta"
+      "accountInspector": "Inspektor konta",
+      "industryFields": "Pola branżowe"
     }
   },
   "pinned": {
@@ -47,11 +48,11 @@
     "title": "Ustawienia"
   },
   "account": {
-    "workspaces": "Workspace",
-    "createWorkspace": "Utwórz workspace",
-    "workspaceUsage": "Wykorzystanie workspace",
-    "workspaceSettings": "Ustawienia workspace",
-    "workspaceMembers": "Członkowie workspace",
+    "workspaces": "Przestrzenie",
+    "createWorkspace": "Utwórz przestrzeń",
+    "workspaceUsage": "Wykorzystanie przestrzeni",
+    "workspaceSettings": "Ustawienia przestrzeni",
+    "workspaceMembers": "Członkowie przestrzeni",
     "accountSettings": "Ustawienia konta"
   },
   "user": {
@@ -68,9 +69,9 @@
     }
   },
   "workspace": {
-    "placeholderName": "Esteo Workspace",
-    "switch": "Zmień workspace",
-    "settings": "Ustawienia workspace",
+    "placeholderName": "Przestrzeń Esteo",
+    "switch": "Zmień przestrzeń",
+    "settings": "Ustawienia przestrzeni",
     "plan": {
       "free": "Free",
       "pro": "Pro"

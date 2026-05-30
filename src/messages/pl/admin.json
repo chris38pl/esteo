@@ -1,6 +1,64 @@
 {
   "accountInspector": {
     "title": "Inspektor konta",
-    "subtitle": "Widok debugowania rekordu użytkownika, konta rozliczeniowego i dostępnych workspace’ów."
+    "subtitle": "Widok debugowania rekordu użytkownika, konta rozliczeniowego i dostępnych przestrzeni."
+  },
+  "industryFields": {
+    "title": "Pola branżowe",
+    "subtitle": "Zarządzaj definicjami pól branżowych i tłumaczeniami dla typów dokumentów.",
+    "soon": "Wkrótce",
+    "yes": "Tak",
+    "no": "Nie",
+    "empty": "Brak definicji pól dla tej branży i typu dokumentu.",
+    "filters": {
+      "industry": "Branża"
+    },
+    "documentTypes": {
+      "ESTIMATE_REQUEST": "Zapytanie ofertowe",
+      "ESTIMATE": "Oferta"
+    },
+    "industries": {
+      "CONSTRUCTION": "Budownictwo",
+      "ELECTRICAL": "Elektryka",
+      "CARPENTRY": "Stolarstwo",
+      "PLUMBING": "Hydraulika"
+    },
+    "table": {
+      "key": "Klucz",
+      "valueType": "Typ",
+      "labelPl": "Etykieta (PL)",
+      "labelEn": "Etykieta (EN)",
+      "required": "Wymagane",
+      "sortOrder": "Kolejność",
+      "active": "Aktywne",
+      "actions": "Akcje"
+    },
+    "actions": {
+      "create": "Dodaj pole",
+      "edit": "Edytuj",
+      "save": "Zapisz",
+      "saving": "Zapisywanie…",
+      "cancel": "Anuluj"
+    },
+    "dialog": {
+      "createTitle": "Nowa definicja pola",
+      "editTitle": "Edycja definicji pola",
+      "key": "Klucz",
+      "valueType": "Typ wartości",
+      "sortOrder": "Kolejność",
+      "required": "Wymagane",
+      "active": "Aktywne",
+      "optionsJson": "Opcje select (JSON)",
+      "label": "Etykieta",
+      "description": "Opis",
+      "placeholder": "Placeholder"
+    },
+    "locales": {
+      "PL": "Polski",
+      "EN": "Angielski"
+    },
+    "errors": {
+      "invalidOptionsJson": "Opcje muszą być poprawnym JSON."
+    }
   }
 }

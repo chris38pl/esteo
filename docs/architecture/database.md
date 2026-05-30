@@ -20,7 +20,8 @@ Workspace {
   ownerId
   name
   slug              // lowercase, immutable in MVP — use normalizeWorkspaceSlug()
-  industry          // String? — see note below
+  industry          // WorkspaceIndustry enum — required, immutable after create
+  industryOtherText // String? — required when industry = OTHER (analytics)
   defaultLocale     // WorkspaceLocale enum (PL | EN)
   deletedAt         // soft delete only in MVP
   createdAt
@@ -30,9 +31,41 @@ Workspace {
 
 ### `industry` field
 
-**Current (MVP):** optional free-form string (`industry String?`).
+**Current:** required `WorkspaceIndustry` enum (`CONSTRUCTION`, `ELECTRICAL`, `CARPENTRY`, `PLUMBING`, `OTHER`).
 
-**Future:** migrate to an enum once industry verticals and AI branch prompts stabilize. Enum migration is intentionally deferred to avoid churn during MVP prompt iteration.
+- Set at workspace creation only — **immutable** after create (no update path in service layer).
+- When `industry = OTHER`, `industryOtherText` stores the free-text description for analytics.
+
+### Industry field catalog & document values
+
+Platform-admin configurable definitions scoped by **industry + document type**:
+
+```ts
+IndustryFieldDefinition {
+  industry     // WorkspaceIndustry
+  documentType // ESTIMATE_REQUEST | ESTIMATE
+  key          // stable slug, e.g. property_type
+  valueType    // TEXT | NUMBER | DATE | BOOLEAN | SELECT
+  options      // JSON for SELECT options
+  translations // PL/EN labels via IndustryFieldTranslation
+}
+```
+
+Document values use typed EAV columns (one populated column per row, based on definition `valueType`):
+
+```ts
+DocumentFieldValue {
+  documentType  // BusinessDocumentType
+  documentId    // e.g. estimateRequestId
+  fieldKey      // matches definition key
+  valueText     // TEXT, SELECT
+  valueNumber   // NUMBER (Decimal)
+  valueDate     // DATE
+  valueBoolean  // BOOLEAN
+}
+```
+
+See `docs/features/industry-fields.md`.
 
 ### Slug rules
 

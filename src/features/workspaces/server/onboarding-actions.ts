@@ -1,5 +1,6 @@
 "use server";
 
+import type { WorkspaceIndustry } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 import { createWorkspace } from "@/features/workspaces/server/service";
@@ -32,7 +33,8 @@ function toActionError(error: unknown): ActionResult<never> {
 export async function createWorkspaceOnboardingAction(
   input: {
     name: string;
-    industry?: string;
+    industry: WorkspaceIndustry;
+    industryOtherText?: string;
   },
   locale: Locale = "pl",
 ): Promise<ActionResult<Awaited<ReturnType<typeof createWorkspace>>>> {
@@ -42,7 +44,8 @@ export async function createWorkspaceOnboardingAction(
 export async function createAdditionalWorkspaceAction(
   input: {
     name: string;
-    industry?: string;
+    industry: WorkspaceIndustry;
+    industryOtherText?: string;
   },
   locale: Locale = "pl",
 ): Promise<ActionResult<Awaited<ReturnType<typeof createWorkspace>>>> {
@@ -50,7 +53,7 @@ export async function createAdditionalWorkspaceAction(
 }
 
 async function createWorkspaceAndActivate(
-  input: { name: string; industry?: string },
+  input: { name: string; industry: WorkspaceIndustry; industryOtherText?: string },
   locale: Locale,
   flow: "onboarding" | "additional",
 ): Promise<ActionResult<Awaited<ReturnType<typeof createWorkspace>>>> {
@@ -74,6 +77,7 @@ async function createWorkspaceAndActivate(
     const workspace = await createWorkspace(user, {
       name: input.name,
       industry: input.industry,
+      industryOtherText: input.industryOtherText,
       locale,
     });
 

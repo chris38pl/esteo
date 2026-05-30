@@ -43,6 +43,7 @@
     "workspaceSlug": "Slug",
     "workspaceName": "Name",
     "workspaceIndustry": "Industry",
+    "workspaceIndustryEnum": "Industry (enum)",
     "workspaceDefaultLocale": "Default locale",
     "workspaceOwnerId": "Owner ID",
     "workspaceBillingAccountId": "Billing account ID",

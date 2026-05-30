@@ -10,14 +10,14 @@
   "sections": {
     "user": "Użytkownik",
     "billing": "Rozliczenia i subskrypcja",
-    "activeWorkspace": "Aktywna przestrzeń robocza",
-    "workspaces": "Dostępne przestrzenie robocze ({count})"
+    "activeWorkspace": "Aktywna przestrzeń",
+    "workspaces": "Dostępne przestrzenie ({count})"
   },
   "labels": {
     "active": "aktywna"
   },
   "empty": {
-    "workspaces": "Brak dostępnych przestrzeni roboczych."
+    "workspaces": "Brak dostępnych przestrzeni."
   },
   "fields": {
     "userId": "ID użytkownika",
@@ -43,6 +43,7 @@
     "workspaceSlug": "Slug",
     "workspaceName": "Nazwa",
     "workspaceIndustry": "Branża",
+    "workspaceIndustryEnum": "Branża (enum)",
     "workspaceDefaultLocale": "Domyślny język",
     "workspaceOwnerId": "ID właściciela",
     "workspaceBillingAccountId": "ID konta rozliczeniowego",

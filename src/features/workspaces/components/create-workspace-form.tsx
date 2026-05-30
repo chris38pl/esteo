@@ -1,5 +1,6 @@
 "use client";
 
+import { WorkspaceIndustry } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
@@ -9,13 +10,20 @@ import {
   createWorkspaceOnboardingAction,
 } from "@/features/workspaces/server/onboarding-actions";
 import { createWorkspaceSchema } from "@/features/workspaces/schemas/create-workspace";
+import { WORKSPACE_INDUSTRIES } from "@/features/workspaces/lib/industries";
 import { slugFromName } from "@/features/workspaces/lib/slug";
 import type { Locale } from "@/lib/locale";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 type CreateWorkspaceFormMode = "onboarding" | "new";
+
+const selectClassName = cn(
+  "h-10 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm dark:bg-input/30",
+  "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+);
 
 export function CreateWorkspaceForm({
   locale,
@@ -29,10 +37,12 @@ export function CreateWorkspaceForm({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [name, setName] = useState("");
-  const [industry, setIndustry] = useState("");
+  const [industry, setIndustry] = useState<WorkspaceIndustry>(WorkspaceIndustry.CONSTRUCTION);
+  const [industryOtherText, setIndustryOtherText] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const slugPreview = name.trim() ? slugFromName(name) : "";
+  const showOtherText = industry === WorkspaceIndustry.OTHER;
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -40,7 +50,8 @@ export function CreateWorkspaceForm({
 
     const parsed = createWorkspaceSchema.safeParse({
       name,
-      industry: industry || undefined,
+      industry,
+      industryOtherText: showOtherText ? industryOtherText : undefined,
     });
 
     if (!parsed.success) {
@@ -55,7 +66,8 @@ export function CreateWorkspaceForm({
       const result = await action(
         {
           name: parsed.data.name,
-          industry: parsed.data.industry || undefined,
+          industry: parsed.data.industry,
+          industryOtherText: parsed.data.industryOtherText,
         },
         locale,
       );
@@ -87,14 +99,34 @@ export function CreateWorkspaceForm({
 
       <div className="space-y-2">
         <Label htmlFor="workspace-industry">{t(`${copyKey}.fields.industry`)}</Label>
-        <Input
+        <select
           id="workspace-industry"
           value={industry}
-          onChange={(event) => setIndustry(event.target.value)}
-          placeholder={t(`${copyKey}.fields.industryPlaceholder`)}
-          className="h-10 rounded-lg"
-        />
+          onChange={(event) => setIndustry(event.target.value as WorkspaceIndustry)}
+          required
+          className={selectClassName}
+        >
+          {WORKSPACE_INDUSTRIES.map((value) => (
+            <option key={value} value={value}>
+              {t(`industries.${value}`)}
+            </option>
+          ))}
+        </select>
       </div>
+
+      {showOtherText ? (
+        <div className="space-y-2">
+          <Label htmlFor="workspace-industry-other">{t(`${copyKey}.fields.industryOther`)}</Label>
+          <Input
+            id="workspace-industry-other"
+            value={industryOtherText}
+            onChange={(event) => setIndustryOtherText(event.target.value)}
+            placeholder={t(`${copyKey}.fields.industryOtherPlaceholder`)}
+            required
+            className="h-10 rounded-lg"
+          />
+        </div>
+      ) : null}
 
       {slugPreview ? (
         <p className="text-xs text-muted-foreground">

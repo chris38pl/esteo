@@ -71,7 +71,7 @@ export function SidebarAccount({
 
   const menu = (
     <DropdownMenuContent
-      side={collapsed ? "right" : "top"}
+      side={collapsed ? "right" : "bottom"}
       align="start"
       className="w-60"
     >

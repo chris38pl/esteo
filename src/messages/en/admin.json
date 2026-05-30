@@ -2,5 +2,63 @@
   "accountInspector": {
     "title": "Account inspector",
     "subtitle": "Debug view of your user record, billing account, and accessible workspaces."
+  },
+  "industryFields": {
+    "title": "Industry fields",
+    "subtitle": "Manage industry-specific field definitions and translations per document type.",
+    "soon": "Soon",
+    "yes": "Yes",
+    "no": "No",
+    "empty": "No field definitions for this industry and document type.",
+    "filters": {
+      "industry": "Industry"
+    },
+    "documentTypes": {
+      "ESTIMATE_REQUEST": "Estimate request",
+      "ESTIMATE": "Estimate"
+    },
+    "industries": {
+      "CONSTRUCTION": "Construction",
+      "ELECTRICAL": "Electrical",
+      "CARPENTRY": "Carpentry",
+      "PLUMBING": "Plumbing"
+    },
+    "table": {
+      "key": "Key",
+      "valueType": "Type",
+      "labelPl": "Label (PL)",
+      "labelEn": "Label (EN)",
+      "required": "Required",
+      "sortOrder": "Order",
+      "active": "Active",
+      "actions": "Actions"
+    },
+    "actions": {
+      "create": "Add field",
+      "edit": "Edit",
+      "save": "Save",
+      "saving": "Saving…",
+      "cancel": "Cancel"
+    },
+    "dialog": {
+      "createTitle": "Create field definition",
+      "editTitle": "Edit field definition",
+      "key": "Key",
+      "valueType": "Value type",
+      "sortOrder": "Sort order",
+      "required": "Required",
+      "active": "Active",
+      "optionsJson": "Select options (JSON)",
+      "label": "Label",
+      "description": "Description",
+      "placeholder": "Placeholder"
+    },
+    "locales": {
+      "PL": "Polish",
+      "EN": "English"
+    },
+    "errors": {
+      "invalidOptionsJson": "Options must be valid JSON."
+    }
   }
 }

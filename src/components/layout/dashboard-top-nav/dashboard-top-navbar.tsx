@@ -17,6 +17,7 @@ import { LocaleSwitcher } from "@/components/shared/locale-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { SidebarLayoutProvider } from "@/components/layout/app-sidebar/sidebar-layout-context";
 import { SidebarHeader } from "@/components/layout/app-sidebar/sidebar-header";
+import { SidebarWorkspace } from "@/components/layout/app-sidebar/sidebar-workspace";
 import { SidebarSearch } from "@/components/layout/app-sidebar/sidebar-search";
 import { SidebarNav } from "@/components/layout/app-sidebar/sidebar-nav";
 import { SidebarAdmin } from "@/components/layout/app-sidebar/sidebar-admin";
@@ -66,9 +67,9 @@ export function DashboardTopNavbar({ locale }: { locale: Locale }) {
             <SidebarLayoutProvider inDrawer>
               <div className="flex h-full min-w-0 max-w-full flex-col overflow-hidden">
                 <SidebarHeader collapsedOverride={false} showCollapseButton={false} />
-                <SidebarDivider />
+                <SidebarWorkspace collapsedOverride={false} />
                 <SidebarSearch collapsedOverride={false} />
-                <div className="flex min-h-0 min-w-0 max-w-full flex-1 flex-col overflow-x-hidden overflow-y-auto">
+                <div className="sidebar-scroll flex min-h-0 min-w-0 max-w-full flex-1 flex-col overflow-x-hidden overflow-y-auto">
                   <SidebarNav locale={locale} collapsedOverride={false} />
                   <SidebarAdmin locale={locale} collapsedOverride={false} />
                   <SidebarPinned locale={locale} collapsedOverride={false} />

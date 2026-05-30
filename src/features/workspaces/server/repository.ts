@@ -1,4 +1,4 @@
-import type { InviteRole, Prisma, WorkspaceLocale, WorkspaceRuleType } from "@prisma/client";
+import type { InviteRole, Prisma, WorkspaceIndustry, WorkspaceLocale, WorkspaceRuleType } from "@prisma/client";
 
 import { prisma } from "@/db/client";
 import type { WorkspaceBranding } from "@/features/workspaces/schemas/branding";
@@ -32,7 +32,8 @@ export async function createWorkspaceRecord(input: {
   ownerId: string;
   name: string;
   slug: string;
-  industry?: string;
+  industry: WorkspaceIndustry;
+  industryOtherText?: string | null;
   defaultLocale: WorkspaceLocale;
   branding?: WorkspaceBranding;
   aiInstructions?: string;
@@ -45,6 +46,8 @@ export async function createWorkspaceRecord(input: {
         name: input.name,
         slug: input.slug,
         industry: input.industry,
+        industryOtherText:
+          input.industry === "OTHER" ? input.industryOtherText?.trim() ?? null : null,
         defaultLocale: input.defaultLocale,
         settings: {
           create: {

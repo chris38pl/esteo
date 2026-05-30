@@ -3,9 +3,12 @@ import {
   PrismaClient,
   SubscriptionPlan,
   SubscriptionStatus,
+  WorkspaceIndustry,
   WorkspaceLocale,
   WorkspaceRole,
 } from "@prisma/client";
+
+import { seedConstructionEstimateRequestFields } from "./seed-industry-fields";
 
 const prisma = new PrismaClient();
 
@@ -31,7 +34,7 @@ const DEV_OWNER = {
 const DEV_WORKSPACE = {
   slug: "esteo-dev",
   name: "Esteo Dev Workspace",
-  industry: "construction",
+  industry: WorkspaceIndustry.CONSTRUCTION,
 } as const;
 
 const VALID_PLANS = new Set<string>(Object.values(SubscriptionPlan));
@@ -161,6 +164,8 @@ async function main() {
     where: { id: owner.id },
     data: { lastActiveWorkspaceId: workspace.id },
   });
+
+  await seedConstructionEstimateRequestFields(prisma);
 
   console.log("Seed completed.");
   console.log(`  Owner:        ${owner.email} (${owner.id})`);
