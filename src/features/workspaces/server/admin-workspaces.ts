@@ -1,4 +1,4 @@
-import type { User, WorkspaceAppearanceTheme } from "@prisma/client";
+import type { User, WorkspaceAppearanceTheme, WorkspaceIndustry } from "@prisma/client";
 import { randomUUID } from "crypto";
 
 import { prisma } from "@/db/client";
@@ -23,6 +23,8 @@ export type AdminWorkspaceRow = {
   name: string;
   slug: string;
   appearanceTheme: WorkspaceAppearanceTheme;
+  industry: WorkspaceIndustry;
+  industryOtherText: string | null;
   createdAt: Date;
   updatedAt: Date;
   owner: {
@@ -75,6 +77,8 @@ export async function listAdminWorkspaces(): Promise<AdminWorkspaceRow[]> {
     name: workspace.name,
     slug: workspace.slug,
     appearanceTheme: workspace.appearanceTheme,
+    industry: workspace.industry,
+    industryOtherText: workspace.industryOtherText,
     createdAt: workspace.createdAt,
     updatedAt: workspace.updatedAt,
     owner: workspace.owner,

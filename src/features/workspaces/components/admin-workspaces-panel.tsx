@@ -1,5 +1,6 @@
 "use client";
 
+import { WorkspaceIndustry } from "@prisma/client";
 import { FileStack, GitBranch, MoreHorizontal, Search } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
@@ -9,6 +10,7 @@ import type { LucideIcon } from "lucide-react";
 
 import { WorkspaceMemberStack } from "@/components/layout/app-sidebar/workspace-member-stack";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -93,6 +95,31 @@ function StatColumn({
   );
 }
 
+function IndustryColumn({
+  label,
+  industryLabel,
+  className,
+}: {
+  label: string;
+  industryLabel: string;
+  className?: string;
+}) {
+  return (
+    <div className={cn("min-w-[108px]", className)}>
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <div className="mt-1.5">
+        <Badge
+          variant="secondary"
+          className="max-w-[140px] truncate rounded-md border border-blue-500/20 bg-blue-500/10 px-2 py-0.5 text-[11px] font-medium text-blue-700 dark:border-blue-400/20 dark:bg-blue-400/10 dark:text-blue-300"
+          title={industryLabel}
+        >
+          {industryLabel}
+        </Badge>
+      </div>
+    </div>
+  );
+}
+
 function AdminWorkspaceListRow({
   workspace,
   onOpenDialog,
@@ -101,10 +128,15 @@ function AdminWorkspaceListRow({
   onOpenDialog: (mode: DialogMode, workspace: AdminWorkspaceRow) => void;
 }) {
   const t = useTranslations("admin.workspaces");
+  const tIndustries = useTranslations("workspaces.industries");
   const locale = useLocale();
   const ownerLabel = workspace.owner.name ?? workspace.owner.email;
   const createdAgo = formatRelativeAgo(locale, workspace.createdAt);
   const updatedAgo = formatRelativeAgo(locale, workspace.updatedAt);
+  const industryLabel =
+    workspace.industry === WorkspaceIndustry.OTHER && workspace.industryOtherText
+      ? workspace.industryOtherText
+      : tIndustries(workspace.industry);
 
   return (
     <div className="flex items-center gap-4 px-4 py-4 sm:gap-6">
@@ -123,6 +155,7 @@ function AdminWorkspaceListRow({
       </div>
 
       <div className="hidden shrink-0 items-center gap-8 md:flex">
+        <IndustryColumn label={t("stats.industry")} industryLabel={industryLabel} />
         <StatColumn
           icon={FileStack}
           label={t("stats.estimateRequests")}

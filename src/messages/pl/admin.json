@@ -13,6 +13,7 @@
       "allWorkspaces": "Wszystkie przestrzenie"
     },
     "stats": {
+      "industry": "Branża",
       "estimateRequests": "Zapytania ofertowe",
       "estimates": "Oferty"
     },

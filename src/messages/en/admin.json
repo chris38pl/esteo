@@ -13,6 +13,7 @@
       "allWorkspaces": "All workspaces"
     },
     "stats": {
+      "industry": "Industry",
       "estimateRequests": "Estimate requests",
       "estimates": "Estimates"
     },
