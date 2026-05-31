@@ -55,6 +55,19 @@
     "newWorkspace": "Nowa przestrzeń",
     "newWorkspaceUpgradeRequired": "Ulepsz plan, aby dodać więcej przestrzeni."
   },
+  "companyDescription": {
+    "label": "Krótki opis firmy (używany przez AI)",
+    "placeholder": "np. Firma XYZ zajmuje się wykończeniem łazienek w Poznaniu. Mamy własną ekipę i 10 lat doświadczenia.",
+    "helper": "Opcjonalne. Opisz krótko zakres usług, lokalizację i wyróżniki firmy. Ułatwi to Esteo dopasowanie wycen i odpowiedzi.",
+    "charCounter": "{count}/{max}"
+  },
+  "settings": {
+    "title": "Ustawienia przestrzeni",
+    "description": "Skonfiguruj, jak Esteo rozumie Twoją firmę. Ten kontekst jest używany przez AI przy generowaniu wycen i odpowiedzi.",
+    "save": "Zapisz zmiany",
+    "saving": "Zapisywanie…",
+    "saved": "Zmiany zapisane."
+  },
   "errors": {
     "generic": "Coś poszło nie tak. Spróbuj ponownie."
   }

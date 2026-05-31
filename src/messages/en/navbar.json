@@ -5,6 +5,7 @@
     "workspace": "Workspace",
     "requests": "Requests",
     "billing": "Billing",
+    "settings": "Settings",
     "onboarding": "Onboarding",
     "newWorkspace": "New workspace",
     "pendingAccess": "Pending access",

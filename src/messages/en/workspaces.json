@@ -55,6 +55,19 @@
     "newWorkspace": "New workspace",
     "newWorkspaceUpgradeRequired": "Upgrade your plan to add more workspaces."
   },
+  "companyDescription": {
+    "label": "Short company description (used by AI)",
+    "placeholder": "e.g. XYZ specializes in bathroom finishing in Poznań. We have our own crew and 10 years of experience.",
+    "helper": "Optional. Briefly describe your services, location, and what sets your company apart. This helps Esteo tailor estimates and responses.",
+    "charCounter": "{count}/{max}"
+  },
+  "settings": {
+    "title": "Workspace settings",
+    "description": "Configure how Esteo understands your company. This context is used by AI when generating estimates and responses.",
+    "save": "Save changes",
+    "saving": "Saving…",
+    "saved": "Changes saved."
+  },
   "errors": {
     "generic": "Something went wrong. Please try again."
   }

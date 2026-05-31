@@ -124,7 +124,7 @@ Implemented in `listActiveWorkspaceRules()` (repository).
 
 ## Related entities
 
-- `WorkspaceSettings` — branding JSON + `aiInstructions` (1:1)
+- `WorkspaceSettings` — branding JSON, `aiInstructions`, `companyDescription` (1:1)
 - `WorkspaceInvitation` — email invites with `InviteRole`
 - `BillingAccountUsagePeriod` — Phase 2 quota counters
 - `AuditLog` — Phase 3 change tracking

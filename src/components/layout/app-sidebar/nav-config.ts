@@ -36,10 +36,8 @@ export const navItems: SidebarNavItem[] = [
   {
     key: "settings",
     icon: Settings,
-    href: (locale) => `/${locale}/settings`,
+    href: (locale) => `/${locale}/dashboard/settings`,
     labelKey: "nav.settings",
-    badge: "Soon",
-    disabled: true,
   },
 ];
 

@@ -84,6 +84,7 @@ export async function createWorkspaceAction(
     locale?: Locale;
     branding?: WorkspaceBranding;
     aiInstructions?: string;
+    companyDescription?: string | null;
   },
   locale: Locale = "pl",
 ): Promise<ActionResult<Awaited<ReturnType<typeof createWorkspace>>>> {
@@ -134,6 +135,7 @@ export async function updateWorkspaceSettingsAction(
   input: {
     branding?: WorkspaceBranding | null;
     aiInstructions?: string | null;
+    companyDescription?: string | null;
   },
   locale: Locale = "pl",
 ) {
@@ -141,6 +143,7 @@ export async function updateWorkspaceSettingsAction(
     const user = await requireAuth(locale);
     const settings = await updateWorkspaceSettings(user, workspaceId, input);
     revalidatePath(`/${locale}/dashboard`);
+    revalidatePath(`/${locale}/dashboard/settings`);
     return { success: true as const, data: settings };
   } catch (error) {
     return toActionError(error);

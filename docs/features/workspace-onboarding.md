@@ -97,12 +97,18 @@ Switch: `setActiveWorkspaceAction` in `src/server/workspaces/actions.ts`
 ## Workspace creation (onboarding)
 
 - Route: `/dashboard/onboarding`
-- Fields: name (required), industry (required enum), industryOtherText (required when industry = Other)
+- Fields: name (required), industry (required enum), industryOtherText (required when industry = Other), companyDescription (optional, max 600 chars)
 - Industry is **immutable** after workspace creation
 - Slug: auto-generated from name, not editable
 - Slug collision: silent suffix retry (`acme`, `acme-2`, `acme-3`, …) in `createWorkspace`
 
 After create: set active workspace cookie + `lastActiveWorkspaceId`, redirect to dashboard.
+
+## Workspace settings
+
+- Route: `/dashboard/settings` (workspace **owner** only)
+- Field: `companyDescription` — optional short company blurb for AI context (max 600 chars stored, 500 in prompts)
+- Editable after onboarding; stored on `WorkspaceSettings`
 
 ## Sidebar workspace switcher
 

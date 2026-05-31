@@ -1,6 +1,8 @@
 import { WorkspaceAppearanceTheme, WorkspaceIndustry } from "@prisma/client";
 import { z } from "zod";
 
+import { companyDescriptionSchema } from "@/features/workspaces/schemas/company-description";
+
 export const createWorkspaceSchema = z
   .object({
     name: z
@@ -13,6 +15,7 @@ export const createWorkspaceSchema = z
     appearanceTheme: z
       .nativeEnum(WorkspaceAppearanceTheme)
       .default(WorkspaceAppearanceTheme.OCEAN_BREEZE),
+    companyDescription: companyDescriptionSchema,
   })
   .refine(
     (data) =>

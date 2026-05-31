@@ -13,6 +13,7 @@ export type BreadcrumbItem = {
 
 type PageLabelKey =
   | "billing"
+  | "settings"
   | "onboarding"
   | "newWorkspace"
   | "pendingAccess"
@@ -28,6 +29,9 @@ function resolvePageLabelKey(
 
   if (pathname === `${base}/billing`) {
     return "billing";
+  }
+  if (pathname === `${base}/settings`) {
+    return "settings";
   }
   if (pathname === `${base}/onboarding`) {
     return "onboarding";

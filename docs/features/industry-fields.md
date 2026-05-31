@@ -54,6 +54,15 @@ Construction + `ESTIMATE_REQUEST` fields seeded via `prisma/seed-industry-fields
 
 Run `npm run prisma:seed` after reset.
 
+## AI prompt context
+
+`getWorkspacePromptContext()` assembles workspace-specific AI instructions:
+
+1. `WorkspaceSettings.companyDescription` — `## Company context` block (stored max 600 chars, prompt cap 500)
+2. Active `WorkspaceRule` rows — appended in sort order
+
+Module: `src/features/workspaces/lib/prompt-context.ts`
+
 ## Related docs
 
 - [`docs/architecture/database.md`](../architecture/database.md) — schema reference

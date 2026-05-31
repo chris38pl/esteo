@@ -10,15 +10,16 @@ import { randomUUID } from "crypto";
 
 import { ensureBillingAccount } from "@/features/billing/server/provision-billing-account";
 import { isValidWorkspaceSlug, normalizeWorkspaceSlug } from "@/features/workspaces/lib/slug";
+import { buildWorkspacePromptContext } from "@/features/workspaces/lib/prompt-context";
 import {
   acceptInvitationRecord,
-  buildWorkspacePromptFromRules,
   createInvitationRecord,
   createWorkspaceRecord,
   createWorkspaceRuleRecord,
   findInvitationByToken,
   findPendingInvitation,
   findWorkspaceById,
+  findWorkspaceSettings,
   listActiveWorkspaceRules,
   listWorkspacesForUser,
   listWorkspaceMembers,
@@ -33,6 +34,7 @@ import {
 } from "@/features/workspaces/server/repository";
 import type { WorkspaceBranding } from "@/features/workspaces/schemas/branding";
 import { workspaceBrandingSchema } from "@/features/workspaces/schemas/branding";
+import { parseCompanyDescription } from "@/features/workspaces/schemas/company-description";
 import { appLocaleToWorkspaceLocale } from "@/lib/workspace-locale";
 import type { Locale } from "@/lib/locale";
 import { prisma } from "@/db/client";
@@ -82,6 +84,7 @@ export async function createWorkspace(
     locale?: Locale;
     branding?: WorkspaceBranding;
     aiInstructions?: string;
+    companyDescription?: string | null;
   },
 ) {
   await assertCanCreateWorkspace(user.id);
@@ -106,6 +109,10 @@ export async function createWorkspace(
   const branding = input.branding
     ? workspaceBrandingSchema.parse(input.branding)
     : undefined;
+  const companyDescription =
+    input.companyDescription === undefined
+      ? undefined
+      : parseCompanyDescription(input.companyDescription);
 
   const workspace = await createWorkspaceRecord({
     billingAccountId: billingAccount.id,
@@ -118,6 +125,7 @@ export async function createWorkspace(
     appearanceTheme: input.appearanceTheme,
     branding,
     aiInstructions: input.aiInstructions,
+    companyDescription,
   });
 
   await logAuditEvent({
@@ -219,6 +227,7 @@ export async function updateWorkspaceSettings(
   input: {
     branding?: WorkspaceBranding | null;
     aiInstructions?: string | null;
+    companyDescription?: string | null;
   },
 ) {
   await requireRole(user, workspaceId, "OWNER");
@@ -229,10 +238,15 @@ export async function updateWorkspaceSettings(
       : input.branding === null
         ? null
         : workspaceBrandingSchema.parse(input.branding);
+  const companyDescription =
+    input.companyDescription === undefined
+      ? undefined
+      : parseCompanyDescription(input.companyDescription);
 
   const settings = await updateWorkspaceSettingsRecord(workspaceId, {
     branding,
     aiInstructions: input.aiInstructions,
+    companyDescription,
   });
 
   await logAuditEvent({
@@ -463,6 +477,13 @@ export async function getWorkspacePromptContext(
   workspaceId: string,
   locale?: WorkspaceLocale,
 ) {
-  const rules = await listActiveWorkspaceRules(workspaceId, locale);
-  return buildWorkspacePromptFromRules(rules);
+  const [settings, rules] = await Promise.all([
+    findWorkspaceSettings(workspaceId),
+    listActiveWorkspaceRules(workspaceId, locale),
+  ]);
+
+  return buildWorkspacePromptContext({
+    companyDescription: settings?.companyDescription,
+    rules,
+  });
 }

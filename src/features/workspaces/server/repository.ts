@@ -55,6 +55,7 @@ export async function createWorkspaceRecord(input: {
   appearanceTheme?: WorkspaceAppearanceTheme;
   branding?: WorkspaceBranding;
   aiInstructions?: string;
+  companyDescription?: string | null;
 }) {
   return prisma.$transaction(async (tx) => {
     const workspace = await tx.workspace.create({
@@ -74,6 +75,7 @@ export async function createWorkspaceRecord(input: {
           create: {
             branding: input.branding ?? undefined,
             aiInstructions: input.aiInstructions,
+            companyDescription: input.companyDescription ?? undefined,
           },
         },
         members: {
@@ -108,11 +110,18 @@ export async function softDeleteWorkspaceRecord(workspaceId: string) {
   });
 }
 
+export async function findWorkspaceSettings(workspaceId: string) {
+  return prisma.workspaceSettings.findUnique({
+    where: { workspaceId },
+  });
+}
+
 export async function updateWorkspaceSettingsRecord(
   workspaceId: string,
   data: {
     branding?: WorkspaceBranding | null;
     aiInstructions?: string | null;
+    companyDescription?: string | null;
   },
 ) {
   return prisma.workspaceSettings.upsert({
@@ -121,10 +130,12 @@ export async function updateWorkspaceSettingsRecord(
       workspaceId,
       branding: data.branding ?? undefined,
       aiInstructions: data.aiInstructions ?? undefined,
+      companyDescription: data.companyDescription ?? undefined,
     },
     update: {
       branding: data.branding ?? undefined,
       aiInstructions: data.aiInstructions ?? undefined,
+      companyDescription: data.companyDescription ?? undefined,
     },
   });
 }
@@ -291,14 +302,4 @@ export async function logAuditEvent(input: {
       diff: input.diff,
     },
   });
-}
-
-export function buildWorkspacePromptFromRules(
-  rules: Array<{ title: string; content: string }>,
-): string {
-  if (rules.length === 0) {
-    return "";
-  }
-
-  return rules.map((rule) => `## ${rule.title}\n${rule.content}`).join("\n\n");
 }

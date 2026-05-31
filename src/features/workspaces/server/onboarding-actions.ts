@@ -36,6 +36,7 @@ export async function createWorkspaceOnboardingAction(
     industry: WorkspaceIndustry;
     industryOtherText?: string;
     appearanceTheme?: WorkspaceAppearanceTheme;
+    companyDescription?: string | null;
   },
   locale: Locale = "pl",
 ): Promise<ActionResult<Awaited<ReturnType<typeof createWorkspace>>>> {
@@ -48,6 +49,7 @@ export async function createAdditionalWorkspaceAction(
     industry: WorkspaceIndustry;
     industryOtherText?: string;
     appearanceTheme?: WorkspaceAppearanceTheme;
+    companyDescription?: string | null;
   },
   locale: Locale = "pl",
 ): Promise<ActionResult<Awaited<ReturnType<typeof createWorkspace>>>> {
@@ -60,6 +62,7 @@ async function createWorkspaceAndActivate(
     industry: WorkspaceIndustry;
     industryOtherText?: string;
     appearanceTheme?: WorkspaceAppearanceTheme;
+    companyDescription?: string | null;
   },
   locale: Locale,
   flow: "onboarding" | "additional",
@@ -86,6 +89,7 @@ async function createWorkspaceAndActivate(
       industry: input.industry,
       industryOtherText: input.industryOtherText,
       appearanceTheme: input.appearanceTheme,
+      companyDescription: input.companyDescription,
       locale,
     });
 

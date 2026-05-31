@@ -9,6 +9,7 @@ import {
   createAdditionalWorkspaceAction,
   createWorkspaceOnboardingAction,
 } from "@/features/workspaces/server/onboarding-actions";
+import { CompanyDescriptionField } from "@/features/workspaces/components/company-description-field";
 import { createWorkspaceSchema } from "@/features/workspaces/schemas/create-workspace";
 import { WorkspaceThemePicker } from "@/features/workspaces/components/workspace-theme-picker";
 import { WORKSPACE_INDUSTRIES } from "@/features/workspaces/lib/industries";
@@ -40,6 +41,7 @@ export function CreateWorkspaceForm({
   const [name, setName] = useState("");
   const [industry, setIndustry] = useState<WorkspaceIndustry>(WorkspaceIndustry.CONSTRUCTION);
   const [industryOtherText, setIndustryOtherText] = useState("");
+  const [companyDescription, setCompanyDescription] = useState("");
   const [appearanceTheme, setAppearanceTheme] = useState<WorkspaceAppearanceTheme>(
     WorkspaceAppearanceTheme.OCEAN_BREEZE,
   );
@@ -57,6 +59,7 @@ export function CreateWorkspaceForm({
       industry,
       industryOtherText: showOtherText ? industryOtherText : undefined,
       appearanceTheme,
+      companyDescription: companyDescription.trim() || undefined,
     });
 
     if (!parsed.success) {
@@ -74,6 +77,7 @@ export function CreateWorkspaceForm({
           industry: parsed.data.industry,
           industryOtherText: parsed.data.industryOtherText,
           appearanceTheme: parsed.data.appearanceTheme,
+          companyDescription: parsed.data.companyDescription,
         },
         locale,
       );
@@ -142,6 +146,13 @@ export function CreateWorkspaceForm({
           />
         </div>
       ) : null}
+
+      <CompanyDescriptionField
+        id="workspace-company-description"
+        value={companyDescription}
+        onChange={setCompanyDescription}
+        disabled={isPending}
+      />
 
       {slugPreview ? (
         <p className="text-xs text-muted-foreground">
