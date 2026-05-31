@@ -36,7 +36,7 @@ export function SidebarHeader({
       ) : (
         <div className="flex min-w-0 max-w-full items-center gap-2 px-2">
           <div className="flex min-w-0 flex-1 items-center gap-2.5">
-            <div className="relative size-7 shrink-0 overflow-hidden rounded-md bg-[var(--sidebar-search)] ring-1 ring-sidebar-search-border">
+            <div className="relative size-7 shrink-0 overflow-hidden rounded-md">
               <Image src="/logo.png" alt="" fill className="object-cover" />
             </div>
             <p className="sidebar-heading truncate text-[14px] font-semibold leading-none tracking-tight">

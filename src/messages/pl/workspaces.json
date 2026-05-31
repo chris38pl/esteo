@@ -52,7 +52,8 @@
   },
   "switcher": {
     "createWorkspace": "Utwórz przestrzeń",
-    "newWorkspace": "Nowa przestrzeń"
+    "newWorkspace": "Nowa przestrzeń",
+    "newWorkspaceUpgradeRequired": "Ulepsz plan, aby dodać więcej przestrzeni."
   },
   "errors": {
     "generic": "Coś poszło nie tak. Spróbuj ponownie."

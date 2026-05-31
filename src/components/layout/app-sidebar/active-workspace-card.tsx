@@ -18,6 +18,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import {
+  SIDEBAR_INSET,
+  SIDEBAR_ITEM_INSET_X,
+} from "./sidebar-layout";
 
 export function ActiveWorkspaceCard({
   memberPreviews,
@@ -45,9 +49,8 @@ export function ActiveWorkspaceCard({
     <DropdownMenu modal={false}>
       <div
         className={cn(
-          "relative flex w-full min-w-0 max-w-full flex-col overflow-hidden rounded-xl",
-          "border border-border/55 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_6px_18px_rgba(0,0,0,0.07)]",
-          "dark:border-border/45 dark:shadow-[0_1px_2px_rgba(0,0,0,0.2),0_8px_24px_rgba(0,0,0,0.32)]",
+          "relative flex w-full min-w-0 max-w-full flex-col overflow-hidden rounded-none",
+          "border-b border-border/40",
         )}
       >
         <div className="relative flex min-h-[148px] flex-col">
@@ -69,7 +72,8 @@ export function ActiveWorkspaceCard({
             }}
           />
 
-          <div className="relative z-10 flex flex-1 flex-col p-3">
+          <div className={cn("relative z-10 flex flex-1 flex-col py-3", SIDEBAR_INSET)}>
+            <div className={cn("flex flex-1 flex-col", SIDEBAR_ITEM_INSET_X)}>
             <div className="flex items-start justify-between gap-2">
               <WorkspacePlanBadge
                 billingSidebarState={billingSidebarState}
@@ -109,11 +113,17 @@ export function ActiveWorkspaceCard({
                 surface="hero"
               />
             </div>
+            </div>
           </div>
         </div>
 
-        <div className="relative z-10 border-t border-border/35 bg-card/97 px-3 py-3.5 backdrop-blur-sm">
-          <div className="flex min-w-0 items-center gap-2.5">
+        <div
+          className={cn(
+            "relative z-10 border-t border-border/35 bg-card/97 py-3.5 backdrop-blur-sm",
+            SIDEBAR_INSET,
+          )}
+        >
+          <div className={cn("flex min-w-0 items-center gap-2.5", SIDEBAR_ITEM_INSET_X)}>
             <Database
               className="size-3.5 shrink-0 self-center text-muted-foreground/70"
               strokeWidth={1.75}

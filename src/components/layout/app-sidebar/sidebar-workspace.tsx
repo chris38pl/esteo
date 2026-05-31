@@ -23,12 +23,7 @@ export function SidebarWorkspace({
   }
 
   return (
-    <div
-      className={cn(
-        sidebarInsetClass(collapsed, inDrawer),
-        collapsed ? "pb-1 pt-2" : "pb-1 pt-2",
-      )}
-    >
+    <div className={cn(collapsed && cn(sidebarInsetClass(collapsed, inDrawer), "pb-1 pt-2"))}>
       {collapsed ? (
         <SidebarAccount collapsedOverride={collapsedOverride} />
       ) : (
