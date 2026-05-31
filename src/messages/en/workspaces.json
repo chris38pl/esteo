@@ -25,8 +25,43 @@
     },
     "slugPreview": "Workspace URL: {slug}",
     "submit": "Create workspace",
-    "submitting": "Creating…",
-    "backToDashboard": "Back to dashboard"
+    "submitting": "Creating…"
+  },
+  "shell": {
+    "heroTitle": "Create your",
+    "heroTitleAccent": "workspace",
+    "heroSubtitle": "Organize your company, projects, and team in one place.",
+    "onboarding": {
+      "title": "Create workspace",
+      "subtitle": "Create a workspace to get started with Esteo."
+    },
+    "new": {
+      "title": "New workspace",
+      "subtitle": "Create a new workspace to get started."
+    }
+  },
+  "createForm": {
+    "nameLabel": "Workspace name",
+    "namePlaceholder": "e.g. Esteo Ltd.",
+    "iconLabel": "Choose an icon",
+    "industryLabel": "Industry",
+    "industryPlaceholder": "Select industry",
+    "industryOtherLabel": "Describe your industry",
+    "industryOtherPlaceholder": "e.g. Landscaping",
+    "icons": {
+      "building": "Building",
+      "store": "Store",
+      "briefcase": "Briefcase",
+      "rocket": "Rocket",
+      "heart": "Heart",
+      "home": "Home",
+      "hardHat": "Construction",
+      "zap": "Electrical",
+      "wrench": "Plumbing"
+    },
+    "errors": {
+      "industryRequired": "Please select an industry."
+    }
   },
   "industries": {
     "CONSTRUCTION": "Construction",
@@ -42,7 +77,7 @@
     "signOut": "Sign out"
   },
   "appearance": {
-    "pickerLabel": "Appearance",
+    "pickerLabel": "Theme",
     "themes": {
       "OCEAN_BREEZE": "Ocean breeze",
       "FOREST_MIST": "Forest mist",
@@ -57,9 +92,11 @@
   },
   "companyDescription": {
     "label": "Short company description (used by AI)",
-    "placeholder": "e.g. XYZ specializes in bathroom finishing in Poznań. We have our own crew and 10 years of experience.",
+    "placeholder": "Describe your company so AI can provide better recommendations and estimates.",
+    "placeholderCreate": "Optional: briefly describe your services, location, and what sets your company apart. This helps Esteo tailor estimates and responses.",
     "helper": "Optional. Briefly describe your services, location, and what sets your company apart. This helps Esteo tailor estimates and responses.",
-    "charCounter": "{count}/{max}"
+    "charCounter": "{count}/{max}",
+    "charCounterSpaced": "{count} / {max}"
   },
   "settings": {
     "title": "Workspace settings",

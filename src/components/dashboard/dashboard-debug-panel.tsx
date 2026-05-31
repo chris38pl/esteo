@@ -166,6 +166,10 @@ export async function DashboardDebugPanel({
                   value={formatValue(workspace.industry, locale)}
                 />
                 <DebugField label={t("fields.workspaceDefaultLocale")} value={workspace.defaultLocale} />
+                <DebugField
+                  label={t("fields.workspaceAppearanceTheme")}
+                  value={formatValue(workspace.appearanceTheme, locale)}
+                />
                 <DebugField label={t("fields.workspaceOwnerId")} value={workspace.ownerId} mono />
                 <DebugField
                   label={t("fields.workspaceBillingAccountId")}

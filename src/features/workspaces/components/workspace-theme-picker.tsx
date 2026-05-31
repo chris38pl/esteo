@@ -14,6 +14,7 @@ export function WorkspaceThemePicker({
   onChange,
   disabled = false,
   size = "md",
+  variant = "default",
   className,
   onClickCapture,
 }: {
@@ -21,18 +22,24 @@ export function WorkspaceThemePicker({
   onChange: (theme: WorkspaceAppearanceTheme) => void;
   disabled?: boolean;
   size?: "sm" | "md";
+  variant?: "default" | "header";
   className?: string;
   onClickCapture?: (event: React.MouseEvent) => void;
 }) {
   const t = useTranslations("workspaces.appearance");
 
-  const dotSize = size === "sm" ? "size-2.5" : "size-3";
+  const dotSize =
+    variant === "header" ? "size-4" : size === "sm" ? "size-2.5" : "size-3";
 
   return (
     <div
       role="radiogroup"
       aria-label={t("pickerLabel")}
-      className={cn("flex items-center gap-2", className)}
+      className={cn(
+        "flex items-center",
+        variant === "header" ? "gap-2.5" : "gap-2",
+        className,
+      )}
       onClickCapture={onClickCapture}
     >
       {WORKSPACE_APPEARANCE_THEMES.map((theme) => {
@@ -52,16 +59,34 @@ export function WorkspaceThemePicker({
               onChange(theme);
             }}
             className={cn(
-              "rounded-full transition-all duration-200",
+              "rounded-full transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 cursor-pointer",
               dotSize,
-              "ring-2 ring-offset-2 ring-offset-card focus-visible:outline-none focus-visible:ring-ring/50",
-              selected ? "scale-110" : "opacity-70 hover:opacity-100",
+              variant === "header"
+                ? selected
+                  ? ""
+                  : "opacity-80 hover:opacity-100"
+                : cn(
+                    "ring-2 ring-offset-2 ring-offset-card",
+                    selected ? "scale-110" : "opacity-70 hover:opacity-100",
+                  ),
               disabled && "pointer-events-none opacity-40",
             )}
             style={{
               backgroundColor: config.dotColor,
-              boxShadow: selected ? `0 0 0 2px ${config.accentMuted}` : undefined,
-              ...(selected ? { outline: `2px solid ${config.accent}`, outlineOffset: "2px" } : {}),
+              ...(variant === "header"
+                ? selected
+                  ? {
+                      boxShadow: `0 0 0 1px ${config.accentMuted}`,
+                      outline: `1.5px solid ${config.accent}`,
+                      outlineOffset: "2px",
+                    }
+                  : {}
+                : {
+                    boxShadow: selected ? `0 0 0 2px ${config.accentMuted}` : undefined,
+                    ...(selected
+                      ? { outline: `2px solid ${config.accent}`, outlineOffset: "2px" }
+                      : {}),
+                  }),
             }}
           />
         );

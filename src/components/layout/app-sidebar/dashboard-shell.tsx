@@ -1,12 +1,22 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 
 import type { Locale } from "@/lib/locale";
 import { AppSidebar, sidebarWidth } from "./app-sidebar";
 import { useSidebarStore } from "./sidebar-store";
 import { DashboardTopNavbar } from "@/components/layout/dashboard-top-nav/dashboard-top-navbar";
+
+const FOCUSED_ROUTE_SUFFIXES = [
+  "/dashboard/onboarding",
+  "/dashboard/pending-access",
+] as const;
+
+function isFocusedDashboardRoute(pathname: string): boolean {
+  return FOCUSED_ROUTE_SUFFIXES.some((suffix) => pathname.endsWith(suffix));
+}
 
 export function DashboardShell({
   locale,
@@ -15,9 +25,14 @@ export function DashboardShell({
   locale: Locale;
   children: ReactNode;
 }) {
+  const pathname = usePathname() ?? "";
   const prefersReducedMotion = useReducedMotion();
   const collapsed = useSidebarStore((s) => s.collapsed);
   const offset = sidebarWidth(collapsed);
+
+  if (isFocusedDashboardRoute(pathname)) {
+    return <div className="min-h-dvh bg-background">{children}</div>;
+  }
 
   return (
     <div className="min-h-dvh bg-background">

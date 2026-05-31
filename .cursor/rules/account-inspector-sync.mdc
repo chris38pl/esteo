@@ -1,0 +1,45 @@
+---
+description: Keep Inspektor konta in sync when global entities change
+globs:
+  - "prisma/schema.prisma"
+  - "prisma/migrations/**/*"
+  - "src/features/**/server/**/*"
+  - "src/server/**/*"
+  - "src/components/dashboard/dashboard-debug-panel.tsx"
+  - "src/features/dashboard/server/get-dashboard-debug-data.ts"
+  - "src/messages/*/dashboard.json"
+alwaysApply: false
+---
+# Account Inspector sync (Inspektor konta)
+
+When adding, renaming, removing, or changing fields on **in-scope** models, update the admin debug panel in the **same task** — do not ask and do not defer.
+
+## In scope
+
+- `User`
+- `BillingAccount`, `Subscription`
+- `Workspace`, `WorkspaceSettings`
+- `WorkspaceMember` (membership context per workspace)
+
+Out of scope unless the inspector is explicitly expanded: estimates, industry-field catalog, document field values, audit logs, webhooks.
+
+## Mandatory steps
+
+1. **Loader** — [`src/features/dashboard/server/get-dashboard-debug-data.ts`](src/features/dashboard/server/get-dashboard-debug-data.ts): add `include`/relations if the panel needs nested data (e.g. `workspace.settings`).
+2. **Panel** — [`src/components/dashboard/dashboard-debug-panel.tsx`](src/components/dashboard/dashboard-debug-panel.tsx): add or update `DebugField` in the correct section:
+   - User scalars → User section
+   - Billing/subscription → Billing section
+   - Workspace scalars → per-workspace block (after locale, before owner/membership)
+   - `WorkspaceSettings` → under each workspace block
+3. **i18n** — add label keys under `fields.*` in **both** [`src/messages/pl/dashboard.json`](src/messages/pl/dashboard.json) and [`src/messages/en/dashboard.json`](src/messages/en/dashboard.json).
+4. **Verify** — run `npm run i18n:check`.
+
+## Formatting
+
+- Reuse `formatValue()` for display.
+- Use `mono` for IDs and slugs.
+- Use existing formatters (e.g. `formatWorkspaceIndustry()`) when raw enum ≠ display value.
+
+## Do not expose
+
+Secrets (tokens, webhook payloads), large JSON blobs unless truncated, or UI-only fields with no DB persistence.

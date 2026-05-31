@@ -45,6 +45,7 @@
     "workspaceIndustry": "Branża",
     "workspaceIndustryEnum": "Branża (enum)",
     "workspaceDefaultLocale": "Domyślny język",
+    "workspaceAppearanceTheme": "Motyw wyglądu",
     "workspaceOwnerId": "ID właściciela",
     "workspaceBillingAccountId": "ID konta rozliczeniowego",
     "accessRole": "Rola dostępu",

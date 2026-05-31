@@ -1,8 +1,9 @@
 "use client";
 
+import { ChevronDown, Rocket } from "lucide-react";
 import { WorkspaceAppearanceTheme, WorkspaceIndustry } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 
 import {
@@ -11,9 +12,11 @@ import {
 } from "@/features/workspaces/server/onboarding-actions";
 import { CompanyDescriptionField } from "@/features/workspaces/components/company-description-field";
 import { createWorkspaceSchema } from "@/features/workspaces/schemas/create-workspace";
-import { WorkspaceThemePicker } from "@/features/workspaces/components/workspace-theme-picker";
+import {
+  WorkspaceIconPicker,
+  type WorkspaceIconKey,
+} from "@/features/workspaces/components/workspace-icon-picker";
 import { WORKSPACE_INDUSTRIES } from "@/features/workspaces/lib/industries";
-import { slugFromName } from "@/features/workspaces/lib/slug";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -23,36 +26,46 @@ import { Label } from "@/components/ui/label";
 type CreateWorkspaceFormMode = "onboarding" | "new";
 
 const selectClassName = cn(
-  "h-10 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm dark:bg-input/30",
+  "h-11 w-full appearance-none rounded-xl border border-input bg-transparent px-3 py-2 pr-10 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm dark:bg-input/30",
   "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
 );
 
 export function CreateWorkspaceForm({
   locale,
   mode = "onboarding",
+  appearanceTheme,
+  onPendingChange,
 }: {
   locale: Locale;
   mode?: CreateWorkspaceFormMode;
+  appearanceTheme: WorkspaceAppearanceTheme;
+  onPendingChange?: (pending: boolean) => void;
 }) {
   const t = useTranslations("workspaces");
-  const copyKey = mode === "new" ? "new" : "onboarding";
+  const tForm = useTranslations("workspaces.createForm");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [name, setName] = useState("");
-  const [industry, setIndustry] = useState<WorkspaceIndustry>(WorkspaceIndustry.CONSTRUCTION);
+  const [workspaceIcon, setWorkspaceIcon] = useState<WorkspaceIconKey>("building");
+  const [industry, setIndustry] = useState<WorkspaceIndustry | "">("");
   const [industryOtherText, setIndustryOtherText] = useState("");
   const [companyDescription, setCompanyDescription] = useState("");
-  const [appearanceTheme, setAppearanceTheme] = useState<WorkspaceAppearanceTheme>(
-    WorkspaceAppearanceTheme.OCEAN_BREEZE,
-  );
   const [error, setError] = useState<string | null>(null);
 
-  const slugPreview = name.trim() ? slugFromName(name) : "";
   const showOtherText = industry === WorkspaceIndustry.OTHER;
+
+  useEffect(() => {
+    onPendingChange?.(isPending);
+  }, [isPending, onPendingChange]);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+
+    if (!industry) {
+      setError(tForm("errors.industryRequired"));
+      return;
+    }
 
     const parsed = createWorkspaceSchema.safeParse({
       name,
@@ -93,56 +106,64 @@ export function CreateWorkspaceForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="workspace-name">{t(`${copyKey}.fields.name`)}</Label>
+        <Label htmlFor="workspace-name">{tForm("nameLabel")}</Label>
         <Input
           id="workspace-name"
           value={name}
           onChange={(event) => setName(event.target.value)}
-          placeholder={t(`${copyKey}.fields.namePlaceholder`)}
+          placeholder={tForm("namePlaceholder")}
           required
           autoComplete="organization"
-          className="h-10 rounded-lg"
+          className="h-11 rounded-xl"
         />
       </div>
 
-      <div className="space-y-2">
-        <Label className="text-muted-foreground">{t("appearance.pickerLabel")}</Label>
-        <WorkspaceThemePicker
-          value={appearanceTheme}
-          onChange={setAppearanceTheme}
-          size="sm"
-        />
-      </div>
+      <WorkspaceIconPicker
+        value={workspaceIcon}
+        onChange={setWorkspaceIcon}
+        disabled={isPending}
+      />
 
       <div className="space-y-2">
-        <Label htmlFor="workspace-industry">{t(`${copyKey}.fields.industry`)}</Label>
-        <select
-          id="workspace-industry"
-          value={industry}
-          onChange={(event) => setIndustry(event.target.value as WorkspaceIndustry)}
-          required
-          className={selectClassName}
-        >
-          {WORKSPACE_INDUSTRIES.map((value) => (
-            <option key={value} value={value}>
-              {t(`industries.${value}`)}
+        <Label htmlFor="workspace-industry">{tForm("industryLabel")}</Label>
+        <div className="relative">
+          <select
+            id="workspace-industry"
+            value={industry}
+            onChange={(event) =>
+              setIndustry(event.target.value as WorkspaceIndustry | "")
+            }
+            required
+            className={cn(selectClassName, !industry && "text-muted-foreground")}
+          >
+            <option value="" disabled>
+              {tForm("industryPlaceholder")}
             </option>
-          ))}
-        </select>
+            {WORKSPACE_INDUSTRIES.map((value) => (
+              <option key={value} value={value}>
+                {t(`industries.${value}`)}
+              </option>
+            ))}
+          </select>
+          <ChevronDown
+            className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden
+          />
+        </div>
       </div>
 
       {showOtherText ? (
         <div className="space-y-2">
-          <Label htmlFor="workspace-industry-other">{t(`${copyKey}.fields.industryOther`)}</Label>
+          <Label htmlFor="workspace-industry-other">{tForm("industryOtherLabel")}</Label>
           <Input
             id="workspace-industry-other"
             value={industryOtherText}
             onChange={(event) => setIndustryOtherText(event.target.value)}
-            placeholder={t(`${copyKey}.fields.industryOtherPlaceholder`)}
+            placeholder={tForm("industryOtherPlaceholder")}
             required
-            className="h-10 rounded-lg"
+            className="h-11 rounded-xl"
           />
         </div>
       ) : null}
@@ -152,22 +173,22 @@ export function CreateWorkspaceForm({
         value={companyDescription}
         onChange={setCompanyDescription}
         disabled={isPending}
+        variant="create"
       />
 
-      {slugPreview ? (
-        <p className="text-xs text-muted-foreground">
-          {t(`${copyKey}.slugPreview`, { slug: slugPreview })}
-        </p>
-      ) : null}
-
       {error ? (
-        <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           {error}
         </p>
       ) : null}
 
-      <Button type="submit" className="w-full rounded-lg" disabled={isPending}>
-        {isPending ? t(`${copyKey}.submitting`) : t(`${copyKey}.submit`)}
+      <Button
+        type="submit"
+        disabled={isPending}
+        className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 text-white shadow-md shadow-blue-900/20 hover:from-blue-500 hover:to-violet-500"
+      >
+        {isPending ? t(`${mode}.submitting`) : t(`${mode}.submit`)}
+        {!isPending ? <Rocket className="ml-2 size-4" strokeWidth={1.75} /> : null}
       </Button>
     </form>
   );

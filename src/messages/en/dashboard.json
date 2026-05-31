@@ -45,6 +45,7 @@
     "workspaceIndustry": "Industry",
     "workspaceIndustryEnum": "Industry (enum)",
     "workspaceDefaultLocale": "Default locale",
+    "workspaceAppearanceTheme": "Appearance theme",
     "workspaceOwnerId": "Owner ID",
     "workspaceBillingAccountId": "Billing account ID",
     "accessRole": "Access role",

@@ -17,3 +17,4 @@ alwaysApply: false
 - Use soft deletes with deletedAt
 - Use Prisma ORM
 - Never access Prisma directly from React components
+- When changing in-scope Prisma models, also sync Inspektor konta (see `account-inspector-sync.mdc`)

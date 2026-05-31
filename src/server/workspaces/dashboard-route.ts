@@ -15,10 +15,17 @@ export type DashboardAccessState = {
   seatBlocked: boolean;
 };
 
-export async function getDashboardAccessState(user: User): Promise<DashboardAccessState> {
+export async function getDashboardAccessState(user: User) {
   const accessibleCount = await countAccessibleWorkspaces(user.id);
+
+  console.log("[GUARD] accessibleCount", accessibleCount);
+
   const seatBlocked =
-    accessibleCount === 0 ? await hasSeatBlockedPendingInvite(user.email) : false;
+    accessibleCount === 0
+      ? await hasSeatBlockedPendingInvite(user.email)
+      : false;
+
+  console.log("[GUARD] seatBlocked", seatBlocked);
 
   return { accessibleCount, seatBlocked };
 }
@@ -45,6 +52,7 @@ export async function assertDashboardHomeAccess(locale: Locale): Promise<User> {
   const { accessibleCount, seatBlocked } = await getDashboardAccessState(user);
 
   if (accessibleCount === 0) {
+    console.log("[GUARD] redirect onboarding");
     redirect(seatBlocked ? pendingAccessPath(locale) : onboardingPath(locale));
   }
 

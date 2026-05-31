@@ -20,6 +20,8 @@ export default async function DashboardLayout({
   children: ReactNode;
   params: Promise<{ locale: string }>;
 }) {
+
+
   const { locale } = await params;
   const resolvedLocale: Locale = isLocale(locale) ? locale : "pl";
 
@@ -27,6 +29,11 @@ export default async function DashboardLayout({
 
   const user = await requireAuth(resolvedLocale);
   const workspaces = await getAccessibleWorkspaces(user.id);
+  console.log(
+    "[LAYOUT] workspaces",
+    workspaces.length,
+    workspaces.map(w => w.id)
+  );
   const activeWorkspaceId = await resolveActiveWorkspace(user.id);
   const [canCreateWorkspace, ownedWorkspaceCount, billingSidebarState] = await Promise.all([
     canUserCreateWorkspace(user.id),
@@ -46,6 +53,8 @@ export default async function DashboardLayout({
   const membersData = activeWorkspaceId
     ? await getActiveWorkspaceMembersData(activeWorkspaceId)
     : { previews: [], totalCount: 0 };
+
+
 
   return (
     <WorkspaceProvider

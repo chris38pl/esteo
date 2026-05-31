@@ -25,8 +25,43 @@
     },
     "slugPreview": "Adres przestrzeni: {slug}",
     "submit": "Utwórz przestrzeń",
-    "submitting": "Tworzenie…",
-    "backToDashboard": "Wróć do panelu"
+    "submitting": "Tworzenie…"
+  },
+  "shell": {
+    "heroTitle": "Stwórz swoją",
+    "heroTitleAccent": "przestrzeń roboczą",
+    "heroSubtitle": "Zorganizuj swoją firmę, projekty i zespół w jednym miejscu.",
+    "onboarding": {
+      "title": "Utwórz przestrzeń",
+      "subtitle": "Utwórz przestrzeń, aby rozpocząć pracę w Esteo."
+    },
+    "new": {
+      "title": "Nowa przestrzeń",
+      "subtitle": "Utwórz nową przestrzeń, aby zacząć działać."
+    }
+  },
+  "createForm": {
+    "nameLabel": "Nazwa przestrzeni",
+    "namePlaceholder": "np. Esteo Sp. z o.o.",
+    "iconLabel": "Wybierz ikonę",
+    "industryLabel": "Branża",
+    "industryPlaceholder": "Wybierz branżę",
+    "industryOtherLabel": "Opisz swoją branżę",
+    "industryOtherPlaceholder": "np. Ogrodnictwo",
+    "icons": {
+      "building": "Budynek",
+      "store": "Sklep",
+      "briefcase": "Teczka",
+      "rocket": "Rakieta",
+      "heart": "Serce",
+      "home": "Dom",
+      "hardHat": "Budownictwo",
+      "zap": "Elektryka",
+      "wrench": "Hydraulika"
+    },
+    "errors": {
+      "industryRequired": "Wybierz branżę."
+    }
   },
   "industries": {
     "CONSTRUCTION": "Budownictwo",
@@ -42,7 +77,7 @@
     "signOut": "Wyloguj się"
   },
   "appearance": {
-    "pickerLabel": "Wygląd",
+    "pickerLabel": "Motyw",
     "themes": {
       "OCEAN_BREEZE": "Ocean breeze",
       "FOREST_MIST": "Mglista puszcza",
@@ -57,9 +92,11 @@
   },
   "companyDescription": {
     "label": "Krótki opis firmy (używany przez AI)",
-    "placeholder": "np. Firma XYZ zajmuje się wykończeniem łazienek w Poznaniu. Mamy własną ekipę i 10 lat doświadczenia.",
+    "placeholder": "Opisz firmę, aby AI mogło lepiej dopasować rekomendacje i wyceny.",
+    "placeholderCreate": "Opcjonalnie: opisz krótko zakres usług, lokalizację i wyróżniki firmy. Ułatwi to Esteo dopasowanie wycen i odpowiedzi.",
     "helper": "Opcjonalne. Opisz krótko zakres usług, lokalizację i wyróżniki firmy. Ułatwi to Esteo dopasowanie wycen i odpowiedzi.",
-    "charCounter": "{count}/{max}"
+    "charCounter": "{count}/{max}",
+    "charCounterSpaced": "{count} / {max}"
   },
   "settings": {
     "title": "Ustawienia przestrzeni",
