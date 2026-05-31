@@ -1,10 +1,10 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 
 import { toReceivedInvitationView } from "@/features/workspaces/components/invitation-types";
 import { ReceivedInvitationsInbox } from "@/features/workspaces/components/received-invitations-inbox";
 import { listReceivedInvitations } from "@/features/workspaces/server/invitation-inbox";
+import { getServerTranslations, resolveRequestLocale } from "@/i18n/request-locale";
 import type { Locale } from "@/lib/locale";
-import { isLocale } from "@/lib/locale";
 import { requireAuth } from "@/server/auth/require-auth";
 
 export default async function AccountPage({
@@ -12,11 +12,11 @@ export default async function AccountPage({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
-  const resolvedLocale: Locale = isLocale(locale) ? locale : "pl";
+  const { locale: localeParam } = await params;
+  const resolvedLocale: Locale = await resolveRequestLocale(localeParam);
 
   setRequestLocale(resolvedLocale);
-  const t = await getTranslations("workspaces.invitations");
+  const t = await getServerTranslations(resolvedLocale, "workspaces.invitations");
 
   const user = await requireAuth(resolvedLocale);
   const invitations = await listReceivedInvitations(user.email);

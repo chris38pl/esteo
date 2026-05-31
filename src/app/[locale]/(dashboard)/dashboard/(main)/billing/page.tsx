@@ -1,19 +1,19 @@
 import Link from "next/link";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 
+import { getServerTranslations, resolveRequestLocale } from "@/i18n/request-locale";
 import type { Locale } from "@/lib/locale";
-import { isLocale } from "@/lib/locale";
 
 export default async function BillingPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
-  const resolvedLocale: Locale = isLocale(locale) ? locale : "pl";
+  const { locale: localeParam } = await params;
+  const resolvedLocale: Locale = await resolveRequestLocale(localeParam);
 
   setRequestLocale(resolvedLocale);
-  const t = await getTranslations("billing");
+  const t = await getServerTranslations(resolvedLocale, "billing");
 
   return (
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col py-10">

@@ -1,18 +1,23 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 
 import { AdminWorkspacesPanel } from "@/features/workspaces/components/admin-workspaces-panel";
 import { listAdminWorkspaces } from "@/features/workspaces/server/admin-workspaces";
-import { resolveRequestLocale } from "@/i18n/request-locale";
+import { getServerTranslations, resolveRequestLocale } from "@/i18n/request-locale";
 import type { Locale } from "@/lib/locale";
 import { assertPlatformAdminAccess } from "@/server/auth/require-platform-admin";
 
-export default async function AdminWorkspacesPage() {
-  const resolvedLocale: Locale = await resolveRequestLocale();
+export default async function AdminWorkspacesPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale: localeParam } = await params;
+  const resolvedLocale: Locale = await resolveRequestLocale(localeParam);
 
   setRequestLocale(resolvedLocale);
 
   await assertPlatformAdminAccess(resolvedLocale);
-  const t = await getTranslations({ locale: resolvedLocale, namespace: "admin.workspaces" });
+  const t = await getServerTranslations(resolvedLocale, "admin.workspaces");
   const workspaces = await listAdminWorkspaces();
 
   return (

@@ -1,7 +1,10 @@
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 
+import { getServerTranslations } from "@/i18n/request-locale";
+import type { Locale } from "@/lib/locale";
+import { isLocale } from "@/lib/locale";
 import { getCurrentUser } from "@/server/auth/get-current-user";
 
 export default async function LocaleHome({
@@ -9,9 +12,11 @@ export default async function LocaleHome({
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
+  const { locale: localeParam } = await params;
+  const locale: Locale = isLocale(localeParam) ? localeParam : "pl";
+
   setRequestLocale(locale);
-  const t = await getTranslations("common");
+  const t = await getServerTranslations(locale, "common");
   const user = await getCurrentUser();
 
   return (

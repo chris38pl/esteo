@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import { getTranslations } from "next-intl/server";
 
 import type { DashboardDebugData } from "@/features/dashboard/server/get-dashboard-debug-data";
 import { formatWorkspaceIndustry } from "@/features/workspaces/lib/industries";
+import { getServerTranslations } from "@/i18n/request-locale";
 import type { Locale } from "@/lib/locale";
 
 function formatValue(value: unknown, locale: Locale): string {
@@ -58,7 +58,7 @@ export async function DashboardDebugPanel({
   data: DashboardDebugData;
   locale: Locale;
 }) {
-  const t = await getTranslations("dashboard");
+  const t = await getServerTranslations(locale, "dashboard");
   const { user, activeWorkspaceId, billingAccount, workspaces } = data;
   const subscription = billingAccount?.subscription ?? null;
   const activeWorkspace = workspaces.find((workspace) => workspace.id === activeWorkspaceId);

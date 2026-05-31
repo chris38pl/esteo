@@ -1,4 +1,4 @@
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { defaultLocale, isLocale, type Locale } from "@/lib/locale";
 
@@ -10,4 +10,9 @@ export async function resolveRequestLocale(localeParam?: string): Promise<Locale
 
   const fromRequest = await getLocale();
   return isLocale(fromRequest) ? fromRequest : defaultLocale;
+}
+
+/** Server-side translations with explicit route locale (avoids defaultLocale fallback). */
+export async function getServerTranslations(locale: Locale, namespace: string) {
+  return getTranslations({ locale, namespace });
 }
