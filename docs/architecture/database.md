@@ -70,8 +70,20 @@ See `docs/features/industry-fields.md`.
 ### Slug rules
 
 - Normalize via `src/features/workspaces/lib/slug.ts` (`normalizeWorkspaceSlug`).
-- Lowercase, URL-safe, unique.
+- Lowercase, URL-safe, **globally unique** (including archived workspaces).
 - **Immutable after creation** in MVP (no rename endpoint).
+- **Never reused after archive (Option C):** archived rows keep their slug; new workspaces with the same base name get suffixes (`acme-2`, `acme-3`, …). Display name is not globally unique.
+
+### Workspace archive (owner delete)
+
+Owner-only: Settings → General → Delete workspace (`archiveWorkspace`).
+
+1. Revoke all `PENDING` invitations.
+2. Set `deletedAt` on `Workspace` (soft delete — estimates and audit data retained).
+3. Reconcile owner active workspace; redirect to dashboard, onboarding, or invitations if none remain.
+4. Members lose access immediately (all queries filter `deletedAt IS NULL`).
+
+Hard purge of archived workspaces is deferred.
 
 ## Roles
 
@@ -122,10 +134,31 @@ Implemented in `listActiveWorkspaceRules()` (repository).
 - `Subscription` is attached to `BillingAccount`, not `Workspace`.
 - Workspace count limits apply to **owned** workspaces (`Workspace.ownerId`), not external memberships.
 
+### User plan vs workspace billing link
+
+| Concern | Source | Used for |
+| --- | --- | --- |
+| **Logged-in user's plan** | `BillingAccount` where `ownerUserId = currentUser.id` | Sidebar plan badge, navbar plan label, upgrade cards, invitee workspace caps (`maxAccessibleWorkspaces`), estimate quotas |
+| **Workspace owner's plan (at create time)** | `Workspace.billingAccountId` → owner's `BillingAccount` | Invite seat limits for that workspace only (`maxInvitedSeats` via `assertCanInviteMember`) |
+
+**UI rule:** Never show the active workspace's billing plan to members. Sidebar and account menus always reflect the **current user's** subscription (`getBillingSidebarState(userId)`).
+
+Invited members with zero owned workspaces still see their personal plan (e.g. FREE) in the sidebar.
+
+### Plan limits (MVP)
+
+| Plan | Owned workspaces | Invited seats (per workspace) | Accessible workspaces (owned + member) |
+| --- | --- | --- | --- |
+| FREE | 1 | 0 | 1 |
+| PRO | 1 | 3 | 3 |
+| BUSINESS | unlimited | unlimited | unlimited |
+
+Implementation: `src/server/permissions/entitlements.ts`
+
 ## Related entities
 
 - `WorkspaceSettings` — branding JSON, `aiInstructions`, `companyDescription` (1:1)
-- `WorkspaceInvitation` — email invites with `InviteRole`
+- `WorkspaceInvitation` — email invites with `InviteRole`; status `PENDING | ACCEPTED | REVOKED | EXPIRED | DECLINED`; optional `promptDismissedAt` for modal dismissal
 - `BillingAccountUsagePeriod` — Phase 2 quota counters
 - `AuditLog` — Phase 3 change tracking
 

@@ -9,8 +9,12 @@ import type {
 import { randomUUID } from "crypto";
 
 import { ensureBillingAccount } from "@/features/billing/server/provision-billing-account";
+import { countAccessibleWorkspaces } from "@/features/workspaces/server/accessible-workspaces";
 import { isValidWorkspaceSlug, normalizeWorkspaceSlug } from "@/features/workspaces/lib/slug";
-import { buildWorkspacePromptContext } from "@/features/workspaces/lib/prompt-context";
+import {
+  findReceivedInvitationById,
+  listReceivedInvitations,
+} from "@/features/workspaces/server/invitation-inbox";
 import {
   acceptInvitationRecord,
   createInvitationRecord,
@@ -25,6 +29,8 @@ import {
   listWorkspaceMembers,
   logAuditEvent,
   revokeInvitationRecord,
+  revokeAllPendingWorkspaceInvitations,
+  softDeleteWorkspaceMemberMembership,
   softDeleteWorkspaceRecord,
   softDeleteWorkspaceRuleRecord,
   updateWorkspaceAppearanceRecord,
@@ -38,9 +44,14 @@ import { parseCompanyDescription } from "@/features/workspaces/schemas/company-d
 import { appLocaleToWorkspaceLocale } from "@/lib/workspace-locale";
 import type { Locale } from "@/lib/locale";
 import { prisma } from "@/db/client";
-import { assertCanCreateWorkspace, assertCanInviteMember } from "@/server/permissions/entitlements";
+import { assertCanAcceptInvitation, assertCanCreateWorkspace, assertCanInviteMember } from "@/server/permissions/entitlements";
 import { PermissionError, WorkspaceError } from "@/server/permissions/errors";
-import { filterWorkspaceMembersForUi, requireRole } from "@/server/permissions/require-workspace";
+import { filterWorkspaceMembersForUi, getWorkspaceMembership, requireRole } from "@/server/permissions/require-workspace";
+import {
+  persistActiveWorkspace,
+  reconcileStaleActiveWorkspace,
+  resolveActiveWorkspace,
+} from "@/server/workspaces/active-workspace";
 
 const INVITATION_TTL_DAYS = 7;
 
@@ -54,6 +65,7 @@ export async function getWorkspace(workspaceId: string) {
 
 const SLUG_RETRY_ATTEMPTS = 10;
 
+/** Slugs are never reused after archive (global unique). Archived rows keep their slug; new workspaces get suffixes. */
 async function resolveAvailableSlug(name: string): Promise<string> {
   const base = normalizeWorkspaceSlug(name);
 
@@ -208,6 +220,8 @@ export async function updateWorkspaceDetails(
 export async function archiveWorkspace(user: User, workspaceId: string) {
   await requireRole(user, workspaceId, "OWNER");
 
+  await revokeAllPendingWorkspaceInvitations(workspaceId);
+
   const workspace = await softDeleteWorkspaceRecord(workspaceId);
 
   await logAuditEvent({
@@ -218,7 +232,68 @@ export async function archiveWorkspace(user: User, workspaceId: string) {
     action: "archived",
   });
 
-  return workspace;
+  await reconcileStaleActiveWorkspace(user.id);
+
+  const remainingAccessibleCount = await countAccessibleWorkspaces(user.id);
+
+  if (remainingAccessibleCount > 0) {
+    const nextActiveId = await resolveActiveWorkspace(user.id);
+
+    if (nextActiveId) {
+      await persistActiveWorkspace(user.id, nextActiveId);
+    }
+  }
+
+  return { workspace, remainingAccessibleCount };
+}
+
+export async function leaveWorkspace(user: User, workspaceId: string) {
+  const workspace = await findWorkspaceById(workspaceId);
+
+  if (!workspace) {
+    throw new PermissionError("Workspace not found.");
+  }
+
+  if (workspace.ownerId === user.id) {
+    throw new PermissionError("Workspace owners cannot leave their workspace.");
+  }
+
+  const membership = await getWorkspaceMembership(user.id, workspaceId);
+
+  if (!membership) {
+    throw new PermissionError("You are not a member of this workspace.");
+  }
+
+  const deletedMembership = await softDeleteWorkspaceMemberMembership(
+    user.id,
+    workspaceId,
+  );
+
+  if (!deletedMembership) {
+    throw new PermissionError("You are not a member of this workspace.");
+  }
+
+  await logAuditEvent({
+    actorUserId: user.id,
+    workspaceId,
+    entityType: "WorkspaceMember",
+    entityId: deletedMembership.id,
+    action: "left",
+  });
+
+  await reconcileStaleActiveWorkspace(user.id);
+
+  const remainingAccessibleCount = await countAccessibleWorkspaces(user.id);
+
+  if (remainingAccessibleCount > 0) {
+    const nextActiveId = await resolveActiveWorkspace(user.id);
+
+    if (nextActiveId) {
+      await persistActiveWorkspace(user.id, nextActiveId);
+    }
+  }
+
+  return { remainingAccessibleCount };
 }
 
 export async function updateWorkspaceSettings(
@@ -359,10 +434,23 @@ export async function createWorkspaceInvitation(
   return invitation;
 }
 
-export async function acceptWorkspaceInvitation(user: User, token: string) {
-  const invitation = await findInvitationByToken(token);
+export async function listReceivedInvitationsForUser(user: User) {
+  return listReceivedInvitations(user.email);
+}
 
-  if (!invitation || invitation.status !== "PENDING") {
+async function acceptPendingInvitation(
+  user: User,
+  invitation: {
+    id: string;
+    workspaceId: string;
+    email: string;
+    role: InviteRole;
+    invitedById: string;
+    expiresAt: Date;
+    status: string;
+  },
+) {
+  if (invitation.status !== "PENDING") {
     throw new WorkspaceError("Invitation not found or no longer valid.");
   }
 
@@ -375,6 +463,7 @@ export async function acceptWorkspaceInvitation(user: User, token: string) {
     throw new WorkspaceError("Invitation email does not match your account.");
   }
 
+  await assertCanAcceptInvitation(user.id);
   await assertCanInviteMember(invitation.workspaceId);
 
   const result = await acceptInvitationRecord({
@@ -394,6 +483,62 @@ export async function acceptWorkspaceInvitation(user: User, token: string) {
   });
 
   return result;
+}
+
+export async function acceptWorkspaceInvitation(user: User, token: string) {
+  const invitation = await findInvitationByToken(token);
+
+  if (!invitation) {
+    throw new WorkspaceError("Invitation not found or no longer valid.");
+  }
+
+  return acceptPendingInvitation(user, invitation);
+}
+
+export async function acceptWorkspaceInvitationById(user: User, invitationId: string) {
+  const invitation = await findReceivedInvitationById(user.email, invitationId);
+
+  if (!invitation) {
+    throw new WorkspaceError("Invitation not found or no longer valid.");
+  }
+
+  return acceptPendingInvitation(user, invitation);
+}
+
+export async function declineWorkspaceInvitation(user: User, invitationId: string) {
+  const invitation = await findReceivedInvitationById(user.email, invitationId);
+
+  if (!invitation) {
+    throw new WorkspaceError("Invitation not found or no longer valid.");
+  }
+
+  const declined = await prisma.workspaceInvitation.update({
+    where: { id: invitationId },
+    data: { status: "DECLINED" },
+  });
+
+  await logAuditEvent({
+    actorUserId: user.id,
+    workspaceId: invitation.workspaceId,
+    entityType: "WorkspaceInvitation",
+    entityId: invitationId,
+    action: "declined",
+  });
+
+  return declined;
+}
+
+export async function dismissInvitationPrompt(user: User, invitationId: string) {
+  const invitation = await findReceivedInvitationById(user.email, invitationId);
+
+  if (!invitation) {
+    throw new WorkspaceError("Invitation not found or no longer valid.");
+  }
+
+  return prisma.workspaceInvitation.update({
+    where: { id: invitationId },
+    data: { promptDismissedAt: new Date() },
+  });
 }
 
 export async function revokeWorkspaceInvitation(

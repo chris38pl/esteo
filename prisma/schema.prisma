@@ -48,6 +48,7 @@ enum InvitationStatus {
   ACCEPTED
   REVOKED
   EXPIRED
+  DECLINED
 }
 
 enum WorkspaceLocale {
@@ -226,10 +227,11 @@ model WorkspaceInvitation {
   role        InviteRole
   token       String           @unique
   invitedById String
-  status      InvitationStatus @default(PENDING)
-  expiresAt   DateTime
-  acceptedAt  DateTime?
-  createdAt   DateTime         @default(now())
+  status            InvitationStatus @default(PENDING)
+  expiresAt         DateTime
+  acceptedAt        DateTime?
+  promptDismissedAt DateTime?
+  createdAt         DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)

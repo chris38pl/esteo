@@ -1,28 +1,33 @@
 import type { SubscriptionPlan, SubscriptionStatus } from "@prisma/client";
 
 import { prisma } from "@/db/client";
+import { countAccessibleWorkspaces } from "@/features/workspaces/server/accessible-workspaces";
 import { EntitlementError } from "@/server/permissions/errors";
 
 export type PlanEntitlements = {
   maxOwnedWorkspaces: number | null;
   maxInvitedSeats: number | null;
+  maxAccessibleWorkspaces: number | null;
   maxEstimatesPerMonth: number | null;
 };
 
 export const PLAN_ENTITLEMENTS: Record<SubscriptionPlan, PlanEntitlements> = {
   FREE: {
     maxOwnedWorkspaces: 1,
-    maxInvitedSeats: null,
+    maxInvitedSeats: 0,
+    maxAccessibleWorkspaces: 1,
     maxEstimatesPerMonth: 3,
   },
   PRO: {
     maxOwnedWorkspaces: 1,
     maxInvitedSeats: 3,
+    maxAccessibleWorkspaces: 3,
     maxEstimatesPerMonth: null,
   },
   BUSINESS: {
     maxOwnedWorkspaces: null,
     maxInvitedSeats: null,
+    maxAccessibleWorkspaces: null,
     maxEstimatesPerMonth: null,
   },
 };
@@ -86,7 +91,25 @@ export async function assertCanCreateWorkspace(userId: string): Promise<void> {
   }
 }
 
+export async function canInviteWorkspaceMembers(workspaceId: string): Promise<boolean> {
+  // Workspace.billingAccount is the owner's account (set at create) — seat limits only, not member UI.
+  const workspace = await prisma.workspace.findFirst({
+    where: { id: workspaceId, deletedAt: null },
+    include: {
+      billingAccount: { include: { subscription: true } },
+    },
+  });
+
+  if (!workspace?.billingAccount.subscription) {
+    return true;
+  }
+
+  const entitlements = getEntitlements(workspace.billingAccount.subscription.plan);
+  return entitlements.maxInvitedSeats !== 0;
+}
+
 export async function assertCanInviteMember(workspaceId: string): Promise<void> {
+  // Uses the workspace owner's subscription (Workspace.billingAccountId), not the current user's.
   const workspace = await prisma.workspace.findFirst({
     where: { id: workspaceId, deletedAt: null },
     include: {
@@ -108,7 +131,32 @@ export async function assertCanInviteMember(workspaceId: string): Promise<void> 
   const invitedSeats = await countInvitedSeats(workspaceId);
 
   if (invitedSeats >= entitlements.maxInvitedSeats) {
-    throw new EntitlementError("Member limit reached for this workspace.");
+    throw new EntitlementError(
+      "Member limit reached for this workspace.",
+      "WORKSPACE_SEAT_LIMIT",
+    );
+  }
+}
+
+export async function assertCanAcceptInvitation(userId: string): Promise<void> {
+  const subscription = await prisma.subscription.findFirst({
+    where: { billingAccount: { ownerUserId: userId } },
+  });
+
+  const plan = subscription?.plan ?? "FREE";
+  const entitlements = getEntitlements(plan);
+
+  if (entitlements.maxAccessibleWorkspaces === null) {
+    return;
+  }
+
+  const accessible = await countAccessibleWorkspaces(userId);
+
+  if (accessible >= entitlements.maxAccessibleWorkspaces) {
+    throw new EntitlementError(
+      "Workspace access limit reached for your plan.",
+      "INVITEE_PLAN_LIMIT",
+    );
   }
 }
 

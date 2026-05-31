@@ -32,11 +32,6 @@ export function WorkspaceCreateShell({
         embedded ? "w-full max-w-[920px]" : "w-full lg:max-w-[920px]",
       )}
     >
-      {!embedded ? (
-        <div className="absolute top-4 right-4 z-10 hidden lg:block">
-          <ThemeToggle compact />
-        </div>
-      ) : null}
       <div className="grid grid-cols-1 lg:grid-cols-[360px_1fr]">
         <div className="relative hidden min-h-[520px] lg:block lg:min-h-full">
           <Image
@@ -68,6 +63,15 @@ export function WorkspaceCreateShell({
               {t("heroSubtitle")}
             </p>
           </div>
+
+          {!embedded ? (
+            <div className="absolute inset-x-0 bottom-5 z-10 flex justify-center">
+              <ThemeToggle
+                compact
+                className="size-9 rounded-lg border-white/35 bg-white/45 p-0 opacity-65 shadow-none backdrop-blur-sm hover:opacity-85 dark:border-white/20 dark:bg-black/25"
+              />
+            </div>
+          ) : null}
         </div>
 
         <div className="flex flex-col px-5 py-8 sm:px-8 lg:px-10 lg:py-10">

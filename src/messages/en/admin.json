@@ -3,6 +3,59 @@
     "title": "Account inspector",
     "subtitle": "Debug view of your user record, billing account, and accessible workspaces."
   },
+  "workspaces": {
+    "title": "Workspaces",
+    "subtitle": "Browse and manage all active workspaces across the platform.",
+    "searchPlaceholder": "Search workspaces…",
+    "empty": "No workspaces match your search.",
+    "bar": {
+      "addWorkspace": "Add new workspace",
+      "allWorkspaces": "All workspaces"
+    },
+    "stats": {
+      "estimateRequests": "Estimate requests",
+      "estimates": "Estimates"
+    },
+    "row": {
+      "meta": "by {owner} · Created {created} · Updated {updated}",
+      "membersHeading": "{count, plural, one {# Member} other {# Members}}"
+    },
+    "table": {
+      "workspace": "Workspace",
+      "estimateRequests": "Estimate requests",
+      "estimates": "Estimates",
+      "members": "Members"
+    },
+    "actions": {
+      "menu": "Workspace actions",
+      "rename": "Rename",
+      "invite": "Invite",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saving": "Saving…",
+      "deleteConfirm": "Delete workspace",
+      "deleting": "Deleting…",
+      "inviteConfirm": "Send invitation",
+      "inviting": "Sending…"
+    },
+    "rename": {
+      "title": "Rename workspace",
+      "description": "Update the display name and URL slug for this workspace.",
+      "nameLabel": "Name",
+      "slugLabel": "Slug"
+    },
+    "delete": {
+      "title": "Delete {name}?",
+      "description": "This soft-deletes the workspace. Members lose access and pending invitations are revoked."
+    },
+    "invite": {
+      "title": "Invite to {name}",
+      "description": "Send a member invitation to the email address below.",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "jane@company.com"
+    }
+  },
   "industryFields": {
     "title": "Industry fields",
     "subtitle": "Manage industry-specific field definitions and translations per document type.",

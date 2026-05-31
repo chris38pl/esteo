@@ -1,6 +1,7 @@
 "use client";
 
-import { BarChart3, Check, Plus, Settings, Users } from "lucide-react";
+import { useState } from "react";
+import { BarChart3, Check, LogOut, Plus, Settings, Users } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -12,6 +13,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { LeaveWorkspaceDialog } from "@/features/workspaces/components/leave-workspace-dialog";
 
 export function WorkspaceSwitcherMenuContent({
   side = "bottom",
@@ -29,8 +31,10 @@ export function WorkspaceSwitcherMenuContent({
     locale,
     switchWorkspace,
   } = useWorkspaceContext();
+  const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
 
   return (
+    <>
     <DropdownMenuContent
       side={side}
       align={align}
@@ -100,6 +104,31 @@ export function WorkspaceSwitcherMenuContent({
         <Users className="size-3.5 text-muted-foreground" />
         {t("account.workspaceMembers")}
       </DropdownMenuItem>
+      {activeWorkspace && !activeWorkspace.isOwner ? (
+        <>
+          <DropdownMenuSeparator className="bg-[color:var(--sidebar-divider)]" />
+          <DropdownMenuItem
+            className="gap-2 text-xs text-destructive focus:text-destructive"
+            onSelect={(event) => {
+              event.preventDefault();
+              setLeaveDialogOpen(true);
+            }}
+          >
+            <LogOut className="size-3.5" />
+            {t("account.leaveWorkspace")}
+          </DropdownMenuItem>
+        </>
+      ) : null}
     </DropdownMenuContent>
+    {activeWorkspace && !activeWorkspace.isOwner ? (
+      <LeaveWorkspaceDialog
+        open={leaveDialogOpen}
+        onOpenChange={setLeaveDialogOpen}
+        workspaceId={activeWorkspace.id}
+        workspaceName={activeWorkspace.name}
+        locale={locale}
+      />
+    ) : null}
+    </>
   );
 }

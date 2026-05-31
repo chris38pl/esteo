@@ -8,12 +8,14 @@ import {
   getWorkspaceMembersForUi,
   listWorkspaceRules,
 } from "@/features/workspaces/server/service";
+import { canInviteWorkspaceMembers } from "@/server/permissions/entitlements";
 
 export type WorkspaceSettingsPageData = {
   workspace: NonNullable<Awaited<ReturnType<typeof findWorkspaceById>>>;
   members: Awaited<ReturnType<typeof getWorkspaceMembersForUi>>;
   invitations: WorkspaceInvitation[];
   rules: WorkspaceRule[];
+  canInviteMembers: boolean;
 };
 
 export async function getWorkspaceSettingsPageData(
@@ -26,11 +28,12 @@ export async function getWorkspaceSettingsPageData(
     return null;
   }
 
-  const [members, invitations, rules] = await Promise.all([
+  const [members, invitations, rules, canInviteMembers] = await Promise.all([
     getWorkspaceMembersForUi(user, workspaceId),
     listPendingWorkspaceInvitations(workspaceId),
     listWorkspaceRules(user, workspaceId),
+    canInviteWorkspaceMembers(workspaceId),
   ]);
 
-  return { workspace, members, invitations, rules };
+  return { workspace, members, invitations, rules, canInviteMembers };
 }

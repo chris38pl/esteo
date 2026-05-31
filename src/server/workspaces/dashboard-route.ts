@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import type { User } from "@prisma/client";
 
-import { hasSeatBlockedPendingInvite } from "@/features/workspaces/server/auto-accept-invitations";
+import { hasPendingInvitations } from "@/features/workspaces/server/invitation-inbox";
 import { countAccessibleWorkspaces } from "@/features/workspaces/server/accessible-workspaces";
 import type { Locale } from "@/lib/locale";
 import { requireAuth } from "@/server/auth/require-auth";
@@ -15,22 +15,15 @@ import { resolveActiveWorkspace } from "@/server/workspaces/active-workspace";
 
 export type DashboardAccessState = {
   accessibleCount: number;
-  seatBlocked: boolean;
+  hasPendingInvites: boolean;
 };
 
-export async function getDashboardAccessState(user: User) {
+export async function getDashboardAccessState(user: User): Promise<DashboardAccessState> {
   const accessibleCount = await countAccessibleWorkspaces(user.id);
+  const pendingInvites =
+    accessibleCount === 0 ? await hasPendingInvitations(user.email) : false;
 
-  console.log("[GUARD] accessibleCount", accessibleCount);
-
-  const seatBlocked =
-    accessibleCount === 0
-      ? await hasSeatBlockedPendingInvite(user.email)
-      : false;
-
-  console.log("[GUARD] seatBlocked", seatBlocked);
-
-  return { accessibleCount, seatBlocked };
+  return { accessibleCount, hasPendingInvites: pendingInvites };
 }
 
 function dashboardPath(locale: Locale): string {
@@ -41,8 +34,8 @@ function onboardingPath(locale: Locale): string {
   return `/${locale}/dashboard/onboarding`;
 }
 
-function pendingAccessPath(locale: Locale): string {
-  return `/${locale}/dashboard/pending-access`;
+function incomingInvitationsPath(locale: Locale): string {
+  return `/${locale}/dashboard/invitations`;
 }
 
 function newWorkspacePath(locale: Locale): string {
@@ -53,59 +46,67 @@ function workspaceSettingsPath(locale: Locale): string {
   return `/${locale}/dashboard/workspaces/settings`;
 }
 
+async function redirectWhenNoAccessibleWorkspaces(
+  locale: Locale,
+  user: User,
+): Promise<void> {
+  const { accessibleCount, hasPendingInvites } = await getDashboardAccessState(user);
+
+  if (accessibleCount === 0) {
+    redirect(hasPendingInvites ? incomingInvitationsPath(locale) : onboardingPath(locale));
+  }
+}
+
 /** Guard for /dashboard (main app) — requires at least one accessible workspace. */
 export async function assertDashboardHomeAccess(locale: Locale): Promise<User> {
   const user = await requireAuth(locale);
-  const { accessibleCount, seatBlocked } = await getDashboardAccessState(user);
-
-  if (accessibleCount === 0) {
-    console.log("[GUARD] redirect onboarding");
-    redirect(seatBlocked ? pendingAccessPath(locale) : onboardingPath(locale));
-  }
-
+  await redirectWhenNoAccessibleWorkspaces(locale, user);
   return user;
 }
 
-/** Guard for /dashboard/onboarding — founders only, not seat-blocked invitees. */
+/** Guard for /dashboard/onboarding — founders only, not invitees with pending invites. */
 export async function assertOnboardingAccess(locale: Locale): Promise<User> {
   const user = await requireAuth(locale);
-  const { accessibleCount, seatBlocked } = await getDashboardAccessState(user);
+  const { accessibleCount, hasPendingInvites } = await getDashboardAccessState(user);
 
   if (accessibleCount > 0) {
     redirect(dashboardPath(locale));
   }
 
-  if (seatBlocked) {
-    redirect(pendingAccessPath(locale));
+  if (hasPendingInvites) {
+    redirect(incomingInvitationsPath(locale));
   }
 
   return user;
 }
 
-/** Guard for /dashboard/pending-access — seat-limit blocked invitees only. */
-export async function assertPendingAccessAccess(locale: Locale): Promise<User> {
+/** Guard for /dashboard/invitations — users with pending invites and no accessible workspace. */
+export async function assertIncomingInvitationsAccess(locale: Locale): Promise<User> {
   const user = await requireAuth(locale);
-  const { accessibleCount, seatBlocked } = await getDashboardAccessState(user);
+  const { accessibleCount, hasPendingInvites } = await getDashboardAccessState(user);
 
   if (accessibleCount > 0) {
     redirect(dashboardPath(locale));
   }
 
-  if (!seatBlocked) {
+  if (!hasPendingInvites) {
     redirect(onboardingPath(locale));
   }
 
   return user;
 }
 
+/** @deprecated Redirects to invitations hub. */
+export async function assertPendingAccessAccess(locale: Locale): Promise<User> {
+  const user = await requireAuth(locale);
+  redirect(incomingInvitationsPath(locale));
+  return user;
+}
+
 /** Guard for /dashboard/workspaces/new — owners who can create another workspace. */
 export async function assertNewWorkspaceAccess(locale: Locale): Promise<User> {
   const user = await requireAuth(locale);
-  const { accessibleCount, seatBlocked } = await getDashboardAccessState(user);
-
-  if (accessibleCount === 0) {
-    redirect(seatBlocked ? pendingAccessPath(locale) : onboardingPath(locale));
-  }
+  await redirectWhenNoAccessibleWorkspaces(locale, user);
 
   const [canCreate, ownedCount] = await Promise.all([
     canUserCreateWorkspace(user.id),
@@ -122,11 +123,7 @@ export async function assertNewWorkspaceAccess(locale: Locale): Promise<User> {
 /** Guard for /dashboard/workspaces/settings — active workspace owners only. */
 export async function assertWorkspaceSettingsAccess(locale: Locale): Promise<User> {
   const user = await requireAuth(locale);
-  const { accessibleCount, seatBlocked } = await getDashboardAccessState(user);
-
-  if (accessibleCount === 0) {
-    redirect(seatBlocked ? pendingAccessPath(locale) : onboardingPath(locale));
-  }
+  await redirectWhenNoAccessibleWorkspaces(locale, user);
 
   const activeWorkspaceId = await resolveActiveWorkspace(user.id);
 
@@ -146,4 +143,4 @@ export async function assertWorkspaceSettingsAccess(locale: Locale): Promise<Use
   return user;
 }
 
-export { newWorkspacePath, workspaceSettingsPath };
+export { incomingInvitationsPath, newWorkspacePath, workspaceSettingsPath };

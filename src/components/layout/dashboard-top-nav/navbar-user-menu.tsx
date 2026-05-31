@@ -26,10 +26,7 @@ function resolvePlanKey(state: BillingSidebarState): PlanKey {
   if (state.variant === "status") {
     return "business";
   }
-  if (state.variant === "upsell") {
-    return state.currentPlan === "PRO" ? "pro" : "free";
-  }
-  return "free";
+  return state.currentPlan === "PRO" ? "pro" : "free";
 }
 
 function StatRow({ label, value }: { label: string; value: string }) {
@@ -43,9 +40,10 @@ function StatRow({ label, value }: { label: string; value: string }) {
 
 export function NavbarUserMenu({ locale }: { locale: Locale }) {
   const t = useTranslations("navbar.userMenu");
+  const tInvitations = useTranslations("workspaces.invitations");
   const tSidebar = useTranslations("sidebar");
   const { user } = useUser();
-  const { billingSidebarState } = useWorkspaceContext();
+  const { billingSidebarState, pendingInvitationCount } = useWorkspaceContext();
 
   const userName = user?.fullName || user?.firstName || tSidebar("user.placeholder.name");
   const userEmail =
@@ -54,21 +52,34 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
   const planKey = resolvePlanKey(billingSidebarState);
   const planLabel = t(`plans.${planKey}`);
   const billingHref = `/${locale}/dashboard/billing`;
+  const accountHref = `/${locale}/dashboard/account`;
+  const showBadge = pendingInvitationCount > 0;
+  const badgeLabel = tInvitations("pendingBadge", { count: pendingInvitationCount });
 
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <button
           type="button"
-          aria-label={t("openMenu")}
+          aria-label={showBadge ? badgeLabel : t("openMenu")}
           className={cn(
-            "flex h-9 max-w-[min(240px,42vw)] shrink-0 items-center gap-2 rounded-lg",
+            "relative flex h-9 max-w-[min(240px,42vw)] shrink-0 items-center gap-2 rounded-lg",
             "border border-border/60 bg-card/40 px-1.5 transition",
             "hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35",
             "sm:max-w-[min(280px,36vw)]",
           )}
         >
-          <UserAvatar imageUrl={user?.imageUrl} size={30} className="ring-0" />
+          <span className="relative shrink-0">
+            <UserAvatar imageUrl={user?.imageUrl} size={30} className="ring-0" />
+            {showBadge ? (
+              <span
+                aria-hidden
+                className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground ring-2 ring-background"
+              >
+                {pendingInvitationCount > 9 ? "9+" : pendingInvitationCount}
+              </span>
+            ) : null}
+          </span>
           <span className="hidden min-w-0 flex-1 flex-col items-start text-left sm:flex">
             <span className="w-full truncate text-xs font-medium leading-tight text-foreground">
               {userName}
@@ -132,13 +143,22 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
         <DropdownMenuSeparator className="mx-0" />
 
         <div className="py-1">
-          <DropdownMenuItem className="gap-2.5 px-4 py-2 text-sm">
-            <User className="size-4 text-muted-foreground" strokeWidth={1.75} />
-            {t("myProfile")}
+          <DropdownMenuItem asChild className="gap-2.5 px-4 py-2 text-sm">
+            <Link href={accountHref}>
+              <User className="size-4 text-muted-foreground" strokeWidth={1.75} />
+              {t("myProfile")}
+              {showBadge ? (
+                <span className="ml-auto rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                  {pendingInvitationCount}
+                </span>
+              ) : null}
+            </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem className="gap-2.5 px-4 py-2 text-sm">
-            <Settings className="size-4 text-muted-foreground" strokeWidth={1.75} />
-            {t("accountSettings")}
+          <DropdownMenuItem asChild className="gap-2.5 px-4 py-2 text-sm">
+            <Link href={accountHref}>
+              <Settings className="size-4 text-muted-foreground" strokeWidth={1.75} />
+              {t("accountSettings")}
+            </Link>
           </DropdownMenuItem>
         </div>
 

@@ -34,7 +34,8 @@
     "collapse": "Collapse admin section",
     "nav": {
       "accountInspector": "Account inspector",
-      "industryFields": "Industry fields"
+      "industryFields": "Industry fields",
+      "workspaces": "Workspaces"
     }
   },
   "pinned": {
@@ -53,7 +54,13 @@
     "workspaceUsage": "Workspace usage",
     "workspaceSettings": "Workspace settings",
     "workspaceMembers": "Workspace members",
-    "accountSettings": "Account settings"
+    "accountSettings": "Account settings",
+    "leaveWorkspace": "Leave workspace",
+    "leaveWorkspaceConfirmTitle": "Leave {name}?",
+    "leaveWorkspaceConfirmDescription": "You will lose access to this workspace. You can rejoin only if invited again.",
+    "leaveWorkspaceConfirmAction": "Leave workspace",
+    "leaveWorkspaceConfirmCancel": "Cancel",
+    "leavingWorkspace": "Leaving…"
   },
   "user": {
     "placeholder": {

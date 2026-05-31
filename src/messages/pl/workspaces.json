@@ -76,6 +76,35 @@
     "signOutHint": "Możesz się wylogować i spróbować ponownie później, gdy właściciel zwiększy limit.",
     "signOut": "Wyloguj się"
   },
+  "invitations": {
+    "modalTitle": "Zaproszenie do przestrzeni",
+    "modalDescription": "Otrzymałeś zaproszenie do dołączenia do przestrzeni. Sprawdź szczegóły i wybierz, jak odpowiedzieć.",
+    "hubTitle": "Twoje zaproszenia",
+    "hubDescription": "Zaakceptuj zaproszenie, aby dołączyć do przestrzeni, lub odrzuć, jeśli to pomyłka.",
+    "profileTitle": "Moje konto",
+    "profileDescription": "Zarządzaj zaproszeniami i ustawieniami konta.",
+    "inboxSectionTitle": "Zaproszenia",
+    "inboxSectionDescription": "Oczekujące zaproszenia do przestrzeni wysłane na Twój adres e-mail.",
+    "otherInvitesTitle": "Pozostałe zaproszenia",
+    "emptyInbox": "Nie masz oczekujących zaproszeń.",
+    "invitedBy": "Zaprosił(a): {name}",
+    "expiresAt": "Wygasa {date}",
+    "accept": "Akceptuj",
+    "accepting": "Akceptowanie…",
+    "decline": "Odrzuć",
+    "dismissPrompt": "Nie pytaj ponownie",
+    "upgradePlan": "Ulepsz plan",
+    "contactOwner": "Skontaktuj się z właścicielem przestrzeni, aby dodać więcej miejsc.",
+    "pendingBadge": "{count, plural, one {# oczekujące zaproszenie} few {# oczekujące zaproszenia} many {# oczekujących zaproszeń} other {# oczekujących zaproszeń}}",
+    "roles": {
+      "MEMBER": "Członek",
+      "VIEWER": "Podgląd"
+    },
+    "errors": {
+      "INVITEE_PLAN_LIMIT": "Osiągnięto limit przestrzeni dla Twojego planu.",
+      "WORKSPACE_SEAT_LIMIT": "Ta przestrzeń osiągnęła limit członków."
+    }
+  },
   "appearance": {
     "pickerLabel": "Motyw",
     "themes": {
@@ -126,6 +155,8 @@
       "inviting": "Wysyłanie…",
       "revoke": "Anuluj",
       "emptyMembers": "Brak członków do wyświetlenia.",
+      "inviteUpgradeDescription": "Zaproszenia członków wymagają płatnego planu. Ulepsz plan, aby zapraszać współpracowników do tej przestrzeni.",
+      "inviteUpgradeCta": "Ulepsz plan",
       "columns": {
         "member": "Użytkownik",
         "role": "Rola",
@@ -157,6 +188,16 @@
         "COMMUNICATION": "Komunikacja",
         "CUSTOM": "Własna"
       }
+    },
+    "delete": {
+      "sectionTitle": "Usuń przestrzeń",
+      "sectionDescription": "Trwale usuń tę przestrzeń z konta. Wszyscy członkowie utracą dostęp.",
+      "deleteButton": "Usuń przestrzeń",
+      "confirmTitle": "Usunąć {name}?",
+      "confirmDescription": "Tej operacji nie można cofnąć w aplikacji. Oczekujące zaproszenia zostaną anulowane, a członkowie natychmiast stracą dostęp.",
+      "confirmAction": "Usuń przestrzeń",
+      "confirmCancel": "Anuluj",
+      "deleting": "Usuwanie…"
     }
   },
   "errors": {

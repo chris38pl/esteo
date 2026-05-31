@@ -23,10 +23,7 @@ const UPGRADE_EXIT = {
   ease: [0.22, 1, 0.36, 1] as const,
 };
 
-function planVariantFromBillingState(state: BillingSidebarState): PlanCardVariant | null {
-  if (state.variant === "hidden") {
-    return null;
-  }
+function planVariantFromBillingState(state: BillingSidebarState): PlanCardVariant {
   if (state.variant === "status") {
     return "business";
   }
@@ -43,10 +40,6 @@ export function SidebarUpgrade({ collapsedOverride }: { collapsedOverride?: bool
   const [visible, setVisible] = useState(true);
 
   const variant = planVariantFromBillingState(billingSidebarState);
-
-  if (!variant) {
-    return null;
-  }
 
   const tooltip = `${tPlan(`${variant}.badge`)} — ${tPlan(`${variant}.title`)}`;
   const exitTransition = prefersReducedMotion ? { duration: 0 } : UPGRADE_EXIT;

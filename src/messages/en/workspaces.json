@@ -76,6 +76,35 @@
     "signOutHint": "You can sign out and try again later once the owner adds capacity.",
     "signOut": "Sign out"
   },
+  "invitations": {
+    "modalTitle": "Workspace invitation",
+    "modalDescription": "You have been invited to join a workspace. Review the details and choose how to respond.",
+    "hubTitle": "Your invitations",
+    "hubDescription": "Accept an invitation to join a workspace, or decline if it is not for you.",
+    "profileTitle": "My account",
+    "profileDescription": "Manage your personal invitations and account settings.",
+    "inboxSectionTitle": "Invitations",
+    "inboxSectionDescription": "Pending workspace invitations sent to your email address.",
+    "otherInvitesTitle": "Other invitations",
+    "emptyInbox": "You have no pending invitations.",
+    "invitedBy": "Invited by {name}",
+    "expiresAt": "Expires {date}",
+    "accept": "Accept",
+    "accepting": "Accepting…",
+    "decline": "Decline",
+    "dismissPrompt": "Don't ask again",
+    "upgradePlan": "Upgrade your plan",
+    "contactOwner": "Contact the workspace owner to add more seats.",
+    "pendingBadge": "{count, plural, one {# pending invitation} other {# pending invitations}}",
+    "roles": {
+      "MEMBER": "Member",
+      "VIEWER": "Viewer"
+    },
+    "errors": {
+      "INVITEE_PLAN_LIMIT": "You have reached the workspace limit for your plan.",
+      "WORKSPACE_SEAT_LIMIT": "This workspace has reached its member limit."
+    }
+  },
   "appearance": {
     "pickerLabel": "Theme",
     "themes": {
@@ -126,6 +155,8 @@
       "inviting": "Sending…",
       "revoke": "Revoke",
       "emptyMembers": "No members to display.",
+      "inviteUpgradeDescription": "Member invitations require a paid plan. Upgrade to invite collaborators to this workspace.",
+      "inviteUpgradeCta": "Upgrade plan",
       "columns": {
         "member": "User",
         "role": "Role",
@@ -157,6 +188,16 @@
         "COMMUNICATION": "Communication",
         "CUSTOM": "Custom"
       }
+    },
+    "delete": {
+      "sectionTitle": "Delete workspace",
+      "sectionDescription": "Permanently remove this workspace from your account. All members will lose access.",
+      "deleteButton": "Delete workspace",
+      "confirmTitle": "Delete {name}?",
+      "confirmDescription": "This action cannot be undone from the app. Pending invitations will be revoked and members will lose access immediately.",
+      "confirmAction": "Delete workspace",
+      "confirmCancel": "Cancel",
+      "deleting": "Deleting…"
     }
   },
   "errors": {

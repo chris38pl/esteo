@@ -1,6 +1,8 @@
-import { assertPlatformAdminAccess } from "@/server/auth/require-platform-admin";
+import { setRequestLocale } from "next-intl/server";
+
+import { resolveRequestLocale } from "@/i18n/request-locale";
 import type { Locale } from "@/lib/locale";
-import { isLocale } from "@/lib/locale";
+import { assertPlatformAdminAccess } from "@/server/auth/require-platform-admin";
 
 export default async function DashboardAdminLayout({
   children,
@@ -9,8 +11,10 @@ export default async function DashboardAdminLayout({
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
-  const resolvedLocale: Locale = isLocale(locale) ? locale : "pl";
+  const { locale: localeParam } = await params;
+  const resolvedLocale: Locale = await resolveRequestLocale(localeParam);
+
+  setRequestLocale(resolvedLocale);
 
   await assertPlatformAdminAccess(resolvedLocale);
 

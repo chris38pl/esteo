@@ -32,7 +32,7 @@ export default async function WorkspaceSettingsPage({
     redirect(`/${resolvedLocale}/dashboard`);
   }
 
-  const { workspace, members, invitations, rules } = data;
+  const { workspace, members, invitations, rules, canInviteMembers } = data;
 
   return (
     <Suspense>
@@ -52,6 +52,7 @@ export default async function WorkspaceSettingsPage({
         }))}
         invitations={invitations}
         rules={rules}
+        canInviteMembers={canInviteMembers}
         locale={resolvedLocale}
       />
     </Suspense>

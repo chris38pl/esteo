@@ -17,8 +17,12 @@ type PageLabelKey =
   | "onboarding"
   | "newWorkspace"
   | "pendingAccess"
+  | "invitations"
+  | "account"
   | "requests"
-  | "accountInspector";
+  | "accountInspector"
+  | "adminWorkspaces"
+  | "adminIndustryFields";
 
 function resolvePageLabelKey(
   pathname: string,
@@ -42,8 +46,20 @@ function resolvePageLabelKey(
   if (pathname === `${base}/pending-access`) {
     return "pendingAccess";
   }
+  if (pathname === `${base}/invitations`) {
+    return "invitations";
+  }
+  if (pathname === `${base}/account`) {
+    return "account";
+  }
   if (pathname === `${base}/admin/account-inspector`) {
     return "accountInspector";
+  }
+  if (pathname === `${base}/admin/workspaces`) {
+    return "adminWorkspaces";
+  }
+  if (pathname === `${base}/admin/industry-fields`) {
+    return "adminIndustryFields";
   }
   if (pathname === base && section === "requests") {
     return "requests";

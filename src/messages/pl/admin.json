@@ -3,6 +3,59 @@
     "title": "Inspektor konta",
     "subtitle": "Widok debugowania rekordu użytkownika, konta rozliczeniowego i dostępnych przestrzeni."
   },
+  "workspaces": {
+    "title": "Przestrzenie",
+    "subtitle": "Przeglądaj i zarządzaj wszystkimi aktywnymi przestrzeniami na platformie.",
+    "searchPlaceholder": "Szukaj przestrzeni…",
+    "empty": "Brak przestrzeni pasujących do wyszukiwania.",
+    "bar": {
+      "addWorkspace": "Dodaj nową przestrzeń",
+      "allWorkspaces": "Wszystkie przestrzenie"
+    },
+    "stats": {
+      "estimateRequests": "Zapytania ofertowe",
+      "estimates": "Oferty"
+    },
+    "row": {
+      "meta": "autor: {owner} · Utworzono {created} · Zaktualizowano {updated}",
+      "membersHeading": "{count, plural, one {# członek} few {# członków} many {# członków} other {# członka}}"
+    },
+    "table": {
+      "workspace": "Przestrzeń",
+      "estimateRequests": "Zapytania ofertowe",
+      "estimates": "Oferty",
+      "members": "Członkowie"
+    },
+    "actions": {
+      "menu": "Akcje przestrzeni",
+      "rename": "Zmień nazwę",
+      "invite": "Zaproś",
+      "delete": "Usuń",
+      "cancel": "Anuluj",
+      "save": "Zapisz",
+      "saving": "Zapisywanie…",
+      "deleteConfirm": "Usuń przestrzeń",
+      "deleting": "Usuwanie…",
+      "inviteConfirm": "Wyślij zaproszenie",
+      "inviting": "Wysyłanie…"
+    },
+    "rename": {
+      "title": "Zmień nazwę przestrzeni",
+      "description": "Zaktualizuj nazwę wyświetlaną i slug URL tej przestrzeni.",
+      "nameLabel": "Nazwa",
+      "slugLabel": "Slug"
+    },
+    "delete": {
+      "title": "Usunąć {name}?",
+      "description": "Przestrzeń zostanie ukryta (soft delete). Członkowie stracą dostęp, a oczekujące zaproszenia zostaną anulowane."
+    },
+    "invite": {
+      "title": "Zaproś do {name}",
+      "description": "Wyślij zaproszenie członka na podany adres e-mail.",
+      "emailLabel": "Adres e-mail",
+      "emailPlaceholder": "jan@firma.pl"
+    }
+  },
   "industryFields": {
     "title": "Pola branżowe",
     "subtitle": "Zarządzaj definicjami pól branżowych i tłumaczeniami dla typów dokumentów.",

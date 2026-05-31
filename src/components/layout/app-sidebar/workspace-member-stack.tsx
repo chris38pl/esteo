@@ -54,12 +54,14 @@ export function WorkspaceMemberStack({
   previews,
   totalCount,
   showInvite = true,
+  onInviteClick,
   size = "md",
   surface = "panel",
 }: {
   previews: WorkspaceMemberPreview[];
   totalCount: number;
   showInvite?: boolean;
+  onInviteClick?: () => void;
   size?: keyof typeof SIZE_CONFIG;
   surface?: "hero" | "panel";
 }) {
@@ -112,6 +114,7 @@ export function WorkspaceMemberStack({
         <button
           type="button"
           aria-label={t("inviteMember")}
+          onClick={onInviteClick}
           className={cn(
             "inline-flex shrink-0 items-center justify-center rounded-full ring-[1.5px]",
             onHero

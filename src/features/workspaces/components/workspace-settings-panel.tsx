@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 
+import { WorkspaceSettingsDeleteSection } from "@/features/workspaces/components/workspace-settings-delete-section";
 import { WorkspaceSettingsForm } from "@/features/workspaces/components/workspace-settings-form";
 import { WorkspaceSettingsRulesTab } from "@/features/workspaces/components/workspace-settings-rules-tab";
 import { WorkspaceSettingsUsersTab } from "@/features/workspaces/components/workspace-settings-users-tab";
@@ -41,6 +42,7 @@ export function WorkspaceSettingsPanel({
   members,
   invitations,
   rules,
+  canInviteMembers,
   locale,
 }: {
   workspaceId: string;
@@ -50,6 +52,7 @@ export function WorkspaceSettingsPanel({
   members: MemberRow[];
   invitations: WorkspaceInvitation[];
   rules: WorkspaceRule[];
+  canInviteMembers: boolean;
   locale: Locale;
 }) {
   const t = useTranslations("workspaces.settings");
@@ -120,14 +123,21 @@ export function WorkspaceSettingsPanel({
         </div>
 
         {activeTab === "general" ? (
-          <WorkspaceSettingsForm
-            workspaceId={workspaceId}
-            initialName={initialName}
-            initialCompanyDescription={initialCompanyDescription}
-            appearanceTheme={appearanceTheme}
-            onPendingChange={setThemePickerDisabled}
-            locale={locale}
-          />
+          <>
+            <WorkspaceSettingsForm
+              workspaceId={workspaceId}
+              initialName={initialName}
+              initialCompanyDescription={initialCompanyDescription}
+              appearanceTheme={appearanceTheme}
+              onPendingChange={setThemePickerDisabled}
+              locale={locale}
+            />
+            <WorkspaceSettingsDeleteSection
+              workspaceId={workspaceId}
+              workspaceName={initialName}
+              locale={locale}
+            />
+          </>
         ) : null}
 
         {activeTab === "users" ? (
@@ -135,6 +145,7 @@ export function WorkspaceSettingsPanel({
             workspaceId={workspaceId}
             members={members}
             invitations={invitations}
+            canInviteMembers={canInviteMembers}
             locale={locale}
           />
         ) : null}

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import type { WorkspaceAppearanceTheme } from "@prisma/client";
 
 import { setActiveWorkspaceAction } from "@/server/workspaces/actions";
+import type { ReceivedInvitationView } from "@/features/workspaces/components/invitation-types";
 import type { BillingSidebarState } from "@/features/billing/billing-sidebar-state";
 import type { WorkspaceMemberPreview } from "@/features/workspaces/server/get-active-workspace-card-data";
 import type { Locale } from "@/lib/locale";
@@ -29,6 +30,8 @@ type WorkspaceContextValue = {
   billingSidebarState: BillingSidebarState;
   isPlatformAdmin: boolean;
   locale: Locale;
+  pendingInvitationCount: number;
+  modalInvitation: ReceivedInvitationView | null;
   switchWorkspace: (workspaceId: string) => void;
   isSwitching: boolean;
 };
@@ -45,6 +48,8 @@ export function WorkspaceProvider({
   memberPreviews,
   memberTotalCount,
   locale,
+  pendingInvitationCount = 0,
+  modalInvitation = null,
   children,
 }: {
   workspaces: WorkspaceSummary[];
@@ -56,6 +61,8 @@ export function WorkspaceProvider({
   memberPreviews: WorkspaceMemberPreview[];
   memberTotalCount: number;
   locale: Locale;
+  pendingInvitationCount?: number;
+  modalInvitation?: ReceivedInvitationView | null;
   children: ReactNode;
 }) {
   const router = useRouter();
@@ -78,6 +85,8 @@ export function WorkspaceProvider({
       billingSidebarState,
       isPlatformAdmin,
       locale,
+      pendingInvitationCount,
+      modalInvitation,
       isSwitching,
       switchWorkspace(workspaceId: string) {
         if (workspaceId === activeWorkspaceId) {
@@ -103,6 +112,8 @@ export function WorkspaceProvider({
       billingSidebarState,
       isPlatformAdmin,
       locale,
+      pendingInvitationCount,
+      modalInvitation,
       isSwitching,
       router,
     ],

@@ -34,7 +34,8 @@
     "collapse": "Zwiń sekcję admin",
     "nav": {
       "accountInspector": "Inspektor konta",
-      "industryFields": "Pola branżowe"
+      "industryFields": "Pola branżowe",
+      "workspaces": "Przestrzenie"
     }
   },
   "pinned": {
@@ -53,7 +54,13 @@
     "workspaceUsage": "Wykorzystanie przestrzeni",
     "workspaceSettings": "Ustawienia przestrzeni",
     "workspaceMembers": "Członkowie przestrzeni",
-    "accountSettings": "Ustawienia konta"
+    "accountSettings": "Ustawienia konta",
+    "leaveWorkspace": "Opuść przestrzeń",
+    "leaveWorkspaceConfirmTitle": "Opuścić {name}?",
+    "leaveWorkspaceConfirmDescription": "Utracisz dostęp do tej przestrzeni. Możesz dołączyć ponownie tylko po otrzymaniu zaproszenia.",
+    "leaveWorkspaceConfirmAction": "Opuść przestrzeń",
+    "leaveWorkspaceConfirmCancel": "Anuluj",
+    "leavingWorkspace": "Opuszczanie…"
   },
   "user": {
     "placeholder": {

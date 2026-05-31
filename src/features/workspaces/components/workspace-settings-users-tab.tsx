@@ -1,6 +1,7 @@
 "use client";
 
-import type { InviteRole, WorkspaceInvitation, WorkspaceRule, WorkspaceRole } from "@prisma/client";
+import type { InviteRole, WorkspaceInvitation, WorkspaceRole } from "@prisma/client";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
@@ -46,11 +47,13 @@ export function WorkspaceSettingsUsersTab({
   workspaceId,
   members,
   invitations,
+  canInviteMembers,
   locale,
 }: {
   workspaceId: string;
   members: MemberRow[];
   invitations: WorkspaceInvitation[];
+  canInviteMembers: boolean;
   locale: Locale;
 }) {
   const t = useTranslations("workspaces.settings.users");
@@ -201,50 +204,64 @@ export function WorkspaceSettingsUsersTab({
 
       <div>
         <h2 className="text-base font-semibold tracking-tight">{t("inviteTitle")}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{t("inviteDescription")}</p>
+        {canInviteMembers ? (
+          <>
+            <p className="mt-1 text-sm text-muted-foreground">{t("inviteDescription")}</p>
 
-        <form onSubmit={handleInvite} className="mt-4 space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="workspace-invite-email">{t("emailLabel")}</Label>
-            <Input
-              id="workspace-invite-email"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              placeholder={t("emailPlaceholder")}
-              required
-              disabled={isPending}
-              className="h-11 rounded-xl"
-            />
-          </div>
+            <form onSubmit={handleInvite} className="mt-4 space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="workspace-invite-email">{t("emailLabel")}</Label>
+                <Input
+                  id="workspace-invite-email"
+                  type="email"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder={t("emailPlaceholder")}
+                  required
+                  disabled={isPending}
+                  className="h-11 rounded-xl"
+                />
+              </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="workspace-invite-role">{t("roleLabel")}</Label>
-            <select
-              id="workspace-invite-role"
-              value={role}
-              onChange={(event) => setRole(event.target.value as InviteRole)}
-              disabled={isPending}
-              className={selectClassName}
+              <div className="space-y-2">
+                <Label htmlFor="workspace-invite-role">{t("roleLabel")}</Label>
+                <select
+                  id="workspace-invite-role"
+                  value={role}
+                  onChange={(event) => setRole(event.target.value as InviteRole)}
+                  disabled={isPending}
+                  className={selectClassName}
+                >
+                  {INVITE_ROLES.map((inviteRole) => (
+                    <option key={inviteRole} value={inviteRole}>
+                      {t(`roles.${inviteRole}`)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {error ? (
+                <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                  {error}
+                </p>
+              ) : null}
+
+              <Button type="submit" className="rounded-lg" disabled={isPending}>
+                {isPending ? t("inviting") : t("inviteSubmit")}
+              </Button>
+            </form>
+          </>
+        ) : (
+          <div className="mt-4 rounded-xl border border-border/60 bg-muted/20 px-4 py-4">
+            <p className="text-sm text-muted-foreground">{t("inviteUpgradeDescription")}</p>
+            <Link
+              href={`/${locale}/dashboard/billing`}
+              className="mt-3 inline-flex text-sm font-medium text-primary underline-offset-4 hover:underline"
             >
-              {INVITE_ROLES.map((inviteRole) => (
-                <option key={inviteRole} value={inviteRole}>
-                  {t(`roles.${inviteRole}`)}
-                </option>
-              ))}
-            </select>
+              {t("inviteUpgradeCta")}
+            </Link>
           </div>
-
-          {error ? (
-            <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-              {error}
-            </p>
-          ) : null}
-
-          <Button type="submit" className="rounded-lg" disabled={isPending}>
-            {isPending ? t("inviting") : t("inviteSubmit")}
-          </Button>
-        </form>
+        )}
       </div>
     </div>
   );

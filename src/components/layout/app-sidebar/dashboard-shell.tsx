@@ -8,10 +8,13 @@ import type { Locale } from "@/lib/locale";
 import { AppSidebar, sidebarWidth } from "./app-sidebar";
 import { useSidebarStore } from "./sidebar-store";
 import { DashboardTopNavbar } from "@/components/layout/dashboard-top-nav/dashboard-top-navbar";
+import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
+import { WorkspaceInvitationPrompt } from "@/features/workspaces/components/workspace-invitation-prompt";
 
 const FOCUSED_ROUTE_SUFFIXES = [
   "/dashboard/onboarding",
   "/dashboard/pending-access",
+  "/dashboard/invitations",
 ] as const;
 
 function isFocusedDashboardRoute(pathname: string): boolean {
@@ -29,6 +32,7 @@ export function DashboardShell({
   const prefersReducedMotion = useReducedMotion();
   const collapsed = useSidebarStore((s) => s.collapsed);
   const offset = sidebarWidth(collapsed);
+  const { modalInvitation, locale: contextLocale } = useWorkspaceContext();
 
   if (isFocusedDashboardRoute(pathname)) {
     return <div className="min-h-dvh bg-background">{children}</div>;
@@ -37,6 +41,7 @@ export function DashboardShell({
   return (
     <div className="min-h-dvh bg-background">
       <AppSidebar locale={locale} />
+      <WorkspaceInvitationPrompt invitation={modalInvitation} locale={contextLocale} />
 
       <motion.div
         initial={false}

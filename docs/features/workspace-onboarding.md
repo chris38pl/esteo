@@ -1,16 +1,16 @@
 # Workspace onboarding
 
-This document describes MVP workspace onboarding, invitation auto-acceptance, active workspace resolution, and dashboard routing guards.
+This document describes MVP workspace onboarding, explicit invitation acceptance, active workspace resolution, and dashboard routing guards.
 
 ## Mental model
 
-Onboarding exists only for **founders with zero accessible workspaces**. Invited employees must never be pushed into organization creation.
+Onboarding exists only for **founders with zero accessible workspaces and no pending invitations**. Invited employees must never be pushed into organization creation.
 
 | User | Experience |
 | --- | --- |
 | Founder (no invites, no access) | `/dashboard/onboarding` — create organization |
-| Invited employee (seats available) | Auto-accept on login → dashboard |
-| Invited employee (seat limit) | `/dashboard/pending-access` |
+| Invited user (zero accessible workspaces) | `/dashboard/invitations` — explicit accept/decline |
+| Existing member with new invite | Dashboard + one-at-a-time invitation modal |
 | Existing member | Dashboard directly |
 
 ## Accessible workspace
@@ -29,46 +29,74 @@ accessible workspace =
 
 Implementation: `src/features/workspaces/server/accessible-workspaces.ts`
 
-## Invitation auto-acceptance
+### Leaving a workspace
 
-Runs during `syncUserFromClerk()` after `ensureBillingAccount()`.
+- **Non-owner members** (MEMBER/VIEWER) can leave via the sidebar workspace card menu → soft-deletes their `WorkspaceMember` row
+- **Owners** cannot leave; they must delete (archive) the workspace instead — Settings → General → Delete workspace
+- After leaving or deleting, active workspace cookie/DB is reconciled; if no accessible workspaces remain, routing falls back to invitations or onboarding
 
-Implementation: `src/features/workspaces/server/auto-accept-invitations.ts`
+### Deleting a workspace (owner archive)
 
-### Processing order (invariant)
+- Soft delete only (`deletedAt`); related estimates and audit logs are retained
+- Pending invitations are revoked; members lose access on next request
+- Workspace URL slug is **not** freed for reuse (see slug rules in `docs/architecture/database.md`)
 
-Pending invitations are queried and processed **`ORDER BY createdAt ASC`**. This order must remain stable for predictable seat assignment and debugging. Do not introduce unordered processing.
+## Invitation acceptance (explicit)
 
-### Algorithm
+Invitations are **not** auto-accepted on login. Users must accept or decline each invitation.
 
-1. Load pending invitations (email match, not expired, workspace not deleted) in `createdAt ASC` order.
-2. For each invitation:
-   - If already an active member → mark `ACCEPTED` if still pending (idempotent).
-   - Run `assertCanInviteMember(workspaceId)`.
-   - On seat limit → record in `seatLimitBlocked`.
-   - Otherwise upsert member and mark invitation `ACCEPTED`.
+Implementation: `src/features/workspaces/server/invitation-inbox.ts`, `src/features/workspaces/server/service.ts`
 
-Safe to run on every login.
+### Modal queue (one at a time)
 
-## Pending-access edge case
+When the user has at least one accessible workspace, pending invitations with `promptDismissedAt IS NULL` are shown in a login modal, **one at a time**, ordered by `createdAt ASC`.
 
-When `accessibleWorkspaces.length === 0` and pending invitations exist but **all** fail seat limits, redirect to `/dashboard/pending-access` instead of onboarding.
+"Don't ask again" sets `promptDismissedAt` on that invitation only. The invitation remains visible in the account inbox (`/dashboard/account`).
 
-Fresh DB check: `hasSeatBlockedPendingInvite(email)` in `auto-accept-invitations.ts`.
+### Accept checks
+
+Accepting runs two entitlement checks (either can fail with different UX):
+
+1. **Invitee plan** — `assertCanAcceptInvitation(userId)` → user's `maxAccessibleWorkspaces`
+2. **Owner workspace seats** — `assertCanInviteMember(workspaceId)` → owner's `maxInvitedSeats`
+
+Failure copy:
+
+- Invitee limit → upgrade billing CTA
+- Owner seat limit → contact workspace owner (no invitee billing upsell)
+
+### Decline
+
+Decline sets invitation status to `DECLINED` (permanent for that invitation).
+
+## Plan entitlements (invitations)
+
+| Plan | maxInvitedSeats (owner sends) | maxAccessibleWorkspaces (invitee joins) |
+| --- | --- | --- |
+| FREE | 0 | 1 |
+| PRO | 3 | 3 |
+| BUSINESS | unlimited | unlimited |
+
+Implementation: `src/server/permissions/entitlements.ts`
+
+FREE workspace owners cannot send invites (UI gated in settings + server enforcement).
+
+**Note:** Invite seat checks use the **workspace owner's** subscription (via `Workspace.billingAccountId`). Invitee limits and all plan **display** use the **logged-in user's** subscription.
 
 ## Dashboard routing
 
 | Condition | Route |
 | --- | --- |
 | `accessible > 0` | `/dashboard` |
-| `accessible === 0` + seat-blocked invites | `/dashboard/pending-access` |
-| `accessible === 0` otherwise | `/dashboard/onboarding` |
+| `accessible === 0` + pending invites | `/dashboard/invitations` |
+| `accessible === 0` + no pending | `/dashboard/onboarding` |
 
 Guards: `src/server/workspaces/dashboard-route.ts`
 
 - `(main)/layout.tsx` — requires accessible workspaces
-- `onboarding/layout.tsx` — founders only, not seat-blocked
-- `pending-access/layout.tsx` — seat-blocked invitees only
+- `onboarding/layout.tsx` — founders only; redirects invitees with pending invites to `/dashboard/invitations`
+- `invitations/layout.tsx` — users with zero accessible workspaces and pending invites
+- `/dashboard/pending-access` — deprecated; redirects to `/dashboard/invitations`
 
 ## Active workspace resolution
 
@@ -106,9 +134,20 @@ After create: set active workspace cookie + `lastActiveWorkspaceId`, redirect to
 
 ## Workspace settings
 
-- Route: `/dashboard/settings` (workspace **owner** only)
+- Route: `/dashboard/workspaces/settings` (workspace **owner** only)
+- Tabs: General, Users, Rules
 - Field: `companyDescription` — optional short company blurb for AI context (max 600 chars stored, 500 in prompts)
-- Editable after onboarding; stored on `WorkspaceSettings`
+- Member invites: gated on owner plan (`maxInvitedSeats > 0`)
+
+## Account inbox
+
+- Route: `/dashboard/account`
+- Lists all pending received invitations (including those dismissed from the modal)
+- Navbar badge shows pending invitation count
+
+## Future: email invite links
+
+Deferred. Planned flow: `GET /[locale]/invite/[token]` → sign-in → accept flow using `WorkspaceInvitation.token`.
 
 ## Sidebar workspace switcher
 

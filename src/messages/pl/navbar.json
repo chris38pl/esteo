@@ -9,8 +9,12 @@
     "onboarding": "Onboarding",
     "newWorkspace": "Nowa przestrzeń",
     "pendingAccess": "Oczekujący dostęp",
+    "invitations": "Zaproszenia",
+    "account": "Konto",
     "admin": "Admin",
-    "accountInspector": "Inspektor konta"
+    "accountInspector": "Inspektor konta",
+    "adminWorkspaces": "Przestrzenie",
+    "adminIndustryFields": "Pola branżowe"
   },
   "notifications": {
     "label": "Powiadomienia",

@@ -4,6 +4,7 @@ export {
   assertPaidPlan,
 } from "@/server/permissions/assert-entitlement";
 export {
+  assertCanAcceptInvitation,
   assertCanCreateEstimate,
   assertCanCreateWorkspace,
   assertCanInviteMember,

@@ -9,8 +9,12 @@
     "onboarding": "Onboarding",
     "newWorkspace": "New workspace",
     "pendingAccess": "Pending access",
+    "invitations": "Invitations",
+    "account": "Account",
     "admin": "Admin",
-    "accountInspector": "Account inspector"
+    "accountInspector": "Account inspector",
+    "adminWorkspaces": "Workspaces",
+    "adminIndustryFields": "Industry fields"
   },
   "notifications": {
     "label": "Notifications",

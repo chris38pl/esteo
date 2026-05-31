@@ -16,10 +16,6 @@ export function WorkspacePlanBadge({
 }) {
   const t = useTranslations("sidebar.workspaceCard");
 
-  if (billingSidebarState.variant === "hidden") {
-    return null;
-  }
-
   const planLabel =
     billingSidebarState.variant === "status"
       ? billingSidebarState.plan

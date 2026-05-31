@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
-import { Layers3, UserRoundSearch } from "lucide-react";
+import { Building2, Layers3, UserRoundSearch } from "lucide-react";
 
-export type AdminNavItemKey = "accountInspector" | "industryFields";
+export type AdminNavItemKey = "accountInspector" | "industryFields" | "workspaces";
 
 export type AdminNavItem = {
   key: AdminNavItemKey;
@@ -11,6 +11,12 @@ export type AdminNavItem = {
 };
 
 export const adminNavItems: AdminNavItem[] = [
+  {
+    key: "workspaces",
+    icon: Building2,
+    href: (locale) => `/${locale}/dashboard/admin/workspaces`,
+    labelKey: "admin.nav.workspaces",
+  },
   {
     key: "accountInspector",
     icon: UserRoundSearch,

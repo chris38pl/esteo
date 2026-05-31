@@ -148,6 +148,24 @@ export async function listWorkspaceMembers(workspaceId: string) {
   });
 }
 
+export async function softDeleteWorkspaceMemberMembership(
+  userId: string,
+  workspaceId: string,
+) {
+  const membership = await prisma.workspaceMember.findFirst({
+    where: { userId, workspaceId, deletedAt: null },
+  });
+
+  if (!membership) {
+    return null;
+  }
+
+  return prisma.workspaceMember.update({
+    where: { id: membership.id },
+    data: { deletedAt: new Date() },
+  });
+}
+
 export async function listPendingWorkspaceInvitations(workspaceId: string) {
   return prisma.workspaceInvitation.findMany({
     where: { workspaceId, status: "PENDING" },
@@ -287,6 +305,13 @@ export async function acceptInvitationRecord(input: {
 export async function revokeInvitationRecord(invitationId: string) {
   return prisma.workspaceInvitation.update({
     where: { id: invitationId },
+    data: { status: "REVOKED" },
+  });
+}
+
+export async function revokeAllPendingWorkspaceInvitations(workspaceId: string) {
+  return prisma.workspaceInvitation.updateMany({
+    where: { workspaceId, status: "PENDING" },
     data: { status: "REVOKED" },
   });
 }

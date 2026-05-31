@@ -6,9 +6,12 @@ export class PermissionError extends Error {
 }
 
 export class EntitlementError extends Error {
-  constructor(message = "Plan limit reached") {
+  code?: string;
+
+  constructor(message = "Plan limit reached", code?: string) {
     super(message);
     this.name = "EntitlementError";
+    this.code = code;
   }
 }
 
