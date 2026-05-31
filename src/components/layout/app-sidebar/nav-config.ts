@@ -36,7 +36,7 @@ export const navItems: SidebarNavItem[] = [
   {
     key: "settings",
     icon: Settings,
-    href: (locale) => `/${locale}/dashboard/settings`,
+    href: (locale) => `/${locale}/dashboard/workspaces/settings`,
     labelKey: "nav.settings",
   },
 ];

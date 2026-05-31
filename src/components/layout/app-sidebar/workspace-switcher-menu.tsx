@@ -88,10 +88,14 @@ export function WorkspaceSwitcherMenuContent({
         <BarChart3 className="size-3.5 text-muted-foreground" />
         {t("account.workspaceUsage")}
       </DropdownMenuItem>
-      <DropdownMenuItem className="gap-2 text-xs">
-        <Settings className="size-3.5 text-muted-foreground" />
-        {t("account.workspaceSettings")}
-      </DropdownMenuItem>
+      {activeWorkspace?.isOwner ? (
+        <DropdownMenuItem asChild className="gap-2 text-xs">
+          <Link href={`/${locale}/dashboard/workspaces/settings`}>
+            <Settings className="size-3.5 text-muted-foreground" />
+            {t("account.workspaceSettings")}
+          </Link>
+        </DropdownMenuItem>
+      ) : null}
       <DropdownMenuItem className="gap-2 text-xs">
         <Users className="size-3.5 text-muted-foreground" />
         {t("account.workspaceMembers")}

@@ -100,10 +100,64 @@
   },
   "settings": {
     "title": "Ustawienia przestrzeni",
-    "description": "Skonfiguruj, jak Esteo rozumie Twoją firmę. Ten kontekst jest używany przez AI przy generowaniu wycen i odpowiedzi.",
+    "description": "Zmień nazwę, motyw wyglądu i krótki opis firmy. Te informacje są widoczne w aplikacji i używane przez AI przy wycenach oraz odpowiedziach.",
+    "nameLabel": "Nazwa przestrzeni",
+    "appearanceLabel": "Motyw wyglądu",
     "save": "Zapisz zmiany",
     "saving": "Zapisywanie…",
-    "saved": "Zmiany zapisane."
+    "saved": "Zmiany zapisane.",
+    "tabs": {
+      "general": "Ogólne",
+      "users": "Użytkownicy",
+      "rules": "Reguły",
+      "usersDescription": "Zarządzaj członkami przestrzeni i zaproszeniami do współpracy.",
+      "rulesDescription": "Definiuj reguły AI używane przy generowaniu wycen i odpowiedzi."
+    },
+    "users": {
+      "membersTitle": "Członkowie",
+      "membersDescription": "Osoby z dostępem do tej przestrzeni.",
+      "pendingTitle": "Oczekujące zaproszenia",
+      "inviteTitle": "Zaproś użytkownika",
+      "inviteDescription": "Wyślij zaproszenie e-mailem. Użytkownik dołączy po zaakceptowaniu.",
+      "emailLabel": "Adres e-mail",
+      "emailPlaceholder": "jan@firma.pl",
+      "roleLabel": "Rola",
+      "inviteSubmit": "Wyślij zaproszenie",
+      "inviting": "Wysyłanie…",
+      "revoke": "Anuluj",
+      "emptyMembers": "Brak członków do wyświetlenia.",
+      "columns": {
+        "member": "Użytkownik",
+        "role": "Rola",
+        "email": "E-mail"
+      },
+      "roles": {
+        "OWNER": "Właściciel",
+        "MEMBER": "Członek",
+        "VIEWER": "Podgląd"
+      }
+    },
+    "rules": {
+      "listTitle": "Reguły AI",
+      "listDescription": "Aktywne reguły są dołączane do kontekstu promptu dla tej przestrzeni.",
+      "createTitle": "Dodaj regułę",
+      "createDescription": "Krótki tytuł i treść reguły, np. sposób wyceny lub ton odpowiedzi.",
+      "titleLabel": "Tytuł",
+      "titlePlaceholder": "np. Zaokrąglanie cen",
+      "typeLabel": "Typ",
+      "contentLabel": "Treść reguły",
+      "contentPlaceholder": "Opisz regułę w języku naturalnym…",
+      "createSubmit": "Dodaj regułę",
+      "creating": "Dodawanie…",
+      "delete": "Usuń",
+      "activeLabel": "Aktywna",
+      "empty": "Brak reguł. Dodaj pierwszą regułę poniżej.",
+      "types": {
+        "ESTIMATE": "Wycena",
+        "COMMUNICATION": "Komunikacja",
+        "CUSTOM": "Własna"
+      }
+    }
   },
   "errors": {
     "generic": "Coś poszło nie tak. Spróbuj ponownie."

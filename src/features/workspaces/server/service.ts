@@ -260,6 +260,60 @@ export async function updateWorkspaceSettings(
   return settings;
 }
 
+export async function updateWorkspaceProfile(
+  user: User,
+  workspaceId: string,
+  input: {
+    name: string;
+    appearanceTheme: WorkspaceAppearanceTheme;
+    companyDescription?: string | null;
+  },
+) {
+  await requireRole(user, workspaceId, "OWNER");
+
+  const companyDescription = parseCompanyDescription(input.companyDescription);
+  const name = input.name.trim();
+
+  const workspace = await prisma.$transaction(async (tx) => {
+    const updated = await tx.workspace.update({
+      where: { id: workspaceId },
+      data: {
+        name,
+        appearanceTheme: input.appearanceTheme,
+      },
+      include: { settings: true },
+    });
+
+    await tx.workspaceSettings.upsert({
+      where: { workspaceId },
+      create: {
+        workspaceId,
+        companyDescription: companyDescription ?? undefined,
+      },
+      update: {
+        companyDescription: companyDescription ?? undefined,
+      },
+    });
+
+    return updated;
+  });
+
+  await logAuditEvent({
+    actorUserId: user.id,
+    workspaceId,
+    entityType: "Workspace",
+    entityId: workspaceId,
+    action: "profile_updated",
+    diff: {
+      name,
+      appearanceTheme: input.appearanceTheme,
+      companyDescription,
+    },
+  });
+
+  return workspace;
+}
+
 export async function getWorkspaceMembersForUi(user: User, workspaceId: string) {
   await requireRole(user, workspaceId, "VIEWER");
   const members = await listWorkspaceMembers(workspaceId);

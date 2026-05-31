@@ -1,9 +1,10 @@
 "use server";
 
-import type { InviteRole, WorkspaceIndustry, WorkspaceLocale, WorkspaceRuleType } from "@prisma/client";
+import type { InviteRole, WorkspaceAppearanceTheme, WorkspaceIndustry, WorkspaceLocale, WorkspaceRuleType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 import type { WorkspaceBranding } from "@/features/workspaces/schemas/branding";
+import { updateWorkspaceProfileSchema } from "@/features/workspaces/schemas/update-workspace-profile";
 import {
   acceptWorkspaceInvitation,
   archiveWorkspace,
@@ -17,6 +18,7 @@ import {
   listWorkspaceRules,
   revokeWorkspaceInvitation,
   updateWorkspaceDetails,
+  updateWorkspaceProfile,
   updateWorkspaceRule,
   updateWorkspaceSettings,
 } from "@/features/workspaces/server/service";
@@ -143,8 +145,29 @@ export async function updateWorkspaceSettingsAction(
     const user = await requireAuth(locale);
     const settings = await updateWorkspaceSettings(user, workspaceId, input);
     revalidatePath(`/${locale}/dashboard`);
-    revalidatePath(`/${locale}/dashboard/settings`);
+    revalidatePath(`/${locale}/dashboard/workspaces/settings`);
     return { success: true as const, data: settings };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function updateWorkspaceProfileAction(
+  workspaceId: string,
+  input: {
+    name: string;
+    appearanceTheme: WorkspaceAppearanceTheme;
+    companyDescription?: string | null;
+  },
+  locale: Locale = "pl",
+) {
+  try {
+    const user = await requireAuth(locale);
+    const parsed = updateWorkspaceProfileSchema.parse(input);
+    const workspace = await updateWorkspaceProfile(user, workspaceId, parsed);
+    revalidatePath(`/${locale}/dashboard`);
+    revalidatePath(`/${locale}/dashboard/workspaces/settings`);
+    return { success: true as const, data: workspace };
   } catch (error) {
     return toActionError(error);
   }

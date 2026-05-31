@@ -30,7 +30,7 @@ function resolvePageLabelKey(
   if (pathname === `${base}/billing`) {
     return "billing";
   }
-  if (pathname === `${base}/settings`) {
+  if (pathname === `${base}/workspaces/settings`) {
     return "settings";
   }
   if (pathname === `${base}/onboarding`) {

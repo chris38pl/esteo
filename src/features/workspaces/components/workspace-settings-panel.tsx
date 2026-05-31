@@ -1,0 +1,152 @@
+"use client";
+
+import type { WorkspaceAppearanceTheme, WorkspaceInvitation, WorkspaceRule } from "@prisma/client";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+
+import { WorkspaceSettingsForm } from "@/features/workspaces/components/workspace-settings-form";
+import { WorkspaceSettingsRulesTab } from "@/features/workspaces/components/workspace-settings-rules-tab";
+import { WorkspaceSettingsUsersTab } from "@/features/workspaces/components/workspace-settings-users-tab";
+import { WorkspaceThemePicker } from "@/features/workspaces/components/workspace-theme-picker";
+import type { Locale } from "@/lib/locale";
+import { cn } from "@/lib/utils";
+
+type SettingsTab = "general" | "users" | "rules";
+
+type MemberRow = {
+  id: string;
+  role: "OWNER" | "MEMBER" | "VIEWER";
+  user: {
+    name: string | null;
+    email: string;
+    avatarUrl: string | null;
+  };
+};
+
+const TABS: SettingsTab[] = ["general", "users", "rules"];
+
+function parseTab(value: string | null): SettingsTab {
+  if (value === "users" || value === "rules") {
+    return value;
+  }
+  return "general";
+}
+
+export function WorkspaceSettingsPanel({
+  workspaceId,
+  initialName,
+  initialAppearanceTheme,
+  initialCompanyDescription,
+  members,
+  invitations,
+  rules,
+  locale,
+}: {
+  workspaceId: string;
+  initialName: string;
+  initialAppearanceTheme: WorkspaceAppearanceTheme;
+  initialCompanyDescription: string;
+  members: MemberRow[];
+  invitations: WorkspaceInvitation[];
+  rules: WorkspaceRule[];
+  locale: Locale;
+}) {
+  const t = useTranslations("workspaces.settings");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const activeTab = parseTab(searchParams.get("tab"));
+  const [appearanceTheme, setAppearanceTheme] = useState(initialAppearanceTheme);
+  const [themePickerDisabled, setThemePickerDisabled] = useState(false);
+
+  useEffect(() => {
+    setAppearanceTheme(initialAppearanceTheme);
+  }, [initialAppearanceTheme]);
+
+  function setTab(tab: SettingsTab) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (tab === "general") {
+      params.delete("tab");
+    } else {
+      params.set("tab", tab);
+    }
+    const query = params.toString();
+    router.replace(query ? `?${query}` : "?", { scroll: false });
+  }
+
+  const tabDescription =
+    activeTab === "general"
+      ? t("description")
+      : activeTab === "users"
+        ? t("tabs.usersDescription")
+        : t("tabs.rulesDescription");
+
+  return (
+    <div className="flex w-full justify-center px-3 sm:px-4 lg:px-6">
+      <div className="w-full max-w-[560px] py-8">
+        <div className="mb-6 space-y-1">
+          <div className="flex items-center justify-between gap-4">
+            <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+            {activeTab === "general" ? (
+              <div className="shrink-0">
+                <WorkspaceThemePicker
+                  variant="header"
+                  value={appearanceTheme}
+                  onChange={setAppearanceTheme}
+                  disabled={themePickerDisabled}
+                />
+              </div>
+            ) : null}
+          </div>
+          <p className="text-sm text-muted-foreground">{tabDescription}</p>
+        </div>
+
+        <div className="mb-8 flex gap-1 border-b border-border/60">
+          {TABS.map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setTab(tab)}
+              className={cn(
+                "cursor-pointer border-b-2 px-4 py-2.5 text-sm font-medium transition-colors",
+                activeTab === tab
+                  ? "border-primary text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {t(`tabs.${tab}`)}
+            </button>
+          ))}
+        </div>
+
+        {activeTab === "general" ? (
+          <WorkspaceSettingsForm
+            workspaceId={workspaceId}
+            initialName={initialName}
+            initialCompanyDescription={initialCompanyDescription}
+            appearanceTheme={appearanceTheme}
+            onPendingChange={setThemePickerDisabled}
+            locale={locale}
+          />
+        ) : null}
+
+        {activeTab === "users" ? (
+          <WorkspaceSettingsUsersTab
+            workspaceId={workspaceId}
+            members={members}
+            invitations={invitations}
+            locale={locale}
+          />
+        ) : null}
+
+        {activeTab === "rules" ? (
+          <WorkspaceSettingsRulesTab
+            workspaceId={workspaceId}
+            rules={rules}
+            locale={locale}
+          />
+        ) : null}
+      </div>
+    </div>
+  );
+}

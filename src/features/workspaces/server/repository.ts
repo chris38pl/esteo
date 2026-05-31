@@ -148,6 +148,13 @@ export async function listWorkspaceMembers(workspaceId: string) {
   });
 }
 
+export async function listPendingWorkspaceInvitations(workspaceId: string) {
+  return prisma.workspaceInvitation.findMany({
+    where: { workspaceId, status: "PENDING" },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
 export async function listActiveWorkspaceRules(
   workspaceId: string,
   locale?: WorkspaceLocale,

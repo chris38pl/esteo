@@ -11,6 +11,7 @@ export {
   listWorkspaceRulesAction,
   revokeWorkspaceInvitationAction,
   updateWorkspaceAction,
+  updateWorkspaceProfileAction,
   updateWorkspaceRuleAction,
   updateWorkspaceSettingsAction,
 } from "@/features/workspaces/server/actions";

@@ -9,6 +9,9 @@ import {
   canUserCreateWorkspace,
   countOwnedWorkspaces,
 } from "@/server/permissions/entitlements";
+import { PermissionError } from "@/server/permissions/errors";
+import { requireRole } from "@/server/permissions/require-workspace";
+import { resolveActiveWorkspace } from "@/server/workspaces/active-workspace";
 
 export type DashboardAccessState = {
   accessibleCount: number;
@@ -44,6 +47,10 @@ function pendingAccessPath(locale: Locale): string {
 
 function newWorkspacePath(locale: Locale): string {
   return `/${locale}/dashboard/workspaces/new`;
+}
+
+function workspaceSettingsPath(locale: Locale): string {
+  return `/${locale}/dashboard/workspaces/settings`;
 }
 
 /** Guard for /dashboard (main app) — requires at least one accessible workspace. */
@@ -112,4 +119,31 @@ export async function assertNewWorkspaceAccess(locale: Locale): Promise<User> {
   return user;
 }
 
-export { newWorkspacePath };
+/** Guard for /dashboard/workspaces/settings — active workspace owners only. */
+export async function assertWorkspaceSettingsAccess(locale: Locale): Promise<User> {
+  const user = await requireAuth(locale);
+  const { accessibleCount, seatBlocked } = await getDashboardAccessState(user);
+
+  if (accessibleCount === 0) {
+    redirect(seatBlocked ? pendingAccessPath(locale) : onboardingPath(locale));
+  }
+
+  const activeWorkspaceId = await resolveActiveWorkspace(user.id);
+
+  if (!activeWorkspaceId) {
+    redirect(dashboardPath(locale));
+  }
+
+  try {
+    await requireRole(user, activeWorkspaceId, "OWNER");
+  } catch (error) {
+    if (error instanceof PermissionError) {
+      redirect(dashboardPath(locale));
+    }
+    throw error;
+  }
+
+  return user;
+}
+
+export { newWorkspacePath, workspaceSettingsPath };

@@ -100,10 +100,64 @@
   },
   "settings": {
     "title": "Workspace settings",
-    "description": "Configure how Esteo understands your company. This context is used by AI when generating estimates and responses.",
+    "description": "Change the workspace name, appearance theme, and short company description. These are shown in the app and used by AI for estimates and responses.",
+    "nameLabel": "Workspace name",
+    "appearanceLabel": "Appearance theme",
     "save": "Save changes",
     "saving": "Saving…",
-    "saved": "Changes saved."
+    "saved": "Changes saved.",
+    "tabs": {
+      "general": "General",
+      "users": "Users",
+      "rules": "Rules",
+      "usersDescription": "Manage workspace members and collaboration invites.",
+      "rulesDescription": "Define AI rules used when generating estimates and responses."
+    },
+    "users": {
+      "membersTitle": "Members",
+      "membersDescription": "People with access to this workspace.",
+      "pendingTitle": "Pending invitations",
+      "inviteTitle": "Invite user",
+      "inviteDescription": "Send an email invitation. The user joins after accepting.",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "jane@company.com",
+      "roleLabel": "Role",
+      "inviteSubmit": "Send invitation",
+      "inviting": "Sending…",
+      "revoke": "Revoke",
+      "emptyMembers": "No members to display.",
+      "columns": {
+        "member": "User",
+        "role": "Role",
+        "email": "Email"
+      },
+      "roles": {
+        "OWNER": "Owner",
+        "MEMBER": "Member",
+        "VIEWER": "Viewer"
+      }
+    },
+    "rules": {
+      "listTitle": "AI rules",
+      "listDescription": "Active rules are appended to the prompt context for this workspace.",
+      "createTitle": "Add rule",
+      "createDescription": "A short title and rule body, e.g. pricing style or response tone.",
+      "titleLabel": "Title",
+      "titlePlaceholder": "e.g. Price rounding",
+      "typeLabel": "Type",
+      "contentLabel": "Rule content",
+      "contentPlaceholder": "Describe the rule in plain language…",
+      "createSubmit": "Add rule",
+      "creating": "Adding…",
+      "delete": "Delete",
+      "activeLabel": "Active",
+      "empty": "No rules yet. Add your first rule below.",
+      "types": {
+        "ESTIMATE": "Estimate",
+        "COMMUNICATION": "Communication",
+        "CUSTOM": "Custom"
+      }
+    }
   },
   "errors": {
     "generic": "Something went wrong. Please try again."
