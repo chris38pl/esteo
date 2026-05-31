@@ -68,6 +68,16 @@
       "logout": "Logout"
     }
   },
+  "workspaceCard": {
+    "activeLabel": "Active workspace",
+    "openSwitcher": "Open workspace menu",
+    "inviteMember": "Invite member",
+    "membersMoreTitle": "{count} more members",
+    "storageLabel": "Storage",
+    "storagePercent": "{percent}%",
+    "storageUsed": "{percent}% storage used",
+    "planBadge": "{plan} PLAN"
+  },
   "workspace": {
     "placeholderName": "Esteo Workspace",
     "switch": "Switch workspace",

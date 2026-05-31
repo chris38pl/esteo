@@ -41,6 +41,15 @@
     "signOutHint": "Możesz się wylogować i spróbować ponownie później, gdy właściciel zwiększy limit.",
     "signOut": "Wyloguj się"
   },
+  "appearance": {
+    "pickerLabel": "Wygląd",
+    "themes": {
+      "OCEAN_BREEZE": "Ocean breeze",
+      "FOREST_MIST": "Mglista puszcza",
+      "SUNRISE_PEAK": "Szczyt o świcie",
+      "GREEN_VALLEY": "Zielona dolina"
+    }
+  },
   "switcher": {
     "createWorkspace": "Utwórz przestrzeń",
     "newWorkspace": "Nowa przestrzeń"

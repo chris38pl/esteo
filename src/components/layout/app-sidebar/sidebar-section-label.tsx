@@ -28,7 +28,10 @@ export function SidebarSectionLabel({
   return (
     <div
       className={cn(
-        "flex items-center gap-1.5 pb-2.5 pt-4 first:pt-2",
+        "flex items-center gap-1.5",
+        expanded
+          ? "pb-2.5 pt-4 first:pt-2"
+          : "pb-0 pt-2.5 first:pt-1.5",
         className,
       )}
     >

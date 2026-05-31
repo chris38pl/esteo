@@ -1,6 +1,6 @@
 "use client";
 
-import { WorkspaceIndustry } from "@prisma/client";
+import { WorkspaceAppearanceTheme, WorkspaceIndustry } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
@@ -10,6 +10,7 @@ import {
   createWorkspaceOnboardingAction,
 } from "@/features/workspaces/server/onboarding-actions";
 import { createWorkspaceSchema } from "@/features/workspaces/schemas/create-workspace";
+import { WorkspaceThemePicker } from "@/features/workspaces/components/workspace-theme-picker";
 import { WORKSPACE_INDUSTRIES } from "@/features/workspaces/lib/industries";
 import { slugFromName } from "@/features/workspaces/lib/slug";
 import type { Locale } from "@/lib/locale";
@@ -39,6 +40,9 @@ export function CreateWorkspaceForm({
   const [name, setName] = useState("");
   const [industry, setIndustry] = useState<WorkspaceIndustry>(WorkspaceIndustry.CONSTRUCTION);
   const [industryOtherText, setIndustryOtherText] = useState("");
+  const [appearanceTheme, setAppearanceTheme] = useState<WorkspaceAppearanceTheme>(
+    WorkspaceAppearanceTheme.OCEAN_BREEZE,
+  );
   const [error, setError] = useState<string | null>(null);
 
   const slugPreview = name.trim() ? slugFromName(name) : "";
@@ -52,6 +56,7 @@ export function CreateWorkspaceForm({
       name,
       industry,
       industryOtherText: showOtherText ? industryOtherText : undefined,
+      appearanceTheme,
     });
 
     if (!parsed.success) {
@@ -68,6 +73,7 @@ export function CreateWorkspaceForm({
           name: parsed.data.name,
           industry: parsed.data.industry,
           industryOtherText: parsed.data.industryOtherText,
+          appearanceTheme: parsed.data.appearanceTheme,
         },
         locale,
       );
@@ -94,6 +100,15 @@ export function CreateWorkspaceForm({
           required
           autoComplete="organization"
           className="h-10 rounded-lg"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-muted-foreground">{t("appearance.pickerLabel")}</Label>
+        <WorkspaceThemePicker
+          value={appearanceTheme}
+          onChange={setAppearanceTheme}
+          size="sm"
         />
       </div>
 

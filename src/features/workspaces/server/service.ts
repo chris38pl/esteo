@@ -1,4 +1,11 @@
-import type { InviteRole, User, WorkspaceIndustry, WorkspaceLocale, WorkspaceRuleType } from "@prisma/client";
+import type {
+  InviteRole,
+  User,
+  WorkspaceAppearanceTheme,
+  WorkspaceIndustry,
+  WorkspaceLocale,
+  WorkspaceRuleType,
+} from "@prisma/client";
 import { randomUUID } from "crypto";
 
 import { ensureBillingAccount } from "@/features/billing/server/provision-billing-account";
@@ -19,6 +26,7 @@ import {
   revokeInvitationRecord,
   softDeleteWorkspaceRecord,
   softDeleteWorkspaceRuleRecord,
+  updateWorkspaceAppearanceRecord,
   updateWorkspaceRecord,
   updateWorkspaceRuleRecord,
   updateWorkspaceSettingsRecord,
@@ -29,7 +37,7 @@ import { appLocaleToWorkspaceLocale } from "@/lib/workspace-locale";
 import type { Locale } from "@/lib/locale";
 import { prisma } from "@/db/client";
 import { assertCanCreateWorkspace, assertCanInviteMember } from "@/server/permissions/entitlements";
-import { WorkspaceError } from "@/server/permissions/errors";
+import { PermissionError, WorkspaceError } from "@/server/permissions/errors";
 import { filterWorkspaceMembersForUi, requireRole } from "@/server/permissions/require-workspace";
 
 const INVITATION_TTL_DAYS = 7;
@@ -70,6 +78,7 @@ export async function createWorkspace(
     slug?: string;
     industry: WorkspaceIndustry;
     industryOtherText?: string;
+    appearanceTheme?: WorkspaceAppearanceTheme;
     locale?: Locale;
     branding?: WorkspaceBranding;
     aiInstructions?: string;
@@ -106,6 +115,7 @@ export async function createWorkspace(
     industry: input.industry,
     industryOtherText: input.industryOtherText,
     defaultLocale: appLocaleToWorkspaceLocale(input.locale ?? "pl"),
+    appearanceTheme: input.appearanceTheme,
     branding,
     aiInstructions: input.aiInstructions,
   });
@@ -119,6 +129,35 @@ export async function createWorkspace(
   });
 
   return workspace;
+}
+
+export async function updateWorkspaceAppearance(
+  user: User,
+  workspaceId: string,
+  appearanceTheme: WorkspaceAppearanceTheme,
+) {
+  const workspace = await findWorkspaceById(workspaceId);
+
+  if (!workspace) {
+    throw new WorkspaceError("Workspace not found.");
+  }
+
+  if (workspace.ownerId !== user.id) {
+    throw new PermissionError("Only the workspace owner can change appearance.");
+  }
+
+  const updated = await updateWorkspaceAppearanceRecord(workspaceId, appearanceTheme);
+
+  await logAuditEvent({
+    actorUserId: user.id,
+    workspaceId,
+    entityType: "Workspace",
+    entityId: workspaceId,
+    action: "appearance_updated",
+    diff: { appearanceTheme },
+  });
+
+  return updated;
 }
 
 export async function updateWorkspaceDetails(

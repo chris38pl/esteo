@@ -41,6 +41,15 @@
     "signOutHint": "You can sign out and try again later once the owner adds capacity.",
     "signOut": "Sign out"
   },
+  "appearance": {
+    "pickerLabel": "Appearance",
+    "themes": {
+      "OCEAN_BREEZE": "Ocean breeze",
+      "FOREST_MIST": "Forest mist",
+      "SUNRISE_PEAK": "Sunrise peak",
+      "GREEN_VALLEY": "Green valley"
+    }
+  },
   "switcher": {
     "createWorkspace": "Create workspace",
     "newWorkspace": "New workspace"

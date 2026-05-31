@@ -68,6 +68,16 @@
       "logout": "Wyloguj"
     }
   },
+  "workspaceCard": {
+    "activeLabel": "Aktywna przestrzeń",
+    "openSwitcher": "Otwórz menu przestrzeni",
+    "inviteMember": "Zaproś członka",
+    "membersMoreTitle": "Jeszcze {count} członków",
+    "storageLabel": "Miejsce",
+    "storagePercent": "{percent}%",
+    "storageUsed": "Wykorzystano {percent}% miejsca",
+    "planBadge": "PLAN {plan}"
+  },
   "workspace": {
     "placeholderName": "Przestrzeń Esteo",
     "switch": "Zmień przestrzeń",

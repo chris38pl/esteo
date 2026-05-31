@@ -70,6 +70,13 @@ enum WorkspaceIndustry {
   OTHER
 }
 
+enum WorkspaceAppearanceTheme {
+  OCEAN_BREEZE
+  FOREST_MIST
+  SUNRISE_PEAK
+  GREEN_VALLEY
+}
+
 enum BusinessDocumentType {
   ESTIMATE_REQUEST
   ESTIMATE
@@ -140,6 +147,7 @@ model Workspace {
   industry          WorkspaceIndustry
   industryOtherText String?
   defaultLocale     WorkspaceLocale  @default(PL)
+  appearanceTheme   WorkspaceAppearanceTheme @default(OCEAN_BREEZE)
   deletedAt        DateTime?
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt

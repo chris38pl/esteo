@@ -38,7 +38,12 @@ export function SidebarAdmin({
   return (
     <>
       <SidebarDivider />
-      <div className={cn(sidebarInsetClass(collapsed, inDrawer), "pb-3")}>
+      <div
+        className={cn(
+          sidebarInsetClass(collapsed, inDrawer),
+          adminOpen || collapsed ? "pb-3" : "pb-0",
+        )}
+      >
       {!collapsed ? (
         <SidebarSectionLabel
           icon={Shield}

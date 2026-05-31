@@ -1,4 +1,11 @@
-import type { InviteRole, Prisma, WorkspaceIndustry, WorkspaceLocale, WorkspaceRuleType } from "@prisma/client";
+import type {
+  InviteRole,
+  Prisma,
+  WorkspaceAppearanceTheme,
+  WorkspaceIndustry,
+  WorkspaceLocale,
+  WorkspaceRuleType,
+} from "@prisma/client";
 
 import { prisma } from "@/db/client";
 import type { WorkspaceBranding } from "@/features/workspaces/schemas/branding";
@@ -27,6 +34,16 @@ export async function listWorkspacesForUser(userId: string) {
   });
 }
 
+export async function updateWorkspaceAppearanceRecord(
+  workspaceId: string,
+  appearanceTheme: import("@prisma/client").WorkspaceAppearanceTheme,
+) {
+  return prisma.workspace.update({
+    where: { id: workspaceId },
+    data: { appearanceTheme },
+  });
+}
+
 export async function createWorkspaceRecord(input: {
   billingAccountId: string;
   ownerId: string;
@@ -35,6 +52,7 @@ export async function createWorkspaceRecord(input: {
   industry: WorkspaceIndustry;
   industryOtherText?: string | null;
   defaultLocale: WorkspaceLocale;
+  appearanceTheme?: WorkspaceAppearanceTheme;
   branding?: WorkspaceBranding;
   aiInstructions?: string;
 }) {
@@ -49,6 +67,9 @@ export async function createWorkspaceRecord(input: {
         industryOtherText:
           input.industry === "OTHER" ? input.industryOtherText?.trim() ?? null : null,
         defaultLocale: input.defaultLocale,
+        ...(input.appearanceTheme != null
+          ? { appearanceTheme: input.appearanceTheme }
+          : {}),
         settings: {
           create: {
             branding: input.branding ?? undefined,

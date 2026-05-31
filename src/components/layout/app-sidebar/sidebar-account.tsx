@@ -1,17 +1,13 @@
 "use client";
 
-import { BarChart3, Check, ChevronUp, Plus, Settings, Users } from "lucide-react";
-import Link from "next/link";
+import { ChevronUp } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { WorkspaceAvatar } from "@/components/avatars/workspace-avatar";
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
+import { WorkspaceSwitcherMenuContent } from "@/components/layout/app-sidebar/workspace-switcher-menu";
 import {
   DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -25,18 +21,10 @@ export function SidebarAccount({
   collapsedOverride?: boolean;
 } = {}) {
   const t = useTranslations("sidebar");
-  const tWorkspaces = useTranslations("workspaces");
   const collapsedFromStore = useSidebarStore((s) => s.collapsed);
   const collapsed = collapsedOverride ?? collapsedFromStore;
   const { inDrawer } = useSidebarLayout();
-  const {
-    workspaces,
-    activeWorkspace,
-    canCreateAdditionalWorkspace,
-    locale,
-    switchWorkspace,
-    isSwitching,
-  } = useWorkspaceContext();
+  const { workspaces, activeWorkspace, isSwitching } = useWorkspaceContext();
 
   if (workspaces.length === 0) {
     return null;
@@ -69,58 +57,6 @@ export function SidebarAccount({
     </DropdownMenuTrigger>
   );
 
-  const menu = (
-    <DropdownMenuContent
-      side={collapsed ? "right" : "bottom"}
-      align="start"
-      className="w-60"
-    >
-      <DropdownMenuLabel className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-        {t("account.workspaces")}
-      </DropdownMenuLabel>
-      {canCreateAdditionalWorkspace ? (
-        <>
-          <DropdownMenuItem asChild className="gap-2 text-xs">
-            <Link href={`/${locale}/dashboard/workspaces/new`}>
-              <Plus className="size-3.5 text-muted-foreground" />
-              {tWorkspaces("switcher.newWorkspace")}
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-        </>
-      ) : null}
-      {workspaces.map((workspace) => (
-        <DropdownMenuItem
-          key={workspace.id}
-          className="gap-2 text-xs"
-          onSelect={() => switchWorkspace(workspace.id)}
-        >
-          <WorkspaceAvatar name={workspace.name} size={20} className="rounded-md ring-0" />
-          <span className="min-w-0 flex-1 truncate">{workspace.name}</span>
-          {workspace.id === activeWorkspace?.id ? (
-            <Check className="size-3.5 shrink-0 text-primary" />
-          ) : null}
-        </DropdownMenuItem>
-      ))}
-
-      <DropdownMenuSeparator />
-
-      <DropdownMenuItem className="gap-2 text-xs">
-        <BarChart3 className="size-3.5 text-muted-foreground" />
-        {t("account.workspaceUsage")}
-      </DropdownMenuItem>
-      <DropdownMenuItem className="gap-2 text-xs">
-        <Settings className="size-3.5 text-muted-foreground" />
-        {t("account.workspaceSettings")}
-      </DropdownMenuItem>
-      <DropdownMenuItem className="gap-2 text-xs">
-        <Users className="size-3.5 text-muted-foreground" />
-        {t("account.workspaceMembers")}
-      </DropdownMenuItem>
-
-    </DropdownMenuContent>
-  );
-
   if (collapsed) {
     return (
       <TooltipProvider>
@@ -129,18 +65,11 @@ export function SidebarAccount({
             <TooltipTrigger asChild>{trigger}</TooltipTrigger>
             <TooltipContent side="right">{workspaceName}</TooltipContent>
           </Tooltip>
-          {menu}
+          <WorkspaceSwitcherMenuContent side="right" align="start" />
         </DropdownMenu>
       </TooltipProvider>
     );
   }
 
-  return (
-    <div className={cn(inDrawer && "w-full min-w-0 max-w-full")}>
-      <DropdownMenu modal={false}>
-        {trigger}
-        {menu}
-      </DropdownMenu>
-    </div>
-  );
+  return null;
 }

@@ -64,7 +64,12 @@ export function SidebarTeam({ collapsedOverride }: { collapsedOverride?: boolean
   }
 
   return (
-    <div className={cn(sidebarInsetClass(false, inDrawer), "pb-3")}>
+    <div
+      className={cn(
+        sidebarInsetClass(false, inDrawer),
+        teamOpen ? "pb-3" : "pb-0",
+      )}
+    >
       <SidebarSectionLabel
         icon={Users}
         expanded={teamOpen}

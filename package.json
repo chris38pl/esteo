@@ -18,7 +18,8 @@
     "prisma:seed": "tsx prisma/seed.ts",
     "prisma:seed:pro": "tsx prisma/seed.ts --plan PRO",
     "prisma:seed:business": "tsx prisma/seed.ts --plan BUSINESS",
-    "prisma:reset": "prisma migrate reset --skip-seed"
+    "prisma:reset": "prisma migrate reset --skip-seed",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@clerk/elements": "^0.24.13",

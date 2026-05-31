@@ -7,6 +7,7 @@ import { DashboardShell } from "@/components/layout/app-sidebar/dashboard-shell"
 import { WorkspaceProvider } from "@/components/layout/app-sidebar/workspace-context";
 import { getBillingSidebarState } from "@/features/billing/server/get-billing-sidebar-state";
 import { getAccessibleWorkspaces } from "@/features/workspaces/server/accessible-workspaces";
+import { getActiveWorkspaceMembersData } from "@/features/workspaces/server/get-active-workspace-card-data";
 import { requireAuth } from "@/server/auth/require-auth";
 import { canUserCreateWorkspace, countOwnedWorkspaces } from "@/server/permissions/entitlements";
 import { isPlatformAdmin } from "@/server/permissions/require-workspace";
@@ -38,12 +39,20 @@ export default async function DashboardLayout({
     id: workspace.id,
     name: workspace.name,
     slug: workspace.slug,
+    appearanceTheme: workspace.appearanceTheme,
+    isOwner: workspace.ownerId === user.id,
   }));
+
+  const membersData = activeWorkspaceId
+    ? await getActiveWorkspaceMembersData(activeWorkspaceId)
+    : { previews: [], totalCount: 0 };
 
   return (
     <WorkspaceProvider
       workspaces={workspaceSummaries}
       activeWorkspaceId={activeWorkspaceId}
+      memberPreviews={membersData.previews}
+      memberTotalCount={membersData.totalCount}
       canCreateWorkspace={canCreateWorkspace}
       canCreateAdditionalWorkspace={canCreateAdditionalWorkspace}
       billingSidebarState={billingSidebarState}

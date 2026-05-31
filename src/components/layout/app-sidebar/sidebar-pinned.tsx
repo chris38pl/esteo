@@ -55,7 +55,12 @@ export function SidebarPinned({
   const activeEstimateId = searchParams?.get("estimate");
 
   return (
-    <div className={cn(sidebarInsetClass(collapsed, inDrawer), "pb-3")}>
+    <div
+      className={cn(
+        sidebarInsetClass(collapsed, inDrawer),
+        pinnedOpen || collapsed ? "pb-3" : "pb-0",
+      )}
+    >
       {!collapsed ? (
         <SidebarSectionLabel
           icon={Pin}

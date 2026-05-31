@@ -1,6 +1,6 @@
 "use server";
 
-import type { WorkspaceIndustry } from "@prisma/client";
+import type { WorkspaceAppearanceTheme, WorkspaceIndustry } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 import { createWorkspace } from "@/features/workspaces/server/service";
@@ -35,6 +35,7 @@ export async function createWorkspaceOnboardingAction(
     name: string;
     industry: WorkspaceIndustry;
     industryOtherText?: string;
+    appearanceTheme?: WorkspaceAppearanceTheme;
   },
   locale: Locale = "pl",
 ): Promise<ActionResult<Awaited<ReturnType<typeof createWorkspace>>>> {
@@ -46,6 +47,7 @@ export async function createAdditionalWorkspaceAction(
     name: string;
     industry: WorkspaceIndustry;
     industryOtherText?: string;
+    appearanceTheme?: WorkspaceAppearanceTheme;
   },
   locale: Locale = "pl",
 ): Promise<ActionResult<Awaited<ReturnType<typeof createWorkspace>>>> {
@@ -53,7 +55,12 @@ export async function createAdditionalWorkspaceAction(
 }
 
 async function createWorkspaceAndActivate(
-  input: { name: string; industry: WorkspaceIndustry; industryOtherText?: string },
+  input: {
+    name: string;
+    industry: WorkspaceIndustry;
+    industryOtherText?: string;
+    appearanceTheme?: WorkspaceAppearanceTheme;
+  },
   locale: Locale,
   flow: "onboarding" | "additional",
 ): Promise<ActionResult<Awaited<ReturnType<typeof createWorkspace>>>> {
@@ -78,6 +85,7 @@ async function createWorkspaceAndActivate(
       name: input.name,
       industry: input.industry,
       industryOtherText: input.industryOtherText,
+      appearanceTheme: input.appearanceTheme,
       locale,
     });
 

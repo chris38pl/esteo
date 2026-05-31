@@ -3,20 +3,27 @@
 import { createContext, useContext, useMemo, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
+import type { WorkspaceAppearanceTheme } from "@prisma/client";
+
 import { setActiveWorkspaceAction } from "@/server/workspaces/actions";
 import type { BillingSidebarState } from "@/features/billing/billing-sidebar-state";
+import type { WorkspaceMemberPreview } from "@/features/workspaces/server/get-active-workspace-card-data";
 import type { Locale } from "@/lib/locale";
 
 export type WorkspaceSummary = {
   id: string;
   name: string;
   slug: string;
+  appearanceTheme: WorkspaceAppearanceTheme;
+  isOwner: boolean;
 };
 
 type WorkspaceContextValue = {
   workspaces: WorkspaceSummary[];
   activeWorkspaceId: string | null;
   activeWorkspace: WorkspaceSummary | null;
+  memberPreviews: WorkspaceMemberPreview[];
+  memberTotalCount: number;
   canCreateWorkspace: boolean;
   canCreateAdditionalWorkspace: boolean;
   billingSidebarState: BillingSidebarState;
@@ -35,6 +42,8 @@ export function WorkspaceProvider({
   canCreateAdditionalWorkspace,
   billingSidebarState,
   isPlatformAdmin,
+  memberPreviews,
+  memberTotalCount,
   locale,
   children,
 }: {
@@ -44,6 +53,8 @@ export function WorkspaceProvider({
   canCreateAdditionalWorkspace: boolean;
   billingSidebarState: BillingSidebarState;
   isPlatformAdmin: boolean;
+  memberPreviews: WorkspaceMemberPreview[];
+  memberTotalCount: number;
   locale: Locale;
   children: ReactNode;
 }) {
@@ -60,6 +71,8 @@ export function WorkspaceProvider({
       workspaces,
       activeWorkspaceId,
       activeWorkspace,
+      memberPreviews,
+      memberTotalCount,
       canCreateWorkspace,
       canCreateAdditionalWorkspace,
       billingSidebarState,
@@ -83,6 +96,8 @@ export function WorkspaceProvider({
       workspaces,
       activeWorkspaceId,
       activeWorkspace,
+      memberPreviews,
+      memberTotalCount,
       canCreateWorkspace,
       canCreateAdditionalWorkspace,
       billingSidebarState,

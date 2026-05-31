@@ -11,7 +11,7 @@ export function SidebarDivider({ className }: { className?: string }) {
       role="separator"
       aria-hidden
       className={cn(
-        "sidebar-divider my-3 h-px shrink-0",
+        "sidebar-divider my-2 h-px shrink-0",
         collapsed ? "mx-1.5" : "mx-3",
         className,
       )}

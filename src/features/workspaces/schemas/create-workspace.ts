@@ -1,4 +1,4 @@
-import { WorkspaceIndustry } from "@prisma/client";
+import { WorkspaceAppearanceTheme, WorkspaceIndustry } from "@prisma/client";
 import { z } from "zod";
 
 export const createWorkspaceSchema = z
@@ -10,6 +10,9 @@ export const createWorkspaceSchema = z
       .max(120, "Name must be at most 120 characters."),
     industry: z.nativeEnum(WorkspaceIndustry),
     industryOtherText: z.string().trim().max(120, "Industry text must be at most 120 characters.").optional(),
+    appearanceTheme: z
+      .nativeEnum(WorkspaceAppearanceTheme)
+      .default(WorkspaceAppearanceTheme.OCEAN_BREEZE),
   })
   .refine(
     (data) =>
