@@ -114,5 +114,18 @@
     "errors": {
       "invalidOptionsJson": "Options must be valid JSON."
     }
+  },
+  "estimateSections": {
+    "title": "Estimate section templates (read-only)",
+    "subtitle": "Default estimate sections and rules shipped per industry. Workspaces can override these under workspace settings → Rules.",
+    "configPath": "Source: src/features/workspaces/config/industry-estimate-sections.ts",
+    "industryLabel": "Industry",
+    "otherIndustry": "Other (generic)",
+    "table": {
+      "key": "Key",
+      "titlePl": "Title (PL)",
+      "titleEn": "Title (EN)",
+      "rulePl": "Default rule (PL)"
+    }
   }
 }

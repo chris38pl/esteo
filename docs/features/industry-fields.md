@@ -59,7 +59,9 @@ Run `npm run prisma:seed` after reset.
 `getWorkspacePromptContext()` assembles workspace-specific AI instructions:
 
 1. `WorkspaceSettings.companyDescription` — `## Company context` block (stored max 600 chars, prompt cap 500)
-2. Active `WorkspaceRule` rows — appended in sort order
+2. `WorkspaceSettings.aiInstructions` — `## Workspace rules` block (max 200 chars)
+3. Estimate section templates — `## Estimate structure` + `## Section-specific rules` (defaults in `src/features/workspaces/config/industry-estimate-sections.ts`, overrides in `WorkspaceSettings.branding.estimateSections`)
+4. Active `WorkspaceRule` rows (ESTIMATE type) — appended in sort order
 
 Module: `src/features/workspaces/lib/prompt-context.ts`
 

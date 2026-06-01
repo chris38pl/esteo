@@ -114,5 +114,18 @@
     "errors": {
       "invalidOptionsJson": "Opcje muszą być poprawnym JSON."
     }
+  },
+  "estimateSections": {
+    "title": "Szablony sekcji kosztorysu (tylko podgląd)",
+    "subtitle": "Domyślne sekcje i reguły per branża. Przestrzenie mogą je nadpisać w ustawieniach → Reguły.",
+    "configPath": "Źródło: src/features/workspaces/config/industry-estimate-sections.ts",
+    "industryLabel": "Branża",
+    "otherIndustry": "Inna (ogólna)",
+    "table": {
+      "key": "Klucz",
+      "titlePl": "Tytuł (PL)",
+      "titleEn": "Tytuł (EN)",
+      "rulePl": "Domyślna reguła (PL)"
+    }
   }
 }

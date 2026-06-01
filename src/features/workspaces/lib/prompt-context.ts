@@ -42,14 +42,57 @@ export function formatGeneralAiInstructionsBlock(
   return `## Workspace rules\n${aiInstructions.trim()}`;
 }
 
+export type PromptEstimateSection = {
+  title: string;
+  rule?: string;
+};
+
+export function formatEstimateStructureBlock(
+  sections: PromptEstimateSection[],
+): string {
+  if (sections.length === 0) {
+    return "";
+  }
+
+  const lines = sections.map(
+    (section, index) => `${index + 1}. ${section.title}`,
+  );
+
+  return [
+    "## Estimate structure",
+    "Use these sections in order when applicable. Omit sections that are not relevant to the project scope.",
+    lines.join("\n"),
+  ].join("\n");
+}
+
+export function formatSectionRulesBlock(
+  sections: PromptEstimateSection[],
+): string {
+  const withRules = sections.filter((section) => section.rule?.trim());
+  if (withRules.length === 0) {
+    return "";
+  }
+
+  const blocks = withRules.map(
+    (section) => `### ${section.title}\n${section.rule!.trim()}`,
+  );
+
+  return ["## Section-specific rules", ...blocks].join("\n\n");
+}
+
 export function buildWorkspacePromptContext(input: {
   companyDescription?: string | null;
   aiInstructions?: string | null;
+  estimateSections?: PromptEstimateSection[];
   rules: Array<{ title: string; content: string }>;
 }): string {
   const companyBlock = formatCompanyContextBlock(input.companyDescription);
   const generalRulesBlock = formatGeneralAiInstructionsBlock(input.aiInstructions);
+  const structureBlock = formatEstimateStructureBlock(input.estimateSections ?? []);
+  const sectionRulesBlock = formatSectionRulesBlock(input.estimateSections ?? []);
   const rulesBlock = buildWorkspacePromptFromRules(input.rules);
 
-  return [companyBlock, generalRulesBlock, rulesBlock].filter(Boolean).join("\n\n");
+  return [companyBlock, generalRulesBlock, structureBlock, sectionRulesBlock, rulesBlock]
+    .filter(Boolean)
+    .join("\n\n");
 }

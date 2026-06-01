@@ -44,6 +44,7 @@ export default async function WorkspaceSettingsPage({
     <Suspense>
       <WorkspaceSettingsPanel
         workspaceId={workspace.id}
+        workspaceIndustry={workspace.industry}
         initialName={workspace.name}
         initialAppearanceTheme={workspace.appearanceTheme}
         initialCompanyDescription={workspace.settings?.companyDescription ?? ""}

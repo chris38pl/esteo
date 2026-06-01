@@ -18,6 +18,8 @@ export {
   updateWorkspaceAction,
   updateWorkspaceProfileAction,
   updateWorkspaceRuleAction,
+  updateWorkspaceEstimateSectionsAction,
+  resetWorkspaceEstimateSectionsAction,
   updateWorkspaceSettingsAction,
 } from "@/features/workspaces/server/actions";
 export { getWorkspacePromptContext } from "@/features/workspaces/server/service";

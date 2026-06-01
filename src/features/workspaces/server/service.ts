@@ -48,6 +48,11 @@ import {
 import { parseEstimateSystemRuleState } from "@/features/workspaces/lib/parse-estimate-system-rule-state";
 import { buildWorkspacePromptContext } from "@/features/workspaces/lib/prompt-context";
 import {
+  parseEstimateSectionsFromBranding,
+  resolveEstimateSectionsForPrompt,
+} from "@/features/workspaces/lib/resolve-estimate-sections";
+import { workspaceLocaleToAppLocale } from "@/lib/workspace-locale";
+import {
   WORKSPACE_ESTIMATE_RULES_MAX_COUNT,
   WORKSPACE_GENERAL_RULES_MAX_LENGTH,
   WORKSPACE_RULE_MAX_LENGTH,
@@ -715,15 +720,19 @@ export async function getWorkspacePromptContext(
   workspaceId: string,
   locale?: WorkspaceLocale,
 ) {
-  const [settings, rules] = await Promise.all([
+  const [workspace, settings, rules] = await Promise.all([
+    findWorkspaceById(workspaceId),
     findWorkspaceSettings(workspaceId),
     listActiveWorkspaceRules(workspaceId, locale),
   ]);
 
+  if (!workspace) {
+    return "";
+  }
+
   const brandingResult = workspaceBrandingSchema.safeParse(settings?.branding ?? {});
-  const systemRuleState = parseEstimateSystemRuleState(
-    brandingResult.success ? brandingResult.data : null,
-  );
+  const branding = brandingResult.success ? brandingResult.data : null;
+  const systemRuleState = parseEstimateSystemRuleState(branding);
 
   const activeSystemRules = ESTIMATE_SYSTEM_RULE_IDS.filter((id) => systemRuleState[id]).map(
     (id) => ESTIMATE_SYSTEM_RULE_PROMPT[id],
@@ -733,9 +742,24 @@ export async function getWorkspacePromptContext(
     .filter((rule) => rule.type === "ESTIMATE")
     .map((rule) => ({ title: rule.title, content: rule.content }));
 
+  const promptLocale = locale
+    ? workspaceLocaleToAppLocale(locale)
+    : workspaceLocaleToAppLocale(workspace.defaultLocale);
+
+  const persistedSections = parseEstimateSectionsFromBranding(settings?.branding);
+  const estimateSections = resolveEstimateSectionsForPrompt(
+    workspace.industry,
+    persistedSections,
+    promptLocale,
+  ).map((section) => ({
+    title: section.title,
+    rule: section.rule,
+  }));
+
   return buildWorkspacePromptContext({
     companyDescription: settings?.companyDescription,
     aiInstructions: settings?.aiInstructions,
+    estimateSections,
     rules: [...activeSystemRules, ...userEstimateRules],
   });
 }

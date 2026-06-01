@@ -217,6 +217,38 @@
         "ruleLimitReached": "You can add at most 10 estimate rules.",
         "ruleCharLimit": "A rule can contain at most 150 characters.",
         "generalRulesLimit": "General workspace rules can contain at most 200 characters."
+      },
+      "sections": {
+        "title": "Estimate sections",
+        "description": "Default section structure for {industry} estimates. Active sections and rules are included in the AI prompt.",
+        "addSection": "Add section",
+        "resetDefaults": "Reset to defaults",
+        "save": "Save sections",
+        "saving": "Saving…",
+        "customBadge": "Custom",
+        "edit": "Edit",
+        "delete": "Delete",
+        "dragHandle": "Drag to reorder",
+        "sectionsLimitFooter": "Up to {max} sections. Configured {count} / {max}",
+        "table": {
+          "order": "#",
+          "section": "Section",
+          "rule": "Section rule",
+          "active": "Active"
+        },
+        "dialog": {
+          "createTitle": "Add section",
+          "editTitle": "Edit section",
+          "description": "Section name and AI instructions for line items in this part of the estimate.",
+          "titleLabel": "Section name",
+          "ruleLabel": "Section rule",
+          "rulePlaceholder": "e.g. Include waterproofing and tiling for all wet-area work…",
+          "cancel": "Cancel",
+          "add": "Add",
+          "save": "Save"
+        },
+        "titleCounter": "{count} / {max}",
+        "ruleCounter": "{count} / {max}"
       }
     },
     "delete": {

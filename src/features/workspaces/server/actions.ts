@@ -3,7 +3,15 @@
 import type { InviteRole, WorkspaceAppearanceTheme, WorkspaceIndustry, WorkspaceLocale, WorkspaceRuleType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
-import type { WorkspaceBranding } from "@/features/workspaces/schemas/branding";
+import {
+  type WorkspaceBranding,
+  workspaceBrandingSchema,
+} from "@/features/workspaces/schemas/branding";
+import {
+  type WorkspaceEstimateSection,
+  workspaceEstimateSectionsSchema,
+} from "@/features/workspaces/schemas/estimate-sections";
+import { findWorkspaceSettings } from "@/features/workspaces/server/repository";
 import { updateWorkspaceProfileSchema } from "@/features/workspaces/schemas/update-workspace-profile";
 import {
   acceptWorkspaceInvitation,
@@ -172,6 +180,69 @@ export async function updateWorkspaceSettingsAction(
     const settings = await updateWorkspaceSettings(user, workspaceId, input);
     revalidatePath(`/${locale}/dashboard`);
     revalidatePath(`/${locale}/dashboard/workspaces/settings`);
+    return { success: true as const, data: settings };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function updateWorkspaceEstimateSectionsAction(
+  workspaceId: string,
+  sections: WorkspaceEstimateSection[],
+  locale: Locale = "pl",
+) {
+  try {
+    const user = await requireAuth(locale);
+    const parsedSections = workspaceEstimateSectionsSchema.parse(sections);
+
+    const existingSettings = await findWorkspaceSettings(workspaceId);
+    const brandingResult = workspaceBrandingSchema.safeParse(
+      existingSettings?.branding ?? {},
+    );
+    const currentBranding = brandingResult.success ? brandingResult.data : {};
+
+    const mergedBranding = workspaceBrandingSchema.parse({
+      ...currentBranding,
+      estimateSections: parsedSections,
+    });
+
+    const settings = await updateWorkspaceSettings(user, workspaceId, {
+      branding: mergedBranding,
+    });
+
+    revalidatePath(`/${locale}/dashboard`);
+    revalidatePath(`/${locale}/dashboard/workspaces/settings`);
+
+    return { success: true as const, data: settings };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function resetWorkspaceEstimateSectionsAction(
+  workspaceId: string,
+  locale: Locale = "pl",
+) {
+  try {
+    const user = await requireAuth(locale);
+
+    const existingSettings = await findWorkspaceSettings(workspaceId);
+    const brandingResult = workspaceBrandingSchema.safeParse(
+      existingSettings?.branding ?? {},
+    );
+    const currentBranding = brandingResult.success ? brandingResult.data : {};
+
+    const { estimateSections: _removed, ...brandingWithoutSections } = currentBranding;
+
+    const mergedBranding = workspaceBrandingSchema.parse(brandingWithoutSections);
+
+    const settings = await updateWorkspaceSettings(user, workspaceId, {
+      branding: mergedBranding,
+    });
+
+    revalidatePath(`/${locale}/dashboard`);
+    revalidatePath(`/${locale}/dashboard/workspaces/settings`);
+
     return { success: true as const, data: settings };
   } catch (error) {
     return toActionError(error);

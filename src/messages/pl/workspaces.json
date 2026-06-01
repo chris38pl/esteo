@@ -217,6 +217,38 @@
         "ruleLimitReached": "Możesz dodać maksymalnie 10 reguł kosztorysu.",
         "ruleCharLimit": "Reguła może zawierać maksymalnie 150 znaków.",
         "generalRulesLimit": "Ogólne reguły workspace mogą mieć maksymalnie 200 znaków."
+      },
+      "sections": {
+        "title": "Sekcje kosztorysu",
+        "description": "Domyślna struktura sekcji dla branży: {industry}. Aktywne sekcje i reguły trafiają do promptu AI.",
+        "addSection": "Dodaj sekcję",
+        "resetDefaults": "Przywróć domyślne",
+        "save": "Zapisz sekcje",
+        "saving": "Zapisywanie…",
+        "customBadge": "Własna",
+        "edit": "Edytuj",
+        "delete": "Usuń",
+        "dragHandle": "Przeciągnij, aby zmienić kolejność",
+        "sectionsLimitFooter": "Maksymalnie {max} sekcji. Skonfigurowano {count} / {max}",
+        "table": {
+          "order": "#",
+          "section": "Sekcja",
+          "rule": "Reguła sekcji",
+          "active": "Aktywna"
+        },
+        "dialog": {
+          "createTitle": "Dodaj sekcję",
+          "editTitle": "Edytuj sekcję",
+          "description": "Nazwa sekcji i instrukcje AI dla pozycji w tym fragmencie kosztorysu.",
+          "titleLabel": "Nazwa sekcji",
+          "ruleLabel": "Reguła sekcji",
+          "rulePlaceholder": "np. Uwzględnij hydroizolację i płytki w strefach mokrych…",
+          "cancel": "Anuluj",
+          "add": "Dodaj",
+          "save": "Zapisz"
+        },
+        "titleCounter": "{count} / {max}",
+        "ruleCounter": "{count} / {max}"
       }
     },
     "delete": {

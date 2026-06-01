@@ -139,6 +139,10 @@ After create: set active workspace cookie + `lastActiveWorkspaceId`, redirect to
 - Route: `/dashboard/workspaces/settings` (workspace **owner** only)
 - Tabs: General, Users, Rules
 - Field: `companyDescription` — optional short company blurb for AI context (max 600 chars stored, 500 in prompts)
+- Rules tab also contains **estimate section templates**:
+  - Defaults are derived from immutable `Workspace.industry` (shipped in `src/features/workspaces/config/industry-estimate-sections.ts`)
+  - Workspaces can override section list (rename, reorder via drag & drop, toggle active, add/remove) under settings → Rules
+  - Overrides are stored in `WorkspaceSettings.branding.estimateSections` and injected into AI prompt context (`## Estimate structure` + `## Section-specific rules`)
 - Member invites: gated on owner plan (`maxInvitedSeats > 0`)
 
 ## Account inbox

@@ -1,6 +1,11 @@
 "use client";
 
-import type { WorkspaceAppearanceTheme, WorkspaceInvitation, WorkspaceRule } from "@prisma/client";
+import type {
+  WorkspaceAppearanceTheme,
+  WorkspaceIndustry,
+  WorkspaceInvitation,
+  WorkspaceRule,
+} from "@prisma/client";
 
 import type { WorkspaceBranding } from "@/features/workspaces/schemas/branding";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -38,6 +43,7 @@ function parseTab(value: string | null): SettingsTab {
 
 export function WorkspaceSettingsPanel({
   workspaceId,
+  workspaceIndustry,
   initialName,
   initialAppearanceTheme,
   initialCompanyDescription,
@@ -50,6 +56,7 @@ export function WorkspaceSettingsPanel({
   locale,
 }: {
   workspaceId: string;
+  workspaceIndustry: WorkspaceIndustry;
   initialName: string;
   initialAppearanceTheme: WorkspaceAppearanceTheme;
   initialCompanyDescription: string;
@@ -164,6 +171,7 @@ export function WorkspaceSettingsPanel({
         {activeTab === "rules" ? (
           <WorkspaceSettingsRulesTab
             workspaceId={workspaceId}
+            workspaceIndustry={workspaceIndustry}
             rules={rules}
             initialAiInstructions={initialAiInstructions}
             initialBranding={initialBranding}

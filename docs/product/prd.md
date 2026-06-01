@@ -519,11 +519,19 @@ Supported:
 ## Estimate Structure
 
 ### Sections
-Example:
+Estimates are organized into ordered **sections** (e.g. work phases). In MVP, Esteo ships an **industry-based default section template** and allows each workspace to override it (rename, reorder, toggle, add/remove).
+
+Defaults live in `src/features/workspaces/config/industry-estimate-sections.ts`.
+
+Workspace overrides are stored in `WorkspaceSettings.branding.estimateSections`.
+
+Example (Construction):
 - Demolition
-- Electrical
-- Finishing
-- Materials
+- Installations
+- Finishing works
+- Kitchen
+- Bathroom
+- Fixtures installation
 
 ### Estimate Items
 Fields:

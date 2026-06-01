@@ -1,6 +1,6 @@
 "use client";
 
-import type { WorkspaceRule } from "@prisma/client";
+import type { WorkspaceIndustry, WorkspaceRule } from "@prisma/client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { WorkspaceEstimateSectionsPanel } from "@/features/workspaces/components/workspace-estimate-sections-panel";
 import { WorkspaceRuleEditorDialog } from "@/features/workspaces/components/workspace-rule-editor-dialog";
 import { WorkspaceRuleListItem } from "@/features/workspaces/components/workspace-rule-list-item";
 import { formatRuleMetaDate } from "@/features/workspaces/lib/format-rule-meta-date";
@@ -62,12 +63,14 @@ function mapRuleError(message: string, tErrors: (key: string) => string): string
 
 export function WorkspaceSettingsRulesTab({
   workspaceId,
+  workspaceIndustry,
   rules,
   initialAiInstructions,
   initialBranding,
   locale,
 }: {
   workspaceId: string;
+  workspaceIndustry: WorkspaceIndustry;
   rules: WorkspaceRule[];
   initialAiInstructions: string;
   initialBranding: WorkspaceBranding | null;
@@ -413,6 +416,13 @@ export function WorkspaceSettingsRulesTab({
           </p>
         </section>
       </div>
+
+      <WorkspaceEstimateSectionsPanel
+        workspaceId={workspaceId}
+        industry={workspaceIndustry}
+        initialBranding={initialBranding}
+        locale={locale}
+      />
 
       {error ? (
         <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
