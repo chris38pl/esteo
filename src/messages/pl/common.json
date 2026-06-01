@@ -17,6 +17,14 @@
     "back": "Wróć",
     "open": "Otwórz",
     "delete": "Usuń"
+  },
+  "errors": {
+    "genericTitle": "Coś poszło nie tak",
+    "genericDescription": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie."
+  },
+  "databaseUnavailable": {
+    "message": "Baza danych jest tymczasowo niedostępna lub budzi się ze snu. Spróbuj ponownie za kilka sekund.",
+    "retry": "Spróbuj ponownie"
   }
 }
 

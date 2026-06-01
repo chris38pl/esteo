@@ -24,7 +24,7 @@ export function ReceivedInvitationsInbox({
 
   if (invitations.length === 0) {
     const empty = (
-      <p className="rounded-3xl border border-dashed border-border/60 bg-card/90 px-6 py-10 text-center text-sm text-muted-foreground shadow-sm backdrop-blur-xl">
+      <p className="rounded-2xl border border-dashed border-border/60 bg-card px-6 py-10 text-center text-sm text-muted-foreground shadow-sm md:rounded-3xl">
         {emptyMessage ?? t("emptyInbox")}
       </p>
     );

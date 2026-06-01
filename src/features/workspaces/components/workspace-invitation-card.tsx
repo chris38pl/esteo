@@ -36,7 +36,8 @@ export function WorkspaceInvitationCard({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const inviterName = invitation.invitedByName ?? invitation.invitedByEmail;
+  const inviterEmail = invitation.invitedByEmail;
+  const inviterLabel = invitation.invitedByName ?? invitation.invitedByEmail;
   const expiresLabel = new Date(invitation.expiresAt).toLocaleDateString(
     locale === "pl" ? "pl-PL" : "en-US",
     { dateStyle: "medium" },
@@ -86,17 +87,20 @@ export function WorkspaceInvitationCard({
   const actions = (
     <div
       className={cn(
-        "flex flex-col gap-2",
+        "w-full gap-2",
         variant === "hero"
-          ? "sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
-          : "sm:flex-row sm:flex-wrap",
+          ? "grid grid-cols-1 md:grid-cols-3 md:gap-3"
+          : "flex flex-col sm:flex-row sm:flex-wrap",
       )}
     >
       <Button
         type="button"
         size="lg"
         disabled={isPending}
-        className="rounded-lg"
+        className={cn(
+          "rounded-lg",
+          variant === "hero" && "w-full md:justify-self-start",
+        )}
         onClick={() => runAction(() => acceptReceivedInvitationAction(invitation.id, locale))}
       >
         {isPending ? t("accepting") : t("accept")}
@@ -107,7 +111,10 @@ export function WorkspaceInvitationCard({
         variant="outline"
         size="lg"
         disabled={isPending}
-        className="rounded-lg"
+        className={cn(
+          "rounded-lg",
+          variant === "hero" && "w-full md:justify-self-center",
+        )}
         onClick={() => runAction(() => declineReceivedInvitationAction(invitation.id, locale))}
       >
         {t("decline")}
@@ -118,7 +125,10 @@ export function WorkspaceInvitationCard({
           variant="ghost"
           size="lg"
           disabled={isPending}
-          className="rounded-lg text-muted-foreground"
+          className={cn(
+            "rounded-lg text-muted-foreground",
+            variant === "hero" && "w-full md:justify-self-end md:px-2",
+          )}
           onClick={() => runAction(() => dismissInvitationPromptAction(invitation.id, locale))}
         >
           {t("dismissPrompt")}
@@ -129,8 +139,8 @@ export function WorkspaceInvitationCard({
 
   if (variant === "hero") {
     return (
-      <article className="overflow-hidden rounded-3xl border border-border/60 bg-card/90 shadow-sm backdrop-blur-xl dark:bg-card/75">
-        <div className="space-y-6 p-6 sm:p-8">
+      <article className="w-full overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm md:rounded-3xl md:bg-card/90 md:backdrop-blur-xl dark:bg-card md:dark:bg-card/75">
+        <div className="space-y-7 px-5 py-8 sm:px-6 sm:py-10 md:space-y-8 md:px-10 md:py-12">
           <header className="space-y-4 text-center">
             <div className="flex justify-center">
               <span className="inline-flex size-14 items-center justify-center rounded-full bg-primary/15 text-primary ring-1 ring-primary/25">
@@ -144,35 +154,37 @@ export function WorkspaceInvitationCard({
                 <span className="text-primary">{t("hubHeadlineAccent")}</span>
               </h1>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                {t("hubSubtitle", { name: inviterName })}
+                {t("hubSubtitle", { email: inviterEmail })}
               </p>
             </div>
           </header>
 
-          <div className="rounded-2xl border border-border/60 bg-muted/35 px-4 py-3.5 dark:bg-muted/25">
-            <div className="flex items-start gap-3">
-              <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-border/60">
-                <Building2 className="size-5" strokeWidth={1.75} />
-              </span>
-              <div className="min-w-0 flex-1 space-y-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="truncate font-semibold tracking-tight text-foreground">
-                    {invitation.workspaceName}
+          <div className="mx-auto w-full space-y-4 md:min-w-[26rem]">
+            <div className="w-full rounded-2xl border border-border/60 bg-muted/35 px-4 py-3.5 dark:bg-muted/25">
+              <div className="flex items-start gap-3">
+                <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-border/60">
+                  <Building2 className="size-5" strokeWidth={1.75} />
+                </span>
+                <div className="min-w-0 flex-1 space-y-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="truncate font-semibold tracking-tight text-foreground">
+                      {invitation.workspaceName}
+                    </p>
+                    <Badge variant="secondary" className="rounded-md px-2 py-0 text-[11px] font-medium">
+                      {t(`roles.${invitation.role}`)}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {t("expiresAt", { date: expiresLabel })}
                   </p>
-                  <Badge variant="secondary" className="rounded-md px-2 py-0 text-[11px] font-medium">
-                    {t(`roles.${invitation.role}`)}
-                  </Badge>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {t("expiresAt", { date: expiresLabel })}
-                </p>
               </div>
             </div>
+
+            {errorBlock}
+
+            {actions}
           </div>
-
-          {errorBlock}
-
-          {actions}
         </div>
       </article>
     );
@@ -193,7 +205,7 @@ export function WorkspaceInvitationCard({
 
         <p className="text-sm text-muted-foreground">
           {t("invitedBy", {
-            name: inviterName,
+            name: inviterLabel,
           })}
         </p>
 

@@ -83,7 +83,7 @@
     "hubDescription": "Accept an invitation to join a workspace, or decline if it is not for you.",
     "hubHeadlineBefore": "Join the",
     "hubHeadlineAccent": "team",
-    "hubSubtitle": "{name} invited you to join a workspace in Esteo.",
+    "hubSubtitle": "{email} invited you to join a workspace in Esteo.",
     "profileTitle": "My account",
     "profileDescription": "Manage your personal invitations and account settings.",
     "inboxSectionTitle": "Invitations",

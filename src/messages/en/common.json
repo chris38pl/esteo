@@ -17,6 +17,14 @@
     "back": "Back",
     "open": "Open",
     "delete": "Delete"
+  },
+  "errors": {
+    "genericTitle": "Something went wrong",
+    "genericDescription": "An unexpected error occurred. Please try again."
+  },
+  "databaseUnavailable": {
+    "message": "Database is temporarily unavailable or waking from sleep. Please retry in a few seconds.",
+    "retry": "Try again"
   }
 }
 

@@ -83,7 +83,7 @@
     "hubDescription": "Zaakceptuj zaproszenie, aby dołączyć do przestrzeni, lub odrzuć, jeśli to pomyłka.",
     "hubHeadlineBefore": "Zaproszenie do",
     "hubHeadlineAccent": "współpracy",
-    "hubSubtitle": "{name} zaprasza Cię do dołączenia do przestrzeni roboczej w Esteo.",
+    "hubSubtitle": "{email} zaprasza Cię do dołączenia do przestrzeni roboczej w Esteo.",
     "profileTitle": "Moje konto",
     "profileDescription": "Zarządzaj zaproszeniami i ustawieniami konta.",
     "inboxSectionTitle": "Zaproszenia",
