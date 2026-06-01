@@ -1,7 +1,7 @@
 import { ClientRedirect } from "@/components/routing/client-redirect";
-import { checkIncomingInvitationsAccess } from "@/server/workspaces/dashboard-route";
+import { resolveRequestLocale } from "@/i18n/request-locale";
 import type { Locale } from "@/lib/locale";
-import { isLocale } from "@/lib/locale";
+import { checkIncomingInvitationsAccess } from "@/server/workspaces/dashboard-route";
 
 export default async function InvitationsLayout({
   children,
@@ -10,8 +10,8 @@ export default async function InvitationsLayout({
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
-  const resolvedLocale: Locale = isLocale(locale) ? locale : "pl";
+  const { locale: localeParam } = await params;
+  const resolvedLocale: Locale = await resolveRequestLocale(localeParam);
 
   const { redirectTo } = await checkIncomingInvitationsAccess(resolvedLocale);
 

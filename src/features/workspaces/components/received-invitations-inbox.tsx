@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
+import { InvitationsHubShell } from "@/features/workspaces/components/invitations-hub-shell";
 import type { ReceivedInvitationView } from "@/features/workspaces/components/invitation-types";
 import { WorkspaceInvitationCard } from "@/features/workspaces/components/workspace-invitation-card";
 import type { Locale } from "@/lib/locale";
@@ -11,41 +12,46 @@ export function ReceivedInvitationsInbox({
   featuredInvitationId,
   locale,
   emptyMessage,
+  layout = "default",
 }: {
   invitations: ReceivedInvitationView[];
   featuredInvitationId?: string | null;
   locale: Locale;
   emptyMessage?: string;
+  layout?: "default" | "hub";
 }) {
   const t = useTranslations("workspaces.invitations");
 
   if (invitations.length === 0) {
-    return (
-      <p className="rounded-xl border border-dashed border-border/60 px-4 py-6 text-sm text-muted-foreground">
+    const empty = (
+      <p className="rounded-3xl border border-dashed border-border/60 bg-card/90 px-6 py-10 text-center text-sm text-muted-foreground shadow-sm backdrop-blur-xl">
         {emptyMessage ?? t("emptyInbox")}
       </p>
     );
+
+    return layout === "hub" ? <InvitationsHubShell>{empty}</InvitationsHubShell> : empty;
   }
 
   const featuredId = featuredInvitationId ?? invitations[0]?.id;
+  const featured = invitations.filter((invitation) => invitation.id === featuredId);
   const others = invitations.filter((invitation) => invitation.id !== featuredId);
 
-  return (
+  const content = (
     <div className="space-y-6">
-      {invitations
-        .filter((invitation) => invitation.id === featuredId)
-        .map((invitation) => (
-          <WorkspaceInvitationCard
-            key={invitation.id}
-            invitation={invitation}
-            locale={locale}
-            variant="embedded"
-          />
-        ))}
+      {featured.map((invitation) => (
+        <WorkspaceInvitationCard
+          key={invitation.id}
+          invitation={invitation}
+          locale={locale}
+          variant={layout === "hub" ? "hero" : "embedded"}
+        />
+      ))}
 
       {others.length > 0 ? (
         <div className="space-y-3">
-          <h2 className="text-base font-semibold tracking-tight">{t("otherInvitesTitle")}</h2>
+          <h2 className="text-center text-sm font-semibold tracking-tight text-foreground">
+            {t("otherInvitesTitle")}
+          </h2>
           {others.map((invitation) => (
             <WorkspaceInvitationCard
               key={invitation.id}
@@ -58,4 +64,6 @@ export function ReceivedInvitationsInbox({
       ) : null}
     </div>
   );
+
+  return layout === "hub" ? <InvitationsHubShell>{content}</InvitationsHubShell> : content;
 }

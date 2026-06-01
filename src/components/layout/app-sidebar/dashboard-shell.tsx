@@ -27,6 +27,10 @@ function isOnboardingRoute(pathname: string): boolean {
   return pathname.endsWith("/dashboard/onboarding");
 }
 
+function isInvitationsRoute(pathname: string): boolean {
+  return pathname.endsWith("/dashboard/invitations");
+}
+
 export function DashboardShell({
   locale,
   children,
@@ -42,7 +46,12 @@ export function DashboardShell({
 
   if (isFocusedDashboardRoute(pathname)) {
     return (
-      <div className="min-h-dvh bg-background">
+      <div
+        className={cn(
+          "min-h-dvh",
+          isInvitationsRoute(pathname) ? "bg-transparent" : "bg-background",
+        )}
+      >
         <div
           className={cn(
             "pointer-events-none fixed inset-x-0 top-0 z-40 flex justify-end p-3 sm:p-4",
