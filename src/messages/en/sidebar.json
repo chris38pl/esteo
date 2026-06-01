@@ -33,6 +33,7 @@
     "expand": "Expand admin section",
     "collapse": "Collapse admin section",
     "nav": {
+      "users": "Users",
       "accountInspector": "Account inspector",
       "industryFields": "Industry fields",
       "workspaces": "Workspaces",

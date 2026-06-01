@@ -1,7 +1,12 @@
 import type { LucideIcon } from "lucide-react";
-import { BookOpen, Building2, Layers3, UserRoundSearch } from "lucide-react";
+import { BookOpen, Building2, Layers3, UserRoundSearch, Users } from "lucide-react";
 
-export type AdminNavItemKey = "accountInspector" | "industryFields" | "workspaces" | "styleguide";
+export type AdminNavItemKey =
+  | "accountInspector"
+  | "industryFields"
+  | "users"
+  | "workspaces"
+  | "styleguide";
 
 export type AdminNavItem = {
   key: AdminNavItemKey;
@@ -11,6 +16,12 @@ export type AdminNavItem = {
 };
 
 export const adminNavItems: AdminNavItem[] = [
+  {
+    key: "users",
+    icon: Users,
+    href: (locale) => `/${locale}/dashboard/admin/users`,
+    labelKey: "admin.nav.users",
+  },
   {
     key: "workspaces",
     icon: Building2,

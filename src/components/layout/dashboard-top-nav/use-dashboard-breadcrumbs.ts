@@ -21,6 +21,7 @@ type PageLabelKey =
   | "account"
   | "requests"
   | "accountInspector"
+  | "adminUsers"
   | "adminWorkspaces"
   | "adminIndustryFields";
 
@@ -54,6 +55,9 @@ function resolvePageLabelKey(
   }
   if (pathname === `${base}/admin/account-inspector`) {
     return "accountInspector";
+  }
+  if (pathname === `${base}/admin/users`) {
+    return "adminUsers";
   }
   if (pathname === `${base}/admin/workspaces`) {
     return "adminWorkspaces";

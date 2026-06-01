@@ -1,4 +1,36 @@
 {
+  "users": {
+    "title": "Użytkownicy",
+    "subtitle": "Przeglądaj użytkowników platformy, wykorzystanie w przestrzeniach i plany subskrypcji.",
+    "searchPlaceholder": "Szukaj użytkowników…",
+    "empty": "Brak użytkowników pasujących do wyszukiwania.",
+    "bar": {
+      "allUsers": "Wszyscy użytkownicy"
+    },
+    "stats": {
+      "provider": "Dostawca",
+      "plan": "Plan",
+      "workspaces": "Przestrzenie",
+      "estimateRequests": "Zapytania",
+      "estimates": "Kosztorysy",
+      "created": "Utworzono",
+      "lastActive": "Ostatnia aktywność"
+    },
+    "provider": {
+      "google": "Google",
+      "standard": "Standard"
+    },
+    "plan": {
+      "FREE": "Free",
+      "PRO": "Pro",
+      "BUSINESS": "Business"
+    },
+    "actions": {
+      "menu": "Akcje użytkownika",
+      "setPlan": "Ustaw plan",
+      "currentPlan": "aktualny"
+    }
+  },
   "accountInspector": {
     "title": "Inspektor konta",
     "subtitle": "Widok debugowania rekordu użytkownika, konta rozliczeniowego i dostępnych przestrzeni."
@@ -15,7 +47,7 @@
     "stats": {
       "industry": "Branża",
       "estimateRequests": "Zapytania",
-      "estimates": "Oferty"
+      "estimates": "Kosztorysy"
     },
     "row": {
       "meta": "autor: {owner} · Utworzono {created} · Zaktualizowano {updated}",
@@ -24,7 +56,7 @@
     "table": {
       "workspace": "Przestrzeń",
       "estimateRequests": "Zapytania",
-      "estimates": "Oferty",
+      "estimates": "Kosztorysy",
       "members": "Członkowie"
     },
     "actions": {
@@ -69,7 +101,7 @@
     },
     "documentTypes": {
       "ESTIMATE_REQUEST": "Zapytanie",
-      "ESTIMATE": "Oferta"
+      "ESTIMATE": "Kosztorys"
     },
     "industries": {
       "CONSTRUCTION": "Budownictwo",

@@ -1,4 +1,36 @@
 {
+  "users": {
+    "title": "Users",
+    "subtitle": "Browse all platform users, usage across workspaces, and subscription plans.",
+    "searchPlaceholder": "Search users…",
+    "empty": "No users match your search.",
+    "bar": {
+      "allUsers": "All users"
+    },
+    "stats": {
+      "provider": "Provider",
+      "plan": "Plan",
+      "workspaces": "Workspaces",
+      "estimateRequests": "Requests",
+      "estimates": "Estimates",
+      "created": "Created",
+      "lastActive": "Last active"
+    },
+    "provider": {
+      "google": "Google",
+      "standard": "Standard"
+    },
+    "plan": {
+      "FREE": "Free",
+      "PRO": "Pro",
+      "BUSINESS": "Business"
+    },
+    "actions": {
+      "menu": "User actions",
+      "setPlan": "Set plan",
+      "currentPlan": "current"
+    }
+  },
   "accountInspector": {
     "title": "Account inspector",
     "subtitle": "Debug view of your user record, billing account, and accessible workspaces."

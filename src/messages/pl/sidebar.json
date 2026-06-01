@@ -33,6 +33,7 @@
     "expand": "Rozwiń sekcję admin",
     "collapse": "Zwiń sekcję admin",
     "nav": {
+      "users": "Użytkownicy",
       "accountInspector": "Inspektor konta",
       "industryFields": "Pola branżowe",
       "workspaces": "Przestrzenie",
