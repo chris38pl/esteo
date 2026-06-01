@@ -172,24 +172,51 @@
       }
     },
     "rules": {
-      "listTitle": "Reguły AI",
-      "listDescription": "Aktywne reguły są dołączane do kontekstu promptu dla tej przestrzeni.",
-      "createTitle": "Dodaj regułę",
-      "createDescription": "Krótki tytuł i treść reguły, np. sposób wyceny lub ton odpowiedzi.",
-      "titleLabel": "Tytuł",
-      "titlePlaceholder": "np. Zaokrąglanie cen",
-      "typeLabel": "Typ",
-      "contentLabel": "Treść reguły",
-      "contentPlaceholder": "Opisz regułę w języku naturalnym…",
+      "generalTitle": "Reguły workspace",
+      "generalDescription": "Ogólne instrukcje stosowane we wszystkich funkcjach AI w tej przestrzeni.",
+      "generalFieldLabel": "Ogólne reguły workspace",
+      "generalPlaceholder": "Zawsze odpowiadaj po polsku. Bądź zwięzły i używaj branżowego słownictwa…",
+      "charCounter": "{count} / {max}",
+      "generalSave": "Zapisz",
+      "generalSaving": "Zapisywanie…",
+      "estimateTitle": "Reguły dla: Tworzenia kosztorysów",
+      "estimateDescription": "Te reguły są uwzględniane, gdy Esteo generuje lub poprawia kosztorysy.",
+      "addRule": "Dodaj regułę",
       "createSubmit": "Dodaj regułę",
       "creating": "Dodawanie…",
       "delete": "Usuń",
+      "edit": "Edytuj",
       "activeLabel": "Aktywna",
-      "empty": "Brak reguł. Dodaj pierwszą regułę poniżej.",
-      "types": {
-        "ESTIMATE": "Wycena",
-        "COMMUNICATION": "Komunikacja",
-        "CUSTOM": "Własna"
+      "systemBadge": "Systemowa",
+      "metaSystem": "System • {date}",
+      "metaUpdated": "Zaktualizowano • {date}",
+      "ruleCharCounter": "{count} / {max}",
+      "rulesLimitFooter": "Możesz dodać maksymalnie {max} reguł. Dodano {count} / {max}",
+      "dialog": {
+        "createTitle": "Dodaj regułę kosztorysu",
+        "editTitle": "Edytuj regułę",
+        "description": "Opisz, jak mają być przygotowywane kosztorysy. Maksymalnie 150 znaków.",
+        "contentLabel": "Reguła",
+        "contentPlaceholder": "np. Zaokrąglaj ceny jednostkowe do pełnych złotych i pokazuj kwoty netto przed VAT…",
+        "cancel": "Anuluj",
+        "save": "Zapisz",
+        "saving": "Zapisywanie…"
+      },
+      "systemRules": {
+        "rounding": "Zaokrąglaj ceny jednostkowe do pełnych kwot, chyba że pozycja wyraźnie wymaga groszy.",
+        "units": "Zawsze podawaj jednostki miary (m², m, szt., h) przy ilościach w pozycjach kosztorysu.",
+        "assumptions": "Wartości netto, VAT i brutto muszą być spójne i poprawnie przeliczone dla każdej pozycji.",
+        "dates": {
+          "rounding": "10 maj 2024",
+          "units": "10 maj 2024",
+          "assumptions": "10 maj 2024"
+        }
+      },
+      "errors": {
+        "generic": "Coś poszło nie tak. Spróbuj ponownie.",
+        "ruleLimitReached": "Możesz dodać maksymalnie 10 reguł kosztorysu.",
+        "ruleCharLimit": "Reguła może zawierać maksymalnie 150 znaków.",
+        "generalRulesLimit": "Ogólne reguły workspace mogą mieć maksymalnie 200 znaków."
       }
     },
     "delete": {

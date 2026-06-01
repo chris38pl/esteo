@@ -172,24 +172,51 @@
       }
     },
     "rules": {
-      "listTitle": "AI rules",
-      "listDescription": "Active rules are appended to the prompt context for this workspace.",
-      "createTitle": "Add rule",
-      "createDescription": "A short title and rule body, e.g. pricing style or response tone.",
-      "titleLabel": "Title",
-      "titlePlaceholder": "e.g. Price rounding",
-      "typeLabel": "Type",
-      "contentLabel": "Rule content",
-      "contentPlaceholder": "Describe the rule in plain language…",
+      "generalTitle": "Workspace rules",
+      "generalDescription": "General instructions applied across AI features in this workspace.",
+      "generalFieldLabel": "General workspace rules",
+      "generalPlaceholder": "Always respond in Polish. Be concise and use industry terminology…",
+      "charCounter": "{count} / {max}",
+      "generalSave": "Save",
+      "generalSaving": "Saving…",
+      "estimateTitle": "Rules for: Creating cost estimates",
+      "estimateDescription": "These rules are included when Esteo generates or refines estimates.",
+      "addRule": "Add rule",
       "createSubmit": "Add rule",
       "creating": "Adding…",
       "delete": "Delete",
+      "edit": "Edit",
       "activeLabel": "Active",
-      "empty": "No rules yet. Add your first rule below.",
-      "types": {
-        "ESTIMATE": "Estimate",
-        "COMMUNICATION": "Communication",
-        "CUSTOM": "Custom"
+      "systemBadge": "System",
+      "metaSystem": "System • {date}",
+      "metaUpdated": "Updated • {date}",
+      "ruleCharCounter": "{count} / {max}",
+      "rulesLimitFooter": "You can add up to {max} rules. Added {count} / {max}",
+      "dialog": {
+        "createTitle": "Add estimate rule",
+        "editTitle": "Edit rule",
+        "description": "Describe how estimates should be prepared. Up to 150 characters.",
+        "contentLabel": "Rule",
+        "contentPlaceholder": "e.g. Round unit prices to whole PLN and show net amounts before VAT…",
+        "cancel": "Cancel",
+        "save": "Save",
+        "saving": "Saving…"
+      },
+      "systemRules": {
+        "rounding": "Round unit prices to whole currency amounts unless the line item explicitly requires decimals.",
+        "units": "Always include measurement units (m², m, pcs, h) next to quantities in estimate line items.",
+        "assumptions": "Net, VAT, and gross amounts must be consistent and correctly calculated for every line item.",
+        "dates": {
+          "rounding": "May 10, 2024",
+          "units": "May 10, 2024",
+          "assumptions": "May 10, 2024"
+        }
+      },
+      "errors": {
+        "generic": "Something went wrong. Please try again.",
+        "ruleLimitReached": "You can add at most 10 estimate rules.",
+        "ruleCharLimit": "A rule can contain at most 150 characters.",
+        "generalRulesLimit": "General workspace rules can contain at most 200 characters."
       }
     },
     "delete": {

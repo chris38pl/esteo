@@ -4,6 +4,7 @@ import { setRequestLocale } from "next-intl/server";
 
 import { WorkspaceSettingsPanel } from "@/features/workspaces/components/workspace-settings-panel";
 import { getWorkspaceSettingsPageData } from "@/features/workspaces/server/get-workspace-settings-page-data";
+import { workspaceBrandingSchema } from "@/features/workspaces/schemas/branding";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 import { requireAuth } from "@/server/auth/require-auth";
@@ -34,6 +35,11 @@ export default async function WorkspaceSettingsPage({
 
   const { workspace, members, invitations, rules, canInviteMembers } = data;
 
+  const brandingResult = workspaceBrandingSchema.safeParse(
+    workspace.settings?.branding ?? {},
+  );
+  const initialBranding = brandingResult.success ? brandingResult.data : null;
+
   return (
     <Suspense>
       <WorkspaceSettingsPanel
@@ -41,6 +47,8 @@ export default async function WorkspaceSettingsPage({
         initialName={workspace.name}
         initialAppearanceTheme={workspace.appearanceTheme}
         initialCompanyDescription={workspace.settings?.companyDescription ?? ""}
+        initialAiInstructions={workspace.settings?.aiInstructions ?? ""}
+        initialBranding={initialBranding}
         members={members.map((member) => ({
           id: member.id,
           role: member.role,

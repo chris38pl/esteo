@@ -1,78 +1,167 @@
 "use client";
 
-import type { WorkspaceRule, WorkspaceRuleType } from "@prisma/client";
+import type { WorkspaceRule } from "@prisma/client";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { WorkspaceRuleEditorDialog } from "@/features/workspaces/components/workspace-rule-editor-dialog";
+import { WorkspaceRuleListItem } from "@/features/workspaces/components/workspace-rule-list-item";
+import { formatRuleMetaDate } from "@/features/workspaces/lib/format-rule-meta-date";
+import {
+  ESTIMATE_SYSTEM_RULES,
+  type EstimateSystemRuleId,
+} from "@/features/workspaces/lib/estimate-system-rules";
+import { parseEstimateSystemRuleState } from "@/features/workspaces/lib/parse-estimate-system-rule-state";
+import {
+  WORKSPACE_ESTIMATE_RULES_MAX_COUNT,
+  WORKSPACE_GENERAL_RULES_MAX_LENGTH,
+} from "@/features/workspaces/lib/workspace-rules-limits";
+import type { WorkspaceBranding } from "@/features/workspaces/schemas/branding";
+import { workspaceBrandingSchema } from "@/features/workspaces/schemas/branding";
 import {
   createWorkspaceRuleAction,
   deleteWorkspaceRuleAction,
   updateWorkspaceRuleAction,
+  updateWorkspaceSettingsAction,
 } from "@/features/workspaces/server/actions";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
-const RULE_TYPES: WorkspaceRuleType[] = ["ESTIMATE", "COMMUNICATION", "CUSTOM"];
-
-const selectClassName = cn(
-  "h-11 w-full appearance-none rounded-xl border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm dark:bg-input/30",
-  "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
-);
+export const RULES_SIDEBAR_LIGHT = "/workspace-rules/rules-sidebar-light.png";
+export const RULES_SIDEBAR_DARK = "/workspace-rules/rules-sidebar-dark.png";
 
 const textareaClassName = cn(
-  "min-h-[120px] w-full rounded-xl border border-input bg-transparent px-3 py-2.5 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm dark:bg-input/30",
+  "min-h-[140px] w-full resize-none rounded-2xl border border-border/60 bg-card px-3 py-2.5 text-sm leading-relaxed shadow-xs transition-[color,box-shadow] outline-none",
   "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
 );
+
+function ruleTitleFromContent(content: string): string {
+  const line = content.trim().split("\n")[0] ?? content.trim();
+  if (line.length <= 80) {
+    return line;
+  }
+  return `${line.slice(0, 77)}…`;
+}
+
+function mapRuleError(message: string, tErrors: (key: string) => string): string {
+  if (message === "RULE_LIMIT_REACHED") {
+    return tErrors("ruleLimitReached");
+  }
+  if (message === "RULE_CHAR_LIMIT") {
+    return tErrors("ruleCharLimit");
+  }
+  if (message === "GENERAL_RULES_LIMIT") {
+    return tErrors("generalRulesLimit");
+  }
+  return message;
+}
 
 export function WorkspaceSettingsRulesTab({
   workspaceId,
   rules,
+  initialAiInstructions,
+  initialBranding,
   locale,
 }: {
   workspaceId: string;
   rules: WorkspaceRule[];
+  initialAiInstructions: string;
+  initialBranding: WorkspaceBranding | null;
   locale: Locale;
 }) {
   const t = useTranslations("workspaces.settings.rules");
+  const tErrors = useTranslations("workspaces.settings.rules.errors");
   const router = useRouter();
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [type, setType] = useState<WorkspaceRuleType>("CUSTOM");
+  const [aiInstructions, setAiInstructions] = useState(initialAiInstructions);
+  const [systemRuleState, setSystemRuleState] = useState(() =>
+    parseEstimateSystemRuleState(initialBranding),
+  );
   const [error, setError] = useState<string | null>(null);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [editorMode, setEditorMode] = useState<"create" | "edit">("create");
+  const [editingRule, setEditingRule] = useState<WorkspaceRule | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  function handleCreate(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError(null);
+  useEffect(() => {
+    setAiInstructions(initialAiInstructions);
+  }, [initialAiInstructions]);
+
+  useEffect(() => {
+    setSystemRuleState(parseEstimateSystemRuleState(initialBranding));
+  }, [initialBranding]);
+
+  const estimateRules = useMemo(
+    () => rules.filter((rule) => rule.type === "ESTIMATE"),
+    [rules],
+  );
+
+  const userRuleCount = estimateRules.length;
+  const canAddRule = userRuleCount < WORKSPACE_ESTIMATE_RULES_MAX_COUNT;
+
+  function persistBranding(nextState: Record<EstimateSystemRuleId, boolean>) {
+    const parsedBranding = workspaceBrandingSchema.safeParse({
+      ...(initialBranding ?? {}),
+      estimateSystemRules: nextState,
+    });
+
+    if (!parsedBranding.success) {
+      setError(tErrors("generic"));
+      return;
+    }
 
     startTransition(async () => {
-      const result = await createWorkspaceRuleAction(
+      const result = await updateWorkspaceSettingsAction(
         workspaceId,
-        { title: title.trim(), content: content.trim(), type },
+        { branding: parsedBranding.data },
         locale,
       );
 
       if (!result.success) {
-        setError(result.error);
+        setError(mapRuleError(result.error, tErrors));
         return;
       }
 
-      setTitle("");
-      setContent("");
-      setType("CUSTOM");
       router.refresh();
     });
   }
 
-  function handleToggleActive(rule: WorkspaceRule, active: boolean) {
-    setError(null);
+  function saveGeneralRules() {
+    const trimmed = aiInstructions.trim();
+    if (trimmed.length > WORKSPACE_GENERAL_RULES_MAX_LENGTH) {
+      setError(tErrors("generalRulesLimit"));
+      return;
+    }
 
+    setError(null);
+    startTransition(async () => {
+      const result = await updateWorkspaceSettingsAction(
+        workspaceId,
+        { aiInstructions: trimmed || null },
+        locale,
+      );
+
+      if (!result.success) {
+        setError(mapRuleError(result.error, tErrors));
+        return;
+      }
+
+      router.refresh();
+    });
+  }
+
+  function handleSystemToggle(ruleId: EstimateSystemRuleId, active: boolean) {
+    setError(null);
+    const next = { ...systemRuleState, [ruleId]: active };
+    setSystemRuleState(next);
+    persistBranding(next);
+  }
+
+  function handleUserToggle(rule: WorkspaceRule, active: boolean) {
+    setError(null);
     startTransition(async () => {
       const result = await updateWorkspaceRuleAction(
         workspaceId,
@@ -82,7 +171,7 @@ export function WorkspaceSettingsRulesTab({
       );
 
       if (!result.success) {
-        setError(result.error);
+        setError(mapRuleError(result.error, tErrors));
         return;
       }
 
@@ -92,12 +181,11 @@ export function WorkspaceSettingsRulesTab({
 
   function handleDelete(ruleId: string) {
     setError(null);
-
     startTransition(async () => {
       const result = await deleteWorkspaceRuleAction(workspaceId, ruleId, locale);
 
       if (!result.success) {
-        setError(result.error);
+        setError(mapRuleError(result.error, tErrors));
         return;
       }
 
@@ -105,121 +193,241 @@ export function WorkspaceSettingsRulesTab({
     });
   }
 
+  function openCreateDialog() {
+    setEditorMode("create");
+    setEditingRule(null);
+    setEditorOpen(true);
+  }
+
+  function openEditDialog(rule: WorkspaceRule) {
+    setEditorMode("edit");
+    setEditingRule(rule);
+    setEditorOpen(true);
+  }
+
+  function handleRuleSubmit(content: string) {
+    setError(null);
+
+    if (editorMode === "create") {
+      startTransition(async () => {
+        const result = await createWorkspaceRuleAction(
+          workspaceId,
+          {
+            type: "ESTIMATE",
+            title: ruleTitleFromContent(content),
+            content,
+          },
+          locale,
+        );
+
+        if (!result.success) {
+          setError(mapRuleError(result.error, tErrors));
+          return;
+        }
+
+        setEditorOpen(false);
+        router.refresh();
+      });
+      return;
+    }
+
+    if (!editingRule) {
+      return;
+    }
+
+    startTransition(async () => {
+      const result = await updateWorkspaceRuleAction(
+        workspaceId,
+        editingRule.id,
+        {
+          content,
+          title: ruleTitleFromContent(content),
+        },
+        locale,
+      );
+
+      if (!result.success) {
+        setError(mapRuleError(result.error, tErrors));
+        return;
+      }
+
+      setEditorOpen(false);
+      setEditingRule(null);
+      router.refresh();
+    });
+  }
+
+  const listItems: Array<{
+    key: string;
+    index: number;
+    content: string;
+    metaLabel: string;
+    active: boolean;
+    isSystem: boolean;
+    rule?: WorkspaceRule;
+    systemId?: EstimateSystemRuleId;
+  }> = [
+    ...ESTIMATE_SYSTEM_RULES.map((systemRule, index) => ({
+      key: systemRule.id,
+      index: index + 1,
+      content: t(systemRule.contentKey),
+      metaLabel: t("metaSystem", {
+        date: t(`systemRules.dates.${systemRule.id}`),
+      }),
+      active: systemRuleState[systemRule.id],
+      isSystem: true,
+      systemId: systemRule.id,
+    })),
+    ...estimateRules.map((rule, index) => ({
+      key: rule.id,
+      index: ESTIMATE_SYSTEM_RULES.length + index + 1,
+      content: rule.content,
+      metaLabel: t("metaUpdated", {
+        date: formatRuleMetaDate(rule.updatedAt, locale),
+      }),
+      active: rule.active,
+      isSystem: false,
+      rule,
+    })),
+  ];
+
   return (
-    <div className="space-y-8">
-      <div>
-        <h2 className="text-base font-semibold tracking-tight">{t("listTitle")}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{t("listDescription")}</p>
-
-        {rules.length === 0 ? (
-          <p className="mt-4 rounded-xl border border-dashed border-border/60 px-4 py-6 text-sm text-muted-foreground">
-            {t("empty")}
-          </p>
-        ) : (
-          <div className="mt-4 space-y-3">
-            {rules.map((rule) => (
-              <div
-                key={rule.id}
-                className="rounded-xl border border-border/60 bg-muted/10 p-4"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0 flex-1 space-y-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-medium">{rule.title}</p>
-                      <Badge variant="secondary">{t(`types.${rule.type}`)}</Badge>
-                    </div>
-                    <p className="whitespace-pre-wrap text-sm text-muted-foreground">
-                      {rule.content}
-                    </p>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    disabled={isPending}
-                    onClick={() => handleDelete(rule.id)}
-                    className="shrink-0 text-destructive hover:text-destructive"
-                  >
-                    {t("delete")}
-                  </Button>
-                </div>
-                <div className="mt-3 flex items-center gap-2">
-                  <Switch
-                    id={`rule-active-${rule.id}`}
-                    checked={rule.active}
-                    disabled={isPending}
-                    onCheckedChange={(checked) => handleToggleActive(rule, checked)}
-                  />
-                  <Label htmlFor={`rule-active-${rule.id}`} className="text-sm font-normal">
-                    {t("activeLabel")}
-                  </Label>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <div>
-        <h2 className="text-base font-semibold tracking-tight">{t("createTitle")}</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{t("createDescription")}</p>
-
-        <form onSubmit={handleCreate} className="mt-4 space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="workspace-rule-title">{t("titleLabel")}</Label>
-            <Input
-              id="workspace-rule-title"
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              placeholder={t("titlePlaceholder")}
-              required
-              disabled={isPending}
-              className="h-11 rounded-xl"
-            />
+    <div className="space-y-6">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)] lg:items-start">
+        <aside className="relative flex flex-col overflow-hidden rounded-2xl border border-border/50 bg-muted/30 p-5 dark:bg-card/40">
+          <div className="space-y-1">
+            <h2 className="text-base font-semibold tracking-tight">{t("generalTitle")}</h2>
+            <p className="text-sm text-muted-foreground">{t("generalDescription")}</p>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="workspace-rule-type">{t("typeLabel")}</Label>
-            <select
-              id="workspace-rule-type"
-              value={type}
-              onChange={(event) => setType(event.target.value as WorkspaceRuleType)}
-              disabled={isPending}
-              className={selectClassName}
-            >
-              {RULE_TYPES.map((ruleType) => (
-                <option key={ruleType} value={ruleType}>
-                  {t(`types.${ruleType}`)}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="workspace-rule-content">{t("contentLabel")}</Label>
+          <div className="mt-5 space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <Label htmlFor="workspace-general-rules" className="text-sm font-medium">
+                {t("generalFieldLabel")}
+              </Label>
+              <span className="text-xs tabular-nums text-muted-foreground">
+                {t("charCounter", {
+                  count: aiInstructions.length,
+                  max: WORKSPACE_GENERAL_RULES_MAX_LENGTH,
+                })}
+              </span>
+            </div>
             <textarea
-              id="workspace-rule-content"
-              value={content}
-              onChange={(event) => setContent(event.target.value)}
-              placeholder={t("contentPlaceholder")}
-              required
+              id="workspace-general-rules"
+              value={aiInstructions}
+              onChange={(event) => setAiInstructions(event.target.value)}
+              maxLength={WORKSPACE_GENERAL_RULES_MAX_LENGTH}
+              placeholder={t("generalPlaceholder")}
               disabled={isPending}
-              rows={5}
               className={textareaClassName}
             />
+            <Button
+              type="button"
+              className="w-full rounded-full bg-violet-600 text-white hover:bg-violet-700 dark:bg-primary dark:hover:bg-primary/90"
+              disabled={isPending}
+              onClick={saveGeneralRules}
+            >
+              {isPending ? t("generalSaving") : t("generalSave")}
+            </Button>
           </div>
 
-          {error ? (
-            <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-              {error}
-            </p>
-          ) : null}
+          <div
+            aria-hidden
+            className="pointer-events-none relative mx-auto mt-6 aspect-[4/3] w-full max-w-[220px]"
+          >
+            <Image
+              src={RULES_SIDEBAR_LIGHT}
+              alt=""
+              fill
+              sizes="220px"
+              className="object-contain object-bottom dark:hidden"
+            />
+            <Image
+              src={RULES_SIDEBAR_DARK}
+              alt=""
+              fill
+              sizes="220px"
+              className="hidden object-contain object-bottom dark:block"
+            />
+          </div>
+        </aside>
 
-          <Button type="submit" className="rounded-lg" disabled={isPending}>
-            {isPending ? t("creating") : t("createSubmit")}
-          </Button>
-        </form>
+        <section className="rounded-2xl border border-border/50 bg-card p-5 shadow-sm dark:shadow-none md:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="space-y-1">
+              <h2 className="text-lg font-semibold tracking-tight">{t("estimateTitle")}</h2>
+              <p className="text-sm text-muted-foreground">{t("estimateDescription")}</p>
+            </div>
+            <Button
+              type="button"
+              className="rounded-full bg-violet-600 px-5 text-white hover:bg-violet-700 dark:bg-primary dark:hover:bg-primary/90"
+              disabled={isPending || !canAddRule}
+              onClick={openCreateDialog}
+            >
+              {t("addRule")}
+            </Button>
+          </div>
+
+          <div className="mt-6 space-y-3">
+            {listItems.map((item) => (
+              <WorkspaceRuleListItem
+                key={item.key}
+                index={item.index}
+                content={item.content}
+                metaLabel={item.metaLabel}
+                active={item.active}
+                isSystem={item.isSystem}
+                isPending={isPending}
+                onActiveChange={(active) => {
+                  if (item.isSystem && item.systemId) {
+                    handleSystemToggle(item.systemId, active);
+                    return;
+                  }
+                  if (item.rule) {
+                    handleUserToggle(item.rule, active);
+                  }
+                }}
+                onEdit={
+                  item.rule
+                    ? () => {
+                        openEditDialog(item.rule!);
+                      }
+                    : undefined
+                }
+                onDelete={
+                  item.rule
+                    ? () => {
+                        handleDelete(item.rule!.id);
+                      }
+                    : undefined
+                }
+              />
+            ))}
+          </div>
+
+          <p className="mt-6 text-center text-xs text-muted-foreground">
+            {t("rulesLimitFooter", {
+              count: userRuleCount,
+              max: WORKSPACE_ESTIMATE_RULES_MAX_COUNT,
+            })}
+          </p>
+        </section>
       </div>
+
+      {error ? (
+        <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {error}
+        </p>
+      ) : null}
+
+      <WorkspaceRuleEditorDialog
+        open={editorOpen}
+        mode={editorMode}
+        initialContent={editingRule?.content ?? ""}
+        isPending={isPending}
+        onOpenChange={setEditorOpen}
+        onSubmit={handleRuleSubmit}
+      />
     </div>
   );
 }

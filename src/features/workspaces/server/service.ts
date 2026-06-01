@@ -41,6 +41,17 @@ import {
 import type { WorkspaceBranding } from "@/features/workspaces/schemas/branding";
 import { workspaceBrandingSchema } from "@/features/workspaces/schemas/branding";
 import { parseCompanyDescription } from "@/features/workspaces/schemas/company-description";
+import {
+  ESTIMATE_SYSTEM_RULE_IDS,
+  ESTIMATE_SYSTEM_RULE_PROMPT,
+} from "@/features/workspaces/lib/estimate-system-rules";
+import { parseEstimateSystemRuleState } from "@/features/workspaces/lib/parse-estimate-system-rule-state";
+import { buildWorkspacePromptContext } from "@/features/workspaces/lib/prompt-context";
+import {
+  WORKSPACE_ESTIMATE_RULES_MAX_COUNT,
+  WORKSPACE_GENERAL_RULES_MAX_LENGTH,
+  WORKSPACE_RULE_MAX_LENGTH,
+} from "@/features/workspaces/lib/workspace-rules-limits";
 import { appLocaleToWorkspaceLocale } from "@/lib/workspace-locale";
 import type { Locale } from "@/lib/locale";
 import { prisma } from "@/db/client";
@@ -318,6 +329,14 @@ export async function updateWorkspaceSettings(
       ? undefined
       : parseCompanyDescription(input.companyDescription);
 
+  if (
+    input.aiInstructions !== undefined &&
+    input.aiInstructions !== null &&
+    input.aiInstructions.length > WORKSPACE_GENERAL_RULES_MAX_LENGTH
+  ) {
+    throw new WorkspaceError("GENERAL_RULES_LIMIT");
+  }
+
   const settings = await updateWorkspaceSettingsRecord(workspaceId, {
     branding,
     aiInstructions: input.aiInstructions,
@@ -591,6 +610,20 @@ export async function createWorkspaceRule(
 ) {
   await requireRole(user, workspaceId, "OWNER");
 
+  if (input.type === "ESTIMATE") {
+    const existingEstimateRules = await prisma.workspaceRule.count({
+      where: { workspaceId, type: "ESTIMATE", deletedAt: null },
+    });
+
+    if (existingEstimateRules >= WORKSPACE_ESTIMATE_RULES_MAX_COUNT) {
+      throw new WorkspaceError("RULE_LIMIT_REACHED");
+    }
+
+    if (input.content.length > WORKSPACE_RULE_MAX_LENGTH) {
+      throw new WorkspaceError("RULE_CHAR_LIMIT");
+    }
+  }
+
   const rule = await createWorkspaceRuleRecord({
     workspaceId,
     ...input,
@@ -628,6 +661,12 @@ export async function updateWorkspaceRule(
 
   if (!existing) {
     throw new WorkspaceError("Rule not found.");
+  }
+
+  if (input.content !== undefined && existing.type === "ESTIMATE") {
+    if (input.content.length > WORKSPACE_RULE_MAX_LENGTH) {
+      throw new WorkspaceError("RULE_CHAR_LIMIT");
+    }
   }
 
   const rule = await updateWorkspaceRuleRecord(ruleId, input);
@@ -681,8 +720,22 @@ export async function getWorkspacePromptContext(
     listActiveWorkspaceRules(workspaceId, locale),
   ]);
 
+  const brandingResult = workspaceBrandingSchema.safeParse(settings?.branding ?? {});
+  const systemRuleState = parseEstimateSystemRuleState(
+    brandingResult.success ? brandingResult.data : null,
+  );
+
+  const activeSystemRules = ESTIMATE_SYSTEM_RULE_IDS.filter((id) => systemRuleState[id]).map(
+    (id) => ESTIMATE_SYSTEM_RULE_PROMPT[id],
+  );
+
+  const userEstimateRules = rules
+    .filter((rule) => rule.type === "ESTIMATE")
+    .map((rule) => ({ title: rule.title, content: rule.content }));
+
   return buildWorkspacePromptContext({
     companyDescription: settings?.companyDescription,
-    rules,
+    aiInstructions: settings?.aiInstructions,
+    rules: [...activeSystemRules, ...userEstimateRules],
   });
 }

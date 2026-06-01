@@ -1,6 +1,8 @@
 "use client";
 
 import type { WorkspaceAppearanceTheme, WorkspaceInvitation, WorkspaceRule } from "@prisma/client";
+
+import type { WorkspaceBranding } from "@/features/workspaces/schemas/branding";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -42,6 +44,8 @@ export function WorkspaceSettingsPanel({
   members,
   invitations,
   rules,
+  initialAiInstructions,
+  initialBranding,
   canInviteMembers,
   locale,
 }: {
@@ -52,6 +56,8 @@ export function WorkspaceSettingsPanel({
   members: MemberRow[];
   invitations: WorkspaceInvitation[];
   rules: WorkspaceRule[];
+  initialAiInstructions: string;
+  initialBranding: WorkspaceBranding | null;
   canInviteMembers: boolean;
   locale: Locale;
 }) {
@@ -86,7 +92,12 @@ export function WorkspaceSettingsPanel({
 
   return (
     <div className="flex w-full justify-center px-3 sm:px-4 lg:px-6">
-      <div className="w-full max-w-[560px] py-8">
+      <div
+        className={cn(
+          "w-full py-8",
+          activeTab === "rules" ? "max-w-5xl" : "max-w-[560px]",
+        )}
+      >
         <div className="mb-6 space-y-1">
           <div className="flex items-center justify-between gap-4">
             <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
@@ -154,6 +165,8 @@ export function WorkspaceSettingsPanel({
           <WorkspaceSettingsRulesTab
             workspaceId={workspaceId}
             rules={rules}
+            initialAiInstructions={initialAiInstructions}
+            initialBranding={initialBranding}
             locale={locale}
           />
         ) : null}
