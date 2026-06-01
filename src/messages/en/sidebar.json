@@ -35,7 +35,8 @@
     "nav": {
       "accountInspector": "Account inspector",
       "industryFields": "Industry fields",
-      "workspaces": "Workspaces"
+      "workspaces": "Workspaces",
+      "styleguide": "Styleguide"
     }
   },
   "pinned": {

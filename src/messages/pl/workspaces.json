@@ -229,6 +229,8 @@
         "edit": "Edytuj",
         "delete": "Usuń",
         "dragHandle": "Przeciągnij, aby zmienić kolejność",
+        "moveUp": "Przesuń sekcję w górę",
+        "moveDown": "Przesuń sekcję w dół",
         "sectionsLimitFooter": "Maksymalnie {max} sekcji. Skonfigurowano {count} / {max}",
         "table": {
           "order": "#",

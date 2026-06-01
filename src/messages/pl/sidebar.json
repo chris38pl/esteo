@@ -35,7 +35,8 @@
     "nav": {
       "accountInspector": "Inspektor konta",
       "industryFields": "Pola branżowe",
-      "workspaces": "Przestrzenie"
+      "workspaces": "Przestrzenie",
+      "styleguide": "Styleguide"
     }
   },
   "pinned": {

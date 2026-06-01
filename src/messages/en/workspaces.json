@@ -229,6 +229,8 @@
         "edit": "Edit",
         "delete": "Delete",
         "dragHandle": "Drag to reorder",
+        "moveUp": "Move section up",
+        "moveDown": "Move section down",
         "sectionsLimitFooter": "Up to {max} sections. Configured {count} / {max}",
         "table": {
           "order": "#",

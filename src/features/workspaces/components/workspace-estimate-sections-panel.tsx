@@ -1,7 +1,7 @@
 "use client";
 
 import type { WorkspaceIndustry } from "@prisma/client";
-import { GripVertical, Pencil, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, GripVertical, Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
@@ -241,6 +241,20 @@ export function WorkspaceEstimateSectionsPanel({
     saveSections(next);
   }
 
+  function handleMoveUp(index: number) {
+    if (index <= 0) {
+      return;
+    }
+    handleReorder(index, index - 1);
+  }
+
+  function handleMoveDown(index: number) {
+    if (index >= sections.length - 1) {
+      return;
+    }
+    handleReorder(index, index + 1);
+  }
+
   const editingSection = editingIndex !== null ? sections[editingIndex] : null;
 
   return (
@@ -325,7 +339,7 @@ export function WorkspaceEstimateSectionsPanel({
                     type="button"
                     draggable={!isPending}
                     disabled={isPending}
-                    className="flex size-8 cursor-grab items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/60 active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-50"
+                    className="hidden size-8 cursor-grab items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/60 active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-50 md:flex"
                     aria-label={t("dragHandle")}
                     onDragStart={() => setDraggedIndex(row.index)}
                     onDragEnd={() => {
@@ -335,6 +349,30 @@ export function WorkspaceEstimateSectionsPanel({
                   >
                     <GripVertical className="size-4 shrink-0" />
                   </button>
+                  <div className="flex flex-col gap-0.5 md:hidden">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="size-7"
+                      disabled={isPending || row.index === 0}
+                      onClick={() => handleMoveUp(row.index)}
+                      aria-label={t("moveUp")}
+                    >
+                      <ChevronUp className="size-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="size-7"
+                      disabled={isPending || row.index === sections.length - 1}
+                      onClick={() => handleMoveDown(row.index)}
+                      aria-label={t("moveDown")}
+                    >
+                      <ChevronDown className="size-4" />
+                    </Button>
+                  </div>
                 </TableCell>
                 <TableCell className="align-top px-2 py-3 tabular-nums whitespace-normal text-muted-foreground">
                   {row.index + 1}
