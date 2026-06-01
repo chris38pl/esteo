@@ -24,3 +24,8 @@ TEST_USER_PASSWORD — test account password
 For resolved non-obvious bugs and reusable patterns (RSC hangs, perpetual "Rendering...", duplicate layout fetches, redirect issues), read [`docs/incidents/README.md`](../../docs/incidents/README.md) before deep-diving the codebase.
 
 Example: [2026-06-01 blank dashboard after login](../../docs/incidents/2026-06-01-blank-dashboard-rendering-after-login.md) — `cache(getAccessibleWorkspaces)`, nested layout waterfalls, Clerk double-navigate.
+
+## Database health
+
+- Health check URL: `http://localhost:3000/api/health` (not `/pl/api/health`).
+- Returns `{ "database": "ok" }` or `{ "database": "unreachable" }` (503).

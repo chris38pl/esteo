@@ -4,6 +4,7 @@ import { cache } from "react";
 
 import { ensureBillingAccount } from "@/features/billing/server/provision-billing-account";
 import { prisma } from "@/db/client";
+import { throwIfDatabaseUnavailable } from "@/server/db/log-database-unavailable";
 
 function getPrimaryEmail(
   clerkUser: NonNullable<Awaited<ReturnType<typeof currentUser>>>,
@@ -32,22 +33,26 @@ export const syncUserFromClerk = cache(async (): Promise<User | null> => {
     [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(" ") || null;
   const avatarUrl = clerkUser.imageUrl ?? null;
 
-  const user = await prisma.user.upsert({
-    where: { clerkId: clerkUser.id },
-    create: {
-      clerkId: clerkUser.id,
-      email,
-      name,
-      avatarUrl,
-    },
-    update: {
-      email,
-      name,
-      avatarUrl,
-    },
-  });
+  try {
+    const user = await prisma.user.upsert({
+      where: { clerkId: clerkUser.id },
+      create: {
+        clerkId: clerkUser.id,
+        email,
+        name,
+        avatarUrl,
+      },
+      update: {
+        email,
+        name,
+        avatarUrl,
+      },
+    });
 
-  await ensureBillingAccount(user.id);
+    await ensureBillingAccount(user.id);
 
-  return user;
+    return user;
+  } catch (error) {
+    throwIfDatabaseUnavailable(error, "syncUserFromClerk");
+  }
 });

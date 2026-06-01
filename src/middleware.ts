@@ -16,9 +16,20 @@ const isPublicRoute = createRouteMatcher([
   "/:locale/sign-in(.*)",
   "/:locale/sign-up(.*)",
   "/:locale/styleguide(.*)",
+  "/api/health",
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
+  const { pathname } = request.nextUrl;
+
+  // API routes are not locale-prefixed; skip next-intl to avoid /pl/api/* redirects.
+  if (pathname.startsWith("/api")) {
+    if (!isPublicRoute(request)) {
+      await auth.protect();
+    }
+    return;
+  }
+
   if (!isPublicRoute(request)) {
     await auth.protect();
   }

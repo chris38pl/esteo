@@ -5,7 +5,9 @@ import { setRequestLocale } from "next-intl/server";
 import { getServerTranslations } from "@/i18n/request-locale";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
+import { DatabaseUnavailableState } from "@/components/database/database-unavailable-state";
 import { getCurrentUser } from "@/server/auth/get-current-user";
+import { DatabaseUnavailableError } from "@/lib/database/database-unavailable-error";
 
 export default async function LocaleHome({
   params,
@@ -17,7 +19,20 @@ export default async function LocaleHome({
 
   setRequestLocale(locale);
   const t = await getServerTranslations(locale, "common");
-  const user = await getCurrentUser();
+
+  let user: Awaited<ReturnType<typeof getCurrentUser>> = null;
+  try {
+    user = await getCurrentUser();
+  } catch (error) {
+    if (error instanceof DatabaseUnavailableError) {
+      return (
+        <main className="surface-base flex flex-1 items-center justify-center px-6 py-16 font-sans">
+          <DatabaseUnavailableState />
+        </main>
+      );
+    }
+    throw error;
+  }
 
   return (
     <main className="surface-base flex flex-1 items-center justify-center px-6 py-16 font-sans">
