@@ -26,7 +26,7 @@ Route:
 
 Under the **Rules** tab (below “Rules for: Creating cost estimates”), the user can manage **Estimate sections**:
 
-- **Reorder** sections via drag & drop
+- **Reorder** sections: drag & drop on desktop (table), move up / down on mobile (cards)
 - **Rename** a section (edited in the current UI locale; the other locale keeps its previous value)
 - **Toggle active** (inactive sections are omitted from prompts)
 - **Add / delete** custom sections

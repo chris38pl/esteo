@@ -179,7 +179,7 @@
       "charCounter": "{count} / {max}",
       "generalSave": "Save",
       "generalSaving": "Saving…",
-      "estimateTitle": "Rules for: Creating cost estimates",
+      "estimateTitle": "Rules for creating cost estimates",
       "estimateDescription": "These rules are included when Esteo generates or refines estimates.",
       "addRule": "Add rule",
       "createSubmit": "Add rule",
@@ -220,7 +220,8 @@
       },
       "sections": {
         "title": "Estimate sections",
-        "description": "Default section structure for {industry} estimates. Active sections and rules are included in the AI prompt.",
+        "description": "Default section structure for {industry}. Active sections and rules are included in the AI prompt.",
+        "descriptionCustomized": "Your estimate section structure (based on the {industry} template). Active sections and rules are included in the AI prompt.",
         "addSection": "Add section",
         "resetDefaults": "Reset to defaults",
         "save": "Save sections",

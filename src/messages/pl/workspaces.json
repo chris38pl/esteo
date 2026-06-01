@@ -179,7 +179,7 @@
       "charCounter": "{count} / {max}",
       "generalSave": "Zapisz",
       "generalSaving": "Zapisywanie…",
-      "estimateTitle": "Reguły dla: Tworzenia kosztorysów",
+      "estimateTitle": "Reguły dla tworzenia kosztorysów",
       "estimateDescription": "Te reguły są uwzględniane, gdy Esteo generuje lub poprawia kosztorysy.",
       "addRule": "Dodaj regułę",
       "createSubmit": "Dodaj regułę",
@@ -220,7 +220,8 @@
       },
       "sections": {
         "title": "Sekcje kosztorysu",
-        "description": "Domyślna struktura sekcji dla branży: {industry}. Aktywne sekcje i reguły trafiają do promptu AI.",
+        "description": "Domyślna struktura sekcji dla branży {industry}. Aktywne sekcje i reguły trafiają do promptu AI.",
+        "descriptionCustomized": "Twoja struktura sekcji kosztorysu (bazuje na szablonie dla branży {industry}). Aktywne sekcje i reguły trafiają do promptu AI.",
         "addSection": "Dodaj sekcję",
         "resetDefaults": "Przywróć domyślne",
         "save": "Zapisz sekcje",
