@@ -5,6 +5,7 @@ import { Rocket } from "lucide-react";
 import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 
+import { FocusedDashboardUserMenu } from "@/components/layout/dashboard-top-nav/focused-dashboard-user-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 
@@ -90,8 +91,9 @@ export function WorkspaceCreateShell({
           <div className="flex-1">{children}</div>
 
           {!embedded ? (
-            <div className="mt-8 flex justify-center lg:hidden">
+            <div className="mt-8 flex items-center justify-center gap-2 lg:hidden">
               <ThemeToggle compact />
+              {mode === "onboarding" ? <FocusedDashboardUserMenu variant="compact" /> : null}
             </div>
           ) : null}
         </div>

@@ -5,9 +5,11 @@ import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 
 import type { Locale } from "@/lib/locale";
+import { cn } from "@/lib/utils";
 import { AppSidebar, sidebarWidth } from "./app-sidebar";
 import { useSidebarStore } from "./sidebar-store";
 import { DashboardTopNavbar } from "@/components/layout/dashboard-top-nav/dashboard-top-navbar";
+import { FocusedDashboardUserMenu } from "@/components/layout/dashboard-top-nav/focused-dashboard-user-menu";
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import { WorkspaceInvitationPrompt } from "@/features/workspaces/components/workspace-invitation-prompt";
 
@@ -19,6 +21,10 @@ const FOCUSED_ROUTE_SUFFIXES = [
 
 function isFocusedDashboardRoute(pathname: string): boolean {
   return FOCUSED_ROUTE_SUFFIXES.some((suffix) => pathname.endsWith(suffix));
+}
+
+function isOnboardingRoute(pathname: string): boolean {
+  return pathname.endsWith("/dashboard/onboarding");
 }
 
 export function DashboardShell({
@@ -35,7 +41,21 @@ export function DashboardShell({
   const { modalInvitation, locale: contextLocale } = useWorkspaceContext();
 
   if (isFocusedDashboardRoute(pathname)) {
-    return <div className="min-h-dvh bg-background">{children}</div>;
+    return (
+      <div className="min-h-dvh bg-background">
+        <div
+          className={cn(
+            "pointer-events-none fixed inset-x-0 top-0 z-40 flex justify-end p-3 sm:p-4",
+            isOnboardingRoute(pathname) && "max-lg:hidden",
+          )}
+        >
+          <div className="pointer-events-auto">
+            <FocusedDashboardUserMenu />
+          </div>
+        </div>
+        {children}
+      </div>
+    );
   }
 
   return (
