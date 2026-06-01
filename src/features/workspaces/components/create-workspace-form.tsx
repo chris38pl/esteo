@@ -101,7 +101,6 @@ export function CreateWorkspaceForm({
       }
 
       router.push(`/${locale}/dashboard`);
-      router.refresh();
     });
   }
 

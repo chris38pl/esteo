@@ -29,6 +29,8 @@ accessible workspace =
 
 Implementation: `src/features/workspaces/server/accessible-workspaces.ts`
 
+`getAccessibleWorkspaces` is wrapped in React `cache()` so `(dashboard)/layout.tsx` and `checkDashboardHomeAccess` in nested layouts share one DB round-trip per request. Do not remove `cache()` without re-auditing concurrent post-login RSC load. See [incident: blank dashboard / Rendering after login](../incidents/2026-06-01-blank-dashboard-rendering-after-login.md).
+
 ### Leaving a workspace
 
 - **Non-owner members** (MEMBER/VIEWER) can leave via the sidebar workspace card menu → soft-deletes their `WorkspaceMember` row

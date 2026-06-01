@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { Workspace } from "@prisma/client";
 
 import { prisma } from "@/db/client";
@@ -22,10 +23,15 @@ function dedupeWorkspacesOrdered(
   return result;
 }
 
-/** Owner path is independent of WorkspaceMember rows. */
-export async function getAccessibleWorkspaces(
+/**
+ * Returns all workspaces accessible to the user (owned + member).
+ * Memoized per request via React cache() so multiple layouts in the same
+ * RSC render pass share a single DB round-trip instead of running
+ * independent queries.
+ */
+export const getAccessibleWorkspaces = cache(async (
   userId: string,
-): Promise<AccessibleWorkspace[]> {
+): Promise<AccessibleWorkspace[]> => {
   const [owned, member] = await Promise.all([
     prisma.workspace.findMany({
       where: { ownerId: userId, deletedAt: null },
@@ -43,7 +49,7 @@ export async function getAccessibleWorkspaces(
   ]);
 
   return dedupeWorkspacesOrdered(owned, member);
-}
+});
 
 export async function countAccessibleWorkspaces(userId: string): Promise<number> {
   const workspaces = await getAccessibleWorkspaces(userId);

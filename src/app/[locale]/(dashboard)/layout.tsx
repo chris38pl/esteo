@@ -34,6 +34,31 @@ export default async function DashboardLayout({
 
   const user = await requireAuth(resolvedLocale);
   const workspaces = await getAccessibleWorkspaces(user.id);
+
+  // New users have no workspaces yet and will be immediately redirected to
+  // onboarding by the child layout. Skip the remaining sidebar data fetches
+  // (~1900ms) to prevent them from competing with the concurrent onboarding
+  // RSC requests that Clerk's double-navigate creates.
+  if (workspaces.length === 0) {
+    return (
+      <WorkspaceProvider
+        workspaces={[]}
+        activeWorkspaceId={null}
+        memberPreviews={[]}
+        memberTotalCount={0}
+        canCreateWorkspace={false}
+        canCreateAdditionalWorkspace={false}
+        billingSidebarState={{ variant: "upsell", currentPlan: "FREE", targetPlan: "PRO" }}
+        isPlatformAdmin={isPlatformAdmin(user)}
+        locale={resolvedLocale}
+        pendingInvitationCount={0}
+        modalInvitation={null}
+      >
+        <DashboardShell locale={resolvedLocale}>{children}</DashboardShell>
+      </WorkspaceProvider>
+    );
+  }
+
   const activeWorkspaceId = await resolveActiveWorkspace(user.id);
   const [canCreateWorkspace, ownedWorkspaceCount, billingSidebarState, pendingInvitationCount, nextModalInvitation] =
     await Promise.all([
@@ -41,7 +66,7 @@ export default async function DashboardLayout({
     countOwnedWorkspaces(user.id),
     getBillingSidebarState(user.id),
     countPendingInvitations(user.email),
-    workspaces.length > 0 ? getNextModalInvitation(user.email) : Promise.resolve(null),
+    getNextModalInvitation(user.email),
   ]);
   const canCreateAdditionalWorkspace = canCreateWorkspace && ownedWorkspaceCount > 0;
 
@@ -56,8 +81,6 @@ export default async function DashboardLayout({
   const membersData = activeWorkspaceId
     ? await getActiveWorkspaceMembersData(activeWorkspaceId)
     : { previews: [], totalCount: 0 };
-
-
 
   return (
     <WorkspaceProvider

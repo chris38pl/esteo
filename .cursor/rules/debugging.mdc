@@ -1,0 +1,26 @@
+---
+description: Test credentials and browser debugging conventions for this project
+alwaysApply: true
+---
+
+# Debugging & Test Credentials
+
+When debugging features that require authentication, read `.env.test.local` for the test account credentials before attempting any browser-based or automated login.
+
+```
+TEST_USER_EMAIL   — test account email
+TEST_USER_PASSWORD — test account password
+```
+
+## Notes
+
+- MFA is **disabled** for this account in Clerk Dashboard (development instance).
+- The Cursor IDE browser (`browser-use` subagent) **cannot access localhost** — it is sandboxed. Use it only for external URLs or deployed environments.
+- For localhost debugging, ask the user to reproduce manually in Chrome and share DevTools screenshots (Network + Console).
+- This account may accumulate workspaces across test sessions. If the onboarding flow must be tested, check the DB state first or use a fresh account.
+
+## Incident notes (similar bugs)
+
+For resolved non-obvious bugs and reusable patterns (RSC hangs, perpetual "Rendering...", duplicate layout fetches, redirect issues), read [`docs/incidents/README.md`](../../docs/incidents/README.md) before deep-diving the codebase.
+
+Example: [2026-06-01 blank dashboard after login](../../docs/incidents/2026-06-01-blank-dashboard-rendering-after-login.md) — `cache(getAccessibleWorkspaces)`, nested layout waterfalls, Clerk double-navigate.

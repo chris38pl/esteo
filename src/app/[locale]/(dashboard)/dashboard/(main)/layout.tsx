@@ -1,4 +1,5 @@
-import { assertDashboardHomeAccess } from "@/server/workspaces/dashboard-route";
+import { ClientRedirect } from "@/components/routing/client-redirect";
+import { checkDashboardHomeAccess } from "@/server/workspaces/dashboard-route";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 
@@ -12,7 +13,11 @@ export default async function DashboardMainLayout({
   const { locale } = await params;
   const resolvedLocale: Locale = isLocale(locale) ? locale : "pl";
 
-  await assertDashboardHomeAccess(resolvedLocale);
+  const { redirectTo } = await checkDashboardHomeAccess(resolvedLocale);
+
+  if (redirectTo) {
+    return <ClientRedirect href={redirectTo} />;
+  }
 
   return children;
 }

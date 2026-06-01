@@ -6,8 +6,8 @@ import { WorkspaceSettingsPanel } from "@/features/workspaces/components/workspa
 import { getWorkspaceSettingsPageData } from "@/features/workspaces/server/get-workspace-settings-page-data";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
+import { requireAuth } from "@/server/auth/require-auth";
 import { resolveActiveWorkspace } from "@/server/workspaces/active-workspace";
-import { assertWorkspaceSettingsAccess } from "@/server/workspaces/dashboard-route";
 
 export default async function WorkspaceSettingsPage({
   params,
@@ -19,7 +19,7 @@ export default async function WorkspaceSettingsPage({
 
   setRequestLocale(resolvedLocale);
 
-  const user = await assertWorkspaceSettingsAccess(resolvedLocale);
+  const user = await requireAuth(resolvedLocale);
   const activeWorkspaceId = await resolveActiveWorkspace(user.id);
 
   if (!activeWorkspaceId) {
