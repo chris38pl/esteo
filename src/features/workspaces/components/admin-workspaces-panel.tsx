@@ -3,12 +3,13 @@
 import { WorkspaceIndustry } from "@prisma/client";
 import { FileStack, GitBranch, MoreHorizontal, Search } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import type { LucideIcon } from "lucide-react";
 
 import { WorkspaceMemberStack } from "@/components/layout/app-sidebar/workspace-member-stack";
+import { PaginationControls } from "@/components/shared/pagination-controls";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -35,6 +36,8 @@ import {
   adminUpdateWorkspaceAction,
 } from "@/features/workspaces/server/admin-actions";
 import type { Locale } from "@/lib/locale";
+import type { PaginatedResult } from "@/lib/pagination";
+import { usePaginationUrl } from "@/lib/pagination";
 import { cn } from "@/lib/utils";
 
 type DialogMode = "rename" | "delete" | "invite" | null;
@@ -214,15 +217,18 @@ function AdminWorkspaceListRow({
 
 export function AdminWorkspacesPanel({
   locale,
-  initialWorkspaces,
+  initialData,
+  initialSearch,
 }: {
   locale: Locale;
-  initialWorkspaces: AdminWorkspaceRow[];
+  initialData: PaginatedResult<AdminWorkspaceRow>;
+  initialSearch: string;
 }) {
   const t = useTranslations("admin.workspaces");
   const router = useRouter();
-  const [search, setSearch] = useState("");
-  const [workspaces, setWorkspaces] = useState(initialWorkspaces);
+  const paginationUrl = usePaginationUrl();
+  const [search, setSearch] = useState(() => initialSearch);
+  const [data, setData] = useState(() => initialData);
   const [activeWorkspace, setActiveWorkspace] = useState<AdminWorkspaceRow | null>(null);
   const [dialogMode, setDialogMode] = useState<DialogMode>(null);
   const [name, setName] = useState("");
@@ -231,25 +237,27 @@ export function AdminWorkspacesPanel({
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const filtered = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    if (!query) {
-      return workspaces;
+  const setSearchInUrlRef = useRef(paginationUrl.setSearch);
+  setSearchInUrlRef.current = paginationUrl.setSearch;
+
+  const syncedSearchRef = useRef(initialSearch);
+
+  useEffect(() => {
+    syncedSearchRef.current = initialSearch;
+  }, [initialSearch]);
+
+  useEffect(() => {
+    if (search === syncedSearchRef.current) {
+      return;
     }
 
-    return workspaces.filter((workspace) => {
-      const haystack = [
-        workspace.name,
-        workspace.slug,
-        workspace.owner.email,
-        workspace.owner.name ?? "",
-      ]
-        .join(" ")
-        .toLowerCase();
+    const timeout = window.setTimeout(() => {
+      syncedSearchRef.current = search.trim();
+      setSearchInUrlRef.current(search);
+    }, 300);
 
-      return haystack.includes(query);
-    });
-  }, [search, workspaces]);
+    return () => window.clearTimeout(timeout);
+  }, [search]);
 
   function openDialog(mode: DialogMode, workspace: AdminWorkspaceRow) {
     setActiveWorkspace(workspace);
@@ -284,11 +292,12 @@ export function AdminWorkspacesPanel({
         return;
       }
 
-      setWorkspaces((current) =>
-        current.map((row) =>
+      setData((current) => ({
+        ...current,
+        items: current.items.map((row) =>
           row.id === activeWorkspace.id ? { ...row, name: name.trim(), slug } : row,
         ),
-      );
+      }));
       closeDialog();
       router.refresh();
     });
@@ -308,7 +317,10 @@ export function AdminWorkspacesPanel({
         return;
       }
 
-      setWorkspaces((current) => current.filter((row) => row.id !== activeWorkspace.id));
+      setData((current) => ({
+        ...current,
+        items: current.items.filter((row) => row.id !== activeWorkspace.id),
+      }));
       closeDialog();
       router.refresh();
     });
@@ -357,11 +369,11 @@ export function AdminWorkspacesPanel({
           </Button>
         </div>
 
-        {filtered.length === 0 ? (
+        {data.items.length === 0 ? (
           <p className="px-4 py-10 text-center text-sm text-muted-foreground">{t("empty")}</p>
         ) : (
           <div className="divide-y divide-border/60">
-            {filtered.map((workspace) => (
+            {data.items.map((workspace) => (
               <AdminWorkspaceListRow
                 key={workspace.id}
                 workspace={workspace}
@@ -371,6 +383,18 @@ export function AdminWorkspacesPanel({
           </div>
         )}
       </div>
+
+      <PaginationControls
+        page={data.page}
+        pageSize={data.pageSize}
+        totalCount={data.totalCount}
+        totalPages={data.totalPages}
+        hasPreviousPage={data.hasPreviousPage}
+        hasNextPage={data.hasNextPage}
+        onPageChange={paginationUrl.setPage}
+        onPageSizeChange={paginationUrl.setPageSize}
+        isLoading={isPending}
+      />
 
       <Dialog open={dialogMode === "rename"} onOpenChange={(open) => !open && closeDialog()}>
         <DialogContent showCloseButton className="sm:max-w-md">

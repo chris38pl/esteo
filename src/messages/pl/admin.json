@@ -14,7 +14,7 @@
     },
     "stats": {
       "industry": "Branża",
-      "estimateRequests": "Zapytania ofertowe",
+      "estimateRequests": "Zapytania",
       "estimates": "Oferty"
     },
     "row": {
@@ -23,7 +23,7 @@
     },
     "table": {
       "workspace": "Przestrzeń",
-      "estimateRequests": "Zapytania ofertowe",
+      "estimateRequests": "Zapytania",
       "estimates": "Oferty",
       "members": "Członkowie"
     },
@@ -68,7 +68,7 @@
       "industry": "Branża"
     },
     "documentTypes": {
-      "ESTIMATE_REQUEST": "Zapytanie ofertowe",
+      "ESTIMATE_REQUEST": "Zapytanie",
       "ESTIMATE": "Oferta"
     },
     "industries": {

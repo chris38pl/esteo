@@ -14,7 +14,7 @@
     },
     "stats": {
       "industry": "Industry",
-      "estimateRequests": "Estimate requests",
+      "estimateRequests": "Requests",
       "estimates": "Estimates"
     },
     "row": {
@@ -23,7 +23,7 @@
     },
     "table": {
       "workspace": "Workspace",
-      "estimateRequests": "Estimate requests",
+      "estimateRequests": "Requests",
       "estimates": "Estimates",
       "members": "Members"
     },
@@ -68,7 +68,7 @@
       "industry": "Industry"
     },
     "documentTypes": {
-      "ESTIMATE_REQUEST": "Estimate request",
+      "ESTIMATE_REQUEST": "Request",
       "ESTIMATE": "Estimate"
     },
     "industries": {

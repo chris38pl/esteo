@@ -25,6 +25,15 @@
   "databaseUnavailable": {
     "message": "Baza danych jest tymczasowo niedostępna lub budzi się ze snu. Spróbuj ponownie za kilka sekund.",
     "retry": "Spróbuj ponownie"
+  },
+  "pagination": {
+    "label": "Paginacja",
+    "previous": "Poprzednia",
+    "next": "Następna",
+    "pageOf": "Strona {page} z {totalPages}",
+    "showing": "Wyświetlanie {from}–{to} z {total}",
+    "rowsPerPage": "Wierszy na stronę",
+    "goToPage": "Przejdź do strony {page}"
   }
 }
 

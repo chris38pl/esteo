@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { AssistantSurface } from "@/components/ai/assistant-surface";
+import { PaginationControls } from "@/components/shared/pagination-controls";
 import { DashboardFrame } from "@/components/layout/dashboard-frame";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Badge } from "@/components/ui/badge";
@@ -232,6 +233,35 @@ export default function StyleguidePage() {
                 </TableRow>
               </TableBody>
             </Table>
+          </div>
+        </section>
+
+        <section className="space-y-3">
+          <h2 className="text-xl font-semibold tracking-tight">{t("sections.pagination")}</h2>
+          <p className="text-sm text-muted-foreground">
+            Pagination control used across admin and dashboard tables.
+          </p>
+          <div className="surface-card p-4 space-y-4">
+            <PaginationControls
+              page={5}
+              pageSize={20}
+              totalCount={234}
+              totalPages={12}
+              hasPreviousPage
+              hasNextPage
+              onPageChange={() => {}}
+              onPageSizeChange={() => {}}
+            />
+            <PaginationControls
+              page={2}
+              pageSize={20}
+              totalCount={234}
+              totalPages={12}
+              hasPreviousPage
+              hasNextPage
+              onPageChange={() => {}}
+              compact
+            />
           </div>
         </section>
 

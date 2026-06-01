@@ -6,7 +6,7 @@ import {
   adminArchiveWorkspace,
   adminInviteToWorkspace,
   adminUpdateWorkspace,
-  listAdminWorkspaces,
+  listAdminWorkspacesPaginated,
 } from "@/features/workspaces/server/admin-workspaces";
 import type { Locale } from "@/lib/locale";
 import { assertPlatformAdminAccess } from "@/server/auth/require-platform-admin";
@@ -32,8 +32,8 @@ function revalidateAdminWorkspaces(locale: Locale) {
 export async function listAdminWorkspacesAction(locale: Locale = "pl") {
   try {
     await assertPlatformAdminAccess(locale);
-    const workspaces = await listAdminWorkspaces();
-    return { success: true as const, data: workspaces };
+    const data = await listAdminWorkspacesPaginated({ page: 1, pageSize: 50 });
+    return { success: true as const, data: data.items };
   } catch (error) {
     return toActionError(error);
   }

@@ -25,6 +25,15 @@
   "databaseUnavailable": {
     "message": "Database is temporarily unavailable or waking from sleep. Please retry in a few seconds.",
     "retry": "Try again"
+  },
+  "pagination": {
+    "label": "Pagination",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {page} of {totalPages}",
+    "showing": "Showing {from}–{to} of {total}",
+    "rowsPerPage": "Rows per page",
+    "goToPage": "Go to page {page}"
   }
 }
 

@@ -8,6 +8,7 @@
     "dialog": "Dialog Surface",
     "ai": "AI Assistant Surface",
     "table": "Table System",
+    "pagination": "Paginacja",
     "dashboard": "Dashboard Layout Foundation",
     "spacing": "Spacing Scale"
   }

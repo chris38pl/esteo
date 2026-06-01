@@ -12,6 +12,8 @@ import {
   updateWorkspaceRecord,
 } from "@/features/workspaces/server/repository";
 import { isValidWorkspaceSlug, normalizeWorkspaceSlug } from "@/features/workspaces/lib/slug";
+import { buildPaginatedResult, toPrismaSkipTake } from "@/lib/pagination";
+import type { PaginatedResult, PaginationParams } from "@/lib/pagination";
 import { isPlatformAdmin } from "@/server/permissions/require-workspace";
 import { PermissionError, WorkspaceError } from "@/server/permissions/errors";
 
@@ -44,35 +46,94 @@ function assertPlatformAdminUser(user: User): void {
   }
 }
 
-export async function listAdminWorkspaces(): Promise<AdminWorkspaceRow[]> {
-  const workspaces = await prisma.workspace.findMany({
-    where: { deletedAt: null },
-    orderBy: { createdAt: "desc" },
-    include: {
-      owner: {
-        select: { id: true, name: true, email: true },
-      },
-      members: {
-        where: { deletedAt: null },
-        take: MEMBER_PREVIEW_LIMIT,
-        orderBy: { createdAt: "asc" },
-        include: {
-          user: {
-            select: { id: true, name: true, email: true, avatarUrl: true },
+export async function listAdminWorkspacesPaginated(
+  params: PaginationParams,
+  filters?: { search?: string },
+): Promise<PaginatedResult<AdminWorkspaceRow>> {
+  const search = filters?.search?.trim();
+  const where =
+    search && search.length > 0
+      ? {
+          deletedAt: null,
+          OR: [
+            { name: { contains: search, mode: "insensitive" as const } },
+            { slug: { contains: search, mode: "insensitive" as const } },
+            { owner: { email: { contains: search, mode: "insensitive" as const } } },
+            { owner: { name: { contains: search, mode: "insensitive" as const } } },
+          ],
+        }
+      : { deletedAt: null };
+
+  const take = params.pageSize;
+
+  const [initialWorkspaces, totalCount] = await prisma.$transaction([
+    prisma.workspace.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip: toPrismaSkipTake(params).skip,
+      take,
+      include: {
+        owner: {
+          select: { id: true, name: true, email: true },
+        },
+        members: {
+          where: { deletedAt: null },
+          take: MEMBER_PREVIEW_LIMIT,
+          orderBy: { createdAt: "asc" },
+          include: {
+            user: {
+              select: { id: true, name: true, email: true, avatarUrl: true },
+            },
+          },
+        },
+        _count: {
+          select: {
+            estimateRequests: true,
+            estimates: true,
+            members: { where: { deletedAt: null } },
           },
         },
       },
-      _count: {
-        select: {
-          estimateRequests: true,
-          estimates: true,
-          members: { where: { deletedAt: null } },
-        },
-      },
-    },
-  });
+    }),
+    prisma.workspace.count({ where }),
+  ]);
 
-  return workspaces.map((workspace) => ({
+  const totalPages = Math.max(1, Math.ceil(totalCount / params.pageSize));
+  const normalizedPage = Math.min(params.page, totalPages);
+
+  const workspaces =
+    normalizedPage === params.page
+      ? initialWorkspaces
+      : await prisma.workspace.findMany({
+          where,
+          orderBy: { createdAt: "desc" },
+          skip: toPrismaSkipTake({ ...params, page: normalizedPage }).skip,
+          take,
+          include: {
+            owner: {
+              select: { id: true, name: true, email: true },
+            },
+            members: {
+              where: { deletedAt: null },
+              take: MEMBER_PREVIEW_LIMIT,
+              orderBy: { createdAt: "asc" },
+              include: {
+                user: {
+                  select: { id: true, name: true, email: true, avatarUrl: true },
+                },
+              },
+            },
+            _count: {
+              select: {
+                estimateRequests: true,
+                estimates: true,
+                members: { where: { deletedAt: null } },
+              },
+            },
+          },
+        });
+
+  const rows: AdminWorkspaceRow[] = workspaces.map((workspace) => ({
     id: workspace.id,
     name: workspace.name,
     slug: workspace.slug,
@@ -91,6 +152,8 @@ export async function listAdminWorkspaces(): Promise<AdminWorkspaceRow[]> {
       imageUrl: member.user.avatarUrl,
     })),
   }));
+
+  return buildPaginatedResult(rows, totalCount, { ...params, page: normalizedPage });
 }
 
 export async function adminUpdateWorkspace(
