@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useSyncExternalStore, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 
@@ -31,6 +31,19 @@ function isInvitationsRoute(pathname: string): boolean {
   return pathname.endsWith("/dashboard/invitations");
 }
 
+/** Matches Tailwind `md:` — sidebar is visible from this width up. */
+function useMdUp() {
+  return useSyncExternalStore(
+    (onStoreChange) => {
+      const mq = window.matchMedia("(min-width: 768px)");
+      mq.addEventListener("change", onStoreChange);
+      return () => mq.removeEventListener("change", onStoreChange);
+    },
+    () => window.matchMedia("(min-width: 768px)").matches,
+    () => false,
+  );
+}
+
 export function DashboardShell({
   locale,
   children,
@@ -42,6 +55,8 @@ export function DashboardShell({
   const prefersReducedMotion = useReducedMotion();
   const collapsed = useSidebarStore((s) => s.collapsed);
   const offset = sidebarWidth(collapsed);
+  const mdUp = useMdUp();
+  const contentInset = mdUp ? offset : 0;
   const { modalInvitation, locale: contextLocale } = useWorkspaceContext();
 
   if (isFocusedDashboardRoute(pathname)) {
@@ -74,14 +89,13 @@ export function DashboardShell({
 
       <motion.div
         initial={false}
-        animate={{ paddingLeft: offset }}
+        animate={{ paddingLeft: contentInset }}
         transition={
           prefersReducedMotion
             ? { duration: 0 }
             : { duration: 0.38, ease: [0.22, 1, 0.36, 1] }
         }
-        className="flex min-h-dvh min-w-0 flex-col"
-        style={{ paddingLeft: 232 }}
+        className="flex min-h-dvh min-w-0 flex-col max-md:!pl-0 md:pl-[232px]"
       >
         <DashboardTopNavbar locale={locale} />
         <main className="min-w-0 flex-1 px-4 py-6 md:px-8">{children}</main>
