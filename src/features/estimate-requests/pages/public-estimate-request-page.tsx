@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Clock3, LockKeyhole, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
@@ -77,32 +78,49 @@ export default async function PublicEstimateRequestPage({ params }: { params: Pa
   const t = await getTranslations({ locale: resolvedLocale, namespace: "estimateRequests" });
 
   return (
-    <main className="min-h-dvh bg-[#070b17] text-white">
+    <main className="min-h-dvh bg-background text-foreground">
       <div className="relative isolate overflow-hidden">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_20%_20%,rgba(249,115,22,0.16),transparent_28%),radial-gradient(circle_at_80%_10%,rgba(59,130,246,0.12),transparent_30%),linear-gradient(135deg,#070b17_0%,#0b1222_55%,#070b17_100%)]" />
-        <div className="absolute bottom-0 left-0 -z-10 h-2/3 w-1/2 bg-[radial-gradient(circle_at_35%_35%,rgba(251,146,60,0.18),transparent_18%),linear-gradient(180deg,transparent,rgba(15,23,42,0.96))]" />
-        <div className="mx-auto grid min-h-dvh max-w-7xl gap-8 px-5 py-8 md:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-14 lg:py-10">
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/images/estimate-request/estimate-request-light.webp"
+            alt=""
+            fill
+            priority
+            className="object-cover object-left-top dark:hidden"
+          />
+          <Image
+            src="/images/estimate-request/estimate-request-dark.webp"
+            alt=""
+            fill
+            priority
+            className="hidden object-cover object-left-top dark:block"
+          />
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_20%_10%,color-mix(in_oklab,var(--color-primary)_18%,transparent),transparent_40%),radial-gradient(circle_at_80%_15%,rgba(99,102,241,0.14),transparent_45%)] dark:bg-[radial-gradient(circle_at_18%_12%,rgba(59,130,246,0.18),transparent_38%),radial-gradient(circle_at_80%_10%,rgba(99,102,241,0.16),transparent_45%)]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/35 via-background/55 to-background/95" />
+        </div>
+
+        <div className="mx-auto grid min-h-dvh max-w-7xl gap-8 px-5 py-8 md:px-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:gap-14 lg:py-10">
           <section className="order-2 lg:order-1">
-            <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.35em] text-orange-400">
+            <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.35em] text-primary">
               {t("hero.eyebrow")}
             </p>
-            <h1 className="max-w-xl text-4xl font-black leading-[0.95] tracking-tight text-white md:text-6xl">
+            <h1 className="max-w-xl text-4xl font-black leading-[0.95] tracking-tight text-foreground md:text-6xl">
               {t("hero.title")}
-              <span className="text-orange-500">.</span>
+              <span className="text-primary">.</span>
             </h1>
-            <p className="mt-5 max-w-md text-sm leading-6 text-slate-300">
+            <p className="mt-5 max-w-md text-sm leading-6 text-muted-foreground">
               {t("hero.description", { workspaceName: pageData.workspace.name })}
             </p>
 
             <div className="mt-8 grid max-w-xl gap-4 sm:grid-cols-2">
               {benefits.map((benefit) => (
                 <div key={benefit.key} className="flex gap-3">
-                  <div className="grid size-9 shrink-0 place-items-center rounded-xl border border-orange-400/25 bg-orange-500/10 text-orange-400">
+                  <div className="grid size-9 shrink-0 place-items-center rounded-xl border border-primary/20 bg-primary/10 text-primary shadow-xs">
                     <benefit.icon className="size-4" />
                   </div>
                   <div>
-                    <h2 className="text-xs font-bold text-white">{t(benefit.titleKey)}</h2>
-                    <p className="mt-1 text-[11px] leading-4 text-slate-400">
+                    <h2 className="text-xs font-bold text-foreground">{t(benefit.titleKey)}</h2>
+                    <p className="mt-1 text-[11px] leading-4 text-muted-foreground">
                       {t(benefit.descriptionKey)}
                     </p>
                   </div>
@@ -110,13 +128,13 @@ export default async function PublicEstimateRequestPage({ params }: { params: Pa
               ))}
             </div>
 
-            <div className="mt-72 hidden max-w-xs items-center gap-3 rounded-2xl border border-white/10 bg-slate-900/75 p-4 shadow-2xl shadow-black/40 backdrop-blur lg:flex">
-              <div className="grid size-9 place-items-center rounded-full bg-orange-500/15 text-orange-400">
+            <div className="mt-72 hidden max-w-xs items-center gap-3 rounded-2xl border bg-card/75 p-4 shadow-xl shadow-black/5 backdrop-blur-md lg:flex dark:bg-card/55 dark:shadow-black/35">
+              <div className="grid size-9 place-items-center rounded-full bg-primary/10 text-primary">
                 <UsersRound className="size-4" />
               </div>
               <div>
-                <p className="text-xs font-bold text-white">{t("hero.badge.title")}</p>
-                <p className="text-[10px] leading-4 text-slate-400">{t("hero.badge.description")}</p>
+                <p className="text-xs font-bold text-foreground">{t("hero.badge.title")}</p>
+                <p className="text-[10px] leading-4 text-muted-foreground">{t("hero.badge.description")}</p>
               </div>
             </div>
           </section>

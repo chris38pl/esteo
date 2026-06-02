@@ -63,16 +63,16 @@ export function AttachmentDropzonePlaceholder() {
           addFiles(event.dataTransfer.files);
         }}
         className={cn(
-          "flex min-h-24 w-full flex-col items-center justify-center rounded-xl border border-dashed border-white/10",
-          "bg-white/[0.02] px-4 py-5 text-center transition hover:border-orange-400/50 hover:bg-orange-500/10",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/30",
+          "flex min-h-24 w-full flex-col items-center justify-center rounded-2xl border border-dashed border-input",
+          "bg-background/60 px-4 py-5 text-center shadow-xs transition hover:bg-accent/50 dark:bg-input/20",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
         )}
       >
-        <span className="mb-3 grid size-9 place-items-center rounded-full border border-orange-400/30 bg-orange-500/10 text-orange-400">
+        <span className="mb-3 grid size-9 place-items-center rounded-full border border-primary/25 bg-primary/10 text-primary">
           <UploadCloud className="size-4" />
         </span>
-        <span className="text-xs font-semibold text-white">{t("title")}</span>
-        <span className="mt-1 text-[10px] text-slate-500">{t("hint")}</span>
+        <span className="text-xs font-semibold text-foreground">{t("title")}</span>
+        <span className="mt-1 text-[10px] text-muted-foreground">{t("hint")}</span>
       </button>
 
       <input
@@ -85,14 +85,14 @@ export function AttachmentDropzonePlaceholder() {
       />
 
       {files.length > 0 ? (
-        <div className="-mx-1 overflow-x-auto px-1 pb-1">
-          <div className="flex min-w-0 gap-2">
+        <div className="-mx-1 w-full max-w-[45.5rem] overflow-x-auto px-1 pb-1 sidebar-scroll">
+          <div className="flex w-max min-w-0 gap-2">
             {files.map((file) => (
               <div
                 key={file.id}
-                className="flex w-44 shrink-0 items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] p-2"
+                className="flex w-44 shrink-0 items-center gap-2 rounded-xl border border-input bg-background/70 p-2 shadow-xs dark:bg-input/20"
               >
-                <div className="grid size-8 shrink-0 place-items-center rounded-md bg-orange-500/10 text-orange-400">
+                <div className="grid size-8 shrink-0 place-items-center rounded-md bg-primary/10 text-primary">
                   {file.type.startsWith("image/") ? (
                     <ImageIcon className="size-4" />
                   ) : (
@@ -100,14 +100,14 @@ export function AttachmentDropzonePlaceholder() {
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[11px] font-medium text-white">{file.name}</p>
-                  <p className="text-[10px] text-slate-500">{formatBytes(file.size)}</p>
+                  <p className="truncate text-[11px] font-medium text-foreground">{file.name}</p>
+                  <p className="text-[10px] text-muted-foreground">{formatBytes(file.size)}</p>
                 </div>
                 <Button
                   type="button"
                   size="icon-xs"
                   variant="ghost"
-                  className="size-6 text-slate-400 hover:text-white"
+                  className="size-6 text-muted-foreground hover:text-foreground"
                   aria-label={t("remove")}
                   onClick={() => setFiles((current) => current.filter((item) => item.id !== file.id))}
                 >
@@ -119,8 +119,8 @@ export function AttachmentDropzonePlaceholder() {
         </div>
       ) : null}
 
-      {error ? <p className="text-[11px] text-orange-300">{error}</p> : null}
-      <p className="text-[10px] leading-4 text-slate-500">{t("notUploadedYet")}</p>
+      {error ? <p className="text-[11px] text-destructive">{error}</p> : null}
+      <p className="text-[10px] leading-4 text-muted-foreground">{t("notUploadedYet")}</p>
     </div>
   );
 }

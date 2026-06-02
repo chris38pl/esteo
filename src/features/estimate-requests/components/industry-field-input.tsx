@@ -20,8 +20,7 @@ const iconByValue = {
   other: Wrench,
 } as const;
 
-const fieldInputClassName =
-  "h-10 rounded-lg border-white/10 bg-white/[0.04] text-white placeholder:text-slate-500 focus-visible:border-orange-400/70 focus-visible:ring-orange-500/20";
+const fieldInputClassName = "h-10 rounded-xl border-input bg-background/80 shadow-xs dark:bg-input/30";
 
 export function IndustryFieldInput({
   field,
@@ -52,18 +51,14 @@ export function IndustryFieldInput({
                 aria-pressed={selected}
                 onClick={() => onChange(field.key, option.value)}
                 className={cn(
-                  "group min-h-20 rounded-xl border bg-white/[0.03] p-3 text-left transition",
-                  "border-white/10 hover:border-orange-400/50 hover:bg-orange-500/10",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/30",
-                  selected && "border-orange-400 bg-orange-500/15 shadow-[0_0_0_1px_rgba(251,146,60,0.25)]",
+                  "group flex min-h-20 flex-col items-center justify-center rounded-2xl border bg-background/65 p-3 text-center shadow-xs transition dark:bg-input/20",
+                  "border-input hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+                  selected && "border-primary/45 bg-primary/10 shadow-[0_0_0_1px_rgba(59,130,246,0.22)]",
                 )}
               >
-                <Icon className="mb-3 size-4 text-orange-400" />
-                <span className="block text-xs font-semibold text-white">
+                <Icon className={cn("mb-3 size-4", selected ? "text-primary" : "text-muted-foreground")} />
+                <span className="block text-xs font-semibold text-foreground">
                   {getIndustryOptionLabel(field.key, option.value, locale, "label")}
-                </span>
-                <span className="mt-1 block text-[10px] leading-4 text-slate-500">
-                  {getIndustryOptionLabel(field.key, option.value, locale, "description")}
                 </span>
               </button>
             );
@@ -83,8 +78,8 @@ export function IndustryFieldInput({
           required={field.required}
           className={cn(
             fieldInputClassName,
-            "w-full appearance-none px-3 text-sm outline-none",
-            !value && "text-slate-500",
+            "w-full appearance-none px-3 text-sm text-foreground outline-none",
+            !value && "text-muted-foreground",
           )}
         >
           <option value="">{field.placeholder ?? selectPlaceholder}</option>
@@ -100,7 +95,7 @@ export function IndustryFieldInput({
 
   if (field.valueType === "BOOLEAN") {
     return (
-      <label className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] p-3 text-xs font-medium text-white">
+      <label className="flex items-center gap-2 rounded-xl border border-input bg-background/65 p-3 text-xs font-medium text-foreground shadow-xs dark:bg-input/20">
         <Checkbox
           checked={value === true}
           onCheckedChange={(checked) => onChange(field.key, checked === true)}
@@ -126,7 +121,7 @@ export function IndustryFieldInput({
           className={cn(fieldInputClassName, field.valueType === "NUMBER" && "pr-10")}
         />
         {field.valueType === "DATE" ? (
-          <CalendarDays className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-slate-500" />
+          <CalendarDays className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         ) : null}
       </div>
     </div>
@@ -135,9 +130,9 @@ export function IndustryFieldInput({
 
 function FieldLabel({ field }: { field: IndustryFieldForDocument }) {
   return (
-    <Label className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-300">
+    <Label className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
       {field.label}
-      {field.required ? <span className="text-orange-400">*</span> : null}
+      {field.required ? <span className="text-primary">*</span> : null}
     </Label>
   );
 }
