@@ -109,7 +109,7 @@ function DateColumn({
   return (
     <div className={cn("min-w-[140px]", className)}>
       <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="mt-1.5 text-sm font-medium tabular-nums leading-tight">
+      <p className="mt-1.5 whitespace-nowrap text-sm font-medium tabular-nums leading-tight">
         {formatDateTime(locale, value)}
       </p>
     </div>
@@ -138,11 +138,11 @@ function AdminEstimateRequestListRow({
   return (
     <div className="relative flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:gap-6">
       {/* Primary: request number + customer identity */}
-      <div className="flex min-w-0 flex-1 gap-3.5">
+      <div className="flex min-w-0 flex-1 gap-3.5 md:min-w-[220px] lg:min-w-[260px] max-w-[300px]">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             {request.requestNumber ? (
-              <span className="font-mono text-xs font-semibold text-sky-700 dark:text-sky-300">
+              <span className="whitespace-nowrap font-mono text-xs font-semibold text-sky-700 dark:text-sky-300">
                 {request.requestNumber}
               </span>
             ) : (
@@ -158,25 +158,25 @@ function AdminEstimateRequestListRow({
           ) : null}
 
           {/* Mobile meta row (card-like) */}
-          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground md:hidden">
-            <span className="max-w-[220px] truncate">{request.workspaceName}</span>
-            <span aria-hidden className="text-muted-foreground/40">
+          <div className="mt-2 flex items-center gap-3 overflow-hidden text-xs text-muted-foreground md:hidden">
+            <span className="min-w-0 truncate">{request.workspaceName}</span>
+            <span aria-hidden className="shrink-0 text-muted-foreground/40">
               •
             </span>
-            <span className="tabular-nums">{formatDateTime(locale, request.createdAt)}</span>
-            <span aria-hidden className="text-muted-foreground/40">
+            <span className="shrink-0 tabular-nums">{formatDateTime(locale, request.createdAt)}</span>
+            <span aria-hidden className="shrink-0 text-muted-foreground/40">
               •
             </span>
-            <span className="inline-flex items-center gap-1 tabular-nums">
+            <span className="shrink-0 inline-flex items-center gap-1 tabular-nums">
               <Paperclip className="size-3.5" />
               {request.attachmentCount}
             </span>
             {request.city ? (
               <>
-                <span aria-hidden className="text-muted-foreground/40">
+                <span aria-hidden className="shrink-0 text-muted-foreground/40">
                   •
                 </span>
-                <span className="max-w-[160px] truncate">{request.city}</span>
+                <span className="min-w-0 truncate">{request.city}</span>
               </>
             ) : null}
           </div>
@@ -191,11 +191,11 @@ function AdminEstimateRequestListRow({
             {request.workspaceName}
           </p>
         </div>
-        <div className="min-w-[88px]">
+        <div className="hidden min-w-[88px] [@media(min-width:1150px)]:block">
           <p className="text-xs text-muted-foreground">{t("stats.city")}</p>
           <p className="mt-1.5 text-sm font-medium">{request.city ?? "—"}</p>
         </div>
-        <div className="min-w-[96px]">
+        <div className="hidden min-w-[96px] [@media(min-width:880px)]:block">
           <p className="text-xs text-muted-foreground">{t("stats.status")}</p>
           <div className="mt-1.5">
             <StatusBadge status={request.status} label={t(`status.${request.status}`)} />
@@ -205,6 +205,7 @@ function AdminEstimateRequestListRow({
           icon={Paperclip}
           label={t("stats.attachments")}
           count={request.attachmentCount}
+          className="hidden [@media(min-width:1000px)]:block"
         />
         <DateColumn label={t("stats.created")} value={request.createdAt} locale={locale} />
       </div>
@@ -330,7 +331,7 @@ export function AdminEstimateRequestsPanel({
         </p>
       ) : null}
 
-      <div className="overflow-hidden rounded-xl border border-border/60 bg-card">
+      <div className="overflow-hidden rounded-xl border border-border/60 bg-card md:max-w-5xl">
         <div className="flex items-center justify-between gap-3 border-b border-border/60 px-4 py-3">
           <span className="text-sm font-medium text-muted-foreground">{t("bar.allRequests")}</span>
           <span className="text-xs tabular-nums text-muted-foreground">{data.totalCount}</span>
@@ -354,16 +355,18 @@ export function AdminEstimateRequestsPanel({
         )}
       </div>
 
-      <PaginationControls
-        page={data.page}
-        pageSize={data.pageSize}
-        totalCount={data.totalCount}
-        totalPages={data.totalPages}
-        hasPreviousPage={data.hasPreviousPage}
-        hasNextPage={data.hasNextPage}
-        onPageChange={paginationUrl.setPage}
-        onPageSizeChange={paginationUrl.setPageSize}
-      />
+      <div className="md:max-w-5xl">
+        <PaginationControls
+          page={data.page}
+          pageSize={data.pageSize}
+          totalCount={data.totalCount}
+          totalPages={data.totalPages}
+          hasPreviousPage={data.hasPreviousPage}
+          hasNextPage={data.hasNextPage}
+          onPageChange={paginationUrl.setPage}
+          onPageSizeChange={paginationUrl.setPageSize}
+        />
+      </div>
 
       <Dialog open={Boolean(activeRequest)} onOpenChange={(open) => !open && closeDeleteDialog()}>
         <DialogContent showCloseButton className="sm:max-w-md">

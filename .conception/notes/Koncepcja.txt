@@ -105,7 +105,7 @@ g) Wysłanie klientowi
 - Workspace Management (editing logo, info about the services + optional configurations for AI prompts -> adding addiitonal context, invites)
 - Subscription Management
 
-8.4 Zapytania o wycene
+8.4 Zapytania o wycene (inaczej "Zapytania")
 - każdy zarejestrowany użytkownik otrzymuje podstronę dla swojego workpace (np. firmy budolwanej XYZ), który służu mu jako contact form dla potencjalnego klienta
 - formularz zawiera podstawowe informacje o kliencie, o inwestycji (np. adres / wojewodztwo,) oraz dane specyficzne dla branży (metraż, typ nieruchomości)
 - do formularza można dodać załączniki (obraz, PDF lub Word)
