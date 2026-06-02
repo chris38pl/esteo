@@ -3,7 +3,8 @@
     "dashboard": "Panel",
     "requests": "Zapytania",
     "estimates": "Wyceny",
-    "settings": "Ustawienia"
+    "settings": "Ustawienia",
+    "settingsOwnerOnly": "Tylko właściciel przestrzeni może zmieniać ustawienia"
   },
   "tooltips": {
     "collapse": "Zwiń pasek boczny",

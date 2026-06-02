@@ -52,6 +52,7 @@ export function SidebarNav({
   const { inDrawer } = useSidebarLayout();
   const { activeWorkspace } = useWorkspaceContext();
   const workspaceSlug = activeWorkspace?.slug ?? null;
+  const canAccessWorkspaceSettings = activeWorkspace?.isOwner === true;
 
   return (
     <TooltipProvider>
@@ -64,7 +65,13 @@ export function SidebarNav({
             const href = item.href(locale, workspaceSlug);
             const active = isNavItemActive(item.key, locale, pathname, section, href, workspaceSlug);
             const label = t(item.labelKey);
-            const disabled = item.disabled === true;
+            const disabled =
+              item.disabled === true ||
+              (item.key === "settings" && !canAccessWorkspaceSettings);
+            const tooltipLabel =
+              disabled && item.key === "settings"
+                ? `${label} — ${t("nav.settingsOwnerOnly")}`
+                : label;
 
             const row = collapsed ? (
               <Link
@@ -112,7 +119,7 @@ export function SidebarNav({
                 {collapsed ? (
                   <Tooltip>
                     <TooltipTrigger asChild>{row}</TooltipTrigger>
-                    <TooltipContent side="right">{label}</TooltipContent>
+                    <TooltipContent side="right">{tooltipLabel}</TooltipContent>
                   </Tooltip>
                 ) : (
                   row

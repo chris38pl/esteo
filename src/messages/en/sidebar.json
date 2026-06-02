@@ -3,7 +3,8 @@
     "dashboard": "Dashboard",
     "requests": "Requests",
     "estimates": "Estimates",
-    "settings": "Settings"
+    "settings": "Settings",
+    "settingsOwnerOnly": "Only workspace owners can change settings"
   },
   "tooltips": {
     "collapse": "Collapse sidebar",
