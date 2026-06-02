@@ -3,7 +3,7 @@ description: i18n rules for pl/en (next-intl)
 globs:
   - "src/app/**/*"
   - "src/components/**/*"
-  - "src/features/**/*"
+  - "src/features/**/components/**/*"
   - "src/messages/**/*.json"
 alwaysApply: false
 ---

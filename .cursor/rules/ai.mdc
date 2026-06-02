@@ -3,8 +3,7 @@
 ---
 description: AI architecture rules
 globs:
-  - "src/ai/**/*"
-  - "src/features/**/*"
+  - src/ai/**/*
 alwaysApply: false
 ---
 

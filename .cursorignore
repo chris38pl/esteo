@@ -1,0 +1,10 @@
+.next/
+out/
+build/
+node_modules/
+coverage/
+.vercel/
+*.log
+.turbo/
+dist/
+docs/product/prd.md

@@ -40,7 +40,19 @@ const nextConfig: NextConfig = {
     ],
   },
   async redirects() {
-    return legacyDashboardRedirects;
+    return [
+      ...legacyDashboardRedirects,
+      {
+        source: "/en/wycena/:workspaceSlug",
+        destination: "/en/estimate-request/:workspaceSlug",
+        permanent: true,
+      },
+      {
+        source: "/pl/estimate-request/:workspaceSlug",
+        destination: "/pl/wycena/:workspaceSlug",
+        permanent: true,
+      },
+    ];
   },
 };
 

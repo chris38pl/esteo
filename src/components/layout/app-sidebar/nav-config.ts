@@ -1,6 +1,9 @@
 import type { LucideIcon } from "lucide-react";
 import { BarChart3, ClipboardList, FileText, LayoutDashboard, Settings } from "lucide-react";
 
+import type { Locale } from "@/lib/locale";
+import { getPublicEstimateRequestPath } from "@/features/estimate-requests/routes";
+
 export type NavItemKey =
   | "dashboard"
   | "requests"
@@ -42,7 +45,9 @@ export const navItems: SidebarNavItem[] = [
     key: "estimateRequestPage",
     icon: ClipboardList,
     href: (locale, workspaceSlug) =>
-      workspaceSlug ? `/${locale}/wycena/${workspaceSlug}` : `/${locale}/dashboard`,
+      workspaceSlug
+        ? getPublicEstimateRequestPath(locale as Locale, workspaceSlug)
+        : `/${locale}/dashboard`,
     labelKey: "nav.estimateRequestPage",
   },
   {
