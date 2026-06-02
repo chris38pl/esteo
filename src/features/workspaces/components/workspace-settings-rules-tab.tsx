@@ -40,6 +40,8 @@ const textareaClassName = cn(
   "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
 );
 
+type RuleErrorsTranslator = ReturnType<typeof useTranslations<"workspaces.settings.rules.errors">>;
+
 function ruleTitleFromContent(content: string): string {
   const line = content.trim().split("\n")[0] ?? content.trim();
   if (line.length <= 80) {
@@ -48,7 +50,7 @@ function ruleTitleFromContent(content: string): string {
   return `${line.slice(0, 77)}…`;
 }
 
-function mapRuleError(message: string, tErrors: (key: string) => string): string {
+function mapRuleError(message: string, tErrors: RuleErrorsTranslator): string {
   if (message === "RULE_LIMIT_REACHED") {
     return tErrors("ruleLimitReached");
   }
@@ -78,6 +80,7 @@ export function WorkspaceSettingsRulesTab({
 }) {
   const t = useTranslations("workspaces.settings.rules");
   const tErrors = useTranslations("workspaces.settings.rules.errors");
+  const tLoose = t as unknown as (key: string, values?: Record<string, unknown>) => string;
   const router = useRouter();
   const [aiInstructions, setAiInstructions] = useState(initialAiInstructions);
   const [systemRuleState, setSystemRuleState] = useState(() =>
@@ -273,9 +276,9 @@ export function WorkspaceSettingsRulesTab({
     ...ESTIMATE_SYSTEM_RULES.map((systemRule, index) => ({
       key: systemRule.id,
       index: index + 1,
-      content: t(systemRule.contentKey),
+      content: tLoose(systemRule.contentKey),
       metaLabel: t("metaSystem", {
-        date: t(`systemRules.dates.${systemRule.id}`),
+        date: tLoose(`systemRules.dates.${systemRule.id}`),
       }),
       active: systemRuleState[systemRule.id],
       isSystem: true,

@@ -1,7 +1,12 @@
 import type { LucideIcon } from "lucide-react";
-import { BarChart3, FileText, LayoutDashboard, Settings } from "lucide-react";
+import { BarChart3, ClipboardList, FileText, LayoutDashboard, Settings } from "lucide-react";
 
-export type NavItemKey = "dashboard" | "requests" | "estimates" | "settings";
+export type NavItemKey =
+  | "dashboard"
+  | "requests"
+  | "estimateRequestPage"
+  | "estimates"
+  | "settings";
 
 export type SidebarNavItem = {
   key: NavItemKey;
@@ -32,6 +37,13 @@ export const navItems: SidebarNavItem[] = [
         ? `/${locale}/dashboard/${workspaceSlug}?section=requests`
         : `/${locale}/dashboard?section=requests`,
     labelKey: "nav.requests",
+  },
+  {
+    key: "estimateRequestPage",
+    icon: ClipboardList,
+    href: (locale, workspaceSlug) =>
+      workspaceSlug ? `/${locale}/wycena/${workspaceSlug}` : `/${locale}/dashboard`,
+    labelKey: "nav.estimateRequestPage",
   },
   {
     key: "estimates",

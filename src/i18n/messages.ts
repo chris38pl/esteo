@@ -5,6 +5,7 @@ import enAuth from "@/messages/en/auth.json";
 import enBilling from "@/messages/en/billing.json";
 import enCommon from "@/messages/en/common.json";
 import enDashboard from "@/messages/en/dashboard.json";
+import enEstimateRequests from "@/messages/en/estimateRequests.json";
 import enNavbar from "@/messages/en/navbar.json";
 import enSidebar from "@/messages/en/sidebar.json";
 import enStyleguide from "@/messages/en/styleguide.json";
@@ -14,6 +15,7 @@ import plAuth from "@/messages/pl/auth.json";
 import plBilling from "@/messages/pl/billing.json";
 import plCommon from "@/messages/pl/common.json";
 import plDashboard from "@/messages/pl/dashboard.json";
+import plEstimateRequests from "@/messages/pl/estimateRequests.json";
 import plNavbar from "@/messages/pl/navbar.json";
 import plSidebar from "@/messages/pl/sidebar.json";
 import plStyleguide from "@/messages/pl/styleguide.json";
@@ -25,11 +27,19 @@ export const namespaces = [
   "auth",
   "billing",
   "dashboard",
+  "estimateRequests",
   "sidebar",
   "styleguide",
   "workspaces",
 ] as const;
-export type Namespace = (typeof namespaces)[number];
+
+/** Top-level message namespaces plus known sub-namespace paths used in server components. */
+export type Namespace =
+  | (typeof namespaces)[number]
+  | "admin.users"
+  | "admin.workspaces"
+  | "admin.industryFields"
+  | "workspaces.invitations";
 
 type MessagesByNamespace = {
   common: typeof enCommon;
@@ -37,6 +47,7 @@ type MessagesByNamespace = {
   auth: typeof enAuth;
   billing: typeof enBilling;
   dashboard: typeof enDashboard;
+  estimateRequests: typeof enEstimateRequests;
   navbar: typeof enNavbar;
   sidebar: typeof enSidebar;
   styleguide: typeof enStyleguide;
@@ -55,6 +66,7 @@ function forLocale(locale: Locale): Messages {
         auth: plAuth,
         billing: plBilling,
         dashboard: plDashboard,
+        estimateRequests: plEstimateRequests,
         navbar: plNavbar,
         sidebar: plSidebar,
         styleguide: plStyleguide,
@@ -66,6 +78,7 @@ function forLocale(locale: Locale): Messages {
         auth: enAuth,
         billing: enBilling,
         dashboard: enDashboard,
+        estimateRequests: enEstimateRequests,
         navbar: enNavbar,
         sidebar: enSidebar,
         styleguide: enStyleguide,

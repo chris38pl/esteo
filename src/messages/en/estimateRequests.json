@@ -1,0 +1,82 @@
+{
+  "hero": {
+    "eyebrow": "Free estimate",
+    "title": "Discover the cost of your project",
+    "description": "Fill in the form and {workspaceName} will prepare a tailored estimate quickly and without obligation.",
+    "benefits": {
+      "fast": {
+        "title": "Fast response",
+        "description": "Receive an estimate in as little as 24h."
+      },
+      "noObligation": {
+        "title": "No obligation",
+        "description": "The estimate is completely free."
+      },
+      "individual": {
+        "title": "Individual approach",
+        "description": "Every project is estimated individually."
+      },
+      "secure": {
+        "title": "Your data is safe",
+        "description": "We protect the information you send."
+      }
+    },
+    "badge": {
+      "title": "500+ completed projects",
+      "description": "Trusted by homeowners and companies."
+    }
+  },
+  "form": {
+    "title": "Estimate form",
+    "description": "Fill in all fields so we can prepare the best possible estimate for you.",
+    "selectPlaceholder": "Select an option",
+    "fields": {
+      "fullName": "Full name",
+      "email": "Email",
+      "phone": "Phone number",
+      "streetAddress": "Investment address",
+      "city": "City",
+      "postalCode": "Postal code",
+      "voivodeship": "Voivodeship",
+      "preferredStartDate": "Preferred start date",
+      "description": "Project description"
+    },
+    "placeholders": {
+      "fullName": "e.g. John Smith",
+      "email": "e.g. john.smith@email.com",
+      "phone": "e.g. 600 123 456",
+      "streetAddress": "e.g. 15 Flower St, 00-001 Warsaw",
+      "city": "City",
+      "postalCode": "Postal code",
+      "voivodeship": "Voivodeship",
+      "description": "Briefly describe your project, planned work, expectations, area, materials, timeline, etc."
+    },
+    "submit": "Send",
+    "checkAi": "Check with AI",
+    "aiUnavailable": "AI checking will be enabled after the protected AI module is added.",
+    "privacy": "By clicking \u201cSend\u201d, you accept the data processing rules and privacy policy.",
+    "errors": {
+      "invalid": "Check the required fields and try again.",
+      "rate_limited": "We received too many submissions. Try again later.",
+      "captcha_failed": "We could not verify the form protection. Refresh the page and try again.",
+      "unavailable": "We could not send the request. Try again in a moment."
+    }
+  },
+  "attachments": {
+    "label": "Add photos (optional)",
+    "title": "Drag files or click to add",
+    "hint": "Photos, plans, PDF, PNG, JPEG, DOCX. Up to 10 MB and max. 10 files.",
+    "remove": "Remove file",
+    "notUploadedYet": "At this stage files are only previewed in the form and will not be sent yet.",
+    "errors": {
+      "maxFiles": "You can add up to 10 files.",
+      "maxSize": "Total file size cannot exceed 10 MB."
+    }
+  },
+  "success": {
+    "title": "Thank you for your request",
+    "description": "{workspaceName} received your request and will contact you after reviewing the scope.",
+    "requestNumberLabel": "Your request number",
+    "requestNumberHint": "Save this number — you may need it when contacting us."
+  }
+}

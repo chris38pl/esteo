@@ -41,6 +41,8 @@ import {
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
+type SectionsTranslator = ReturnType<typeof useTranslations<"workspaces.settings.rules.sections">>;
+
 type SectionDisplayRow = {
   index: number;
   key: string;
@@ -102,7 +104,7 @@ function SectionRowActions({
   canRemove: boolean;
   onEdit: (index: number) => void;
   onDelete: (index: number) => void;
-  t: (key: string) => string;
+  t: SectionsTranslator;
 }) {
   return (
     <div className="flex items-center justify-end gap-0.5">
@@ -165,7 +167,7 @@ function SectionCardControls({
   onMoveDown: (index: number) => void;
   onEdit: (index: number) => void;
   onDelete: (index: number) => void;
-  t: (key: string) => string;
+  t: SectionsTranslator;
 }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
@@ -270,7 +272,7 @@ function EstimateSectionMobileCard({
   onMoveDown: (index: number) => void;
   onEdit: (index: number) => void;
   onDelete: (index: number) => void;
-  t: (key: string) => string;
+  t: SectionsTranslator;
 }) {
   return (
     <article

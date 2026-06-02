@@ -139,9 +139,10 @@ export async function updateWorkspaceAction(
 export async function archiveWorkspaceAction(
   workspaceId: string,
   locale: Locale = "pl",
-):
+): Promise<
   | { success: true; redirectTo: string | null }
-  | { success: false; error: string; code?: string } {
+  | { success: false; error: string; code?: string }
+> {
   try {
     const user = await requireAuth(locale);
     const { remainingAccessibleCount } = await archiveWorkspace(user, workspaceId);
@@ -159,7 +160,11 @@ export async function archiveWorkspaceAction(
 
     return { success: true, redirectTo };
   } catch (error) {
-    return toActionError(error);
+    const result = toActionError(error);
+    if (result.success) {
+      return { success: false, error: "Something went wrong." };
+    }
+    return { success: false, error: result.error, code: result.code };
   }
 }
 
@@ -448,9 +453,10 @@ export async function deleteWorkspaceRuleAction(
 export async function leaveWorkspaceAction(
   workspaceId: string,
   locale: Locale = "pl",
-):
+): Promise<
   | { success: true; redirectTo: string | null }
-  | { success: false; error: string; code?: string } {
+  | { success: false; error: string; code?: string }
+> {
   try {
     const user = await requireAuth(locale);
     const { remainingAccessibleCount } = await leaveWorkspace(user, workspaceId);
@@ -468,6 +474,10 @@ export async function leaveWorkspaceAction(
 
     return { success: true, redirectTo };
   } catch (error) {
-    return toActionError(error);
+    const result = toActionError(error);
+    if (result.success) {
+      return { success: false, error: "Something went wrong." };
+    }
+    return { success: false, error: result.error, code: result.code };
   }
 }

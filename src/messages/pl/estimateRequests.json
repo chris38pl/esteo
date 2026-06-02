@@ -1,0 +1,82 @@
+{
+  "hero": {
+    "eyebrow": "Darmowa wycena",
+    "title": "Poznaj koszt swojego projektu",
+    "description": "Wypełnij formularz, a zespół {workspaceName} przygotuje indywidualną wycenę szybko i bez zobowiązań.",
+    "benefits": {
+      "fast": {
+        "title": "Szybka odpowiedź",
+        "description": "Otrzymasz wycenę nawet w 24h."
+      },
+      "noObligation": {
+        "title": "Bez zobowiązań",
+        "description": "Wycena jest całkowicie darmowa."
+      },
+      "individual": {
+        "title": "Indywidualne podejście",
+        "description": "Każdy projekt wyceniamy indywidualnie."
+      },
+      "secure": {
+        "title": "Twoje dane są bezpieczne",
+        "description": "Chronimy przekazane informacje."
+      }
+    },
+    "badge": {
+      "title": "Ponad 500+ zrealizowanych projektów",
+      "description": "Zaufali nam klienci indywidualni i firmy."
+    }
+  },
+  "form": {
+    "title": "Formularz wyceny",
+    "description": "Wypełnij wszystkie pola, abyśmy mogli przygotować dla Ciebie jak najlepszą wycenę.",
+    "selectPlaceholder": "Wybierz opcję",
+    "fields": {
+      "fullName": "Imię i nazwisko",
+      "email": "E-mail",
+      "phone": "Numer kontaktowy",
+      "streetAddress": "Dane adresowe inwestycji",
+      "city": "Miasto",
+      "postalCode": "Kod pocztowy",
+      "voivodeship": "Województwo",
+      "preferredStartDate": "Termin rozpoczęcia",
+      "description": "Opis inwestycji"
+    },
+    "placeholders": {
+      "fullName": "np. Jan Kowalski",
+      "email": "np. jan.kowalski@email.com",
+      "phone": "np. 600 123 456",
+      "streetAddress": "np. ul. Kwiatowa 15, 00-001 Warszawa",
+      "city": "Miasto",
+      "postalCode": "Kod pocztowy",
+      "voivodeship": "Województwo",
+      "description": "Opisz krótko swój projekt, planowane prace, oczekiwania, metraż, materiały, termin realizacji itp."
+    },
+    "submit": "Wyślij",
+    "checkAi": "Sprawdź z AI",
+    "aiUnavailable": "Sprawdzenie z AI zostanie włączone po dodaniu chronionego modułu AI.",
+    "privacy": "Klikaj\u0105c \u201eWy\u015blij\u201d, akceptujesz zasady przetwarzania danych i polityk\u0119 prywatno\u015bci.",
+    "errors": {
+      "invalid": "Sprawdź wymagane pola i spróbuj ponownie.",
+      "rate_limited": "Otrzymaliśmy zbyt wiele zgłoszeń. Spróbuj ponownie później.",
+      "captcha_failed": "Nie udało się potwierdzić zabezpieczenia formularza. Odśwież stronę i spróbuj ponownie.",
+      "unavailable": "Nie udało się wysłać zgłoszenia. Spróbuj ponownie za chwilę."
+    }
+  },
+  "attachments": {
+    "label": "Dodaj zdjęcia (opcjonalnie)",
+    "title": "Przeciągnij pliki lub kliknij, aby dodać",
+    "hint": "Zdjęcia, plany, rzuty PDF, PNG, JPEG, DOCX. Do 10 MB i maks. 10 plików.",
+    "remove": "Usuń plik",
+    "notUploadedYet": "Na tym etapie pliki są tylko podglądem w formularzu i nie zostaną jeszcze wysłane.",
+    "errors": {
+      "maxFiles": "Możesz dodać maksymalnie 10 plików.",
+      "maxSize": "Łączny rozmiar plików nie może przekroczyć 10 MB."
+    }
+  },
+  "success": {
+    "title": "Dziękujemy za zgłoszenie",
+    "description": "Zespół {workspaceName} otrzymał Twoje zapytanie i skontaktuje się z Tobą po analizie zakresu prac.",
+    "requestNumberLabel": "Numer Twojego zgłoszenia",
+    "requestNumberHint": "Zachowaj ten numer \u2014 możesz go podać przy kontakcie z nami."
+  }
+}

@@ -293,6 +293,7 @@ model StripeWebhookEvent {
 model EstimateRequest {
   id                 String                @id @default(cuid())
   workspaceId        String
+  requestNumber      String?
   status             EstimateRequestStatus @default(PENDING)
   customerData       Json?
   address            Json?
@@ -307,6 +308,7 @@ model EstimateRequest {
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   estimate  Estimate? @relation("EstimateRequestEstimate", fields: [estimateId], references: [id], onDelete: SetNull)
 
+  @@unique([workspaceId, requestNumber])
   @@index([workspaceId, status])
   @@index([workspaceId, deletedAt])
 }

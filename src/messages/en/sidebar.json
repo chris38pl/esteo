@@ -2,6 +2,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "requests": "Requests",
+    "estimateRequestPage": "Estimate request page",
     "estimates": "Estimates",
     "settings": "Settings",
     "settingsOwnerOnly": "Only workspace owners can change settings"

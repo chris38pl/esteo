@@ -2,6 +2,7 @@
   "nav": {
     "dashboard": "Panel",
     "requests": "Zapytania",
+    "estimateRequestPage": "Strona wyceny",
     "estimates": "Wyceny",
     "settings": "Ustawienia",
     "settingsOwnerOnly": "Tylko właściciel przestrzeni może zmieniać ustawienia"

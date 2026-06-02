@@ -7,9 +7,11 @@ import {
 } from "@prisma/client";
 
 const PROPERTY_TYPE_OPTIONS = [
-  { value: "house", labelKey: "house" },
   { value: "apartment", labelKey: "apartment" },
+  { value: "house", labelKey: "house" },
+  { value: "office", labelKey: "office" },
   { value: "commercial", labelKey: "commercial" },
+  { value: "other", labelKey: "other" },
 ];
 
 export async function seedConstructionEstimateRequestFields(prisma: PrismaClient) {

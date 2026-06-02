@@ -17,6 +17,7 @@ const isPublicRoute = createRouteMatcher([
   "/:locale/sign-in(.*)",
   "/:locale/sign-up(.*)",
   "/:locale/styleguide(.*)",
+  "/:locale/wycena(.*)",
   "/api/health",
 ]);
 
