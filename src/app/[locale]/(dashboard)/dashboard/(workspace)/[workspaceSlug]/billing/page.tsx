@@ -7,9 +7,9 @@ import type { Locale } from "@/lib/locale";
 export default async function BillingPage({
   params,
 }: {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: string; workspaceSlug: string }>;
 }) {
-  const { locale: localeParam } = await params;
+  const { locale: localeParam, workspaceSlug } = await params;
   const resolvedLocale: Locale = await resolveRequestLocale(localeParam);
 
   setRequestLocale(resolvedLocale);
@@ -28,7 +28,7 @@ export default async function BillingPage({
       </div>
 
       <Link
-        href={`/${resolvedLocale}/dashboard`}
+        href={`/${resolvedLocale}/dashboard/${workspaceSlug}`}
         className="mt-8 text-sm font-medium text-primary underline"
       >
         {t("backToDashboard")}

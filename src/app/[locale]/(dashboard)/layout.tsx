@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { headers } from "next/headers";
 import { setRequestLocale } from "next-intl/server";
 
 import { resolveRequestLocale } from "@/i18n/request-locale";
@@ -13,10 +14,14 @@ import {
   countPendingInvitations,
   getNextModalInvitation,
 } from "@/features/workspaces/server/invitation-inbox";
+import { RESERVED_DASHBOARD_SLUGS } from "@/features/workspaces/server/slug-availability";
 import { requireAuth } from "@/server/auth/require-auth";
 import { canUserCreateWorkspace, countOwnedWorkspaces } from "@/server/permissions/entitlements";
 import { isPlatformAdmin } from "@/server/permissions/require-workspace";
-import { resolveActiveWorkspace } from "@/server/workspaces/active-workspace";
+import {
+  resolveActiveWorkspace,
+  resolveWorkspaceBySlug,
+} from "@/server/workspaces/active-workspace";
 
 export default async function DashboardLayout({
   children,
@@ -59,7 +64,27 @@ export default async function DashboardLayout({
     );
   }
 
-  const activeWorkspaceId = await resolveActiveWorkspace(user.id);
+  // Determine active workspace.
+  // For workspace-scoped routes (/dashboard/[workspaceSlug]/...) we read the slug from the URL
+  // (injected by middleware as x-pathname). For admin and pre-workspace routes we fall back
+  // to the cookie-based resolver so the sidebar still reflects the user's last active workspace.
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") ?? "";
+  const segments = pathname.split("/");
+  const dashIdx = segments.findIndex((s) => s === "dashboard");
+  const possibleSlug = dashIdx >= 0 ? segments[dashIdx + 1] : undefined;
+  const slugFromUrl =
+    possibleSlug && possibleSlug !== "" && !RESERVED_DASHBOARD_SLUGS.has(possibleSlug)
+      ? possibleSlug
+      : null;
+
+  let activeWorkspaceId: string | null = null;
+  if (slugFromUrl) {
+    const resolved = await resolveWorkspaceBySlug(slugFromUrl, user.id);
+    activeWorkspaceId = resolved?.workspace.id ?? null;
+  } else {
+    activeWorkspaceId = await resolveActiveWorkspace(user.id);
+  }
   const [canCreateWorkspace, ownedWorkspaceCount, billingSidebarState, pendingInvitationCount, nextModalInvitation] =
     await Promise.all([
     canUserCreateWorkspace(user.id),

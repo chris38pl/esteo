@@ -6,7 +6,11 @@ export type NavItemKey = "dashboard" | "requests" | "estimates" | "settings";
 export type SidebarNavItem = {
   key: NavItemKey;
   icon: LucideIcon;
-  href: (locale: string) => string;
+  /**
+   * Generates the href for this nav item.
+   * `workspaceSlug` is null for items that are workspace-independent (e.g. external links).
+   */
+  href: (locale: string, workspaceSlug: string | null) => string;
   labelKey: `nav.${NavItemKey}`;
   badge?: string;
   disabled?: boolean;
@@ -16,13 +20,17 @@ export const navItems: SidebarNavItem[] = [
   {
     key: "dashboard",
     icon: LayoutDashboard,
-    href: (locale) => `/${locale}/dashboard`,
+    href: (locale, workspaceSlug) =>
+      workspaceSlug ? `/${locale}/dashboard/${workspaceSlug}` : `/${locale}/dashboard`,
     labelKey: "nav.dashboard",
   },
   {
     key: "requests",
     icon: FileText,
-    href: (locale) => `/${locale}/dashboard?section=requests`,
+    href: (locale, workspaceSlug) =>
+      workspaceSlug
+        ? `/${locale}/dashboard/${workspaceSlug}?section=requests`
+        : `/${locale}/dashboard?section=requests`,
     labelKey: "nav.requests",
   },
   {
@@ -36,7 +44,10 @@ export const navItems: SidebarNavItem[] = [
   {
     key: "settings",
     icon: Settings,
-    href: (locale) => `/${locale}/dashboard/workspaces/settings`,
+    href: (locale, workspaceSlug) =>
+      workspaceSlug
+        ? `/${locale}/dashboard/${workspaceSlug}/settings`
+        : `/${locale}/dashboard`,
     labelKey: "nav.settings",
   },
 ];

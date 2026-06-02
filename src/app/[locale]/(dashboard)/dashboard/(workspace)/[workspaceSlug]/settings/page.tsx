@@ -8,29 +8,31 @@ import { workspaceBrandingSchema } from "@/features/workspaces/schemas/branding"
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 import { requireAuth } from "@/server/auth/require-auth";
-import { resolveActiveWorkspace } from "@/server/workspaces/active-workspace";
+import { resolveWorkspaceBySlug } from "@/server/workspaces/active-workspace";
 
 export default async function WorkspaceSettingsPage({
   params,
 }: {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: string; workspaceSlug: string }>;
 }) {
-  const { locale } = await params;
+  const { locale, workspaceSlug } = await params;
   const resolvedLocale: Locale = isLocale(locale) ? locale : "pl";
 
   setRequestLocale(resolvedLocale);
 
   const user = await requireAuth(resolvedLocale);
-  const activeWorkspaceId = await resolveActiveWorkspace(user.id);
 
-  if (!activeWorkspaceId) {
+  // Free cache hit — resolved by the parent [workspaceSlug]/layout.tsx already.
+  const resolved = await resolveWorkspaceBySlug(workspaceSlug, user.id);
+
+  if (!resolved) {
     redirect(`/${resolvedLocale}/dashboard`);
   }
 
-  const data = await getWorkspaceSettingsPageData(user, activeWorkspaceId);
+  const data = await getWorkspaceSettingsPageData(user, resolved.workspace.id);
 
   if (!data) {
-    redirect(`/${resolvedLocale}/dashboard`);
+    redirect(`/${resolvedLocale}/dashboard/${resolved.canonicalSlug}`);
   }
 
   const { workspace, members, invitations, rules, canInviteMembers } = data;

@@ -11,6 +11,7 @@ import { randomUUID } from "crypto";
 import { ensureBillingAccount } from "@/features/billing/server/provision-billing-account";
 import { countAccessibleWorkspaces } from "@/features/workspaces/server/accessible-workspaces";
 import { isValidWorkspaceSlug, normalizeWorkspaceSlug } from "@/features/workspaces/lib/slug";
+import { isSlugAvailable } from "@/features/workspaces/server/slug-availability";
 import {
   findReceivedInvitationById,
   listReceivedInvitations,
@@ -81,7 +82,10 @@ export async function getWorkspace(workspaceId: string) {
 
 const SLUG_RETRY_ATTEMPTS = 10;
 
-/** Slugs are never reused after archive (global unique). Archived rows keep their slug; new workspaces get suffixes. */
+/**
+ * Finds a unique slug derived from name. Checks both Workspace.slug and WorkspaceSlugAlias.slug
+ * so generated slugs never collide with existing aliases either.
+ */
 async function resolveAvailableSlug(name: string): Promise<string> {
   const base = normalizeWorkspaceSlug(name);
 
@@ -91,9 +95,8 @@ async function resolveAvailableSlug(name: string): Promise<string> {
 
   for (let attempt = 0; attempt < SLUG_RETRY_ATTEMPTS; attempt += 1) {
     const slug = attempt === 0 ? base : `${base}-${attempt + 1}`;
-    const existingSlug = await prisma.workspace.findUnique({ where: { slug } });
 
-    if (!existingSlug) {
+    if (await isSlugAvailable(slug)) {
       return slug;
     }
   }
@@ -127,9 +130,7 @@ export async function createWorkspace(
   }
 
   if (input.slug) {
-    const existingSlug = await prisma.workspace.findUnique({ where: { slug } });
-
-    if (existingSlug) {
+    if (!(await isSlugAvailable(slug))) {
       throw new WorkspaceError("Workspace slug is already taken.");
     }
   }

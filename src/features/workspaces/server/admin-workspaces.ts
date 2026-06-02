@@ -12,6 +12,7 @@ import {
   updateWorkspaceRecord,
 } from "@/features/workspaces/server/repository";
 import { isValidWorkspaceSlug, normalizeWorkspaceSlug } from "@/features/workspaces/lib/slug";
+import { isSlugAvailable, recordSlugAlias } from "@/features/workspaces/server/slug-availability";
 import { buildPaginatedResult, toPrismaSkipTake } from "@/lib/pagination";
 import type { PaginatedResult, PaginationParams } from "@/lib/pagination";
 import { isPlatformAdmin } from "@/server/permissions/require-workspace";
@@ -182,10 +183,13 @@ export async function adminUpdateWorkspace(
     throw new WorkspaceError("Invalid workspace slug.");
   }
 
-  const slugOwner = await prisma.workspace.findUnique({ where: { slug } });
-
-  if (slugOwner && slugOwner.id !== workspaceId) {
+  if (!(await isSlugAvailable(slug, workspaceId))) {
     throw new WorkspaceError("Workspace slug is already taken.");
+  }
+
+  const oldSlug = workspace.slug;
+  if (oldSlug !== slug) {
+    await recordSlugAlias(workspaceId, oldSlug);
   }
 
   const updated = await updateWorkspaceRecord(workspaceId, { name, slug });

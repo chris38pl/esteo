@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { cookies } from "next/headers";
 
 import { prisma } from "@/db/client";
@@ -7,6 +8,7 @@ import {
   getFirstOwnedWorkspace,
 } from "@/features/workspaces/server/accessible-workspaces";
 import { ACTIVE_WORKSPACE_COOKIE } from "@/server/workspaces/constants";
+import type { Workspace } from "@prisma/client";
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -124,3 +126,56 @@ export async function isWorkspaceAccessible(
   const accessible = await getAccessibleWorkspaces(userId);
   return accessible.some((workspace) => workspace.id === workspaceId);
 }
+
+export type ResolvedWorkspaceBySlug = {
+  workspace: Workspace;
+  /** Always the current canonical slug (Workspace.slug). */
+  canonicalSlug: string;
+  /** True when the URL slug matched a WorkspaceSlugAlias, not the current Workspace.slug. */
+  matchedViaAlias: boolean;
+};
+
+/**
+ * Resolves a workspace by URL slug.
+ *
+ * Lookup order:
+ *  1. Direct match on Workspace.slug for accessible workspaces.
+ *  2. Match on WorkspaceSlugAlias.slug (old slug after rename).
+ *
+ * Returns null if the slug is unknown or the user has no access to the matched workspace.
+ *
+ * Memoised via React cache() so the outer (dashboard) layout and the inner
+ * [workspaceSlug] layout share one DB round-trip per request.
+ */
+export const resolveWorkspaceBySlug = cache(
+  async (slug: string, userId: string): Promise<ResolvedWorkspaceBySlug | null> => {
+    const accessible = await getAccessibleWorkspaces(userId);
+
+    // 1. Direct slug match among accessible workspaces
+    const direct = accessible.find((w) => w.slug === slug);
+    if (direct) {
+      return { workspace: direct, canonicalSlug: direct.slug, matchedViaAlias: false };
+    }
+
+    // 2. Alias lookup
+    const alias = await prisma.workspaceSlugAlias.findUnique({
+      where: { slug },
+      include: { workspace: true },
+    });
+
+    if (!alias || alias.workspace.deletedAt) {
+      return null;
+    }
+
+    const isAccessible = accessible.some((w) => w.id === alias.workspaceId);
+    if (!isAccessible) {
+      return null;
+    }
+
+    return {
+      workspace: alias.workspace,
+      canonicalSlug: alias.workspace.slug,
+      matchedViaAlias: true,
+    };
+  },
+);

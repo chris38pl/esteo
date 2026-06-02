@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { navItems } from "./nav-config";
 import type { NavItemKey } from "./nav-config";
+import { useWorkspaceContext } from "./workspace-context";
 import { sidebarInsetClass } from "./sidebar-layout";
 import { useSidebarLayout } from "./sidebar-layout-context";
 import { useSidebarStore } from "./sidebar-store";
@@ -18,15 +19,18 @@ function isNavItemActive(
   pathname: string,
   section: string | null,
   href: string,
+  workspaceSlug: string | null,
 ) {
-  const dashboardPath = `/${locale}/dashboard`;
+  const workspaceDashboardPath = workspaceSlug
+    ? `/${locale}/dashboard/${workspaceSlug}`
+    : `/${locale}/dashboard`;
 
   if (key === "dashboard") {
-    return pathname === dashboardPath && section !== "requests";
+    return pathname === workspaceDashboardPath && section !== "requests";
   }
 
   if (key === "requests") {
-    return pathname === dashboardPath && section === "requests";
+    return pathname === workspaceDashboardPath && section === "requests";
   }
 
   return pathname === href;
@@ -46,6 +50,8 @@ export function SidebarNav({
   const collapsedFromStore = useSidebarStore((s) => s.collapsed);
   const collapsed = collapsedOverride ?? collapsedFromStore;
   const { inDrawer } = useSidebarLayout();
+  const { activeWorkspace } = useWorkspaceContext();
+  const workspaceSlug = activeWorkspace?.slug ?? null;
 
   return (
     <TooltipProvider>
@@ -55,8 +61,8 @@ export function SidebarNav({
       >
         <ul className="space-y-1">
           {navItems.map((item) => {
-            const href = item.href(locale);
-            const active = isNavItemActive(item.key, locale, pathname, section, href);
+            const href = item.href(locale, workspaceSlug);
+            const active = isNavItemActive(item.key, locale, pathname, section, href, workspaceSlug);
             const label = t(item.labelKey);
             const disabled = item.disabled === true;
 

@@ -166,10 +166,22 @@ model Workspace {
   auditLogs           AuditLog[]
   lastActiveUsers     User[]              @relation("UserLastActiveWorkspace")
   documentFieldValues DocumentFieldValue[]
+  slugAliases         WorkspaceSlugAlias[]
 
   @@index([billingAccountId])
   @@index([ownerId])
   @@index([deletedAt])
+}
+
+model WorkspaceSlugAlias {
+  id          String   @id @default(cuid())
+  workspaceId String
+  slug        String   @unique
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
 }
 
 model WorkspaceSettings {

@@ -10,7 +10,7 @@ import { requireAuth } from "@/server/auth/require-auth";
 export default async function AccountPage({
   params,
 }: {
-  params: Promise<{ locale: string }>;
+  params: Promise<{ locale: string; workspaceSlug: string }>;
 }) {
   const { locale: localeParam } = await params;
   const resolvedLocale: Locale = await resolveRequestLocale(localeParam);

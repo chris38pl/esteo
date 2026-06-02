@@ -76,7 +76,7 @@ export function WorkspaceSwitcherMenuContent({
         <DropdownMenuItem
           key={workspace.id}
           className="gap-2 text-xs"
-          onSelect={() => switchWorkspace(workspace.id)}
+          onSelect={() => switchWorkspace(workspace.slug)}
         >
           <WorkspaceAvatar name={workspace.name} size={20} className="rounded-md ring-0" />
           <span className="min-w-0 flex-1 truncate">{workspace.name}</span>
@@ -94,7 +94,7 @@ export function WorkspaceSwitcherMenuContent({
       </DropdownMenuItem>
       {activeWorkspace?.isOwner ? (
         <DropdownMenuItem asChild className="gap-2 text-xs">
-          <Link href={`/${locale}/dashboard/workspaces/settings`}>
+          <Link href={`/${locale}/dashboard/${activeWorkspace.slug}/settings`}>
             <Settings className="size-3.5 text-muted-foreground" />
             {t("account.workspaceSettings")}
           </Link>

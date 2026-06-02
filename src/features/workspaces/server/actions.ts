@@ -146,10 +146,7 @@ export async function archiveWorkspaceAction(
     const user = await requireAuth(locale);
     const { remainingAccessibleCount } = await archiveWorkspace(user, workspaceId);
 
-    revalidatePath(`/${locale}/dashboard`);
-    revalidatePath(`/${locale}/dashboard/workspaces/settings`);
-    revalidatePath(`/${locale}/dashboard/invitations`);
-    revalidatePath(`/${locale}/dashboard/account`);
+    revalidatePath(`/${locale}/dashboard`, "layout");
 
     let redirectTo: string | null = null;
 
@@ -178,8 +175,7 @@ export async function updateWorkspaceSettingsAction(
   try {
     const user = await requireAuth(locale);
     const settings = await updateWorkspaceSettings(user, workspaceId, input);
-    revalidatePath(`/${locale}/dashboard`);
-    revalidatePath(`/${locale}/dashboard/workspaces/settings`);
+    revalidatePath(`/${locale}/dashboard`, "layout");
     return { success: true as const, data: settings };
   } catch (error) {
     return toActionError(error);
@@ -210,8 +206,7 @@ export async function updateWorkspaceEstimateSectionsAction(
       branding: mergedBranding,
     });
 
-    revalidatePath(`/${locale}/dashboard`);
-    revalidatePath(`/${locale}/dashboard/workspaces/settings`);
+    revalidatePath(`/${locale}/dashboard`, "layout");
 
     return { success: true as const, data: settings };
   } catch (error) {
@@ -240,8 +235,7 @@ export async function resetWorkspaceEstimateSectionsAction(
       branding: mergedBranding,
     });
 
-    revalidatePath(`/${locale}/dashboard`);
-    revalidatePath(`/${locale}/dashboard/workspaces/settings`);
+    revalidatePath(`/${locale}/dashboard`, "layout");
 
     return { success: true as const, data: settings };
   } catch (error) {
@@ -262,8 +256,7 @@ export async function updateWorkspaceProfileAction(
     const user = await requireAuth(locale);
     const parsed = updateWorkspaceProfileSchema.parse(input);
     const workspace = await updateWorkspaceProfile(user, workspaceId, parsed);
-    revalidatePath(`/${locale}/dashboard`);
-    revalidatePath(`/${locale}/dashboard/workspaces/settings`);
+    revalidatePath(`/${locale}/dashboard`, "layout");
     return { success: true as const, data: workspace };
   } catch (error) {
     return toActionError(error);
@@ -305,9 +298,7 @@ export async function acceptWorkspaceInvitationAction(
     const user = await requireAuth(locale);
     const invitation = await acceptWorkspaceInvitation(user, token);
     await persistActiveWorkspace(user.id, invitation.workspaceId);
-    revalidatePath(`/${locale}/dashboard`);
-    revalidatePath(`/${locale}/dashboard/invitations`);
-    revalidatePath(`/${locale}/dashboard/account`);
+    revalidatePath(`/${locale}/dashboard`, "layout");
     return { success: true as const, data: invitation };
   } catch (error) {
     return toActionError(error);
@@ -332,9 +323,7 @@ export async function acceptReceivedInvitationAction(
     const user = await requireAuth(locale);
     const invitation = await acceptWorkspaceInvitationById(user, invitationId);
     await persistActiveWorkspace(user.id, invitation.workspaceId);
-    revalidatePath(`/${locale}/dashboard`);
-    revalidatePath(`/${locale}/dashboard/invitations`);
-    revalidatePath(`/${locale}/dashboard/account`);
+    revalidatePath(`/${locale}/dashboard`, "layout");
     return { success: true as const, data: invitation };
   } catch (error) {
     return toActionError(error);
@@ -348,9 +337,7 @@ export async function declineReceivedInvitationAction(
   try {
     const user = await requireAuth(locale);
     const invitation = await declineWorkspaceInvitation(user, invitationId);
-    revalidatePath(`/${locale}/dashboard`);
-    revalidatePath(`/${locale}/dashboard/invitations`);
-    revalidatePath(`/${locale}/dashboard/account`);
+    revalidatePath(`/${locale}/dashboard`, "layout");
     return { success: true as const, data: invitation };
   } catch (error) {
     return toActionError(error);
@@ -364,8 +351,7 @@ export async function dismissInvitationPromptAction(
   try {
     const user = await requireAuth(locale);
     const invitation = await dismissInvitationPrompt(user, invitationId);
-    revalidatePath(`/${locale}/dashboard`);
-    revalidatePath(`/${locale}/dashboard/account`);
+    revalidatePath(`/${locale}/dashboard`, "layout");
     return { success: true as const, data: invitation };
   } catch (error) {
     return toActionError(error);
@@ -469,8 +455,7 @@ export async function leaveWorkspaceAction(
     const user = await requireAuth(locale);
     const { remainingAccessibleCount } = await leaveWorkspace(user, workspaceId);
 
-    revalidatePath(`/${locale}/dashboard`);
-    revalidatePath(`/${locale}/dashboard/workspaces/settings`);
+    revalidatePath(`/${locale}/dashboard`, "layout");
 
     let redirectTo: string | null = null;
 

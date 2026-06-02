@@ -29,48 +29,34 @@ function resolvePageLabelKey(
   pathname: string,
   locale: Locale,
   section: string | null,
+  workspaceSlug: string | null,
 ): PageLabelKey | null {
   const base = `/${locale}/dashboard`;
+  const wsBase = workspaceSlug ? `${base}/${workspaceSlug}` : null;
 
-  if (pathname === `${base}/billing`) {
-    return "billing";
+  // Workspace-scoped pages (new slug-based paths)
+  if (wsBase) {
+    if (pathname === `${wsBase}/billing`) return "billing";
+    if (pathname === `${wsBase}/settings`) return "settings";
+    if (pathname === `${wsBase}/account`) return "account";
+    if (pathname === wsBase && section === "requests") return "requests";
+    if (pathname === wsBase) return null;
   }
-  if (pathname === `${base}/workspaces/settings`) {
-    return "settings";
-  }
-  if (pathname === `${base}/onboarding`) {
-    return "onboarding";
-  }
-  if (pathname === `${base}/workspaces/new`) {
-    return "newWorkspace";
-  }
-  if (pathname === `${base}/pending-access`) {
-    return "pendingAccess";
-  }
-  if (pathname === `${base}/invitations`) {
-    return "invitations";
-  }
-  if (pathname === `${base}/account`) {
-    return "account";
-  }
-  if (pathname === `${base}/admin/account-inspector`) {
-    return "accountInspector";
-  }
-  if (pathname === `${base}/admin/users`) {
-    return "adminUsers";
-  }
-  if (pathname === `${base}/admin/workspaces`) {
-    return "adminWorkspaces";
-  }
-  if (pathname === `${base}/admin/industry-fields`) {
-    return "adminIndustryFields";
-  }
-  if (pathname === base && section === "requests") {
-    return "requests";
-  }
-  if (pathname === base) {
-    return null;
-  }
+
+  // Legacy paths (kept for the backward-compat redirect period)
+  if (pathname === `${base}/billing`) return "billing";
+  if (pathname === `${base}/workspaces/settings`) return "settings";
+  if (pathname === `${base}/account`) return "account";
+
+  // Workspace-free paths
+  if (pathname === `${base}/onboarding`) return "onboarding";
+  if (pathname === `${base}/workspaces/new`) return "newWorkspace";
+  if (pathname === `${base}/pending-access`) return "pendingAccess";
+  if (pathname === `${base}/invitations`) return "invitations";
+  if (pathname === `${base}/admin/account-inspector`) return "accountInspector";
+  if (pathname === `${base}/admin/users`) return "adminUsers";
+  if (pathname === `${base}/admin/workspaces`) return "adminWorkspaces";
+  if (pathname === `${base}/admin/industry-fields`) return "adminIndustryFields";
 
   return null;
 }
@@ -82,12 +68,14 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
   const t = useTranslations("navbar.breadcrumbs");
   const { activeWorkspace } = useWorkspaceContext();
 
-  const dashboardHref = `/${locale}/dashboard`;
-  const pageKey = resolvePageLabelKey(pathname, locale, section);
+  const workspaceSlug = activeWorkspace?.slug ?? null;
+  const dashboardHref = workspaceSlug
+    ? `/${locale}/dashboard/${workspaceSlug}`
+    : `/${locale}/dashboard`;
+  const pageKey = resolvePageLabelKey(pathname, locale, section, workspaceSlug);
   const isAdminPath = pathname.startsWith(`/${locale}/dashboard/admin`);
 
-  const workspaceLabel =
-    activeWorkspace?.name?.trim() || t("workspace");
+  const workspaceLabel = activeWorkspace?.name?.trim() || t("workspace");
 
   const crumbs: BreadcrumbItem[] = [
     { label: t("dashboard"), href: dashboardHref },

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 
 import type { WorkspaceAppearanceTheme } from "@prisma/client";
 
-import { setActiveWorkspaceAction } from "@/server/workspaces/actions";
 import type { ReceivedInvitationView } from "@/features/workspaces/components/invitation-types";
 import type { BillingSidebarState } from "@/features/billing/billing-sidebar-state";
 import type { WorkspaceMemberPreview } from "@/features/workspaces/server/get-active-workspace-card-data";
@@ -32,7 +31,8 @@ type WorkspaceContextValue = {
   locale: Locale;
   pendingInvitationCount: number;
   modalInvitation: ReceivedInvitationView | null;
-  switchWorkspace: (workspaceId: string) => void;
+  /** Navigate to a workspace by its current slug. */
+  switchWorkspace: (workspaceSlug: string) => void;
   isSwitching: boolean;
 };
 
@@ -88,16 +88,14 @@ export function WorkspaceProvider({
       pendingInvitationCount,
       modalInvitation,
       isSwitching,
-      switchWorkspace(workspaceId: string) {
-        if (workspaceId === activeWorkspaceId) {
+      switchWorkspace(workspaceSlug: string) {
+        const target = workspaces.find((w) => w.slug === workspaceSlug);
+        if (!target || target.id === activeWorkspaceId) {
           return;
         }
 
-        startTransition(async () => {
-          const result = await setActiveWorkspaceAction(workspaceId, locale);
-          if (result.success) {
-            router.refresh();
-          }
+        startTransition(() => {
+          router.push(`/${locale}/dashboard/${workspaceSlug}`);
         });
       },
     }),

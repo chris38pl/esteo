@@ -11,7 +11,6 @@ import {
 } from "@/server/permissions/entitlements";
 import { PermissionError } from "@/server/permissions/errors";
 import { requireRole } from "@/server/permissions/require-workspace";
-import { resolveActiveWorkspace } from "@/server/workspaces/active-workspace";
 
 export type DashboardAccessState = {
   accessibleCount: number;
@@ -45,8 +44,8 @@ function newWorkspacePath(locale: Locale): string {
   return `/${locale}/dashboard/workspaces/new`;
 }
 
-function workspaceSettingsPath(locale: Locale): string {
-  return `/${locale}/dashboard/workspaces/settings`;
+function workspaceSettingsPath(locale: Locale, workspaceSlug: string): string {
+  return `/${locale}/dashboard/${workspaceSlug}/settings`;
 }
 
 /**
@@ -117,27 +116,6 @@ export async function checkNewWorkspaceAccess(locale: Locale): Promise<AccessChe
   return { user, redirectTo: null };
 }
 
-/** Guard for /dashboard/workspaces/settings — active workspace owners only. */
-export async function checkWorkspaceSettingsAccess(locale: Locale): Promise<AccessCheckResult> {
-  const user = await requireAuth(locale);
-  const noAccessUrl = await resolveNoAccessUrl(locale, user);
-  if (noAccessUrl) return { user, redirectTo: noAccessUrl };
-
-  const activeWorkspaceId = await resolveActiveWorkspace(user.id);
-  if (!activeWorkspaceId) return { user, redirectTo: dashboardPath(locale) };
-
-  try {
-    await requireRole(user, activeWorkspaceId, "OWNER");
-  } catch (error) {
-    if (error instanceof PermissionError) {
-      return { user, redirectTo: dashboardPath(locale) };
-    }
-    throw error;
-  }
-
-  return { user, redirectTo: null };
-}
-
 // ─── Legacy throwing guards (kept for reference) ─────────────────────────────
 //
 // These call redirect() directly. Prefer the check* variants above in layouts.
@@ -173,13 +151,6 @@ export async function assertPendingAccessAccess(locale: Locale): Promise<User> {
 /** @deprecated Use checkNewWorkspaceAccess in layouts. */
 export async function assertNewWorkspaceAccess(locale: Locale): Promise<User> {
   const { user, redirectTo } = await checkNewWorkspaceAccess(locale);
-  if (redirectTo) redirect(redirectTo);
-  return user;
-}
-
-/** @deprecated Use checkWorkspaceSettingsAccess in layouts. */
-export async function assertWorkspaceSettingsAccess(locale: Locale): Promise<User> {
-  const { user, redirectTo } = await checkWorkspaceSettingsAccess(locale);
   if (redirectTo) redirect(redirectTo);
   return user;
 }
