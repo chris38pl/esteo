@@ -23,7 +23,9 @@ type PageLabelKey =
   | "accountInspector"
   | "adminUsers"
   | "adminWorkspaces"
-  | "adminIndustryFields";
+  | "adminIndustryFields"
+  | "adminEstimateRequests"
+  | "adminEstimateRequestDetail";
 
 function resolvePageLabelKey(
   pathname: string,
@@ -57,6 +59,8 @@ function resolvePageLabelKey(
   if (pathname === `${base}/admin/users`) return "adminUsers";
   if (pathname === `${base}/admin/workspaces`) return "adminWorkspaces";
   if (pathname === `${base}/admin/industry-fields`) return "adminIndustryFields";
+  if (pathname === `${base}/admin/estimate-requests`) return "adminEstimateRequests";
+  if (pathname.startsWith(`${base}/admin/estimate-requests/`)) return "adminEstimateRequestDetail";
 
   return null;
 }

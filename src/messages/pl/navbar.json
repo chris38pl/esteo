@@ -15,7 +15,9 @@
     "accountInspector": "Inspektor konta",
     "adminUsers": "Użytkownicy",
     "adminWorkspaces": "Przestrzenie",
-    "adminIndustryFields": "Pola branżowe"
+    "adminIndustryFields": "Pola branżowe",
+    "adminEstimateRequests": "Zapytania o wycenę",
+    "adminEstimateRequestDetail": "Szczegóły zapytania"
   },
   "notifications": {
     "label": "Powiadomienia",

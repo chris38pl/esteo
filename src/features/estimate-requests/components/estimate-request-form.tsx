@@ -119,7 +119,7 @@ export function EstimateRequestForm({
   if (requestNumber !== null) {
     return (
       <div className="rounded-2xl border border-white/10 bg-slate-950/80 p-8 text-center shadow-2xl shadow-black/30">
-        <div className="mx-auto mb-5 grid size-14 place-items-center rounded-full bg-orange-500/15 text-orange-400">
+        <div className="mx-auto mb-5 grid size-14 place-items-center rounded-full bg-sky-500/15 text-sky-300">
           <CheckCircle2 className="size-7" />
         </div>
         <h2 className="text-2xl font-bold text-white">{t("success.title")}</h2>
@@ -127,11 +127,11 @@ export function EstimateRequestForm({
           {t("success.description", { workspaceName: pageData.workspace.name })}
         </p>
         {requestNumber && (
-          <div className="mx-auto mt-6 max-w-xs rounded-xl border border-orange-500/20 bg-orange-500/10 px-6 py-4">
-            <p className="text-xs font-medium uppercase tracking-widest text-orange-400/70">
+          <div className="mx-auto mt-6 max-w-xs rounded-xl border border-sky-500/20 bg-sky-500/10 px-6 py-4">
+            <p className="text-xs font-medium uppercase tracking-widest text-sky-300/70">
               {t("success.requestNumberLabel")}
             </p>
-            <p className="mt-1 font-mono text-2xl font-bold tracking-wider text-orange-300">
+            <p className="mt-1 font-mono text-2xl font-bold tracking-wider text-sky-200">
               {requestNumber}
             </p>
             <p className="mt-2 text-xs leading-5 text-slate-500">

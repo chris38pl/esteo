@@ -1,8 +1,9 @@
 import type { LucideIcon } from "lucide-react";
-import { BookOpen, Building2, Layers3, UserRoundSearch, Users } from "lucide-react";
+import { BookOpen, Building2, ClipboardList, Layers3, UserRoundSearch, Users } from "lucide-react";
 
 export type AdminNavItemKey =
   | "accountInspector"
+  | "estimateRequests"
   | "industryFields"
   | "users"
   | "workspaces"
@@ -27,6 +28,12 @@ export const adminNavItems: AdminNavItem[] = [
     icon: Building2,
     href: (locale) => `/${locale}/dashboard/admin/workspaces`,
     labelKey: "admin.nav.workspaces",
+  },
+  {
+    key: "estimateRequests",
+    icon: ClipboardList,
+    href: (locale) => `/${locale}/dashboard/admin/estimate-requests`,
+    labelKey: "admin.nav.estimateRequests",
   },
   {
     key: "accountInspector",

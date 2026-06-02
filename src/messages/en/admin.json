@@ -147,6 +147,73 @@
       "invalidOptionsJson": "Options must be valid JSON."
     }
   },
+  "estimateRequests": {
+    "title": "Estimate Requests",
+    "subtitle": "Browse all estimate requests submitted across workspaces.",
+    "searchPlaceholder": "Search by number or workspace\u2026",
+    "empty": "No estimate requests match your search.",
+    "bar": {
+      "allRequests": "All requests"
+    },
+    "stats": {
+      "workspace": "Workspace",
+      "status": "Status",
+      "city": "City",
+      "attachments": "Attachments",
+      "created": "Created"
+    },
+    "status": {
+      "PENDING": "Pending",
+      "PROCESSING": "Processing",
+      "COMPLETED": "Completed",
+      "FAILED": "Failed"
+    },
+    "industries": {
+      "CONSTRUCTION": "Construction",
+      "ELECTRICAL": "Electrical",
+      "CARPENTRY": "Carpentry",
+      "PLUMBING": "Plumbing",
+      "OTHER": "Other"
+    },
+    "actions": {
+      "menu": "Request actions",
+      "view": "View",
+      "delete": "Delete",
+      "deleteConfirm": "Delete request",
+      "deleting": "Deleting…",
+      "cancel": "Cancel"
+    },
+    "delete": {
+      "title": "Delete {requestNumber}?",
+      "description": "This soft-deletes the estimate request. It will disappear from lists but can be restored from the database if needed."
+    },
+    "detail": {
+      "backToList": "Back to requests",
+      "requestLabel": "Request",
+      "customerSection": "Customer",
+      "projectSection": "Project",
+      "addressSection": "Location",
+      "workspaceSection": "Workspace",
+      "metaSection": "Metadata",
+      "name": "Full name",
+      "email": "Email",
+      "phone": "Phone",
+      "description": "Project description",
+      "preferredStartDate": "Preferred start date",
+      "streetAddress": "Street address",
+      "city": "City",
+      "postalCode": "Postal code",
+      "voivodeship": "Voivodeship",
+      "workspaceName": "Workspace",
+      "industry": "Industry",
+      "slug": "URL slug",
+      "requestId": "Request ID",
+      "createdAt": "Created",
+      "updatedAt": "Last updated",
+      "attachments": "Attachments",
+      "attachmentCount": "{count, plural, =0 {None} one {# file} other {# files}}"
+    }
+  },
   "estimateSections": {
     "title": "Estimate section templates (read-only)",
     "subtitle": "Default estimate sections and rules shipped per industry. Workspaces can override these under workspace settings → Rules.",

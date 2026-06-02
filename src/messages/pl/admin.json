@@ -147,6 +147,73 @@
       "invalidOptionsJson": "Opcje muszą być poprawnym JSON."
     }
   },
+  "estimateRequests": {
+    "title": "Zapytania o wycen\u0119",
+    "subtitle": "Przegl\u0105daj wszystkie zapytania przes\u0142ane w ramach przestrzeni.",
+    "searchPlaceholder": "Szukaj po numerze lub przestrzeni\u2026",
+    "empty": "Brak zapyta\u0144 pasuj\u0105cych do wyszukiwania.",
+    "bar": {
+      "allRequests": "Wszystkie zapytania"
+    },
+    "stats": {
+      "workspace": "Przestrze\u0144",
+      "status": "Status",
+      "city": "Miasto",
+      "attachments": "Za\u0142\u0105czniki",
+      "created": "Utworzono"
+    },
+    "status": {
+      "PENDING": "Oczekuj\u0105ce",
+      "PROCESSING": "W toku",
+      "COMPLETED": "Zako\u0144czone",
+      "FAILED": "B\u0142\u0105d"
+    },
+    "industries": {
+      "CONSTRUCTION": "Budownictwo",
+      "ELECTRICAL": "Elektryka",
+      "CARPENTRY": "Stolarstwo",
+      "PLUMBING": "Hydraulika",
+      "OTHER": "Inne"
+    },
+    "actions": {
+      "menu": "Akcje zapytania",
+      "view": "Szczeg\u00f3\u0142y",
+      "delete": "Usu\u0144",
+      "deleteConfirm": "Usu\u0144 zapytanie",
+      "deleting": "Usuwanie\u2026",
+      "cancel": "Anuluj"
+    },
+    "delete": {
+      "title": "Usun\u0105\u0107 {requestNumber}?",
+      "description": "To ukrywa (soft delete) zapytanie o wycen\u0119. Zniknie z list, ale w razie potrzeby mo\u017cna je przywr\u00f3ci\u0107 w bazie."
+    },
+    "detail": {
+      "backToList": "Wr\u00f3\u0107 do listy",
+      "requestLabel": "Zapytanie",
+      "customerSection": "Klient",
+      "projectSection": "Projekt",
+      "addressSection": "Lokalizacja",
+      "workspaceSection": "Przestrze\u0144",
+      "metaSection": "Metadane",
+      "name": "Imi\u0119 i nazwisko",
+      "email": "E-mail",
+      "phone": "Telefon",
+      "description": "Opis projektu",
+      "preferredStartDate": "Preferowany termin",
+      "streetAddress": "Adres",
+      "city": "Miasto",
+      "postalCode": "Kod pocztowy",
+      "voivodeship": "Wojew\u00f3dztwo",
+      "workspaceName": "Przestrze\u0144",
+      "industry": "Bran\u017ca",
+      "slug": "Slug URL",
+      "requestId": "ID zapytania",
+      "createdAt": "Utworzono",
+      "updatedAt": "Zaktualizowano",
+      "attachments": "Za\u0142\u0105czniki",
+      "attachmentCount": "{count, plural, =0 {Brak} one {# plik} few {# pliki} many {# plik\u00f3w} other {# pliku}}"
+    }
+  },
   "estimateSections": {
     "title": "Szablony sekcji kosztorysu (tylko podgląd)",
     "subtitle": "Domyślne sekcje i reguły per branża. Przestrzenie mogą je nadpisać w ustawieniach → Reguły.",

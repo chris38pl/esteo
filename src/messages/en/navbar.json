@@ -15,7 +15,9 @@
     "accountInspector": "Account inspector",
     "adminUsers": "Users",
     "adminWorkspaces": "Workspaces",
-    "adminIndustryFields": "Industry fields"
+    "adminIndustryFields": "Industry fields",
+    "adminEstimateRequests": "Estimate Requests",
+    "adminEstimateRequestDetail": "Request detail"
   },
   "notifications": {
     "label": "Notifications",

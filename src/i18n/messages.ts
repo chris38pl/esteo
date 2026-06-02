@@ -39,6 +39,7 @@ export type Namespace =
   | "admin.users"
   | "admin.workspaces"
   | "admin.industryFields"
+  | "admin.estimateRequests"
   | "workspaces.invitations";
 
 type MessagesByNamespace = {
