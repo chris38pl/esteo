@@ -51,13 +51,13 @@ export function IndustryFieldInput({
                 aria-pressed={selected}
                 onClick={() => onChange(field.key, option.value)}
                 className={cn(
-                  "group flex min-h-20 flex-col items-center justify-center rounded-2xl border bg-background/65 p-3 text-center shadow-xs transition dark:bg-input/20",
+                  "group flex min-h-20 flex-col items-center justify-center rounded-2xl border bg-background/65 p-3 text-center shadow-xs transition dark:bg-input/20 cursor-pointer",
                   "border-input hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
-                  selected && "border-primary/45 bg-primary/10 shadow-[0_0_0_1px_rgba(59,130,246,0.22)]",
+                  selected && "border-primary/45 bg-primary/20 dark:bg-primary/10 shadow-[0_0_0_1px_rgba(59,130,246,0.22)]",
                 )}
               >
                 <Icon className={cn("mb-3 size-4", selected ? "text-primary" : "text-muted-foreground")} />
-                <span className="block text-xs font-semibold text-foreground">
+                <span className="block text-xs text-foreground">
                   {getIndustryOptionLabel(field.key, option.value, locale, "label")}
                 </span>
               </button>

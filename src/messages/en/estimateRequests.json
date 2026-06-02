@@ -1,7 +1,8 @@
 {
   "hero": {
     "eyebrow": "Free estimate",
-    "title": "Discover the cost of your project",
+    "title": "Discover the cost of your ",
+    "titleHighlight": "project.",
     "description": "Fill in the form and {workspaceName} will prepare a tailored estimate quickly and without obligation.",
     "benefits": {
       "fast": {
@@ -66,6 +67,8 @@
     "label": "Add photos (optional)",
     "title": "Drag files or click to add",
     "hint": "Photos, plans, PDF, PNG, JPEG, DOCX. Up to 10 MB and max. 10 files.",
+    "addFile": "Add file",
+    "fileCount": "{current}/{max}",
     "remove": "Remove file",
     "notUploadedYet": "At this stage files are only previewed in the form and will not be sent yet.",
     "errors": {

@@ -106,7 +106,7 @@ export default async function PublicEstimateRequestPage({ params }: { params: Pa
             </p>
             <h1 className="max-w-xl text-4xl font-black leading-[0.95] tracking-tight text-foreground md:text-6xl">
               {t("hero.title")}
-              <span className="text-primary">.</span>
+              <span className="text-primary">{t("hero.titleHighlight")}</span>
             </h1>
             <p className="mt-5 max-w-md text-sm leading-6 text-muted-foreground">
               {t("hero.description", { workspaceName: pageData.workspace.name })}

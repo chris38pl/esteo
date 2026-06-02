@@ -1,7 +1,8 @@
 {
   "hero": {
     "eyebrow": "Darmowa wycena",
-    "title": "Poznaj koszt swojego projektu",
+    "title": "Poznaj koszt swojego ",
+    "titleHighlight": "projektu.",
     "description": "Wypełnij formularz, a zespół {workspaceName} przygotuje indywidualną wycenę szybko i bez zobowiązań.",
     "benefits": {
       "fast": {
@@ -66,6 +67,8 @@
     "label": "Dodaj zdjęcia (opcjonalnie)",
     "title": "Przeciągnij pliki lub kliknij, aby dodać",
     "hint": "Zdjęcia, plany, rzuty PDF, PNG, JPEG, DOCX. Do 10 MB i maks. 10 plików.",
+    "addFile": "Dodaj plik",
+    "fileCount": "{current}/{max}",
     "remove": "Usuń plik",
     "notUploadedYet": "Na tym etapie pliki są tylko podglądem w formularzu i nie zostaną jeszcze wysłane.",
     "errors": {
