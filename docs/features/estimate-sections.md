@@ -64,5 +64,7 @@ Section templates and rules feed **both**:
 1. **Draft generation** — background job after an estimate request is submitted ([`estimate-ai.md`](../architecture/estimate-ai.md)).
 2. **Agentic edit** — AI assistant in the estimate view/edit screen ([`estimates.md`](estimates.md)).
 
+Industry-specific role, scope checklist, and **scope expansion** rules live separately in [`industry-ai-profiles.md`](industry-ai-profiles.md).
+
 On the estimate editor, a **rules applied** indicator is shown when active rules or sections affect prompts. Clicking it opens workspace settings → Rules tab (`?tab=rules`).
 

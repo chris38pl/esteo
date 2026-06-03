@@ -1,6 +1,9 @@
 import type { EstimateAgentPatch } from "@/ai/schemas/estimate-agent-patch";
 import { proposeEstimateEdit } from "@/ai/services/propose-estimate-edit";
 import { prisma } from "@/db/client";
+import { loadEstimateGenerationContext } from "@/features/workspaces/lib/load-estimate-generation-context";
+import type { Locale } from "@/lib/locale";
+import { isLocale } from "@/lib/locale";
 import {
   assertCanCreateEstimate,
   assertCanUseAiAssistant,
@@ -130,16 +133,12 @@ export async function proposeEdit(input: {
     throw new Error("VERSION_NOT_FOUND");
   }
 
-  const workspaceData = await prisma.workspace.findUnique({
-    where: { id: input.workspaceId },
-    include: {
-      settings: true,
-      rules: {
-        where: { active: true, deletedAt: null },
-        orderBy: { sortOrder: "asc" },
-      },
-    },
-  });
+  const locale: Locale = isLocale(input.locale) ? input.locale : "pl";
+  const context = await loadEstimateGenerationContext(input.workspaceId, locale);
+
+  if (!context) {
+    throw new Error("WORKSPACE_NOT_FOUND");
+  }
 
   return proposeEstimateEdit({
     userMessage: input.message,
@@ -160,10 +159,7 @@ export async function proposeEdit(input: {
         })),
       })),
     },
-    companyDescription: workspaceData?.settings?.companyDescription,
-    aiInstructions: workspaceData?.settings?.aiInstructions,
-    rules: workspaceData?.rules.map((r) => ({ title: r.title, content: r.content })) ?? [],
-    locale: input.locale,
+    context,
   });
 }
 
@@ -320,6 +316,10 @@ async function applyPatch(
       }
     }
 
+    console.log(
+      JSON.stringify(patch, null, 2)
+    );
+
     if (patch.updates.length > 0) {
       for (const u of patch.updates) {
         const updateData: Record<string, unknown> = {};
@@ -329,6 +329,18 @@ async function applyPatch(
         if (u.unitPrice != null) updateData.unitPrice = u.unitPrice;
         if (u.vatRate != null) updateData.vatRate = u.vatRate;
         if (Object.keys(updateData).length) {
+        console.log("Updating item", u.itemId);
+        const item = await tx.estimateLineItem.findUnique({
+          where: {
+            id: u.itemId,
+          },
+        });
+
+        console.log("Item lookup:", item);
+          const existing = await tx.estimateLineItem.findUnique({
+            where: { id: u.itemId },
+          });
+          console.log("Exists?", !!existing);
           await tx.estimateLineItem.update({
             where: { id: u.itemId },
             data: updateData,

@@ -14,6 +14,10 @@ import {
   serializeEstimateForEditor,
   serializeVersionWithTree,
 } from "@/features/estimates/lib/serialize-estimate";
+import {
+  estimateAiRulesApplied,
+  loadEstimateGenerationContext,
+} from "@/features/workspaces/lib/load-estimate-generation-context";
 
 export default async function EstimateEditorPage({
   params,
@@ -58,6 +62,14 @@ export default async function EstimateEditorPage({
   const serializedTree = rawVersionTree ? serializeVersionWithTree(rawVersionTree) : null;
   const editorKey = `${activeVersionId ?? "none"}-${serializedTree?.updatedAt ?? "empty"}`;
 
+  const generationContext = await loadEstimateGenerationContext(
+    resolved.workspace.id,
+    resolvedLocale,
+  );
+  const rulesApplied = generationContext
+    ? estimateAiRulesApplied(generationContext)
+    : false;
+
   return (
     <EstimateEditor
       key={editorKey}
@@ -66,6 +78,7 @@ export default async function EstimateEditorPage({
       activeVersionId={activeVersionId ?? null}
       workspaceSlug={workspaceSlug}
       locale={resolvedLocale}
+      rulesApplied={rulesApplied}
     />
   );
 }

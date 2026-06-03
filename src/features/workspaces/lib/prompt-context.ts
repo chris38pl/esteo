@@ -19,7 +19,7 @@ export function formatCompanyContextBlock(
   }
 
   const capped = capCompanyDescriptionForPrompt(description);
-  return `## Company context\n${capped}`;
+  return `## Company Context\n${capped}`;
 }
 
 export function buildWorkspacePromptFromRules(
@@ -39,7 +39,7 @@ export function formatGeneralAiInstructionsBlock(
     return "";
   }
 
-  return `## Workspace rules\n${aiInstructions.trim()}`;
+  return `## Workspace Rules\n${aiInstructions.trim()}`;
 }
 
 export type PromptEstimateSection = {
@@ -59,8 +59,10 @@ export function formatEstimateStructureBlock(
   );
 
   return [
-    "## Estimate structure",
-    "Use these sections in order when applicable. Omit sections that are not relevant to the project scope.",
+    "## Estimate Structure",
+    "Use the sections below in this order with these exact titles when they apply to the project scope.",
+    "Do not invent unrelated section names when configured sections cover the work.",
+    "If a section is clearly out of scope, omit it or leave it without line items — do not rename sections arbitrarily.",
     lines.join("\n"),
   ].join("\n");
 }
@@ -77,7 +79,7 @@ export function formatSectionRulesBlock(
     (section) => `### ${section.title}\n${section.rule!.trim()}`,
   );
 
-  return ["## Section-specific rules", ...blocks].join("\n\n");
+  return ["## Section-Specific Rules", ...blocks].join("\n\n");
 }
 
 export function buildWorkspacePromptContext(input: {

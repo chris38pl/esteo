@@ -1,36 +1,66 @@
-import { buildWorkspacePromptContext } from "@/features/workspaces/lib/prompt-context";
+import { resolveIndustryAiProfileForPrompt } from "@/ai/config/industry-ai-profiles";
+import {
+  formatEstimateCompletenessBlock,
+  formatEstimationPrinciplesBlock,
+  formatIndustryRoleBlock,
+  formatOutputRulesBlock,
+  formatScopeChecklistBlock,
+  formatScopeExpansionRulesBlock,
+  formatQuantityDerivationRulesBlock
+} from "@/ai/lib/format-industry-profile-blocks";
+import type { EstimateGenerationContext } from "@/features/workspaces/lib/load-estimate-generation-context";
+import {
+  buildWorkspacePromptFromRules,
+  formatCompanyContextBlock,
+  formatEstimateStructureBlock,
+  formatGeneralAiInstructionsBlock,
+  formatSectionRulesBlock,
+} from "@/features/workspaces/lib/prompt-context";
+import type { Locale } from "@/lib/locale";
+import { isLocale } from "@/lib/locale";
 
 export interface EstimateDraftPromptInput {
-  projectDescription: string;
-  companyDescription?: string | null;
-  aiInstructions?: string | null;
-  rules: Array<{ title: string; content: string }>;
-  estimateSections?: Array<{ title: string; rule?: string }>;
-  locale: string;
+  projectBrief: string;
+  context: EstimateGenerationContext;
 }
 
 export function buildEstimateDraftPrompt(input: EstimateDraftPromptInput): string {
-  const contextBlock = buildWorkspacePromptContext({
-    companyDescription: input.companyDescription,
-    aiInstructions: input.aiInstructions,
-    estimateSections: input.estimateSections,
-    rules: input.rules,
-  });
+  const locale: Locale = isLocale(input.context.locale)
+    ? input.context.locale
+    : "pl";
+  const lang = locale === "en" ? "en" : "pl";
 
-  const briefBlock = `## Project brief\n${input.projectDescription.trim()}`;
+  const profile = resolveIndustryAiProfileForPrompt(
+    input.context.industry,
+    locale,
+  );
 
-  const instrBlock = [
-    "## Instructions",
-    `- Respond in language: ${input.locale === "pl" ? "Polish (pl)" : "English (en)"}`,
-    "- Return a structured estimate draft based on the project brief above.",
-    "- Group line items into logical sections.",
-    "- Use realistic unit prices appropriate for the described work.",
-    "- Set vatRate as a decimal fraction (e.g. 0.23 for 23% VAT).",
-    "- Set unit to null when the line item has no unit of measure.",
-    "- Set suggestedMarginPercent to null when you are not suggesting a global margin.",
-    "- Use sequential sortOrder values starting at 0 within each section.",
-    "- Do not include explanatory prose — return only the structured output.",
-  ].join("\n");
+  const estimateSections = input.context.estimateSections.map((s) => ({
+    title: s.title,
+    rule: s.rule,
+  }));
 
-  return [contextBlock, briefBlock, instrBlock].filter(Boolean).join("\n\n");
+  const blocks = [
+    formatIndustryRoleBlock(profile.role),
+    formatEstimationPrinciplesBlock(profile.estimationPrinciples),
+  
+    formatCompanyContextBlock(input.context.companyDescription),
+    formatGeneralAiInstructionsBlock(input.context.aiInstructions),
+  
+    `## Project Brief\n${input.projectBrief.trim()}`,
+  
+    formatScopeChecklistBlock(profile.scopeChecklist),
+    formatScopeExpansionRulesBlock(profile.scopeExpansionRules),
+    formatQuantityDerivationRulesBlock(profile.quantityDerivationRules),
+  
+    formatEstimateStructureBlock(estimateSections),
+    formatSectionRulesBlock(estimateSections),
+  
+    buildWorkspacePromptFromRules(input.context.rules),
+  
+    formatEstimateCompletenessBlock(lang),
+    formatOutputRulesBlock(lang),
+  ];
+
+  return blocks.filter(Boolean).join("\n\n");
 }

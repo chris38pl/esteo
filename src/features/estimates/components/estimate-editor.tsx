@@ -35,6 +35,7 @@ interface EstimateEditorProps {
   activeVersionId: string | null;
   workspaceSlug: string;
   locale: Locale;
+  rulesApplied?: boolean;
 }
 
 function versionTreeToSections(tree: VersionTreeClient | null): SectionData[] {
@@ -61,6 +62,7 @@ export function EstimateEditor({
   activeVersionId,
   workspaceSlug,
   locale,
+  rulesApplied = false,
 }: EstimateEditorProps) {
   const t = useTranslations("estimates");
   const router = useRouter();
@@ -247,7 +249,7 @@ export function EstimateEditor({
         versions={allVersions}
         activeVersionId={activeVersionId ?? ""}
         autosaveStatus={autosaveStatus}
-        rulesApplied={true}
+        rulesApplied={rulesApplied}
       />
 
       <EstimateContextCards

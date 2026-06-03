@@ -15,48 +15,48 @@ Draft generation accelerates the first version. Agentic edit mutates an estimate
 
 ---
 
-## Prompt assembly
+## Prompt assembly (draft generation)
 
-Order matches [`buildWorkspacePromptContext`](../../src/features/workspaces/lib/prompt-context.ts) and global app prompts under `/ai/prompts`:
+Implemented in [`buildEstimateDraftPrompt`](../../src/ai/prompts/estimate-draft.ts). Context is loaded with [`loadEstimateGenerationContext`](../../src/features/workspaces/lib/load-estimate-generation-context.ts).
 
 ```txt
-Base application prompt
-↓
-Branch / workspace context (industry, locale)
-↓
-## Company context          (WorkspaceSettings.companyDescription)
-↓
-## Workspace rules          (WorkspaceSettings.aiInstructions)
-↓
-## Estimate structure       (active section titles, ordered)
-↓
-## Section-specific rules   (per-section rule bodies when set)
-↓
-## WorkspaceRule (ESTIMATE) (title + content, active, sorted)
-↓
-## Project brief             (summarized request — single text field)
-↓
-Attachment context            (UploadThing URLs / extracted text)
-↓
-User request                (agent mode only)
-↓
-Current estimate JSON       (agent mode only)
+## Role                      (industry AI profile)
+## Estimation Principles     (industry AI profile)
+## Company Context           (WorkspaceSettings.companyDescription)
+## Workspace Rules           (WorkspaceSettings.aiInstructions)
+## Estimate Structure        (branding.estimateSections — active only)
+## Section-Specific Rules    (per-section rule bodies)
+## System + ESTIMATE rules   (branding toggles + WorkspaceRule type ESTIMATE)
+## Project Brief             (buildProjectBrief — description, customer, address, industry fields)
+## Scope Checklist            (industry AI profile)
+## Scope Expansion Rules     (industry AI profile — infer implied work)
+## Estimate Completeness     (shared — no minimum line-item quotas)
+## Output Rules              (JSON, locale, vatRate, etc.)
 ```
 
-### Project brief (draft generation)
+Industry profiles: [`docs/features/industry-ai-profiles.md`](../features/industry-ai-profiles.md).
 
-Before the job runs, normalize the estimate request into one **`projectBrief`** string:
+**Option A:** the model returns `sections[]` with `title` + `items[]`; nothing is pre-inserted in the DB before AI.
 
-- Customer and address fields (structured → prose or labeled lines).
-- `projectDescription` and industry-specific `DocumentFieldValue` rows.
-- Stable internal labels; output locale from workspace or request.
+### Project brief
 
-Summarization may use a lightweight model call or deterministic formatting in MVP; the brief is stored on the request or in `aiMetadata` for traceability.
+[`buildProjectBrief`](../../src/features/estimate-requests/lib/build-project-brief.ts) formats:
+
+- `projectDescription`
+- `customerData`, `address` (when present)
+- `DocumentFieldValue` rows for `ESTIMATE_REQUEST` with field labels
 
 ### Section and rules context
 
-- Section list: [`docs/features/estimate-sections.md`](../features/estimate-sections.md) — workspace overrides in `WorkspaceSettings.branding.estimateSections`.
-- Estimate-creation rules: `WorkspaceRule` where `type = ESTIMATE` (see `listActiveWorkspaceRules()` ordering in [`database.md`](database.md)).
+- Sections: `WorkspaceSettings.branding.estimateSections` (or industry defaults) via `resolveEstimateSectionsForPrompt` — **not** `WorkspaceRule` rows.
+- System rules: `branding.estimateSystemRules` toggles → prompt bodies (PL/EN).
+- User rules: `WorkspaceRule` where `type = ESTIMATE`, locale-filtered via `listActiveWorkspaceRules`.
+
+### Section title validation (post-AI)
+
+- Zod keeps `section.title: z.string()`.
+- [`validateGeneratedSectionTitles`](../../src/ai/lib/validate-generated-section-titles.ts) compares titles to allowed workspace sections; warnings go to `aiMetadata`.
+- Job fails only on empty output (no sections or no line items), not on title mismatch.
 
 ### Locale
 
@@ -107,11 +107,15 @@ Enqueue Trigger.dev task
 ↓
 status → PROCESSING
 ↓
-Build prompt (brief + rules + attachments)
+loadEstimateGenerationContext + buildProjectBrief
 ↓
-AI structured output
+Build prompt (industry profile + workspace context + brief)
 ↓
-Transaction: create Estimate + EstimateSection[] + EstimateLineItem[]
+AI structured output (Option A: sections + items)
+↓
+validateGeneratedSectionTitles → warnings in aiMetadata
+↓
+Transaction: EstimateSection[] + EstimateLineItem[] from AI output
 ↓
 Link EstimateRequest.estimateId, status → COMPLETED
 ↓
@@ -198,6 +202,11 @@ Do not commit secrets. Document required keys in `.env.example` when implementat
 
 ```txt
 /ai
+  /config
+    industry-ai-profiles.ts
+  /lib
+    format-industry-profile-blocks.ts
+    validate-generated-section-titles.ts
   /prompts
     estimate-draft.ts
     estimate-agent.ts
@@ -208,12 +217,14 @@ Do not commit secrets. Document required keys in `.env.example` when implementat
     generate-estimate-draft.ts
     propose-estimate-edit.ts
 
-/features/estimates/server
-  service.ts      — orchestration
-  repository.ts   — Prisma
+/features/workspaces/lib
+  load-estimate-generation-context.ts
 
-Trigger.dev tasks
-  generate-estimate-from-request.ts
+/features/estimate-requests/lib
+  build-project-brief.ts
+
+Trigger.dev
+  generate-estimate-draft.ts
 ```
 
 Cross-link: [`backend.md`](backend.md), [`docs/features/estimate-requests.md`](../features/estimate-requests.md).

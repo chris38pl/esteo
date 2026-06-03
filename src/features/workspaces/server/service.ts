@@ -42,16 +42,8 @@ import {
 import type { WorkspaceBranding } from "@/features/workspaces/schemas/branding";
 import { workspaceBrandingSchema } from "@/features/workspaces/schemas/branding";
 import { parseCompanyDescription } from "@/features/workspaces/schemas/company-description";
-import {
-  ESTIMATE_SYSTEM_RULE_IDS,
-  ESTIMATE_SYSTEM_RULE_PROMPT,
-} from "@/features/workspaces/lib/estimate-system-rules";
-import { parseEstimateSystemRuleState } from "@/features/workspaces/lib/parse-estimate-system-rule-state";
+import { loadEstimateGenerationContext } from "@/features/workspaces/lib/load-estimate-generation-context";
 import { buildWorkspacePromptContext } from "@/features/workspaces/lib/prompt-context";
-import {
-  parseEstimateSectionsFromBranding,
-  resolveEstimateSectionsForPrompt,
-} from "@/features/workspaces/lib/resolve-estimate-sections";
 import { workspaceLocaleToAppLocale } from "@/lib/workspace-locale";
 import {
   WORKSPACE_ESTIMATE_RULES_MAX_COUNT,
@@ -721,46 +713,26 @@ export async function getWorkspacePromptContext(
   workspaceId: string,
   locale?: WorkspaceLocale,
 ) {
-  const [workspace, settings, rules] = await Promise.all([
-    findWorkspaceById(workspaceId),
-    findWorkspaceSettings(workspaceId),
-    listActiveWorkspaceRules(workspaceId, locale),
-  ]);
+  const workspace = await findWorkspaceById(workspaceId);
 
   if (!workspace) {
     return "";
   }
 
-  const brandingResult = workspaceBrandingSchema.safeParse(settings?.branding ?? {});
-  const branding = brandingResult.success ? brandingResult.data : null;
-  const systemRuleState = parseEstimateSystemRuleState(branding);
-
-  const activeSystemRules = ESTIMATE_SYSTEM_RULE_IDS.filter((id) => systemRuleState[id]).map(
-    (id) => ESTIMATE_SYSTEM_RULE_PROMPT[id],
-  );
-
-  const userEstimateRules = rules
-    .filter((rule) => rule.type === "ESTIMATE")
-    .map((rule) => ({ title: rule.title, content: rule.content }));
-
-  const promptLocale = locale
+  const appLocale = locale
     ? workspaceLocaleToAppLocale(locale)
     : workspaceLocaleToAppLocale(workspace.defaultLocale);
 
-  const persistedSections = parseEstimateSectionsFromBranding(settings?.branding);
-  const estimateSections = resolveEstimateSectionsForPrompt(
-    workspace.industry,
-    persistedSections,
-    promptLocale,
-  ).map((section) => ({
-    title: section.title,
-    rule: section.rule,
-  }));
+  const context = await loadEstimateGenerationContext(workspaceId, appLocale);
+
+  if (!context) {
+    return "";
+  }
 
   return buildWorkspacePromptContext({
-    companyDescription: settings?.companyDescription,
-    aiInstructions: settings?.aiInstructions,
-    estimateSections,
-    rules: [...activeSystemRules, ...userEstimateRules],
+    companyDescription: context.companyDescription,
+    aiInstructions: context.aiInstructions,
+    estimateSections: context.estimateSections,
+    rules: context.rules,
   });
 }

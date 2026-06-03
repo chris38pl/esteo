@@ -2,6 +2,11 @@ import { task, logger } from "@trigger.dev/sdk";
 
 import { prisma } from "@/db/client";
 import { generateEstimateDraft } from "@/ai/services/generate-estimate-draft";
+import { validateGeneratedSectionTitles } from "@/ai/lib/validate-generated-section-titles";
+import { buildProjectBrief } from "@/features/estimate-requests/lib/build-project-brief";
+import { loadEstimateGenerationContext } from "@/features/workspaces/lib/load-estimate-generation-context";
+import type { Locale } from "@/lib/locale";
+import { isLocale } from "@/lib/locale";
 
 interface GenerateEstimateDraftPayload {
   estimateRequestId: string;
@@ -21,7 +26,10 @@ export const generateEstimateDraftTask = task({
     factor: 2,
   },
   run: async (payload: GenerateEstimateDraftPayload) => {
-    const { estimateRequestId, estimateId, versionId, workspaceId, locale } = payload;
+    const { estimateRequestId, estimateId, versionId, workspaceId, locale: localeRaw } =
+      payload;
+
+    const locale: Locale = isLocale(localeRaw) ? localeRaw : "pl";
 
     const request = await prisma.estimateRequest.findUnique({
       where: { id: estimateRequestId },
@@ -46,48 +54,48 @@ export const generateEstimateDraftTask = task({
     });
 
     try {
-      const workspaceData = await prisma.workspace.findUnique({
-        where: { id: workspaceId },
-        include: {
-          settings: true,
-          rules: {
-            where: { active: true, deletedAt: null },
-            orderBy: { sortOrder: "asc" },
-          },
-        },
-      });
+      const context = await loadEstimateGenerationContext(workspaceId, locale);
 
-      if (!workspaceData) {
+      if (!context) {
         throw new Error(`Workspace not found: ${workspaceId}`);
       }
 
-      const estimateSectionConfigs = await prisma.workspaceRule.findMany({
-        where: {
-          workspaceId,
-          type: "ESTIMATE",
-          active: true,
-          deletedAt: null,
-        },
-        orderBy: { sortOrder: "asc" },
-        select: { title: true, content: true },
-      });
+      const projectBrief = await buildProjectBrief({ request, locale });
 
       const draftOutput = await generateEstimateDraft({
-        projectDescription: request.projectDescription,
-        companyDescription: workspaceData.settings?.companyDescription,
-        aiInstructions: workspaceData.settings?.aiInstructions,
-        rules: workspaceData.rules.map((r) => ({ title: r.title, content: r.content })),
-        estimateSections: estimateSectionConfigs.map((s) => ({
-          title: s.title,
-          rule: s.content,
-        })),
-        locale,
+        projectBrief,
+        context,
       });
+
+      const titleValidation = validateGeneratedSectionTitles({
+        generatedSections: draftOutput.sections,
+        allowedSections: context.allowedSections,
+      });
+
+      if (!titleValidation.ok) {
+        throw new Error(
+          "AI returned an empty estimate (no sections or no line items).",
+        );
+      }
+
+      if (titleValidation.warnings.length > 0) {
+        logger.warn("Section title validation warnings", {
+          estimateRequestId,
+          warnings: titleValidation.warnings,
+        });
+      }
 
       logger.info("AI draft generated", {
         sectionCount: draftOutput.sections.length,
         suggestedMargin: draftOutput.suggestedMarginPercent,
+        titleWarningCount: titleValidation.warnings.length,
       });
+
+      const sectionTitleValidationMeta = {
+        warnings: titleValidation.warnings,
+        allowedTitles: titleValidation.allowedTitles,
+        generatedTitles: titleValidation.generatedTitles,
+      };
 
       await prisma.$transaction(async (tx) => {
         for (const [sIdx, section] of draftOutput.sections.entries()) {
@@ -131,6 +139,9 @@ export const generateEstimateDraftTask = task({
               ...(request.aiMetadata as object | null ?? {}),
               generatedAt: new Date().toISOString(),
               model: "gpt-4o",
+              industry: context.industry,
+              sectionTitleValidation: sectionTitleValidationMeta,
+              promptSectionCount: context.estimateSections.length,
             },
           },
         });
@@ -142,6 +153,7 @@ export const generateEstimateDraftTask = task({
               generatedAt: new Date().toISOString(),
               model: "gpt-4o",
               sectionCount: draftOutput.sections.length,
+              sectionTitleValidation: sectionTitleValidationMeta,
             },
           },
         });

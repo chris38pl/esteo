@@ -35,6 +35,28 @@ export const ESTIMATE_SYSTEM_RULE_PROMPT: Record<
   },
 };
 
+/** Polish prompt bodies for active system rules. */
+export const ESTIMATE_SYSTEM_RULE_PROMPT_PL: Record<
+  EstimateSystemRuleId,
+  { title: string; content: string }
+> = {
+  rounding: {
+    title: "Zaokrąglanie cen",
+    content:
+      "Zaokrąglaj ceny jednostkowe do pełnych kwot, chyba że pozycja wymaga groszy.",
+  },
+  units: {
+    title: "Jednostki miary",
+    content:
+      "Zawsze podawaj jednostki miary (m², m, szt., kpl., h) przy ilościach w pozycjach kosztorysu.",
+  },
+  assumptions: {
+    title: "Netto, VAT i brutto",
+    content:
+      "Kwoty netto, VAT i brutto muszą być spójne i poprawnie policzone dla każdej pozycji.",
+  },
+};
+
 export function defaultEstimateSystemRuleState(): Record<EstimateSystemRuleId, boolean> {
   return {
     rounding: true,
