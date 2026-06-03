@@ -1,129 +1,174 @@
-// docs\features\estimate-request.md
 # Estimate Request
 
-
 ## Goal
-Allow potential customers to submit structured estimate requests that can be automatically transformed into AI-generated estimate drafts.
 
-## User Flow
-Customer Fills form
+Allow structured estimate requests that are automatically transformed into AI-generated estimate drafts. Requests are the **entry point** for estimates — see [`estimates.md`](estimates.md).
+
+## Two sources
+
+| Source | Actor | Entry |
+| --- | --- | --- |
+| **External (customer)** | Potential client | Public page `/[locale]/wycena/[workspaceSlug]` |
+| **Internal (workspace user)** | Owner / Member | Estimate creation panel in dashboard |
+
+For internal creation, the user enters the same logical fields as the public form. The system **auto-creates** an `EstimateRequest` in the background, then runs the **same** background job as the public flow. There is one pipeline and one link model (`EstimateRequest.estimateId`).
+
+## User flow
+
+### Customer (public)
+
+```txt
+Customer fills form
 ↓
-Optionally check with AI
+Optionally check with AI (pre-submit suggestions)
 ↓
 Customer submits request
 ↓
-Request saved in database
+Request saved (status: PENDING)
 ↓
-AI estimate generation job triggered
+AI estimate generation job triggered (Trigger.dev)
 ↓
-Request status changes to processing
+status → PROCESSING
 ↓
 Estimate draft generated
 ↓
-Request status changes to completed
+status → COMPLETED, estimateId linked
+```
 
+### Workspace user (internal)
+
+```txt
+User fills creation panel (request fields)
+↓
+EstimateRequest created automatically
+↓
+Same job pipeline as above
+↓
+User opens linked estimate for review
+```
+
+On job failure: `status → FAILED`; user may retry or create estimate manually. See [`estimate-ai.md`](../architecture/estimate-ai.md).
+
+## Link to estimate
+
+- `EstimateRequest.estimateId` — optional unique FK to `Estimate`.
+- Set when draft generation succeeds.
+- Estimate request statuses track processing; the estimate itself has separate draft/sent semantics (planned).
 
 ## Fields
 
-Add placeholders it selected language.
+Add placeholders in the selected language.
 
-### Customer Data
-- name
-- surname
+### Customer data
+
+- name / full name
 - email
 - telephone
 
 ### Address
-- address
+
+- street address
 - city
-- postalCode
+- postal code
 - voivodeship
 
-### Workspace specific fields (if industry = Construction Building)
-- propertyType
-- preferredStartDate
+### Workspace-specific fields
 
-### Project Details
-- description
+Industry-driven via `IndustryFieldDefinition` (e.g. property type, preferred start date). See [`industry-fields.md`](industry-fields.md).
+
+### Project details
+
+- description (min 20 characters)
 - attachments
 
-Industry-specific fields depend on workspace business type.
-The form should support dynamic field configuration in the future.
-
-## Validation Rules
+## Validation rules
 
 - description minimum 20 characters
-- maximum 10 attachments
-- maximum total upload size: 10MB
+- maximum 10 attachments per **request submission**
+- maximum total upload size: **10 MB** per submission (public form)
 - email must be valid
 - phone number required
 
-## AI Behavior
+Workspace-level attachment storage for estimates uses a separate **500 MB** quota — see [`estimate-ai.md`](../architecture/estimate-ai.md).
 
-The AI assistant analyzes:
+## AI behavior (pre-submit assistant)
+
+The “Check with AI” assistant analyzes:
+
 - missing information
 - unclear scope
 - incomplete project details
 
 The response must:
+
 - return structured output
 - return maximum 5 suggestions
 - return array of strings
 - never return markdown
 
+Draft generation AI is documented in [`estimate-ai.md`](../architecture/estimate-ai.md).
+
 ## Statuses
 
-Internal status values:
-- pending
-- processing
-- completed
-- failed
+Internal enum (`EstimateRequestStatus`):
 
-Localized labels should be displayed in UI.
-Internal enum values must remain stable.
+| Value | Meaning |
+| --- | --- |
+| `PENDING` | Saved, job not started or queued |
+| `PROCESSING` | Background job running |
+| `COMPLETED` | Estimate linked |
+| `FAILED` | Job error |
 
-## UI Requirements
+Localized labels in UI; enum values must remain stable.
 
+## UI requirements
 
 ### Desktop
+
 - Two-column layout
 
 #### Left column
+
 - Marketing image
 - Product description
 - Benefits list
 
 #### Right column
+
 - Estimate request form
 
 ### Mobile
+
 - Single column layout
 - Form displayed first
 
 Attachments should provide good UX on smaller screens.
 
 Two buttons:
+
 - Send
 - Check with AI
 
-## Technical Notes
+## Technical notes
 
-## Future Improvements
-
+- Implementation: `src/features/estimate-requests`
+- Public create: `createPublicEstimateRequest`
+- Job enqueue: after successful save (implementation TBD in estimates feature)
 
 ## Attachments
 
 Supported file types:
+
 - images
 - PDF
 - DOCX
 
-Constraints:
+Constraints (per request submission):
+
 - maximum 10 files
-- maximum total size: 10MB
+- maximum total size: 10 MB
 
-
-## Edge Cases
+## Edge cases
 
 - upload failure
 - AI generation failure
@@ -138,26 +183,28 @@ Constraints:
 - Upload validation required
 - AI usage limits required
 
-
 ## Dictionary for workspace (type = construction business)
+
 ### Type of property
 
-For construction business (it will be only business for MVP)
+For construction business (MVP focus):
+
 - Mieszkanie
 - Dom
 - Biuro
-- Lokal Usługowy
+- Lokal usługowy
 - Inne
 
 ### Start date
 
-For construction business
 - As soon as possible
 - 1 to 3 months
-- 3 - 6 months
+- 3–6 months
 - 6 to 12 months
 - Elastic
 
+## Related
 
-
-
+- [`estimates.md`](estimates.md)
+- [`estimate-sections.md`](estimate-sections.md)
+- [`estimate-ai.md`](../architecture/estimate-ai.md)

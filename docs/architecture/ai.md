@@ -1,30 +1,53 @@
-// docs\architecture\ai.md
-## AI Stack
-- OpenAI
+# AI architecture (application-wide)
+
+## AI stack
+
+- OpenAI (or configured provider)
 - AI SDK
-- Structured outputs
+- Structured outputs (Zod schemas — no markdown parsing for machine paths)
 
-### AI Protection
-- token limits,
-- request quotas,
-- prompt injection mitigation.
+### AI protection
 
+- Token limits
+- Request quotas (per feature — see estimate entitlements)
+- Prompt injection mitigation
 
-## AI Locale Awareness
+## AI locale awareness
+
 Prompts must receive:
 
 ```ts
 locale: "pl" | "en"
 ```
 
-# Prompt system:
-- Base prompt: Same for all prompts in the entire application
-- Branch prompt: Dodaje kontekst danego workspace (np. dodajac inforamcje o firmie)
-- Workspace custom instructions (dodatkowe instrukcje które można dodać per workspace)
-- Uploaded files context 
-- User request
+## Prompt system (global)
 
-# AI Cost Strategy
-- model usage,
-- limity,
-- fallback models,
+```txt
+Base prompt          — same for all application prompts
+↓
+Branch prompt        — workspace / industry context
+↓
+Workspace custom     — company description, aiInstructions, rules
+↓
+Uploaded files       — when applicable
+↓
+User request         — chat or form-specific input
+```
+
+Implementation for workspace blocks: `src/features/workspaces/lib/prompt-context.ts`.
+
+## Estimate-specific AI
+
+Estimate **draft generation** and **agentic editing** are documented in depth here:
+
+- **[`estimate-ai.md`](estimate-ai.md)** — jobs, prompt assembly, attachments, quotas, structured output, approve/reject flow
+
+Product flows: [`docs/features/estimates.md`](../features/estimates.md).
+
+## AI cost strategy
+
+- Model usage tiers
+- Plan limits and fallbacks
+- Retries and streaming where appropriate
+- Caching where safe
+- Langfuse tracing (see root ARCHITECTURE.md)

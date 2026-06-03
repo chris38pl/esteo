@@ -80,7 +80,8 @@ The contractor can add comments and manually edit the estimate easily
 
 - 3 estimates per month
 - PDF watermark
-- Limited AI assistant usage for estimate editing (3 times per estimate)
+- AI assistant in estimate editor: **3 prompts per calendar month**, only **one estimate** may use the assistant that month
+- Undo: **1** last change
 
 ## Pro (89 PLN/month)
 
@@ -90,7 +91,8 @@ The contractor can add comments and manually edit the estimate easily
 - Branding
 - PDF export
 - Unlimited estimate storage
-- AI suggestions
+- AI assistant: **10 prompts per estimate**
+- Undo: **3** last changes
 
 ## Business (199 PLN/month)
 
@@ -99,6 +101,8 @@ The contractor can add comments and manually edit the estimate easily
 - Templates
 - Pricing catalogs
 - Website integration (API/webhook for estimate requests)
+- AI assistant: **unlimited** prompts
+- Undo: **3** last changes
 
 ## Esteo does not sell AI itself — it sells:
 
@@ -177,7 +181,8 @@ g) Sending to customer
 
 ## Estimate editor
 
-- AI chat assistant for modifying estimates
+- AI chat assistant for modifying estimates (approve/reject proposals; uses current table as context)
+- Undo stack (1 step Free, 3 steps Pro/Business)
 - Manual editing support
 - Manual item/section editing
 - Pricing catalogs (Business plan)

@@ -74,10 +74,10 @@ Should NOT contain:
 Contains application domains/features.
 
 Examples:
-- estimate-requests
-- estimates
+- estimate-requests (implemented)
+- estimates (planned — editor, versions, agent)
 - workspaces
-- attachments
+- attachments (planned — UploadThing + workspace quota)
 
 Each feature should be self-contained.
 
@@ -571,17 +571,20 @@ Do NOT:
 # MVP Priorities
 
 Focus on:
-1. Estimate requests
-2. AI estimate draft generation
-3. Estimate editing
-4. PDF export
+1. Estimate requests (public + internal auto-request)
+2. AI estimate draft generation ([`estimate-ai.md`](estimate-ai.md))
+3. Estimate view/edit ([`docs/features/estimates.md`](../features/estimates.md), [`estimates-view-edit-ui.md`](../features/estimates-view-edit-ui.md))
+4. PDF export stub → implementation ([`estimate-pdf-export.md`](../features/estimate-pdf-export.md))
+
+Planned in estimate MVP (schema/docs ready):
+- Estimate versioning (v1, v2, …)
+- Agentic edit with approve/reject
+- Per-plan AI assistant quotas
 
 Defer:
-- audit logs,
-- estimate versioning,
+- audit logs (full enforcement),
 - advanced analytics,
 - Typesense,
-- advanced automation,
 - marketplace integrations.
 
 Keep the architecture pragmatic and iteration-friendly.

@@ -57,3 +57,12 @@ Platform admins can preview the shipped templates here:
 
 The panel is read-only and exists to make the shipped defaults transparent.
 
+## Estimates feature
+
+Section templates and rules feed **both**:
+
+1. **Draft generation** — background job after an estimate request is submitted ([`estimate-ai.md`](../architecture/estimate-ai.md)).
+2. **Agentic edit** — AI assistant in the estimate view/edit screen ([`estimates.md`](estimates.md)).
+
+On the estimate editor, a **rules applied** indicator is shown when active rules or sections affect prompts. Clicking it opens workspace settings → Rules tab (`?tab=rules`).
+

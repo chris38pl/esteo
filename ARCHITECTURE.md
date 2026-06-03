@@ -4,11 +4,13 @@
 Esteo is an AI-powered SaaS platform for service companies to generate professional estimates quickly.
 
 Core workflow:
-1. Customer submits estimate request
-2. AI generates draft estimate
-3. User edits estimate
-4. User exports PDF
-5. User sends estimate to customer
+1. Customer or workspace user submits estimate request (internal path auto-creates request)
+2. AI generates draft estimate (background job)
+3. User reviews and edits estimate ([`docs/features/estimates.md`](docs/features/estimates.md))
+4. User exports PDF ([`docs/features/estimate-pdf-export.md`](docs/features/estimate-pdf-export.md))
+5. User sends estimate to customer (post-MVP)
+
+Documentation index: [`docs/README.md`](docs/README.md).
 
 # Architecture Philosophy
 

@@ -201,6 +201,8 @@ EstimateRequest {
 
 ## Estimate
 
+**Implemented today:**
+
 ```ts
 Estimate {
   id
@@ -211,7 +213,86 @@ Estimate {
   updatedAt
   deletedAt?
 }
+
+EstimateSection {
+  id
+  workspaceId
+  estimateId
+  title
+  sortOrder
+  ...
+}
+
+EstimateLineItem {
+  id
+  workspaceId
+  sectionId
+  name
+  unit
+  quantity
+  unitPrice
+  vatRate
+  sortOrder
+  ...
+}
 ```
+
+**Planned extensions** (documented for implementation; not in schema yet):
+
+```ts
+Estimate {
+  // additions
+  title              String?
+  status             EstimateStatus  // DRAFT | SENT | ...
+  versionNumber      Int             // or separate EstimateVersion table
+  parentEstimateId   String?         // version lineage
+  requestId          String?         // denormalized link for queries
+}
+
+EstimateLineItem {
+  marginPercent      Decimal?        // UI shows margin column
+}
+
+WorkspaceSettings {
+  attachmentStorageUsedBytes  BigInt @default(0)  // 500 MB cap per workspace
+}
+
+// Per-estimate AI usage (PRO: 10 prompts per estimate)
+EstimateAiUsage {
+  estimateId
+  promptCount
+}
+
+// FREE plan: lock assistant to one estimate per month (billing period)
+BillingAccountUsagePeriod {
+  aiAssistantCalls
+  aiAssistantLockedEstimateId  String?
+}
+
+// Attachments (UploadThing metadata)
+EstimateAttachment {
+  estimateId
+  workspaceId
+  fileKey
+  fileName
+  mimeType
+  sizeBytes
+  ...
+}
+
+// Undo / agent approve — recommend EstimateRevision snapshots
+EstimateRevision {
+  estimateId
+  versionNumber
+  snapshotJson
+  createdByUserId
+  source            // MANUAL | AI_APPROVED
+}
+```
+
+Versioning recommendation: **`EstimateVersion`** table (or `versionNumber` + snapshot) rather than only soft-delete history — supports PDF per version and agent undo stack.
+
+See [`estimate-ai.md`](estimate-ai.md) and [`docs/features/estimates.md`](../features/estimates.md).
 
 ---
 
