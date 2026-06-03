@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 import { getAccessibleWorkspaces } from "@/features/workspaces/server/accessible-workspaces";
 import { hasPendingInvitations } from "@/features/workspaces/server/invitation-inbox";
 import type { Locale } from "@/lib/locale";
@@ -12,8 +14,10 @@ import { ClientRedirect } from "@/components/routing/client-redirect";
  *  - No workspaces, pending invites: /dashboard/invitations
  *  - No workspaces, no invites:      /dashboard/onboarding
  *
- * Uses ClientRedirect instead of server redirect() to avoid stalled RSC streams
- * during Clerk's post-login double soft-navigation (see docs/incidents/2026-06-01).
+ * Uses ClientRedirect for onboarding/invitations (avoids stalled RSC streams during
+ * Clerk's post-login double soft-navigation — see docs/incidents/2026-06-01).
+ * Uses server redirect() for workspace landing so /dashboard/[slug] is a full
+ * document navigation (client router.replace can 404 on RSC flights with Clerk).
  */
 export default async function DashboardRootPage({
   params,
@@ -40,5 +44,5 @@ export default async function DashboardRootPage({
   const activeId = await resolveActiveWorkspace(user.id);
   const target = accessible.find((w) => w.id === activeId) ?? accessible[0];
 
-  return <ClientRedirect href={`/${resolvedLocale}/dashboard/${target.slug}`} />;
+  redirect(`/${resolvedLocale}/dashboard/${target.slug}`);
 }

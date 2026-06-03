@@ -13,5 +13,6 @@ export default async function WorkspaceDashboardPage({
 
   setRequestLocale(resolvedLocale);
 
-  return null;
+  // Intentionally minimal — main dashboard panels are added incrementally.
+  return <div className="min-h-[12rem]" />;
 }

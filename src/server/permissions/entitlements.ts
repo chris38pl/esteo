@@ -9,6 +9,8 @@ export type PlanEntitlements = {
   maxInvitedSeats: number | null;
   maxAccessibleWorkspaces: number | null;
   maxEstimatesPerMonth: number | null;
+  maxAiAssistantCallsPerMonth: number | null;
+  maxUndoSteps: number;
 };
 
 export const PLAN_ENTITLEMENTS: Record<SubscriptionPlan, PlanEntitlements> = {
@@ -17,18 +19,24 @@ export const PLAN_ENTITLEMENTS: Record<SubscriptionPlan, PlanEntitlements> = {
     maxInvitedSeats: 0,
     maxAccessibleWorkspaces: 1,
     maxEstimatesPerMonth: 3,
+    maxAiAssistantCallsPerMonth: 10,
+    maxUndoSteps: 1,
   },
   PRO: {
     maxOwnedWorkspaces: 1,
     maxInvitedSeats: 3,
     maxAccessibleWorkspaces: 3,
     maxEstimatesPerMonth: null,
+    maxAiAssistantCallsPerMonth: 100,
+    maxUndoSteps: 3,
   },
   BUSINESS: {
     maxOwnedWorkspaces: null,
     maxInvitedSeats: null,
     maxAccessibleWorkspaces: null,
     maxEstimatesPerMonth: null,
+    maxAiAssistantCallsPerMonth: null,
+    maxUndoSteps: 3,
   },
 };
 
@@ -249,4 +257,48 @@ export async function incrementAiAssistantUsage(userId: string): Promise<void> {
       aiAssistantCalls: { increment: 1 },
     },
   });
+}
+
+export async function assertCanUseAiAssistant(userId: string): Promise<void> {
+  const billingAccount = await prisma.billingAccount.findUnique({
+    where: { ownerUserId: userId },
+    include: { subscription: true },
+  });
+
+  if (!billingAccount?.subscription) {
+    return;
+  }
+
+  const entitlements = getEntitlements(billingAccount.subscription.plan);
+
+  if (entitlements.maxAiAssistantCallsPerMonth === null) {
+    return;
+  }
+
+  const periodKey = currentPeriodKey();
+  const usage = await prisma.billingAccountUsagePeriod.findUnique({
+    where: {
+      billingAccountId_periodKey: {
+        billingAccountId: billingAccount.id,
+        periodKey,
+      },
+    },
+  });
+
+  const calls = usage?.aiAssistantCalls ?? 0;
+
+  if (calls >= entitlements.maxAiAssistantCallsPerMonth) {
+    throw new EntitlementError(
+      "Monthly AI assistant call limit reached for your plan.",
+      "AI_ASSISTANT_LIMIT",
+    );
+  }
+}
+
+export async function getMaxUndoSteps(userId: string): Promise<number> {
+  const subscription = await prisma.subscription.findFirst({
+    where: { billingAccount: { ownerUserId: userId } },
+  });
+  const plan = subscription?.plan ?? "FREE";
+  return getEntitlements(plan).maxUndoSteps;
 }

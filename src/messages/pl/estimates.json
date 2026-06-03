@@ -1,0 +1,120 @@
+{
+  "page": {
+    "title": "Wyceny",
+    "newEstimate": "Nowa wycena",
+    "empty": "Brak wycen.",
+    "createFirst": "Utwórz pierwszą wycenę"
+  },
+  "list": {
+    "columns": {
+      "estimate": "Wycena",
+      "status": "Status",
+      "request": "Zapytanie",
+      "versions": "Wersje",
+      "updated": "Zaktualizowano"
+    }
+  },
+  "status": {
+    "DRAFT": "Szkic",
+    "SENT": "Wysłana",
+    "ARCHIVED": "Zarchiwizowana"
+  },
+  "requestStatus": {
+    "PENDING": "Oczekuje",
+    "PROCESSING": "Przetwarzanie",
+    "COMPLETED": "Gotowa",
+    "FAILED": "Błąd"
+  },
+  "create": {
+    "title": "Nowa wycena",
+    "titleLabel": "Tytuł (opcjonalnie)",
+    "titlePlaceholder": "Np. Remont mieszkania — Warszawa",
+    "descriptionLabel": "Opis projektu",
+    "descriptionPlaceholder": "Opisz zakres projektu, wymagania klienta, lokalizację itp.",
+    "descriptionHint": "AI użyje tego opisu do wygenerowania szkicu wyceny.",
+    "cancel": "Anuluj",
+    "submit": "Utwórz wycenę",
+    "submitting": "Tworzenie…"
+  },
+  "editor": {
+    "items": "Pozycje wyceny",
+    "aiAssistant": "Asystent AI",
+    "hideAi": "Ukryj AI",
+    "addSection": "Dodaj sekcję",
+    "addItem": "Dodaj pozycję",
+    "conflictBanner": "Inny użytkownik zapisał tę wycenę. Odśwież, aby kontynuować edycję.",
+    "reload": "Odśwież",
+    "columns": {
+      "no": "Lp.",
+      "name": "Nazwa",
+      "unit": "J.m.",
+      "qty": "Ilość",
+      "unitPrice": "Cena j.",
+      "net": "Netto",
+      "vat": "VAT %",
+      "gross": "Brutto"
+    },
+    "noSections": "Brak sekcji. Dodaj pierwszą, aby rozpocząć budowanie wyceny.",
+    "newSection": "Nowa sekcja",
+    "deleteSection": "Usuń sekcję",
+    "deleteItem": "Usuń pozycję",
+    "sectionNet": "Netto: {amount}",
+    "untitled": "Wycena",
+    "generating": "AI generuje szkic wyceny…",
+    "generatingTimeout": "Generowanie trwa dłużej niż oczekiwano.",
+    "generatingFailed": "Generowanie wyceny nie powiodło się.",
+    "generatingFailedHint": "Możesz edytować wycenę ręcznie.",
+    "refreshStatus": "Odśwież, aby sprawdzić status"
+  },
+  "autosave": {
+    "saving": "Zapisywanie…",
+    "saved": "Zapisano",
+    "error": "Błąd zapisu",
+    "conflict": "Konflikt — odśwież"
+  },
+  "margin": {
+    "label": "Globalny narzut",
+    "unit": "%"
+  },
+  "summary": {
+    "title": "Podsumowanie",
+    "net": "Suma netto",
+    "vat": "VAT",
+    "gross": "Suma brutto",
+    "profitability": "Rentowność",
+    "costBasis": "Koszt własny",
+    "profit": "Zysk",
+    "costRatio": "Udział kosztów",
+    "costRatioHint": "Udział kosztów — niższy = wyższa rentowność"
+  },
+  "ai": {
+    "placeholder": "Zapytaj AI o modyfikację wyceny…",
+    "send": "Wyślij",
+    "thinking": "Analizuję…",
+    "proposed": "Proponowane zmiany gotowe",
+    "approve": "Zatwierdź",
+    "reject": "Odrzuć",
+    "undo": "Cofnij",
+    "upgradeForMore": "Ulepsz dla więcej",
+    "undoTooltipFree": "Plan Free: 1 krok cofnięcia. Ulepsz do Pro lub Business dla 3.",
+    "undoTooltipPaid": "Cofnij do {steps} kroków",
+    "limitReached": "Miesięczny limit AI osiągnięty.",
+    "callsLeft": "{remaining} / {max} wywołań pozostało",
+    "emptyHint": "Poproś AI o modyfikację wyceny. Np. „Dodaj 5 gniazd elektrycznych” lub „Zwiększ narzut do 25%”.",
+    "proposedReasoning": "Oto proponowane zmiany. Sprawdź i zatwierdź lub odrzuć."
+  },
+  "rules": {
+    "applied": "Reguły zastosowane",
+    "tooltip": "Reguły są stosowane przy generowaniu AI. Kliknij, aby zarządzać regułami."
+  },
+  "versions": {
+    "createVersion": "Utwórz wersję {n}",
+    "versionLabel": "Wersja {n}"
+  },
+  "context": {
+    "request": "Zapytanie",
+    "client": "Klient",
+    "created": "Utworzono",
+    "lastUpdated": "Ostatnia aktualizacja"
+  }
+}

@@ -96,6 +96,7 @@ async function createWorkspaceAndActivate(
     await persistActiveWorkspace(user.id, workspace.id);
 
     revalidatePath(`/${locale}/dashboard`);
+    revalidatePath(`/${locale}/dashboard/${workspace.slug}`);
     revalidatePath(`/${locale}/dashboard/onboarding`);
     revalidatePath(`/${locale}/dashboard/workspaces/new`);
 

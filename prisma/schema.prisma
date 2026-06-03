@@ -91,6 +91,12 @@ enum IndustryFieldValueType {
   SELECT
 }
 
+enum EstimateVersionStatus {
+  DRAFT
+  SENT
+  ARCHIVED
+}
+
 model User {
   id                    String       @id @default(cuid())
   email                 String       @unique
@@ -161,8 +167,10 @@ model Workspace {
   rules            WorkspaceRule[]
   estimateRequests EstimateRequest[]
   estimates        Estimate[]
-  estimateSections EstimateSection[]
+  estimateVersions  EstimateVersion[]
+  estimateSections  EstimateSection[]
   estimateLineItems EstimateLineItem[]
+  estimateRevisions EstimateRevision[]
   auditLogs           AuditLog[]
   lastActiveUsers     User[]              @relation("UserLastActiveWorkspace")
   documentFieldValues DocumentFieldValue[]
@@ -314,25 +322,50 @@ model EstimateRequest {
 }
 
 model Estimate {
-  id          String    @id @default(cuid())
-  workspaceId String
-  aiMetadata  Json?
-  currency    String    @default("PLN")
-  deletedAt   DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id              String    @id @default(cuid())
+  workspaceId     String
+  title           String?
+  aiMetadata      Json?
+  currency        String    @default("PLN")
+  latestVersionId String?
+  deletedAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 
-  workspace       Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  estimateRequest EstimateRequest? @relation("EstimateRequestEstimate")
-  sections        EstimateSection[]
+  workspace       Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  estimateRequest EstimateRequest?  @relation("EstimateRequestEstimate")
+  versions        EstimateVersion[] @relation("EstimateVersions")
+  latestVersion   EstimateVersion?  @relation("EstimateLatestVersion", fields: [latestVersionId], references: [id], onDelete: SetNull)
 
+  @@index([workspaceId])
+}
+
+model EstimateVersion {
+  id              String                @id @default(cuid())
+  estimateId      String
+  workspaceId     String
+  versionNumber   Int
+  status          EstimateVersionStatus @default(DRAFT)
+  marginPercent   Decimal               @default(0)
+  createdByUserId String?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  estimate  Estimate          @relation("EstimateVersions", fields: [estimateId], references: [id], onDelete: Cascade)
+  latestOf  Estimate[]        @relation("EstimateLatestVersion")
+  workspace Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  sections  EstimateSection[]
+  revisions EstimateRevision[]
+
+  @@unique([estimateId, versionNumber])
+  @@index([estimateId])
   @@index([workspaceId])
 }
 
 model EstimateSection {
   id          String    @id @default(cuid())
   workspaceId String
-  estimateId  String
+  versionId   String
   title       String
   sortOrder   Int       @default(0)
   deletedAt   DateTime?
@@ -340,12 +373,11 @@ model EstimateSection {
   updatedAt   DateTime  @updatedAt
 
   workspace Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  estimate  Estimate          @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  version   EstimateVersion   @relation(fields: [versionId], references: [id], onDelete: Cascade)
   lineItems EstimateLineItem[]
 
-  @@index([estimateId, sortOrder])
+  @@index([versionId, sortOrder])
   @@index([workspaceId])
-  @@index([workspaceId, deletedAt])
 }
 
 model EstimateLineItem {
@@ -366,6 +398,22 @@ model EstimateLineItem {
   section   EstimateSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 
   @@index([sectionId, sortOrder])
+  @@index([workspaceId])
+}
+
+model EstimateRevision {
+  id              String   @id @default(cuid())
+  versionId       String
+  workspaceId     String
+  snapshotJson    Json
+  source          String
+  createdByUserId String
+  createdAt       DateTime @default(now())
+
+  version   EstimateVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  workspace Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([versionId, createdAt])
   @@index([workspaceId])
 }
 

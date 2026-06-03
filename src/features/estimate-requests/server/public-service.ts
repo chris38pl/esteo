@@ -5,6 +5,8 @@ import { getIndustryFieldsForDocument, type IndustryFieldForDocument } from "@/f
 import type { FieldValueInput } from "@/features/industry-fields/server/map-field-value";
 import { upsertDocumentFieldValues, validateDocumentFieldValues } from "@/features/industry-fields/server/validate-document-values";
 import type { PublicEstimateRequestInput } from "@/features/estimate-requests/schemas/request";
+import { tasks } from "@trigger.dev/sdk";
+import type { generateEstimateDraftTask } from "@/trigger/generate-estimate-draft";
 import type { Locale } from "@/lib/locale";
 
 export type PublicEstimateRequestWorkspace = {
@@ -77,13 +79,39 @@ export async function createPublicEstimateRequest(input: {
     values: dynamicValues,
   });
 
-  const request = await prisma.$transaction(async (tx) => {
+  const { request, estimateId, versionId } = await prisma.$transaction(async (tx) => {
     const requestNumber = await generateRequestNumber(tx, pageData.workspace.id);
 
-    return tx.estimateRequest.create({
+    const estimate = await tx.estimate.create({
+      data: {
+        workspaceId: pageData.workspace.id,
+        latestVersionId: null,
+      },
+    });
+
+    const version = await tx.estimateVersion.create({
+      data: {
+        estimateId: estimate.id,
+        workspaceId: pageData.workspace.id,
+        versionNumber: 1,
+        status: "DRAFT",
+        marginPercent: 0,
+      },
+    });
+
+    await tx.estimate.update({
+      where: { id: estimate.id },
+      data: { latestVersionId: version.id },
+    });
+
+    const eid = estimate.id;
+    const vid = version.id;
+
+    const createdRequest = await tx.estimateRequest.create({
       data: {
         workspaceId: pageData.workspace.id,
         requestNumber,
+        estimateId: eid,
         customerData: {
           fullName: input.payload.customer.fullName,
           email: input.payload.customer.email,
@@ -109,6 +137,8 @@ export async function createPublicEstimateRequest(input: {
         requestNumber: true,
       },
     });
+
+    return { request: createdRequest, estimateId: eid, versionId: vid };
   });
 
   if (Object.keys(dynamicValues).length > 0) {
@@ -120,6 +150,14 @@ export async function createPublicEstimateRequest(input: {
       values: dynamicValues,
     });
   }
+
+  await tasks.trigger<typeof generateEstimateDraftTask>("generate-estimate-draft", {
+    estimateRequestId: request.id,
+    estimateId,
+    versionId,
+    workspaceId: pageData.workspace.id,
+    locale: input.locale,
+  });
 
   return request;
 }

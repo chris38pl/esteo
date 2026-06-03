@@ -53,10 +53,11 @@ export const navItems: SidebarNavItem[] = [
   {
     key: "estimates",
     icon: BarChart3,
-    href: (locale) => `/${locale}/estimates`,
+    href: (locale, workspaceSlug) =>
+      workspaceSlug
+        ? `/${locale}/dashboard/${workspaceSlug}/estimates`
+        : `/${locale}/dashboard`,
     labelKey: "nav.estimates",
-    badge: "Soon",
-    disabled: true,
   },
   {
     key: "settings",

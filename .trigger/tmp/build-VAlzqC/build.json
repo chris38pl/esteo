@@ -1,0 +1,110 @@
+{
+  "build": {
+  },
+  "cliPackageVersion": "4.4.6",
+  "config": {
+    "dirs": [
+      "./src/trigger"
+    ],
+    "project": "proj_qoakmklufatitghsdkqt"
+  },
+  "configPath": "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\Desktop\\Web Dev\\Esteo\\code\\trigger.config.mjs",
+  "contentHash": "025f70182b027141f45a1eaf968b83f4",
+  "customConditions": [
+  ],
+  "deploy": {
+    "env": {
+    }
+  },
+  "environment": "dev",
+  "externals": [
+    {
+      "name": "import-in-the-middle",
+      "version": "1.11.0"
+    }
+  ],
+  "files": [
+    {
+      "entry": "src/trigger/generate-estimate-draft.ts",
+      "out": "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\Desktop\\Web Dev\\Esteo\\code\\src\\trigger\\generate-estimate-draft.mjs"
+    }
+  ],
+  "indexWorkerEntryPoint": "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\AppData\\Local\\npm-cache\\_npx\\f51a09bd0abf5f10\\node_modules\\trigger.dev\\dist\\esm\\entryPoints\\dev-index-worker.mjs",
+  "otelImportHook": {
+    "include": [
+    ]
+  },
+  "outputHashes": {
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\AppData\\Local\\npm-cache\\_npx\\f51a09bd0abf5f10\\node_modules\\trigger.dev\\dist\\esm\\entryPoints\\dev-index-worker.mjs": "1CV3g50S4uo",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\AppData\\Local\\npm-cache\\_npx\\f51a09bd0abf5f10\\node_modules\\trigger.dev\\dist\\esm\\entryPoints\\dev-index-worker.mjs.map": "ISvfmkzCL0E",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\AppData\\Local\\npm-cache\\_npx\\f51a09bd0abf5f10\\node_modules\\trigger.dev\\dist\\esm\\entryPoints\\dev-run-worker.mjs": "tsKJuxAwrT4",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\AppData\\Local\\npm-cache\\_npx\\f51a09bd0abf5f10\\node_modules\\trigger.dev\\dist\\esm\\entryPoints\\dev-run-worker.mjs.map": "1Foh0/v5dwU",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\Desktop\\Web Dev\\Esteo\\code\\src\\trigger\\generate-estimate-draft.mjs": "YGXJibf1hWs",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\Desktop\\Web Dev\\Esteo\\code\\src\\trigger\\generate-estimate-draft.mjs.map": "PKorRpm/Cn4",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\Desktop\\Web Dev\\Esteo\\code\\trigger.config.mjs": "ZAP7HpI23fw",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\Desktop\\Web Dev\\Esteo\\code\\trigger.config.mjs.map": "CJDxAK9ORaw",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\chunk-4VOZ4RGY.mjs": "ssmc5GBbr1w",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\chunk-4VOZ4RGY.mjs.map": "Jk0PRneOHwU",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\chunk-5A2LE32G.mjs": "iAHCaksTzjY",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\chunk-5A2LE32G.mjs.map": "jXG8+ZCdH20",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\chunk-LROOZ24B.mjs": "AJLOwpshZtQ",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\chunk-LROOZ24B.mjs.map": "5ak/T6txcww",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\chunk-QYGBEIJN.mjs": "2lyUYzq2X1k",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\chunk-QYGBEIJN.mjs.map": "K+4hR6FYszc",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\chunk-SLAQP7UH.mjs": "fCoXgWgDoeI",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\chunk-SLAQP7UH.mjs.map": "uqfyjPaYzlE",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\chunk-VM47NNMF.mjs": "ZqraDF0Ivts",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\chunk-VM47NNMF.mjs.map": "6QcdPb8EykU",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\chunk-XOYU2SSU.mjs": "3S0OeDlBSZ0",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\chunk-XOYU2SSU.mjs.map": "OJswEe6bU6g",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\chunk-ZHBVPOXT.mjs": "M0zKuiekTzY",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\chunk-ZHBVPOXT.mjs.map": "LMPzUuAiOIM",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\crypto.node-FM7UGXJT.mjs": "z8aG5X8jtIE",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\crypto.node-FM7UGXJT.mjs.map": "0b4tlwmkM3g",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\crypto.node-XRVDZYDR.mjs": "GcFh3y+kCyo",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\crypto.node-XRVDZYDR.mjs.map": "VHU7akysEiw",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\esm-RPN3OIEW.mjs": "ORgrtVZKFNs",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\esm-RPN3OIEW.mjs.map": "aSgryE2T3ck",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\esm-Y4WS42OM.mjs": "3etOuFhnrBo",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\esm-Y4WS42OM.mjs.map": "VON93E1In1A",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\getMachineId-bsd-GMU5MSVV.mjs": "cnaE+hCajTw",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\getMachineId-bsd-GMU5MSVV.mjs.map": "VMBe3PC9NEA",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\getMachineId-darwin-DWK7OBSQ.mjs": "JFdz+h+AtKQ",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\getMachineId-darwin-DWK7OBSQ.mjs.map": "a3w4uCc/h2k",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\getMachineId-linux-TFPHH63R.mjs": "N6MDMjDOl4I",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\getMachineId-linux-TFPHH63R.mjs.map": "Tvbt7HWoATQ",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\getMachineId-unsupported-GDB4GCKL.mjs": "z5EJPHwztUQ",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\getMachineId-unsupported-GDB4GCKL.mjs.map": "psNm6WHF8qE",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\getMachineId-win-2C2J73KT.mjs": "mpQi4o3dud8",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\getMachineId-win-2C2J73KT.mjs.map": "vHkdW7od7No",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\s2s-QMW2GXMY.mjs": "ux8qbNNIbvM",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\s2s-QMW2GXMY.mjs.map": "HglUrV4RWCw",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\token-4FO65MMG.mjs": "LjOFUTEukoA",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\token-4FO65MMG.mjs.map": "Pq/VKTEig0s",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\token-util-FS2DA6CC.mjs": "JdSd9+C6OWc",
+    "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\token-util-FS2DA6CC.mjs.map": "0b4tlwmkM3g"
+  },
+  "outputPath": "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC",
+  "packageVersion": "4.4.6",
+  "runWorkerEntryPoint": "C:\\Users\\Krzysztof\\Desktop\\Web Dev\\Esteo\\code\\.trigger\\tmp\\build-VAlzqC\\AppData\\Local\\npm-cache\\_npx\\f51a09bd0abf5f10\\node_modules\\trigger.dev\\dist\\esm\\entryPoints\\dev-run-worker.mjs",
+  "runtime": "node",
+  "sources": {
+    "package.json": {
+      "contentHash": "50f9251fd30037218468596482766b2e",
+      "contents": "eJyVVU1vGjEQvfMrLA451d6PLCRwQlV76KWtGvUaydgTmOL1rmwvIYn63yt/7AeURuqNffNmPG/m2bzNCJlrXsN8TeZgHTTzDx46grHYaI/mrGB5RFuDR+4815kOesjWfL4mbzNCCJlbAOmznD2RGMs8xJydzwj5HXKsMNg6OyZJOPocDSdHJBwJpc+wbbk4hGMJmW87VHKgxK8Uso4bN4TiVwop1C7qCr8SisV90KXbmphOE/+9FnsQB3JzQ3QjgVAKpxYM1qAdV9Q6gy11Ly1YknrPQgLdcyNFI0HSDr3EyRGxZDjov0r6XHqAFzupFwe5PnKFMs4/QWSAzpk70GDOmQN0zqxxd0FMiF/EBfed3f5NXLemuU4mlLaKa/L9x7dredvOogZr30/++PPhy9fPDw8XFQxYcFfEBJxQag/Y0qCjz2usQ20dV+rasAbPSmhBS9ACYWLcDUdq5SFrWtAcfYHHW5az5V1ffiMUmEMGCvzig6bHnJUVK24vKN6+vyJheRFye6ghhkpWscVYPc1GKIRo9Umu4RJPtMPMABeOuqZRDttAKljJ7geiA7QtFxBaoJPDcrZINz/QDO52YJiEY2ZlcHbFKjYcmPQvWc6K1aJHheLW0iM3yLUAyju3bwy6l3TAHStGpj0ljcWIPhleg6F149Jz9FiUrMrHvlQnUAINIpO4YjmGvSYPF0tWjr0Gpahd2PljxYpyzOjnlopVbNjUcEaxYiWrzmAqm/pfIRSNjhNdsElr4Q2AKLlkkw4cR/WMWtIazA6SqyaJ7plyjTV3QEW8J6HPIf7ayKRr0vxrZx3XMrWRewNOzH38dN3fds+l0FmaRs7yUdumb1NYm/lr1PdSXbXM8ISfmWYTnsDMP5FxEPlFZLLX1bVQP/dJeMu3oGiruh3q6AsqmrpFBSZsiE3ck/4afIHVOUZFo59wR68baPjbm9y4yTzO5+CSsStWluNCgojw9MedhHXMfv8B+eQfog=="
+    },
+    "src/trigger/generate-estimate-draft.ts": {
+      "contentHash": "87abdf37b12718e923ea31648a00e445",
+      "contents": "eJy1WNtu3DYQfQ+Qf5gIedACGzm9PCnYum68CRaIa8N224eiQBhptGYtkQo5sr1wFuhH9Av7JYVISqJujtOLXrwkh3M5c4YcmhelVAT3QExfLyGX2y0q2EOmZAHB96R4PRGleHOg0+vg1dMnT5/wZk+puC5YJ32QfjhIco6CasFWbIsCFSNca+IFIzxWLCNvF+MHGtUNT1AfNLIv0Am/SGtpZ1gQqowlCG+nVJ6xXS5ZCvdPnwA0+8/xY4WaNmkMmhQX21f+6mD6BpXmUgxmb6W61iVLhtK5TFiO3tS+dhLvTNiJFJqmQ79k+hpWBvHQ+MrTGIK5yJe1RMHujivFiEsRwzcvX5pJhaR2sQ3XiBwRYVGSjuHrpZvk4pIXKCvaiJN6/qXba+R7S1+97NYylpBUjZq9tVaJGJjeiQTC0iIdP5iHBay+a5yzaNyPs7L0UrHs8F/6oC8d0rCHFTjThg+dZmX1wQrYLePkmBkNzEUZF+lPgn+sMHSOAdxeocIY7k0WRv654AH2i9YkzyB85iwuoFVkaydCpaQKg3VfEwhJkMlKpMFyCger3ypSSJUSbrj3rTqjkSZGlYbVagXB69OTs3fry/VxAJ8+wZTEm6PNu/VxMHaVi0yGwcU1L0sutvDXH3+2QLJcIUt3UCqZoNZo3G62T1TXsluzpuOBK63AZwN9MINVmTL68uwBpIxYLdd4F5ydn75eX1xsfnwbTCWZ1K4L2JKspeQxIzakWrs4SbKBox65PRcBuEjyKsXYhxpAIxEXWx0DqQqX/pKqctQDcc8WS4jfoNsHKeZImB5RDKLK857l+pMqRfXDzqAkFZ3WwxgCppNgIOuP9v3MNgNTJD3EFr6bdKXkLQi8hbWpl/e/NKJdpcTw/N5Dav++Y86+M2Rz06T+ApP6kHwtRca3ejZJ51VuE3XCxG4qTX60/lHkz9OuxBiC9cXl5uToch30FnvQ+wuDLEwi+fhcaMwxoVqMOOVtqhMpCAXZ4VyKLHLmljmtqKy643Py2vJhKpX8HRM6Rp0oXtprqan38ZrnbyKLkoldb2OPJVHD9sNoLOspYnwjNKnKpFvPK+nLeQpc6fT3mcmoYGUYKnN/hS2wKjI/PGxV5H7CfrHwNA+4qOMZdlo72tnpMcua1M7ksOLrFWfap0/PCXtlTie+d/wfbSwF2qQPjnrd+FzVMXtsidyKjnIUW7ryWVltt6gJ0xOmtlwMtvUXz1AlfiA9T3vV+5wUE5oZo6HrROjObzPqL5MKQkvtX/UmvVs2EfwGMpv2HwUpjjpcLPqFb7UkCmtUXO7aGqG7aJDWyEqGg9PY3Tz9yflTpf66Pmi40jDDWRzzw8DfnRiNYDsFh4dgYOlvGpzvfg6GoHIDKicsDKKNhXpiHkoYo/aOC9wQFjOwzQL3MHQtYetmvZ+6iE+JC1ZgbMKJ6p8TEpXg5CTqnzWCg5O7+T5WTBCnnZNuhjM6zxRP0FNsxhOyN4zOGTWSbjQVeJd2I9nLOR/nfJj1Xm8G9pb1fnptSgbh5ysanq0MTgMmjHjwsyX7qLWzX69vauti5HnT3hW+B485d6aYPxn0yO+5lnTk9UNtKczxvO1Tu/5+EDLjJ0hspkiiKGpfC50gMA3yQ307wyfbAx4ewv1+MSJGexeYNgVv4bgOcRGR3FycXpj3bjjeVcgU8/opW9KLb+XQ3wdayP5xM0L68RA/DtsHkfs/Qv9nt+gjQJvAr3e5Nw2cu+I1u8EUdJXUb7qsyvNd7zXae4J3BvaQMEquIDRP29kX7xvGc0yBZAthqxjcvzIe+4Q0GmP7B7jQxESCMrNvBTi0C1GBWrMtQgwuLda/R3QSny/hLyjgCR61xeue3v2XwTz7/lXVZgb/L2Dtf4PyiJfT+NsHn9nbPfittJH7G8kc5cI="
+    },
+    "trigger.config.ts": {
+      "contentHash": "a06f524036197ab8bbfdd49ce15915c8",
+      "contents": "eJxtUctuwjAQvEfKP6x8AgkltNzMgVaAUCpVrRA3hJCJN8FNbAfbQbQo/17lQVAfFz9mdmZHu0IW2ji4AsdEKJxrlYgUKkiMlkCenBFpiibgeA4tz8jU98RNURhhJVteHCortPpfdChFzkO8FdmwVdVGvoeXxopjwsrc/YgwuPoeQGH0B8aO1o8YrQ1QnYPNOlqtluv9+/rtZTnf7KMFzGZA6tr9SbNMZnmZMCdcerQ8Ozkyqq24MJbClgShNXHYRSS7hpPssigNc0IrCpPxuAENOiPQUmiSAKBihxx5pBZ4ppCw3OKoZbr8fWVj+OwcysJZCpNRDwu1ERJ16SL1aik8jLteneYPeWcTFjttKDz2iGGKaym+kIIz5S1L1dzt2cz+nr/fAYXtr90NrmDjI0pG6znWVNj+g25dI5CaIwWSY8riTwLVcNd3qoZT3/sGvva1zA=="
+    },
+    "tsconfig.json": {
+      "contentHash": "ee17fd1c97c735e9f3564e3f5251f125",
+      "contents": "eJxtUU1Lw0AQvedXLHMMbaJehJ4E6cFiEfRYimyyQ7t2v9id1EjJf5fdJNVET8O8N2/2vdlLxhjUVjup0L84ktYEWLFLxhhjQNwfkGDFYP12d3N7D4seV7KCFduBsBoWLJZCEnpeKYw9BoMtwX6Y5krZz01cS77BAQwn6Z5l9XjE+jRjyMuappixay1nGIatFY3CJ0PorZuSOlHR+WBmgr9isKqJYeNE1Rih0I8jPpJn3ARrtuOWX5tlsIoTip6bpfoIbdzokde0jM0oMrVHjYa4mgqcag4ynXyXADacvk/NdYqQAgxwl+p4Wsfp+PNfjMFDmaefKcrg6zKHfTaKuiiJRlQj8Ppe2r1Ecy5EQWG0m+dl/re9pimiqKQvh6GcjfaUwPP/dGo1hZgmZQBsr4bAWIHverjrPuuyb0p5toA="
+    }
+  },
+  "target": "dev"
+}

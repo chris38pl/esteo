@@ -1,0 +1,120 @@
+{
+  "page": {
+    "title": "Estimates",
+    "newEstimate": "New estimate",
+    "empty": "No estimates yet.",
+    "createFirst": "Create your first estimate"
+  },
+  "list": {
+    "columns": {
+      "estimate": "Estimate",
+      "status": "Status",
+      "request": "Request",
+      "versions": "Versions",
+      "updated": "Updated"
+    }
+  },
+  "status": {
+    "DRAFT": "Draft",
+    "SENT": "Sent",
+    "ARCHIVED": "Archived"
+  },
+  "requestStatus": {
+    "PENDING": "Pending",
+    "PROCESSING": "Processing",
+    "COMPLETED": "Completed",
+    "FAILED": "Failed"
+  },
+  "create": {
+    "title": "New estimate",
+    "titleLabel": "Title (optional)",
+    "titlePlaceholder": "E.g. Apartment renovation — Warsaw",
+    "descriptionLabel": "Project description",
+    "descriptionPlaceholder": "Describe the project scope, client requirements, location, etc.",
+    "descriptionHint": "AI will use this description to generate the estimate draft.",
+    "cancel": "Cancel",
+    "submit": "Create estimate",
+    "submitting": "Creating…"
+  },
+  "editor": {
+    "items": "Estimate Items",
+    "aiAssistant": "AI Assistant",
+    "hideAi": "Hide AI",
+    "addSection": "Add section",
+    "addItem": "Add item",
+    "conflictBanner": "Another user saved this estimate. Reload to continue editing.",
+    "reload": "Reload",
+    "columns": {
+      "no": "#",
+      "name": "Name",
+      "unit": "Unit",
+      "qty": "Qty",
+      "unitPrice": "Unit price",
+      "net": "Net",
+      "vat": "VAT %",
+      "gross": "Gross"
+    },
+    "noSections": "No sections yet. Add one to start building the estimate.",
+    "newSection": "New section",
+    "deleteSection": "Delete section",
+    "deleteItem": "Delete item",
+    "sectionNet": "Net: {amount}",
+    "untitled": "Estimate",
+    "generating": "AI is generating your estimate draft…",
+    "generatingTimeout": "Generation is taking longer than expected.",
+    "generatingFailed": "Estimate generation failed.",
+    "generatingFailedHint": "You can still edit the estimate manually.",
+    "refreshStatus": "Refresh to check status"
+  },
+  "autosave": {
+    "saving": "Saving…",
+    "saved": "Saved",
+    "error": "Save error",
+    "conflict": "Conflict — reload"
+  },
+  "margin": {
+    "label": "Global margin",
+    "unit": "%"
+  },
+  "summary": {
+    "title": "Summary",
+    "net": "Net total",
+    "vat": "VAT",
+    "gross": "Gross total",
+    "profitability": "Profitability",
+    "costBasis": "Cost basis",
+    "profit": "Profit",
+    "costRatio": "Cost ratio",
+    "costRatioHint": "Cost ratio — lower is more profitable"
+  },
+  "ai": {
+    "placeholder": "Ask AI to modify the estimate…",
+    "send": "Send",
+    "thinking": "Thinking…",
+    "proposed": "Proposed changes ready",
+    "approve": "Approve",
+    "reject": "Reject",
+    "undo": "Undo",
+    "upgradeForMore": "Upgrade for more",
+    "undoTooltipFree": "Free plan: 1 undo step. Upgrade to Pro or Business for 3.",
+    "undoTooltipPaid": "Undo up to {steps} steps",
+    "limitReached": "Monthly AI limit reached.",
+    "callsLeft": "{remaining} / {max} calls left",
+    "emptyHint": "Ask the AI to modify the estimate. E.g. \"Add 5 electrical outlets\" or \"Increase margin to 25%\".",
+    "proposedReasoning": "Here are the proposed changes. Review and approve or reject."
+  },
+  "rules": {
+    "applied": "Rules applied",
+    "tooltip": "Rules are applied to AI generation. Click to manage rules."
+  },
+  "versions": {
+    "createVersion": "Create Version {n}",
+    "versionLabel": "Version {n}"
+  },
+  "context": {
+    "request": "Request",
+    "client": "Client",
+    "created": "Created",
+    "lastUpdated": "Last updated"
+  }
+}

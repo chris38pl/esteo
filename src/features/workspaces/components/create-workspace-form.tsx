@@ -100,7 +100,7 @@ export function CreateWorkspaceForm({
         return;
       }
 
-      router.push(`/${locale}/dashboard`);
+      router.replace(`/${locale}/dashboard/${result.data.slug}`);
     });
   }
 

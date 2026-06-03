@@ -1,5 +1,6 @@
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import Link from "next/link";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
+
+import { ClerkUserButton } from "@/components/auth/clerk-user-button";
 import { setRequestLocale } from "next-intl/server";
 
 import { getServerTranslations } from "@/i18n/request-locale";
@@ -45,7 +46,7 @@ export default async function LocaleHome({
             </p>
           </div>
           <SignedIn>
-            <UserButton />
+            <ClerkUserButton />
           </SignedIn>
         </div>
 
@@ -53,12 +54,12 @@ export default async function LocaleHome({
           <p className="text-sm text-muted-foreground">
             {t("home.signInHint")}
           </p>
-          <Link
+          <a
             href={`/${locale}/sign-in`}
             className="inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground"
           >
             {t("home.signInCta")}
-          </Link>
+          </a>
         </SignedOut>
 
         <SignedIn>
@@ -69,12 +70,12 @@ export default async function LocaleHome({
                 {user?.email ?? t("status.syncing")}
               </span>
             </p>
-            <Link
+            <a
               href={`/${locale}/dashboard`}
               className="inline-flex font-medium underline"
             >
               {t("home.goToDashboard")}
-            </Link>
+            </a>
           </div>
         </SignedIn>
       </div>
