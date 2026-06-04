@@ -4,6 +4,7 @@ import { prisma } from "@/db/client";
 import { getIndustryFieldsForDocument, type IndustryFieldForDocument } from "@/features/industry-fields/server/get-fields-for-workspace";
 import type { FieldValueInput } from "@/features/industry-fields/server/map-field-value";
 import { upsertDocumentFieldValues, validateDocumentFieldValues } from "@/features/industry-fields/server/validate-document-values";
+import { buildEstimateTitleFromPublicRequest } from "@/features/estimates/lib/build-estimate-title-from-public-request";
 import type { PublicEstimateRequestInput } from "@/features/estimate-requests/schemas/request";
 import { tasks } from "@trigger.dev/sdk";
 import type { generateEstimateDraftTask } from "@/trigger/generate-estimate-draft";
@@ -79,12 +80,21 @@ export async function createPublicEstimateRequest(input: {
     values: dynamicValues,
   });
 
+  const estimateTitle = buildEstimateTitleFromPublicRequest({
+    industry: pageData.workspace.industry,
+    fullName: input.payload.customer.fullName,
+    address: input.payload.address,
+    industryFieldValues: dynamicValues,
+    locale: input.locale,
+  });
+
   const { request, estimateId, versionId } = await prisma.$transaction(async (tx) => {
     const requestNumber = await generateRequestNumber(tx, pageData.workspace.id);
 
     const estimate = await tx.estimate.create({
       data: {
         workspaceId: pageData.workspace.id,
+        title: estimateTitle,
         latestVersionId: null,
       },
     });

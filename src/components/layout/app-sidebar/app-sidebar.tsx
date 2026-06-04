@@ -8,7 +8,6 @@ import { useSidebarStore } from "./sidebar-store";
 import { SidebarHeader } from "./sidebar-header";
 import { SidebarWorkspace } from "./sidebar-workspace";
 import { SidebarSearch } from "./sidebar-search";
-import { SidebarDivider } from "./sidebar-divider";
 import { SidebarNav } from "./sidebar-nav";
 import { SidebarAdmin } from "./sidebar-admin";
 import { SidebarPinned } from "./sidebar-pinned";
@@ -57,7 +56,6 @@ export function AppSidebar({
         <SidebarNav locale={locale} />
         <SidebarAdmin locale={locale} />
         <SidebarPinned locale={locale} />
-        <SidebarDivider />
         <SidebarTeam />
       </div>
 

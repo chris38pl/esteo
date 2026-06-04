@@ -18,6 +18,7 @@ import { RESERVED_DASHBOARD_SLUGS } from "@/features/workspaces/server/slug-avai
 import { requireAuth } from "@/server/auth/require-auth";
 import { canUserCreateWorkspace, countOwnedWorkspaces } from "@/server/permissions/entitlements";
 import { isPlatformAdmin } from "@/server/permissions/require-workspace";
+import { listPinnedEstimatesForSidebar } from "@/features/estimates/server/pinned-estimates";
 import {
   resolveActiveWorkspace,
   resolveWorkspaceBySlug,
@@ -58,6 +59,7 @@ export default async function DashboardLayout({
         locale={resolvedLocale}
         pendingInvitationCount={0}
         modalInvitation={null}
+        pinnedEstimates={[]}
       >
         <DashboardShell locale={resolvedLocale}>{children}</DashboardShell>
       </WorkspaceProvider>
@@ -107,6 +109,16 @@ export default async function DashboardLayout({
     ? await getActiveWorkspaceMembersData(activeWorkspaceId)
     : { previews: [], totalCount: 0 };
 
+  const activeWorkspaceSummary = workspaceSummaries.find((w) => w.id === activeWorkspaceId);
+  const pinnedEstimates =
+    activeWorkspaceId && activeWorkspaceSummary
+      ? await listPinnedEstimatesForSidebar({
+          userId: user.id,
+          workspaceId: activeWorkspaceId,
+          workspaceSlug: activeWorkspaceSummary.slug,
+        })
+      : [];
+
   return (
     <WorkspaceProvider
       workspaces={workspaceSummaries}
@@ -122,6 +134,7 @@ export default async function DashboardLayout({
       modalInvitation={
         nextModalInvitation ? toReceivedInvitationView(nextModalInvitation) : null
       }
+      pinnedEstimates={pinnedEstimates}
     >
       <DashboardShell locale={resolvedLocale}>{children}</DashboardShell>
     </WorkspaceProvider>

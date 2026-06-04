@@ -120,6 +120,7 @@ model User {
   sentInvitations      WorkspaceInvitation[] @relation("InvitationSender")
   memberInvites        WorkspaceMember[]     @relation("MemberInvitedBy")
   auditLogs            AuditLog[]
+  pinnedEstimates      PinnedEstimate[]
 }
 
 model BillingAccount {
@@ -180,6 +181,7 @@ model Workspace {
   lastActiveUsers     User[]              @relation("UserLastActiveWorkspace")
   documentFieldValues DocumentFieldValue[]
   slugAliases         WorkspaceSlugAlias[]
+  pinnedEstimates     PinnedEstimate[]
 
   @@index([billingAccountId])
   @@index([ownerId])
@@ -341,8 +343,25 @@ model Estimate {
   estimateRequest EstimateRequest?  @relation("EstimateRequestEstimate")
   versions        EstimateVersion[] @relation("EstimateVersions")
   latestVersion   EstimateVersion?  @relation("EstimateLatestVersion", fields: [latestVersionId], references: [id], onDelete: SetNull)
+  pinnedBy        PinnedEstimate[]
 
   @@index([workspaceId])
+}
+
+model PinnedEstimate {
+  id          String   @id @default(cuid())
+  userId      String
+  workspaceId String
+  estimateId  String
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  estimate  Estimate  @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId, estimateId])
+  @@index([userId, workspaceId, sortOrder])
 }
 
 model EstimateVersion {

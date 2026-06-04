@@ -30,6 +30,7 @@ import {
   getLatestAiApprovedRevisionAt,
   listAiMessagesByVersionId,
 } from "@/features/estimates/server/ai-messages-repository";
+import { isEstimatePinned } from "@/features/estimates/server/pinned-estimates";
 
 export default async function EstimateEditorPage({
   params,
@@ -119,6 +120,12 @@ export default async function EstimateEditorPage({
     latestAiApprovedRevisionAt,
   );
 
+  const pinned = await isEstimatePinned({
+    userId: user.id,
+    workspaceId: resolved.workspace.id,
+    estimateId,
+  });
+
   return (
     <EstimateEditor
       key={editorKey}
@@ -131,6 +138,7 @@ export default async function EstimateEditorPage({
       investmentPropertyType={investmentPropertyType}
       initialAiMessages={initialAiMessages}
       initialPendingEdit={initialPendingEdit}
+      isPinned={pinned}
     />
   );
 }

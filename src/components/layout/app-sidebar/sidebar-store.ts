@@ -3,19 +3,18 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import { DEFAULT_PINNED_ORDER } from "./pinned-config";
-
 export type SidebarSectionId = "pinned" | "team" | "admin";
 
 type SidebarState = {
   collapsed: boolean;
   sectionsOpen: Record<SidebarSectionId, boolean>;
+  /** Estimate IDs — hydrated from server per workspace; local order until refresh. */
   pinnedOrder: string[];
   setCollapsed: (collapsed: boolean) => void;
   toggle: () => void;
   toggleSection: (section: SidebarSectionId) => void;
   setPinnedOrder: (order: string[]) => void;
-  reorderPinned: (activeKey: string, overKey: string) => void;
+  reorderPinned: (activeKey: string, overKey: string) => string[];
 };
 
 export const useSidebarStore = create<SidebarState>()(
@@ -27,7 +26,7 @@ export const useSidebarStore = create<SidebarState>()(
         team: true,
         admin: true,
       },
-      pinnedOrder: DEFAULT_PINNED_ORDER,
+      pinnedOrder: [],
       setCollapsed: (collapsed) => set({ collapsed }),
       toggle: () => set({ collapsed: !get().collapsed }),
       toggleSection: (section) =>
@@ -39,14 +38,15 @@ export const useSidebarStore = create<SidebarState>()(
         })),
       setPinnedOrder: (order) => set({ pinnedOrder: order }),
       reorderPinned: (activeKey, overKey) => {
-        if (activeKey === overKey) return;
+        if (activeKey === overKey) return get().pinnedOrder;
         const order = [...get().pinnedOrder];
         const from = order.indexOf(activeKey);
         const to = order.indexOf(overKey);
-        if (from === -1 || to === -1) return;
+        if (from === -1 || to === -1) return order;
         order.splice(from, 1);
         order.splice(to, 0, activeKey);
         set({ pinnedOrder: order });
+        return order;
       },
     }),
     {

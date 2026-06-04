@@ -4,5 +4,6 @@ export {
   ESTIMATE_HEADER_TITLE_LARGE_MIN_PX,
   estimateHeaderInlineActionButtonClass,
   estimateHeaderInlineActionMenuItemClass,
+  estimateHeaderMoreMenuPinActionClass,
   estimateHeaderTitleClass,
 } from "@/features/estimates/lib/estimate-layout-config";

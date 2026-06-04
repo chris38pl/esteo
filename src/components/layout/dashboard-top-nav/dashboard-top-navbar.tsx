@@ -21,7 +21,6 @@ import { SidebarWorkspace } from "@/components/layout/app-sidebar/sidebar-worksp
 import { SidebarSearch } from "@/components/layout/app-sidebar/sidebar-search";
 import { SidebarNav } from "@/components/layout/app-sidebar/sidebar-nav";
 import { SidebarAdmin } from "@/components/layout/app-sidebar/sidebar-admin";
-import { SidebarDivider } from "@/components/layout/app-sidebar/sidebar-divider";
 import { SidebarPinned } from "@/components/layout/app-sidebar/sidebar-pinned";
 import { SidebarTeam } from "@/components/layout/app-sidebar/sidebar-team";
 import { SidebarSettings } from "@/components/layout/app-sidebar/sidebar-settings";
@@ -73,7 +72,6 @@ export function DashboardTopNavbar({ locale }: { locale: Locale }) {
                   <SidebarNav locale={locale} collapsedOverride={false} />
                   <SidebarAdmin locale={locale} collapsedOverride={false} />
                   <SidebarPinned locale={locale} collapsedOverride={false} />
-                  <SidebarDivider />
                   <SidebarTeam collapsedOverride={false} />
                 </div>
                 <SidebarSettings collapsedOverride={false} />

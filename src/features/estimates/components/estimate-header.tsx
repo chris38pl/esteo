@@ -19,7 +19,9 @@ import {
 import { EstimateVersionSelector } from "./estimate-version-selector";
 import { EstimateHeaderStatusBadge } from "./estimate-header-status-badge";
 import { EstimateRulesIndicator } from "./estimate-rules-indicator";
+import { EstimateHeaderPinMenuItem } from "./estimate-header-pin-menu-item";
 import type { AutoSaveStatus } from "@/features/estimates/hooks/use-estimate-autosave";
+import type { Locale } from "@/lib/locale";
 import {
   estimateHeaderInlineActionButtonClass,
   estimateHeaderInlineActionMenuItemClass,
@@ -48,11 +50,12 @@ interface EstimateHeaderProps {
   estimateId: string;
   workspaceId: string;
   workspaceSlug: string;
-  locale: string;
+  locale: Locale;
   versions: Version[];
   activeVersionId: string;
   autosaveStatus: AutoSaveStatus;
   rulesApplied?: boolean;
+  isPinned?: boolean;
 }
 
 export function EstimateHeader({
@@ -65,6 +68,7 @@ export function EstimateHeader({
   activeVersionId,
   autosaveStatus,
   rulesApplied = true,
+  isPinned = false,
 }: EstimateHeaderProps) {
   const t = useTranslations("estimates");
   const activeVersion = versions.find((version) => version.id === activeVersionId) ?? versions[0];
@@ -123,6 +127,13 @@ export function EstimateHeader({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <EstimateHeaderPinMenuItem
+                estimateId={estimateId}
+                workspaceId={workspaceId}
+                workspaceSlug={workspaceSlug}
+                locale={locale}
+                isPinned={isPinned}
+              />
               <DropdownMenuItem className={headerMoreMenuInlineActionClassName}>
                 <Eye className="size-4" />
                 {t("header.actions.preview")}

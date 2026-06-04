@@ -1,18 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { GripVertical, Pin, Plus } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { GripVertical, Pin } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { reorderPinnedEstimatesAction } from "@/features/estimates/server/pinned-actions";
+import { orderPinnedNavItems } from "./pinned-config";
+import { SidebarDivider } from "./sidebar-divider";
 import { SidebarSectionLabel } from "./sidebar-section-label";
-import { orderPinnedItems } from "./pinned-config";
 import { sidebarInsetClass } from "./sidebar-layout";
 import { useSidebarLayout } from "./sidebar-layout-context";
 import { useSidebarStore } from "./sidebar-store";
+import { useWorkspaceContext } from "./workspace-context";
 
 function formatUpdatedAt(
   format: ReturnType<typeof useFormatter>,
@@ -32,27 +35,52 @@ export function SidebarPinned({
   locale: string;
   collapsedOverride?: boolean;
 }) {
-  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
   const format = useFormatter();
   const t = useTranslations("sidebar.pinned");
+  const { activeWorkspace, pinnedEstimates, locale: contextLocale } = useWorkspaceContext();
   const collapsedFromStore = useSidebarStore((s) => s.collapsed);
   const pinnedOrder = useSidebarStore((s) => s.pinnedOrder);
   const pinnedOpen = useSidebarStore((s) => s.sectionsOpen.pinned);
   const toggleSection = useSidebarStore((s) => s.toggleSection);
+  const setPinnedOrder = useSidebarStore((s) => s.setPinnedOrder);
   const reorderPinned = useSidebarStore((s) => s.reorderPinned);
   const collapsed = collapsedOverride ?? collapsedFromStore;
   const { inDrawer } = useSidebarLayout();
+  const [, startReorderTransition] = useTransition();
 
   const [dragKey, setDragKey] = useState<string | null>(null);
   const [overKey, setOverKey] = useState<string | null>(null);
 
-  const items = useMemo(() => orderPinnedItems(pinnedOrder), [pinnedOrder]);
+  useEffect(() => {
+    const serverOrder = pinnedEstimates.map((item) => item.estimateId);
+    setPinnedOrder(serverOrder);
+  }, [pinnedEstimates, setPinnedOrder]);
+
+  const items = useMemo(
+    () => orderPinnedNavItems(pinnedOrder, pinnedEstimates),
+    [pinnedOrder, pinnedEstimates],
+  );
 
   if (items.length === 0) {
     return null;
   }
 
-  const activeEstimateId = searchParams?.get("estimate");
+  const persistReorder = (order: string[]) => {
+    if (!activeWorkspace) return;
+    startReorderTransition(async () => {
+      const result = await reorderPinnedEstimatesAction({
+        workspaceId: activeWorkspace.id,
+        workspaceSlug: activeWorkspace.slug,
+        locale: contextLocale,
+        estimateIds: order,
+      });
+      if (result.success) {
+        router.refresh();
+      }
+    });
+  };
 
   return (
     <div
@@ -68,15 +96,6 @@ export function SidebarPinned({
           onToggle={() => toggleSection("pinned")}
           toggleLabel={pinnedOpen ? t("collapse") : t("expand")}
           className="pt-1"
-          action={
-            <button
-              type="button"
-              aria-label={t("add")}
-              className="rounded-md p-0.5 text-[var(--sidebar-section)] transition hover:bg-[var(--sidebar-nav-hover)] hover:text-[var(--sidebar-heading)]"
-            >
-              <Plus className="size-3.5" strokeWidth={1.75} />
-            </button>
-          }
         >
           {t("title")}
         </SidebarSectionLabel>
@@ -86,7 +105,7 @@ export function SidebarPinned({
         <ul className={cn("space-y-0.5", collapsed && "pt-1")}>
           {items.map((item) => {
             const href = item.href(locale);
-            const active = activeEstimateId === item.key;
+            const active = pathname.includes(`/estimates/${item.key}`);
 
             const updatedLabel = formatUpdatedAt(format, item.updatedAt);
 
@@ -129,7 +148,8 @@ export function SidebarPinned({
                 onDrop={(event) => {
                   event.preventDefault();
                   if (dragKey && dragKey !== item.key) {
-                    reorderPinned(dragKey, item.key);
+                    const nextOrder = reorderPinned(dragKey, item.key);
+                    persistReorder(nextOrder);
                   }
                   setDragKey(null);
                   setOverKey(null);
@@ -191,6 +211,7 @@ export function SidebarPinned({
           })}
         </ul>
       ) : null}
+      <SidebarDivider />
     </div>
   );
 }

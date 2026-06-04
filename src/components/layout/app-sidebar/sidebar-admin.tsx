@@ -32,7 +32,7 @@ export function SidebarAdmin({
   const { inDrawer } = useSidebarLayout();
 
   if (!isPlatformAdmin) {
-    return <SidebarDivider />;
+    return null;
   }
 
   return (

@@ -73,6 +73,8 @@ const estimateLayoutTailwind = {
   editorMaxWidth: `max-w-[${b.editorMaxWidth}px]`,
   headerInlineActionButton: "estimate-header-inline-action",
   headerInlineActionMenuItem: "estimate-header-more-menu-inline-action",
+  /** Always visible in Więcej menu (not hidden when inline Preview/Share show) */
+  headerMoreMenuPinAction: "estimate-header-more-menu-pin-action",
   headerTitle:
     "estimate-header__title truncate text-xl font-semibold tracking-tight text-foreground",
   headerStatusBadgeMinWidth: `min-w-[${b.headerStatusBadge}px]`,
@@ -117,6 +119,9 @@ export const estimateHeaderInlineActionButtonClass =
 
 export const estimateHeaderInlineActionMenuItemClass =
   ESTIMATE_LAYOUT_CONFIG.tailwind.headerInlineActionMenuItem;
+
+export const estimateHeaderMoreMenuPinActionClass =
+  ESTIMATE_LAYOUT_CONFIG.tailwind.headerMoreMenuPinAction;
 
 export const ESTIMATE_HEADER_TITLE_LARGE_MIN_PX =
   ESTIMATE_LAYOUT_CONFIG.breakpoints.headerInlineActions;
@@ -218,6 +223,9 @@ export function getEstimateEditorResponsiveCss(): string {
   display: none !important;
 }
 .estimate-header-more-menu-inline-action {
+  display: flex;
+}
+.estimate-header-more-menu-pin-action {
   display: flex;
 }
 @media ${mediaQueryMin(breakpoints.headerInlineActions)} {

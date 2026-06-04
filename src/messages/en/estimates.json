@@ -111,6 +111,8 @@
       "preview": "Preview",
       "share": "Share",
       "more": "More",
+      "pinToMenu": "Pin to menu",
+      "unpinFromMenu": "Unpin from menu",
       "morePlaceholder": "Additional actions",
       "send": "Send",
       "sendToClient": "Send to client"

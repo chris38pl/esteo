@@ -8,6 +8,7 @@ import type { WorkspaceAppearanceTheme } from "@prisma/client";
 import type { ReceivedInvitationView } from "@/features/workspaces/components/invitation-types";
 import type { BillingSidebarState } from "@/features/billing/billing-sidebar-state";
 import type { WorkspaceMemberPreview } from "@/features/workspaces/server/get-active-workspace-card-data";
+import type { PinnedEstimateSidebarItem } from "@/components/layout/app-sidebar/pinned-config";
 import type { Locale } from "@/lib/locale";
 
 export type WorkspaceSummary = {
@@ -31,6 +32,8 @@ type WorkspaceContextValue = {
   locale: Locale;
   pendingInvitationCount: number;
   modalInvitation: ReceivedInvitationView | null;
+  /** Pinned estimates for the active workspace (per user). */
+  pinnedEstimates: PinnedEstimateSidebarItem[];
   /** Navigate to a workspace by its current slug. */
   switchWorkspace: (workspaceSlug: string) => void;
   isSwitching: boolean;
@@ -50,6 +53,7 @@ export function WorkspaceProvider({
   locale,
   pendingInvitationCount = 0,
   modalInvitation = null,
+  pinnedEstimates = [],
   children,
 }: {
   workspaces: WorkspaceSummary[];
@@ -63,6 +67,7 @@ export function WorkspaceProvider({
   locale: Locale;
   pendingInvitationCount?: number;
   modalInvitation?: ReceivedInvitationView | null;
+  pinnedEstimates?: PinnedEstimateSidebarItem[];
   children: ReactNode;
 }) {
   const router = useRouter();
@@ -87,6 +92,7 @@ export function WorkspaceProvider({
       locale,
       pendingInvitationCount,
       modalInvitation,
+      pinnedEstimates,
       isSwitching,
       switchWorkspace(workspaceSlug: string) {
         const target = workspaces.find((w) => w.slug === workspaceSlug);
@@ -112,6 +118,7 @@ export function WorkspaceProvider({
       locale,
       pendingInvitationCount,
       modalInvitation,
+      pinnedEstimates,
       isSwitching,
       router,
     ],

@@ -62,6 +62,7 @@ interface EstimateEditorProps {
   investmentPropertyType?: string | null;
   initialAiMessages?: AiMessageClient[];
   initialPendingEdit?: ProposeEditResult | null;
+  isPinned?: boolean;
 }
 
 function lineItemFromServer(
@@ -115,6 +116,7 @@ export function EstimateEditor({
   investmentPropertyType = null,
   initialAiMessages = [],
   initialPendingEdit = null,
+  isPinned = false,
 }: EstimateEditorProps) {
   const t = useTranslations("estimates");
   const router = useRouter();
@@ -427,6 +429,7 @@ export function EstimateEditor({
         activeVersionId={activeVersionId ?? ""}
         autosaveStatus={autosaveStatus}
         rulesApplied={rulesApplied}
+        isPinned={isPinned}
       />
 
       <div
