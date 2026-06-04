@@ -4,6 +4,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
+import { useDashboardBreadcrumbDetail } from "@/components/layout/dashboard-top-nav/dashboard-breadcrumb-detail-context";
 import type { Locale } from "@/lib/locale";
 
 export type BreadcrumbItem = {
@@ -26,6 +27,35 @@ type PageLabelKey =
   | "adminIndustryFields"
   | "adminEstimateRequests"
   | "adminEstimateRequestDetail";
+
+type EstimatesRoute =
+  | { kind: "list" }
+  | { kind: "detail"; estimateId: string };
+
+function parseEstimatesRoute(
+  pathname: string,
+  locale: Locale,
+  workspaceSlug: string | null,
+): EstimatesRoute | null {
+  if (!workspaceSlug) {
+    return null;
+  }
+
+  const base = `/${locale}/dashboard/${workspaceSlug}/estimates`;
+  if (pathname === base) {
+    return { kind: "list" };
+  }
+
+  if (pathname.startsWith(`${base}/`)) {
+    const suffix = pathname.slice(base.length + 1);
+    const estimateId = suffix.split("/")[0];
+    if (estimateId) {
+      return { kind: "detail", estimateId };
+    }
+  }
+
+  return null;
+}
 
 function resolvePageLabelKey(
   pathname: string,
@@ -71,11 +101,13 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
   const section = searchParams?.get("section");
   const t = useTranslations("navbar.breadcrumbs");
   const { activeWorkspace } = useWorkspaceContext();
+  const { detailLabel } = useDashboardBreadcrumbDetail();
 
   const workspaceSlug = activeWorkspace?.slug ?? null;
   const dashboardHref = workspaceSlug
     ? `/${locale}/dashboard/${workspaceSlug}`
     : `/${locale}/dashboard`;
+  const estimatesRoute = parseEstimatesRoute(pathname, locale, workspaceSlug);
   const pageKey = resolvePageLabelKey(pathname, locale, section, workspaceSlug);
   const isAdminPath = pathname.startsWith(`/${locale}/dashboard/admin`);
 
@@ -89,6 +121,25 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
     crumbs.push({ label: t("admin") });
   } else {
     crumbs.push({ label: workspaceLabel });
+  }
+
+  if (estimatesRoute && workspaceSlug) {
+    const estimatesHref = `/${locale}/dashboard/${workspaceSlug}/estimates`;
+
+    crumbs.push({
+      label: t("estimates"),
+      href: estimatesRoute.kind === "detail" ? estimatesHref : undefined,
+    });
+
+    if (estimatesRoute.kind === "detail") {
+      crumbs.push({
+        label:
+          detailLabel?.trim() ||
+          estimatesRoute.estimateId,
+      });
+    }
+
+    return crumbs;
   }
 
   if (pageKey) {

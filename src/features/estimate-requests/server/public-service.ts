@@ -2,9 +2,9 @@ import { BusinessDocumentType, type Prisma, type WorkspaceIndustry } from "@pris
 
 import { prisma } from "@/db/client";
 import { getIndustryFieldsForDocument, type IndustryFieldForDocument } from "@/features/industry-fields/server/get-fields-for-workspace";
-import type { FieldValueInput } from "@/features/industry-fields/server/map-field-value";
 import { upsertDocumentFieldValues, validateDocumentFieldValues } from "@/features/industry-fields/server/validate-document-values";
 import { buildEstimateTitleFromPublicRequest } from "@/features/estimates/lib/build-estimate-title-from-public-request";
+import { coerceIndustryFieldValues } from "@/features/estimate-requests/lib/coerce-industry-field-values";
 import type { PublicEstimateRequestInput } from "@/features/estimate-requests/schemas/request";
 import { tasks } from "@trigger.dev/sdk";
 import type { generateEstimateDraftTask } from "@/trigger/generate-estimate-draft";
@@ -29,6 +29,36 @@ export async function getPublicEstimateRequestPageData(input: {
   const workspace = await prisma.workspace.findFirst({
     where: {
       slug: input.workspaceSlug,
+      deletedAt: null,
+    },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      industry: true,
+    },
+  });
+
+  if (!workspace) {
+    return null;
+  }
+
+  const fields = await getIndustryFieldsForDocument({
+    workspaceId: workspace.id,
+    documentType: BusinessDocumentType.ESTIMATE_REQUEST,
+    locale: input.locale,
+  });
+
+  return { workspace, fields };
+}
+
+export async function getEstimateRequestFormDataForWorkspace(input: {
+  workspaceId: string;
+  locale: Locale;
+}): Promise<PublicEstimateRequestPageData | null> {
+  const workspace = await prisma.workspace.findFirst({
+    where: {
+      id: input.workspaceId,
       deletedAt: null,
     },
     select: {
@@ -189,35 +219,3 @@ async function generateRequestNumber(
   return `${prefix}${String(count + 1).padStart(5, "0")}`;
 }
 
-function coerceIndustryFieldValues(input: {
-  fields: IndustryFieldForDocument[];
-  values: PublicEstimateRequestInput["industryFields"];
-}): Record<string, FieldValueInput> {
-  const definitionByKey = new Map(input.fields.map((field) => [field.key, field]));
-  const coerced: Record<string, FieldValueInput> = {};
-
-  for (const [key, value] of Object.entries(input.values)) {
-    const definition = definitionByKey.get(key);
-    if (!definition || value === null || value === "") {
-      coerced[key] = value;
-      continue;
-    }
-
-    switch (definition.valueType) {
-      case "NUMBER":
-        coerced[key] = typeof value === "number" ? value : Number(value);
-        break;
-      case "BOOLEAN":
-        coerced[key] = typeof value === "boolean" ? value : value === "true";
-        break;
-      case "DATE":
-        coerced[key] = new Date(`${String(value)}T00:00:00.000Z`);
-        break;
-      default:
-        coerced[key] = String(value).trim();
-        break;
-    }
-  }
-
-  return coerced;
-}

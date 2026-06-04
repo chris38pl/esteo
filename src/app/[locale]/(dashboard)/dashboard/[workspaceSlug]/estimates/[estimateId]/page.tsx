@@ -10,6 +10,7 @@ import {
   getEstimateForEditor,
   getVersionWithTree,
 } from "@/features/estimates/server/repository";
+import { SyncDashboardBreadcrumbDetail } from "@/components/layout/dashboard-top-nav/sync-dashboard-breadcrumb-detail";
 import { EstimateEditor } from "@/features/estimates/components/estimate-editor";
 import {
   serializeEstimateForEditor,
@@ -126,19 +127,27 @@ export default async function EstimateEditorPage({
     estimateId,
   });
 
+  const breadcrumbLabel =
+    estimate.estimateRequest?.requestNumber?.trim() ||
+    estimate.title?.trim() ||
+    null;
+
   return (
-    <EstimateEditor
-      key={editorKey}
-      estimate={serializeEstimateForEditor(estimate)}
-      versionTree={serializedTree}
-      activeVersionId={activeVersionId ?? null}
-      workspaceSlug={workspaceSlug}
-      locale={resolvedLocale}
-      rulesApplied={rulesApplied}
-      investmentPropertyType={investmentPropertyType}
-      initialAiMessages={initialAiMessages}
-      initialPendingEdit={initialPendingEdit}
-      isPinned={pinned}
-    />
+    <>
+      <SyncDashboardBreadcrumbDetail label={breadcrumbLabel} />
+      <EstimateEditor
+        key={editorKey}
+        estimate={serializeEstimateForEditor(estimate)}
+        versionTree={serializedTree}
+        activeVersionId={activeVersionId ?? null}
+        workspaceSlug={workspaceSlug}
+        locale={resolvedLocale}
+        rulesApplied={rulesApplied}
+        investmentPropertyType={investmentPropertyType}
+        initialAiMessages={initialAiMessages}
+        initialPendingEdit={initialPendingEdit}
+        isPinned={pinned}
+      />
+    </>
   );
 }

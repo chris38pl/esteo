@@ -8,6 +8,7 @@ import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import { AppSidebar, sidebarWidth } from "./app-sidebar";
 import { useSidebarStore } from "./sidebar-store";
+import { DashboardBreadcrumbDetailProvider } from "@/components/layout/dashboard-top-nav/dashboard-breadcrumb-detail-context";
 import { DashboardTopNavbar } from "@/components/layout/dashboard-top-nav/dashboard-top-navbar";
 import { FocusedDashboardUserMenu } from "@/components/layout/dashboard-top-nav/focused-dashboard-user-menu";
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
@@ -83,23 +84,25 @@ export function DashboardShell({
   }
 
   return (
-    <div className="min-h-dvh bg-background">
-      <AppSidebar locale={locale} />
-      <WorkspaceInvitationPrompt invitation={modalInvitation} locale={contextLocale} />
+    <DashboardBreadcrumbDetailProvider>
+      <div className="min-h-dvh bg-background">
+        <AppSidebar locale={locale} />
+        <WorkspaceInvitationPrompt invitation={modalInvitation} locale={contextLocale} />
 
-      <motion.div
-        initial={false}
-        animate={{ paddingLeft: contentInset }}
-        transition={
-          prefersReducedMotion
-            ? { duration: 0 }
-            : { duration: 0.38, ease: [0.22, 1, 0.36, 1] }
-        }
-        className="flex min-h-dvh min-w-0 flex-col max-md:!pl-0 md:pl-[232px]"
-      >
-        <DashboardTopNavbar locale={locale} />
-        <main className="min-w-0 flex-1 px-4 py-6 md:px-8">{children}</main>
-      </motion.div>
-    </div>
+        <motion.div
+          initial={false}
+          animate={{ paddingLeft: contentInset }}
+          transition={
+            prefersReducedMotion
+              ? { duration: 0 }
+              : { duration: 0.38, ease: [0.22, 1, 0.36, 1] }
+          }
+          className="flex min-h-dvh min-w-0 flex-col max-md:!pl-0 md:pl-[232px]"
+        >
+          <DashboardTopNavbar locale={locale} />
+          <main className="min-w-0 flex-1 px-4 py-6 md:px-8">{children}</main>
+        </motion.div>
+      </div>
+    </DashboardBreadcrumbDetailProvider>
   );
 }

@@ -7,6 +7,7 @@ import { resolveWorkspaceBySlug } from "@/server/workspaces/active-workspace";
 import { redirect } from "next/navigation";
 import { listEstimates } from "@/features/estimates/server/repository";
 import { EstimatesListPanel } from "@/features/estimates/components/estimates-list-panel";
+import { getEstimateRequestFormDataForWorkspace } from "@/features/estimate-requests/server/public-service";
 
 export default async function EstimatesPage({
   params,
@@ -25,11 +26,22 @@ export default async function EstimatesPage({
     redirect(`/${resolvedLocale}/dashboard`);
   }
 
-  const estimates = await listEstimates(resolved.workspace.id);
+  const [estimates, createFormData] = await Promise.all([
+    listEstimates(resolved.workspace.id),
+    getEstimateRequestFormDataForWorkspace({
+      workspaceId: resolved.workspace.id,
+      locale: resolvedLocale,
+    }),
+  ]);
+
+  if (!createFormData) {
+    redirect(`/${resolvedLocale}/dashboard`);
+  }
 
   return (
     <EstimatesListPanel
       estimates={estimates}
+      createFormData={createFormData}
       workspaceId={resolved.workspace.id}
       workspaceSlug={workspaceSlug}
       locale={resolvedLocale}

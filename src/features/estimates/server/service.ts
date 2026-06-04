@@ -1,7 +1,15 @@
 import type { EstimateAgentPatch } from "@/ai/schemas/estimate-agent-patch";
 import { proposeEstimateEdit } from "@/ai/services/propose-estimate-edit";
-import type { Prisma } from "@prisma/client";
+import { BusinessDocumentType, type Prisma } from "@prisma/client";
 import { prisma } from "@/db/client";
+import { getIndustryFieldsForDocument } from "@/features/industry-fields/server/get-fields-for-workspace";
+import {
+  upsertDocumentFieldValues,
+  validateDocumentFieldValues,
+} from "@/features/industry-fields/server/validate-document-values";
+import { buildEstimateTitleFromPublicRequest } from "@/features/estimates/lib/build-estimate-title-from-public-request";
+import { coerceIndustryFieldValues } from "@/features/estimate-requests/lib/coerce-industry-field-values";
+import type { InternalEstimateCreateInput } from "@/features/estimate-requests/schemas/request";
 import { getTranslations } from "next-intl/server";
 import {
   appendAiMessage,
@@ -41,47 +49,104 @@ import {
 // Internal estimate creation
 // ---------------------------------------------------------------------------
 
-export async function createInternalEstimate(input: {
-  userId: string;
-  workspaceId: string;
-  title?: string;
-  projectDescription: string;
-  locale: string;
-}): Promise<{ estimateId: string }> {
+export async function createInternalEstimate(
+  input: {
+    userId: string;
+    workspaceId: string;
+    locale: Locale;
+  } & InternalEstimateCreateInput,
+): Promise<{ estimateId: string }> {
   await assertCanCreateEstimate(input.userId);
+
+  const workspace = await prisma.workspace.findFirst({
+    where: { id: input.workspaceId, deletedAt: null },
+    select: { id: true, industry: true },
+  });
+
+  if (!workspace) {
+    throw new Error("Workspace not found.");
+  }
+
+  const fields = await getIndustryFieldsForDocument({
+    workspaceId: workspace.id,
+    documentType: BusinessDocumentType.ESTIMATE_REQUEST,
+    locale: input.locale,
+  });
+
+  const dynamicValues = coerceIndustryFieldValues({
+    fields,
+    values: input.industryFields,
+  });
+
+  await validateDocumentFieldValues({
+    industry: workspace.industry,
+    documentType: BusinessDocumentType.ESTIMATE_REQUEST,
+    values: dynamicValues,
+  });
+
+  const explicitTitle = input.title?.trim() || undefined;
+  const generatedTitle = buildEstimateTitleFromPublicRequest({
+    industry: workspace.industry,
+    fullName: input.customer.fullName,
+    address: input.address,
+    industryFieldValues: dynamicValues,
+    locale: input.locale,
+  });
+  const estimateTitle = explicitTitle ?? generatedTitle ?? null;
 
   const requestNumber = await generateInternalRequestNumber(input.workspaceId);
 
-  const { estimateId, versionId } = await prisma.$transaction(async (tx) => {
+  const { estimateId, versionId, requestId } = await prisma.$transaction(async (tx) => {
     const { estimateId: eid, versionId: vid } = await createEstimateWithFirstVersionInTx(
       tx,
       {
         workspaceId: input.workspaceId,
-        title: input.title,
+        title: estimateTitle ?? undefined,
         createdByUserId: input.userId,
       },
     );
 
-    await tx.estimateRequest.create({
+    const createdRequest = await tx.estimateRequest.create({
       data: {
         workspaceId: input.workspaceId,
         requestNumber,
-        projectDescription: input.projectDescription,
         estimateId: eid,
+        customerData: {
+          fullName: input.customer.fullName,
+          email: input.customer.email,
+          phone: input.customer.phone,
+          project: {
+            preferredStartDate: input.project.preferredStartDate,
+          },
+        },
+        address: input.address,
+        projectDescription: input.project.description,
+        attachments: [],
         aiMetadata: {
           source: "internal_dashboard",
           createdByUserId: input.userId,
         },
       },
+      select: { id: true },
     });
 
-    return { estimateId: eid, versionId: vid };
+    return { estimateId: eid, versionId: vid, requestId: createdRequest.id };
   });
+
+  if (Object.keys(dynamicValues).length > 0) {
+    await upsertDocumentFieldValues({
+      workspaceId: input.workspaceId,
+      industry: workspace.industry,
+      documentType: BusinessDocumentType.ESTIMATE_REQUEST,
+      documentId: requestId,
+      values: dynamicValues,
+    });
+  }
 
   await incrementEstimateUsage(input.userId);
 
   await tasks.trigger<typeof generateEstimateDraftTask>("generate-estimate-draft", {
-    estimateRequestId: await getRequestIdForEstimate(estimateId),
+    estimateRequestId: requestId,
     estimateId,
     versionId,
     workspaceId: input.workspaceId,

@@ -28,12 +28,14 @@ export function IndustryFieldInput({
   onChange,
   locale,
   selectPlaceholder,
+  disabled = false,
 }: {
   field: IndustryFieldForDocument;
   value: IndustryFieldValue;
   onChange: (key: string, value: IndustryFieldValue) => void;
   locale: Locale;
   selectPlaceholder: string;
+  disabled?: boolean;
 }) {
   if (field.valueType === "SELECT" && field.key === "property_type") {
     return (
@@ -48,10 +50,12 @@ export function IndustryFieldInput({
               <button
                 key={option.value}
                 type="button"
+                disabled={disabled}
                 aria-pressed={selected}
                 onClick={() => onChange(field.key, option.value)}
                 className={cn(
-                  "group flex min-h-20 flex-col items-center justify-center rounded-2xl border bg-background/65 p-3 text-center shadow-xs transition dark:bg-input/20 cursor-pointer",
+                  "group flex min-h-20 flex-col items-center justify-center rounded-2xl border bg-background/65 p-3 text-center shadow-xs transition dark:bg-input/20",
+                  !disabled && "cursor-pointer",
                   "border-input hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
                   selected && "border-primary/45 bg-primary/20 dark:bg-primary/10 shadow-[0_0_0_1px_rgba(59,130,246,0.22)]",
                 )}
@@ -76,6 +80,7 @@ export function IndustryFieldInput({
           value={typeof value === "string" ? value : ""}
           onChange={(event) => onChange(field.key, event.target.value)}
           required={field.required}
+          disabled={disabled}
           className={cn(
             fieldInputClassName,
             "w-full appearance-none px-3 text-sm text-foreground outline-none",
@@ -98,6 +103,7 @@ export function IndustryFieldInput({
       <label className="flex items-center gap-2 rounded-xl border border-input bg-background/65 p-3 text-xs font-medium text-foreground shadow-xs dark:bg-input/20">
         <Checkbox
           checked={value === true}
+          disabled={disabled}
           onCheckedChange={(checked) => onChange(field.key, checked === true)}
         />
         {field.label}
@@ -117,6 +123,7 @@ export function IndustryFieldInput({
             onChange(field.key, field.valueType === "NUMBER" && next ? Number(next) : next);
           }}
           required={field.required}
+          disabled={disabled}
           placeholder={field.placeholder ?? undefined}
           className={cn(fieldInputClassName, field.valueType === "NUMBER" && "pr-10")}
         />

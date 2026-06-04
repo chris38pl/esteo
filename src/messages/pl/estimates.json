@@ -27,6 +27,7 @@
   },
   "create": {
     "title": "Nowa wycena",
+    "subtitle": "Te same pola co w publicznym formularzu zapytania, plus opcjonalny tytuł wyceny dla zespołu.",
     "titleLabel": "Tytuł (opcjonalnie)",
     "titlePlaceholder": "Np. Remont mieszkania — Warszawa",
     "descriptionLabel": "Opis projektu",

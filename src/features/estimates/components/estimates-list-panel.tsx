@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { EstimateVersionStatus, EstimateRequestStatus } from "@prisma/client";
 import { CreateEstimateModal } from "./create-estimate-modal";
+import type { PublicEstimateRequestPageData } from "@/features/estimate-requests/server/public-service";
 import type { Locale } from "@/lib/locale";
 
 interface EstimateListItem {
@@ -32,6 +33,7 @@ interface EstimateListItem {
 
 interface EstimatesListPanelProps {
   estimates: EstimateListItem[];
+  createFormData: PublicEstimateRequestPageData;
   workspaceId: string;
   workspaceSlug: string;
   locale: Locale;
@@ -64,6 +66,7 @@ const requestStatusVariant: Record<
 
 export function EstimatesListPanel({
   estimates,
+  createFormData,
   workspaceId,
   workspaceSlug,
   locale,
@@ -160,6 +163,7 @@ export function EstimatesListPanel({
       <CreateEstimateModal
         open={createOpen}
         onOpenChange={setCreateOpen}
+        formData={createFormData}
         workspaceId={workspaceId}
         workspaceSlug={workspaceSlug}
         locale={locale}

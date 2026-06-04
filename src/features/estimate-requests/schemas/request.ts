@@ -60,3 +60,20 @@ export const publicEstimateRequestSchema = z.object({
 });
 
 export type PublicEstimateRequestInput = z.infer<typeof publicEstimateRequestSchema>;
+
+const optionalTitleField = z
+  .string()
+  .transform(cleanText)
+  .refine((value) => value.length <= 200, "Must be at most 200 characters.")
+  .refine((value) => !CONTROL_CHARACTERS.test(value), "Invalid characters.")
+  .optional()
+  .or(z.literal(""));
+
+/** Dashboard “New estimate” — same body as public form plus optional title. */
+export const internalEstimateCreateSchema = publicEstimateRequestSchema
+  .omit({ workspaceSlug: true, security: true })
+  .extend({
+    title: optionalTitleField,
+  });
+
+export type InternalEstimateCreateInput = z.infer<typeof internalEstimateCreateSchema>;

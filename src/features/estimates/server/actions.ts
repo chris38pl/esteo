@@ -8,6 +8,10 @@ import type { EstimateAgentPatch } from "@/ai/schemas/estimate-agent-patch";
 import type { ProposeEditResult } from "@/features/estimates/lib/estimate-agent-types";
 import { prisma } from "@/db/client";
 import type { Locale } from "@/lib/locale";
+import {
+  internalEstimateCreateSchema,
+  type InternalEstimateCreateInput,
+} from "@/features/estimate-requests/schemas/request";
 import { requireAuth } from "@/server/auth/require-auth";
 import { EntitlementError, PermissionError } from "@/server/permissions/errors";
 import {
@@ -51,22 +55,29 @@ function toActionError(error: unknown): ActionResult<never> {
 // Estimate creation
 // ---------------------------------------------------------------------------
 
-export async function createInternalEstimateAction(input: {
-  title?: string;
-  projectDescription: string;
-  workspaceId: string;
-  locale?: Locale;
-}): Promise<ActionResult<{ estimateId: string }>> {
+export async function createInternalEstimateAction(
+  input: { workspaceId: string; locale?: Locale } & InternalEstimateCreateInput,
+): Promise<ActionResult<{ estimateId: string }>> {
   try {
-    const user = await requireAuth(input.locale ?? "pl");
+    const locale = input.locale ?? "pl";
+    const { workspaceId, locale: _locale, ...body } = input;
+    const parsed = internalEstimateCreateSchema.safeParse(body);
+
+    if (!parsed.success) {
+      return { success: false, error: "Invalid estimate request data." };
+    }
+
+    const user = await requireAuth(locale);
+    const payload = parsed.data;
+
     const result = await createInternalEstimate({
       userId: user.id,
-      workspaceId: input.workspaceId,
-      title: input.title,
-      projectDescription: input.projectDescription,
-      locale: input.locale ?? "pl",
+      workspaceId,
+      locale,
+      ...payload,
     });
-    revalidatePath(`/${input.locale ?? "pl"}/dashboard`);
+
+    revalidatePath(`/${locale}/dashboard`);
     return { success: true, data: result };
   } catch (error) {
     return toActionError(error);

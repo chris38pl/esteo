@@ -27,6 +27,7 @@
   },
   "create": {
     "title": "New estimate",
+    "subtitle": "Same fields as the public request form, plus an optional estimate title for your team.",
     "titleLabel": "Title (optional)",
     "titlePlaceholder": "E.g. Apartment renovation — Warsaw",
     "descriptionLabel": "Project description",
