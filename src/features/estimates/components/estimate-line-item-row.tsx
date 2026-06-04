@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { MoreHorizontal, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { GripVertical, MoreHorizontal, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { calculateLineItem } from "@/features/estimates/lib/calculate-estimate";
+import {
+  estimateFlatInputClassName,
+  estimateLineItemRowClassName,
+} from "./estimate-table-input-styles";
 
 export interface LineItemData {
   id: string;
@@ -27,10 +31,18 @@ export interface LineItemData {
 
 interface EstimateLineItemRowProps {
   item: LineItemData;
-  index: number;
+  positionLabel: string;
+  marginPercent: number;
   onUpdate: (id: string, data: Partial<Omit<LineItemData, "id" | "sortOrder">>) => void;
   onDelete: (id: string) => void;
   onBlur: () => void;
+  isDragging?: boolean;
+  isDragOver?: boolean;
+  onDragHandleStart: () => void;
+  onDragHandleEnd: () => void;
+  onDragOverRow: () => void;
+  onDragLeaveRow: () => void;
+  onDropOnRow: () => void;
 }
 
 function formatCurrency(value: number): string {
@@ -42,13 +54,25 @@ function formatCurrency(value: number): string {
 
 export function EstimateLineItemRow({
   item,
-  index,
+  positionLabel,
+  marginPercent,
   onUpdate,
   onDelete,
   onBlur,
+  isDragging = false,
+  isDragOver = false,
+  onDragHandleStart,
+  onDragHandleEnd,
+  onDragOverRow,
+  onDragLeaveRow,
+  onDropOnRow,
 }: EstimateLineItemRowProps) {
   const t = useTranslations("estimates");
   const [local, setLocal] = useState<LineItemData>(item);
+
+  useEffect(() => {
+    setLocal(item);
+  }, [item]);
 
   const calc = calculateLineItem({
     quantity: local.quantity,
@@ -56,10 +80,7 @@ export function EstimateLineItemRow({
     vatRate: local.vatRate,
   });
 
-  const handleChange = <K extends keyof LineItemData>(
-    key: K,
-    raw: string,
-  ) => {
+  const handleChange = <K extends keyof LineItemData>(key: K, raw: string) => {
     let value: LineItemData[K];
     if (key === "quantity" || key === "unitPrice") {
       value = (parseFloat(raw) || 0) as LineItemData[K];
@@ -73,20 +94,51 @@ export function EstimateLineItemRow({
     onUpdate(item.id, { [key]: value });
   };
 
-  const cellClass = "px-3 py-2 align-middle";
-  const inputClass = "h-9 min-w-0 rounded-lg border-transparent bg-transparent px-2 text-sm shadow-none transition-colors hover:bg-muted/40 focus:border-primary/30 focus:bg-background focus:shadow-sm";
+  const cellClass = "px-2 py-1.5 align-middle";
 
   return (
-    <tr className="group bg-background transition-colors hover:bg-muted/20">
-      <td className={cn(cellClass, "w-12 text-center text-xs font-medium text-muted-foreground")}>
-        {index + 1}
+    <tr
+      className={cn(
+        estimateLineItemRowClassName,
+        isDragging && "opacity-50",
+        isDragOver && "bg-muted/40 dark:bg-muted/20",
+      )}
+      onDragOver={(event) => {
+        event.preventDefault();
+        onDragOverRow();
+      }}
+      onDragLeave={onDragLeaveRow}
+      onDrop={(event) => {
+        event.preventDefault();
+        onDropOnRow();
+      }}
+    >
+      <td className={cn(cellClass, "w-9")}>
+        <button
+          type="button"
+          draggable
+          className="flex size-8 cursor-grab items-center justify-center rounded-md text-muted-foreground/70 transition-colors hover:bg-muted/50 active:cursor-grabbing"
+          aria-label={t("editor.dragHandle")}
+          onDragStart={onDragHandleStart}
+          onDragEnd={onDragHandleEnd}
+        >
+          <GripVertical className="size-4 shrink-0" strokeWidth={1.75} />
+        </button>
+      </td>
+      <td
+        className={cn(
+          cellClass,
+          "w-14 text-xs font-medium tabular-nums text-muted-foreground",
+        )}
+      >
+        {positionLabel}
       </td>
       <td className={cellClass}>
         <Input
           value={local.name}
           onChange={(e) => handleChange("name", e.target.value)}
           onBlur={onBlur}
-          className={inputClass}
+          className={estimateFlatInputClassName}
           placeholder={t("editor.itemNamePlaceholder")}
         />
       </td>
@@ -95,7 +147,7 @@ export function EstimateLineItemRow({
           value={local.unit ?? ""}
           onChange={(e) => handleChange("unit", e.target.value)}
           onBlur={onBlur}
-          className={inputClass}
+          className={estimateFlatInputClassName}
           placeholder={t("editor.unitPlaceholder")}
         />
       </td>
@@ -106,7 +158,7 @@ export function EstimateLineItemRow({
           value={local.quantity}
           onChange={(e) => handleChange("quantity", e.target.value)}
           onBlur={onBlur}
-          className={cn(inputClass, "text-right")}
+          className={cn(estimateFlatInputClassName, "text-right")}
         />
       </td>
       <td className={cn(cellClass, "w-28")}>
@@ -117,13 +169,21 @@ export function EstimateLineItemRow({
           value={local.unitPrice}
           onChange={(e) => handleChange("unitPrice", e.target.value)}
           onBlur={onBlur}
-          className={cn(inputClass, "text-right")}
+          className={cn(estimateFlatInputClassName, "text-right")}
         />
       </td>
-      <td className={cn(cellClass, "w-32 text-right text-sm font-medium tabular-nums")}>
+      <td className={cn(cellClass, "w-28 text-right text-sm tabular-nums")}>
         {formatCurrency(calc.netValue)}
       </td>
-      <td className={cn(cellClass, "w-20")}>
+      <td
+        className={cn(
+          cellClass,
+          "w-20 text-right text-sm tabular-nums text-muted-foreground",
+        )}
+      >
+        {marginPercent > 0 ? `${marginPercent}%` : "—"}
+      </td>
+      <td className={cn(cellClass, "w-16")}>
         <Input
           type="number"
           min={0}
@@ -132,10 +192,10 @@ export function EstimateLineItemRow({
           value={(local.vatRate * 100).toFixed(0)}
           onChange={(e) => handleChange("vatRate", e.target.value)}
           onBlur={onBlur}
-          className={cn(inputClass, "text-right")}
+          className={cn(estimateFlatInputClassName, "text-right")}
         />
       </td>
-      <td className={cn(cellClass, "w-32 text-right text-sm font-semibold tabular-nums text-foreground")}>
+      <td className={cn(cellClass, "w-28 text-right text-sm font-medium tabular-nums")}>
         {formatCurrency(calc.grossValue)}
       </td>
       <td className={cn(cellClass, "w-10")}>
@@ -144,7 +204,7 @@ export function EstimateLineItemRow({
             <Button
               variant="ghost"
               size="icon-sm"
-              className="rounded-lg opacity-0 transition-opacity group-hover:opacity-100"
+              className="size-8 rounded-md opacity-0 transition-opacity group-hover:opacity-100"
             >
               <MoreHorizontal className="size-4" />
             </Button>
@@ -152,7 +212,7 @@ export function EstimateLineItemRow({
           <DropdownMenuContent align="end">
             <DropdownMenuItem
               onClick={() => onDelete(item.id)}
-              className="text-destructive gap-2"
+              className="gap-2 text-destructive"
             >
               <Trash2 className="size-4" />
               {t("editor.deleteItem")}

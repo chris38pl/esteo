@@ -41,7 +41,26 @@
     "titleWithVersion": "{title} – Wersja {version}",
     "items": "Pozycje wyceny",
     "itemsEyebrow": "Kosztorys",
-    "aiAssistant": "Asystent AI",
+    "tabs": {
+      "ariaLabel": "Zakładki wyceny",
+      "items": "Kosztorys",
+      "summary": "Podsumowanie",
+      "attachments": "Załączniki ({count})",
+      "history": "Historia",
+      "payments": "Płatności",
+      "notes": "Notatki"
+    },
+    "toolbar": {
+      "importPriceList": "Import z cennika",
+      "statements": "Zestawienia",
+      "search": "Szukaj",
+      "filter": "Filtruj",
+      "settings": "Ustawienia tabeli",
+      "comingSoon": "Wkrótce"
+    },
+    "tabPlaceholder": "Ta zakładka będzie dostępna wkrótce.",
+    "dragHandle": "Przeciągnij, aby zmienić kolejność",
+    "aiAssistant": "AI Asystent",
     "hideAi": "Ukryj AI",
     "addSection": "Dodaj sekcję",
     "addItem": "Dodaj pozycję",
@@ -54,13 +73,14 @@
     "reload": "Odśwież",
     "columns": {
       "no": "Lp.",
-      "name": "Nazwa",
-      "unit": "J.m.",
+      "name": "Nazwa pozycji",
+      "unit": "Jednostka",
       "qty": "Ilość",
-      "unitPrice": "Cena j.",
-      "net": "Netto",
-      "vat": "VAT %",
-      "gross": "Brutto"
+      "unitPrice": "Cena jedn. (netto)",
+      "net": "Wartość netto",
+      "margin": "Marża",
+      "vat": "VAT",
+      "gross": "Wartość brutto"
     },
     "noSections": "Brak sekcji. Dodaj pierwszą, aby rozpocząć budowanie wyceny.",
     "newSection": "Nowa sekcja",

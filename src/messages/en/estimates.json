@@ -41,6 +41,25 @@
     "titleWithVersion": "{title} – Version {version}",
     "items": "Estimate Items",
     "itemsEyebrow": "Estimate",
+    "tabs": {
+      "ariaLabel": "Estimate tabs",
+      "items": "Estimate",
+      "summary": "Summary",
+      "attachments": "Attachments ({count})",
+      "history": "History",
+      "payments": "Payments",
+      "notes": "Notes"
+    },
+    "toolbar": {
+      "importPriceList": "Import from price list",
+      "statements": "Statements",
+      "search": "Search",
+      "filter": "Filter",
+      "settings": "Table settings",
+      "comingSoon": "Coming soon"
+    },
+    "tabPlaceholder": "This tab will be available soon.",
+    "dragHandle": "Drag to reorder",
     "aiAssistant": "AI Assistant",
     "hideAi": "Hide AI",
     "addSection": "Add section",
@@ -54,13 +73,14 @@
     "reload": "Reload",
     "columns": {
       "no": "#",
-      "name": "Name",
+      "name": "Item name",
       "unit": "Unit",
       "qty": "Qty",
-      "unitPrice": "Unit price",
-      "net": "Net",
-      "vat": "VAT %",
-      "gross": "Gross"
+      "unitPrice": "Unit price (net)",
+      "net": "Net value",
+      "margin": "Margin",
+      "vat": "VAT",
+      "gross": "Gross value"
     },
     "noSections": "No sections yet. Add one to start building the estimate.",
     "newSection": "New section",

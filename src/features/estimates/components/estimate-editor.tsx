@@ -3,9 +3,6 @@
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Bot, Plus } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
 import { useEstimateAutosave } from "@/features/estimates/hooks/use-estimate-autosave";
 import type {
   EstimateForEditorClient,
@@ -16,6 +13,7 @@ import {
   addSectionAction,
   deleteLineItemAction,
   deleteSectionAction,
+  reorderAction,
 } from "@/features/estimates/server/actions";
 import type { Locale } from "@/lib/locale";
 import type { LineItemData } from "./estimate-line-item-row";
@@ -26,8 +24,11 @@ import { EstimateItemsTable } from "./estimate-items-table";
 import { EstimateRightRail } from "./estimate-right-rail";
 import { EstimateAiPanel } from "./estimate-ai-panel";
 import { EstimateGeneratingSkeleton } from "./estimate-generating-skeleton";
-import { EstimateMarginControl } from "./estimate-margin-control";
-import { estimateOutlineButtonClassName } from "./estimate-action-button-styles";
+import {
+  EstimateEditorTabs,
+  type EstimateEditorTabId,
+} from "./estimate-editor-tabs";
+import { EstimateItemsToolbar } from "./estimate-items-toolbar";
 import type { LineItemCalcInput } from "@/features/estimates/lib/calculate-estimate";
 import type {
   AiMessageClient,
@@ -87,6 +88,7 @@ export function EstimateEditor({
     versionTree?.updatedAt ?? new Date().toISOString(),
   );
   const [showAiPanel, setShowAiPanel] = useState(true);
+  const [activeTab, setActiveTab] = useState<EstimateEditorTabId>("items");
 
   const requestStatus = estimate.estimateRequest?.status ?? null;
   const isGenerating =
@@ -220,6 +222,44 @@ export function EstimateEditor({
     await deleteLineItemAction({ itemId, locale });
   };
 
+  const handleReorderItems = useCallback(
+    async (sectionId: string, fromIndex: number, toIndex: number) => {
+      if (!activeVersionId || fromIndex === toIndex) return;
+
+      let nextSections: SectionData[] | undefined;
+      setSections((prev) => {
+        nextSections = prev.map((s) => {
+          if (s.id !== sectionId) return s;
+          const items = [...s.items];
+          const [moved] = items.splice(fromIndex, 1);
+          items.splice(toIndex, 0, moved!);
+          return {
+            ...s,
+            items: items.map((li, i) => ({ ...li, sortOrder: i })),
+          };
+        });
+        return nextSections;
+      });
+
+      if (!nextSections) return;
+
+      const payload = nextSections.flatMap((s) =>
+        s.items.map((li, i) => ({
+          id: li.id,
+          sectionId: s.id,
+          sortOrder: i,
+        })),
+      );
+      await reorderAction({
+        versionId: activeVersionId,
+        workspaceId: estimate.workspaceId,
+        items: payload,
+        locale,
+      });
+    },
+    [activeVersionId, estimate.workspaceId, locale],
+  );
+
   const allItems: LineItemCalcInput[] = sections.flatMap((s) =>
     s.items.map((li) => ({
       quantity: li.quantity,
@@ -308,59 +348,47 @@ export function EstimateEditor({
           )}
         >
           <div className="min-w-0 space-y-4">
-            <div className="min-w-0 overflow-x-auto rounded-2xl border bg-card/95 p-4 shadow-sm">
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary/70">
-                    {t("editor.itemsEyebrow")}
-                  </p>
-                  <h2 className="mt-1 text-lg font-semibold tracking-tight">
-                    {t("editor.items")}
-                  </h2>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={estimateOutlineButtonClassName}
-                    onClick={handleAddSection}
-                  >
-                    <Plus className="size-4" />
-                    {t("editor.addSection")}
-                  </Button>
-                  <EstimateMarginControl
+            <div className="min-w-0 overflow-hidden rounded-2xl border bg-card/95 shadow-sm">
+              <EstimateEditorTabs
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                attachmentsCount={0}
+              />
+
+              {activeTab === "items" ? (
+                <>
+                  <EstimateItemsToolbar
                     marginPercent={marginPercent}
-                    onChange={(v) => {
+                    onMarginChange={(v) => {
                       setMarginPercent(v);
                       triggerSave();
                     }}
-                    onBlur={(v) => {
+                    onMarginBlur={(v) => {
                       setMarginPercent(v);
                       triggerBlurSave();
                     }}
+                    onAddSection={handleAddSection}
+                    showAiPanel={showAiPanel}
+                    onToggleAiPanel={() => setShowAiPanel((v) => !v)}
                   />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className={estimateOutlineButtonClassName}
-                    onClick={() => setShowAiPanel((v) => !v)}
-                  >
-                    <Bot className="size-4" />
-                    {showAiPanel ? t("editor.hideAi") : t("editor.aiAssistant")}
-                  </Button>
+                  <EstimateItemsTable
+                    sections={sections}
+                    currency={estimate.currency}
+                    marginPercent={marginPercent}
+                    onUpdateSection={handleUpdateSection}
+                    onDeleteSection={handleDeleteSection}
+                    onAddItem={handleAddItem}
+                    onUpdateItem={handleUpdateItem}
+                    onDeleteItem={handleDeleteItem}
+                    onReorderItems={handleReorderItems}
+                    onBlur={triggerBlurSave}
+                  />
+                </>
+              ) : (
+                <div className="px-4 py-16 text-center text-sm text-muted-foreground">
+                  {t("editor.tabPlaceholder")}
                 </div>
-              </div>
-
-              <EstimateItemsTable
-                sections={sections}
-                currency={estimate.currency}
-                onUpdateSection={handleUpdateSection}
-                onDeleteSection={handleDeleteSection}
-                onAddItem={handleAddItem}
-                onUpdateItem={handleUpdateItem}
-                onDeleteItem={handleDeleteItem}
-                onBlur={triggerBlurSave}
-              />
+              )}
             </div>
           </div>
 
