@@ -13,6 +13,7 @@ export interface UseEstimateAutosaveOptions {
   workspaceId: string;
   initialUpdatedAt: string;
   locale?: string;
+  enabled?: boolean;
 }
 
 export interface UseEstimateAutosaveReturn {
@@ -28,6 +29,7 @@ export function useEstimateAutosave({
   workspaceId,
   initialUpdatedAt,
   locale = "pl",
+  enabled = true,
 }: UseEstimateAutosaveOptions): UseEstimateAutosaveReturn {
   const [status, setStatus] = useState<AutoSaveStatus>("idle");
   const updatedAtRef = useRef<string>(initialUpdatedAt);
@@ -40,7 +42,7 @@ export function useEstimateAutosave({
 
   const persist = useCallback(
     async (data: AutoSaveData) => {
-      if (status === "conflict") return;
+      if (!enabled || status === "conflict") return;
 
       setStatus("saving");
 
@@ -70,7 +72,7 @@ export function useEstimateAutosave({
         setStatus("error");
       }
     },
-    [versionId, workspaceId, locale, status],
+    [versionId, workspaceId, locale, status, enabled],
   );
 
   const onBlur = useCallback(

@@ -1,6 +1,7 @@
 import { task, logger } from "@trigger.dev/sdk";
 
 import { prisma } from "@/db/client";
+import { syncVersionTotals } from "@/features/estimates/lib/sync-version-totals";
 import { generateEstimateDraft } from "@/ai/services/generate-estimate-draft";
 import { validateGeneratedSectionTitles } from "@/ai/lib/validate-generated-section-titles";
 import { buildProjectBrief } from "@/features/estimate-requests/lib/build-project-brief";
@@ -158,6 +159,8 @@ export const generateEstimateDraftTask = task({
           },
         });
       });
+
+      await syncVersionTotals(versionId, workspaceId);
 
       logger.info("Estimate draft saved successfully", { estimateId, versionId });
     } catch (error) {

@@ -15,7 +15,7 @@ interface EstimateContextCardsProps {
   investmentCity?: string | null;
   requestCreatedAt?: string | Date | null;
   updatedAt?: string | Date | null;
-  updatedBy?: string | null;
+  updatedByEmail?: string | null;
   locale: Locale;
 }
 
@@ -31,7 +31,7 @@ export function EstimateContextCards({
   investmentCity,
   requestCreatedAt,
   updatedAt,
-  updatedBy,
+  updatedByEmail,
   locale,
 }: EstimateContextCardsProps) {
   const t = useTranslations("estimates");
@@ -83,9 +83,7 @@ export function EstimateContextCards({
       heading: t("context.lastUpdated"),
       primary: updatedAt ? formatDateTime(updatedAt) : t("context.noDate"),
       secondary: t("context.editedBy", {
-        user: updatedBy
-          ? t("context.userIdShort", { id: updatedBy.slice(0, 8) })
-          : t("context.system"),
+        user: updatedByEmail ?? t("context.system"),
       }),
     },
   ];

@@ -12,6 +12,10 @@
       "request": "Request",
       "versions": "Versions",
       "updated": "Updated"
+    },
+    "actions": {
+      "more": "More options",
+      "edit": "Edit"
     }
   },
   "status": {
@@ -77,6 +81,7 @@
     "expandSection": "Expand section",
     "itemNamePlaceholder": "Item name",
     "unitPlaceholder": "unit",
+    "archivedBanner": "This version is archived and cannot be edited.",
     "conflictBanner": "Another user saved this estimate. Reload to continue editing.",
     "reload": "Reload",
     "columns": {
@@ -114,6 +119,9 @@
       "more": "More",
       "pinToMenu": "Pin to menu",
       "unpinFromMenu": "Unpin from menu",
+      "archiveVersion": "Archive",
+      "unarchiveVersion": "Unarchive",
+      "deleteVersion": "Remove version",
       "morePlaceholder": "Additional actions",
       "send": "Send",
       "sendToClient": "Send to client"
@@ -168,7 +176,7 @@
     "tooltip": "Rules are applied to AI generation. Click to manage rules."
   },
   "versions": {
-    "createVersion": "Create Version {n}",
+    "createNewVersion": "Create new version",
     "versionLabel": "Version {n}",
     "shortVersionLabel": "Version {n}"
   },

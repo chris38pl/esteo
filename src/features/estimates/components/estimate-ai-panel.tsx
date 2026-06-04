@@ -80,6 +80,8 @@ export interface EstimateAiPanelProps {
 
   onClose?: () => void;
 
+  readOnly?: boolean;
+
 }
 
 
@@ -124,6 +126,8 @@ export function EstimateAiPanel({
 
   onClose,
 
+  readOnly = false,
+
 }: EstimateAiPanelProps) {
 
   const t = useTranslations("estimates");
@@ -152,7 +156,7 @@ export function EstimateAiPanel({
 
   const handleSend = () => {
 
-    if (!input.trim() || isPending) return;
+    if (readOnly || !input.trim() || isPending) return;
 
 
 
@@ -220,7 +224,7 @@ export function EstimateAiPanel({
 
   const handleApprove = () => {
 
-    if (!pendingEdit) return;
+    if (readOnly || !pendingEdit) return;
 
     setError(null);
 
@@ -275,6 +279,8 @@ export function EstimateAiPanel({
 
 
   const handleUndo = () => {
+
+    if (readOnly) return;
 
     setError(null);
 
@@ -493,7 +499,12 @@ export function EstimateAiPanel({
 
           <div className="flex gap-2">
 
-            <Button size="sm" className="h-9 flex-1 gap-1.5 rounded-lg" onClick={handleApprove} disabled={isPending}>
+            <Button
+              size="sm"
+              className="h-9 flex-1 gap-1.5 rounded-lg"
+              onClick={handleApprove}
+              disabled={readOnly || isPending}
+            >
 
               <Check className="size-3" />
 
@@ -543,7 +554,7 @@ export function EstimateAiPanel({
 
           placeholder={t("ai.placeholder")}
 
-          disabled={isPending || isAtLimit}
+          disabled={readOnly || isPending || isAtLimit}
 
           rows={2}
 
@@ -557,7 +568,7 @@ export function EstimateAiPanel({
 
           onClick={handleSend}
 
-          disabled={!input.trim() || isPending || isAtLimit}
+          disabled={readOnly || !input.trim() || isPending || isAtLimit}
 
           className="self-end rounded-lg"
 
@@ -597,7 +608,7 @@ export function EstimateAiPanel({
 
                 onClick={handleUndo}
 
-                disabled={isUndoing || maxUndoSteps === 0}
+                disabled={readOnly || isUndoing || maxUndoSteps === 0}
 
               >
 

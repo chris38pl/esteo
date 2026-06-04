@@ -244,7 +244,7 @@ export function EstimateVersionSelector({
 
               <PlusCircle className="size-4" />
 
-              {t("versions.createVersion", { n: versions.length + 1 })}
+              {t("versions.createNewVersion")}
 
             </DropdownMenuItem>
 

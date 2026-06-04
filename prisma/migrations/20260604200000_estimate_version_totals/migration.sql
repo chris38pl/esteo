@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "EstimateVersion" ADD COLUMN     "totalNet" DECIMAL(65,30) NOT NULL DEFAULT 0,
+ADD COLUMN     "totalGross" DECIMAL(65,30) NOT NULL DEFAULT 0;

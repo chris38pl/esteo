@@ -26,14 +26,14 @@ function isNavItemActive(
     : `/${locale}/dashboard`;
 
   if (key === "dashboard") {
-    return pathname === workspaceDashboardPath && section !== "requests";
+    return pathname === workspaceDashboardPath;
   }
 
   if (key === "requests") {
-    return pathname === workspaceDashboardPath && section === "requests";
+    return pathname === href || pathname.startsWith(`${href}/`);
   }
 
-  return pathname === href;
+  return pathname === href || pathname.startsWith(`${href}/`);
 }
 
 export function SidebarNav({

@@ -32,6 +32,7 @@ import {
   listAiMessagesByVersionId,
 } from "@/features/estimates/server/ai-messages-repository";
 import { isEstimatePinned } from "@/features/estimates/server/pinned-estimates";
+import { resolveUserEmailsByIds } from "@/features/users/server/resolve-user-emails";
 
 export default async function EstimateEditorPage({
   params,
@@ -128,9 +129,15 @@ export default async function EstimateEditorPage({
   });
 
   const breadcrumbLabel =
-    estimate.estimateRequest?.requestNumber?.trim() ||
     estimate.title?.trim() ||
+    estimate.estimateRequest?.requestNumber?.trim() ||
     null;
+
+  const userEmailsMap = await resolveUserEmailsByIds([
+    ...estimate.versions.map((version) => version.createdByUserId),
+    rawVersionTree?.createdByUserId,
+  ]);
+  const userEmailsById = Object.fromEntries(userEmailsMap);
 
   return (
     <>
@@ -147,6 +154,7 @@ export default async function EstimateEditorPage({
         initialAiMessages={initialAiMessages}
         initialPendingEdit={initialPendingEdit}
         isPinned={pinned}
+        userEmailsById={userEmailsById}
       />
     </>
   );

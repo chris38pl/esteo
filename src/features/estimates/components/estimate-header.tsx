@@ -20,6 +20,7 @@ import { EstimateVersionSelector } from "./estimate-version-selector";
 import { EstimateHeaderStatusBadge } from "./estimate-header-status-badge";
 import { EstimateRulesIndicator } from "./estimate-rules-indicator";
 import { EstimateHeaderPinMenuItem } from "./estimate-header-pin-menu-item";
+import { EstimateHeaderVersionMenuItems } from "./estimate-header-version-menu-items";
 import type { AutoSaveStatus } from "@/features/estimates/hooks/use-estimate-autosave";
 import type { Locale } from "@/lib/locale";
 import {
@@ -133,6 +134,15 @@ export function EstimateHeader({
                 workspaceSlug={workspaceSlug}
                 locale={locale}
                 isPinned={isPinned}
+              />
+              <EstimateHeaderVersionMenuItems
+                estimateId={estimateId}
+                activeVersionId={activeVersionId}
+                activeVersionStatus={activeStatus}
+                versionCount={versions.length}
+                workspaceId={workspaceId}
+                workspaceSlug={workspaceSlug}
+                locale={locale}
               />
               <DropdownMenuItem className={headerMoreMenuInlineActionClassName}>
                 <Eye className="size-4" />

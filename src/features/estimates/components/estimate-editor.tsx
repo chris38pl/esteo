@@ -49,6 +49,7 @@ import type {
   AiMessageClient,
 } from "@/features/estimates/lib/serialize-ai-messages";
 import type { ProposeEditResult } from "@/features/estimates/lib/estimate-agent-types";
+import { isEstimateVersionEditable } from "@/features/estimates/lib/version-mutability";
 import { cn } from "@/lib/utils";
 import "@/features/estimates/styles/estimate-editor-layout.css";
 
@@ -63,6 +64,7 @@ interface EstimateEditorProps {
   initialAiMessages?: AiMessageClient[];
   initialPendingEdit?: ProposeEditResult | null;
   isPinned?: boolean;
+  userEmailsById?: Record<string, string>;
 }
 
 function lineItemFromServer(
@@ -117,6 +119,7 @@ export function EstimateEditor({
   initialAiMessages = [],
   initialPendingEdit = null,
   isPinned = false,
+  userEmailsById = {},
 }: EstimateEditorProps) {
   const t = useTranslations("estimates");
   const router = useRouter();
@@ -150,6 +153,8 @@ export function EstimateEditor({
     requestStatus === "PENDING" || requestStatus === "PROCESSING";
 
   const activeVersion = versionTree;
+  const versionStatus = activeVersion?.status ?? "DRAFT";
+  const isVersionReadOnly = !isEstimateVersionEditable(versionStatus);
   const allVersions = estimate.versions.map((v) => ({
     id: v.id,
     versionNumber: v.versionNumber,
@@ -161,6 +166,7 @@ export function EstimateEditor({
     workspaceId: estimate.workspaceId,
     initialUpdatedAt: versionUpdatedAt,
     locale,
+    enabled: !isVersionReadOnly,
   });
 
   const applyVersionTree = useCallback((tree: VersionTreeClient | null) => {
@@ -194,7 +200,7 @@ export function EstimateEditor({
   }, [activeVersionId, autosaveOnBlur, marginPercent]);
 
   const handleAddSection = async () => {
-    if (!activeVersionId) return;
+    if (!activeVersionId || isVersionReadOnly) return;
     const result = await addSectionAction({
       versionId: activeVersionId,
       workspaceId: estimate.workspaceId,
@@ -214,6 +220,7 @@ export function EstimateEditor({
   };
 
   const handleUpdateSection = (sectionId: string, title: string) => {
+    if (isVersionReadOnly) return;
     setSections((prev) =>
       prev.map((s) => (s.id === sectionId ? { ...s, title } : s)),
     );
@@ -221,12 +228,18 @@ export function EstimateEditor({
   };
 
   const handleDeleteSection = async (sectionId: string) => {
+    if (isVersionReadOnly) return;
     setSections((prev) => prev.filter((s) => s.id !== sectionId));
-    await deleteSectionAction({ sectionId, locale });
+    await deleteSectionAction({
+      sectionId,
+      workspaceId: estimate.workspaceId,
+      locale,
+    });
   };
 
   const handleAdvancedModeChange = useCallback(
     (nextAdvanced: boolean) => {
+      if (isVersionReadOnly) return;
       if (nextAdvanced && !advancedMode) {
         setSections((prev) =>
           prev.map((s) => ({
@@ -257,33 +270,35 @@ export function EstimateEditor({
       }
       setAdvancedMode(nextAdvanced);
     },
-    [advancedMode, marginPercent, setAdvancedMode],
+    [advancedMode, isVersionReadOnly, marginPercent, setAdvancedMode],
   );
 
   const handleMarginChange = useCallback(
     (value: number) => {
+      if (isVersionReadOnly) return;
       setMarginPercent(value);
       if (advancedMode) {
         setSections((prev) => applyMarginToSections(prev, value));
       }
       if (activeVersionId) save({ marginPercent: value });
     },
-    [advancedMode, activeVersionId, save],
+    [advancedMode, activeVersionId, isVersionReadOnly, save],
   );
 
   const handleMarginBlur = useCallback(
     (value: number) => {
+      if (isVersionReadOnly) return;
       setMarginPercent(value);
       if (advancedMode) {
         setSections((prev) => applyMarginToSections(prev, value));
       }
       if (activeVersionId) autosaveOnBlur({ marginPercent: value });
     },
-    [advancedMode, activeVersionId, autosaveOnBlur],
+    [advancedMode, activeVersionId, isVersionReadOnly, autosaveOnBlur],
   );
 
   const handleAddItem = async (sectionId: string) => {
-    if (!activeVersionId) return;
+    if (!activeVersionId || isVersionReadOnly) return;
     const result = await addLineItemAction({
       sectionId,
       workspaceId: estimate.workspaceId,
@@ -319,6 +334,7 @@ export function EstimateEditor({
     itemId: string,
     data: Partial<Omit<LineItemData, "id" | "sortOrder">>,
   ) => {
+    if (isVersionReadOnly) return;
     setSections((prev) =>
       prev.map((s) => ({
         ...s,
@@ -338,15 +354,20 @@ export function EstimateEditor({
   };
 
   const handleDeleteItem = async (itemId: string) => {
+    if (isVersionReadOnly) return;
     setSections((prev) =>
       prev.map((s) => ({ ...s, items: s.items.filter((li) => li.id !== itemId) })),
     );
-    await deleteLineItemAction({ itemId, locale });
+    await deleteLineItemAction({
+      itemId,
+      workspaceId: estimate.workspaceId,
+      locale,
+    });
   };
 
   const handleReorderItems = useCallback(
     async (sectionId: string, fromIndex: number, toIndex: number) => {
-      if (!activeVersionId || fromIndex === toIndex) return;
+      if (!activeVersionId || isVersionReadOnly || fromIndex === toIndex) return;
 
       let nextSections: SectionData[] | undefined;
       setSections((prev) => {
@@ -399,6 +420,12 @@ export function EstimateEditor({
     | null
     | undefined;
 
+  const versionCreatorId =
+    activeVersion?.createdByUserId ?? estimate.latestVersion?.createdByUserId ?? null;
+  const updatedByEmail = versionCreatorId
+    ? (userEmailsById[versionCreatorId] ?? null)
+    : null;
+
   return (
     <div
       className={cn(
@@ -407,6 +434,11 @@ export function EstimateEditor({
       )}
     >
       <EstimateEditorLayoutStyles />
+      {isVersionReadOnly ? (
+        <div className="rounded-xl border border-border/70 bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
+          {t("editor.archivedBanner")}
+        </div>
+      ) : null}
       {autosaveStatus === "conflict" && (
         <div className="rounded-xl border border-amber-200 bg-amber-50/90 px-4 py-3 text-sm text-amber-800 shadow-sm dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-200">
           {t("editor.conflictBanner")}{" "}
@@ -450,7 +482,7 @@ export function EstimateEditor({
           investmentCity={addressData?.city}
           requestCreatedAt={estimate.estimateRequest?.createdAt ?? estimate.createdAt}
           updatedAt={activeVersion?.updatedAt ?? null}
-          updatedBy={activeVersion?.createdByUserId ?? estimate.latestVersion?.createdByUserId}
+          updatedByEmail={updatedByEmail}
           locale={locale}
         />
         </div>
@@ -493,7 +525,10 @@ export function EstimateEditor({
               />
 
               {activeTab === "items" ? (
-                <>
+                <fieldset
+                  disabled={isVersionReadOnly}
+                  className="min-w-0 border-0 p-0 disabled:opacity-80"
+                >
                   <EstimateItemsToolbar
                     advancedMode={advancedMode}
                     onAdvancedModeChange={handleAdvancedModeChange}
@@ -520,7 +555,7 @@ export function EstimateEditor({
                     onBlur={triggerBlurSave}
                     tableSearchQuery={tableSearchQuery}
                   />
-                </>
+                </fieldset>
               ) : (
                 <div className="px-4 py-16 text-center text-sm text-muted-foreground">
                   {t("editor.tabPlaceholder")}
@@ -551,6 +586,7 @@ export function EstimateEditor({
                 estimateId={estimate.id}
                 locale={locale}
                 maxUndoSteps={3}
+                readOnly={isVersionReadOnly}
                 onApproved={handleAiMutation}
                 initialMessages={initialAiMessages}
                 initialPendingEdit={initialPendingEdit}
@@ -570,6 +606,7 @@ export function EstimateEditor({
           estimateId={estimate.id}
           locale={locale}
           maxUndoSteps={3}
+          readOnly={isVersionReadOnly}
           onApproved={handleAiMutation}
           initialMessages={initialAiMessages}
           initialPendingEdit={initialPendingEdit}

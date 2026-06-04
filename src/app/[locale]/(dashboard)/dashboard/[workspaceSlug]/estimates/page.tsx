@@ -5,7 +5,7 @@ import { isLocale } from "@/lib/locale";
 import { requireAuth } from "@/server/auth/require-auth";
 import { resolveWorkspaceBySlug } from "@/server/workspaces/active-workspace";
 import { redirect } from "next/navigation";
-import { listEstimates } from "@/features/estimates/server/repository";
+import { loadEstimatesForListPage } from "@/features/estimates/server/list-estimates-page-data";
 import { EstimatesListPanel } from "@/features/estimates/components/estimates-list-panel";
 import { getEstimateRequestFormDataForWorkspace } from "@/features/estimate-requests/server/public-service";
 
@@ -26,10 +26,12 @@ export default async function EstimatesPage({
     redirect(`/${resolvedLocale}/dashboard`);
   }
 
+  const workspaceId = resolved.workspace.id;
+
   const [estimates, createFormData] = await Promise.all([
-    listEstimates(resolved.workspace.id),
+    loadEstimatesForListPage(workspaceId, resolvedLocale),
     getEstimateRequestFormDataForWorkspace({
-      workspaceId: resolved.workspace.id,
+      workspaceId,
       locale: resolvedLocale,
     }),
   ]);

@@ -1,6 +1,9 @@
-import type { EstimateVersionStatus, Prisma } from "@prisma/client";
+import { Prisma, type EstimateVersionStatus } from "@prisma/client";
 
 import { prisma } from "@/db/client";
+import { syncVersionTotals } from "@/features/estimates/lib/sync-version-totals";
+import { isEstimateVersionEditable } from "@/features/estimates/lib/version-mutability";
+import { PermissionError } from "@/server/permissions/errors";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -129,7 +132,7 @@ export async function getVersionWithTree(versionId: string, workspaceId: string)
 }
 
 export async function listEstimates(workspaceId: string) {
-  return prisma.estimate.findMany({
+  const estimates = await prisma.estimate.findMany({
     where: { workspaceId, deletedAt: null },
     orderBy: { createdAt: "desc" },
     include: {
@@ -139,6 +142,7 @@ export async function listEstimates(workspaceId: string) {
           versionNumber: true,
           status: true,
           updatedAt: true,
+          createdByUserId: true,
         },
       },
       estimateRequest: {
@@ -147,12 +151,66 @@ export async function listEstimates(workspaceId: string) {
           requestNumber: true,
           status: true,
           createdAt: true,
+          customerData: true,
+          address: true,
         },
       },
       _count: {
         select: { versions: true },
       },
     },
+  });
+
+  const versionIds = estimates
+    .map((estimate) => estimate.latestVersion?.id)
+    .filter((id): id is string => Boolean(id));
+
+  if (versionIds.length === 0) {
+    return estimates.map((estimate) =>
+      estimate.latestVersion
+        ? {
+            ...estimate,
+            latestVersion: {
+              ...estimate.latestVersion,
+              totalNet: 0,
+              totalGross: 0,
+            },
+          }
+        : estimate,
+    );
+  }
+
+  const totalsRows = await prisma.$queryRaw<
+    Array<{ id: string; totalNet: Prisma.Decimal; totalGross: Prisma.Decimal }>
+  >`
+    SELECT id, "totalNet", "totalGross"
+    FROM "EstimateVersion"
+    WHERE id IN (${Prisma.join(versionIds)})
+  `;
+
+  const totalsById = new Map(
+    totalsRows.map((row) => [
+      row.id,
+      {
+        totalNet: Number(row.totalNet),
+        totalGross: Number(row.totalGross),
+      },
+    ]),
+  );
+
+  return estimates.map((estimate) => {
+    if (!estimate.latestVersion) return estimate;
+    const totals = totalsById.get(estimate.latestVersion.id) ?? {
+      totalNet: 0,
+      totalGross: 0,
+    };
+    return {
+      ...estimate,
+      latestVersion: {
+        ...estimate.latestVersion,
+        ...totals,
+      },
+    };
   });
 }
 
@@ -225,6 +283,8 @@ export async function createVersionCopy(input: {
       data: { latestVersionId: newVersion.id },
     });
 
+    await syncVersionTotals(newVersion.id, input.workspaceId, tx);
+
     return { versionId: newVersion.id };
   });
 }
@@ -233,11 +293,152 @@ export async function createVersionCopy(input: {
 // Section & line item CRUD
 // ---------------------------------------------------------------------------
 
+export async function assertVersionEditable(
+  versionId: string,
+  workspaceId: string,
+): Promise<void> {
+  const status = await getVersionStatus(versionId, workspaceId);
+  if (!status) {
+    throw new PermissionError("Estimate version not found.");
+  }
+  if (!isEstimateVersionEditable(status)) {
+    throw new PermissionError("Archived versions cannot be modified.");
+  }
+}
+
+async function assertSectionVersionEditable(
+  sectionId: string,
+  workspaceId: string,
+): Promise<void> {
+  const section = await prisma.estimateSection.findFirst({
+    where: { id: sectionId, workspaceId, deletedAt: null },
+    select: { versionId: true },
+  });
+  if (!section) {
+    throw new PermissionError("Section not found.");
+  }
+  await assertVersionEditable(section.versionId, workspaceId);
+}
+
+async function assertLineItemVersionEditable(
+  itemId: string,
+  workspaceId: string,
+): Promise<void> {
+  const item = await prisma.estimateLineItem.findFirst({
+    where: { id: itemId, workspaceId, deletedAt: null },
+    select: { section: { select: { versionId: true } } },
+  });
+  if (!item) {
+    throw new PermissionError("Line item not found.");
+  }
+  await assertVersionEditable(item.section.versionId, workspaceId);
+}
+
+export async function archiveEstimateVersion(input: {
+  versionId: string;
+  workspaceId: string;
+  estimateId: string;
+}): Promise<void> {
+  const version = await prisma.estimateVersion.findFirst({
+    where: {
+      id: input.versionId,
+      workspaceId: input.workspaceId,
+      estimateId: input.estimateId,
+    },
+    select: { status: true },
+  });
+
+  if (!version) {
+    throw new PermissionError("Estimate version not found.");
+  }
+
+  if (version.status === "ARCHIVED") {
+    return;
+  }
+
+  await prisma.estimateVersion.update({
+    where: { id: input.versionId },
+    data: { status: "ARCHIVED" },
+  });
+}
+
+export async function unarchiveEstimateVersion(input: {
+  versionId: string;
+  workspaceId: string;
+  estimateId: string;
+}): Promise<void> {
+  const version = await prisma.estimateVersion.findFirst({
+    where: {
+      id: input.versionId,
+      workspaceId: input.workspaceId,
+      estimateId: input.estimateId,
+    },
+    select: { status: true },
+  });
+
+  if (!version) {
+    throw new PermissionError("Estimate version not found.");
+  }
+
+  if (version.status !== "ARCHIVED") {
+    return;
+  }
+
+  await prisma.estimateVersion.update({
+    where: { id: input.versionId },
+    data: { status: "DRAFT" },
+  });
+}
+
+export async function deleteEstimateVersion(input: {
+  versionId: string;
+  workspaceId: string;
+  estimateId: string;
+}): Promise<{ redirectVersionNumber: number }> {
+  return prisma.$transaction(async (tx) => {
+    const versions = await tx.estimateVersion.findMany({
+      where: { estimateId: input.estimateId, workspaceId: input.workspaceId },
+      orderBy: { versionNumber: "desc" },
+      select: { id: true, versionNumber: true },
+    });
+
+    if (versions.length <= 1) {
+      throw new PermissionError("An estimate must have at least one version.");
+    }
+
+    const deleting = versions.find((version) => version.id === input.versionId);
+    if (!deleting) {
+      throw new PermissionError("Estimate version not found.");
+    }
+
+    const estimate = await tx.estimate.findFirstOrThrow({
+      where: { id: input.estimateId, workspaceId: input.workspaceId },
+      select: { latestVersionId: true },
+    });
+
+    await tx.estimateVersion.delete({ where: { id: input.versionId } });
+
+    const remaining = versions.filter((version) => version.id !== input.versionId);
+    const fallback = remaining[0];
+
+    if (estimate.latestVersionId === input.versionId) {
+      await tx.estimate.update({
+        where: { id: input.estimateId },
+        data: { latestVersionId: fallback.id },
+      });
+    }
+
+    return { redirectVersionNumber: fallback.versionNumber };
+  });
+}
+
 export async function addSectionToVersion(input: {
   workspaceId: string;
   versionId: string;
   title?: string;
 }) {
+  await assertVersionEditable(input.versionId, input.workspaceId);
+
   const lastSection = await prisma.estimateSection.findFirst({
     where: { versionId: input.versionId, deletedAt: null },
     orderBy: { sortOrder: "desc" },
@@ -257,12 +458,19 @@ export async function addLineItemToSection(input: {
   workspaceId: string;
   sectionId: string;
 }) {
+  await assertSectionVersionEditable(input.sectionId, input.workspaceId);
+
   const lastItem = await prisma.estimateLineItem.findFirst({
     where: { sectionId: input.sectionId, deletedAt: null },
     orderBy: { sortOrder: "desc" },
     select: { sortOrder: true },
   });
-  return prisma.estimateLineItem.create({
+  const section = await prisma.estimateSection.findFirstOrThrow({
+    where: { id: input.sectionId, workspaceId: input.workspaceId },
+    select: { versionId: true },
+  });
+
+  const item = await prisma.estimateLineItem.create({
     data: {
       workspaceId: input.workspaceId,
       sectionId: input.sectionId,
@@ -273,6 +481,9 @@ export async function addLineItemToSection(input: {
       sortOrder: (lastItem?.sortOrder ?? -1) + 1,
     },
   });
+
+  await syncVersionTotals(section.versionId, input.workspaceId);
+  return item;
 }
 
 export async function upsertSection(input: {
@@ -282,6 +493,8 @@ export async function upsertSection(input: {
   title: string;
   sortOrder?: number;
 }) {
+  await assertVersionEditable(input.versionId, input.workspaceId);
+
   if (input.id) {
     return prisma.estimateSection.update({
       where: { id: input.id },
@@ -309,6 +522,8 @@ export async function upsertLineItem(input: {
   vatRate: number;
   sortOrder?: number;
 }) {
+  await assertSectionVersionEditable(input.sectionId, input.workspaceId);
+
   const data = {
     name: input.name,
     unit: input.unit ?? null,
@@ -330,15 +545,31 @@ export async function upsertLineItem(input: {
   });
 }
 
-export async function deleteLineItem(itemId: string) {
-  return prisma.estimateLineItem.update({
+export async function deleteLineItem(itemId: string, workspaceId: string) {
+  await assertLineItemVersionEditable(itemId, workspaceId);
+
+  const lineItem = await prisma.estimateLineItem.findFirstOrThrow({
+    where: { id: itemId, workspaceId },
+    select: { section: { select: { versionId: true } } },
+  });
+
+  const result = await prisma.estimateLineItem.update({
     where: { id: itemId },
     data: { deletedAt: new Date() },
   });
+
+  await syncVersionTotals(lineItem.section.versionId, workspaceId);
+  return result;
 }
 
-export async function deleteSection(sectionId: string) {
-  return prisma.$transaction(async (tx) => {
+export async function deleteSection(sectionId: string, workspaceId: string) {
+  const section = await prisma.estimateSection.findFirstOrThrow({
+    where: { id: sectionId, workspaceId, deletedAt: null },
+    select: { versionId: true },
+  });
+  await assertVersionEditable(section.versionId, workspaceId);
+
+  const result = await prisma.$transaction(async (tx) => {
     await tx.estimateLineItem.updateMany({
       where: { sectionId },
       data: { deletedAt: new Date() },
@@ -348,6 +579,9 @@ export async function deleteSection(sectionId: string) {
       data: { deletedAt: new Date() },
     });
   });
+
+  await syncVersionTotals(section.versionId, workspaceId);
+  return result;
 }
 
 export async function reorderItems(
@@ -355,6 +589,8 @@ export async function reorderItems(
   workspaceId: string,
   items: Array<{ id: string; sectionId: string; sortOrder: number }>,
 ) {
+  await assertVersionEditable(versionId, workspaceId);
+
   return prisma.$transaction(
     items.map((item) =>
       prisma.estimateLineItem.update({
@@ -442,7 +678,13 @@ export async function getRevisions(versionId: string, limit = 3) {
   });
 }
 
-export async function restoreRevision(versionId: string, revisionId: string): Promise<void> {
+export async function restoreRevision(
+  versionId: string,
+  workspaceId: string,
+  revisionId: string,
+): Promise<void> {
+  await assertVersionEditable(versionId, workspaceId);
+
   const revision = await prisma.estimateRevision.findUniqueOrThrow({
     where: { id: revisionId },
   });
@@ -492,6 +734,8 @@ export async function restoreRevision(versionId: string, revisionId: string): Pr
       where: { id: versionId },
       data: { marginPercent: snapshot.marginPercent },
     });
+
+    await syncVersionTotals(versionId, workspaceId, tx);
   });
 }
 
@@ -528,6 +772,8 @@ export async function autoSave(input: {
   data: AutoSaveData;
   expectedUpdatedAt: Date;
 }): Promise<AutoSaveResult> {
+  await assertVersionEditable(input.versionId, input.workspaceId);
+
   const current = await prisma.estimateVersion.findFirst({
     where: { id: input.versionId, workspaceId: input.workspaceId },
     select: { updatedAt: true },

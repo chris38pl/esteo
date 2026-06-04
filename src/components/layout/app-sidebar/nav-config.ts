@@ -37,8 +37,8 @@ export const navItems: SidebarNavItem[] = [
     icon: FileText,
     href: (locale, workspaceSlug) =>
       workspaceSlug
-        ? `/${locale}/dashboard/${workspaceSlug}?section=requests`
-        : `/${locale}/dashboard?section=requests`,
+        ? `/${locale}/dashboard/${workspaceSlug}/requests`
+        : `/${locale}/dashboard`,
     labelKey: "nav.requests",
   },
   {

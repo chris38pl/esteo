@@ -29,6 +29,9 @@ import {
 import {
   addSectionToVersion,
   addLineItemToSection,
+  archiveEstimateVersion,
+  unarchiveEstimateVersion,
+  deleteEstimateVersion,
   deleteLineItem,
   deleteSection,
   getVersionWithTree,
@@ -101,6 +104,72 @@ export async function createNewVersionAction(input: {
       estimateId: input.estimateId,
       workspaceId: input.workspaceId,
       userId: user.id,
+    });
+    revalidateEstimatePaths(locale, input.workspaceSlug, input.estimateId);
+    return { success: true, data: result };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function archiveEstimateVersionAction(input: {
+  estimateId: string;
+  versionId: string;
+  workspaceId: string;
+  workspaceSlug: string;
+  locale?: Locale;
+}): Promise<ActionResult<void>> {
+  const locale = input.locale ?? "pl";
+  try {
+    await requireAuth(locale);
+    await archiveEstimateVersion({
+      estimateId: input.estimateId,
+      versionId: input.versionId,
+      workspaceId: input.workspaceId,
+    });
+    revalidateEstimatePaths(locale, input.workspaceSlug, input.estimateId);
+    return { success: true, data: undefined };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function unarchiveEstimateVersionAction(input: {
+  estimateId: string;
+  versionId: string;
+  workspaceId: string;
+  workspaceSlug: string;
+  locale?: Locale;
+}): Promise<ActionResult<void>> {
+  const locale = input.locale ?? "pl";
+  try {
+    await requireAuth(locale);
+    await unarchiveEstimateVersion({
+      estimateId: input.estimateId,
+      versionId: input.versionId,
+      workspaceId: input.workspaceId,
+    });
+    revalidateEstimatePaths(locale, input.workspaceSlug, input.estimateId);
+    return { success: true, data: undefined };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function deleteEstimateVersionAction(input: {
+  estimateId: string;
+  versionId: string;
+  workspaceId: string;
+  workspaceSlug: string;
+  locale?: Locale;
+}): Promise<ActionResult<{ redirectVersionNumber: number }>> {
+  const locale = input.locale ?? "pl";
+  try {
+    await requireAuth(locale);
+    const result = await deleteEstimateVersion({
+      estimateId: input.estimateId,
+      versionId: input.versionId,
+      workspaceId: input.workspaceId,
     });
     revalidateEstimatePaths(locale, input.workspaceSlug, input.estimateId);
     return { success: true, data: result };
@@ -188,11 +257,12 @@ export async function addLineItemAction(input: {
 
 export async function deleteLineItemAction(input: {
   itemId: string;
+  workspaceId: string;
   locale?: Locale;
 }): Promise<ActionResult<void>> {
   try {
     await requireAuth(input.locale ?? "pl");
-    await deleteLineItem(input.itemId);
+    await deleteLineItem(input.itemId, input.workspaceId);
     return { success: true, data: undefined };
   } catch (error) {
     return toActionError(error);
@@ -201,11 +271,12 @@ export async function deleteLineItemAction(input: {
 
 export async function deleteSectionAction(input: {
   sectionId: string;
+  workspaceId: string;
   locale?: Locale;
 }): Promise<ActionResult<void>> {
   try {
     await requireAuth(input.locale ?? "pl");
-    await deleteSection(input.sectionId);
+    await deleteSection(input.sectionId, input.workspaceId);
     return { success: true, data: undefined };
   } catch (error) {
     return toActionError(error);

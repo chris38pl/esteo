@@ -12,6 +12,10 @@
       "request": "Zapytanie",
       "versions": "Wersje",
       "updated": "Zaktualizowano"
+    },
+    "actions": {
+      "more": "Więcej opcji",
+      "edit": "Edytuj"
     }
   },
   "status": {
@@ -77,6 +81,7 @@
     "expandSection": "Rozwiń sekcję",
     "itemNamePlaceholder": "Nazwa pozycji",
     "unitPlaceholder": "j.m.",
+    "archivedBanner": "Ta wersja jest zarchiwizowana i nie można jej edytować.",
     "conflictBanner": "Inny użytkownik zapisał tę wycenę. Odśwież, aby kontynuować edycję.",
     "reload": "Odśwież",
     "columns": {
@@ -114,6 +119,9 @@
       "more": "Więcej",
       "pinToMenu": "Przypnij do menu",
       "unpinFromMenu": "Odepnij z menu",
+      "archiveVersion": "Archiwizuj",
+      "unarchiveVersion": "Przywróć z archiwum",
+      "deleteVersion": "Usuń wersję",
       "morePlaceholder": "Dodatkowe akcje",
       "send": "Wyślij",
       "sendToClient": "Wyślij do klienta"
@@ -168,7 +176,7 @@
     "tooltip": "Reguły są stosowane przy generowaniu AI. Kliknij, aby zarządzać regułami."
   },
   "versions": {
-    "createVersion": "Utwórz wersję {n}",
+    "createNewVersion": "Utwórz nową wersję",
     "versionLabel": "Wersja {n}",
     "shortVersionLabel": "Wersja {n}"
   },
@@ -180,7 +188,7 @@
     "userIdShort": "Użytkownik {id}",
     "created": "Utworzono",
     "createdOn": "z {date}",
-    "lastUpdated": "Ostatnia aktualizacja",
+    "lastUpdated": "Zaaktualizowano",
     "editedBy": "przez {user}",
     "investmentFallback": "Typ inwestycji",
     "empty": "—",

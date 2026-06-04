@@ -1,0 +1,49 @@
+{
+  "page": {
+    "title": "Zapytania",
+    "empty": "Brak zapytań o wycenę. Pojawią się tutaj, gdy klient wypełni formularz publiczny lub gdy utworzysz wycenę z panelu."
+  },
+  "list": {
+    "columns": {
+      "request": "Zapytanie",
+      "status": "Status",
+      "location": "Lokalizacja",
+      "estimate": "Wycena",
+      "received": "Otrzymano"
+    },
+    "unknownClient": "Nieznany klient",
+    "noRequestNumber": "Zapytanie",
+    "linkedEstimate": "Zobacz wycenę"
+  },
+  "status": {
+    "PENDING": "Oczekuje",
+    "PROCESSING": "W trakcie",
+    "COMPLETED": "Zakończone",
+    "FAILED": "Nieudane"
+  },
+  "detail": {
+    "eyebrow": "Zapytanie o wycenę",
+    "requestLabel": "Zapytanie",
+    "backToList": "Wszystkie zapytania",
+    "openEstimate": "Otwórz wycenę",
+    "metaLine": "Otrzymano {created} · Aktualizacja {updated}",
+    "customerSection": "Klient",
+    "projectSection": "Projekt",
+    "addressSection": "Adres inwestycji",
+    "industrySection": "Szczegóły projektu",
+    "estimateSection": "Wycena",
+    "name": "Imię i nazwisko",
+    "email": "E-mail",
+    "phone": "Telefon",
+    "description": "Opis projektu",
+    "preferredStartDate": "Preferowany termin startu",
+    "attachments": "Załączniki",
+    "attachmentCount": "{count, plural, =0 {Brak plików} one {# plik} few {# pliki} many {# plików} other {# pliku}}",
+    "streetAddress": "Ulica",
+    "city": "Miasto",
+    "postalCode": "Kod pocztowy",
+    "voivodeship": "Województwo",
+    "linkedEstimate": "Powiązana wycena",
+    "noEstimateYet": "Do tego zapytania nie utworzono jeszcze wyceny."
+  }
+}

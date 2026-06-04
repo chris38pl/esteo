@@ -19,9 +19,9 @@ type DashboardBreadcrumbDetailContextValue = {
 const DashboardBreadcrumbDetailContext =
   createContext<DashboardBreadcrumbDetailContextValue | null>(null);
 
-/** True when pathname is a single estimate editor route (…/estimates/:id). */
-function isEstimateDetailPath(pathname: string): boolean {
-  return /\/estimates\/[^/]+$/.test(pathname);
+/** True when pathname is a detail route that supplies a fourth breadcrumb segment. */
+function isBreadcrumbDetailPath(pathname: string): boolean {
+  return /\/(estimates|requests)\/[^/]+$/.test(pathname);
 }
 
 export function DashboardBreadcrumbDetailProvider({ children }: { children: ReactNode }) {
@@ -33,7 +33,7 @@ export function DashboardBreadcrumbDetailProvider({ children }: { children: Reac
   }, []);
 
   useEffect(() => {
-    if (!isEstimateDetailPath(pathname)) {
+    if (!isBreadcrumbDetailPath(pathname)) {
       setDetailLabelState(null);
     }
   }, [pathname]);

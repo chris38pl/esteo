@@ -28,33 +28,50 @@ type PageLabelKey =
   | "adminEstimateRequests"
   | "adminEstimateRequestDetail";
 
-type EstimatesRoute =
+type WorkspaceSectionRoute =
   | { kind: "list" }
-  | { kind: "detail"; estimateId: string };
+  | { kind: "detail"; id: string };
 
-function parseEstimatesRoute(
+function parseWorkspaceSectionRoute(
   pathname: string,
   locale: Locale,
   workspaceSlug: string | null,
-): EstimatesRoute | null {
+  section: "estimates" | "requests",
+): WorkspaceSectionRoute | null {
   if (!workspaceSlug) {
     return null;
   }
 
-  const base = `/${locale}/dashboard/${workspaceSlug}/estimates`;
+  const base = `/${locale}/dashboard/${workspaceSlug}/${section}`;
   if (pathname === base) {
     return { kind: "list" };
   }
 
   if (pathname.startsWith(`${base}/`)) {
     const suffix = pathname.slice(base.length + 1);
-    const estimateId = suffix.split("/")[0];
-    if (estimateId) {
-      return { kind: "detail", estimateId };
+    const id = suffix.split("/")[0];
+    if (id) {
+      return { kind: "detail", id };
     }
   }
 
   return null;
+}
+
+function parseEstimatesRoute(
+  pathname: string,
+  locale: Locale,
+  workspaceSlug: string | null,
+): WorkspaceSectionRoute | null {
+  return parseWorkspaceSectionRoute(pathname, locale, workspaceSlug, "estimates");
+}
+
+function parseRequestsRoute(
+  pathname: string,
+  locale: Locale,
+  workspaceSlug: string | null,
+): WorkspaceSectionRoute | null {
+  return parseWorkspaceSectionRoute(pathname, locale, workspaceSlug, "requests");
 }
 
 function resolvePageLabelKey(
@@ -71,7 +88,6 @@ function resolvePageLabelKey(
     if (pathname === `${wsBase}/billing`) return "billing";
     if (pathname === `${wsBase}/settings`) return "settings";
     if (pathname === `${wsBase}/account`) return "account";
-    if (pathname === wsBase && section === "requests") return "requests";
     if (pathname === wsBase) return null;
   }
 
@@ -108,6 +124,7 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
     ? `/${locale}/dashboard/${workspaceSlug}`
     : `/${locale}/dashboard`;
   const estimatesRoute = parseEstimatesRoute(pathname, locale, workspaceSlug);
+  const requestsRoute = parseRequestsRoute(pathname, locale, workspaceSlug);
   const pageKey = resolvePageLabelKey(pathname, locale, section, workspaceSlug);
   const isAdminPath = pathname.startsWith(`/${locale}/dashboard/admin`);
 
@@ -133,9 +150,24 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
 
     if (estimatesRoute.kind === "detail") {
       crumbs.push({
-        label:
-          detailLabel?.trim() ||
-          estimatesRoute.estimateId,
+        label: detailLabel?.trim() || estimatesRoute.id,
+      });
+    }
+
+    return crumbs;
+  }
+
+  if (requestsRoute && workspaceSlug) {
+    const requestsHref = `/${locale}/dashboard/${workspaceSlug}/requests`;
+
+    crumbs.push({
+      label: t("requests"),
+      href: requestsRoute.kind === "detail" ? requestsHref : undefined,
+    });
+
+    if (requestsRoute.kind === "detail") {
+      crumbs.push({
+        label: detailLabel?.trim() || requestsRoute.id,
       });
     }
 

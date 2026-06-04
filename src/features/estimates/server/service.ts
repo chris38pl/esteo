@@ -15,6 +15,7 @@ import {
   appendAiMessage,
 } from "@/features/estimates/server/ai-messages-repository";
 import { buildAgentEditInputs } from "@/features/estimates/lib/build-agent-edit-guidance";
+import { syncVersionTotals } from "@/features/estimates/lib/sync-version-totals";
 import type {
   EstimateVersionSnapshot,
   ProposeEditResult,
@@ -34,6 +35,7 @@ import {
 import { tasks } from "@trigger.dev/sdk";
 import type { generateEstimateDraftTask } from "@/trigger/generate-estimate-draft";
 import {
+  assertVersionEditable,
   autoSave,
   createEstimateWithFirstVersion,
   createVersionCopy,
@@ -225,6 +227,7 @@ export async function proposeEdit(input: {
   locale: string;
 }): Promise<ProposeEditResult> {
   await assertCanUseAiAssistant(input.userId);
+  await assertVersionEditable(input.versionId, input.workspaceId);
 
   const version = await getVersionWithTree(input.versionId, input.workspaceId);
 
@@ -290,6 +293,8 @@ export async function approveEdit(input: {
   userId: string;
   patch: EstimateAgentPatch;
 }): Promise<{ updatedAt: Date }> {
+  await assertVersionEditable(input.versionId, input.workspaceId);
+
   await saveRevision({
     versionId: input.versionId,
     workspaceId: input.workspaceId,
@@ -317,6 +322,8 @@ export async function undoLastChange(input: {
   workspaceId: string;
   userId: string;
 }): Promise<void> {
+  await assertVersionEditable(input.versionId, input.workspaceId);
+
   const maxSteps = await getMaxUndoSteps(input.userId);
   const revisions = await getRevisions(input.versionId, maxSteps);
 
@@ -325,7 +332,7 @@ export async function undoLastChange(input: {
   }
 
   const latest = revisions[0];
-  await restoreRevision(input.versionId, latest.id);
+  await restoreRevision(input.versionId, input.workspaceId, latest.id);
 }
 
 // ---------------------------------------------------------------------------
@@ -410,6 +417,8 @@ async function applyPatch(
   workspaceId: string,
   patch: EstimateAgentPatch,
 ): Promise<void> {
+  await assertVersionEditable(versionId, workspaceId);
+
   await prisma.$transaction(async (tx) => {
     if (patch.marginPercent != null) {
       await tx.estimateVersion.update({
@@ -509,4 +518,6 @@ async function applyPatch(
       }
     }
   });
+
+  await syncVersionTotals(versionId, workspaceId);
 }

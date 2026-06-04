@@ -1,0 +1,49 @@
+{
+  "page": {
+    "title": "Requests",
+    "empty": "No estimate requests yet. Requests appear here when customers submit the public form or when you create an estimate from the dashboard."
+  },
+  "list": {
+    "columns": {
+      "request": "Request",
+      "status": "Status",
+      "location": "Location",
+      "estimate": "Estimate",
+      "received": "Received"
+    },
+    "unknownClient": "Unknown client",
+    "noRequestNumber": "Request",
+    "linkedEstimate": "View estimate"
+  },
+  "status": {
+    "PENDING": "Pending",
+    "PROCESSING": "Processing",
+    "COMPLETED": "Completed",
+    "FAILED": "Failed"
+  },
+  "detail": {
+    "eyebrow": "Estimate request",
+    "requestLabel": "Request",
+    "backToList": "All requests",
+    "openEstimate": "Open estimate",
+    "metaLine": "Received {created} · Updated {updated}",
+    "customerSection": "Customer",
+    "projectSection": "Project",
+    "addressSection": "Investment address",
+    "industrySection": "Project details",
+    "estimateSection": "Estimate",
+    "name": "Full name",
+    "email": "Email",
+    "phone": "Phone",
+    "description": "Project description",
+    "preferredStartDate": "Preferred start date",
+    "attachments": "Attachments",
+    "attachmentCount": "{count, plural, =0 {No files} one {# file} other {# files}}",
+    "streetAddress": "Street address",
+    "city": "City",
+    "postalCode": "Postal code",
+    "voivodeship": "Voivodeship",
+    "linkedEstimate": "Linked estimate",
+    "noEstimateYet": "No estimate created for this request yet."
+  }
+}
