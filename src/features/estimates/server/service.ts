@@ -1,6 +1,11 @@
 import type { EstimateAgentPatch } from "@/ai/schemas/estimate-agent-patch";
 import { proposeEstimateEdit } from "@/ai/services/propose-estimate-edit";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/db/client";
+import { getTranslations } from "next-intl/server";
+import {
+  appendAiMessage,
+} from "@/features/estimates/server/ai-messages-repository";
 import { buildAgentEditInputs } from "@/features/estimates/lib/build-agent-edit-guidance";
 import type {
   EstimateVersionSnapshot,
@@ -193,7 +198,25 @@ export async function proposeEdit(input: {
     currency: agentContext.currency,
   });
 
-  return { patch, guidance, simulatedImpact, warnings };
+  const result: ProposeEditResult = { patch, guidance, simulatedImpact, warnings };
+  const t = await getTranslations({ locale, namespace: "estimates" });
+  const assistantContent = patch.reasoning ?? t("ai.proposedReasoning");
+
+  await prisma.$transaction(async (tx) => {
+    await appendAiMessage(tx, {
+      versionId: input.versionId,
+      role: "USER",
+      content: input.message,
+    });
+    await appendAiMessage(tx, {
+      versionId: input.versionId,
+      role: "ASSISTANT",
+      content: assistantContent,
+      proposalJson: result as Prisma.InputJsonValue,
+    });
+  });
+
+  return result;
 }
 
 export async function approveEdit(input: {

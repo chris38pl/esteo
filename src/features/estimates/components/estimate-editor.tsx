@@ -29,6 +29,10 @@ import { EstimateGeneratingSkeleton } from "./estimate-generating-skeleton";
 import { EstimateMarginControl } from "./estimate-margin-control";
 import { estimateOutlineButtonClassName } from "./estimate-action-button-styles";
 import type { LineItemCalcInput } from "@/features/estimates/lib/calculate-estimate";
+import type {
+  AiMessageClient,
+} from "@/features/estimates/lib/serialize-ai-messages";
+import type { ProposeEditResult } from "@/features/estimates/lib/estimate-agent-types";
 import { cn } from "@/lib/utils";
 import "@/features/estimates/styles/estimate-editor-layout.css";
 
@@ -40,6 +44,8 @@ interface EstimateEditorProps {
   locale: Locale;
   rulesApplied?: boolean;
   investmentPropertyType?: string | null;
+  initialAiMessages?: AiMessageClient[];
+  initialPendingEdit?: ProposeEditResult | null;
 }
 
 function versionTreeToSections(tree: VersionTreeClient | null): SectionData[] {
@@ -68,6 +74,8 @@ export function EstimateEditor({
   locale,
   rulesApplied = false,
   investmentPropertyType = null,
+  initialAiMessages = [],
+  initialPendingEdit = null,
 }: EstimateEditorProps) {
   const t = useTranslations("estimates");
   const router = useRouter();
@@ -366,6 +374,8 @@ export function EstimateEditor({
                 locale={locale}
                 maxUndoSteps={3}
                 onApproved={handleAiMutation}
+                initialMessages={initialAiMessages}
+                initialPendingEdit={initialPendingEdit}
               />
             </div>
           )}

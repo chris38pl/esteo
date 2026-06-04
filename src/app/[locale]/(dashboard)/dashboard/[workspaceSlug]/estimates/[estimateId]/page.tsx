@@ -22,6 +22,14 @@ import {
 import { getIndustryOptionLabel } from "@/features/estimate-requests/config/industry-option-labels";
 import { listDocumentFieldValues } from "@/features/industry-fields/server/repository";
 import { readTypedFieldValue } from "@/features/industry-fields/server/map-field-value";
+import {
+  deriveInitialPendingEdit,
+  serializeAiMessages,
+} from "@/features/estimates/lib/serialize-ai-messages";
+import {
+  getLatestAiApprovedRevisionAt,
+  listAiMessagesByVersionId,
+} from "@/features/estimates/server/ai-messages-repository";
 
 export default async function EstimateEditorPage({
   params,
@@ -97,6 +105,20 @@ export default async function EstimateEditorPage({
         )
       : null;
 
+  const aiMessageRows =
+    activeVersionId != null
+      ? await listAiMessagesByVersionId(activeVersionId)
+      : [];
+  const latestAiApprovedRevisionAt =
+    activeVersionId != null
+      ? await getLatestAiApprovedRevisionAt(activeVersionId)
+      : null;
+  const initialAiMessages = serializeAiMessages(aiMessageRows);
+  const initialPendingEdit = deriveInitialPendingEdit(
+    aiMessageRows,
+    latestAiApprovedRevisionAt,
+  );
+
   return (
     <EstimateEditor
       key={editorKey}
@@ -107,6 +129,8 @@ export default async function EstimateEditorPage({
       locale={resolvedLocale}
       rulesApplied={rulesApplied}
       investmentPropertyType={investmentPropertyType}
+      initialAiMessages={initialAiMessages}
+      initialPendingEdit={initialPendingEdit}
     />
   );
 }

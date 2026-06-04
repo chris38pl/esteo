@@ -37,6 +37,7 @@ import {
 } from "@/features/estimates/server/actions";
 
 import type { ProposeEditResult } from "@/features/estimates/lib/estimate-agent-types";
+import type { AiMessageClient } from "@/features/estimates/lib/serialize-ai-messages";
 
 import type { VersionTreeClient } from "@/features/estimates/lib/serialize-estimate";
 
@@ -71,6 +72,10 @@ interface EstimateAiPanelProps {
 
   }) => void;
 
+  initialMessages?: AiMessageClient[];
+
+  initialPendingEdit?: ProposeEditResult | null;
+
   className?: string;
 
 }
@@ -78,6 +83,8 @@ interface EstimateAiPanelProps {
 
 
 interface Message {
+
+  id?: string;
 
   role: "user" | "assistant";
 
@@ -107,17 +114,29 @@ export function EstimateAiPanel({
 
   onApproved,
 
+  initialMessages = [],
+
+  initialPendingEdit = null,
+
   className,
 
 }: EstimateAiPanelProps) {
 
   const t = useTranslations("estimates");
 
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(() =>
+    initialMessages.map((message) => ({
+      id: message.id,
+      role: message.role,
+      content: message.content,
+    })),
+  );
 
   const [input, setInput] = useState("");
 
-  const [pendingEdit, setPendingEdit] = useState<ProposeEditResult | null>(null);
+  const [pendingEdit, setPendingEdit] = useState<ProposeEditResult | null>(
+    initialPendingEdit,
+  );
 
   const [error, setError] = useState<string | null>(null);
 
@@ -139,7 +158,10 @@ export function EstimateAiPanel({
 
     setError(null);
 
-    setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
+    setMessages((prev) => [
+      ...prev,
+      { role: "user", content: userMessage },
+    ]);
 
 
 
@@ -173,20 +195,17 @@ export function EstimateAiPanel({
 
 
 
+      const assistantContent =
+        result.data.patch.reasoning ?? t("ai.proposedReasoning");
+
       setPendingEdit(result.data);
 
       setMessages((prev) => [
-
         ...prev,
-
         {
-
           role: "assistant",
-
-          content: result.data.patch.reasoning ?? t("ai.proposedReasoning"),
-
+          content: assistantContent,
         },
-
       ]);
 
     });
@@ -347,7 +366,7 @@ export function EstimateAiPanel({
 
           <div
 
-            key={i}
+            key={msg.id ?? i}
 
             className={
 

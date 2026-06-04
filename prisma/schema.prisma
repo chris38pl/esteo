@@ -97,6 +97,11 @@ enum EstimateVersionStatus {
   ARCHIVED
 }
 
+enum EstimateAiMessageRole {
+  USER
+  ASSISTANT
+}
+
 model User {
   id                    String       @id @default(cuid())
   email                 String       @unique
@@ -354,8 +359,9 @@ model EstimateVersion {
   estimate  Estimate          @relation("EstimateVersions", fields: [estimateId], references: [id], onDelete: Cascade)
   latestOf  Estimate[]        @relation("EstimateLatestVersion")
   workspace Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  sections  EstimateSection[]
-  revisions EstimateRevision[]
+  sections   EstimateSection[]
+  revisions  EstimateRevision[]
+  aiMessages EstimateAiMessage[]
 
   @@unique([estimateId, versionNumber])
   @@index([estimateId])
@@ -415,6 +421,20 @@ model EstimateRevision {
 
   @@index([versionId, createdAt])
   @@index([workspaceId])
+}
+
+/// Append-only AI assistant conversation log per estimate version (immutable).
+model EstimateAiMessage {
+  id           String                @id @default(cuid())
+  versionId    String
+  role         EstimateAiMessageRole
+  content      String                @db.Text
+  proposalJson Json?
+  createdAt    DateTime              @default(now())
+
+  version EstimateVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+
+  @@index([versionId, createdAt])
 }
 
 model IndustryFieldDefinition {

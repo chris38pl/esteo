@@ -288,6 +288,14 @@ EstimateRevision {
   createdByUserId
   source            // MANUAL | AI_APPROVED
 }
+
+// Append-only AI assistant chat per estimate version (immutable; proposalJson preserved)
+EstimateAiMessage {
+  versionId
+  role              // USER | ASSISTANT
+  content
+  proposalJson      // nullable snapshot of ProposeEditResult on ASSISTANT rows
+}
 ```
 
 Versioning recommendation: **`EstimateVersion`** table (or `versionNumber` + snapshot) rather than only soft-delete history — supports PDF per version and agent undo stack.
