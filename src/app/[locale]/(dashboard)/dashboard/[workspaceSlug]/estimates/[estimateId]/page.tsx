@@ -1,5 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
+import { BusinessDocumentType } from "@prisma/client";
 
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
@@ -18,6 +19,9 @@ import {
   estimateAiRulesApplied,
   loadEstimateGenerationContext,
 } from "@/features/workspaces/lib/load-estimate-generation-context";
+import { getIndustryOptionLabel } from "@/features/estimate-requests/config/industry-option-labels";
+import { listDocumentFieldValues } from "@/features/industry-fields/server/repository";
+import { readTypedFieldValue } from "@/features/industry-fields/server/map-field-value";
 
 export default async function EstimateEditorPage({
   params,
@@ -70,6 +74,29 @@ export default async function EstimateEditorPage({
     ? estimateAiRulesApplied(generationContext)
     : false;
 
+  const requestFieldValues = estimate.estimateRequest
+    ? await listDocumentFieldValues({
+        workspaceId: resolved.workspace.id,
+        documentType: BusinessDocumentType.ESTIMATE_REQUEST,
+        documentId: estimate.estimateRequest.id,
+      })
+    : [];
+  const propertyTypeValue = requestFieldValues.find(
+    (field) => field.fieldKey === "property_type",
+  );
+  const rawPropertyType = propertyTypeValue
+    ? readTypedFieldValue(propertyTypeValue)
+    : null;
+  const investmentPropertyType =
+    typeof rawPropertyType === "string" && rawPropertyType.length > 0
+      ? getIndustryOptionLabel(
+          "property_type",
+          rawPropertyType,
+          resolvedLocale,
+          "label",
+        )
+      : null;
+
   return (
     <EstimateEditor
       key={editorKey}
@@ -79,6 +106,7 @@ export default async function EstimateEditorPage({
       workspaceSlug={workspaceSlug}
       locale={resolvedLocale}
       rulesApplied={rulesApplied}
+      investmentPropertyType={investmentPropertyType}
     />
   );
 }

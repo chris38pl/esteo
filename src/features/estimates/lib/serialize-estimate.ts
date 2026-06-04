@@ -25,6 +25,7 @@ export type EstimateForEditorClient = {
     requestNumber: string | null;
     status: EstimateRequestStatus;
     customerData: Prisma.JsonValue;
+    address: Prisma.JsonValue;
     projectDescription: string;
     createdAt: string;
   } | null;
@@ -98,6 +99,7 @@ export function serializeEstimateForEditor(raw: RawEstimate): EstimateForEditorC
           requestNumber: raw.estimateRequest.requestNumber,
           status: raw.estimateRequest.status,
           customerData: raw.estimateRequest.customerData,
+          address: raw.estimateRequest.address,
           projectDescription: raw.estimateRequest.projectDescription,
           createdAt: raw.estimateRequest.createdAt.toISOString(),
         }

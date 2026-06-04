@@ -1,96 +1,127 @@
 "use client";
 
-import { Calendar, Hash, User } from "lucide-react";
+import { Building2, CalendarClock, FileText, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import type { EstimateRequestStatus } from "@prisma/client";
+import type { Locale } from "@/lib/locale";
+import { cn } from "@/lib/utils";
 
 interface EstimateContextCardsProps {
   requestNumber?: string | null;
-  requestStatus?: EstimateRequestStatus | null;
   customerName?: string | null;
   customerEmail?: string | null;
-  createdAt?: string | Date | null;
+  investmentPropertyType?: string | null;
+  investmentStreet?: string | null;
+  investmentCity?: string | null;
+  requestCreatedAt?: string | Date | null;
   updatedAt?: string | Date | null;
+  updatedBy?: string | null;
+  locale: Locale;
 }
 
-const requestStatusVariant: Record<
-  EstimateRequestStatus,
-  "default" | "secondary" | "outline" | "destructive"
-> = {
-  PENDING: "secondary",
-  PROCESSING: "default",
-  COMPLETED: "outline",
-  FAILED: "destructive",
-};
+const iconClassName =
+  "flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary/8 text-primary ring-1 ring-primary/10";
 
 export function EstimateContextCards({
   requestNumber,
-  requestStatus,
   customerName,
   customerEmail,
-  createdAt,
+  investmentPropertyType,
+  investmentStreet,
+  investmentCity,
+  requestCreatedAt,
   updatedAt,
+  updatedBy,
+  locale,
 }: EstimateContextCardsProps) {
   const t = useTranslations("estimates");
+  const dateLocale = locale === "pl" ? "pl-PL" : "en-US";
+
+  const formatDate = (value: string | Date) =>
+    new Intl.DateTimeFormat(dateLocale, {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }).format(new Date(value));
+
+  const formatDateTime = (value: string | Date) =>
+    new Intl.DateTimeFormat(dateLocale, {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date(value));
+
+  const cards = [
+    {
+      key: "request",
+      icon: FileText,
+      heading: t("context.request"),
+      primary: requestNumber ?? t("context.empty"),
+      secondary: requestCreatedAt
+        ? t("context.createdOn", { date: formatDate(requestCreatedAt) })
+        : t("context.noDate"),
+    },
+    {
+      key: "investment",
+      icon: Building2,
+      heading: t("context.investment"),
+      primary: investmentPropertyType ?? t("context.investmentFallback"),
+      secondary: [investmentStreet, investmentCity].filter(Boolean).join(", ") || t("context.noAddress"),
+    },
+    {
+      key: "client",
+      icon: User,
+      heading: t("context.client"),
+      primary: customerName ?? customerEmail ?? t("context.empty"),
+      secondary: customerName && customerEmail ? customerEmail : t("context.noEmail"),
+    },
+    {
+      key: "updated",
+      icon: CalendarClock,
+      heading: t("context.lastUpdated"),
+      primary: updatedAt ? formatDateTime(updatedAt) : t("context.noDate"),
+      secondary: t("context.editedBy", {
+        user: updatedBy
+          ? t("context.userIdShort", { id: updatedBy.slice(0, 8) })
+          : t("context.system"),
+      }),
+    },
+  ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-      {requestNumber && (
-        <Card className="p-3">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-            <Hash className="size-3" />
-            {t("context.request")}
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">{requestNumber}</span>
-            {requestStatus && (
-              <Badge variant={requestStatusVariant[requestStatus]} className="text-xs">
-                {t(`requestStatus.${requestStatus}`)}
-              </Badge>
-            )}
-          </div>
-        </Card>
-      )}
+    <section className="h-full min-w-0 overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-sm">
+      <div className="estimate-context-grid">
+        {cards.map((card) => {
+          const Icon = card.icon;
 
-      {(customerName ?? customerEmail) && (
-        <Card className="p-3">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-            <User className="size-3" />
-            {t("context.client")}
-          </div>
-          <div className="text-sm font-medium truncate">{customerName ?? customerEmail}</div>
-          {customerName && customerEmail && (
-            <div className="text-xs text-muted-foreground truncate">{customerEmail}</div>
-          )}
-        </Card>
-      )}
-
-      {createdAt && (
-        <Card className="p-3">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-            <Calendar className="size-3" />
-            {t("context.created")}
-          </div>
-          <div className="text-sm font-medium">
-            {new Date(createdAt).toLocaleDateString()}
-          </div>
-        </Card>
-      )}
-
-      {updatedAt && (
-        <Card className="p-3">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-            <Calendar className="size-3" />
-            {t("context.lastUpdated")}
-          </div>
-          <div className="text-sm font-medium">
-            {new Date(updatedAt).toLocaleDateString()}
-          </div>
-        </Card>
-      )}
-    </div>
+          return (
+            <div
+              key={card.key}
+              className={cn(
+                "flex min-w-0 items-center gap-3 px-5 py-4",
+                "bg-card/95",
+              )}
+            >
+              <span className={iconClassName}>
+                <Icon className="size-5" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                  {card.heading}
+                </p>
+                <p className="mt-1 truncate text-sm font-semibold text-foreground">
+                  {card.primary}
+                </p>
+                <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                  {card.secondary}
+                </p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }

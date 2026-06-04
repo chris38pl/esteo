@@ -37,11 +37,19 @@
     "submitting": "Creating…"
   },
   "editor": {
+    "titleEyebrow": "Estimate",
+    "titleWithVersion": "{title} – Version {version}",
     "items": "Estimate Items",
+    "itemsEyebrow": "Estimate",
     "aiAssistant": "AI Assistant",
     "hideAi": "Hide AI",
     "addSection": "Add section",
     "addItem": "Add item",
+    "itemCount": "{count, plural, one {# item} other {# items}}",
+    "collapseSection": "Collapse section",
+    "expandSection": "Expand section",
+    "itemNamePlaceholder": "Item name",
+    "unitPlaceholder": "unit",
     "conflictBanner": "Another user saved this estimate. Reload to continue editing.",
     "reload": "Reload",
     "columns": {
@@ -66,6 +74,21 @@
     "generatingFailedHint": "You can still edit the estimate manually.",
     "refreshStatus": "Refresh to check status"
   },
+  "header": {
+    "status": {
+      "DRAFT": "Draft",
+      "SENT": "Sent",
+      "ARCHIVED": "Archived"
+    },
+    "actions": {
+      "preview": "Preview",
+      "share": "Share",
+      "more": "More",
+      "morePlaceholder": "Additional actions",
+      "send": "Send",
+      "sendToClient": "Send to client"
+    }
+  },
   "autosave": {
     "saving": "Saving…",
     "saved": "Saved",
@@ -89,6 +112,7 @@
   },
   "ai": {
     "placeholder": "Ask AI to modify the estimate…",
+    "panelHint": "Fast edits for this estimate",
     "send": "Send",
     "thinking": "Thinking…",
     "proposed": "Proposed changes ready",
@@ -101,7 +125,11 @@
     "limitReached": "Monthly AI limit reached.",
     "callsLeft": "{remaining} / {max} calls left",
     "emptyHint": "Ask the AI to modify the estimate. E.g. \"Add 5 electrical outlets\" or \"Increase margin to 25%\".",
-    "proposedReasoning": "Here are the proposed changes. Review and approve or reject."
+    "proposedReasoning": "Here are the proposed changes. Review and approve or reject.",
+    "impactBefore": "Gross before: {gross}",
+    "impactAfter": "Gross after changes: {gross}",
+    "impactDiff": "Gross difference: {diff}",
+    "targetProgress": "Target: {target} — after changes: ~{after}"
   },
   "rules": {
     "applied": "Rules applied",
@@ -109,12 +137,23 @@
   },
   "versions": {
     "createVersion": "Create Version {n}",
-    "versionLabel": "Version {n}"
+    "versionLabel": "Version {n}",
+    "shortVersionLabel": "Version {n}"
   },
   "context": {
     "request": "Request",
+    "investment": "Investment",
     "client": "Client",
+    "system": "System",
+    "userIdShort": "User {id}",
     "created": "Created",
-    "lastUpdated": "Last updated"
+    "createdOn": "from {date}",
+    "lastUpdated": "Last updated",
+    "editedBy": "by {user}",
+    "investmentFallback": "Investment type",
+    "empty": "—",
+    "noDate": "No date",
+    "noAddress": "No address",
+    "noEmail": "No email"
   }
 }

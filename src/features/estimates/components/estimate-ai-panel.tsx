@@ -36,7 +36,7 @@ import {
 
 } from "@/features/estimates/server/actions";
 
-import type { EstimateAgentPatch } from "@/ai/schemas/estimate-agent-patch";
+import type { ProposeEditResult } from "@/features/estimates/lib/estimate-agent-types";
 
 import type { VersionTreeClient } from "@/features/estimates/lib/serialize-estimate";
 
@@ -116,7 +116,7 @@ export function EstimateAiPanel({
 
   const [input, setInput] = useState("");
 
-  const [pendingPatch, setPendingPatch] = useState<EstimateAgentPatch | null>(null);
+  const [pendingEdit, setPendingEdit] = useState<ProposeEditResult | null>(null);
 
   const [error, setError] = useState<string | null>(null);
 
@@ -172,7 +172,7 @@ export function EstimateAiPanel({
 
 
 
-      setPendingPatch(result.data);
+      setPendingEdit(result.data);
 
       setMessages((prev) => [
 
@@ -182,7 +182,7 @@ export function EstimateAiPanel({
 
           role: "assistant",
 
-          content: result.data.reasoning ?? t("ai.proposedReasoning"),
+          content: result.data.patch.reasoning ?? t("ai.proposedReasoning"),
 
         },
 
@@ -196,7 +196,7 @@ export function EstimateAiPanel({
 
   const handleApprove = () => {
 
-    if (!pendingPatch) return;
+    if (!pendingEdit) return;
 
     setError(null);
 
@@ -214,7 +214,7 @@ export function EstimateAiPanel({
 
         estimateId,
 
-        patch: pendingPatch,
+        patch: pendingEdit.patch,
 
         locale,
 
@@ -232,7 +232,7 @@ export function EstimateAiPanel({
 
 
 
-      setPendingPatch(null);
+      setPendingEdit(null);
 
       onApproved(result.data);
 
@@ -244,7 +244,7 @@ export function EstimateAiPanel({
 
   const handleReject = () => {
 
-    setPendingPatch(null);
+    setPendingEdit(null);
 
   };
 
@@ -292,15 +292,20 @@ export function EstimateAiPanel({
 
   return (
 
-    <aside className={className}>
+    <aside className={`rounded-3xl border bg-card/95 p-5 shadow-sm ${className ?? ""}`}>
 
-      <div className="flex items-center justify-between mb-3">
+      <div className="mb-4 flex items-center justify-between gap-3">
 
         <div className="flex items-center gap-2">
 
-          <Bot className="size-4 text-primary" />
+          <span className="flex size-9 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+            <Bot className="size-4" />
+          </span>
 
-          <span className="text-sm font-medium">{t("editor.aiAssistant")}</span>
+          <div>
+            <p className="text-sm font-semibold">{t("editor.aiAssistant")}</p>
+            <p className="text-xs text-muted-foreground">{t("ai.panelHint")}</p>
+          </div>
 
         </div>
 
@@ -324,11 +329,11 @@ export function EstimateAiPanel({
 
 
 
-      <div className="flex flex-col gap-2 mb-3 min-h-[100px] max-h-[300px] overflow-y-auto">
+      <div className="mb-4 flex min-h-[160px] max-h-[360px] flex-col gap-2 overflow-y-auto rounded-2xl border bg-muted/20 p-3">
 
         {messages.length === 0 && (
 
-          <p className="text-xs text-muted-foreground">{t("ai.emptyHint")}</p>
+          <p className="text-xs leading-relaxed text-muted-foreground">{t("ai.emptyHint")}</p>
 
         )}
 
@@ -342,9 +347,9 @@ export function EstimateAiPanel({
 
               msg.role === "user"
 
-                ? "self-end rounded-lg bg-primary px-3 py-1.5 text-xs text-primary-foreground max-w-[85%]"
+                ? "self-end rounded-2xl bg-primary px-3 py-2 text-xs text-primary-foreground max-w-[85%] shadow-sm"
 
-                : "self-start rounded-lg bg-muted px-3 py-1.5 text-xs max-w-[85%]"
+                : "self-start rounded-2xl bg-background px-3 py-2 text-xs max-w-[85%] shadow-sm"
 
             }
 
@@ -358,7 +363,7 @@ export function EstimateAiPanel({
 
         {isPending && (
 
-          <div className="self-start rounded-lg bg-muted px-3 py-1.5 text-xs flex items-center gap-2">
+          <div className="flex items-center gap-2 self-start rounded-2xl bg-background px-3 py-2 text-xs shadow-sm">
 
             <Loader2 className="size-3 animate-spin" />
 
@@ -372,15 +377,87 @@ export function EstimateAiPanel({
 
 
 
-      {pendingPatch && (
+      {pendingEdit && (
 
-        <div className="mb-3 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30 p-3">
+        <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 p-3 shadow-sm dark:border-amber-800 dark:bg-amber-950/30">
 
-          <p className="text-xs font-medium mb-2">{t("ai.proposed")}</p>
+          <p className="mb-2 text-xs font-semibold">{t("ai.proposed")}</p>
+
+          <div className="mb-2 space-y-1 text-xs text-muted-foreground">
+
+            <p>
+
+              {t("ai.impactBefore", {
+
+                gross: pendingEdit.simulatedImpact.before.gross.toLocaleString(locale),
+
+              })}
+
+            </p>
+
+            <p>
+
+              {t("ai.impactAfter", {
+
+                gross: pendingEdit.simulatedImpact.after.gross.toLocaleString(locale),
+
+              })}
+
+            </p>
+
+            <p>
+
+              {t("ai.impactDiff", {
+
+                diff: pendingEdit.simulatedImpact.difference.gross.toLocaleString(locale, {
+
+                  signDisplay: "exceptZero",
+
+                }),
+
+              })}
+
+            </p>
+
+            {pendingEdit.guidance.financialTarget && (
+
+              <p>
+
+                {t("ai.targetProgress", {
+
+                  target: pendingEdit.guidance.financialTarget.targetValue.toLocaleString(
+
+                    locale,
+
+                  ),
+
+                  after: pendingEdit.simulatedImpact.after.gross.toLocaleString(locale),
+
+                })}
+
+              </p>
+
+            )}
+
+          </div>
+
+          {pendingEdit.warnings.length > 0 && (
+
+            <ul className="mb-2 list-disc pl-4 text-xs text-amber-800 dark:text-amber-200">
+
+              {pendingEdit.warnings.map((warning, index) => (
+
+                <li key={`${warning.code}-${index}`}>{warning.message}</li>
+
+              ))}
+
+            </ul>
+
+          )}
 
           <div className="flex gap-2">
 
-            <Button size="sm" className="gap-1.5 flex-1" onClick={handleApprove} disabled={isPending}>
+            <Button size="sm" className="h-9 flex-1 gap-1.5 rounded-xl" onClick={handleApprove} disabled={isPending}>
 
               <Check className="size-3" />
 
@@ -388,7 +465,7 @@ export function EstimateAiPanel({
 
             </Button>
 
-            <Button size="sm" variant="outline" className="gap-1.5 flex-1" onClick={handleReject}>
+            <Button size="sm" variant="outline" className="h-9 flex-1 gap-1.5 rounded-xl" onClick={handleReject}>
 
               <X className="size-3" />
 
@@ -434,7 +511,7 @@ export function EstimateAiPanel({
 
           rows={2}
 
-          className="flex-1 min-w-0 resize-none rounded-md border border-input bg-background px-3 py-2 text-xs ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+          className="min-w-0 flex-1 resize-none rounded-2xl border border-input bg-background px-3 py-2 text-xs shadow-xs ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
 
         />
 
@@ -446,7 +523,7 @@ export function EstimateAiPanel({
 
           disabled={!input.trim() || isPending || isAtLimit}
 
-          className="self-end"
+          className="self-end rounded-xl"
 
           aria-label={t("ai.send")}
 
@@ -480,7 +557,7 @@ export function EstimateAiPanel({
 
                 size="sm"
 
-                className="gap-1.5 text-xs ml-auto"
+                className="ml-auto gap-1.5 rounded-xl text-xs"
 
                 onClick={handleUndo}
 

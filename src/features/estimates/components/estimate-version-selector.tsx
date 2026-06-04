@@ -31,6 +31,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 
 import { createNewVersionAction } from "@/features/estimates/server/actions";
+import { estimateOutlineButtonClassName } from "./estimate-action-button-styles";
 
 import type { EstimateVersionStatus } from "@prisma/client";
 
@@ -182,19 +183,16 @@ export function EstimateVersionSelector({
 
       <DropdownMenuTrigger asChild>
 
-        <Button variant="outline" size="sm" className="gap-2" disabled={isCreating || isPending}>
+        <Button
+          variant="outline"
+          size="sm"
+          className={estimateOutlineButtonClassName}
+          disabled={isCreating || isPending}
+        >
 
-          <span className="font-medium">v{activeVersion?.versionNumber ?? 1}</span>
-
-          {activeVersion && (
-
-            <Badge variant={statusVariant[activeVersion.status]} className="text-xs">
-
-              {statusLabel(activeVersion.status)}
-
-            </Badge>
-
-          )}
+          <span className="font-medium">
+            {t("versions.shortVersionLabel", { n: activeVersion?.versionNumber ?? 1 })}
+          </span>
 
           <ChevronDown className="size-4" />
 

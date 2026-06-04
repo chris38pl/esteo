@@ -37,11 +37,19 @@
     "submitting": "Tworzenie…"
   },
   "editor": {
+    "titleEyebrow": "Kosztorys",
+    "titleWithVersion": "{title} – Wersja {version}",
     "items": "Pozycje wyceny",
+    "itemsEyebrow": "Kosztorys",
     "aiAssistant": "Asystent AI",
     "hideAi": "Ukryj AI",
     "addSection": "Dodaj sekcję",
     "addItem": "Dodaj pozycję",
+    "itemCount": "{count, plural, one {# pozycja} few {# pozycje} many {# pozycji} other {# pozycji}}",
+    "collapseSection": "Zwiń sekcję",
+    "expandSection": "Rozwiń sekcję",
+    "itemNamePlaceholder": "Nazwa pozycji",
+    "unitPlaceholder": "j.m.",
     "conflictBanner": "Inny użytkownik zapisał tę wycenę. Odśwież, aby kontynuować edycję.",
     "reload": "Odśwież",
     "columns": {
@@ -66,6 +74,21 @@
     "generatingFailedHint": "Możesz edytować wycenę ręcznie.",
     "refreshStatus": "Odśwież, aby sprawdzić status"
   },
+  "header": {
+    "status": {
+      "DRAFT": "Projekt roboczy",
+      "SENT": "Wysłana",
+      "ARCHIVED": "Zarchiwizowana"
+    },
+    "actions": {
+      "preview": "Podgląd",
+      "share": "Udostępnij",
+      "more": "Więcej",
+      "morePlaceholder": "Dodatkowe akcje",
+      "send": "Wyślij",
+      "sendToClient": "Wyślij do klienta"
+    }
+  },
   "autosave": {
     "saving": "Zapisywanie…",
     "saved": "Zapisano",
@@ -89,6 +112,7 @@
   },
   "ai": {
     "placeholder": "Zapytaj AI o modyfikację wyceny…",
+    "panelHint": "Szybkie zmiany w wycenie",
     "send": "Wyślij",
     "thinking": "Analizuję…",
     "proposed": "Proponowane zmiany gotowe",
@@ -101,7 +125,11 @@
     "limitReached": "Miesięczny limit AI osiągnięty.",
     "callsLeft": "{remaining} / {max} wywołań pozostało",
     "emptyHint": "Poproś AI o modyfikację wyceny. Np. „Dodaj 5 gniazd elektrycznych” lub „Zwiększ narzut do 25%”.",
-    "proposedReasoning": "Oto proponowane zmiany. Sprawdź i zatwierdź lub odrzuć."
+    "proposedReasoning": "Oto proponowane zmiany. Sprawdź i zatwierdź lub odrzuć.",
+    "impactBefore": "Brutto przed: {gross} PLN",
+    "impactAfter": "Brutto po zmianach: {gross} PLN",
+    "impactDiff": "Różnica brutto: {diff} PLN",
+    "targetProgress": "Cel: {target} PLN — po zmianach: ~{after} PLN"
   },
   "rules": {
     "applied": "Reguły zastosowane",
@@ -109,12 +137,23 @@
   },
   "versions": {
     "createVersion": "Utwórz wersję {n}",
-    "versionLabel": "Wersja {n}"
+    "versionLabel": "Wersja {n}",
+    "shortVersionLabel": "Wersja {n}"
   },
   "context": {
     "request": "Zapytanie",
+    "investment": "Inwestycja",
     "client": "Klient",
+    "system": "System",
+    "userIdShort": "Użytkownik {id}",
     "created": "Utworzono",
-    "lastUpdated": "Ostatnia aktualizacja"
+    "createdOn": "z {date}",
+    "lastUpdated": "Ostatnia aktualizacja",
+    "editedBy": "przez {user}",
+    "investmentFallback": "Typ inwestycji",
+    "empty": "—",
+    "noDate": "Brak daty",
+    "noAddress": "Brak adresu",
+    "noEmail": "Brak e-maila"
   }
 }

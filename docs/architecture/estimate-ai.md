@@ -133,20 +133,52 @@ Store trace ids / model in aiMetadata (request + estimate)
 ```txt
 User sends chat message (after entitlement check)
 ↓
-Load current estimate tree from DB
+Load current estimate tree from DB → EstimateVersionSnapshot
 ↓
-Build prompt + current estimate JSON + user message
+buildEstimateAgentContext (calculate-estimate.ts totals + cost drivers)
 ↓
-Stream or return proposed patch (structured diff or full subtree)
+detectEditIntent + parseFinancialTarget + deriveRecommendedStrategy
 ↓
-UI shows preview (added/updated/removed rows)
+buildEstimateAgentPrompt (financial snapshot, intent, target, strategy, constraints, compact tree)
+↓
+generateObject → EstimateAgentPatch
+↓
+simulateAgentPatch (in-memory applyPatchToSnapshot + recalc)
+↓
+validateAgentPatch → non-blocking warnings
+↓
+UI: gross before/after/diff, target progress, warnings
 ↓
 User: Approve | Reject
 ↓
-On approve: persist in transaction, push undo snapshot, increment usage
-↓
-On reject: discard proposal, no usage increment (optional: count on send only)
+On approve: applyPatch in transaction, undo snapshot, increment usage
 ```
+
+### Financial snapshot and guidance
+
+Implemented under `src/features/estimates/lib/`:
+
+| Module | Role |
+| --- | --- |
+| `estimate-agent-types.ts` | `EditIntent`, `RecommendedStrategy`, `EditConstraints`, `EstimateAgentContext`, `ProposeEditResult` |
+| `build-estimate-agent-context.ts` | Section shares, top cost drivers, summary totals via `calculateEstimate` |
+| `build-compact-estimate-tree.ts` | Minimal tree for LLM (ids, qty, unitPrice — no sortOrder/vatRate in prompt) |
+| `detect-edit-intent.ts` | Deterministic PL/EN patterns |
+| `parse-financial-target.ts` | Absolute amounts (35k, 35 tys) and % adjustments |
+| `derive-recommended-strategy.ts` | Maps intent + target gap → strategy |
+| `build-agent-edit-guidance.ts` | Orchestrates guidance for `proposeEdit` |
+
+Prompt blocks: `src/ai/lib/format-estimate-agent-prompt-blocks.ts` — assembled in [`buildEstimateAgentPrompt`](../../src/ai/prompts/estimate-agent.ts).
+
+### Simulation and validation
+
+| Module | Role |
+| --- | --- |
+| `apply-patch-to-snapshot.ts` | In-memory patch (mirrors DB `applyPatch` rules) |
+| `simulate-agent-patch.ts` | Before/after net and gross |
+| `validate-agent-patch.ts` | Warnings from `DEFAULT_EDIT_CONSTRAINTS` + target miss |
+
+Deferred: multi-agent flows, planner/executor, LLM-based intent detection, Langfuse hard-reject.
 
 - **Never auto-apply** agent changes without explicit approval.
 - Manual edits between agent turns remain in DB; next prompt reloads fresh state.

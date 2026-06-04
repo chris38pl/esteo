@@ -1,0 +1,81 @@
+/**
+ * Estimate editor layout — tune breakpoints in the block below.
+ *
+ * TOP_BAND_SPLIT (1200px)
+ *   Context cards and summary/profitability sit side-by-side.
+ *
+ * CONTEXT_TWO_COL (768px)
+ *   Context cards use a 2×2 grid (Zapytanie+Inwestycja / Klient+Ostatnia aktualizacja).
+ *   Applies when viewport is below CONTEXT_FOUR_COL.
+ *
+ * CONTEXT_FOUR_COL (1500px)
+ *   All four context cards in one row (with summary/profitability still on the right
+ *   when TOP_BAND_SPLIT is active).
+ */
+
+.estimate-top-band {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  align-items: stretch;
+  min-width: 0;
+}
+
+@media (min-width: 1200px) {
+  .estimate-top-band:not(.estimate-top-band--stacked) {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  }
+}
+
+.estimate-top-band--stacked {
+  grid-template-columns: 1fr;
+}
+
+.estimate-context-grid {
+  --estimate-context-divider: color-mix(in oklab, var(--border) 70%, transparent);
+  display: grid;
+  grid-template-columns: 1fr;
+  min-width: 0;
+  height: 100%;
+}
+
+.estimate-context-grid > * {
+  border-bottom: 1px solid var(--estimate-context-divider);
+}
+
+.estimate-context-grid > *:last-child {
+  border-bottom: none;
+}
+
+@media (min-width: 768px) {
+  .estimate-context-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .estimate-context-grid > * {
+    border-right: 1px solid var(--estimate-context-divider);
+  }
+
+  .estimate-context-grid > *:nth-child(2n) {
+    border-right: none;
+  }
+
+  .estimate-context-grid > *:nth-child(n + 3) {
+    border-bottom: none;
+  }
+}
+
+@media (min-width: 1800px) {
+  .estimate-context-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .estimate-context-grid > * {
+    border-bottom: none;
+    border-right: 1px solid var(--estimate-context-divider);
+  }
+
+  .estimate-context-grid > *:last-child {
+    border-right: none;
+  }
+}

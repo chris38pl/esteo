@@ -31,7 +31,6 @@ interface EstimateLineItemRowProps {
   onUpdate: (id: string, data: Partial<Omit<LineItemData, "id" | "sortOrder">>) => void;
   onDelete: (id: string) => void;
   onBlur: () => void;
-  currency?: string;
 }
 
 function formatCurrency(value: number): string {
@@ -47,7 +46,6 @@ export function EstimateLineItemRow({
   onUpdate,
   onDelete,
   onBlur,
-  currency = "PLN",
 }: EstimateLineItemRowProps) {
   const t = useTranslations("estimates");
   const [local, setLocal] = useState<LineItemData>(item);
@@ -75,12 +73,12 @@ export function EstimateLineItemRow({
     onUpdate(item.id, { [key]: value });
   };
 
-  const cellClass = "px-2 py-1";
-  const inputClass = "h-7 min-w-0 border-transparent bg-transparent px-1 text-sm shadow-none focus:border-input focus:bg-background focus:shadow-sm";
+  const cellClass = "px-3 py-2 align-middle";
+  const inputClass = "h-9 min-w-0 rounded-xl border-transparent bg-transparent px-2 text-sm shadow-none transition-colors hover:bg-muted/40 focus:border-primary/30 focus:bg-background focus:shadow-sm";
 
   return (
-    <tr className="group border-b hover:bg-muted/30 transition-colors">
-      <td className={cn(cellClass, "w-8 text-center text-xs text-muted-foreground")}>
+    <tr className="group bg-background transition-colors hover:bg-muted/20">
+      <td className={cn(cellClass, "w-12 text-center text-xs font-medium text-muted-foreground")}>
         {index + 1}
       </td>
       <td className={cellClass}>
@@ -89,7 +87,7 @@ export function EstimateLineItemRow({
           onChange={(e) => handleChange("name", e.target.value)}
           onBlur={onBlur}
           className={inputClass}
-          placeholder="Item name"
+          placeholder={t("editor.itemNamePlaceholder")}
         />
       </td>
       <td className={cn(cellClass, "w-20")}>
@@ -98,7 +96,7 @@ export function EstimateLineItemRow({
           onChange={(e) => handleChange("unit", e.target.value)}
           onBlur={onBlur}
           className={inputClass}
-          placeholder="unit"
+          placeholder={t("editor.unitPlaceholder")}
         />
       </td>
       <td className={cn(cellClass, "w-20")}>
@@ -122,7 +120,7 @@ export function EstimateLineItemRow({
           className={cn(inputClass, "text-right")}
         />
       </td>
-      <td className={cn(cellClass, "w-24 text-right text-sm tabular-nums")}>
+      <td className={cn(cellClass, "w-32 text-right text-sm font-medium tabular-nums")}>
         {formatCurrency(calc.netValue)}
       </td>
       <td className={cn(cellClass, "w-20")}>
@@ -137,7 +135,7 @@ export function EstimateLineItemRow({
           className={cn(inputClass, "text-right")}
         />
       </td>
-      <td className={cn(cellClass, "w-28 text-right text-sm tabular-nums")}>
+      <td className={cn(cellClass, "w-32 text-right text-sm font-semibold tabular-nums text-foreground")}>
         {formatCurrency(calc.grossValue)}
       </td>
       <td className={cn(cellClass, "w-10")}>
@@ -145,10 +143,10 @@ export function EstimateLineItemRow({
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              size="icon-xs"
-              className="opacity-0 group-hover:opacity-100 transition-opacity"
+              size="icon-sm"
+              className="rounded-xl opacity-0 transition-opacity group-hover:opacity-100"
             >
-              <MoreHorizontal className="size-3" />
+              <MoreHorizontal className="size-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">

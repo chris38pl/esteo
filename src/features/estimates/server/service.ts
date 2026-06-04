@@ -1,6 +1,13 @@
 import type { EstimateAgentPatch } from "@/ai/schemas/estimate-agent-patch";
 import { proposeEstimateEdit } from "@/ai/services/propose-estimate-edit";
 import { prisma } from "@/db/client";
+import { buildAgentEditInputs } from "@/features/estimates/lib/build-agent-edit-guidance";
+import type {
+  EstimateVersionSnapshot,
+  ProposeEditResult,
+} from "@/features/estimates/lib/estimate-agent-types";
+import { simulateAgentPatch } from "@/features/estimates/lib/simulate-agent-patch";
+import { validateAgentPatch } from "@/features/estimates/lib/validate-agent-patch";
 import { loadEstimateGenerationContext } from "@/features/workspaces/lib/load-estimate-generation-context";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
@@ -118,13 +125,35 @@ export async function createNewVersion(input: {
 // AI assistant
 // ---------------------------------------------------------------------------
 
+function versionTreeToSnapshot(
+  version: NonNullable<Awaited<ReturnType<typeof getVersionWithTree>>>,
+): EstimateVersionSnapshot {
+  return {
+    marginPercent: Number(version.marginPercent),
+    sections: version.sections.map((s) => ({
+      id: s.id,
+      title: s.title,
+      sortOrder: s.sortOrder,
+      items: s.lineItems.map((li) => ({
+        id: li.id,
+        name: li.name,
+        unit: li.unit,
+        quantity: Number(li.quantity),
+        unitPrice: Number(li.unitPrice),
+        vatRate: Number(li.vatRate),
+        sortOrder: li.sortOrder,
+      })),
+    })),
+  };
+}
+
 export async function proposeEdit(input: {
   versionId: string;
   workspaceId: string;
   userId: string;
   message: string;
   locale: string;
-}): Promise<EstimateAgentPatch> {
+}): Promise<ProposeEditResult> {
   await assertCanUseAiAssistant(input.userId);
 
   const version = await getVersionWithTree(input.versionId, input.workspaceId);
@@ -140,27 +169,31 @@ export async function proposeEdit(input: {
     throw new Error("WORKSPACE_NOT_FOUND");
   }
 
-  return proposeEstimateEdit({
+  const snapshot = versionTreeToSnapshot(version);
+  const { agentContext, compactTree, guidance } = buildAgentEditInputs(
+    snapshot,
+    input.message,
+    locale,
+  );
+
+  const patch = await proposeEstimateEdit({
     userMessage: input.message,
-    currentVersion: {
-      marginPercent: Number(version.marginPercent),
-      sections: version.sections.map((s) => ({
-        id: s.id,
-        title: s.title,
-        sortOrder: s.sortOrder,
-        items: s.lineItems.map((li) => ({
-          id: li.id,
-          name: li.name,
-          unit: li.unit,
-          quantity: Number(li.quantity),
-          unitPrice: Number(li.unitPrice),
-          vatRate: Number(li.vatRate),
-          sortOrder: li.sortOrder,
-        })),
-      })),
-    },
     context,
+    agentContext,
+    guidance,
+    compactTree,
   });
+
+  const simulatedImpact = simulateAgentPatch(snapshot, patch);
+  const warnings = validateAgentPatch({
+    snapshot,
+    patch,
+    guidance,
+    simulatedImpact,
+    currency: agentContext.currency,
+  });
+
+  return { patch, guidance, simulatedImpact, warnings };
 }
 
 export async function approveEdit(input: {
@@ -316,10 +349,6 @@ async function applyPatch(
       }
     }
 
-    console.log(
-      JSON.stringify(patch, null, 2)
-    );
-
     if (patch.updates.length > 0) {
       for (const u of patch.updates) {
         const updateData: Record<string, unknown> = {};
@@ -329,18 +358,6 @@ async function applyPatch(
         if (u.unitPrice != null) updateData.unitPrice = u.unitPrice;
         if (u.vatRate != null) updateData.vatRate = u.vatRate;
         if (Object.keys(updateData).length) {
-        console.log("Updating item", u.itemId);
-        const item = await tx.estimateLineItem.findUnique({
-          where: {
-            id: u.itemId,
-          },
-        });
-
-        console.log("Item lookup:", item);
-          const existing = await tx.estimateLineItem.findUnique({
-            where: { id: u.itemId },
-          });
-          console.log("Exists?", !!existing);
           await tx.estimateLineItem.update({
             where: { id: u.itemId },
             data: updateData,

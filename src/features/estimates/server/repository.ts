@@ -79,6 +79,7 @@ export async function getEstimateForEditor(estimateId: string, workspaceId: stri
           requestNumber: true,
           status: true,
           customerData: true,
+          address: true,
           projectDescription: true,
           createdAt: true,
         },

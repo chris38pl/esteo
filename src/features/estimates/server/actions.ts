@@ -5,6 +5,7 @@ import "server-only";
 import { revalidatePath } from "next/cache";
 
 import type { EstimateAgentPatch } from "@/ai/schemas/estimate-agent-patch";
+import type { ProposeEditResult } from "@/features/estimates/lib/estimate-agent-types";
 import { prisma } from "@/db/client";
 import type { Locale } from "@/lib/locale";
 import { requireAuth } from "@/server/auth/require-auth";
@@ -226,18 +227,18 @@ export async function proposeEditAction(input: {
   estimateId: string;
   message: string;
   locale?: Locale;
-}): Promise<ActionResult<EstimateAgentPatch>> {
+}): Promise<ActionResult<ProposeEditResult>> {
   const locale = input.locale ?? "pl";
   try {
     const user = await requireAuth(locale);
-    const patch = await proposeEdit({
+    const result = await proposeEdit({
       versionId: input.versionId,
       workspaceId: input.workspaceId,
       userId: user.id,
       message: input.message,
       locale,
     });
-    return { success: true, data: patch };
+    return { success: true, data: result };
   } catch (error) {
     return toActionError(error);
   }
