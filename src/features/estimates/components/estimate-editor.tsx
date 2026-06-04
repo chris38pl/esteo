@@ -366,7 +366,6 @@ export function EstimateEditor({
                 locale={locale}
                 maxUndoSteps={3}
                 onApproved={handleAiMutation}
-                className="h-full"
               />
             </div>
           )}

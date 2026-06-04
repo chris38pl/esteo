@@ -82,17 +82,49 @@
 
 /**
  * Sticky AI panel — aligns below dashboard top bar (h-14 / 3.5rem).
- * Tune STICKY_TOP_GAP or BOTTOM_GAP if the panel sits under/over the navbar.
+ * Uses top + bottom (not fixed height) so at page top the panel stays compact;
+ * while scrolling it stretches to fill the viewport between top bar and bottom gap.
+ *
+ * Tune: top offset (3.5rem + 1rem), bottom (1rem), max-height fallback.
  */
 .estimate-ai-sticky {
   min-width: 0;
+}
+
+.estimate-ai-panel {
+  display: flex;
+  min-height: 0;
+  width: 100%;
+  flex-direction: column;
+}
+
+.estimate-ai-messages {
+  min-height: 7rem;
+  max-height: min(18rem, calc(100dvh - 14rem));
+  overflow-y: auto;
+  flex: 0 1 auto;
 }
 
 @media (min-width: 1100px) {
   .estimate-ai-sticky {
     position: sticky;
     top: calc(3.5rem + 1rem);
-    height: calc(100dvh - 3.5rem - 2rem);
+    bottom: 1rem;
+    max-height: calc(100dvh - 3.5rem - 2rem);
     align-self: start;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .estimate-ai-sticky > .estimate-ai-panel {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: 100%;
+  }
+
+  .estimate-ai-sticky > .estimate-ai-panel .estimate-ai-messages {
+    flex: 1 1 auto;
+    min-height: 7rem;
+    max-height: none;
   }
 }

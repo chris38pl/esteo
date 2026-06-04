@@ -295,7 +295,7 @@ export function EstimateAiPanel({
 
     <aside
       className={cn(
-        "flex h-full min-h-0 flex-col rounded-2xl border bg-card/95 p-4 shadow-sm",
+        "estimate-ai-panel rounded-2xl border bg-card/95 p-4 shadow-sm",
         className,
       )}
     >
@@ -335,7 +335,7 @@ export function EstimateAiPanel({
 
 
 
-      <div className="mb-3 flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto rounded-xl border bg-muted/20 p-3">
+      <div className="estimate-ai-messages mb-3 flex flex-col gap-2 rounded-xl border bg-muted/20 p-3">
 
         {messages.length === 0 && (
 
