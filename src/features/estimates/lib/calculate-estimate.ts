@@ -20,6 +20,8 @@ export interface EstimateCalcResult {
   profit: number;
   /** Cost as fraction of net revenue: costBasis / totalNet (0 when no revenue) */
   costRatio: number;
+  /** Profit as % of net revenue — user-facing profitability metric */
+  profitMarginOnNetPercent: number;
 }
 
 export function calculateLineItem(item: LineItemCalcInput): LineItemResult {
@@ -48,6 +50,15 @@ export function calculateEstimate(
   const costBasis = divisor !== 0 ? totalNet / divisor : 0;
   const profit = totalNet - costBasis;
   const costRatio = totalNet !== 0 ? costBasis / totalNet : 0;
+  const profitMarginOnNetPercent = totalNet !== 0 ? (profit / totalNet) * 100 : 0;
 
-  return { totalNet, totalVat, totalGross, costBasis, profit, costRatio };
+  return {
+    totalNet,
+    totalVat,
+    totalGross,
+    costBasis,
+    profit,
+    costRatio,
+    profitMarginOnNetPercent,
+  };
 }

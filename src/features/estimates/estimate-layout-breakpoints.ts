@@ -1,21 +1,35 @@
+import { ESTIMATE_LAYOUT_CONFIG } from "@/features/estimates/lib/estimate-layout-config";
+
+const b = ESTIMATE_LAYOUT_CONFIG.breakpoints;
+const side = ESTIMATE_LAYOUT_CONFIG.sideColumn;
+
 /**
- * Reference for estimate editor layout breakpoints.
- *
- * **Edit the real values in:**
- * `src/features/estimates/styles/estimate-editor-layout.css`
- * (see the comment block at the top of that file)
+ * Human-readable breakpoint map derived from `ESTIMATE_LAYOUT_CONFIG`.
+ * Re-export `ESTIMATE_LAYOUT_CONFIG` from `lib/estimate-layout-config.ts` to change behavior.
  */
 export const ESTIMATE_EDITOR_LAYOUT_BREAKPOINTS = {
-  /** Context cards | summary + profitability side-by-side */
-  topBandSplit: "1200px",
-  /** Context cards 2×2 grid */
-  contextTwoCol: "768px",
-  /** All four context cards in one row */
-  contextFourCol: "1500px",
-  /** Centered editor max width (Tailwind on estimate-editor.tsx) */
-  editorMaxWidth: "1760px",
-  /** Sticky AI — edit in estimate-editor-layout.css (.estimate-ai-sticky, .estimate-ai-messages) */
-  stickyAiTop: "calc(3.5rem + 1rem)",
-  stickyAiBottom: "1rem",
-  stickyAiMessagesMaxHeight: "min(18rem, calc(100dvh - 14rem))",
+  headerInlineActions: `${b.headerInlineActions}px`,
+  headerTitleLarge: `${b.headerInlineActions}px`,
+  headerRulesLabel: `${b.headerRulesLabel}px`,
+  headerStatusBadgeMinWidth: `${b.headerStatusBadge}px`,
+  headerActionsDivider: `${b.headerActionsDivider}px`,
+  autosaveSavedDisplayMs: ESTIMATE_LAYOUT_CONFIG.autosave.savedDisplayMs,
+  topBandSplit: `${b.topBandSplit}px`,
+  contextTwoCol: `${b.contextTwoCol}px`,
+  contextFourCol: `${b.contextFourCol}px`,
+  editorMaxWidth: `${b.editorMaxWidth}px`,
+  sideColumnWidth: `${side.narrowRem}rem`,
+  sideColumnWidthWide: `${side.wideRem}rem`,
+  sideColumnWidthBreakpoint: `${b.sideColumnWide}px`,
+  aiSideLayoutMin: `${b.aiSideLayout}px`,
+  aiSideGridColumn: `${ESTIMATE_LAYOUT_CONFIG.ai.gridColumnRem}rem`,
+  stickyAiTop: ESTIMATE_LAYOUT_CONFIG.stickyAi.top,
+  stickyAiBottom: ESTIMATE_LAYOUT_CONFIG.stickyAi.bottom,
+  stickyAiMessagesMaxHeight: ESTIMATE_LAYOUT_CONFIG.stickyAi.messagesMaxHeight,
 } as const;
+
+export {
+  ESTIMATE_LAYOUT_CONFIG,
+  getEstimateEditorResponsiveCss,
+  mediaQueryMin,
+} from "@/features/estimates/lib/estimate-layout-config";

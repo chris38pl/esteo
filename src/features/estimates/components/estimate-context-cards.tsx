@@ -91,7 +91,7 @@ export function EstimateContextCards({
   ];
 
   return (
-    <section className="h-full min-w-0 overflow-hidden rounded-xl border border-border/70 bg-card/95 shadow-sm">
+    <section className="flex h-full min-h-[8.75rem] min-w-0 flex-col overflow-hidden rounded-xl border border-border/70 bg-card/95 shadow-sm">
       <div className="estimate-context-grid">
         {cards.map((card) => {
           const Icon = card.icon;

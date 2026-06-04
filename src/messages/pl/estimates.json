@@ -52,16 +52,21 @@
     },
     "toolbar": {
       "importPriceList": "Import z cennika",
-      "statements": "Zestawienia",
       "search": "Szukaj",
       "filter": "Filtruj",
       "settings": "Ustawienia tabeli",
       "comingSoon": "Wkrótce"
     },
+    "mode": {
+      "label": "Tryb edycji",
+      "basic": "Podstawowy",
+      "advanced": "Zaawansowany"
+    },
     "tabPlaceholder": "Ta zakładka będzie dostępna wkrótce.",
     "dragHandle": "Przeciągnij, aby zmienić kolejność",
     "aiAssistant": "AI Asystent",
     "hideAi": "Ukryj AI",
+    "closeAi": "Zamknij asystenta AI",
     "addSection": "Dodaj sekcję",
     "addItem": "Dodaj pozycję",
     "itemCount": "{count, plural, one {# pozycja} few {# pozycje} many {# pozycji} other {# pozycji}}",
@@ -76,9 +81,9 @@
       "name": "Nazwa pozycji",
       "unit": "Jednostka",
       "qty": "Ilość",
+      "baseUnitPrice": "Cena bazowa",
       "unitPrice": "Cena jedn. (netto)",
       "net": "Wartość netto",
-      "margin": "Marża",
       "vat": "VAT",
       "gross": "Wartość brutto"
     },
@@ -116,19 +121,21 @@
     "conflict": "Konflikt — odśwież"
   },
   "margin": {
-    "label": "Globalny narzut",
     "unit": "%"
   },
   "summary": {
     "title": "Podsumowanie",
     "net": "Suma netto",
     "vat": "VAT",
-    "gross": "Suma brutto",
-    "profitability": "Rentowność",
-    "costBasis": "Koszt własny",
+    "gross": "Suma brutto"
+  },
+  "profitability": {
+    "title": "Rentowność",
+    "tooltip": "Szacunki z marży projektu i sumy netto — nie z rzeczywistych kosztów materiałów ani robocizny.",
+    "projectMargin": "Marża projektu",
+    "cost": "Koszt",
     "profit": "Zysk",
-    "costRatio": "Udział kosztów",
-    "costRatioHint": "Udział kosztów — niższy = wyższa rentowność"
+    "profitabilityRate": "Rentowność"
   },
   "ai": {
     "placeholder": "Zapytaj AI o modyfikację wyceny…",

@@ -17,9 +17,25 @@ import {
   estimatePrimaryButtonClassName,
 } from "./estimate-action-button-styles";
 import { EstimateVersionSelector } from "./estimate-version-selector";
-import { EstimateAutosaveIndicator } from "./estimate-autosave-indicator";
+import { EstimateHeaderStatusBadge } from "./estimate-header-status-badge";
 import { EstimateRulesIndicator } from "./estimate-rules-indicator";
 import type { AutoSaveStatus } from "@/features/estimates/hooks/use-estimate-autosave";
+import {
+  estimateHeaderInlineActionButtonClass,
+  estimateHeaderInlineActionMenuItemClass,
+  estimateHeaderTitleClass,
+} from "@/features/estimates/lib/estimate-header-layout";
+import { cn } from "@/lib/utils";
+
+const headerInlineActionButtonClassName = cn(
+  estimateOutlineButtonClassName,
+  estimateHeaderInlineActionButtonClass,
+);
+
+const headerMoreMenuInlineActionClassName = cn(
+  "gap-2",
+  estimateHeaderInlineActionMenuItemClass,
+);
 
 interface Version {
   id: string;
@@ -59,60 +75,64 @@ export function EstimateHeader({
   return (
     <header className="flex min-w-0 flex-wrap items-center gap-3">
       <div className="flex min-w-0 flex-1 items-center gap-2">
-        <h1 className="truncate text-xl font-semibold tracking-tight text-foreground lg:text-2xl">
+        <h1 className={estimateHeaderTitleClass}>
           {t("editor.titleWithVersion", {
             title: headerTitle,
             version: activeVersionNumber,
           })}
         </h1>
-        <span className="rounded-md border bg-background px-2.5 py-1 text-xs font-medium text-muted-foreground">
-          {t(`header.status.${activeStatus}`)}
-        </span>
-        <EstimateAutosaveIndicator
-          status={autosaveStatus}
-          className="px-1"
+        <EstimateHeaderStatusBadge
+          versionStatus={activeStatus}
+          autosaveStatus={autosaveStatus}
         />
       </div>
 
       <div className="flex min-w-0 max-w-full flex-wrap items-center justify-end gap-2.5">
         <div className="flex min-w-0 flex-wrap items-center gap-2.5">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className={estimateOutlineButtonClassName}
-        >
-          <Eye className="size-4" />
-          {t("header.actions.preview")}
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className={estimateOutlineButtonClassName}
-        >
-          <Share2 className="size-4" />
-          {t("header.actions.share")}
-        </Button>
-        <Button type="button" size="sm" className={estimatePrimaryButtonClassName}>
-          {t("header.actions.send")}
-        </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className={estimateOutlineButtonClassName}
-            >
-              {t("header.actions.more")}
-              <ChevronDown className="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>{t("header.actions.morePlaceholder")}</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className={headerInlineActionButtonClassName}
+          >
+            <Eye className="size-4" />
+            {t("header.actions.preview")}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className={headerInlineActionButtonClassName}
+          >
+            <Share2 className="size-4" />
+            {t("header.actions.share")}
+          </Button>
+          <Button type="button" size="sm" className={estimatePrimaryButtonClassName}>
+            {t("header.actions.send")}
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className={estimateOutlineButtonClassName}
+              >
+                {t("header.actions.more")}
+                <ChevronDown className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem className={headerMoreMenuInlineActionClassName}>
+                <Eye className="size-4" />
+                {t("header.actions.preview")}
+              </DropdownMenuItem>
+              <DropdownMenuItem className={headerMoreMenuInlineActionClassName}>
+                <Share2 className="size-4" />
+                {t("header.actions.share")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div
@@ -122,20 +142,20 @@ export function EstimateHeader({
         />
 
         <div className="flex min-w-0 flex-wrap items-center gap-2.5">
-        <EstimateRulesIndicator
-          workspaceSlug={workspaceSlug}
-          locale={locale}
-          rulesApplied={rulesApplied}
-        />
+          <EstimateRulesIndicator
+            workspaceSlug={workspaceSlug}
+            locale={locale}
+            rulesApplied={rulesApplied}
+          />
 
-        <EstimateVersionSelector
-          estimateId={estimateId}
-          workspaceId={workspaceId}
-          versions={versions}
-          activeVersionId={activeVersionId}
-          locale={locale}
-          workspaceSlug={workspaceSlug}
-        />
+          <EstimateVersionSelector
+            estimateId={estimateId}
+            workspaceId={workspaceId}
+            versions={versions}
+            activeVersionId={activeVersionId}
+            locale={locale}
+            workspaceSlug={workspaceSlug}
+          />
         </div>
       </div>
     </header>

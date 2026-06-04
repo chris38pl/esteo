@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { calculateLineItem } from "@/features/estimates/lib/calculate-estimate";
+import { parseEstimateDecimalInput, roundEstimateDecimal } from "@/features/estimates/lib/estimate-decimals";
 import {
   estimateFlatInputClassName,
   estimateLineItemRowClassName,
@@ -24,6 +25,7 @@ export interface LineItemData {
   name: string;
   unit: string | null;
   quantity: number;
+  baseUnitPrice: number;
   unitPrice: number;
   vatRate: number;
   sortOrder: number;
@@ -32,7 +34,7 @@ export interface LineItemData {
 interface EstimateLineItemRowProps {
   item: LineItemData;
   positionLabel: string;
-  marginPercent: number;
+  advancedMode: boolean;
   onUpdate: (id: string, data: Partial<Omit<LineItemData, "id" | "sortOrder">>) => void;
   onDelete: (id: string) => void;
   onBlur: () => void;
@@ -55,7 +57,7 @@ function formatCurrency(value: number): string {
 export function EstimateLineItemRow({
   item,
   positionLabel,
-  marginPercent,
+  advancedMode,
   onUpdate,
   onDelete,
   onBlur,
@@ -82,8 +84,8 @@ export function EstimateLineItemRow({
 
   const handleChange = <K extends keyof LineItemData>(key: K, raw: string) => {
     let value: LineItemData[K];
-    if (key === "quantity" || key === "unitPrice") {
-      value = (parseFloat(raw) || 0) as LineItemData[K];
+    if (key === "quantity" || key === "unitPrice" || key === "baseUnitPrice") {
+      value = parseEstimateDecimalInput(raw) as LineItemData[K];
     } else if (key === "vatRate") {
       value = (parseFloat(raw) / 100 || 0) as LineItemData[K];
     } else {
@@ -151,37 +153,67 @@ export function EstimateLineItemRow({
           placeholder={t("editor.unitPlaceholder")}
         />
       </td>
-      <td className={cn(cellClass, "w-20")}>
-        <Input
-          type="number"
-          min={0}
-          value={local.quantity}
-          onChange={(e) => handleChange("quantity", e.target.value)}
-          onBlur={onBlur}
-          className={cn(estimateFlatInputClassName, "text-right")}
-        />
-      </td>
-      <td className={cn(cellClass, "w-28")}>
+      <td className={cn(cellClass, "w-20 text-right")}>
         <Input
           type="number"
           min={0}
           step={0.01}
-          value={local.unitPrice}
-          onChange={(e) => handleChange("unitPrice", e.target.value)}
-          onBlur={onBlur}
+          value={local.quantity}
+          onChange={(e) => handleChange("quantity", e.target.value)}
+          onBlur={() => {
+            const rounded = roundEstimateDecimal(local.quantity);
+            if (rounded !== local.quantity) {
+              handleChange("quantity", String(rounded));
+            }
+            onBlur();
+          }}
           className={cn(estimateFlatInputClassName, "text-right")}
         />
       </td>
+      {advancedMode ? (
+        <td className={cn(cellClass, "w-28")}>
+          <Input
+            type="number"
+            min={0}
+            step={0.01}
+            value={local.baseUnitPrice}
+            onChange={(e) => handleChange("baseUnitPrice", e.target.value)}
+            onBlur={() => {
+              const rounded = roundEstimateDecimal(local.baseUnitPrice);
+              if (rounded !== local.baseUnitPrice) {
+                handleChange("baseUnitPrice", String(rounded));
+              }
+              onBlur();
+            }}
+            className={cn(estimateFlatInputClassName, "text-right")}
+          />
+        </td>
+      ) : null}
+      <td className={cn(cellClass, "w-28")}>
+        {advancedMode ? (
+          <span className="block px-1 text-right text-sm tabular-nums text-muted-foreground">
+            {formatCurrency(local.unitPrice)}
+          </span>
+        ) : (
+          <Input
+            type="number"
+            min={0}
+            step={0.01}
+            value={local.unitPrice}
+            onChange={(e) => handleChange("unitPrice", e.target.value)}
+            onBlur={() => {
+              const rounded = roundEstimateDecimal(local.unitPrice);
+              if (rounded !== local.unitPrice) {
+                handleChange("unitPrice", String(rounded));
+              }
+              onBlur();
+            }}
+            className={cn(estimateFlatInputClassName, "text-right")}
+          />
+        )}
+      </td>
       <td className={cn(cellClass, "w-28 text-right text-sm tabular-nums")}>
         {formatCurrency(calc.netValue)}
-      </td>
-      <td
-        className={cn(
-          cellClass,
-          "w-20 text-right text-sm tabular-nums text-muted-foreground",
-        )}
-      >
-        {marginPercent > 0 ? `${marginPercent}%` : "—"}
       </td>
       <td className={cn(cellClass, "w-16")}>
         <Input

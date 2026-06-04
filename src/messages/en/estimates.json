@@ -52,16 +52,21 @@
     },
     "toolbar": {
       "importPriceList": "Import from price list",
-      "statements": "Statements",
       "search": "Search",
       "filter": "Filter",
       "settings": "Table settings",
       "comingSoon": "Coming soon"
     },
+    "mode": {
+      "label": "Editor mode",
+      "basic": "Basic",
+      "advanced": "Advanced"
+    },
     "tabPlaceholder": "This tab will be available soon.",
     "dragHandle": "Drag to reorder",
     "aiAssistant": "AI Assistant",
     "hideAi": "Hide AI",
+    "closeAi": "Close AI assistant",
     "addSection": "Add section",
     "addItem": "Add item",
     "itemCount": "{count, plural, one {# item} other {# items}}",
@@ -76,9 +81,9 @@
       "name": "Item name",
       "unit": "Unit",
       "qty": "Qty",
+      "baseUnitPrice": "Base unit price",
       "unitPrice": "Unit price (net)",
       "net": "Net value",
-      "margin": "Margin",
       "vat": "VAT",
       "gross": "Gross value"
     },
@@ -116,19 +121,21 @@
     "conflict": "Conflict — reload"
   },
   "margin": {
-    "label": "Global margin",
     "unit": "%"
   },
   "summary": {
     "title": "Summary",
     "net": "Net total",
     "vat": "VAT",
-    "gross": "Gross total",
-    "profitability": "Profitability",
-    "costBasis": "Cost basis",
+    "gross": "Gross total"
+  },
+  "profitability": {
+    "title": "Profitability",
+    "tooltip": "Estimates from project margin and net total — not actual material or labor costs.",
+    "projectMargin": "Project margin",
+    "cost": "Cost",
     "profit": "Profit",
-    "costRatio": "Cost ratio",
-    "costRatioHint": "Cost ratio — lower is more profitable"
+    "profitabilityRate": "Profitability"
   },
   "ai": {
     "placeholder": "Ask AI to modify the estimate…",

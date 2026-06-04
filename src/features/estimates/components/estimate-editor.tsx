@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEstimateAutosave } from "@/features/estimates/hooks/use-estimate-autosave";
+import { useEstimateAdvancedMode } from "@/features/estimates/hooks/use-estimate-advanced-mode";
 import type {
   EstimateForEditorClient,
   VersionTreeClient,
@@ -23,6 +24,15 @@ import { EstimateContextCards } from "./estimate-context-cards";
 import { EstimateItemsTable } from "./estimate-items-table";
 import { EstimateRightRail } from "./estimate-right-rail";
 import { EstimateAiPanel } from "./estimate-ai-panel";
+import { EstimateAiFloating } from "./estimate-ai-floating";
+import {
+  ESTIMATE_LAYOUT_CONFIG,
+  estimateEditorAiSideGridClass,
+  estimateEditorMaxWidthClass,
+  mediaQueryMin,
+} from "@/features/estimates/lib/estimate-layout-config";
+import { useEstimateAiSideLayout } from "@/features/estimates/hooks/use-estimate-ai-side-layout";
+import { EstimateEditorLayoutStyles } from "./estimate-editor-layout-styles";
 import { EstimateGeneratingSkeleton } from "./estimate-generating-skeleton";
 import {
   EstimateEditorTabs,
@@ -30,6 +40,10 @@ import {
 } from "./estimate-editor-tabs";
 import { EstimateItemsToolbar } from "./estimate-items-toolbar";
 import type { LineItemCalcInput } from "@/features/estimates/lib/calculate-estimate";
+import {
+  baseUnitPriceFromUnitPrice,
+  unitPriceFromBase,
+} from "@/features/estimates/lib/margin-pricing";
 import type {
   AiMessageClient,
 } from "@/features/estimates/lib/serialize-ai-messages";
@@ -49,20 +63,43 @@ interface EstimateEditorProps {
   initialPendingEdit?: ProposeEditResult | null;
 }
 
+function lineItemFromServer(
+  li: VersionTreeClient["sections"][number]["lineItems"][number],
+  marginPercent: number,
+): LineItemData {
+  const baseUnitPrice = baseUnitPriceFromUnitPrice(li.unitPrice, marginPercent);
+  return {
+    id: li.id,
+    name: li.name,
+    unit: li.unit,
+    quantity: li.quantity,
+    baseUnitPrice,
+    unitPrice: li.unitPrice,
+    vatRate: li.vatRate,
+    sortOrder: li.sortOrder,
+  };
+}
+
 function versionTreeToSections(tree: VersionTreeClient | null): SectionData[] {
   if (!tree) return [];
+  const marginPercent = tree.marginPercent ?? 0;
   return tree.sections.map((s) => ({
     id: s.id,
     title: s.title,
     sortOrder: s.sortOrder,
-    items: s.lineItems.map((li) => ({
-      id: li.id,
-      name: li.name,
-      unit: li.unit,
-      quantity: li.quantity,
-      unitPrice: li.unitPrice,
-      vatRate: li.vatRate,
-      sortOrder: li.sortOrder,
+    items: s.lineItems.map((li) => lineItemFromServer(li, marginPercent)),
+  }));
+}
+
+function applyMarginToSections(
+  sections: SectionData[],
+  marginPercent: number,
+): SectionData[] {
+  return sections.map((s) => ({
+    ...s,
+    items: s.items.map((li) => ({
+      ...li,
+      unitPrice: unitPriceFromBase(li.baseUnitPrice, marginPercent),
     })),
   }));
 }
@@ -87,8 +124,19 @@ export function EstimateEditor({
   const [versionUpdatedAt, setVersionUpdatedAt] = useState(
     versionTree?.updatedAt ?? new Date().toISOString(),
   );
-  const [showAiPanel, setShowAiPanel] = useState(true);
+  const isAiSideLayout = useEstimateAiSideLayout();
+  const [showAiPanel, setShowAiPanel] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia(
+      mediaQueryMin(ESTIMATE_LAYOUT_CONFIG.breakpoints.aiSideLayout),
+    );
+    if (mq.matches) {
+      setShowAiPanel(true);
+    }
+  }, []);
   const [activeTab, setActiveTab] = useState<EstimateEditorTabId>("items");
+  const { advancedMode, setAdvancedMode } = useEstimateAdvancedMode();
 
   const requestStatus = estimate.estimateRequest?.status ?? null;
   const isGenerating =
@@ -170,6 +218,63 @@ export function EstimateEditor({
     await deleteSectionAction({ sectionId, locale });
   };
 
+  const handleAdvancedModeChange = useCallback(
+    (nextAdvanced: boolean) => {
+      if (nextAdvanced && !advancedMode) {
+        setSections((prev) =>
+          prev.map((s) => ({
+            ...s,
+            items: s.items.map((li) => {
+              const base =
+                li.baseUnitPrice > 0
+                  ? li.baseUnitPrice
+                  : baseUnitPriceFromUnitPrice(li.unitPrice, marginPercent);
+              return {
+                ...li,
+                baseUnitPrice: base,
+                unitPrice: unitPriceFromBase(base, marginPercent),
+              };
+            }),
+          })),
+        );
+      } else if (!nextAdvanced && advancedMode) {
+        setSections((prev) =>
+          prev.map((s) => ({
+            ...s,
+            items: s.items.map((li) => ({
+              ...li,
+              baseUnitPrice: li.unitPrice,
+            })),
+          })),
+        );
+      }
+      setAdvancedMode(nextAdvanced);
+    },
+    [advancedMode, marginPercent, setAdvancedMode],
+  );
+
+  const handleMarginChange = useCallback(
+    (value: number) => {
+      setMarginPercent(value);
+      if (advancedMode) {
+        setSections((prev) => applyMarginToSections(prev, value));
+      }
+      if (activeVersionId) save({ marginPercent: value });
+    },
+    [advancedMode, activeVersionId, save],
+  );
+
+  const handleMarginBlur = useCallback(
+    (value: number) => {
+      setMarginPercent(value);
+      if (advancedMode) {
+        setSections((prev) => applyMarginToSections(prev, value));
+      }
+      if (activeVersionId) autosaveOnBlur({ marginPercent: value });
+    },
+    [advancedMode, activeVersionId, autosaveOnBlur],
+  );
+
   const handleAddItem = async (sectionId: string) => {
     if (!activeVersionId) return;
     const result = await addLineItemAction({
@@ -190,6 +295,7 @@ export function EstimateEditor({
                     name: "",
                     unit: null,
                     quantity: 0,
+                    baseUnitPrice: 0,
                     unitPrice: 0,
                     vatRate: 0.23,
                     sortOrder: s.items.length,
@@ -209,7 +315,16 @@ export function EstimateEditor({
     setSections((prev) =>
       prev.map((s) => ({
         ...s,
-        items: s.items.map((li) => (li.id === itemId ? { ...li, ...data } : li)),
+        items: s.items.map((li) => {
+          if (li.id !== itemId) return li;
+          const next = { ...li, ...data };
+          if (advancedMode && data.baseUnitPrice !== undefined) {
+            next.unitPrice = unitPriceFromBase(next.baseUnitPrice, marginPercent);
+          } else if (!advancedMode && data.unitPrice !== undefined) {
+            next.baseUnitPrice = next.unitPrice;
+          }
+          return next;
+        }),
       })),
     );
     triggerSave();
@@ -278,7 +393,13 @@ export function EstimateEditor({
     | undefined;
 
   return (
-    <div className="mx-auto min-w-0 w-full max-w-[1760px] space-y-6 pb-8">
+    <div
+      className={cn(
+        "estimate-editor mx-auto min-w-0 w-full space-y-6 pb-8",
+        estimateEditorMaxWidthClass,
+      )}
+    >
+      <EstimateEditorLayoutStyles />
       {autosaveStatus === "conflict" && (
         <div className="rounded-xl border border-amber-200 bg-amber-50/90 px-4 py-3 text-sm text-amber-800 shadow-sm dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-200">
           {t("editor.conflictBanner")}{" "}
@@ -304,9 +425,14 @@ export function EstimateEditor({
       />
 
       <div
-        className={cn("estimate-top-band", isGenerating && "estimate-top-band--stacked")}
+        className={cn(
+          "estimate-top-band",
+          isGenerating && "estimate-top-band--stacked",
+          !isGenerating &&
+            (advancedMode ? "estimate-top-band--advanced" : "estimate-top-band--basic"),
+        )}
       >
-        <div className="min-w-0">
+        <div className="estimate-top-band-card min-w-0">
         <EstimateContextCards
           requestNumber={estimate.estimateRequest?.requestNumber}
           customerName={customerData?.fullName}
@@ -322,12 +448,15 @@ export function EstimateEditor({
         </div>
 
         {!isGenerating && (
-          <EstimateRightRail
-            className="min-w-0 h-full"
-            items={allItems}
-            marginPercent={marginPercent}
-            currency={estimate.currency}
-          />
+          <div className="estimate-top-band-card min-w-0">
+            <EstimateRightRail
+              className="h-full w-full min-w-0"
+              items={allItems}
+              marginPercent={marginPercent}
+              currency={estimate.currency}
+              advancedMode={advancedMode}
+            />
+          </div>
         )}
       </div>
 
@@ -342,8 +471,8 @@ export function EstimateEditor({
         <div
           className={cn(
             "grid min-w-0 gap-6",
-            showAiPanel && activeVersionId
-              ? "min-[1100px]:grid-cols-[minmax(0,1fr)_minmax(0,18rem)] min-[1400px]:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]"
+            showAiPanel && activeVersionId && isAiSideLayout
+              ? estimateEditorAiSideGridClass
               : "",
           )}
         >
@@ -358,23 +487,20 @@ export function EstimateEditor({
               {activeTab === "items" ? (
                 <>
                   <EstimateItemsToolbar
+                    advancedMode={advancedMode}
+                    onAdvancedModeChange={handleAdvancedModeChange}
                     marginPercent={marginPercent}
-                    onMarginChange={(v) => {
-                      setMarginPercent(v);
-                      triggerSave();
-                    }}
-                    onMarginBlur={(v) => {
-                      setMarginPercent(v);
-                      triggerBlurSave();
-                    }}
+                    onMarginChange={handleMarginChange}
+                    onMarginBlur={handleMarginBlur}
                     onAddSection={handleAddSection}
                     showAiPanel={showAiPanel}
                     onToggleAiPanel={() => setShowAiPanel((v) => !v)}
+                    aiUsesSideLayout={isAiSideLayout}
                   />
                   <EstimateItemsTable
                     sections={sections}
                     currency={estimate.currency}
-                    marginPercent={marginPercent}
+                    advancedMode={advancedMode}
                     onUpdateSection={handleUpdateSection}
                     onDeleteSection={handleDeleteSection}
                     onAddItem={handleAddItem}
@@ -392,7 +518,7 @@ export function EstimateEditor({
             </div>
           </div>
 
-          {showAiPanel && activeVersionId && (
+          {showAiPanel && activeVersionId && isAiSideLayout ? (
             <div className="estimate-ai-sticky">
               <EstimateAiPanel
                 versionId={activeVersionId}
@@ -406,9 +532,25 @@ export function EstimateEditor({
                 initialPendingEdit={initialPendingEdit}
               />
             </div>
-          )}
+          ) : null}
         </div>
       )}
+
+      {!isGenerating && activeVersionId && !isAiSideLayout ? (
+        <EstimateAiFloating
+          open={showAiPanel}
+          onOpenChange={setShowAiPanel}
+          versionId={activeVersionId}
+          workspaceId={estimate.workspaceId}
+          workspaceSlug={workspaceSlug}
+          estimateId={estimate.id}
+          locale={locale}
+          maxUndoSteps={3}
+          onApproved={handleAiMutation}
+          initialMessages={initialAiMessages}
+          initialPendingEdit={initialPendingEdit}
+        />
+      ) : null}
     </div>
   );
 }

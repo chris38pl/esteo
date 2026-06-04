@@ -27,7 +27,6 @@ interface EstimateSectionRowProps {
   title: string;
   items: LineItemData[];
   sectionNumber: number;
-  marginPercent: number;
   expanded: boolean;
   onToggleExpanded: () => void;
   onUpdateSection: (id: string, title: string) => void;
@@ -35,6 +34,7 @@ interface EstimateSectionRowProps {
   onAddItem: (sectionId: string) => void;
   onBlur: () => void;
   currency?: string;
+  titleColSpan: number;
 }
 
 function formatCurrency(value: number, currency: string): string {
@@ -51,7 +51,6 @@ export function EstimateSectionRow({
   title,
   items,
   sectionNumber,
-  marginPercent,
   expanded,
   onToggleExpanded,
   onUpdateSection,
@@ -59,6 +58,7 @@ export function EstimateSectionRow({
   onAddItem,
   onBlur,
   currency = "PLN",
+  titleColSpan,
 }: EstimateSectionRowProps) {
   const t = useTranslations("estimates");
   const [localTitle, setLocalTitle] = useState(title);
@@ -72,7 +72,7 @@ export function EstimateSectionRow({
     unitPrice: i.unitPrice,
     vatRate: i.vatRate,
   }));
-  const sectionCalc = calculateEstimate(calcInputs, marginPercent);
+  const sectionCalc = calculateEstimate(calcInputs, 0);
 
   return (
     <tr className={estimateSectionRowClassName}>
@@ -90,7 +90,7 @@ export function EstimateSectionRow({
       <td className="w-14 px-2 py-2.5 align-middle text-xs font-semibold text-muted-foreground">
         {sectionNumber}
       </td>
-      <td colSpan={4} className="px-2 py-2.5 align-middle">
+      <td colSpan={titleColSpan} className="px-2 py-2.5 align-middle">
         <Input
           value={localTitle}
           onChange={(e) => {
@@ -103,9 +103,6 @@ export function EstimateSectionRow({
       </td>
       <td className="px-3 py-2.5 text-right text-sm font-semibold tabular-nums">
         {formatCurrency(sectionCalc.totalNet, currency)}
-      </td>
-      <td className="px-3 py-2.5 text-right text-sm font-semibold tabular-nums text-muted-foreground">
-        {marginPercent > 0 ? `${marginPercent}%` : "—"}
       </td>
       <td className="px-3 py-2.5 text-right text-sm font-semibold tabular-nums">
         {formatCurrency(sectionCalc.totalVat, currency)}

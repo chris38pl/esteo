@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { SAVED_DISPLAY_MS } from "@/features/estimates/lib/estimate-layout-config";
 import { autoSaveAction } from "@/features/estimates/server/actions";
 import type { AutoSaveData } from "@/features/estimates/server/repository";
 
@@ -89,6 +90,7 @@ export function useEstimateAutosave({
       if (status === "conflict") return;
 
       pendingDataRef.current = data;
+      setStatus("saving");
 
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);
@@ -110,6 +112,12 @@ export function useEstimateAutosave({
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (status !== "saved") return;
+    const timer = setTimeout(() => setStatus("idle"), SAVED_DISPLAY_MS);
+    return () => clearTimeout(timer);
+  }, [status]);
 
   return { status, save, onBlur };
 }

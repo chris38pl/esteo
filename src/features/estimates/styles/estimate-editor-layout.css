@@ -1,16 +1,7 @@
 /**
- * Estimate editor layout — tune breakpoints in the block below.
- *
- * TOP_BAND_SPLIT (1200px)
- *   Context cards and summary/profitability sit side-by-side.
- *
- * CONTEXT_TWO_COL (768px)
- *   Context cards use a 2×2 grid (Zapytanie+Inwestycja / Klient+Ostatnia aktualizacja).
- *   Applies when viewport is below CONTEXT_FOUR_COL.
- *
- * CONTEXT_FOUR_COL (1500px)
- *   All four context cards in one row (with summary/profitability still on the right
- *   when TOP_BAND_SPLIT is active).
+ * Static estimate editor layout (no @media breakpoints here).
+ * Responsive breakpoints: `lib/estimate-layout-config.ts` → injected by
+ * `EstimateEditorLayoutStyles` in estimate-editor.tsx.
  */
 
 .estimate-top-band {
@@ -21,10 +12,18 @@
   min-width: 0;
 }
 
-@media (min-width: 1200px) {
-  .estimate-top-band:not(.estimate-top-band--stacked) {
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-  }
+.estimate-side-rail {
+  width: 100%;
+  min-width: 0;
+}
+
+.estimate-top-band--basic .estimate-side-rail {
+  max-width: var(--estimate-side-column-width);
+}
+
+.estimate-top-band-card {
+  min-height: 8.75rem;
+  min-width: 0;
 }
 
 .estimate-top-band--stacked {
@@ -47,39 +46,6 @@
   border-bottom: none;
 }
 
-@media (min-width: 768px) {
-  .estimate-context-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .estimate-context-grid > * {
-    border-right: 1px solid var(--estimate-context-divider);
-  }
-
-  .estimate-context-grid > *:nth-child(2n) {
-    border-right: none;
-  }
-
-  .estimate-context-grid > *:nth-child(n + 3) {
-    border-bottom: none;
-  }
-}
-
-@media (min-width: 1800px) {
-  .estimate-context-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .estimate-context-grid > * {
-    border-bottom: none;
-    border-right: 1px solid var(--estimate-context-divider);
-  }
-
-  .estimate-context-grid > *:last-child {
-    border-right: none;
-  }
-}
-
 /**
  * Sticky AI panel — aligns below dashboard top bar (h-14 / 3.5rem).
  * Uses top + bottom (not fixed height) so at page top the panel stays compact;
@@ -87,10 +53,6 @@
  *
  * Tune: top offset (3.5rem + 1rem), bottom (1rem), max-height fallback.
  */
-.estimate-ai-sticky {
-  min-width: 0;
-}
-
 .estimate-ai-panel {
   display: flex;
   min-height: 0;
@@ -105,26 +67,43 @@
   flex: 0 1 auto;
 }
 
-@media (min-width: 1100px) {
-  .estimate-ai-sticky {
-    position: sticky;
-    top: calc(3.5rem + 1rem);
-    bottom: 1rem;
-    max-height: calc(100dvh - 3.5rem - 2rem);
-    align-self: start;
-    display: flex;
-    flex-direction: column;
-  }
+/**
+ * Floating AI popup — fixed FAB + dialog (below `breakpoints.aiSideLayout` in config).
+ */
+.estimate-ai-panel--floating {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+}
 
-  .estimate-ai-sticky > .estimate-ai-panel {
-    flex: 1 1 auto;
-    min-height: 0;
-    max-height: 100%;
-  }
+.estimate-ai-panel--floating .estimate-ai-messages {
+  min-height: 6rem;
+  max-height: min(42dvh, calc(100dvh - 14rem));
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
 
-  .estimate-ai-sticky > .estimate-ai-panel .estimate-ai-messages {
-    flex: 1 1 auto;
-    min-height: 7rem;
-    max-height: none;
-  }
+/* Side layout only — not mounted below config `breakpoints.aiSideLayout` */
+.estimate-ai-sticky {
+  min-width: 0;
+  position: sticky;
+  top: calc(3.5rem + 1rem);
+  bottom: 1rem;
+  max-height: calc(100dvh - 3.5rem - 2rem);
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+}
+
+.estimate-ai-sticky > .estimate-ai-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 100%;
+}
+
+.estimate-ai-sticky > .estimate-ai-panel .estimate-ai-messages {
+  flex: 1 1 auto;
+  min-height: 7rem;
+  max-height: none;
 }

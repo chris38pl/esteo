@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
 
+import { cn } from "@/lib/utils";
 import { EstimateSectionRow } from "./estimate-section-row";
 import { EstimateLineItemRow, type LineItemData } from "./estimate-line-item-row";
 
@@ -13,10 +14,12 @@ export interface SectionData {
   items: LineItemData[];
 }
 
+export const ESTIMATE_TABLE_TITLE_COLSPAN = { basic: 4, advanced: 5 } as const;
+
 interface EstimateItemsTableProps {
   sections: SectionData[];
   currency?: string;
-  marginPercent: number;
+  advancedMode: boolean;
   onUpdateSection: (sectionId: string, title: string) => void;
   onDeleteSection: (sectionId: string) => void;
   onAddItem: (sectionId: string) => void;
@@ -34,7 +37,7 @@ type DragState = {
 export function EstimateItemsTable({
   sections,
   currency = "PLN",
-  marginPercent,
+  advancedMode,
   onUpdateSection,
   onDeleteSection,
   onAddItem,
@@ -78,7 +81,12 @@ export function EstimateItemsTable({
   return (
     <div className="min-w-0">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[960px] border-collapse text-sm">
+        <table
+          className={cn(
+            "w-full border-collapse text-sm",
+            advancedMode ? "min-w-[1000px]" : "min-w-[880px]",
+          )}
+        >
           <thead>
             <tr className="border-b border-border/60 text-xs font-medium text-muted-foreground">
               <th className="w-9 px-2 py-3" aria-hidden />
@@ -87,10 +95,18 @@ export function EstimateItemsTable({
                 {t("editor.columns.name")}
               </th>
               <th className="w-20 px-2 py-3 text-left">{t("editor.columns.unit")}</th>
-              <th className="w-20 px-2 py-3 text-right">{t("editor.columns.qty")}</th>
+              <th className="w-20 px-2 py-3 text-right align-bottom">
+                <span className="block w-full pr-1 text-right tabular-nums">
+                  {t("editor.columns.qty")}
+                </span>
+              </th>
+              {advancedMode ? (
+                <th className="w-28 px-2 py-3 text-right">
+                  {t("editor.columns.baseUnitPrice")}
+                </th>
+              ) : null}
               <th className="w-28 px-2 py-3 text-right">{t("editor.columns.unitPrice")}</th>
               <th className="w-28 px-2 py-3 text-right">{t("editor.columns.net")}</th>
-              <th className="w-20 px-2 py-3 text-right">{t("editor.columns.margin")}</th>
               <th className="w-16 px-2 py-3 text-right">{t("editor.columns.vat")}</th>
               <th className="w-28 px-2 py-3 text-right">{t("editor.columns.gross")}</th>
               <th className="w-10 px-2 py-3" aria-hidden />
@@ -107,8 +123,8 @@ export function EstimateItemsTable({
                   section={section}
                   sectionNumber={sectionNumber}
                   expanded={expanded}
+                  advancedMode={advancedMode}
                   currency={currency}
-                  marginPercent={marginPercent}
                   dragState={dragState}
                   dragOverIndex={dragOverIndex}
                   onToggleExpanded={() => toggleSection(section.id)}
@@ -158,8 +174,8 @@ function SectionRows({
   section,
   sectionNumber,
   expanded,
+  advancedMode,
   currency,
-  marginPercent,
   dragState,
   dragOverIndex,
   onToggleExpanded,
@@ -178,8 +194,8 @@ function SectionRows({
   section: SectionData;
   sectionNumber: number;
   expanded: boolean;
+  advancedMode: boolean;
   currency: string;
-  marginPercent: number;
   dragState: DragState;
   dragOverIndex: number | null;
   onToggleExpanded: () => void;
@@ -205,7 +221,6 @@ function SectionRows({
         title={section.title}
         items={section.items}
         sectionNumber={sectionNumber}
-        marginPercent={marginPercent}
         expanded={expanded}
         onToggleExpanded={onToggleExpanded}
         onUpdateSection={onUpdateSection}
@@ -213,6 +228,11 @@ function SectionRows({
         onAddItem={onAddItem}
         onBlur={onBlur}
         currency={currency}
+        titleColSpan={
+          advancedMode
+            ? ESTIMATE_TABLE_TITLE_COLSPAN.advanced
+            : ESTIMATE_TABLE_TITLE_COLSPAN.basic
+        }
       />
       {expanded
         ? section.items.map((item, index) => (
@@ -220,7 +240,7 @@ function SectionRows({
               key={item.id}
               item={item}
               positionLabel={`${sectionNumber}.${index + 1}`}
-              marginPercent={marginPercent}
+              advancedMode={advancedMode}
               onUpdate={onUpdateItem}
               onDelete={onDeleteItem}
               onBlur={onBlur}

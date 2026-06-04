@@ -46,7 +46,7 @@ import { cn } from "@/lib/utils";
 
 
 
-interface EstimateAiPanelProps {
+export interface EstimateAiPanelProps {
 
   versionId: string;
 
@@ -77,6 +77,8 @@ interface EstimateAiPanelProps {
   initialPendingEdit?: ProposeEditResult | null;
 
   className?: string;
+
+  onClose?: () => void;
 
 }
 
@@ -119,6 +121,8 @@ export function EstimateAiPanel({
   initialPendingEdit = null,
 
   className,
+
+  onClose,
 
 }: EstimateAiPanelProps) {
 
@@ -334,21 +338,28 @@ export function EstimateAiPanel({
 
         </div>
 
-        {maxCalls !== null && maxCalls !== undefined && (
-
-          <span className="text-xs text-muted-foreground">
-
-            {t("ai.callsLeft", {
-
-              remaining: remainingCalls ?? "?",
-
-              max: maxCalls,
-
-            })}
-
-          </span>
-
-        )}
+        <div className="flex shrink-0 items-center gap-1">
+          {maxCalls !== null && maxCalls !== undefined ? (
+            <span className="text-xs text-muted-foreground">
+              {t("ai.callsLeft", {
+                remaining: remainingCalls ?? "?",
+                max: maxCalls,
+              })}
+            </span>
+          ) : null}
+          {onClose ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="size-8 shrink-0"
+              onClick={onClose}
+              aria-label={t("editor.closeAi")}
+            >
+              <X className="size-4" />
+            </Button>
+          ) : null}
+        </div>
 
       </div>
 
