@@ -79,7 +79,8 @@ const estimateLayoutTailwind = {
   headerActionsDivider:
     "estimate-header-actions-divider mx-1 hidden h-9 w-px shrink-0 self-center bg-border",
   rightRailAdvancedGrid: "estimate-right-rail__grid estimate-right-rail__grid--advanced",
-  aiSideGrid: `grid-cols-[minmax(0,1fr)_minmax(0,${estimateLayoutAi.gridColumnRem}rem)]`,
+  /** Injected CSS in `getEstimateEditorResponsiveCss()` — not dynamic Tailwind */
+  aiSideGrid: "estimate-editor-ai-grid",
 } as const;
 
 export const ESTIMATE_LAYOUT_CONFIG = {
@@ -141,6 +142,7 @@ export function getEstimateEditorResponsiveCss(): string {
   const breakpoints = ESTIMATE_LAYOUT_CONFIG.breakpoints;
   const side = ESTIMATE_LAYOUT_CONFIG.sideColumn;
   const topAdvanced = ESTIMATE_LAYOUT_CONFIG.topBandAdvanced;
+  const ai = ESTIMATE_LAYOUT_CONFIG.ai;
 
   return `
 .estimate-editor {
@@ -237,6 +239,14 @@ export function getEstimateEditorResponsiveCss(): string {
   .estimate-header-actions-divider {
     display: block !important;
   }
+}
+/* Table + side AI (≥ breakpoints.aiSideLayout via useEstimateAiSideLayout) */
+.estimate-editor-ai-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, ${ai.gridColumnRem}rem);
+  gap: 1.5rem;
+  align-items: start;
+  min-width: 0;
 }
 /* PODSUMOWANIE | RENTOWNOŚĆ — side-by-side whenever advanced rail is shown */
 .estimate-right-rail__grid--advanced {

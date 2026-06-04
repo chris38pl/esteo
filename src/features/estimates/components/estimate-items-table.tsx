@@ -97,10 +97,8 @@ export function EstimateItemsTable({
                 {t("editor.columns.name")}
               </th>
               <th className="w-20 px-2 py-3 text-left">{t("editor.columns.unit")}</th>
-              <th className="w-20 px-2 py-3 text-right align-bottom">
-                <span className="block w-full pr-1 text-right tabular-nums">
-                  {t("editor.columns.qty")}
-                </span>
+              <th className="w-20 px-2 py-3 text-right tabular-nums">
+                {t("editor.columns.qty")}
               </th>
               {advancedMode ? (
                 <th className="w-28 px-2 py-3 text-right">

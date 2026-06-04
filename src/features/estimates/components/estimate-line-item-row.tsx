@@ -158,7 +158,7 @@ export function EstimateLineItemRow({
           placeholder={t("editor.unitPlaceholder")}
         />
       </td>
-      <td className={cn(cellClass, "w-20 text-right")}>
+      <td className={cn(cellClass, "w-20")}>
         <Input
           type="number"
           min={0}
@@ -172,7 +172,7 @@ export function EstimateLineItemRow({
             }
             onBlur();
           }}
-          className={cn(estimateLineItemFlatInputClassName, "text-right")}
+          className={cn(estimateLineItemFlatInputClassName, "text-right tabular-nums")}
         />
       </td>
       {advancedMode ? (

@@ -84,10 +84,6 @@
   overflow-y: auto;
 }
 
-.estimate-editor-ai-grid {
-  align-items: start;
-}
-
 /*
  * Side-column AI only (not floating FAB).
  * --estimate-ai-sticky-max-h: natural top → viewport bottom (set once per layout, not on scroll).

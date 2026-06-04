@@ -475,10 +475,10 @@ export function EstimateEditor({
       ) : (
         <div
           className={cn(
-            "grid min-w-0 gap-6",
+            "min-w-0",
             showAiPanel && activeVersionId && isAiSideLayout
-              ? cn(estimateEditorAiSideGridClass, "estimate-editor-ai-grid")
-              : "",
+              ? estimateEditorAiSideGridClass
+              : "grid gap-6",
           )}
         >
           <div className="min-w-0 space-y-4">
