@@ -12,11 +12,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { EstimateHighlightedInput } from "./estimate-highlighted-input";
 import { cn } from "@/lib/utils";
 import { calculateLineItem } from "@/features/estimates/lib/calculate-estimate";
 import { parseEstimateDecimalInput, roundEstimateDecimal } from "@/features/estimates/lib/estimate-decimals";
 import {
-  estimateFlatInputClassName,
+  estimateLineItemFlatInputClassName,
   estimateLineItemRowClassName,
 } from "./estimate-table-input-styles";
 
@@ -45,6 +46,7 @@ interface EstimateLineItemRowProps {
   onDragOverRow: () => void;
   onDragLeaveRow: () => void;
   onDropOnRow: () => void;
+  searchQuery?: string;
 }
 
 function formatCurrency(value: number): string {
@@ -68,6 +70,7 @@ export function EstimateLineItemRow({
   onDragOverRow,
   onDragLeaveRow,
   onDropOnRow,
+  searchQuery = "",
 }: EstimateLineItemRowProps) {
   const t = useTranslations("estimates");
   const [local, setLocal] = useState<LineItemData>(item);
@@ -136,20 +139,22 @@ export function EstimateLineItemRow({
         {positionLabel}
       </td>
       <td className={cellClass}>
-        <Input
+        <EstimateHighlightedInput
           value={local.name}
+          searchQuery={searchQuery}
           onChange={(e) => handleChange("name", e.target.value)}
           onBlur={onBlur}
-          className={estimateFlatInputClassName}
+          className={estimateLineItemFlatInputClassName}
           placeholder={t("editor.itemNamePlaceholder")}
         />
       </td>
       <td className={cn(cellClass, "w-20")}>
-        <Input
+        <EstimateHighlightedInput
           value={local.unit ?? ""}
+          searchQuery={searchQuery}
           onChange={(e) => handleChange("unit", e.target.value)}
           onBlur={onBlur}
-          className={estimateFlatInputClassName}
+          className={estimateLineItemFlatInputClassName}
           placeholder={t("editor.unitPlaceholder")}
         />
       </td>
@@ -167,7 +172,7 @@ export function EstimateLineItemRow({
             }
             onBlur();
           }}
-          className={cn(estimateFlatInputClassName, "text-right")}
+          className={cn(estimateLineItemFlatInputClassName, "text-right")}
         />
       </td>
       {advancedMode ? (
@@ -185,7 +190,7 @@ export function EstimateLineItemRow({
               }
               onBlur();
             }}
-            className={cn(estimateFlatInputClassName, "text-right")}
+            className={cn(estimateLineItemFlatInputClassName, "text-right")}
           />
         </td>
       ) : null}
@@ -208,7 +213,7 @@ export function EstimateLineItemRow({
               }
               onBlur();
             }}
-            className={cn(estimateFlatInputClassName, "text-right")}
+            className={cn(estimateLineItemFlatInputClassName, "text-right")}
           />
         )}
       </td>
@@ -224,7 +229,7 @@ export function EstimateLineItemRow({
           value={(local.vatRate * 100).toFixed(0)}
           onChange={(e) => handleChange("vatRate", e.target.value)}
           onBlur={onBlur}
-          className={cn(estimateFlatInputClassName, "text-right")}
+          className={cn(estimateLineItemFlatInputClassName, "text-right")}
         />
       </td>
       <td className={cn(cellClass, "w-28 text-right text-sm font-medium tabular-nums")}>

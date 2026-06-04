@@ -53,6 +53,8 @@
     "toolbar": {
       "importPriceList": "Import z cennika",
       "search": "Szukaj",
+      "searchPlaceholder": "Szukaj pozycji…",
+      "searchClose": "Zamknij wyszukiwanie",
       "filter": "Filtruj",
       "settings": "Ustawienia tabeli",
       "comingSoon": "Wkrótce"

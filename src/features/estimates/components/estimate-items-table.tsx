@@ -27,6 +27,7 @@ interface EstimateItemsTableProps {
   onDeleteItem: (itemId: string) => void;
   onReorderItems: (sectionId: string, fromIndex: number, toIndex: number) => void;
   onBlur: () => void;
+  tableSearchQuery?: string;
 }
 
 type DragState = {
@@ -45,6 +46,7 @@ export function EstimateItemsTable({
   onDeleteItem,
   onReorderItems,
   onBlur,
+  tableSearchQuery = "",
 }: EstimateItemsTableProps) {
   const t = useTranslations("estimates");
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(
@@ -134,6 +136,7 @@ export function EstimateItemsTable({
                   onUpdateItem={onUpdateItem}
                   onDeleteItem={onDeleteItem}
                   onBlur={onBlur}
+                  tableSearchQuery={tableSearchQuery}
                   onDragStart={(itemIndex) =>
                     setDragState({ sectionId: section.id, itemIndex })
                   }
@@ -185,6 +188,7 @@ function SectionRows({
   onUpdateItem,
   onDeleteItem,
   onBlur,
+  tableSearchQuery,
   onDragStart,
   onDragOver,
   onDragLeave,
@@ -208,6 +212,7 @@ function SectionRows({
   ) => void;
   onDeleteItem: (itemId: string) => void;
   onBlur: () => void;
+  tableSearchQuery: string;
   onDragStart: (itemIndex: number) => void;
   onDragOver: (itemIndex: number) => void;
   onDragLeave: (itemIndex: number) => void;
@@ -244,6 +249,7 @@ function SectionRows({
               onUpdate={onUpdateItem}
               onDelete={onDeleteItem}
               onBlur={onBlur}
+              searchQuery={tableSearchQuery}
               isDragging={
                 dragState?.sectionId === section.id && dragState.itemIndex === index
               }

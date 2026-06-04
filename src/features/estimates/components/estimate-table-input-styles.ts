@@ -14,4 +14,8 @@ export const estimateSectionRowClassName =
  * Light: secondary (#f1f5f9); dark: background (#060b16).
  */
 export const estimateLineItemRowClassName =
-  "group border-b border-border/40 bg-secondary transition-colors dark:bg-background hover:bg-secondary/80 dark:hover:bg-background";
+  "group border-b border-border/40 bg-secondary transition-colors dark:bg-background dark:text-muted-foreground hover:bg-secondary/80 dark:hover:bg-background";
+
+/** Line-item cells only — softer text in dark mode (sections keep default). */
+export const estimateLineItemFlatInputClassName =
+  `${estimateFlatInputClassName} dark:text-muted-foreground dark:caret-muted-foreground dark:placeholder:text-muted-foreground/70`;

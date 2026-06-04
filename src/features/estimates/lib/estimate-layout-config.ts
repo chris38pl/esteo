@@ -38,6 +38,35 @@ const estimateLayoutAi = {
   gridColumnRem: 20,
 } as const;
 
+/** Top band when advanced: context cards (left) vs summary + profitability (right) */
+const estimateLayoutTopBandAdvanced = {
+  /** Context 2×2 (< `breakpoints.contextFourCol`) — left needs less width; widen summary/profitability */
+  whenContextStacked: {
+    leftFr: 1,
+    rightColumnClampRem: { min: 34, max: 44 },
+    rightColumnPreferredPercent: 42,
+  },
+  /** Context 4-across (≥ `breakpoints.contextFourCol`) */
+  whenContextFourCol: {
+    leftFr: 1.2,
+    rightColumnClampRem: { min: 28, max: 36 },
+    rightColumnPreferredPercent: 32,
+  },
+} as const;
+
+function topBandAdvancedGridColumns(
+  profile:
+    | (typeof estimateLayoutTopBandAdvanced)["whenContextStacked"]
+    | (typeof estimateLayoutTopBandAdvanced)["whenContextFourCol"],
+): string {
+  const { leftFr, rightColumnClampRem, rightColumnPreferredPercent } = profile;
+  return `minmax(0, ${leftFr}fr) clamp(
+      ${rightColumnClampRem.min}rem,
+      ${rightColumnPreferredPercent}%,
+      ${rightColumnClampRem.max}rem
+    )`;
+}
+
 const b = estimateLayoutBreakpoints;
 
 const estimateLayoutTailwind = {
@@ -56,6 +85,7 @@ const estimateLayoutTailwind = {
 export const ESTIMATE_LAYOUT_CONFIG = {
   breakpoints: estimateLayoutBreakpoints,
   sideColumn: estimateLayoutSideColumn,
+  topBandAdvanced: estimateLayoutTopBandAdvanced,
   ai: estimateLayoutAi,
   autosave: {
     savedDisplayMs: 2000,
@@ -63,6 +93,8 @@ export const ESTIMATE_LAYOUT_CONFIG = {
   stickyAi: {
     top: "calc(3.5rem + 1rem)",
     bottom: "1rem",
+    /** Side-column AI only (≥ `breakpoints.aiSideLayout`); not floating popup */
+    sideMinHeightVh: 60,
     messagesMaxHeight: "min(18rem, calc(100dvh - 14rem))",
   },
   tailwind: estimateLayoutTailwind,
@@ -108,6 +140,7 @@ export function mediaQueryMax(px: number): string {
 export function getEstimateEditorResponsiveCss(): string {
   const breakpoints = ESTIMATE_LAYOUT_CONFIG.breakpoints;
   const side = ESTIMATE_LAYOUT_CONFIG.sideColumn;
+  const topAdvanced = ESTIMATE_LAYOUT_CONFIG.topBandAdvanced;
 
   return `
 .estimate-editor {
@@ -123,7 +156,7 @@ export function getEstimateEditorResponsiveCss(): string {
     grid-template-columns: minmax(0, 1fr) var(--estimate-side-column-width);
   }
   .estimate-top-band:not(.estimate-top-band--stacked).estimate-top-band--advanced {
-    grid-template-columns: minmax(0, 1fr) minmax(calc(var(--estimate-side-column-width) * 2), 1fr);
+    grid-template-columns: ${topBandAdvancedGridColumns(topAdvanced.whenContextStacked)};
   }
   .estimate-top-band--basic .estimate-side-rail {
     justify-self: end;
@@ -148,6 +181,9 @@ export function getEstimateEditorResponsiveCss(): string {
   }
 }
 @media ${mediaQueryMin(breakpoints.contextFourCol)} {
+  .estimate-top-band:not(.estimate-top-band--stacked).estimate-top-band--advanced {
+    grid-template-columns: ${topBandAdvancedGridColumns(topAdvanced.whenContextFourCol)};
+  }
   .estimate-context-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }

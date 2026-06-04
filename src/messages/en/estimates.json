@@ -53,6 +53,8 @@
     "toolbar": {
       "importPriceList": "Import from price list",
       "search": "Search",
+      "searchPlaceholder": "Search items…",
+      "searchClose": "Close search",
       "filter": "Filter",
       "settings": "Table settings",
       "comingSoon": "Coming soon"
@@ -101,7 +103,7 @@
   },
   "header": {
     "status": {
-      "DRAFT": "Draft",
+      "DRAFT": "Draft project",
       "SENT": "Sent",
       "ARCHIVED": "Archived"
     },

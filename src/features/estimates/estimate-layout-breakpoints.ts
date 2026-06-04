@@ -25,6 +25,7 @@ export const ESTIMATE_EDITOR_LAYOUT_BREAKPOINTS = {
   aiSideGridColumn: `${ESTIMATE_LAYOUT_CONFIG.ai.gridColumnRem}rem`,
   stickyAiTop: ESTIMATE_LAYOUT_CONFIG.stickyAi.top,
   stickyAiBottom: ESTIMATE_LAYOUT_CONFIG.stickyAi.bottom,
+  stickyAiSideMinHeightVh: ESTIMATE_LAYOUT_CONFIG.stickyAi.sideMinHeightVh,
   stickyAiMessagesMaxHeight: ESTIMATE_LAYOUT_CONFIG.stickyAi.messagesMaxHeight,
 } as const;
 

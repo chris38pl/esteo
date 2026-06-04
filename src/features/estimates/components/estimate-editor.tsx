@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEstimateAutosave } from "@/features/estimates/hooks/use-estimate-autosave";
@@ -32,6 +32,7 @@ import {
   mediaQueryMin,
 } from "@/features/estimates/lib/estimate-layout-config";
 import { useEstimateAiSideLayout } from "@/features/estimates/hooks/use-estimate-ai-side-layout";
+import { useEstimateAiStickyMaxHeight } from "@/features/estimates/hooks/use-estimate-ai-sticky-max-height";
 import { EstimateEditorLayoutStyles } from "./estimate-editor-layout-styles";
 import { EstimateGeneratingSkeleton } from "./estimate-generating-skeleton";
 import {
@@ -126,6 +127,10 @@ export function EstimateEditor({
   );
   const isAiSideLayout = useEstimateAiSideLayout();
   const [showAiPanel, setShowAiPanel] = useState(false);
+  const aiStickyRef = useRef<HTMLDivElement>(null);
+  const showSideAiPanel = showAiPanel && Boolean(activeVersionId) && isAiSideLayout;
+  const aiStickyMaxHeight = useEstimateAiStickyMaxHeight(aiStickyRef, showSideAiPanel);
+  const [tableSearchQuery, setTableSearchQuery] = useState("");
 
   useEffect(() => {
     const mq = window.matchMedia(
@@ -472,7 +477,7 @@ export function EstimateEditor({
           className={cn(
             "grid min-w-0 gap-6",
             showAiPanel && activeVersionId && isAiSideLayout
-              ? estimateEditorAiSideGridClass
+              ? cn(estimateEditorAiSideGridClass, "estimate-editor-ai-grid")
               : "",
           )}
         >
@@ -496,6 +501,8 @@ export function EstimateEditor({
                     showAiPanel={showAiPanel}
                     onToggleAiPanel={() => setShowAiPanel((v) => !v)}
                     aiUsesSideLayout={isAiSideLayout}
+                    tableSearchQuery={tableSearchQuery}
+                    onTableSearchQueryChange={setTableSearchQuery}
                   />
                   <EstimateItemsTable
                     sections={sections}
@@ -508,6 +515,7 @@ export function EstimateEditor({
                     onDeleteItem={handleDeleteItem}
                     onReorderItems={handleReorderItems}
                     onBlur={triggerBlurSave}
+                    tableSearchQuery={tableSearchQuery}
                   />
                 </>
               ) : (
@@ -518,8 +526,21 @@ export function EstimateEditor({
             </div>
           </div>
 
-          {showAiPanel && activeVersionId && isAiSideLayout ? (
-            <div className="estimate-ai-sticky">
+          {showSideAiPanel ? (
+            <div
+              ref={aiStickyRef}
+              className="estimate-ai-sticky"
+              style={
+                {
+                  "--estimate-ai-side-min-h": `${ESTIMATE_LAYOUT_CONFIG.stickyAi.sideMinHeightVh}dvh`,
+                  ...(aiStickyMaxHeight != null
+                    ? {
+                        "--estimate-ai-sticky-max-h": `${aiStickyMaxHeight}px`,
+                      }
+                    : {}),
+                } as React.CSSProperties
+              }
+            >
               <EstimateAiPanel
                 versionId={activeVersionId}
                 workspaceId={estimate.workspaceId}
