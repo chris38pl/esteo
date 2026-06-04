@@ -20,7 +20,7 @@ interface EstimateContextCardsProps {
 }
 
 const iconClassName =
-  "flex size-11 shrink-0 items-center justify-center rounded-2xl bg-primary/8 text-primary ring-1 ring-primary/10";
+  "flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary ring-1 ring-primary/10";
 
 export function EstimateContextCards({
   requestNumber,
@@ -91,7 +91,7 @@ export function EstimateContextCards({
   ];
 
   return (
-    <section className="h-full min-w-0 overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-sm">
+    <section className="h-full min-w-0 overflow-hidden rounded-xl border border-border/70 bg-card/95 shadow-sm">
       <div className="estimate-context-grid">
         {cards.map((card) => {
           const Icon = card.icon;

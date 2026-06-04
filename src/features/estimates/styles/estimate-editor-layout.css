@@ -79,3 +79,20 @@
     border-right: none;
   }
 }
+
+/**
+ * Sticky AI panel — aligns below dashboard top bar (h-14 / 3.5rem).
+ * Tune STICKY_TOP_GAP or BOTTOM_GAP if the panel sits under/over the navbar.
+ */
+.estimate-ai-sticky {
+  min-width: 0;
+}
+
+@media (min-width: 1100px) {
+  .estimate-ai-sticky {
+    position: sticky;
+    top: calc(3.5rem + 1rem);
+    height: calc(100dvh - 3.5rem - 2rem);
+    align-self: start;
+  }
+}

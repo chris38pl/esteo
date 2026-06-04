@@ -72,7 +72,7 @@ export function EstimateRightRail({
 
   return (
     <aside className={cn("h-full min-w-0", className)}>
-      <section className="h-full min-w-0 overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-sm">
+      <section className="h-full min-w-0 overflow-hidden rounded-xl border border-border/70 bg-card/95 shadow-sm">
         <div className="grid h-full min-w-0 divide-y divide-border/70 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
           <div className="flex min-w-0 flex-col bg-card/95 p-4 xl:px-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary/70">

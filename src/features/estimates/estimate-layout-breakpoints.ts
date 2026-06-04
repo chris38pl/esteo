@@ -14,4 +14,7 @@ export const ESTIMATE_EDITOR_LAYOUT_BREAKPOINTS = {
   contextFourCol: "1500px",
   /** Centered editor max width (Tailwind on estimate-editor.tsx) */
   editorMaxWidth: "1760px",
+  /** Sticky AI offset — edit in estimate-editor-layout.css (.estimate-ai-sticky) */
+  stickyAiTop: "calc(3.5rem + 1rem)",
+  stickyAiHeight: "calc(100dvh - 3.5rem - 2rem)",
 } as const;

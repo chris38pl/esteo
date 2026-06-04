@@ -74,7 +74,7 @@ export function EstimateLineItemRow({
   };
 
   const cellClass = "px-3 py-2 align-middle";
-  const inputClass = "h-9 min-w-0 rounded-xl border-transparent bg-transparent px-2 text-sm shadow-none transition-colors hover:bg-muted/40 focus:border-primary/30 focus:bg-background focus:shadow-sm";
+  const inputClass = "h-9 min-w-0 rounded-lg border-transparent bg-transparent px-2 text-sm shadow-none transition-colors hover:bg-muted/40 focus:border-primary/30 focus:bg-background focus:shadow-sm";
 
   return (
     <tr className="group bg-background transition-colors hover:bg-muted/20">
@@ -144,7 +144,7 @@ export function EstimateLineItemRow({
             <Button
               variant="ghost"
               size="icon-sm"
-              className="rounded-xl opacity-0 transition-opacity group-hover:opacity-100"
+              className="rounded-lg opacity-0 transition-opacity group-hover:opacity-100"
             >
               <MoreHorizontal className="size-4" />
             </Button>

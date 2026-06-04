@@ -41,6 +41,7 @@ import type { ProposeEditResult } from "@/features/estimates/lib/estimate-agent-
 import type { VersionTreeClient } from "@/features/estimates/lib/serialize-estimate";
 
 import type { Locale } from "@/lib/locale";
+import { cn } from "@/lib/utils";
 
 
 
@@ -292,13 +293,18 @@ export function EstimateAiPanel({
 
   return (
 
-    <aside className={`rounded-3xl border bg-card/95 p-5 shadow-sm ${className ?? ""}`}>
+    <aside
+      className={cn(
+        "flex h-full min-h-0 flex-col rounded-2xl border bg-card/95 p-4 shadow-sm",
+        className,
+      )}
+    >
 
-      <div className="mb-4 flex items-center justify-between gap-3">
+      <div className="mb-3 flex shrink-0 items-center justify-between gap-3">
 
         <div className="flex items-center gap-2">
 
-          <span className="flex size-9 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+          <span className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <Bot className="size-4" />
           </span>
 
@@ -329,7 +335,7 @@ export function EstimateAiPanel({
 
 
 
-      <div className="mb-4 flex min-h-[160px] max-h-[360px] flex-col gap-2 overflow-y-auto rounded-2xl border bg-muted/20 p-3">
+      <div className="mb-3 flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto rounded-xl border bg-muted/20 p-3">
 
         {messages.length === 0 && (
 
@@ -347,9 +353,9 @@ export function EstimateAiPanel({
 
               msg.role === "user"
 
-                ? "self-end rounded-2xl bg-primary px-3 py-2 text-xs text-primary-foreground max-w-[85%] shadow-sm"
+                ? "self-end rounded-xl bg-primary px-3 py-2 text-xs text-primary-foreground max-w-[85%] shadow-sm"
 
-                : "self-start rounded-2xl bg-background px-3 py-2 text-xs max-w-[85%] shadow-sm"
+                : "self-start rounded-xl bg-background px-3 py-2 text-xs max-w-[85%] shadow-sm"
 
             }
 
@@ -363,7 +369,7 @@ export function EstimateAiPanel({
 
         {isPending && (
 
-          <div className="flex items-center gap-2 self-start rounded-2xl bg-background px-3 py-2 text-xs shadow-sm">
+          <div className="flex items-center gap-2 self-start rounded-xl bg-background px-3 py-2 text-xs shadow-sm">
 
             <Loader2 className="size-3 animate-spin" />
 
@@ -379,7 +385,7 @@ export function EstimateAiPanel({
 
       {pendingEdit && (
 
-        <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 p-3 shadow-sm dark:border-amber-800 dark:bg-amber-950/30">
+        <div className="mb-3 shrink-0 rounded-xl border border-amber-200 bg-amber-50 p-3 shadow-sm dark:border-amber-800 dark:bg-amber-950/30">
 
           <p className="mb-2 text-xs font-semibold">{t("ai.proposed")}</p>
 
@@ -457,7 +463,7 @@ export function EstimateAiPanel({
 
           <div className="flex gap-2">
 
-            <Button size="sm" className="h-9 flex-1 gap-1.5 rounded-xl" onClick={handleApprove} disabled={isPending}>
+            <Button size="sm" className="h-9 flex-1 gap-1.5 rounded-lg" onClick={handleApprove} disabled={isPending}>
 
               <Check className="size-3" />
 
@@ -465,7 +471,7 @@ export function EstimateAiPanel({
 
             </Button>
 
-            <Button size="sm" variant="outline" className="h-9 flex-1 gap-1.5 rounded-xl" onClick={handleReject}>
+            <Button size="sm" variant="outline" className="h-9 flex-1 gap-1.5 rounded-lg" onClick={handleReject}>
 
               <X className="size-3" />
 
@@ -481,11 +487,11 @@ export function EstimateAiPanel({
 
 
 
-      {error && <p className="mb-2 text-xs text-destructive">{error}</p>}
+      {error && <p className="mb-2 shrink-0 text-xs text-destructive">{error}</p>}
 
 
 
-      <div className="flex gap-2">
+      <div className="flex shrink-0 gap-2">
 
         <textarea
 
@@ -511,7 +517,7 @@ export function EstimateAiPanel({
 
           rows={2}
 
-          className="min-w-0 flex-1 resize-none rounded-2xl border border-input bg-background px-3 py-2 text-xs shadow-xs ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+          className="min-w-0 flex-1 resize-none rounded-xl border border-input bg-background px-3 py-2 text-xs shadow-xs ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
 
         />
 
@@ -523,7 +529,7 @@ export function EstimateAiPanel({
 
           disabled={!input.trim() || isPending || isAtLimit}
 
-          className="self-end rounded-xl"
+          className="self-end rounded-lg"
 
           aria-label={t("ai.send")}
 
@@ -537,7 +543,7 @@ export function EstimateAiPanel({
 
 
 
-      <div className="mt-2 flex items-center justify-between">
+      <div className="mt-2 flex shrink-0 items-center justify-between">
 
         {isAtLimit && (
 
@@ -557,7 +563,7 @@ export function EstimateAiPanel({
 
                 size="sm"
 
-                className="ml-auto gap-1.5 rounded-xl text-xs"
+                className="ml-auto gap-1.5 rounded-lg text-xs"
 
                 onClick={handleUndo}
 

@@ -55,7 +55,7 @@ export function EstimateItemsTable({
       ))}
 
       {sections.length === 0 && (
-        <div className="rounded-2xl border border-dashed bg-muted/20 py-14 text-center text-sm text-muted-foreground">
+        <div className="rounded-xl border border-dashed bg-muted/20 py-14 text-center text-sm text-muted-foreground">
           {t("editor.noSections")}
         </div>
       )}

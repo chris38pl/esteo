@@ -61,12 +61,12 @@ export function EstimateSectionRow({
   const sectionCalc = calculateEstimate(calcInputs, 0);
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-border/70 bg-background shadow-sm">
+    <section className="overflow-hidden rounded-xl border border-border/70 bg-background shadow-sm">
       <div className="flex flex-wrap items-center gap-3 border-b bg-muted/20 px-4 py-3">
         <Button
           variant="ghost"
           size="icon-sm"
-          className="size-8 rounded-xl"
+          className="size-8 rounded-lg"
           onClick={() => setExpanded((v) => !v)}
           aria-label={expanded ? t("editor.collapseSection") : t("editor.expandSection")}
         >
@@ -77,7 +77,7 @@ export function EstimateSectionRow({
           )}
         </Button>
         <div className="flex min-w-0 flex-1 items-center gap-3">
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-xs font-semibold text-primary">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-xs font-semibold text-primary">
             {sectionNumber}
           </span>
           <Input
@@ -101,7 +101,7 @@ export function EstimateSectionRow({
           </span>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon-sm" className="rounded-xl">
+              <Button variant="ghost" size="icon-sm" className="rounded-lg">
                 <MoreHorizontal className="size-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -158,7 +158,7 @@ export function EstimateSectionRow({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 gap-2 rounded-xl text-xs text-primary hover:bg-primary/10 hover:text-primary"
+                    className="h-8 gap-2 rounded-lg text-xs text-primary hover:bg-primary/10 hover:text-primary"
                     onClick={() => onAddItem(id)}
                   >
                     <Plus className="size-3.5" />

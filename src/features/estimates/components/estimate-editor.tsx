@@ -232,7 +232,7 @@ export function EstimateEditor({
   return (
     <div className="mx-auto min-w-0 w-full max-w-[1760px] space-y-6 pb-8">
       {autosaveStatus === "conflict" && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50/90 px-4 py-3 text-sm text-amber-800 shadow-sm dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-200">
+        <div className="rounded-xl border border-amber-200 bg-amber-50/90 px-4 py-3 text-sm text-amber-800 shadow-sm dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-200">
           {t("editor.conflictBanner")}{" "}
           <button
             className="underline underline-offset-4"
@@ -300,7 +300,7 @@ export function EstimateEditor({
           )}
         >
           <div className="min-w-0 space-y-4">
-            <div className="min-w-0 overflow-x-auto rounded-3xl border bg-card/95 p-4 shadow-sm">
+            <div className="min-w-0 overflow-x-auto rounded-2xl border bg-card/95 p-4 shadow-sm">
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary/70">
@@ -357,7 +357,7 @@ export function EstimateEditor({
           </div>
 
           {showAiPanel && activeVersionId && (
-            <div className="min-w-0 min-[1100px]:sticky min-[1100px]:top-6 min-[1100px]:self-start">
+            <div className="estimate-ai-sticky">
               <EstimateAiPanel
                 versionId={activeVersionId}
                 workspaceId={estimate.workspaceId}
@@ -366,6 +366,7 @@ export function EstimateEditor({
                 locale={locale}
                 maxUndoSteps={3}
                 onApproved={handleAiMutation}
+                className="h-full"
               />
             </div>
           )}
