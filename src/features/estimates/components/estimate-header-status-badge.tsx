@@ -31,7 +31,7 @@ export function EstimateHeaderStatusBadge({
         className={cn(
           estimateHeaderStatusBadgeClassName,
           ESTIMATE_HEADER_STATUS_BADGE_MIN_WIDTH,
-          "text-center text-muted-foreground ml-2",
+          "shrink-0 text-center text-muted-foreground",
         )}
       >
         {versionLabel}
@@ -76,7 +76,7 @@ export function EstimateHeaderStatusBadge({
       className={cn(
         estimateHeaderStatusBadgeClassName,
         ESTIMATE_HEADER_STATUS_BADGE_MIN_WIDTH,
-        "text-center",
+        "shrink-0 text-center",
         badgeClass,
       )}
     >

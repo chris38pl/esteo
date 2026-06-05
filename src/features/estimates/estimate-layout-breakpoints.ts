@@ -11,7 +11,7 @@ export const ESTIMATE_EDITOR_LAYOUT_BREAKPOINTS = {
   headerInlineActions: `${b.headerInlineActions}px`,
   headerTitleLarge: `${b.headerInlineActions}px`,
   headerRulesLabel: `${b.headerRulesLabel}px`,
-  headerStatusBadgeMinWidth: `${b.headerStatusBadge}px`,
+  headerStatusBadgeMinWidth: `${b.headerStatusBadgeMinWidthPx}px`,
   headerActionsDivider: `${b.headerActionsDivider}px`,
   autosaveSavedDisplayMs: ESTIMATE_LAYOUT_CONFIG.autosave.savedDisplayMs,
   topBandSplit: `${b.topBandSplit}px`,

@@ -63,6 +63,9 @@
   "editor": {
     "titleEyebrow": "Kosztorys",
     "titleWithVersion": "{title} – Wersja {version}",
+    "titleVersionSuffix": " – Wersja {version}",
+    "titleEditLabel": "Tytuł kosztorysu",
+    "titleSaveError": "Nie udało się zapisać tytułu.",
     "items": "Pozycje wyceny",
     "itemsEyebrow": "Kosztorys",
     "tabs": {
@@ -163,7 +166,18 @@
       "deleteVersion": "Usuń wersję",
       "morePlaceholder": "Dodatkowe akcje",
       "send": "Wyślij",
-      "sendToClient": "Wyślij do klienta"
+      "sendToClient": "Wyślij do klienta",
+      "rename": "Zmień nazwę"
+    },
+    "rename": {
+      "title": "Zmień nazwę wyceny",
+      "description": "Ta nazwa jest widoczna w liście wycen, menu i nagłówku edytora.",
+      "label": "Nazwa wyceny",
+      "placeholder": "Np. Remont mieszkania — Warszawa",
+      "counter": "{count}/{max}",
+      "save": "Zapisz",
+      "cancel": "Anuluj",
+      "saving": "Zapisywanie…"
     }
   },
   "autosave": {

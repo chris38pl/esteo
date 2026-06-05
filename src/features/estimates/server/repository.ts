@@ -148,6 +148,33 @@ export async function getEstimateForEditor(estimateId: string, workspaceId: stri
   });
 }
 
+export async function updateEstimateTitle(input: {
+  estimateId: string;
+  workspaceId: string;
+  title: string | null;
+}): Promise<{ title: string | null }> {
+  const estimate = await prisma.estimate.findFirst({
+    where: {
+      id: input.estimateId,
+      workspaceId: input.workspaceId,
+      deletedAt: null,
+    },
+    select: { id: true },
+  });
+
+  if (!estimate) {
+    throw new PermissionError("Estimate not found.");
+  }
+
+  const updated = await prisma.estimate.update({
+    where: { id: input.estimateId },
+    data: { title: input.title },
+    select: { title: true },
+  });
+
+  return { title: updated.title };
+}
+
 export async function getVersionWithTree(versionId: string, workspaceId: string) {
   return prisma.estimateVersion.findFirst({
     where: { id: versionId, workspaceId },

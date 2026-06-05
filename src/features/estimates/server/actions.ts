@@ -18,6 +18,7 @@ import {
   serializeVersionWithTree,
   type VersionTreeClient,
 } from "@/features/estimates/lib/serialize-estimate";
+import { updateEstimateTitleSchema } from "@/features/estimates/schemas/estimate-title";
 import {
   approveEdit,
   autoSaveVersion,
@@ -26,6 +27,7 @@ import {
   proposeEdit,
   retryEstimateDraftGeneration,
   undoLastChange,
+  updateEstimateTitle,
 } from "./service";
 import {
   addSectionToVersion,
@@ -173,6 +175,40 @@ export async function deleteEstimateVersionAction(input: {
       workspaceId: input.workspaceId,
     });
     revalidateEstimatePaths(locale, input.workspaceSlug, input.estimateId);
+    return { success: true, data: result };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Estimate metadata
+// ---------------------------------------------------------------------------
+
+export async function updateEstimateTitleAction(input: {
+  estimateId: string;
+  workspaceId: string;
+  workspaceSlug: string;
+  title: string;
+  locale?: Locale;
+}): Promise<ActionResult<{ title: string | null }>> {
+  const locale = input.locale ?? "pl";
+  try {
+    const parsed = updateEstimateTitleSchema.safeParse(input);
+    if (!parsed.success) {
+      return { success: false, error: "Invalid estimate title." };
+    }
+
+    const user = await requireAuth(locale);
+    const result = await updateEstimateTitle(user, {
+      estimateId: parsed.data.estimateId,
+      workspaceId: parsed.data.workspaceId,
+      title: parsed.data.title,
+    });
+
+    revalidateEstimatePaths(locale, parsed.data.workspaceSlug, parsed.data.estimateId);
+    revalidatePath(`/${locale}/dashboard/${parsed.data.workspaceSlug}`, "layout");
+
     return { success: true, data: result };
   } catch (error) {
     return toActionError(error);

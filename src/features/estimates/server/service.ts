@@ -34,6 +34,8 @@ import {
 } from "@/server/permissions/entitlements";
 import { tasks } from "@trigger.dev/sdk";
 import type { generateEstimateDraftTask } from "@/trigger/generate-estimate-draft";
+import type { User } from "@prisma/client";
+import { requireWorkspace } from "@/server/permissions/require-workspace";
 import {
   assertVersionEditable,
   autoSave,
@@ -43,6 +45,7 @@ import {
   getVersionWithTree,
   restoreRevision,
   saveRevision,
+  updateEstimateTitle as updateEstimateTitleInRepository,
   type AutoSaveData,
   type AutoSaveResult,
 } from "./repository";
@@ -390,6 +393,22 @@ export async function undoLastChange(input: {
 
   const latest = revisions[0];
   await restoreRevision(input.versionId, input.workspaceId, latest.id);
+}
+
+// ---------------------------------------------------------------------------
+// Estimate metadata
+// ---------------------------------------------------------------------------
+
+export async function updateEstimateTitle(
+  user: User,
+  input: {
+    estimateId: string;
+    workspaceId: string;
+    title: string | null;
+  },
+): Promise<{ title: string | null }> {
+  await requireWorkspace(user, input.workspaceId);
+  return updateEstimateTitleInRepository(input);
 }
 
 // ---------------------------------------------------------------------------

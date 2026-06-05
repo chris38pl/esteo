@@ -20,6 +20,7 @@ import { EstimateVersionSelector } from "./estimate-version-selector";
 import { EstimateHeaderStatusBadge } from "./estimate-header-status-badge";
 import { EstimateRulesIndicator } from "./estimate-rules-indicator";
 import { EstimateHeaderPinMenuItem } from "./estimate-header-pin-menu-item";
+import { EstimateHeaderRenameMenuItem } from "./estimate-header-rename-menu-item";
 import { EstimateHeaderVersionMenuItems } from "./estimate-header-version-menu-items";
 import type { AutoSaveStatus } from "@/features/estimates/hooks/use-estimate-autosave";
 import type { Locale } from "@/lib/locale";
@@ -92,7 +93,7 @@ export function EstimateHeader({
         />
       </div>
 
-      <div className="flex min-w-0 max-w-full flex-wrap items-center justify-end gap-2.5">
+      <div className="ml-auto flex min-w-0 max-w-full flex-wrap items-center justify-end gap-2.5">
         <div className="flex min-w-0 flex-wrap items-center gap-2.5">
           <Button
             type="button"
@@ -128,6 +129,13 @@ export function EstimateHeader({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <EstimateHeaderRenameMenuItem
+                title={title}
+                estimateId={estimateId}
+                workspaceId={workspaceId}
+                workspaceSlug={workspaceSlug}
+                locale={locale}
+              />
               <EstimateHeaderPinMenuItem
                 estimateId={estimateId}
                 workspaceId={workspaceId}

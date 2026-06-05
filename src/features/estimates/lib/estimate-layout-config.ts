@@ -11,8 +11,8 @@ const estimateLayoutBreakpoints = {
   headerInlineActions: 1424,
   /** Reguły zastosowane — label visible at/above; icon-only below */
   headerRulesLabel: 1600,
-  /** Status badge min-width (limits label jump) */
-  headerStatusBadge: 1200,
+  /** Status badge min-width in px (limits label jump between autosave states) */
+  headerStatusBadgeMinWidthPx: 140,
   /** Header vertical divider between action groups */
   headerActionsDivider: 900,
   /** Context cards 2×2 */
@@ -77,8 +77,8 @@ const estimateLayoutTailwind = {
   /** Always visible in Więcej menu (not hidden when inline Preview/Share show) */
   headerMoreMenuPinAction: "estimate-header-more-menu-pin-action",
   headerTitle:
-    "estimate-header__title truncate text-xl font-semibold tracking-tight text-foreground",
-  headerStatusBadgeMinWidth: `min-w-[${b.headerStatusBadge}px]`,
+    "estimate-header__title text-xl font-semibold tracking-tight text-foreground",
+  headerStatusBadgeMinWidth: `min-w-[${b.headerStatusBadgeMinWidthPx}px]`,
   headerActionsDivider:
     "estimate-header-actions-divider mx-1 hidden h-9 w-px shrink-0 self-center bg-border",
   rightRailAdvancedGrid: "estimate-right-rail__grid estimate-right-rail__grid--advanced",
@@ -251,6 +251,22 @@ export function getEstimateEditorResponsiveCss(): string {
 }
 .estimate-header-more-menu-pin-action {
   display: flex;
+}
+.estimate-header__title input {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0 !important;
+}
+.dark .estimate-header__title input,
+.dark .estimate-header__title input:hover,
+.dark .estimate-header__title input:focus,
+.dark .estimate-header__title input:focus-visible {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 @media ${mediaQueryMin(breakpoints.headerInlineActions)} {
   .estimate-header-inline-action {

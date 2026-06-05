@@ -63,6 +63,9 @@
   "editor": {
     "titleEyebrow": "Estimate",
     "titleWithVersion": "{title} – Version {version}",
+    "titleVersionSuffix": " – Version {version}",
+    "titleEditLabel": "Estimate title",
+    "titleSaveError": "Could not save title.",
     "items": "Estimate Items",
     "itemsEyebrow": "Estimate",
     "tabs": {
@@ -163,7 +166,18 @@
       "deleteVersion": "Remove version",
       "morePlaceholder": "Additional actions",
       "send": "Send",
-      "sendToClient": "Send to client"
+      "sendToClient": "Send to client",
+      "rename": "Rename"
+    },
+    "rename": {
+      "title": "Rename estimate",
+      "description": "This name appears in the estimates list, sidebar pins, and editor header.",
+      "label": "Estimate name",
+      "placeholder": "E.g. Apartment renovation — Warsaw",
+      "counter": "{count}/{max}",
+      "save": "Save",
+      "cancel": "Cancel",
+      "saving": "Saving…"
     }
   },
   "autosave": {
