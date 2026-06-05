@@ -17,6 +17,37 @@ interface GenerateEstimateDraftPayload {
   locale: string;
 }
 
+async function markEstimateRequestFailed(
+  estimateRequestId: string,
+  priorMetadata: unknown,
+  errorMessage: string,
+): Promise<void> {
+  const request = await prisma.estimateRequest.findUnique({
+    where: { id: estimateRequestId },
+    select: { status: true },
+  });
+
+  if (!request || request.status === "COMPLETED") {
+    return;
+  }
+
+  if (request.status !== "PENDING" && request.status !== "PROCESSING") {
+    return;
+  }
+
+  await prisma.estimateRequest.update({
+    where: { id: estimateRequestId },
+    data: {
+      status: "FAILED",
+      aiMetadata: {
+        ...(priorMetadata as object | null ?? {}),
+        failedAt: new Date().toISOString(),
+        error: errorMessage,
+      },
+    },
+  });
+}
+
 export const generateEstimateDraftTask = task({
   id: "generate-estimate-draft",
   maxDuration: 300,
@@ -26,11 +57,61 @@ export const generateEstimateDraftTask = task({
     maxTimeoutInMs: 10000,
     factor: 2,
   },
+  onFailure: async ({ payload, error }) => {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.error("Estimate draft task failed (onFailure)", {
+      estimateRequestId: payload.estimateRequestId,
+      error: errorMessage,
+    });
+
+    const request = await prisma.estimateRequest.findUnique({
+      where: { id: payload.estimateRequestId },
+      select: { aiMetadata: true },
+    });
+
+    await markEstimateRequestFailed(
+      payload.estimateRequestId,
+      request?.aiMetadata,
+      errorMessage,
+    );
+  },
+  onComplete: async ({ payload, output, error }) => {
+    if (output !== undefined) {
+      return;
+    }
+
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : error != null
+          ? String(error)
+          : "Task completed without output";
+
+    logger.warn("Estimate draft task completed without success (onComplete)", {
+      estimateRequestId: payload.estimateRequestId,
+      error: errorMessage,
+    });
+
+    const request = await prisma.estimateRequest.findUnique({
+      where: { id: payload.estimateRequestId },
+      select: { aiMetadata: true, status: true },
+    });
+
+    if (request?.status === "PROCESSING" || request?.status === "PENDING") {
+      await markEstimateRequestFailed(
+        payload.estimateRequestId,
+        request.aiMetadata,
+        errorMessage,
+      );
+    }
+  },
   run: async (payload: GenerateEstimateDraftPayload) => {
     const { estimateRequestId, estimateId, versionId, workspaceId, locale: localeRaw } =
       payload;
 
     const locale: Locale = isLocale(localeRaw) ? localeRaw : "pl";
+
+    logger.info("Estimate draft generation started", { estimateRequestId, estimateId });
 
     const request = await prisma.estimateRequest.findUnique({
       where: { id: estimateRequestId },
@@ -55,17 +136,31 @@ export const generateEstimateDraftTask = task({
     });
 
     try {
+      logger.info("Loading estimate generation context", { estimateRequestId, workspaceId });
       const context = await loadEstimateGenerationContext(workspaceId, locale);
 
       if (!context) {
         throw new Error(`Workspace not found: ${workspaceId}`);
       }
 
+      logger.info("Building project brief", {
+        estimateRequestId,
+        industry: context.industry,
+        sectionCount: context.estimateSections.length,
+      });
       const projectBrief = await buildProjectBrief({ request, locale });
 
+      logger.info("Calling OpenAI for estimate draft", {
+        estimateRequestId,
+        projectBriefLength: projectBrief.length,
+      });
       const draftOutput = await generateEstimateDraft({
         projectBrief,
         context,
+      });
+      logger.info("OpenAI estimate draft returned", {
+        estimateRequestId,
+        sectionCount: draftOutput.sections.length,
       });
 
       const titleValidation = validateGeneratedSectionTitles({
@@ -175,17 +270,11 @@ export const generateEstimateDraftTask = task({
         error: errorMessage,
       });
 
-      await prisma.estimateRequest.update({
-        where: { id: estimateRequestId },
-        data: {
-          status: "FAILED",
-          aiMetadata: {
-            ...(request.aiMetadata as object | null ?? {}),
-            failedAt: new Date().toISOString(),
-            error: error instanceof Error ? error.message : String(error),
-          },
-        },
-      });
+      await markEstimateRequestFailed(
+        estimateRequestId,
+        request.aiMetadata,
+        errorMessage,
+      );
 
       throw error;
     }

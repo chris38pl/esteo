@@ -9,6 +9,10 @@ export async function generateEstimateDraft(
 ): Promise<EstimateDraftOutput> {
   const prompt = buildEstimateDraftPrompt(input);
 
+  if (process.env.NODE_ENV === "development") {
+    console.info("[generateEstimateDraft] prompt length:", prompt.length);
+  }
+
   const { object } = await generateObject({
     model: openai("gpt-4o"),
     schema: estimateDraftOutputSchema,

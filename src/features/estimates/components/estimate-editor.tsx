@@ -523,6 +523,7 @@ export function EstimateEditor({
       {isGenerating ? (
         <EstimateGeneratingSkeleton
           estimateId={estimate.id}
+          workspaceId={estimate.workspaceId}
           workspaceSlug={workspaceSlug}
           locale={locale}
           initialStatus={requestStatus}

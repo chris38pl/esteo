@@ -176,7 +176,8 @@ export async function retryEstimateDraftGeneration(input: {
     throw new Error("ESTIMATE_NOT_FOUND");
   }
 
-  if (estimate.estimateRequest.status !== "FAILED") {
+  const retryableStatuses = new Set(["FAILED", "PROCESSING"]);
+  if (!retryableStatuses.has(estimate.estimateRequest.status)) {
     throw new Error("GENERATION_NOT_RETRYABLE");
   }
 
