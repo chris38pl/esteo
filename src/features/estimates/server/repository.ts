@@ -11,7 +11,42 @@ import { PermissionError } from "@/server/permissions/errors";
 
 export type EstimateWithLatestVersion = Awaited<ReturnType<typeof getEstimateForEditor>>;
 export type VersionWithTree = Awaited<ReturnType<typeof getVersionWithTree>>;
-export type EstimateListItem = Awaited<ReturnType<typeof listEstimates>>[number];
+
+type EstimateListQueryRow = Prisma.EstimateGetPayload<{
+  include: {
+    latestVersion: {
+      select: {
+        id: true;
+        versionNumber: true;
+        status: true;
+        updatedAt: true;
+        createdByUserId: true;
+      };
+    };
+    estimateRequest: {
+      select: {
+        id: true;
+        requestNumber: true;
+        status: true;
+        createdAt: true;
+        customerData: true;
+        address: true;
+      };
+    };
+    _count: {
+      select: { versions: true };
+    };
+  };
+}>;
+
+export type EstimateListItem = Omit<EstimateListQueryRow, "latestVersion"> & {
+  latestVersion:
+    | (NonNullable<EstimateListQueryRow["latestVersion"]> & {
+        totalNet: number;
+        totalGross: number;
+      })
+    | null;
+};
 export type RevisionSnapshot = {
   sections: Array<{
     id: string;
@@ -131,7 +166,7 @@ export async function getVersionWithTree(versionId: string, workspaceId: string)
   });
 }
 
-export async function listEstimates(workspaceId: string) {
+export async function listEstimates(workspaceId: string): Promise<EstimateListItem[]> {
   const estimates = await prisma.estimate.findMany({
     where: { workspaceId, deletedAt: null },
     orderBy: { createdAt: "desc" },
@@ -166,7 +201,7 @@ export async function listEstimates(workspaceId: string) {
     .filter((id): id is string => Boolean(id));
 
   if (versionIds.length === 0) {
-    return estimates.map((estimate) =>
+    return estimates.map((estimate): EstimateListItem =>
       estimate.latestVersion
         ? {
             ...estimate,
@@ -176,7 +211,7 @@ export async function listEstimates(workspaceId: string) {
               totalGross: 0,
             },
           }
-        : estimate,
+        : (estimate as EstimateListItem),
     );
   }
 
@@ -198,8 +233,8 @@ export async function listEstimates(workspaceId: string) {
     ]),
   );
 
-  return estimates.map((estimate) => {
-    if (!estimate.latestVersion) return estimate;
+  return estimates.map((estimate): EstimateListItem => {
+    if (!estimate.latestVersion) return estimate as EstimateListItem;
     const totals = totalsById.get(estimate.latestVersion.id) ?? {
       totalNet: 0,
       totalGross: 0,

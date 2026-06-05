@@ -75,16 +75,16 @@ export const generateEstimateDraftTask = task({
       errorMessage,
     );
   },
-  onComplete: async ({ payload, output, error }) => {
-    if (output !== undefined) {
+  onComplete: async ({ payload, result }) => {
+    if (result.ok) {
       return;
     }
 
     const errorMessage =
-      error instanceof Error
-        ? error.message
-        : error != null
-          ? String(error)
+      result.error instanceof Error
+        ? result.error.message
+        : result.error != null
+          ? String(result.error)
           : "Task completed without output";
 
     logger.warn("Estimate draft task completed without success (onComplete)", {

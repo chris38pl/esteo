@@ -89,6 +89,10 @@
       "basic": "Basic",
       "advanced": "Advanced"
     },
+    "topPanel": {
+      "hide": "Hide top cards",
+      "show": "Show top cards"
+    },
     "notes": {
       "empty": "No notes yet. Add the first note for your team.",
       "placeholder": "Write a note…",

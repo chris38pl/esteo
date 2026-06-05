@@ -37,7 +37,20 @@ function diff(a: string[], b: string[]): string[] {
 }
 
 const root = resolve(process.cwd());
-const namespaces = ["common", "admin", "auth", "billing", "dashboard", "navbar", "sidebar", "styleguide", "workspaces"] as const;
+const namespaces = [
+  "common",
+  "admin",
+  "auth",
+  "billing",
+  "dashboard",
+  "estimateRequests",
+  "estimates",
+  "navbar",
+  "requests",
+  "sidebar",
+  "styleguide",
+  "workspaces",
+] as const;
 type Namespace = (typeof namespaces)[number];
 
 function readLocale(locale: "pl" | "en"): Json {

@@ -622,7 +622,7 @@ export function EstimateEditor({
               }
             >
               <EstimateAiPanel
-                versionId={activeVersionId}
+                versionId={activeVersionId ?? ""}
                 workspaceId={estimate.workspaceId}
                 workspaceSlug={workspaceSlug}
                 estimateId={estimate.id}
