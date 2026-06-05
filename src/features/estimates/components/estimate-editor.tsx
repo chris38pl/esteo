@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEstimateAutosave } from "@/features/estimates/hooks/use-estimate-autosave";
 import { useEstimateAdvancedMode } from "@/features/estimates/hooks/use-estimate-advanced-mode";
+import { useEstimateFocusMode } from "@/features/estimates/hooks/use-estimate-focus-mode";
 import type {
   EstimateForEditorClient,
   VersionTreeClient,
@@ -146,6 +147,7 @@ export function EstimateEditor({
   }, []);
   const [activeTab, setActiveTab] = useState<EstimateEditorTabId>("items");
   const { advancedMode, setAdvancedMode } = useEstimateAdvancedMode();
+  const { topPanelHidden, toggleTopPanel } = useEstimateFocusMode();
 
   const requestStatus = estimate.estimateRequest?.status ?? null;
   const isGenerating =
@@ -462,41 +464,43 @@ export function EstimateEditor({
         isPinned={isPinned}
       />
 
-      <div
-        className={cn(
-          "estimate-top-band",
-          isGenerating && "estimate-top-band--stacked",
-          !isGenerating &&
-            (advancedMode ? "estimate-top-band--advanced" : "estimate-top-band--basic"),
-        )}
-      >
-        <div className="estimate-top-band-card min-w-0">
-        <EstimateContextCards
-          requestNumber={estimate.estimateRequest?.requestNumber}
-          customerName={customerData?.fullName}
-          customerEmail={customerData?.email}
-          investmentPropertyType={investmentPropertyType}
-          investmentStreet={addressData?.streetAddress}
-          investmentCity={addressData?.city}
-          requestCreatedAt={estimate.estimateRequest?.createdAt ?? estimate.createdAt}
-          updatedAt={activeVersion?.updatedAt ?? null}
-          updatedByEmail={updatedByEmail}
-          locale={locale}
-        />
-        </div>
-
-        {!isGenerating && (
+      {!topPanelHidden ? (
+        <div
+          className={cn(
+            "estimate-top-band",
+            isGenerating && "estimate-top-band--stacked",
+            !isGenerating &&
+              (advancedMode ? "estimate-top-band--advanced" : "estimate-top-band--basic"),
+          )}
+        >
           <div className="estimate-top-band-card min-w-0">
-            <EstimateRightRail
-              className="h-full w-full min-w-0"
-              items={allItems}
-              marginPercent={marginPercent}
-              currency={estimate.currency}
-              advancedMode={advancedMode}
+            <EstimateContextCards
+              requestNumber={estimate.estimateRequest?.requestNumber}
+              customerName={customerData?.fullName}
+              customerEmail={customerData?.email}
+              investmentPropertyType={investmentPropertyType}
+              investmentStreet={addressData?.streetAddress}
+              investmentCity={addressData?.city}
+              requestCreatedAt={estimate.estimateRequest?.createdAt ?? estimate.createdAt}
+              updatedAt={activeVersion?.updatedAt ?? null}
+              updatedByEmail={updatedByEmail}
+              locale={locale}
             />
           </div>
-        )}
-      </div>
+
+          {!isGenerating ? (
+            <div className="estimate-top-band-card min-w-0">
+              <EstimateRightRail
+                className="h-full w-full min-w-0"
+                items={allItems}
+                marginPercent={marginPercent}
+                currency={estimate.currency}
+                advancedMode={advancedMode}
+              />
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
       {isGenerating ? (
         <EstimateGeneratingSkeleton
@@ -520,6 +524,8 @@ export function EstimateEditor({
                 activeTab={activeTab}
                 onTabChange={setActiveTab}
                 attachmentsCount={0}
+                topPanelHidden={topPanelHidden}
+                onToggleTopPanel={toggleTopPanel}
               />
 
               {activeTab === "items" ? (

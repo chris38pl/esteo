@@ -66,8 +66,13 @@
     },
     "mode": {
       "label": "Tryb edycji",
+      "view": "Widok: {mode}",
       "basic": "Podstawowy",
       "advanced": "Zaawansowany"
+    },
+    "topPanel": {
+      "hide": "Ukryj karty górne",
+      "show": "Pokaż karty górne"
     },
     "tabPlaceholder": "Ta zakładka będzie dostępna wkrótce.",
     "dragHandle": "Przeciągnij, aby zmienić kolejność",

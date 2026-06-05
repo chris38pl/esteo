@@ -188,6 +188,25 @@ export function getEstimateEditorResponsiveCss(): string {
     border-bottom: none;
   }
 }
+@media ${mediaQueryMin(breakpoints.contextTwoCol)} and ${mediaQueryMax(breakpoints.contextFourCol - 1)} {
+  .estimate-context-card {
+    gap: 0.625rem;
+    padding: 0.875rem 1rem;
+  }
+  .estimate-context-card__icon {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.625rem;
+  }
+  .estimate-context-card__icon svg {
+    width: 1rem;
+    height: 1rem;
+  }
+  .estimate-context-card__primary {
+    font-size: 0.75rem;
+    line-height: 1.125rem;
+  }
+}
 @media ${mediaQueryMin(breakpoints.contextFourCol)} {
   .estimate-editor,
   .estimate-editor-max-width {

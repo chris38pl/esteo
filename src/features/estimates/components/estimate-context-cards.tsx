@@ -20,7 +20,7 @@ interface EstimateContextCardsProps {
 }
 
 const iconClassName =
-  "flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary ring-1 ring-primary/10";
+  "estimate-context-card__icon flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary ring-1 ring-primary/10";
 
 export function EstimateContextCards({
   requestNumber,
@@ -98,7 +98,7 @@ export function EstimateContextCards({
             <div
               key={card.key}
               className={cn(
-                "flex min-w-0 items-center gap-3 px-5 py-4",
+                "estimate-context-card flex min-w-0 items-center gap-3 px-5 py-4",
                 "bg-card/95",
               )}
             >
@@ -109,7 +109,7 @@ export function EstimateContextCards({
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
                   {card.heading}
                 </p>
-                <p className="mt-1 truncate text-sm font-semibold text-foreground">
+                <p className="estimate-context-card__primary mt-1 truncate text-sm font-semibold text-foreground">
                   {card.primary}
                 </p>
                 <p className="mt-0.5 truncate text-xs text-muted-foreground">

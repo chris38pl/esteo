@@ -24,6 +24,7 @@ export function EstimateEditorModeSelect({
 }: EstimateEditorModeSelectProps) {
   const t = useTranslations("estimates");
   const value = advancedMode ? "advanced" : "basic";
+  const modeLabel = advancedMode ? t("editor.mode.advanced") : t("editor.mode.basic");
 
   return (
     <DropdownMenu>
@@ -34,7 +35,7 @@ export function EstimateEditorModeSelect({
           className={estimateOutlineButtonClassName}
           aria-label={t("editor.mode.label")}
         >
-          {advancedMode ? t("editor.mode.advanced") : t("editor.mode.basic")}
+          {t("editor.mode.view", { mode: modeLabel })}
           <ChevronDown className="size-3.5 opacity-70" />
         </Button>
       </DropdownMenuTrigger>

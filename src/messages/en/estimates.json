@@ -66,6 +66,7 @@
     },
     "mode": {
       "label": "Editor mode",
+      "view": "View: {mode}",
       "basic": "Basic",
       "advanced": "Advanced"
     },
