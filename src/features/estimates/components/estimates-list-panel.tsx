@@ -111,39 +111,41 @@ export function EstimatesListPanel({
 
       <EstimatesListStatsCards estimates={estimates} locale={locale} />
 
-      <EstimatesListToolbar searchQuery={searchQuery} onSearchQueryChange={setSearchQuery} />
+      <div className="surface-card overflow-hidden p-0">
+        <EstimatesListToolbar searchQuery={searchQuery} onSearchQueryChange={setSearchQuery} />
 
-      {!hasEstimates ? (
-        <div className="surface-card flex flex-col items-center justify-center gap-3 px-6 py-16 text-center">
-          <p className="text-sm text-muted-foreground">{t("page.empty")}</p>
-          <Button variant="outline" onClick={() => setCreateOpen(true)}>
-            {t("page.createFirst")}
-          </Button>
-        </div>
-      ) : !hasFilteredResults ? (
-        <div className="surface-card flex flex-col items-center justify-center px-6 py-16 text-center">
-          <p className="text-sm text-muted-foreground">{t("list.noSearchResults")}</p>
-        </div>
-      ) : (
-        <EstimatesListTable
-          estimates={pageEstimates}
-          workspaceSlug={workspaceSlug}
-          locale={locale}
-          footer={
-            <PaginationControls
-              className="px-4 pb-4"
-              page={safePage}
-              pageSize={pageSize}
-              totalCount={totalCount}
-              totalPages={totalPages}
-              hasPreviousPage={safePage > 1}
-              hasNextPage={safePage < totalPages}
-              onPageChange={setPage}
-              onPageSizeChange={setPageSize}
-            />
-          }
-        />
-      )}
+        {!hasEstimates ? (
+          <div className="flex flex-col items-center justify-center gap-3 px-6 py-16 text-center">
+            <p className="text-sm text-muted-foreground">{t("page.empty")}</p>
+            <Button variant="outline" onClick={() => setCreateOpen(true)}>
+              {t("page.createFirst")}
+            </Button>
+          </div>
+        ) : !hasFilteredResults ? (
+          <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+            <p className="text-sm text-muted-foreground">{t("list.noSearchResults")}</p>
+          </div>
+        ) : (
+          <EstimatesListTable
+            estimates={pageEstimates}
+            workspaceSlug={workspaceSlug}
+            locale={locale}
+            footer={
+              <PaginationControls
+                className="px-4 pb-4"
+                page={safePage}
+                pageSize={pageSize}
+                totalCount={totalCount}
+                totalPages={totalPages}
+                hasPreviousPage={safePage > 1}
+                hasNextPage={safePage < totalPages}
+                onPageChange={setPage}
+                onPageSizeChange={setPageSize}
+              />
+            }
+          />
+        )}
+      </div>
 
       <CreateEstimateModal
         open={createOpen}

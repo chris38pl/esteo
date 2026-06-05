@@ -27,7 +27,7 @@ export function EstimatesListTable({
   const t = useTranslations("estimates");
 
   return (
-    <div className="surface-card overflow-hidden p-0">
+    <>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[36rem] text-sm">
           <thead className="border-b border-border/60 bg-muted/30">
@@ -66,6 +66,6 @@ export function EstimatesListTable({
         </table>
       </div>
       {footer}
-    </div>
+    </>
   );
 }
