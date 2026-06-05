@@ -23,11 +23,13 @@ export function WorkspaceInvitationCard({
   invitation,
   locale,
   variant = "card",
+  heroPresentation = "page",
   onResolved,
 }: {
   invitation: ReceivedInvitationView;
   locale: Locale;
   variant?: "card" | "embedded" | "hero";
+  heroPresentation?: "page" | "modal";
   onResolved?: () => void;
 }) {
   const t = useTranslations("workspaces.invitations");
@@ -139,7 +141,14 @@ export function WorkspaceInvitationCard({
 
   if (variant === "hero") {
     return (
-      <article className="w-full overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm md:rounded-3xl md:bg-card/90 md:backdrop-blur-xl dark:bg-card md:dark:bg-card/75">
+      <article
+        className={cn(
+          "w-full overflow-hidden rounded-2xl border border-border/60 shadow-sm",
+          heroPresentation === "modal"
+            ? "bg-card/90 backdrop-blur-xl dark:bg-card/75"
+            : "bg-card md:rounded-3xl md:bg-card/90 md:backdrop-blur-xl dark:bg-card md:dark:bg-card/75",
+        )}
+      >
         <div className="space-y-7 px-5 py-8 sm:px-6 sm:py-10 md:space-y-8 md:px-10 md:py-12">
           <header className="space-y-4 text-center">
             <div className="flex justify-center">

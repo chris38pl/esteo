@@ -8,6 +8,47 @@ import { cn } from "@/lib/utils";
 export const INVITATIONS_BG_LIGHT = "/invitations/invitations-light.png";
 export const INVITATIONS_BG_DARK = "/invitations/invitations-dark.png";
 
+export function InvitationsHubBackdrop({
+  className,
+  imageSizes = "75vw",
+  alwaysVisible = false,
+  priority = true,
+}: {
+  className?: string;
+  imageSizes?: string;
+  alwaysVisible?: boolean;
+  priority?: boolean;
+}) {
+  return (
+    <div
+      aria-hidden
+      className={cn(
+        "pointer-events-none absolute inset-0",
+        alwaysVisible ? "block" : "hidden md:block",
+        className,
+      )}
+    >
+      <Image
+        src={INVITATIONS_BG_LIGHT}
+        alt=""
+        fill
+        priority={priority}
+        sizes={imageSizes}
+        className="object-cover object-center dark:hidden"
+      />
+      <Image
+        src={INVITATIONS_BG_DARK}
+        alt=""
+        fill
+        priority={priority}
+        sizes={imageSizes}
+        className="hidden object-cover object-center dark:block"
+      />
+      <div className="absolute inset-0 bg-background/15 dark:bg-black/25" />
+    </div>
+  );
+}
+
 export function InvitationsHubShell({
   children,
   className,
@@ -29,25 +70,7 @@ export function InvitationsHubShell({
           "md:mx-auto md:min-h-[min(85dvh,760px)] md:w-[75vw] md:max-w-5xl md:overflow-hidden md:rounded-3xl md:border md:border-border/60 md:shadow-sm",
         )}
       >
-        <div aria-hidden className="pointer-events-none absolute inset-0 hidden md:block">
-          <Image
-            src={INVITATIONS_BG_LIGHT}
-            alt=""
-            fill
-            priority
-            sizes="75vw"
-            className="object-cover object-center dark:hidden"
-          />
-          <Image
-            src={INVITATIONS_BG_DARK}
-            alt=""
-            fill
-            priority
-            sizes="75vw"
-            className="hidden object-cover object-center dark:block"
-          />
-          <div className="absolute inset-0 bg-background/15 dark:bg-black/25" />
-        </div>
+        <InvitationsHubBackdrop />
 
         <div
           className={cn(
