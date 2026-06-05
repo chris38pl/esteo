@@ -1,4 +1,4 @@
-export type AuthProviderKind = "google" | "standard";
+export type AuthProviderKind = "google" | "apple" | "standard";
 
 type ClerkUserLike = {
   firstName: string | null;
@@ -14,7 +14,16 @@ export function resolveAuthProvider(
     return provider === "google" || provider === "oauth_google";
   });
 
-  return hasGoogle ? "google" : "standard";
+  if (hasGoogle) {
+    return "google";
+  }
+
+  const hasApple = externalAccounts.some((account) => {
+    const provider = account.provider.toLowerCase();
+    return provider === "apple" || provider === "oauth_apple";
+  });
+
+  return hasApple ? "apple" : "standard";
 }
 
 export function resolveUserDisplayName(clerkUser: ClerkUserLike): string | null {

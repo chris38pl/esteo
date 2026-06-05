@@ -49,7 +49,7 @@ export type AdminUserRow = {
   avatarUrl: string | null;
   avatarPreset: string | null;
   plan: SubscriptionPlan;
-  provider: "google" | "standard";
+  provider: "google" | "apple" | "standard";
   workspaceCount: number;
   estimateRequestCount: number;
   estimateCount: number;

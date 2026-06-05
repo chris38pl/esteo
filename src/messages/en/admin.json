@@ -18,6 +18,7 @@
     },
     "provider": {
       "google": "Google",
+      "apple": "Apple",
       "standard": "Standard"
     },
     "plan": {
