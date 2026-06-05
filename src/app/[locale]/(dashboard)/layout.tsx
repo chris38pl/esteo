@@ -17,7 +17,11 @@ import {
 import { RESERVED_DASHBOARD_SLUGS } from "@/features/workspaces/server/slug-availability";
 import { toCurrentUserProfile } from "@/lib/avatars/user-avatar-presets";
 import { requireAuth } from "@/server/auth/require-auth";
-import { canUserCreateWorkspace, countOwnedWorkspaces } from "@/server/permissions/entitlements";
+import {
+  canInviteWorkspaceMembers,
+  canUserCreateWorkspace,
+  countOwnedWorkspaces,
+} from "@/server/permissions/entitlements";
 import { isPlatformAdmin } from "@/server/permissions/require-workspace";
 import { listPinnedEstimatesForSidebar } from "@/features/estimates/server/pinned-estimates";
 import {
@@ -56,6 +60,7 @@ export default async function DashboardLayout({
         memberTotalCount={0}
         canCreateWorkspace={false}
         canCreateAdditionalWorkspace={false}
+        canInviteMembers={false}
         billingSidebarState={{ variant: "upsell", currentPlan: "FREE", targetPlan: "PRO" }}
         isPlatformAdmin={isPlatformAdmin(user)}
         currentUser={currentUser}
@@ -108,9 +113,12 @@ export default async function DashboardLayout({
     isOwner: workspace.ownerId === user.id,
   }));
 
-  const membersData = activeWorkspaceId
-    ? await getActiveWorkspaceMembersData(activeWorkspaceId)
-    : { previews: [], totalCount: 0 };
+  const [membersData, canInviteMembers] = activeWorkspaceId
+    ? await Promise.all([
+        getActiveWorkspaceMembersData(activeWorkspaceId),
+        canInviteWorkspaceMembers(activeWorkspaceId),
+      ])
+    : [{ previews: [], totalCount: 0 }, false];
 
   const activeWorkspaceSummary = workspaceSummaries.find((w) => w.id === activeWorkspaceId);
   const pinnedEstimates =
@@ -130,6 +138,7 @@ export default async function DashboardLayout({
       memberTotalCount={membersData.totalCount}
       canCreateWorkspace={canCreateWorkspace}
       canCreateAdditionalWorkspace={canCreateAdditionalWorkspace}
+      canInviteMembers={canInviteMembers}
       billingSidebarState={billingSidebarState}
       isPlatformAdmin={isPlatformAdmin(user)}
       currentUser={currentUser}

@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import { WorkspaceMemberStack } from "@/components/layout/app-sidebar/workspace-member-stack";
+import { WorkspaceInvitePopover } from "@/components/layout/app-sidebar/workspace-invite-popover";
 import { WorkspacePlanBadge } from "@/components/layout/app-sidebar/workspace-plan-badge";
 import { WorkspaceSwitcherMenuContent } from "@/components/layout/app-sidebar/workspace-switcher-menu";
 import {
@@ -32,7 +33,8 @@ export function ActiveWorkspaceCard({
 }) {
   const t = useTranslations("sidebar.workspaceCard");
   const { resolvedTheme } = useTheme();
-  const { activeWorkspace, billingSidebarState, isSwitching } = useWorkspaceContext();
+  const { activeWorkspace, billingSidebarState, isSwitching, locale, canInviteMembers } =
+    useWorkspaceContext();
 
   const workspace = activeWorkspace;
 
@@ -111,6 +113,19 @@ export function ActiveWorkspaceCard({
                 totalCount={memberTotalCount}
                 size="sm"
                 surface="hero"
+                showInvite={workspace.isOwner}
+                inviteControl={
+                  workspace.isOwner ? (
+                    <WorkspaceInvitePopover
+                      workspaceId={workspace.id}
+                      locale={locale}
+                      canInviteMembers={canInviteMembers}
+                      avatarSize={20}
+                      inviteIconSize={10}
+                      surface="hero"
+                    />
+                  ) : undefined
+                }
               />
             </div>
             </div>

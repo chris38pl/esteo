@@ -35,6 +35,7 @@ type WorkspaceContextValue = {
   memberTotalCount: number;
   canCreateWorkspace: boolean;
   canCreateAdditionalWorkspace: boolean;
+  canInviteMembers: boolean;
   billingSidebarState: BillingSidebarState;
   isPlatformAdmin: boolean;
   currentUser: CurrentUserProfile;
@@ -55,6 +56,7 @@ export function WorkspaceProvider({
   activeWorkspaceId,
   canCreateWorkspace,
   canCreateAdditionalWorkspace,
+  canInviteMembers = false,
   billingSidebarState,
   isPlatformAdmin,
   currentUser,
@@ -70,6 +72,7 @@ export function WorkspaceProvider({
   activeWorkspaceId: string | null;
   canCreateWorkspace: boolean;
   canCreateAdditionalWorkspace: boolean;
+  canInviteMembers?: boolean;
   billingSidebarState: BillingSidebarState;
   isPlatformAdmin: boolean;
   currentUser: CurrentUserProfile;
@@ -98,6 +101,7 @@ export function WorkspaceProvider({
       memberTotalCount,
       canCreateWorkspace,
       canCreateAdditionalWorkspace,
+      canInviteMembers,
       billingSidebarState,
       isPlatformAdmin,
       currentUser,
@@ -125,6 +129,7 @@ export function WorkspaceProvider({
       memberTotalCount,
       canCreateWorkspace,
       canCreateAdditionalWorkspace,
+      canInviteMembers,
       billingSidebarState,
       isPlatformAdmin,
       currentUser,

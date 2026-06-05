@@ -47,6 +47,7 @@ export function WorkspaceMemberStack({
   totalCount,
   showInvite = true,
   onInviteClick,
+  inviteControl,
   size = "md",
   surface = "panel",
 }: {
@@ -54,6 +55,7 @@ export function WorkspaceMemberStack({
   totalCount: number;
   showInvite?: boolean;
   onInviteClick?: () => void;
+  inviteControl?: React.ReactNode;
   size?: keyof typeof SIZE_CONFIG;
   surface?: "hero" | "panel";
 }) {
@@ -103,21 +105,23 @@ export function WorkspaceMemberStack({
         ) : null}
       </div>
       {showInvite ? (
-        <button
-          type="button"
-          aria-label={t("inviteMember")}
-          onClick={onInviteClick}
-          className={cn(
-            "inline-flex shrink-0 items-center justify-center rounded-full ring-[1.5px]",
-            onHero
-              ? "border border-dashed border-white/70 bg-white/95 text-slate-800 ring-white/90 hover:border-slate-400 hover:bg-white hover:text-slate-900 focus-visible:ring-white/80"
-              : "border border-dashed border-border/65 bg-card text-muted-foreground ring-card hover:border-border hover:bg-accent/40 hover:text-foreground focus-visible:ring-ring/40",
-            "transition-colors focus-visible:outline-none focus-visible:ring-2",
-          )}
-          style={{ width: config.avatar, height: config.avatar }}
-        >
-          <Plus style={{ width: config.inviteIcon, height: config.inviteIcon }} strokeWidth={2.25} />
-        </button>
+        inviteControl ?? (
+          <button
+            type="button"
+            aria-label={t("inviteMember")}
+            onClick={onInviteClick}
+            className={cn(
+              "inline-flex shrink-0 items-center justify-center rounded-full ring-[1.5px]",
+              onHero
+                ? "border border-dashed border-white/70 bg-white/95 text-slate-800 ring-white/90 hover:border-slate-400 hover:bg-white hover:text-slate-900 focus-visible:ring-white/80"
+                : "border border-dashed border-border/65 bg-card text-muted-foreground ring-card hover:border-border hover:bg-accent/40 hover:text-foreground focus-visible:ring-ring/40",
+              "transition-colors focus-visible:outline-none focus-visible:ring-2",
+            )}
+            style={{ width: config.avatar, height: config.avatar }}
+          >
+            <Plus style={{ width: config.inviteIcon, height: config.inviteIcon }} strokeWidth={2.25} />
+          </button>
+        )
       ) : null}
     </div>
   );
