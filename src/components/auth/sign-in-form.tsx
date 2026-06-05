@@ -6,6 +6,11 @@ import * as SignIn from "@clerk/elements/sign-in";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
+import { AuthLoadingIndicator } from "@/components/auth/auth-loading-indicator";
+import {
+  SignInSecondFactorPrepare,
+  SignInSecondFactorResend,
+} from "@/components/auth/sign-in-second-factor-prepare";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -20,6 +25,7 @@ export function SignInForm({ locale }: { locale: string }) {
     <SignIn.Root
       routing="path"
       path={`/${locale}/sign-in`}
+      fallback={<AuthLoadingIndicator message={t("signIn.loading")} />}
     >
       <Clerk.GlobalError className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive" />
       <div id="clerk-captcha" />
@@ -137,6 +143,43 @@ export function SignInForm({ locale }: { locale: string }) {
             </Link>
           </p>
         </div>
+      </SignIn.Step>
+
+      <SignIn.Step name="verifications">
+        <SignIn.Strategy name="email_code">
+          <SignInSecondFactorPrepare />
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              {t("signIn.verifyEmailTitle")}{" "}
+              <span className="font-medium text-foreground">
+                <SignIn.SafeIdentifier />
+              </span>
+            </p>
+
+            <Clerk.Field name="code" className="space-y-2">
+              <Clerk.Label asChild>
+                <Label>{t("fields.code")}</Label>
+              </Clerk.Label>
+              <Clerk.Input asChild required>
+                <Input inputMode="numeric" autoComplete="one-time-code" className="h-10 rounded-lg" />
+              </Clerk.Input>
+              <Clerk.FieldError className="text-xs text-destructive" />
+            </Clerk.Field>
+
+            <SignIn.Action submit asChild>
+              <Button type="submit" className="h-11 w-full rounded-lg">
+                {t("signIn.verifySubmit")}
+              </Button>
+            </SignIn.Action>
+
+            <SignInSecondFactorResend
+              resendLabel={t("signIn.resendCode")}
+              resendWaitLabel={(seconds) =>
+                t("signIn.resendCodeWait", { seconds })
+              }
+            />
+          </div>
+        </SignIn.Strategy>
       </SignIn.Step>
 
       <SignIn.Step name="forgot-password">
