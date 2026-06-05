@@ -50,7 +50,7 @@ type WorkspaceContextValue = {
   isSwitching: boolean;
 };
 
-const WorkspaceContext = createContext<WorkspaceContextValue | null>(null);
+export const WorkspaceContext = createContext<WorkspaceContextValue | null>(null);
 
 export function WorkspaceProvider({
   workspaces,

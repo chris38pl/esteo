@@ -1,11 +1,15 @@
 "use client";
 
+import { useContext } from "react";
 import { ChevronDown, LogOut } from "lucide-react";
 import { SignOutButton } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 
 import { UserAvatar } from "@/components/avatars/user-avatar";
-import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
+import {
+  WorkspaceContext,
+  type CurrentUserProfile,
+} from "@/components/layout/app-sidebar/workspace-context";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,11 +21,19 @@ import { cn } from "@/lib/utils";
 
 export function FocusedDashboardUserMenu({
   variant = "default",
+  currentUser: currentUserProp,
 }: {
   variant?: "default" | "compact";
+  currentUser?: CurrentUserProfile;
 }) {
   const t = useTranslations("navbar.userMenu");
-  const { currentUser } = useWorkspaceContext();
+  const workspaceContext = useContext(WorkspaceContext);
+  const currentUser = currentUserProp ?? workspaceContext?.currentUser;
+
+  if (!currentUser) {
+    return null;
+  }
+
   const compact = variant === "compact";
 
   const userName = currentUser.name?.trim() || currentUser.email;

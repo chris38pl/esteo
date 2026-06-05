@@ -5,10 +5,15 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { EstimateRequestForm } from "@/features/estimate-requests/components/estimate-request-form";
+import { PublicEstimateHeader } from "@/features/estimate-requests/components/public-estimate-header";
 import { getPublicEstimateRequestPath } from "@/features/estimate-requests/routes";
 import { getPublicEstimateRequestPageData } from "@/features/estimate-requests/server/public-service";
+import { viewerHasWorkspaceAccess } from "@/features/workspaces/server/workspace-access";
+import { toCurrentUserProfile } from "@/lib/avatars/user-avatar-presets";
+import { DatabaseUnavailableError } from "@/lib/database/database-unavailable-error";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
+import { getCurrentUser } from "@/server/auth/get-current-user";
 
 const benefits = [
   {
@@ -77,8 +82,31 @@ export default async function PublicEstimateRequestPage({ params }: { params: Pa
 
   const t = await getTranslations({ locale: resolvedLocale, namespace: "estimateRequests" });
 
+  let memberHeader: { backHref: string; currentUser: ReturnType<typeof toCurrentUserProfile> } | null =
+    null;
+
+  try {
+    const user = await getCurrentUser();
+    if (user && (await viewerHasWorkspaceAccess(user.id, pageData.workspace.id))) {
+      memberHeader = {
+        backHref: `/${resolvedLocale}/dashboard/${pageData.workspace.slug}/estimates`,
+        currentUser: toCurrentUserProfile(user),
+      };
+    }
+  } catch (error) {
+    if (!(error instanceof DatabaseUnavailableError)) {
+      throw error;
+    }
+  }
+
   return (
     <main className="min-h-dvh bg-background text-foreground">
+      {memberHeader ? (
+        <PublicEstimateHeader
+          backHref={memberHeader.backHref}
+          currentUser={memberHeader.currentUser}
+        />
+      ) : null}
       <div className="relative isolate overflow-hidden">
         <div className="absolute inset-0 -z-10">
           <Image
