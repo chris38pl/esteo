@@ -1,17 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Building2,
-  CalendarClock,
-  FileText,
-  MoreVertical,
-  Pencil,
-  User,
-} from "lucide-react";
+import { FileText, MoreVertical, Pencil } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -19,26 +11,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { EstimateListContextCell } from "@/features/estimates/components/estimate-list-context-cell";
+import { EstimateListStatusBadge } from "@/features/estimates/components/estimate-list-status-badge";
 import type { EstimateListPageItem } from "@/features/estimates/server/list-estimates-page-data";
 import { formatCurrency, type Currency } from "@/i18n/formatters";
 import type { Locale } from "@/lib/locale";
-import type { EstimateVersionStatus } from "@prisma/client";
-
-const versionStatusVariant: Record<
-  EstimateVersionStatus,
-  "default" | "secondary" | "outline"
-> = {
-  DRAFT: "secondary",
-  SENT: "default",
-  ARCHIVED: "outline",
-};
 
 interface EstimateListRowProps {
   estimate: EstimateListPageItem;
   workspaceSlug: string;
   locale: Locale;
 }
+
+const iconClassName =
+  "flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/8 text-primary ring-1 ring-primary/10";
 
 export function EstimateListRow({
   estimate,
@@ -75,104 +60,104 @@ export function EstimateListRow({
   const toCurrency = (code: string): Currency => (code === "EUR" ? "EUR" : "PLN");
 
   const displayTitle = estimate.title ?? `Estimate ${estimate.id.slice(-6)}`;
+  const subline = request?.requestNumber ?? estimate.id.slice(-8).toUpperCase();
 
   return (
-    <div className="flex min-w-0 items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/30 sm:gap-4">
-      <div className="min-w-[7.5rem] flex-1 shrink-0 basis-32">
-        <Link
-          href={href}
-          className="line-clamp-2 font-medium underline-offset-4 hover:text-primary hover:underline"
-        >
-          {displayTitle}
-        </Link>
+    <tr className="border-b border-border/60 transition-colors last:border-0 hover:bg-muted/30">
+      <td className="px-4 py-3">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className={iconClassName}>
+            <FileText className="size-4" />
+          </span>
+          <div className="min-w-0">
+            <Link
+              href={href}
+              className="line-clamp-2 font-semibold underline-offset-4 hover:text-primary hover:underline"
+            >
+              {displayTitle}
+            </Link>
+            <p className="mt-0.5 truncate text-xs text-muted-foreground">{subline}</p>
+          </div>
+        </div>
+      </td>
+
+      <td className="hidden px-4 py-3 md:table-cell">
+        <p className="truncate font-medium">{request?.requestNumber ?? t("context.empty")}</p>
         <p className="mt-0.5 truncate text-xs text-muted-foreground">
-          {request?.requestNumber ?? t("context.empty")}
+          {request?.createdAt
+            ? t("context.createdOn", { date: formatDate(request.createdAt) })
+            : t("context.noDate")}
         </p>
-      </div>
+      </td>
 
-      <div className="hidden min-w-0 items-center gap-6 md:flex lg:gap-7">
-        <EstimateListContextCell
-          icon={FileText}
-          heading={t("context.request")}
-          primary={request?.requestNumber ?? t("context.empty")}
-          secondary={
-            request?.createdAt
-              ? t("context.createdOn", { date: formatDate(request.createdAt) })
-              : t("context.noDate")
-          }
-        />
+      <td className="hidden px-4 py-3 lg:table-cell">
+        <p className="truncate font-medium">
+          {ctx.investmentPropertyType ?? t("context.investmentFallback")}
+        </p>
+        <p className="mt-0.5 truncate text-xs text-muted-foreground">
+          {[ctx.investmentStreet, ctx.investmentCity].filter(Boolean).join(", ") ||
+            t("context.noAddress")}
+        </p>
+      </td>
 
-        <EstimateListContextCell
-          className="hidden lg:flex"
-          icon={Building2}
-          heading={t("context.investment")}
-          primary={ctx.investmentPropertyType ?? t("context.investmentFallback")}
-          secondary={
-            [ctx.investmentStreet, ctx.investmentCity].filter(Boolean).join(", ") ||
-            t("context.noAddress")
-          }
-        />
+      <td className="hidden px-4 py-3 xl:table-cell">
+        <p className="truncate font-medium">
+          {ctx.customerName ?? ctx.customerEmail ?? t("context.empty")}
+        </p>
+        <p className="mt-0.5 truncate text-xs text-muted-foreground">
+          {ctx.customerName && ctx.customerEmail ? ctx.customerEmail : t("context.noEmail")}
+        </p>
+      </td>
 
-        <EstimateListContextCell
-          className="hidden xl:flex"
-          icon={User}
-          heading={t("context.client")}
-          primary={ctx.customerName ?? ctx.customerEmail ?? t("context.empty")}
-          secondary={
-            ctx.customerName && ctx.customerEmail
-              ? ctx.customerEmail
-              : t("context.noEmail")
-          }
-        />
-
-        <EstimateListContextCell
-          className="hidden 2xl:flex"
-          icon={CalendarClock}
-          heading={t("context.lastUpdated")}
-          primary={formatDateTime(updatedAt)}
-          secondary={t("context.editedBy", {
+      <td className="hidden px-4 py-3 2xl:table-cell">
+        <p className="truncate font-medium tabular-nums">{formatDateTime(updatedAt)}</p>
+        <p className="mt-0.5 truncate text-xs text-muted-foreground">
+          {t("context.editedBy", {
             user: ctx.updatedByEmail ?? t("context.system"),
           })}
-        />
-      </div>
+        </p>
+      </td>
 
-      <div className="shrink-0 text-right">
-        <p className="font-semibold tabular-nums">
+      <td className="px-4 py-3 text-right">
+        <p className="font-semibold tabular-nums whitespace-nowrap">
           {formatCurrency(grossTotal, locale, toCurrency(estimate.currency))}
         </p>
-      </div>
+      </td>
 
-      <div className="shrink-0">
+      <td className="px-4 py-3">
         {versionStatus ? (
-          <Badge variant={versionStatusVariant[versionStatus]}>
-            {t(`status.${versionStatus}`)}
-          </Badge>
+          <EstimateListStatusBadge
+            status={versionStatus}
+            label={t(`status.${versionStatus}`)}
+          />
         ) : (
           <span className="text-xs text-muted-foreground">—</span>
         )}
-      </div>
+      </td>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            className="size-8 shrink-0 rounded-md"
-            aria-label={t("list.actions.more")}
-          >
-            <MoreVertical className="size-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem asChild>
-            <Link href={href} className="gap-2">
-              <Pencil className="size-4" />
-              {t("list.actions.edit")}
-            </Link>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+      <td className="px-2 py-3">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              className="size-8 shrink-0 rounded-md"
+              aria-label={t("list.actions.more")}
+            >
+              <MoreVertical className="size-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem asChild>
+              <Link href={href} className="gap-2">
+                <Pencil className="size-4" />
+                {t("list.actions.edit")}
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </td>
+    </tr>
   );
 }

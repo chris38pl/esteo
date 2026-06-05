@@ -1,17 +1,36 @@
 {
   "page": {
     "title": "Wyceny",
+    "subtitle": "Zarządzaj wszystkimi wycenami w jednym miejscu.",
     "newEstimate": "Nowa wycena",
     "empty": "Brak wycen.",
     "createFirst": "Utwórz pierwszą wycenę"
   },
   "list": {
+    "searchPlaceholder": "Szukaj wyceny, klienta, inwestycji…",
+    "noSearchResults": "Brak wyników dla podanej frazy.",
+    "stats": {
+      "total": "Wszystkie wyceny",
+      "totalValue": "Wartość wycen",
+      "sent": "Wysłane",
+      "conversion": "Konwersja"
+    },
+    "toolbar": {
+      "filters": "Filtry",
+      "dateRange": "Zakres dat",
+      "more": "Więcej"
+    },
     "columns": {
       "estimate": "Wycena",
+      "estimateName": "Nazwa wyceny",
       "status": "Status",
       "request": "Zapytanie",
+      "inquiry": "Zapytanie",
+      "investment": "Inwestycja",
+      "client": "Klient",
       "versions": "Wersje",
-      "updated": "Zaktualizowano"
+      "updated": "Zaktualizowano",
+      "value": "Wartość"
     },
     "actions": {
       "more": "Więcej opcji",

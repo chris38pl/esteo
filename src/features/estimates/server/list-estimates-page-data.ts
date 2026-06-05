@@ -14,7 +14,13 @@ import {
 import { resolveUserEmailsByIds } from "@/features/users/server/resolve-user-emails";
 import type { Locale } from "@/lib/locale";
 
-export type EstimateListPageItem = EstimateListItem & {
+type EstimateListLatestVersion = NonNullable<EstimateListItem["latestVersion"]> & {
+  totalNet: number;
+  totalGross: number;
+};
+
+export type EstimateListPageItem = Omit<EstimateListItem, "latestVersion"> & {
+  latestVersion: EstimateListLatestVersion | null;
   listContext: {
     investmentPropertyType: string | null;
     customerName: string | null;

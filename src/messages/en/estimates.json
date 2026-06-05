@@ -1,17 +1,36 @@
 {
   "page": {
     "title": "Estimates",
+    "subtitle": "Manage all estimates in one place.",
     "newEstimate": "New estimate",
     "empty": "No estimates yet.",
     "createFirst": "Create your first estimate"
   },
   "list": {
+    "searchPlaceholder": "Search estimates, clients, investments…",
+    "noSearchResults": "No results match your search.",
+    "stats": {
+      "total": "All estimates",
+      "totalValue": "Total value",
+      "sent": "Sent",
+      "conversion": "Conversion"
+    },
+    "toolbar": {
+      "filters": "Filters",
+      "dateRange": "Date range",
+      "more": "More"
+    },
     "columns": {
       "estimate": "Estimate",
+      "estimateName": "Estimate name",
       "status": "Status",
       "request": "Request",
+      "inquiry": "Inquiry",
+      "investment": "Investment",
+      "client": "Client",
       "versions": "Versions",
-      "updated": "Updated"
+      "updated": "Updated",
+      "value": "Value"
     },
     "actions": {
       "more": "More options",

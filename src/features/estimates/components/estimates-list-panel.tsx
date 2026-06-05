@@ -1,12 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { PaginationControls } from "@/components/shared/pagination-controls";
 import { Button } from "@/components/ui/button";
 import { CreateEstimateModal } from "./create-estimate-modal";
-import { EstimateListRow } from "./estimate-list-row";
+import { EstimatesListStatsCards } from "./estimates-list-stats-cards";
+import { EstimatesListTable } from "./estimates-list-table";
+import { EstimatesListToolbar } from "./estimates-list-toolbar";
+import { estimatePrimaryButtonClassName } from "./estimate-action-button-styles";
 import type { EstimateListPageItem } from "@/features/estimates/server/list-estimates-page-data";
 import type { PublicEstimateRequestPageData } from "@/features/estimate-requests/server/public-service";
 import type { Locale } from "@/lib/locale";
@@ -19,6 +23,27 @@ interface EstimatesListPanelProps {
   locale: Locale;
 }
 
+const DEFAULT_PAGE_SIZE = 10;
+
+function matchesSearch(estimate: EstimateListPageItem, query: string): boolean {
+  const ctx = estimate.listContext;
+  const request = estimate.estimateRequest;
+  const haystack = [
+    estimate.title,
+    request?.requestNumber,
+    ctx.customerName,
+    ctx.customerEmail,
+    ctx.investmentPropertyType,
+    ctx.investmentStreet,
+    ctx.investmentCity,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  return haystack.includes(query);
+}
+
 export function EstimatesListPanel({
   estimates,
   createFormData,
@@ -28,37 +53,96 @@ export function EstimatesListPanel({
 }: EstimatesListPanelProps) {
   const t = useTranslations("estimates");
   const [createOpen, setCreateOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+
+  const filteredEstimates = useMemo(() => {
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+    const list = normalizedQuery
+      ? estimates.filter((estimate) => matchesSearch(estimate, normalizedQuery))
+      : [...estimates];
+
+    list.sort((a, b) => {
+      const aDate = a.latestVersion?.updatedAt ?? a.createdAt;
+      const bDate = b.latestVersion?.updatedAt ?? b.createdAt;
+      return bDate.getTime() - aDate.getTime();
+    });
+
+    return list;
+  }, [estimates, searchQuery]);
+
+  const totalCount = filteredEstimates.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const pageEstimates = filteredEstimates.slice(
+    (safePage - 1) * pageSize,
+    safePage * pageSize,
+  );
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (page !== safePage) {
+      setPage(safePage);
+    }
+  }, [page, safePage]);
+
+  const hasEstimates = estimates.length > 0;
+  const hasFilteredResults = filteredEstimates.length > 0;
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{t("page.title")}</h1>
-        <Button onClick={() => setCreateOpen(true)} className="gap-2">
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0 space-y-1">
+          <h1 className="text-2xl font-semibold tracking-tight">{t("page.title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("page.subtitle")}</p>
+        </div>
+        <Button
+          onClick={() => setCreateOpen(true)}
+          className={estimatePrimaryButtonClassName}
+        >
           <Plus className="size-4" />
           {t("page.newEstimate")}
         </Button>
       </div>
 
-      {estimates.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed py-16 text-center">
-          <p className="text-muted-foreground text-sm">{t("page.empty")}</p>
+      <EstimatesListStatsCards estimates={estimates} locale={locale} />
+
+      <EstimatesListToolbar searchQuery={searchQuery} onSearchQueryChange={setSearchQuery} />
+
+      {!hasEstimates ? (
+        <div className="surface-card flex flex-col items-center justify-center gap-3 px-6 py-16 text-center">
+          <p className="text-sm text-muted-foreground">{t("page.empty")}</p>
           <Button variant="outline" onClick={() => setCreateOpen(true)}>
             {t("page.createFirst")}
           </Button>
         </div>
-      ) : (
-        <div className="overflow-x-auto rounded-md border">
-          <div className="min-w-[20rem] divide-y">
-            {estimates.map((estimate) => (
-              <EstimateListRow
-                key={estimate.id}
-                estimate={estimate}
-                workspaceSlug={workspaceSlug}
-                locale={locale}
-              />
-            ))}
-          </div>
+      ) : !hasFilteredResults ? (
+        <div className="surface-card flex flex-col items-center justify-center px-6 py-16 text-center">
+          <p className="text-sm text-muted-foreground">{t("list.noSearchResults")}</p>
         </div>
+      ) : (
+        <EstimatesListTable
+          estimates={pageEstimates}
+          workspaceSlug={workspaceSlug}
+          locale={locale}
+          footer={
+            <PaginationControls
+              className="px-4 pb-4"
+              page={safePage}
+              pageSize={pageSize}
+              totalCount={totalCount}
+              totalPages={totalPages}
+              hasPreviousPage={safePage > 1}
+              hasNextPage={safePage < totalPages}
+              onPageChange={setPage}
+              onPageSizeChange={setPageSize}
+            />
+          }
+        />
       )}
 
       <CreateEstimateModal
