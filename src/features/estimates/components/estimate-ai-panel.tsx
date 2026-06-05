@@ -2,7 +2,7 @@
 
 
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 
 import { Bot, Check, Loader2, RotateCcw, Send, X } from "lucide-react";
 
@@ -152,7 +152,14 @@ export function EstimateAiPanel({
 
   const [isUndoing, startUndoTransition] = useTransition();
 
+  const scrollBodyRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    if (!pendingEdit) return;
+    const scrollBody = scrollBodyRef.current;
+    if (!scrollBody) return;
+    scrollBody.scrollTop = scrollBody.scrollHeight;
+  }, [pendingEdit]);
 
   const handleSend = () => {
 
@@ -371,159 +378,99 @@ export function EstimateAiPanel({
 
 
 
-      <div className="estimate-ai-messages mb-3 flex flex-col gap-2 rounded-xl border bg-muted/20 p-3">
-
-        {messages.length === 0 && (
-
-          <p className="text-xs leading-relaxed text-muted-foreground">{t("ai.emptyHint")}</p>
-
-        )}
-
-        {messages.map((msg, i) => (
-
-          <div
-
-            key={msg.id ?? i}
-
-            className={
-
-              msg.role === "user"
-
-                ? "self-end rounded-xl bg-primary px-3 py-2 text-xs text-primary-foreground max-w-[85%] shadow-sm"
-
-                : "self-start rounded-xl bg-background px-3 py-2 text-xs max-w-[85%] shadow-sm"
-
-            }
-
-          >
-
-            {msg.content}
-
-          </div>
-
-        ))}
-
-        {isPending && (
-
-          <div className="flex items-center gap-2 self-start rounded-xl bg-background px-3 py-2 text-xs shadow-sm">
-
-            <Loader2 className="size-3 animate-spin" />
-
-            {t("ai.thinking")}
-
-          </div>
-
-        )}
-
-      </div>
-
-
-
-      {pendingEdit && (
-
-        <div className="mb-3 shrink-0 rounded-xl border border-amber-200 bg-amber-50 p-3 shadow-sm dark:border-amber-800 dark:bg-amber-950/30">
-
-          <p className="mb-2 text-xs font-semibold">{t("ai.proposed")}</p>
-
-          <div className="mb-2 space-y-1 text-xs text-muted-foreground">
-
-            <p>
-
-              {t("ai.impactBefore", {
-
-                gross: pendingEdit.simulatedImpact.before.gross.toLocaleString(locale),
-
-              })}
-
-            </p>
-
-            <p>
-
-              {t("ai.impactAfter", {
-
-                gross: pendingEdit.simulatedImpact.after.gross.toLocaleString(locale),
-
-              })}
-
-            </p>
-
-            <p>
-
-              {t("ai.impactDiff", {
-
-                diff: pendingEdit.simulatedImpact.difference.gross.toLocaleString(locale, {
-
-                  signDisplay: "exceptZero",
-
-                }),
-
-              })}
-
-            </p>
-
-            {pendingEdit.guidance.financialTarget && (
-
-              <p>
-
-                {t("ai.targetProgress", {
-
-                  target: pendingEdit.guidance.financialTarget.targetValue.toLocaleString(
-
-                    locale,
-
-                  ),
-
-                  after: pendingEdit.simulatedImpact.after.gross.toLocaleString(locale),
-
-                })}
-
-              </p>
-
-            )}
-
-          </div>
-
-          {pendingEdit.warnings.length > 0 && (
-
-            <ul className="mb-2 list-disc pl-4 text-xs text-amber-800 dark:text-amber-200">
-
-              {pendingEdit.warnings.map((warning, index) => (
-
-                <li key={`${warning.code}-${index}`}>{warning.message}</li>
-
-              ))}
-
-            </ul>
-
+      <div ref={scrollBodyRef} className="estimate-ai-scroll-body mb-3 flex flex-col gap-3">
+        <div className="estimate-ai-messages flex flex-col gap-2 rounded-xl border bg-muted/20 p-3">
+          {messages.length === 0 && (
+            <p className="text-xs leading-relaxed text-muted-foreground">{t("ai.emptyHint")}</p>
           )}
 
-          <div className="flex gap-2">
-
-            <Button
-              size="sm"
-              className="h-9 flex-1 gap-1.5 rounded-lg"
-              onClick={handleApprove}
-              disabled={readOnly || isPending}
+          {messages.map((msg, i) => (
+            <div
+              key={msg.id ?? i}
+              className={
+                msg.role === "user"
+                  ? "self-end max-w-[85%] break-words rounded-xl bg-primary px-3 py-2 text-xs text-primary-foreground shadow-sm"
+                  : "self-start max-w-[85%] break-words rounded-xl bg-background px-3 py-2 text-xs shadow-sm"
+              }
             >
+              {msg.content}
+            </div>
+          ))}
 
-              <Check className="size-3" />
-
-              {t("ai.approve")}
-
-            </Button>
-
-            <Button size="sm" variant="outline" className="h-9 flex-1 gap-1.5 rounded-lg" onClick={handleReject}>
-
-              <X className="size-3" />
-
-              {t("ai.reject")}
-
-            </Button>
-
-          </div>
-
+          {isPending && (
+            <div className="flex items-center gap-2 self-start rounded-xl bg-background px-3 py-2 text-xs shadow-sm">
+              <Loader2 className="size-3 animate-spin" />
+              {t("ai.thinking")}
+            </div>
+          )}
         </div>
 
+        {pendingEdit && (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 shadow-sm dark:border-amber-800 dark:bg-amber-950/30">
+            <p className="mb-2 text-xs font-semibold">{t("ai.proposed")}</p>
+
+            <div className="space-y-1 text-xs text-muted-foreground">
+              <p>
+                {t("ai.impactBefore", {
+                  gross: pendingEdit.simulatedImpact.before.gross.toLocaleString(locale),
+                })}
+              </p>
+              <p>
+                {t("ai.impactAfter", {
+                  gross: pendingEdit.simulatedImpact.after.gross.toLocaleString(locale),
+                })}
+              </p>
+              <p>
+                {t("ai.impactDiff", {
+                  diff: pendingEdit.simulatedImpact.difference.gross.toLocaleString(locale, {
+                    signDisplay: "exceptZero",
+                  }),
+                })}
+              </p>
+              {pendingEdit.guidance.financialTarget && (
+                <p>
+                  {t("ai.targetProgress", {
+                    target: pendingEdit.guidance.financialTarget.targetValue.toLocaleString(
+                      locale,
+                    ),
+                    after: pendingEdit.simulatedImpact.after.gross.toLocaleString(locale),
+                  })}
+                </p>
+              )}
+            </div>
+
+            {pendingEdit.warnings.length > 0 && (
+              <ul className="mt-2 list-disc pl-4 text-xs text-amber-800 dark:text-amber-200">
+                {pendingEdit.warnings.map((warning, index) => (
+                  <li key={`${warning.code}-${index}`}>{warning.message}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+      </div>
+
+      {pendingEdit && (
+        <div className="estimate-ai-proposal-actions mb-3 flex shrink-0 gap-2">
+          <Button
+            size="sm"
+            className="h-9 flex-1 gap-1.5 rounded-lg"
+            onClick={handleApprove}
+            disabled={readOnly || isPending}
+          >
+            <Check className="size-3" />
+            {t("ai.approve")}
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-9 flex-1 gap-1.5 rounded-lg"
+            onClick={handleReject}
+          >
+            <X className="size-3" />
+            {t("ai.reject")}
+          </Button>
+        </div>
       )}
 
 
