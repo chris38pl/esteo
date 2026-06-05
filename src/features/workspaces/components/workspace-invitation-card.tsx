@@ -6,6 +6,7 @@ import { ArrowRight, Building2, UsersRound } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 
+import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ReceivedInvitationView } from "@/features/workspaces/components/invitation-types";
@@ -14,8 +15,14 @@ import {
   declineReceivedInvitationAction,
   dismissInvitationPromptAction,
 } from "@/features/workspaces/server/actions";
+import { dashboardBillingHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
+
+function daysUntilExpiry(expiresAt: string) {
+  const ms = new Date(expiresAt).getTime() - Date.now();
+  return Math.max(0, Math.ceil(ms / (1000 * 60 * 60 * 24)));
+}
 
 type InvitationActionErrorCode = "INVITEE_PLAN_LIMIT" | "WORKSPACE_SEAT_LIMIT";
 
@@ -28,12 +35,14 @@ export function WorkspaceInvitationCard({
 }: {
   invitation: ReceivedInvitationView;
   locale: Locale;
-  variant?: "card" | "embedded" | "hero";
+  variant?: "card" | "embedded" | "hero" | "compact";
   heroPresentation?: "page" | "modal";
   onResolved?: () => void;
 }) {
   const t = useTranslations("workspaces.invitations");
+  const { locale: contextLocale } = useWorkspaceContext();
   const router = useRouter();
+  const billingHref = dashboardBillingHref(contextLocale);
   const [errorCode, setErrorCode] = useState<InvitationActionErrorCode | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -44,6 +53,7 @@ export function WorkspaceInvitationCard({
     locale === "pl" ? "pl-PL" : "en-US",
     { dateStyle: "medium" },
   );
+  const expiresInDays = daysUntilExpiry(invitation.expiresAt);
 
   function handleError(result: { success: false; error: string; code?: string }) {
     if (result.code === "INVITEE_PLAN_LIMIT" || result.code === "WORKSPACE_SEAT_LIMIT") {
@@ -74,7 +84,7 @@ export function WorkspaceInvitationCard({
       <p>{errorCode ? t(`errors.${errorCode}`) : errorMessage}</p>
       {errorCode === "INVITEE_PLAN_LIMIT" ? (
         <Link
-          href={`/${locale}/dashboard/billing`}
+          href={billingHref}
           className="inline-block font-medium text-primary underline-offset-4 hover:underline"
         >
           {t("upgradePlan")}
@@ -92,12 +102,26 @@ export function WorkspaceInvitationCard({
         "w-full gap-2",
         variant === "hero"
           ? "grid grid-cols-1 md:grid-cols-3 md:gap-3"
-          : "flex flex-col sm:flex-row sm:flex-wrap",
+          : variant === "compact"
+            ? "flex shrink-0 flex-wrap gap-2"
+            : "flex flex-col sm:flex-row sm:flex-wrap",
       )}
     >
+      {variant === "compact" ? (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={isPending}
+          className="rounded-lg"
+          onClick={() => runAction(() => declineReceivedInvitationAction(invitation.id, locale))}
+        >
+          {t("decline")}
+        </Button>
+      ) : null}
       <Button
         type="button"
-        size="lg"
+        size={variant === "compact" ? "sm" : "lg"}
         disabled={isPending}
         className={cn(
           "rounded-lg",
@@ -108,19 +132,21 @@ export function WorkspaceInvitationCard({
         {isPending ? t("accepting") : t("accept")}
         {variant === "hero" ? <ArrowRight className="size-4" strokeWidth={2.25} /> : null}
       </Button>
-      <Button
-        type="button"
-        variant="outline"
-        size="lg"
-        disabled={isPending}
-        className={cn(
-          "rounded-lg",
-          variant === "hero" && "w-full md:justify-self-center",
-        )}
-        onClick={() => runAction(() => declineReceivedInvitationAction(invitation.id, locale))}
-      >
-        {t("decline")}
-      </Button>
+      {variant !== "compact" ? (
+        <Button
+          type="button"
+          variant="outline"
+          size="lg"
+          disabled={isPending}
+          className={cn(
+            "rounded-lg",
+            variant === "hero" && "w-full md:justify-self-center",
+          )}
+          onClick={() => runAction(() => declineReceivedInvitationAction(invitation.id, locale))}
+        >
+          {t("decline")}
+        </Button>
+      ) : null}
       {variant === "hero" || variant === "embedded" ? (
         <Button
           type="button"
@@ -138,6 +164,33 @@ export function WorkspaceInvitationCard({
       ) : null}
     </div>
   );
+
+  if (variant === "compact") {
+    return (
+      <div className="rounded-xl border border-border/60 bg-muted/15 p-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 items-start gap-3">
+            <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-border/60">
+              <Building2 className="size-5" strokeWidth={1.75} />
+            </span>
+            <div className="min-w-0 space-y-1">
+              <p className="truncate font-semibold tracking-tight text-foreground">
+                {invitation.workspaceName}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {t("invitedBy", { name: inviterLabel })}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {t("expiresInDays", { count: expiresInDays })}
+              </p>
+            </div>
+          </div>
+          {actions}
+        </div>
+        {errorBlock ? <div className="mt-3">{errorBlock}</div> : null}
+      </div>
+    );
+  }
 
   if (variant === "hero") {
     return (

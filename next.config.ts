@@ -12,18 +12,18 @@ const LOCALES = ["pl", "en"];
  */
 const legacyDashboardRedirects = LOCALES.flatMap((locale) => [
   {
-    source: `/${locale}/dashboard/billing`,
-    destination: `/${locale}/dashboard`,
-    permanent: true,
-  },
-  {
-    source: `/${locale}/dashboard/account`,
-    destination: `/${locale}/dashboard`,
-    permanent: true,
-  },
-  {
     source: `/${locale}/dashboard/workspaces/settings`,
     destination: `/${locale}/dashboard`,
+    permanent: true,
+  },
+  {
+    source: `/${locale}/dashboard/:workspaceSlug/account`,
+    destination: `/${locale}/dashboard/account`,
+    permanent: true,
+  },
+  {
+    source: `/${locale}/dashboard/:workspaceSlug/billing`,
+    destination: `/${locale}/dashboard/billing`,
     permanent: true,
   },
 ]);

@@ -92,6 +92,8 @@
     "emptyInbox": "You have no pending invitations.",
     "invitedBy": "Invited by {name}",
     "expiresAt": "Expires {date}",
+    "expiresInDays": "{count, plural, one {Expires in # day} other {Expires in # days}}",
+    "seeAllInvitations": "See all invitations",
     "accept": "Accept",
     "accepting": "Accepting…",
     "decline": "Decline",

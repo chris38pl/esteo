@@ -17,6 +17,7 @@ export type CurrentUserProfile = {
   email: string;
   avatarUrl: string | null;
   avatarPreset: AvatarPreset | null;
+  avatarSource: "CLERK" | "PRESET";
 };
 
 export type WorkspaceSummary = {

@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { INVITE_ROLES } from "@/features/workspaces/lib/invite-role";
 import { inviteWorkspaceMemberAction } from "@/features/workspaces/server/actions";
+import { dashboardBillingHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -43,6 +44,7 @@ export function WorkspaceInvitePopover({
   const tSidebar = useTranslations("sidebar.workspaceCard");
   const t = useTranslations("workspaces.settings.users");
   const router = useRouter();
+  const billingHref = dashboardBillingHref(locale);
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<InviteRole>("MEMBER");
@@ -157,7 +159,7 @@ export function WorkspaceInvitePopover({
             <p className="text-sm font-medium leading-tight">{t("inviteTitle")}</p>
             <p className="text-xs text-muted-foreground">{t("inviteUpgradeDescription")}</p>
             <Link
-              href={`/${locale}/dashboard/billing`}
+              href={billingHref}
               className="inline-flex text-xs font-medium text-primary underline-offset-4 hover:underline"
               onClick={() => setOpen(false)}
             >

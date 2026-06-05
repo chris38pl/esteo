@@ -6,6 +6,8 @@ import { prisma } from "@/db/client";
  */
 export const RESERVED_DASHBOARD_SLUGS = new Set([
   "admin",
+  "account",
+  "billing",
   "onboarding",
   "invitations",
   "pending-access",

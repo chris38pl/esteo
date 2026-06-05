@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, BadgeCheck, Check, Crown, Sparkles, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { dashboardBillingHref } from "@/lib/dashboard-routes";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -52,7 +53,7 @@ export function SidebarPlanCard({
   onDismiss?: () => void;
 }) {
   const t = useTranslations("sidebar.planCards");
-  const billingHref = `/${locale}/dashboard/billing`;
+  const billingHref = dashboardBillingHref(locale as "pl" | "en");
   const featureKeys = FEATURE_KEYS[variant];
   const isBusiness = variant === "business";
 

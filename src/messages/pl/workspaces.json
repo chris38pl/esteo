@@ -92,6 +92,8 @@
     "emptyInbox": "Nie masz oczekujących zaproszeń.",
     "invitedBy": "Zaprosił(a): {name}",
     "expiresAt": "Wygasa {date}",
+    "expiresInDays": "{count, plural, one {Wygasa za # dzień} few {Wygasa za # dni} many {Wygasa za # dni} other {Wygasa za # dni}}",
+    "seeAllInvitations": "Zobacz wszystkie zaproszenia",
     "accept": "Akceptuj",
     "accepting": "Akceptowanie…",
     "decline": "Odrzuć",

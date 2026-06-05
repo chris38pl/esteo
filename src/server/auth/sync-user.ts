@@ -1,10 +1,10 @@
 import { currentUser } from "@clerk/nextjs/server";
-import type { User } from "@prisma/client";
+import type { AvatarSource, User } from "@prisma/client";
 import { cache } from "react";
 
 import { ensureBillingAccount } from "@/features/billing/server/provision-billing-account";
 import { prisma } from "@/db/client";
-import { pickDefaultAvatarPreset } from "@/lib/avatars/user-avatar-presets";
+import { isAvatarPreset, pickDefaultAvatarPreset } from "@/lib/avatars/user-avatar-presets";
 import { resolveUserDisplayName } from "@/server/auth/resolve-user-display-name";
 import { throwIfDatabaseUnavailable } from "@/server/db/log-database-unavailable";
 
@@ -20,18 +20,40 @@ function getPrimaryEmail(
 
 function resolveAvatarFields(
   clerkUser: NonNullable<Awaited<ReturnType<typeof currentUser>>>,
-  existingAvatarPreset: string | null | undefined,
-): { avatarUrl: string | null; avatarPreset: string | null } {
+  existing: {
+    avatarPreset: string | null | undefined;
+    avatarSource: AvatarSource | undefined;
+  } | null,
+): {
+  avatarUrl: string | null;
+  avatarPreset: string | null;
+  avatarSource: AvatarSource;
+} {
+  const existingPreset = isAvatarPreset(existing?.avatarPreset) ? existing.avatarPreset : null;
+  const existingSource = existing?.avatarSource;
+
+  if (existingSource === "PRESET" && existingPreset) {
+    return {
+      avatarUrl: null,
+      avatarPreset: existingPreset,
+      avatarSource: "PRESET",
+    };
+  }
+
   if (clerkUser.hasImage) {
     return {
       avatarUrl: clerkUser.imageUrl ?? null,
       avatarPreset: null,
+      avatarSource: "CLERK",
     };
   }
 
+  const preset = existingPreset ?? pickDefaultAvatarPreset(clerkUser.id);
+
   return {
     avatarUrl: null,
-    avatarPreset: existingAvatarPreset ?? pickDefaultAvatarPreset(clerkUser.id),
+    avatarPreset: preset,
+    avatarSource: "PRESET",
   };
 }
 
@@ -53,10 +75,10 @@ export const syncUserFromClerk = cache(async (): Promise<User | null> => {
   try {
     const existing = await prisma.user.findUnique({
       where: { clerkId: clerkUser.id },
-      select: { avatarPreset: true },
+      select: { avatarPreset: true, avatarSource: true },
     });
 
-    const avatarFields = resolveAvatarFields(clerkUser, existing?.avatarPreset);
+    const avatarFields = resolveAvatarFields(clerkUser, existing);
 
     const user = await prisma.user.upsert({
       where: { clerkId: clerkUser.id },

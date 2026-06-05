@@ -62,16 +62,22 @@ export function toCurrentUserProfile(user: {
   email: string;
   avatarUrl: string | null;
   avatarPreset: string | null;
+  avatarSource?: "CLERK" | "PRESET";
 }): {
   name: string | null;
   email: string;
   avatarUrl: string | null;
   avatarPreset: AvatarPreset | null;
+  avatarSource: "CLERK" | "PRESET";
 } {
+  const preset = isAvatarPreset(user.avatarPreset) ? user.avatarPreset : null;
+  const source = user.avatarSource ?? (user.avatarUrl ? "CLERK" : "PRESET");
+
   return {
     name: user.name,
     email: user.email,
-    avatarUrl: user.avatarUrl,
-    avatarPreset: isAvatarPreset(user.avatarPreset) ? user.avatarPreset : null,
+    avatarUrl: source === "PRESET" ? null : user.avatarUrl,
+    avatarPreset: preset,
+    avatarSource: source,
   };
 }

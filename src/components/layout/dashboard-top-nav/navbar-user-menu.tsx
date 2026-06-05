@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { BillingSidebarState } from "@/features/billing/billing-sidebar-state";
+import { dashboardAccountHref, dashboardBillingHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -48,8 +49,8 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
 
   const planKey = resolvePlanKey(billingSidebarState);
   const planLabel = t(`plans.${planKey}`);
-  const billingHref = `/${locale}/dashboard/billing`;
-  const accountHref = `/${locale}/dashboard/account`;
+  const billingHref = dashboardBillingHref(locale);
+  const accountHref = dashboardAccountHref(locale);
   const showBadge = pendingInvitationCount > 0;
   const badgeLabel = tInvitations("pendingBadge", { count: pendingInvitationCount });
 

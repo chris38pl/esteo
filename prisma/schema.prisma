@@ -102,6 +102,11 @@ enum EstimateAiMessageRole {
   ASSISTANT
 }
 
+enum AvatarSource {
+  CLERK
+  PRESET
+}
+
 model User {
   id                    String       @id @default(cuid())
   email                 String       @unique
@@ -109,6 +114,7 @@ model User {
   name                  String?
   avatarUrl             String?
   avatarPreset          String?
+  avatarSource          AvatarSource @default(PRESET)
   platformRole          PlatformRole @default(NONE)
   lastActiveWorkspaceId String?
   createdAt             DateTime     @default(now())

@@ -2,41 +2,9 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+import { buildLocalePath } from "@/lib/locale-navigation";
 import type { Locale } from "@/lib/locale";
 import { locales } from "@/lib/locale";
-import { publicEstimateRequestSegmentByLocale } from "@/features/estimate-requests/routes";
-
-function withLocale(pathname: string, locale: Locale): string {
-  const segments = pathname.split("/");
-  const current = segments[1];
-  if (locales.includes(current as Locale)) {
-    segments[1] = locale;
-    return segments.join("/") || `/${locale}`;
-  }
-  return `/${locale}${pathname.startsWith("/") ? "" : "/"}${pathname}`;
-}
-
-function withLocaleSpecificSegments(pathname: string, nextLocale: Locale): string {
-  const withPrefix = withLocale(pathname, nextLocale);
-  const segments = withPrefix.split("/");
-
-  // Expected: /{locale}/{segment}/{workspaceSlug}
-  const locale = segments[1];
-  const segment = segments[2];
-  const workspaceSlug = segments[3];
-
-  if (!workspaceSlug || locale !== nextLocale) {
-    return withPrefix;
-  }
-
-  const estimateSegments = Object.values(publicEstimateRequestSegmentByLocale);
-  if (estimateSegments.includes(segment)) {
-    segments[2] = publicEstimateRequestSegmentByLocale[nextLocale];
-    return segments.join("/");
-  }
-
-  return withPrefix;
-}
 
 export function LocaleSwitcher({
   value,
@@ -54,8 +22,7 @@ export function LocaleSwitcher({
   const searchParams = useSearchParams();
 
   const query = searchParams?.toString();
-  const hrefBase = pathname ? withLocaleSpecificSegments(pathname, value) : `/${value}`;
-  const href = query ? `${hrefBase}?${query}` : hrefBase;
+  const href = buildLocalePath(pathname ?? "", value, query);
 
   return (
     <div
@@ -66,8 +33,7 @@ export function LocaleSwitcher({
       }
     >
       {locales.map((l) => {
-        const nextBase = pathname ? withLocaleSpecificSegments(pathname, l) : `/${l}`;
-        const next = query ? `${nextBase}?${query}` : nextBase;
+        const next = buildLocalePath(pathname ?? "", l, query);
         const active = l === value;
 
         return (

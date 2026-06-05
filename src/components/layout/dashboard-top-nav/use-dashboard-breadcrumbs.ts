@@ -28,6 +28,8 @@ type PageLabelKey =
   | "adminEstimateRequests"
   | "adminEstimateRequestDetail";
 
+const USER_LEVEL_PAGES = new Set<PageLabelKey>(["account", "billing"]);
+
 type WorkspaceSectionRoute =
   | { kind: "list" }
   | { kind: "detail"; id: string };
@@ -130,13 +132,15 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
 
   const workspaceLabel = activeWorkspace?.name?.trim() || t("workspace");
 
+  const isUserLevelPage = pageKey !== null && USER_LEVEL_PAGES.has(pageKey);
+
   const crumbs: BreadcrumbItem[] = [
     { label: t("dashboard"), href: dashboardHref },
   ];
 
   if (isAdminPath) {
     crumbs.push({ label: t("admin") });
-  } else {
+  } else if (!isUserLevelPage) {
     crumbs.push({ label: workspaceLabel });
   }
 

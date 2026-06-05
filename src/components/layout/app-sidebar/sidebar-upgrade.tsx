@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import type { BillingSidebarState } from "@/features/billing/billing-sidebar-state";
+import { dashboardBillingHref } from "@/lib/dashboard-routes";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
@@ -33,6 +34,7 @@ function planVariantFromBillingState(state: BillingSidebarState): PlanCardVarian
 export function SidebarUpgrade({ collapsedOverride }: { collapsedOverride?: boolean } = {}) {
   const tPlan = useTranslations("sidebar.planCards");
   const { billingSidebarState, locale } = useWorkspaceContext();
+  const billingHref = dashboardBillingHref(locale);
   const collapsedFromStore = useSidebarStore((s) => s.collapsed);
   const collapsed = collapsedOverride ?? collapsedFromStore;
   const { inDrawer } = useSidebarLayout();
@@ -63,7 +65,7 @@ export function SidebarUpgrade({ collapsedOverride }: { collapsedOverride?: bool
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
-                    href={`/${locale}/dashboard/billing`}
+                    href={billingHref}
                     aria-label={tooltip}
                     className={cn(
                       "group mx-auto flex size-9 items-center justify-center rounded-lg",
