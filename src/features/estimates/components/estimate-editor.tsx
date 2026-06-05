@@ -28,7 +28,6 @@ import { EstimateAiFloating } from "./estimate-ai-floating";
 import {
   ESTIMATE_LAYOUT_CONFIG,
   estimateEditorAiSideGridClass,
-  estimateEditorMaxWidthClass,
   mediaQueryMin,
 } from "@/features/estimates/lib/estimate-layout-config";
 import { useEstimateAiSideLayout } from "@/features/estimates/hooks/use-estimate-ai-side-layout";
@@ -430,7 +429,6 @@ export function EstimateEditor({
     <div
       className={cn(
         "estimate-editor mx-auto min-w-0 w-full space-y-6 pb-8",
-        estimateEditorMaxWidthClass,
       )}
     >
       <EstimateEditorLayoutStyles />

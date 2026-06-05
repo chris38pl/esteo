@@ -46,11 +46,11 @@ const estimateLayoutTopBandAdvanced = {
     rightColumnClampRem: { min: 34, max: 44 },
     rightColumnPreferredPercent: 42,
   },
-  /** Context 4-across (≥ `breakpoints.contextFourCol`) */
+  /** Context 4-across (≥ `breakpoints.contextFourCol`) — wider summary/profitability rail */
   whenContextFourCol: {
     leftFr: 1.2,
-    rightColumnClampRem: { min: 28, max: 36 },
-    rightColumnPreferredPercent: 32,
+    rightColumnClampRem: { min: 44, max: 83 },
+    rightColumnPreferredPercent: 38.4,
   },
 } as const;
 
@@ -70,7 +70,8 @@ function topBandAdvancedGridColumns(
 const b = estimateLayoutBreakpoints;
 
 const estimateLayoutTailwind = {
-  editorMaxWidth: `max-w-[${b.editorMaxWidth}px]`,
+  /** Requires injected CSS from `getEstimateEditorResponsiveCss()` — not dynamic Tailwind */
+  editorMaxWidth: "estimate-editor-max-width",
   headerInlineActionButton: "estimate-header-inline-action",
   headerInlineActionMenuItem: "estimate-header-more-menu-inline-action",
   /** Always visible in Więcej menu (not hidden when inline Preview/Share show) */
@@ -188,6 +189,10 @@ export function getEstimateEditorResponsiveCss(): string {
   }
 }
 @media ${mediaQueryMin(breakpoints.contextFourCol)} {
+  .estimate-editor,
+  .estimate-editor-max-width {
+    max-width: ${breakpoints.editorMaxWidth}px;
+  }
   .estimate-top-band:not(.estimate-top-band--stacked).estimate-top-band--advanced {
     grid-template-columns: ${topBandAdvancedGridColumns(topAdvanced.whenContextFourCol)};
   }

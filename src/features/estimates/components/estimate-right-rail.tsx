@@ -52,6 +52,21 @@ function SummaryRow({ label, value, emphasized }: { label: string; value: string
   );
 }
 
+function RailCardHeader({ title, badge }: { title: string; badge?: string }) {
+  return (
+    <div className={cn("relative", badge != null && "pr-16")}>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary/70">
+        {title}
+      </p>
+      {badge != null ? (
+        <span className="absolute top-0 right-0 shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary tabular-nums">
+          {badge}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
 function SummaryCard({
   items,
   currency,
@@ -66,9 +81,7 @@ function SummaryCard({
 
   return (
     <div className="estimate-right-rail__summary flex min-h-[8.75rem] min-w-0 flex-1 flex-col bg-card/95 p-4 xl:px-5">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary/70">
-        {t("summary.title")}
-      </p>
+      <RailCardHeader title={t("summary.title")} />
       <div className="mt-3 space-y-2">
         <SummaryRow
           label={t("summary.net")}
@@ -105,53 +118,32 @@ function ProfitabilityCard({
   const calc = calculateEstimate(items, marginPercent);
   const profitabilityPercent = Math.min(100, Math.max(0, calc.profitMarginOnNetPercent));
 
-  const rows: Array<{ label: string; value: string }> = [
-    {
-      label: t("profitability.projectMargin"),
-      value: formatPercent(marginPercent, locale),
-    },
-    {
-      label: t("profitability.cost"),
-      value: formatCurrency(calc.costBasis, currency, locale),
-    },
-    {
-      label: t("profitability.profit"),
-      value: formatCurrency(calc.profit, currency, locale),
-    },
-    {
-      label: t("profitability.profitabilityRate"),
-      value: formatPercent(calc.profitMarginOnNetPercent, locale),
-    },
-  ];
-
   return (
     <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
           <div className="estimate-right-rail__profitability flex min-h-[8.75rem] min-w-0 flex-1 cursor-help flex-col bg-muted/20 p-4 outline-none focus-visible:ring-2 focus-visible:ring-ring/60 dark:bg-muted/10 xl:px-5">
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary/70">
-                {t("profitability.title")}
-              </p>
-              <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary tabular-nums">
-                {formatPercent(profitabilityPercent, locale)}
-              </span>
-            </div>
+            <RailCardHeader
+              title={t("profitability.title")}
+              badge={formatPercent(profitabilityPercent, locale)}
+            />
 
             <div className="mt-3 space-y-2">
-              {rows.map(({ label, value }) => (
-                <div key={label} className="flex items-center justify-between gap-4">
-                  <span className="text-xs text-muted-foreground">{label}</span>
-                  <span className="text-xs font-semibold tabular-nums">{value}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
-              <div
-                className="h-full rounded-full bg-primary transition-all"
-                style={{ width: `${profitabilityPercent.toFixed(1)}%` }}
+              <SummaryRow
+                label={t("profitability.projectMargin")}
+                value={formatPercent(marginPercent, locale)}
               />
+              <SummaryRow
+                label={t("profitability.cost")}
+                value={formatCurrency(calc.costBasis, currency, locale)}
+              />
+              <div className="border-t border-border/60 pt-2">
+                <SummaryRow
+                  label={t("profitability.profit")}
+                  value={formatCurrency(calc.profit, currency, locale)}
+                  emphasized
+                />
+              </div>
             </div>
           </div>
         </TooltipTrigger>

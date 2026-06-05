@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { EstimateContextCards } from "@/features/estimates/components/estimate-context-cards";
+import { EstimateEditorLayoutStyles } from "@/features/estimates/components/estimate-editor-layout-styles";
 import { estimateEditorMaxWidthClass } from "@/features/estimates/lib/estimate-layout-config";
 import { RequestStatusBadge } from "@/features/estimate-requests/components/request-status-badge";
 import type { WorkspaceRequestDetail } from "@/features/estimate-requests/server/workspace-requests";
@@ -85,6 +86,7 @@ export function RequestDetailPanel({
 
   return (
     <div className={cn("mx-auto min-w-0 w-full space-y-6 pb-8", estimateEditorMaxWidthClass)}>
+      <EstimateEditorLayoutStyles />
       <header className="flex min-w-0 flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 space-y-2">
           <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
