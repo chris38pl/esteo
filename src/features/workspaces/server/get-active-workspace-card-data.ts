@@ -1,9 +1,12 @@
+import type { AvatarPreset } from "@/components/avatars/user-avatar";
+import { isAvatarPreset } from "@/lib/avatars/user-avatar-presets";
 import { prisma } from "@/db/client";
 
 export type WorkspaceMemberPreview = {
   id: string;
   name: string;
   imageUrl: string | null;
+  avatarPreset: AvatarPreset | null;
 };
 
 export type ActiveWorkspaceMembersData = {
@@ -34,6 +37,7 @@ export async function getActiveWorkspaceMembersData(
             id: true,
             name: true,
             avatarUrl: true,
+            avatarPreset: true,
           },
         },
       },
@@ -46,6 +50,7 @@ export async function getActiveWorkspaceMembersData(
       id: member.user.id,
       name: member.user.name?.trim() || "Member",
       imageUrl: member.user.avatarUrl,
+      avatarPreset: isAvatarPreset(member.user.avatarPreset) ? member.user.avatarPreset : null,
     })),
   };
 }
@@ -69,6 +74,7 @@ export async function getActiveWorkspaceMemberPreviews(
           id: true,
           name: true,
           avatarUrl: true,
+          avatarPreset: true,
         },
       },
     },
@@ -78,5 +84,6 @@ export async function getActiveWorkspaceMemberPreviews(
     id: member.user.id,
     name: member.user.name?.trim() || "Member",
     imageUrl: member.user.avatarUrl,
+    avatarPreset: isAvatarPreset(member.user.avatarPreset) ? member.user.avatarPreset : null,
   }));
 }

@@ -1,10 +1,11 @@
 "use client";
 
 import { ChevronDown, LogOut } from "lucide-react";
-import { SignOutButton, useUser } from "@clerk/nextjs";
+import { SignOutButton } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 
 import { UserAvatar } from "@/components/avatars/user-avatar";
+import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,13 +21,11 @@ export function FocusedDashboardUserMenu({
   variant?: "default" | "compact";
 }) {
   const t = useTranslations("navbar.userMenu");
-  const tSidebar = useTranslations("sidebar");
-  const { user } = useUser();
+  const { currentUser } = useWorkspaceContext();
   const compact = variant === "compact";
 
-  const userName = user?.fullName || user?.firstName || tSidebar("user.placeholder.name");
-  const userEmail =
-    user?.primaryEmailAddress?.emailAddress ?? tSidebar("user.placeholder.email");
+  const userName = currentUser.name?.trim() || currentUser.email;
+  const userEmail = currentUser.email;
 
   return (
     <DropdownMenu modal={false}>
@@ -44,7 +43,12 @@ export function FocusedDashboardUserMenu({
                 ),
           )}
         >
-          <UserAvatar imageUrl={user?.imageUrl} size={compact ? 26 : 30} className="ring-0" />
+          <UserAvatar
+            imageUrl={currentUser.avatarUrl}
+            avatarPreset={currentUser.avatarPreset}
+            size={compact ? 26 : 30}
+            className="ring-0"
+          />
           {!compact ? (
             <>
               <span className="hidden min-w-0 flex-1 flex-col items-start text-left sm:flex">
@@ -67,7 +71,12 @@ export function FocusedDashboardUserMenu({
 
       <DropdownMenuContent align="end" className="w-64 p-0">
         <div className="flex items-start gap-3 p-4">
-          <UserAvatar imageUrl={user?.imageUrl} size={40} className="ring-0" />
+          <UserAvatar
+            imageUrl={currentUser.avatarUrl}
+            avatarPreset={currentUser.avatarPreset}
+            size={40}
+            className="ring-0"
+          />
           <div className="min-w-0 flex-1 pt-0.5">
             <p className="truncate text-sm font-semibold leading-tight text-foreground">
               {userName}

@@ -17,6 +17,7 @@ import { WorkspaceSettingsForm } from "@/features/workspaces/components/workspac
 import { WorkspaceSettingsRulesTab } from "@/features/workspaces/components/workspace-settings-rules-tab";
 import { WorkspaceSettingsUsersTab } from "@/features/workspaces/components/workspace-settings-users-tab";
 import { WorkspaceThemePicker } from "@/features/workspaces/components/workspace-theme-picker";
+import type { AvatarPreset } from "@/components/avatars/user-avatar";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +30,7 @@ type MemberRow = {
     name: string | null;
     email: string;
     avatarUrl: string | null;
+    avatarPreset: AvatarPreset | null;
   };
 };
 

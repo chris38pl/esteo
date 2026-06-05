@@ -108,6 +108,7 @@ model User {
   clerkId               String       @unique
   name                  String?
   avatarUrl             String?
+  avatarPreset          String?
   platformRole          PlatformRole @default(NONE)
   lastActiveWorkspaceId String?
   createdAt             DateTime     @default(now())

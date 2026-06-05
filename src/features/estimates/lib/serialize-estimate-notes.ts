@@ -1,3 +1,5 @@
+import type { AvatarPreset } from "@/components/avatars/user-avatar";
+import { isAvatarPreset } from "@/lib/avatars/user-avatar-presets";
 import type { EstimateNoteRow } from "@/features/estimates/server/notes-repository";
 
 export type EstimateNoteAuthorClient = {
@@ -5,6 +7,7 @@ export type EstimateNoteAuthorClient = {
   name: string | null;
   email: string;
   avatarUrl: string | null;
+  avatarPreset: AvatarPreset | null;
 };
 
 export type EstimateNoteClient = {
@@ -23,6 +26,7 @@ function serializeAuthor(
     name: author.name,
     email: author.email,
     avatarUrl: author.avatarUrl,
+    avatarPreset: isAvatarPreset(author.avatarPreset) ? author.avatarPreset : null,
   };
 }
 

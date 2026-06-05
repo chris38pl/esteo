@@ -33,6 +33,7 @@ import {
 } from "@/features/estimates/lib/estimate-layout-config";
 import { useEstimateAiSideLayout } from "@/features/estimates/hooks/use-estimate-ai-side-layout";
 import { useEstimateAiStickyMaxHeight } from "@/features/estimates/hooks/use-estimate-ai-sticky-max-height";
+import type { AvatarPreset } from "@/components/avatars/user-avatar";
 import type { EstimateNoteClient } from "@/features/estimates/lib/serialize-estimate-notes";
 import { EstimateNotesPanel } from "./estimate-notes-panel";
 import { EstimateEditorLayoutStyles } from "./estimate-editor-layout-styles";
@@ -71,6 +72,7 @@ interface EstimateEditorProps {
   initialNotes?: EstimateNoteClient[];
   currentUserId?: string;
   currentUserAvatarUrl?: string | null;
+  currentUserAvatarPreset?: AvatarPreset | null;
 }
 
 function lineItemFromServer(
@@ -129,6 +131,7 @@ export function EstimateEditor({
   initialNotes = [],
   currentUserId = "",
   currentUserAvatarUrl = null,
+  currentUserAvatarPreset = null,
 }: EstimateEditorProps) {
   const t = useTranslations("estimates");
   const router = useRouter();
@@ -552,6 +555,7 @@ export function EstimateEditor({
                   initialNotes={initialNotes}
                   currentUserId={currentUserId}
                   currentUserAvatarUrl={currentUserAvatarUrl}
+                  currentUserAvatarPreset={currentUserAvatarPreset}
                 />
               ) : activeTab === "items" ? (
                 <fieldset

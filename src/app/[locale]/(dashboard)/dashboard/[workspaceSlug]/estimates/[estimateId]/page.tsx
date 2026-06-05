@@ -4,6 +4,7 @@ import { BusinessDocumentType } from "@prisma/client";
 
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
+import { isAvatarPreset } from "@/lib/avatars/user-avatar-presets";
 import { requireAuth } from "@/server/auth/require-auth";
 import { resolveWorkspaceBySlug } from "@/server/workspaces/active-workspace";
 import {
@@ -165,6 +166,9 @@ export default async function EstimateEditorPage({
         initialNotes={initialNotes}
         currentUserId={user.id}
         currentUserAvatarUrl={user.avatarUrl}
+        currentUserAvatarPreset={
+          isAvatarPreset(user.avatarPreset) ? user.avatarPreset : null
+        }
       />
     </>
   );

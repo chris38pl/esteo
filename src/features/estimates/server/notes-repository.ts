@@ -8,6 +8,7 @@ const authorSelect = {
   name: true,
   email: true,
   avatarUrl: true,
+  avatarPreset: true,
 } as const;
 
 export type EstimateNoteRow = {
@@ -22,6 +23,7 @@ export type EstimateNoteRow = {
     name: string | null;
     email: string;
     avatarUrl: string | null;
+    avatarPreset: string | null;
   };
 };
 

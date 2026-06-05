@@ -8,6 +8,7 @@ import { useLocale, useTranslations } from "next-intl";
 import type { LucideIcon } from "lucide-react";
 
 import { UserAvatar } from "@/components/avatars/user-avatar";
+import { isAvatarPreset } from "@/lib/avatars/user-avatar-presets";
 import { PaginationControls } from "@/components/shared/pagination-controls";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -111,7 +112,12 @@ function AdminUserListRow({
   return (
     <div className="flex items-center gap-4 px-4 py-4 sm:gap-6">
       <div className="flex min-w-0 flex-1 items-center gap-3.5">
-        <UserAvatar imageUrl={user.avatarUrl} size={40} className="ring-0" />
+        <UserAvatar
+          imageUrl={user.avatarUrl}
+          avatarPreset={isAvatarPreset(user.avatarPreset) ? user.avatarPreset : null}
+          size={40}
+          className="ring-0"
+        />
         <div className="min-w-0">
           <p className="truncate text-[15px] font-semibold leading-tight">{displayName}</p>
           <p className="mt-0.5 truncate text-xs text-muted-foreground">{user.email}</p>

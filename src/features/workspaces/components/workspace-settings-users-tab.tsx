@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 
+import type { AvatarPreset } from "@/components/avatars/user-avatar";
 import { UserAvatar } from "@/components/avatars/user-avatar";
-import { WorkspaceAvatar } from "@/components/avatars/workspace-avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +35,7 @@ type MemberRow = {
     name: string | null;
     email: string;
     avatarUrl: string | null;
+    avatarPreset: AvatarPreset | null;
   };
 };
 
@@ -129,18 +130,11 @@ export function WorkspaceSettingsUsersTab({
                   <TableRow key={member.id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        {member.user.avatarUrl ? (
-                          <UserAvatar
-                            imageUrl={member.user.avatarUrl}
-                            size={32}
-                          />
-                        ) : (
-                          <WorkspaceAvatar
-                            name={member.user.name ?? member.user.email}
-                            size={32}
-                            className="rounded-full"
-                          />
-                        )}
+                        <UserAvatar
+                          imageUrl={member.user.avatarUrl}
+                          avatarPreset={member.user.avatarPreset}
+                          size={32}
+                        />
                         <div className="min-w-0">
                           <p className="truncate font-medium">
                             {member.user.name ?? member.user.email}

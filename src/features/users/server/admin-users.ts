@@ -47,6 +47,7 @@ export type AdminUserRow = {
   name: string | null;
   email: string;
   avatarUrl: string | null;
+  avatarPreset: string | null;
   plan: SubscriptionPlan;
   provider: "google" | "standard";
   workspaceCount: number;
@@ -108,6 +109,7 @@ async function mapUsersToRows(
     name: string | null;
     email: string;
     avatarUrl: string | null;
+    avatarPreset: string | null;
     createdAt: Date;
     billingAccount: {
       subscription: { plan: SubscriptionPlan } | null;
@@ -135,6 +137,7 @@ async function mapUsersToRows(
       name: user.name,
       email: user.email,
       avatarUrl: user.avatarUrl,
+      avatarPreset: user.avatarPreset,
       plan: user.billingAccount?.subscription?.plan ?? "FREE",
       provider: clerk?.provider ?? "standard",
       workspaceCount: stats.workspaceCount,

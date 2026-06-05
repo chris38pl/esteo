@@ -1,22 +1,16 @@
 import { clerkClient } from "@clerk/nextjs/server";
 
-export type AuthProviderKind = "google" | "standard";
+import {
+  resolveAuthProvider,
+  type AuthProviderKind,
+} from "@/server/auth/resolve-user-display-name";
+
+export type { AuthProviderKind };
 
 export type ClerkUserMetadata = {
   provider: AuthProviderKind;
   lastActiveAt: Date | null;
 };
-
-function resolveProvider(
-  externalAccounts: Array<{ provider: string }>,
-): AuthProviderKind {
-  const hasGoogle = externalAccounts.some((account) => {
-    const provider = account.provider.toLowerCase();
-    return provider === "google" || provider === "oauth_google";
-  });
-
-  return hasGoogle ? "google" : "standard";
-}
 
 function resolveLastActiveAt(lastActiveAt: number | null, lastSignInAt: number | null): Date | null {
   const timestamp = lastActiveAt ?? lastSignInAt;
@@ -43,7 +37,7 @@ export async function fetchClerkMetadataForUsers(
     if (result.status === "fulfilled") {
       const clerkUser = result.value;
       map.set(clerkId, {
-        provider: resolveProvider(clerkUser.externalAccounts),
+        provider: resolveAuthProvider(clerkUser.externalAccounts),
         lastActiveAt: resolveLastActiveAt(clerkUser.lastActiveAt, clerkUser.lastSignInAt),
       });
       return;

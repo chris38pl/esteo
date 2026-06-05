@@ -4,7 +4,6 @@ import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { UserAvatar } from "@/components/avatars/user-avatar";
-import { WorkspaceAvatar } from "@/components/avatars/workspace-avatar";
 import type { WorkspaceMemberPreview } from "@/features/workspaces/server/get-active-workspace-card-data";
 import { cn } from "@/lib/utils";
 
@@ -33,19 +32,12 @@ function MemberStackAvatar({
       style={{ width: size, height: size, ...style }}
       title={member.name}
     >
-      {member.imageUrl ? (
-        <UserAvatar
-          imageUrl={member.imageUrl}
-          size={size}
-          className="size-full ring-0"
-        />
-      ) : (
-        <WorkspaceAvatar
-          name={member.name}
-          size={size}
-          className="size-full rounded-full ring-0"
-        />
-      )}
+      <UserAvatar
+        imageUrl={member.imageUrl}
+        avatarPreset={member.avatarPreset}
+        size={size}
+        className="size-full ring-0"
+      />
     </span>
   );
 }

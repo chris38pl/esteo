@@ -77,7 +77,11 @@ export function EstimateNoteItem({
   return (
     <div className={cn(!isTopLevel && "border-l border-border/60 pl-4")}>
       <div className="flex gap-3">
-        <UserAvatar imageUrl={note.author.avatarUrl} size={36} />
+        <UserAvatar
+          imageUrl={note.author.avatarUrl}
+          avatarPreset={note.author.avatarPreset}
+          size={36}
+        />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
             <span className="text-sm font-semibold text-foreground">

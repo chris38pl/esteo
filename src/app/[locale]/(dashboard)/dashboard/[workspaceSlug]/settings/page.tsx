@@ -7,6 +7,7 @@ import { getWorkspaceSettingsPageData } from "@/features/workspaces/server/get-w
 import { workspaceBrandingSchema } from "@/features/workspaces/schemas/branding";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
+import { isAvatarPreset } from "@/lib/avatars/user-avatar-presets";
 import { requireAuth } from "@/server/auth/require-auth";
 import { resolveWorkspaceBySlug } from "@/server/workspaces/active-workspace";
 
@@ -59,6 +60,9 @@ export default async function WorkspaceSettingsPage({
             name: member.user.name,
             email: member.user.email,
             avatarUrl: member.user.avatarUrl,
+            avatarPreset: isAvatarPreset(member.user.avatarPreset)
+              ? member.user.avatarPreset
+              : null,
           },
         }))}
         invitations={invitations}

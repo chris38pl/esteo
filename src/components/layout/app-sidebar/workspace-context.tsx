@@ -9,7 +9,15 @@ import type { ReceivedInvitationView } from "@/features/workspaces/components/in
 import type { BillingSidebarState } from "@/features/billing/billing-sidebar-state";
 import type { WorkspaceMemberPreview } from "@/features/workspaces/server/get-active-workspace-card-data";
 import type { PinnedEstimateSidebarItem } from "@/components/layout/app-sidebar/pinned-config";
+import type { AvatarPreset } from "@/components/avatars/user-avatar";
 import type { Locale } from "@/lib/locale";
+
+export type CurrentUserProfile = {
+  name: string | null;
+  email: string;
+  avatarUrl: string | null;
+  avatarPreset: AvatarPreset | null;
+};
 
 export type WorkspaceSummary = {
   id: string;
@@ -29,6 +37,7 @@ type WorkspaceContextValue = {
   canCreateAdditionalWorkspace: boolean;
   billingSidebarState: BillingSidebarState;
   isPlatformAdmin: boolean;
+  currentUser: CurrentUserProfile;
   locale: Locale;
   pendingInvitationCount: number;
   modalInvitation: ReceivedInvitationView | null;
@@ -48,6 +57,7 @@ export function WorkspaceProvider({
   canCreateAdditionalWorkspace,
   billingSidebarState,
   isPlatformAdmin,
+  currentUser,
   memberPreviews,
   memberTotalCount,
   locale,
@@ -62,6 +72,7 @@ export function WorkspaceProvider({
   canCreateAdditionalWorkspace: boolean;
   billingSidebarState: BillingSidebarState;
   isPlatformAdmin: boolean;
+  currentUser: CurrentUserProfile;
   memberPreviews: WorkspaceMemberPreview[];
   memberTotalCount: number;
   locale: Locale;
@@ -89,6 +100,7 @@ export function WorkspaceProvider({
       canCreateAdditionalWorkspace,
       billingSidebarState,
       isPlatformAdmin,
+      currentUser,
       locale,
       pendingInvitationCount,
       modalInvitation,
@@ -115,6 +127,7 @@ export function WorkspaceProvider({
       canCreateAdditionalWorkspace,
       billingSidebarState,
       isPlatformAdmin,
+      currentUser,
       locale,
       pendingInvitationCount,
       modalInvitation,

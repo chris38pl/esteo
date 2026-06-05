@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
 
+import type { AvatarPreset } from "@/components/avatars/user-avatar";
 import { UserAvatar } from "@/components/avatars/user-avatar";
 import type { EstimateNoteClient } from "@/features/estimates/lib/serialize-estimate-notes";
 import {
@@ -22,6 +23,7 @@ interface EstimateNotesPanelProps {
   initialNotes: EstimateNoteClient[];
   currentUserId: string;
   currentUserAvatarUrl?: string | null;
+  currentUserAvatarPreset?: AvatarPreset | null;
 }
 
 export function EstimateNotesPanel({
@@ -32,6 +34,7 @@ export function EstimateNotesPanel({
   initialNotes,
   currentUserId,
   currentUserAvatarUrl,
+  currentUserAvatarPreset = null,
 }: EstimateNotesPanelProps) {
   const t = useTranslations("estimates");
   const [notes, setNotes] = useState<EstimateNoteClient[]>(initialNotes);
@@ -117,7 +120,11 @@ export function EstimateNotesPanel({
   return (
     <div className="px-4 py-5">
       <div className="flex gap-3 border-b border-border/60 pb-5">
-        <UserAvatar imageUrl={currentUserAvatarUrl} size={36} />
+        <UserAvatar
+          imageUrl={currentUserAvatarUrl}
+          avatarPreset={currentUserAvatarPreset}
+          size={36}
+        />
         <div className="min-w-0 flex-1">
           <EstimateNoteComposer
             placeholder={t("editor.notes.placeholder")}

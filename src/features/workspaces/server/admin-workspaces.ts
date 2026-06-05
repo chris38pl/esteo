@@ -2,6 +2,7 @@ import type { User, WorkspaceAppearanceTheme, WorkspaceIndustry } from "@prisma/
 import { randomUUID } from "crypto";
 
 import { prisma } from "@/db/client";
+import { isAvatarPreset } from "@/lib/avatars/user-avatar-presets";
 import type { WorkspaceMemberPreview } from "@/features/workspaces/server/get-active-workspace-card-data";
 import {
   createInvitationRecord,
@@ -83,7 +84,7 @@ export async function listAdminWorkspacesPaginated(
           orderBy: { createdAt: "asc" },
           include: {
             user: {
-              select: { id: true, name: true, email: true, avatarUrl: true },
+              select: { id: true, name: true, email: true, avatarUrl: true, avatarPreset: true },
             },
           },
         },
@@ -120,7 +121,7 @@ export async function listAdminWorkspacesPaginated(
               orderBy: { createdAt: "asc" },
               include: {
                 user: {
-                  select: { id: true, name: true, email: true, avatarUrl: true },
+                  select: { id: true, name: true, email: true, avatarUrl: true, avatarPreset: true },
                 },
               },
             },
@@ -151,6 +152,7 @@ export async function listAdminWorkspacesPaginated(
       id: member.user.id,
       name: member.user.name ?? member.user.email,
       imageUrl: member.user.avatarUrl,
+      avatarPreset: isAvatarPreset(member.user.avatarPreset) ? member.user.avatarPreset : null,
     })),
   }));
 

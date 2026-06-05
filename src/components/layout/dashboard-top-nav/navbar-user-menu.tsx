@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowRight, ChevronDown, LogOut, Settings, User } from "lucide-react";
-import { SignOutButton, useUser } from "@clerk/nextjs";
+import { SignOutButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -41,13 +41,10 @@ function StatRow({ label, value }: { label: string; value: string }) {
 export function NavbarUserMenu({ locale }: { locale: Locale }) {
   const t = useTranslations("navbar.userMenu");
   const tInvitations = useTranslations("workspaces.invitations");
-  const tSidebar = useTranslations("sidebar");
-  const { user } = useUser();
-  const { billingSidebarState, pendingInvitationCount } = useWorkspaceContext();
+  const { billingSidebarState, pendingInvitationCount, currentUser } = useWorkspaceContext();
 
-  const userName = user?.fullName || user?.firstName || tSidebar("user.placeholder.name");
-  const userEmail =
-    user?.primaryEmailAddress?.emailAddress ?? tSidebar("user.placeholder.email");
+  const userName = currentUser.name?.trim() || currentUser.email;
+  const userEmail = currentUser.email;
 
   const planKey = resolvePlanKey(billingSidebarState);
   const planLabel = t(`plans.${planKey}`);
@@ -70,7 +67,12 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
           )}
         >
           <span className="relative shrink-0">
-            <UserAvatar imageUrl={user?.imageUrl} size={30} className="ring-0" />
+            <UserAvatar
+              imageUrl={currentUser.avatarUrl}
+              avatarPreset={currentUser.avatarPreset}
+              size={30}
+              className="ring-0"
+            />
             {showBadge ? (
               <span
                 aria-hidden
@@ -98,7 +100,12 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
 
       <DropdownMenuContent align="end" className="w-72 p-0">
         <div className="flex items-start gap-3 p-4">
-          <UserAvatar imageUrl={user?.imageUrl} size={40} className="ring-0" />
+          <UserAvatar
+            imageUrl={currentUser.avatarUrl}
+            avatarPreset={currentUser.avatarPreset}
+            size={40}
+            className="ring-0"
+          />
           <div className="min-w-0 flex-1 pt-0.5">
             <p className="truncate text-sm font-semibold leading-tight text-foreground">
               {userName}

@@ -1,10 +1,10 @@
 "use client";
 
 import { Plus, Users } from "lucide-react";
-import { useUser } from "@clerk/nextjs";
 import { useTranslations } from "next-intl";
 
 import { UserAvatar } from "@/components/avatars/user-avatar";
+import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { SidebarSectionLabel } from "./sidebar-section-label";
@@ -20,14 +20,15 @@ export function SidebarTeam({ collapsedOverride }: { collapsedOverride?: boolean
   const toggleSection = useSidebarStore((s) => s.toggleSection);
   const collapsed = collapsedOverride ?? collapsedFromStore;
   const { inDrawer } = useSidebarLayout();
-  const { user } = useUser();
+  const { currentUser } = useWorkspaceContext();
 
   const members = teamMembers.map((member, index) => ({
     ...member,
-    imageUrl: index === 0 && user ? user.imageUrl : member.imageUrl,
+    imageUrl: index === 0 ? currentUser.avatarUrl : member.imageUrl,
+    avatarPreset: index === 0 ? currentUser.avatarPreset : member.avatarPreset,
     displayName:
-      index === 0 && user
-        ? user.fullName || user.firstName || t(member.nameKey)
+      index === 0
+        ? currentUser.name?.trim() || currentUser.email
         : t(member.nameKey),
   }));
 

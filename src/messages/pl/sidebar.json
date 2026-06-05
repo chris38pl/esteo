@@ -69,9 +69,9 @@
   },
   "user": {
     "placeholder": {
-      "name": "Chris Nowak",
+      "name": "Użytkownik",
       "role": "Właściciel",
-      "email": "konto@esteo.pl"
+      "email": "—"
     },
     "menu": {
       "account": "Konto",

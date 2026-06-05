@@ -5,6 +5,7 @@ import * as SignUp from "@clerk/elements/sign-up";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
+import { SignUpContinue } from "@/components/auth/sign-up-continue";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,6 +25,19 @@ export function SignUpForm({ locale }: { locale: string }) {
 
       <SignUp.Step name="start">
         <div className="space-y-4">
+          <Clerk.Field name="firstName" className="space-y-2">
+            <Clerk.Label asChild>
+              <Label>{t("fields.name")}</Label>
+            </Clerk.Label>
+            <Clerk.Input asChild type="text" required autoComplete="name">
+              <Input
+                placeholder={t("fields.namePlaceholder")}
+                className="h-10 rounded-lg"
+              />
+            </Clerk.Input>
+            <Clerk.FieldError className="text-xs text-destructive" />
+          </Clerk.Field>
+
           <Clerk.Field name="emailAddress" className="space-y-2">
             <Clerk.Label asChild>
               <Label>{t("fields.email")}</Label>
@@ -103,6 +117,10 @@ export function SignUpForm({ locale }: { locale: string }) {
         </div>
       </SignUp.Step>
 
+      <SignUp.Step name="continue">
+        <SignUpContinue />
+      </SignUp.Step>
+
       <SignUp.Step name="verifications">
         <SignUp.Strategy name="email_code">
           <div className="space-y-4">
@@ -131,4 +149,3 @@ export function SignUpForm({ locale }: { locale: string }) {
     </SignUp.Root>
   );
 }
-

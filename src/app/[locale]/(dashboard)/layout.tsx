@@ -15,6 +15,7 @@ import {
   getNextModalInvitation,
 } from "@/features/workspaces/server/invitation-inbox";
 import { RESERVED_DASHBOARD_SLUGS } from "@/features/workspaces/server/slug-availability";
+import { toCurrentUserProfile } from "@/lib/avatars/user-avatar-presets";
 import { requireAuth } from "@/server/auth/require-auth";
 import { canUserCreateWorkspace, countOwnedWorkspaces } from "@/server/permissions/entitlements";
 import { isPlatformAdmin } from "@/server/permissions/require-workspace";
@@ -39,6 +40,7 @@ export default async function DashboardLayout({
   setRequestLocale(resolvedLocale);
 
   const user = await requireAuth(resolvedLocale);
+  const currentUser = toCurrentUserProfile(user);
   const workspaces = await getAccessibleWorkspaces(user.id);
 
   // New users have no workspaces yet and will be immediately redirected to
@@ -56,6 +58,7 @@ export default async function DashboardLayout({
         canCreateAdditionalWorkspace={false}
         billingSidebarState={{ variant: "upsell", currentPlan: "FREE", targetPlan: "PRO" }}
         isPlatformAdmin={isPlatformAdmin(user)}
+        currentUser={currentUser}
         locale={resolvedLocale}
         pendingInvitationCount={0}
         modalInvitation={null}
@@ -129,6 +132,7 @@ export default async function DashboardLayout({
       canCreateAdditionalWorkspace={canCreateAdditionalWorkspace}
       billingSidebarState={billingSidebarState}
       isPlatformAdmin={isPlatformAdmin(user)}
+      currentUser={currentUser}
       locale={resolvedLocale}
       pendingInvitationCount={pendingInvitationCount}
       modalInvitation={
