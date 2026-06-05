@@ -103,7 +103,7 @@ export function WorkspaceInvitationCard({
         variant === "hero"
           ? "grid grid-cols-1 md:grid-cols-3 md:gap-3"
           : variant === "compact"
-            ? "flex shrink-0 flex-wrap gap-2"
+            ? "flex shrink-0 justify-end gap-2"
             : "flex flex-col sm:flex-row sm:flex-wrap",
       )}
     >
@@ -168,19 +168,19 @@ export function WorkspaceInvitationCard({
   if (variant === "compact") {
     return (
       <div className="rounded-xl border border-border/60 bg-muted/15 p-4">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3">
           <div className="flex min-w-0 items-start gap-3">
             <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-border/60">
               <Building2 className="size-5" strokeWidth={1.75} />
             </span>
-            <div className="min-w-0 space-y-1">
+            <div className="min-w-0 flex-1 space-y-1">
               <p className="truncate font-semibold tracking-tight text-foreground">
                 {invitation.workspaceName}
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="break-words text-xs text-muted-foreground">
                 {t("invitedBy", { name: inviterLabel })}
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs whitespace-nowrap text-muted-foreground">
                 {t("expiresInDays", { count: expiresInDays })}
               </p>
             </div>
