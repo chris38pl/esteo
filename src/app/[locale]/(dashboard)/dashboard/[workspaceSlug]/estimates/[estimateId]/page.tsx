@@ -77,7 +77,9 @@ export default async function EstimateEditorPage({
     : null;
 
   const serializedTree = rawVersionTree ? serializeVersionWithTree(rawVersionTree) : null;
-  const editorKey = `${activeVersionId ?? "none"}-${serializedTree?.updatedAt ?? "empty"}`;
+  const sectionCount = serializedTree?.sections.length ?? 0;
+  const requestStatus = estimate.estimateRequest?.status ?? "none";
+  const editorKey = `${activeVersionId ?? "none"}-${sectionCount}-${requestStatus}-${serializedTree?.updatedAt ?? "empty"}`;
 
   const generationContext = await loadEstimateGenerationContext(
     resolved.workspace.id,

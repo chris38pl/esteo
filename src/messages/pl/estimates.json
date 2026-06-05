@@ -141,6 +141,9 @@
     "generatingTimeout": "Generowanie trwa dłużej niż oczekiwano.",
     "generatingFailed": "Generowanie wyceny nie powiodło się.",
     "generatingFailedHint": "Możesz edytować wycenę ręcznie.",
+    "retryGeneration": "Ponów generowanie AI",
+    "retryGenerationPending": "Ponawianie…",
+    "retryGenerationError": "Nie udało się wznowić generowania. Spróbuj ponownie.",
     "refreshStatus": "Odśwież, aby sprawdzić status"
   },
   "header": {

@@ -226,5 +226,30 @@
       "titleEn": "Tytuł (EN)",
       "rulePl": "Domyślna reguła (PL)"
     }
+  },
+  "aiProfiles": {
+    "title": "Profile AI branżowe (tylko podgląd)",
+    "subtitle": "Wskazówki promptów per branża dla generowania wycen. Brakujące opcjonalne bloki są pomijane w promptach AI.",
+    "configPath": "Źródło: src/ai/config/industry-ai-profiles.ts",
+    "industryLabel": "Branża",
+    "otherIndustry": "Inna (ogólna)",
+    "completenessTitle": "Kompletność profilu",
+    "quantityRulesTitle": "Reguły wyprowadzania ilości",
+    "quantityRulesMissing": "Brak reguł wyprowadzania ilości dla tej branży. Prompty wyceny pominą ten blok.",
+    "status": {
+      "ok": "OK",
+      "missing": "Brak"
+    },
+    "fields": {
+      "role": "Rola",
+      "estimationPrinciples": "Zasady kosztorysowania",
+      "scopeChecklist": "Lista kontrolna zakresu",
+      "scopeExpansionRules": "Reguły rozszerzania zakresu",
+      "quantityDerivationRules": "Reguły wyprowadzania ilości"
+    },
+    "table": {
+      "rulePl": "Reguła (PL)",
+      "ruleEn": "Reguła (EN)"
+    }
   }
 }

@@ -162,11 +162,17 @@ export const generateEstimateDraftTask = task({
 
       await syncVersionTotals(versionId, workspaceId);
 
+      await prisma.estimateVersion.update({
+        where: { id: versionId },
+        data: { updatedAt: new Date() },
+      });
+
       logger.info("Estimate draft saved successfully", { estimateId, versionId });
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
       logger.error("Failed to generate estimate draft", {
         estimateRequestId,
-        error: error instanceof Error ? error.message : String(error),
+        error: errorMessage,
       });
 
       await prisma.estimateRequest.update({

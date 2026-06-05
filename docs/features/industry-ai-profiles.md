@@ -16,6 +16,7 @@ Each profile defines (localized `pl` / `en`):
 | `estimationPrinciples` | Units, pricing, VAT, materials vs labor |
 | `scopeChecklist` | What to analyze in the project brief |
 | `scopeExpansionRules` | Infer implied work (e.g. bathroom tiles → waterproofing, grout) |
+| `quantityDerivationRules` | Optional — how to derive quantities from brief data; omitted from draft prompts when absent |
 
 Resolver: `resolveIndustryAiProfileForPrompt(industry, locale)`.
 
@@ -35,8 +36,9 @@ Formatters: [`src/ai/lib/format-industry-profile-blocks.ts`](../../src/ai/lib/fo
 8. Project Brief (`buildProjectBrief`)  
 9. Scope Checklist  
 10. Scope Expansion Rules  
-11. Estimate Completeness  
-12. Output Rules  
+11. Quantity Derivation Rules (only when configured for the industry)  
+12. Estimate Completeness  
+13. Output Rules  
 
 Workspace context is loaded via [`loadEstimateGenerationContext`](../../src/features/workspaces/lib/load-estimate-generation-context.ts) (branding sections, not `WorkspaceRule` rows).
 

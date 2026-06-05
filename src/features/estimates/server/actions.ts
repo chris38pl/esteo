@@ -24,6 +24,7 @@ import {
   createInternalEstimate,
   createNewVersion,
   proposeEdit,
+  retryEstimateDraftGeneration,
   undoLastChange,
 } from "./service";
 import {
@@ -383,6 +384,43 @@ export async function undoChangeAction(input: {
       },
     };
   } catch (error) {
+    return toActionError(error);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Generation retry
+// ---------------------------------------------------------------------------
+
+export async function retryEstimateGenerationAction(input: {
+  estimateId: string;
+  workspaceId: string;
+  workspaceSlug: string;
+  locale?: Locale;
+}): Promise<ActionResult<void>> {
+  const locale = input.locale ?? "pl";
+  try {
+    const user = await requireAuth(locale);
+    await retryEstimateDraftGeneration({
+      estimateId: input.estimateId,
+      workspaceId: input.workspaceId,
+      userId: user.id,
+      locale,
+    });
+    revalidateEstimatePaths(locale, input.workspaceSlug, input.estimateId);
+    return { success: true, data: undefined };
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === "GENERATION_NOT_RETRYABLE") {
+        return { success: false, error: "Generation cannot be retried in its current state." };
+      }
+      if (error.message === "GENERATION_HAS_SECTIONS") {
+        return {
+          success: false,
+          error: "Cannot retry AI generation when the estimate already has sections.",
+        };
+      }
+    }
     return toActionError(error);
   }
 }

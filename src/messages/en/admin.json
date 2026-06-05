@@ -226,5 +226,30 @@
       "titleEn": "Title (EN)",
       "rulePl": "Default rule (PL)"
     }
+  },
+  "aiProfiles": {
+    "title": "Industry AI profiles (read-only)",
+    "subtitle": "Prompt guidance shipped per industry for estimate draft generation. Missing optional blocks are omitted from AI prompts.",
+    "configPath": "Source: src/ai/config/industry-ai-profiles.ts",
+    "industryLabel": "Industry",
+    "otherIndustry": "Other (generic)",
+    "completenessTitle": "Profile completeness",
+    "quantityRulesTitle": "Quantity derivation rules",
+    "quantityRulesMissing": "No quantity derivation rules configured for this industry. Draft prompts will omit this block.",
+    "status": {
+      "ok": "OK",
+      "missing": "Missing"
+    },
+    "fields": {
+      "role": "Role",
+      "estimationPrinciples": "Estimation principles",
+      "scopeChecklist": "Scope checklist",
+      "scopeExpansionRules": "Scope expansion rules",
+      "quantityDerivationRules": "Quantity derivation rules"
+    },
+    "table": {
+      "rulePl": "Rule (PL)",
+      "ruleEn": "Rule (EN)"
+    }
   }
 }

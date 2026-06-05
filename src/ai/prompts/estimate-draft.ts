@@ -43,21 +43,17 @@ export function buildEstimateDraftPrompt(input: EstimateDraftPromptInput): strin
   const blocks = [
     formatIndustryRoleBlock(profile.role),
     formatEstimationPrinciplesBlock(profile.estimationPrinciples),
-  
     formatCompanyContextBlock(input.context.companyDescription),
     formatGeneralAiInstructionsBlock(input.context.aiInstructions),
-  
     `## Project Brief\n${input.projectBrief.trim()}`,
-  
     formatScopeChecklistBlock(profile.scopeChecklist),
     formatScopeExpansionRulesBlock(profile.scopeExpansionRules),
-    formatQuantityDerivationRulesBlock(profile.quantityDerivationRules),
-  
+    ...(profile.quantityDerivationRules?.length
+      ? [formatQuantityDerivationRulesBlock(profile.quantityDerivationRules)]
+      : []),
     formatEstimateStructureBlock(estimateSections),
     formatSectionRulesBlock(estimateSections),
-  
     buildWorkspacePromptFromRules(input.context.rules),
-  
     formatEstimateCompletenessBlock(lang),
     formatOutputRulesBlock(lang),
   ];

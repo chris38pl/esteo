@@ -137,6 +137,9 @@
     "generatingTimeout": "Generation is taking longer than expected.",
     "generatingFailed": "Estimate generation failed.",
     "generatingFailedHint": "You can still edit the estimate manually.",
+    "retryGeneration": "Retry AI generation",
+    "retryGenerationPending": "Retrying…",
+    "retryGenerationError": "Could not restart generation. Try again.",
     "refreshStatus": "Refresh to check status"
   },
   "header": {

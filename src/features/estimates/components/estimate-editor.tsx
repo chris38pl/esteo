@@ -37,6 +37,7 @@ import type { EstimateNoteClient } from "@/features/estimates/lib/serialize-esti
 import { EstimateNotesPanel } from "./estimate-notes-panel";
 import { EstimateEditorLayoutStyles } from "./estimate-editor-layout-styles";
 import { EstimateGeneratingSkeleton } from "./estimate-generating-skeleton";
+import { EstimateGenerationFailedBanner } from "./estimate-generation-failed-banner";
 import {
   EstimateEditorTabs,
   type EstimateEditorTabId,
@@ -160,6 +161,7 @@ export function EstimateEditor({
   const requestStatus = estimate.estimateRequest?.status ?? null;
   const isGenerating =
     requestStatus === "PENDING" || requestStatus === "PROCESSING";
+  const generationFailed = requestStatus === "FAILED";
 
   const activeVersion = versionTree;
   const versionStatus = activeVersion?.status ?? "DRAFT";
@@ -185,6 +187,11 @@ export function EstimateEditor({
       setVersionUpdatedAt(tree.updatedAt);
     }
   }, []);
+
+  useEffect(() => {
+    if (!versionTree || isGenerating) return;
+    applyVersionTree(versionTree);
+  }, [versionTree, isGenerating, applyVersionTree]);
 
   const handleAiMutation = useCallback(
     (result: { updatedAt: string; versionTree: VersionTreeClient | null }) => {
@@ -564,6 +571,14 @@ export function EstimateEditor({
                     tableSearchQuery={tableSearchQuery}
                     onTableSearchQueryChange={setTableSearchQuery}
                   />
+                  {generationFailed && sections.length === 0 ? (
+                    <EstimateGenerationFailedBanner
+                      estimateId={estimate.id}
+                      workspaceId={estimate.workspaceId}
+                      workspaceSlug={workspaceSlug}
+                      locale={locale}
+                    />
+                  ) : null}
                   <EstimateItemsTable
                     sections={sections}
                     currency={estimate.currency}

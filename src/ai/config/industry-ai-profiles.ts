@@ -10,7 +10,7 @@ export type IndustryAiProfile = {
   estimationPrinciples: LocalizedList;
   scopeChecklist: LocalizedList;
   scopeExpansionRules: LocalizedList;
-  quantityDerivationRules: LocalizedList;
+  quantityDerivationRules?: LocalizedList;
 };
 
 export type ResolvedIndustryAiProfile = {
@@ -18,7 +18,25 @@ export type ResolvedIndustryAiProfile = {
   estimationPrinciples: string[];
   scopeChecklist: string[];
   scopeExpansionRules: string[];
-  quantityDerivationRules: string[];
+  quantityDerivationRules?: string[];
+};
+
+export type IndustryAiProfileFieldKey =
+  | "role"
+  | "estimationPrinciples"
+  | "scopeChecklist"
+  | "scopeExpansionRules"
+  | "quantityDerivationRules";
+
+export type IndustryAiProfileFieldStatus = {
+  key: IndustryAiProfileFieldKey;
+  defined: boolean;
+};
+
+export type IndustryAiProfileAdminView = {
+  industry: WorkspaceIndustry;
+  fields: IndustryAiProfileFieldStatus[];
+  quantityDerivationRules: { pl: string[]; en: string[] } | null;
 };
 
 const PROFILES: Record<WorkspaceIndustry, IndustryAiProfile> = {
@@ -196,6 +214,22 @@ const PROFILES: Record<WorkspaceIndustry, IndustryAiProfile> = {
         "Developer flat implies completing circuits, missing runs, and IP-rated points in wet zones.",
       ],
     },
+    quantityDerivationRules: {
+      pl: [
+        "Liczba gniazd, włączników i punktów oświetleniowych powinna wynikać z briefu lub typowego rozmieszczenia w pomieszczeniach.",
+        "Długość przewodów szacuj z tras (mb) — nie kopiuj jednej wartości na wszystkie obwody.",
+        "Obwody oświetleniowe i gniazdowe licz osobno; LED w kuchni to osobne pozycje z zasilaczem/sterowaniem jeśli wynika z zakresu.",
+        "Rozdzielnia i zabezpieczenia dopasuj do liczby obwodów i obciążenia — nie pomijaj RCD/BCP gdy zakres obejmuje nowe obwody.",
+        "Prace przygotowawcze (bruzdy, puszki) skaluj z liczbą punktów i długością tras.",
+      ],
+      en: [
+        "Socket, switch, and lighting point counts should follow the brief or typical room layout.",
+        "Estimate cable length from routing (linear m) — do not reuse one value for every circuit.",
+        "Count lighting and socket circuits separately; kitchen LED runs are separate lines with drivers/controls when in scope.",
+        "Size panel and protection to circuit count and load — include RCD/breakers when new circuits are in scope.",
+        "Scale prep work (chasing, boxes) with point count and route length.",
+      ],
+    },
   },
   [WorkspaceIndustry.PLUMBING]: {
     role: {
@@ -246,6 +280,20 @@ const PROFILES: Record<WorkspaceIndustry, IndustryAiProfile> = {
         "Developer flat implies verifying supplies and moves for final layout.",
       ],
     },
+    quantityDerivationRules: {
+      pl: [
+        "Długość rur (mb) wynikaj z tras między punktami — nie stosuj jednej wartości dla całej instalacji.",
+        "Liczba punktów czerpalnych i odpływów powinna być spójna z liczbą urządzeń w briefie.",
+        "Próby ciśnieniowe i odbiór licz jako komplet usług, nie per metr rury.",
+        "Materiały (rury, kształtki, izolacja) skaluj z długością tras i liczbą podejść.",
+      ],
+      en: [
+        "Pipe length (linear m) follows routing between points — do not use one value for the whole system.",
+        "Fixture and waste point counts should match appliances described in the brief.",
+        "Pressure tests and commissioning are whole-job services, not per meter of pipe.",
+        "Materials (pipe, fittings, insulation) scale with route length and connection count.",
+      ],
+    },
   },
   [WorkspaceIndustry.CARPENTRY]: {
     role: {
@@ -292,6 +340,20 @@ const PROFILES: Record<WorkspaceIndustry, IndustryAiProfile> = {
         "Wood flooring implies underlay, install, and sanding/oiling when brief implies it.",
       ],
     },
+    quantityDerivationRules: {
+      pl: [
+        "Powierzchnie zabudów (m²) wynikaj z wymiarów w briefie lub typowych modułów kuchennych/szaf.",
+        "Liczba skrzydł drzwi i ościeżnic = liczba otworów w zakresie.",
+        "Podłogi drewniane w m² — spójnie z powierzchnią pomieszczeń objętych zakresem.",
+        "Listwy i obróbki w mb — z obwodu pomieszczeń lub długości krawędzi zabudowy.",
+      ],
+      en: [
+        "Built-in areas (m²) follow brief dimensions or typical kitchen/wardrobe modules.",
+        "Door leaf and frame count equals openings in scope.",
+        "Wood flooring in m² — consistent with room areas in scope.",
+        "Skirting and trims in linear m — from room perimeter or built-in edge length.",
+      ],
+    },
   },
   [WorkspaceIndustry.OTHER]: {
     role: {
@@ -334,8 +396,63 @@ const PROFILES: Record<WorkspaceIndustry, IndustryAiProfile> = {
         "Lump-sum phrases in the brief should split into labor and materials when it improves estimate clarity.",
       ],
     },
+    quantityDerivationRules: {
+      pl: [
+        "Wyprowadzaj ilości z briefu i typowej praktyki branżowej — nie używaj losowych wartości.",
+        "Zachowaj spójność jednostek i ilości między materiałami a robocizną.",
+        "Nie kopiuj jednej liczby (np. metrażu) na każdą pozycję kosztorysu.",
+      ],
+      en: [
+        "Derive quantities from the brief and typical trade practice — avoid arbitrary values.",
+        "Keep units and quantities consistent between materials and labor.",
+        "Do not copy one figure (e.g. floor area) onto every line item.",
+      ],
+    },
   },
 };
+
+function isProfileFieldDefined(
+  profile: IndustryAiProfile,
+  key: IndustryAiProfileFieldKey,
+): boolean {
+  if (key === "role") {
+    return Boolean(profile.role.pl.trim() || profile.role.en.trim());
+  }
+
+  const list = profile[key];
+  if (!list) {
+    return false;
+  }
+
+  return list.pl.length > 0 || list.en.length > 0;
+}
+
+export function getIndustryAiProfileAdminView(
+  industry: WorkspaceIndustry,
+): IndustryAiProfileAdminView {
+  const profile = PROFILES[industry] ?? PROFILES[WorkspaceIndustry.OTHER];
+  const fieldKeys: IndustryAiProfileFieldKey[] = [
+    "role",
+    "estimationPrinciples",
+    "scopeChecklist",
+    "scopeExpansionRules",
+    "quantityDerivationRules",
+  ];
+
+  return {
+    industry,
+    fields: fieldKeys.map((key) => ({
+      key,
+      defined: isProfileFieldDefined(profile, key),
+    })),
+    quantityDerivationRules: profile.quantityDerivationRules
+      ? {
+          pl: profile.quantityDerivationRules.pl,
+          en: profile.quantityDerivationRules.en,
+        }
+      : null,
+  };
+}
 
 export function resolveIndustryAiProfileForPrompt(
   industry: WorkspaceIndustry,
@@ -349,6 +466,6 @@ export function resolveIndustryAiProfileForPrompt(
     estimationPrinciples: profile.estimationPrinciples[lang],
     scopeChecklist: profile.scopeChecklist[lang],
     scopeExpansionRules: profile.scopeExpansionRules[lang],
-    quantityDerivationRules: profile.quantityDerivationRules[lang],
+    quantityDerivationRules: profile.quantityDerivationRules?.[lang],
   };
 }

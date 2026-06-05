@@ -11,6 +11,7 @@ import { setRequestLocale } from "next-intl/server";
 
 
 import { IndustryFieldsAdminPanel } from "@/features/industry-fields/components/industry-fields-admin-panel";
+import { IndustryAiProfilesAdminPanel } from "@/features/workspaces/components/industry-ai-profiles-admin-panel";
 import { IndustryEstimateSectionsAdminPanel } from "@/features/workspaces/components/industry-estimate-sections-admin-panel";
 
 import { listFieldDefinitions } from "@/features/industry-fields/server/repository";
@@ -130,6 +131,11 @@ export default async function IndustryFieldsAdminPage({
       />
 
       <IndustryEstimateSectionsAdminPanel
+        locale={resolvedLocale}
+        initialIndustry={industry}
+      />
+
+      <IndustryAiProfilesAdminPanel
         locale={resolvedLocale}
         initialIndustry={industry}
       />
