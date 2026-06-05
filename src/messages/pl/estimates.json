@@ -74,6 +74,18 @@
       "hide": "Ukryj karty górne",
       "show": "Pokaż karty górne"
     },
+    "notes": {
+      "empty": "Brak notatek. Dodaj pierwszą notatkę dla zespołu.",
+      "placeholder": "Napisz notatkę…",
+      "replyPlaceholder": "Napisz odpowiedź…",
+      "submit": "Dodaj",
+      "submitting": "Dodawanie…",
+      "reply": "Odpowiedz",
+      "delete": "Usuń",
+      "deleteConfirm": "Usunąć tę notatkę?",
+      "deleteConfirmWithReplies": "Usunąć tę notatkę wraz ze wszystkimi odpowiedziami?",
+      "error": "Nie udało się zapisać notatki. Spróbuj ponownie."
+    },
     "tabPlaceholder": "Ta zakładka będzie dostępna wkrótce.",
     "dragHandle": "Przeciągnij, aby zmienić kolejność",
     "aiAssistant": "AI Asystent",

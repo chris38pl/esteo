@@ -33,6 +33,8 @@ import {
 } from "@/features/estimates/lib/estimate-layout-config";
 import { useEstimateAiSideLayout } from "@/features/estimates/hooks/use-estimate-ai-side-layout";
 import { useEstimateAiStickyMaxHeight } from "@/features/estimates/hooks/use-estimate-ai-sticky-max-height";
+import type { EstimateNoteClient } from "@/features/estimates/lib/serialize-estimate-notes";
+import { EstimateNotesPanel } from "./estimate-notes-panel";
 import { EstimateEditorLayoutStyles } from "./estimate-editor-layout-styles";
 import { EstimateGeneratingSkeleton } from "./estimate-generating-skeleton";
 import {
@@ -65,6 +67,9 @@ interface EstimateEditorProps {
   initialPendingEdit?: ProposeEditResult | null;
   isPinned?: boolean;
   userEmailsById?: Record<string, string>;
+  initialNotes?: EstimateNoteClient[];
+  currentUserId?: string;
+  currentUserAvatarUrl?: string | null;
 }
 
 function lineItemFromServer(
@@ -120,6 +125,9 @@ export function EstimateEditor({
   initialPendingEdit = null,
   isPinned = false,
   userEmailsById = {},
+  initialNotes = [],
+  currentUserId = "",
+  currentUserAvatarUrl = null,
 }: EstimateEditorProps) {
   const t = useTranslations("estimates");
   const router = useRouter();
@@ -528,7 +536,17 @@ export function EstimateEditor({
                 onToggleTopPanel={toggleTopPanel}
               />
 
-              {activeTab === "items" ? (
+              {activeTab === "notes" ? (
+                <EstimateNotesPanel
+                  estimateId={estimate.id}
+                  workspaceId={estimate.workspaceId}
+                  workspaceSlug={workspaceSlug}
+                  locale={locale}
+                  initialNotes={initialNotes}
+                  currentUserId={currentUserId}
+                  currentUserAvatarUrl={currentUserAvatarUrl}
+                />
+              ) : activeTab === "items" ? (
                 <fieldset
                   disabled={isVersionReadOnly}
                   className="min-w-0 border-0 p-0 disabled:opacity-80"

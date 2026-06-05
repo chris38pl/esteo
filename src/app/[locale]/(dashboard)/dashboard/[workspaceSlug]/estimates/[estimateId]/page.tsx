@@ -31,7 +31,9 @@ import {
   getLatestAiApprovedRevisionAt,
   listAiMessagesByVersionId,
 } from "@/features/estimates/server/ai-messages-repository";
+import { serializeEstimateNotes } from "@/features/estimates/lib/serialize-estimate-notes";
 import { isEstimatePinned } from "@/features/estimates/server/pinned-estimates";
+import { listNotesByEstimateId } from "@/features/estimates/server/notes-repository";
 import { resolveUserEmailsByIds } from "@/features/users/server/resolve-user-emails";
 
 export default async function EstimateEditorPage({
@@ -139,6 +141,9 @@ export default async function EstimateEditorPage({
   ]);
   const userEmailsById = Object.fromEntries(userEmailsMap);
 
+  const noteRows = await listNotesByEstimateId(estimateId);
+  const initialNotes = serializeEstimateNotes(noteRows);
+
   return (
     <>
       <SyncDashboardBreadcrumbDetail label={breadcrumbLabel} />
@@ -155,6 +160,9 @@ export default async function EstimateEditorPage({
         initialPendingEdit={initialPendingEdit}
         isPinned={pinned}
         userEmailsById={userEmailsById}
+        initialNotes={initialNotes}
+        currentUserId={user.id}
+        currentUserAvatarUrl={user.avatarUrl}
       />
     </>
   );

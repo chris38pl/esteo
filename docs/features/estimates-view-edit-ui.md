@@ -71,7 +71,7 @@ Purpose: context without leaving the screen. Data from `EstimateRequest` + estim
 | **Attachments** | Files for this estimate / request | Yes |
 | History | Change log | Post-MVP |
 | Payments | Payment schedule | Post-MVP |
-| Notes | Internal notes | Post-MVP |
+| Notes | Internal threaded notes | Yes — see [`estimate-notes.md`](estimate-notes.md) |
 
 ---
 
