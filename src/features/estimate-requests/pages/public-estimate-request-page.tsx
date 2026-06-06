@@ -100,14 +100,14 @@ export default async function PublicEstimateRequestPage({ params }: { params: Pa
   }
 
   return (
-    <main className="min-h-dvh bg-background text-foreground">
+    <main className="min-h-dvh w-full min-w-0 overflow-x-hidden bg-background text-foreground">
       {memberHeader ? (
         <PublicEstimateHeader
           backHref={memberHeader.backHref}
           currentUser={memberHeader.currentUser}
         />
       ) : null}
-      <div className="relative isolate overflow-hidden">
+      <div className="relative isolate overflow-x-hidden">
         <div className="absolute inset-0 -z-10">
           <Image
             src="/images/estimate-request/estimate-request-light.webp"
@@ -127,8 +127,8 @@ export default async function PublicEstimateRequestPage({ params }: { params: Pa
           <div className="absolute inset-0 bg-gradient-to-b from-background/35 via-background/55 to-background/95" />
         </div>
 
-        <div className="mx-auto grid min-h-dvh max-w-7xl gap-8 px-5 py-8 md:px-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:gap-14 lg:py-10">
-          <section className="order-2 lg:order-1">
+        <div className="mx-auto grid min-h-dvh w-full min-w-0 max-w-7xl gap-8 px-4 py-8 sm:px-5 md:px-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:gap-14 lg:py-10">
+          <section>
             <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.35em] text-primary">
               {t("hero.eyebrow")}
             </p>
@@ -167,7 +167,7 @@ export default async function PublicEstimateRequestPage({ params }: { params: Pa
             </div>
           </section>
 
-          <section className="order-1 lg:order-2">
+          <section className="min-w-0 w-full">
             <EstimateRequestForm locale={resolvedLocale} pageData={pageData} />
           </section>
         </div>

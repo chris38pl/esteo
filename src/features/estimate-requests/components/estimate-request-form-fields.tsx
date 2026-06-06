@@ -93,7 +93,7 @@ export function EstimateRequestFormFields({
   );
 
   return (
-    <div className="space-y-5">
+    <div className="min-w-0 space-y-5">
       {showTitle ? (
         <EstimateRequestTextInput
           id="internal-estimate-title"
@@ -226,7 +226,7 @@ export function EstimateRequestFormFields({
           {t("form.fields.preferredStartDate")}
           <span className="text-primary">*</span>
         </Label>
-        <div className="flex gap-2 overflow-x-auto pb-1">
+        <div className="flex w-full min-w-0 max-w-full gap-2 overflow-x-auto pb-1">
           {START_DATE_KEYS.map((option) => {
             const selected = project.preferredStartDate === option;
             return (

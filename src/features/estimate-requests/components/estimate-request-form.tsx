@@ -131,10 +131,10 @@ export function EstimateRequestForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-2xl border bg-card/85 p-5 shadow-xl shadow-black/5 backdrop-blur-md md:p-6 dark:bg-card/70 dark:shadow-black/35"
+      className="w-full min-w-0 max-w-full rounded-2xl border bg-card/85 p-5 shadow-xl shadow-black/5 backdrop-blur-md md:p-6 dark:bg-card/70 dark:shadow-black/35"
     >
       <div className="flex items-start justify-between gap-4">
-        <div>
+        <div className="min-w-0">
           <h2 className="text-xl font-bold text-foreground">{t("form.title")}</h2>
           <p className="mt-2 text-xs leading-5 text-muted-foreground">{t("form.description")}</p>
         </div>
