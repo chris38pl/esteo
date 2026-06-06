@@ -1,7 +1,15 @@
 "use client";
 
-import { createContext, useContext, useMemo, useTransition, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useTransition,
+  type ReactNode,
+} from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 import type { WorkspaceAppearanceTheme } from "@prisma/client";
 
@@ -52,6 +60,24 @@ type WorkspaceContextValue = {
 
 export const WorkspaceContext = createContext<WorkspaceContextValue | null>(null);
 
+const RESERVED_DASHBOARD_SEGMENTS = new Set([
+  "admin",
+  "account",
+  "billing",
+  "onboarding",
+  "invitations",
+  "pending-access",
+  "workspaces",
+]);
+
+function workspaceSlugFromPathname(pathname: string): string | null {
+  const segments = pathname.split("/");
+  const dashIdx = segments.findIndex((s) => s === "dashboard");
+  const segment = dashIdx >= 0 ? segments[dashIdx + 1] : undefined;
+  if (!segment || RESERVED_DASHBOARD_SEGMENTS.has(segment)) return null;
+  return segment;
+}
+
 export function WorkspaceProvider({
   workspaces,
   activeWorkspaceId,
@@ -93,6 +119,30 @@ export function WorkspaceProvider({
     [workspaces, activeWorkspaceId],
   );
 
+  const pathname = usePathname() ?? "";
+  const slugFromPath = useMemo(() => workspaceSlugFromPathname(pathname), [pathname]);
+  const activeSlug = activeWorkspace?.slug ?? null;
+  const refreshingForSlugRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (isSwitching) return;
+
+    if (!slugFromPath) {
+      refreshingForSlugRef.current = null;
+      return;
+    }
+
+    if (slugFromPath === activeSlug) {
+      refreshingForSlugRef.current = null;
+      return;
+    }
+
+    if (refreshingForSlugRef.current === slugFromPath) return;
+
+    refreshingForSlugRef.current = slugFromPath;
+    router.refresh();
+  }, [slugFromPath, activeSlug, isSwitching, router]);
+
   const value = useMemo<WorkspaceContextValue>(
     () => ({
       workspaces,
@@ -117,8 +167,12 @@ export function WorkspaceProvider({
           return;
         }
 
+        // push then refresh: Next.js queues ACTION_REFRESH after ACTION_NAVIGATE
+        // completes, so refresh re-fetches the parent (dashboard) layout with the
+        // new canonical URL and x-pathname (see refresh-reducer.js in next@16).
         startTransition(() => {
           router.push(`/${locale}/dashboard/${workspaceSlug}`);
+          router.refresh();
         });
       },
     }),
