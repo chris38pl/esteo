@@ -157,6 +157,19 @@ function activityDescription(
         });
       }
       return t("editor.history.actions.note_deleted");
+    case "attachment_added":
+      if (meta.fileCount != null && meta.fileCount > 1) {
+        return t("editor.history.actions.attachment_added_multiple", {
+          count: meta.fileCount,
+        });
+      }
+      return t("editor.history.actions.attachment_added", {
+        fileName: meta.fileName ?? "",
+      });
+    case "attachment_deleted":
+      return t("editor.history.actions.attachment_deleted", {
+        fileName: meta.fileName ?? "",
+      });
     default:
       return log.action;
   }

@@ -22,6 +22,8 @@ export const ESTIMATE_ACTIVITY_ACTIONS = {
   note_added: "note_added",
   note_replied: "note_replied",
   note_deleted: "note_deleted",
+  attachment_added: "attachment_added",
+  attachment_deleted: "attachment_deleted",
 } as const;
 
 export type EstimateActivityAction =
@@ -39,4 +41,6 @@ export type ActivityMetadata = {
   presetId?: string;
   installmentCount?: number;
   replyCount?: number;
+  fileName?: string;
+  fileCount?: number;
 };

@@ -210,6 +210,21 @@ When workspace storage is exhausted, submit is rejected if the user attached fil
 
 Partial success: some files may fail upload while others succeed; entities are created unless **all** uploads fail.
 
+## Activity history (editor manual)
+
+Manual uploads and deletes from the estimate editor **Attachments** tab are logged in **Historia** / **History** (category `ESTIMATE`):
+
+| Action | Logged from | Notes |
+| --- | --- | --- |
+| Upload batch | `POST /api/attachments/upload` | One entry per upload request; `fileCount` in metadata |
+| Delete | `deleteEstimateAttachmentAction` | One entry with `fileName` |
+
+Not logged: attachments promoted from estimate request forms (`PUBLIC_REQUEST` / `INTERNAL_REQUEST`).
+
+After upload or delete, `EstimateAttachmentsPanel` calls `router.refresh()` so the History tab shows new entries without navigation.
+
+See [`estimate-activity-history.md`](estimate-activity-history.md).
+
 ## Future derived assets
 
 Phase 1–2 store `original` + async `thumbnail` (images). Future phases may add OCR results, AI previews, or additional variants.

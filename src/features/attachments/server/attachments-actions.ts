@@ -4,6 +4,8 @@ import "server-only";
 
 import { AttachmentThumbnailStatus } from "@prisma/client";
 
+import { ESTIMATE_ACTIVITY_ACTIONS } from "@/features/estimates/lib/estimate-activity-types";
+import { logEstimateActivity } from "@/features/estimates/server/activity-log";
 import { revalidateEstimatePaths } from "@/features/estimates/server/revalidate-estimate-paths";
 import { assertEstimateInWorkspace } from "@/features/estimates/server/notes-repository";
 import {
@@ -54,6 +56,16 @@ export async function deleteEstimateAttachmentAction(input: {
     await deleteEstimateAttachment({
       attachmentId: input.attachmentId,
       workspaceId: input.workspaceId,
+    });
+
+    await logEstimateActivity({
+      estimateId: input.estimateId,
+      workspaceId: input.workspaceId,
+      actorType: "USER",
+      actorUserId: user.id,
+      category: "ESTIMATE",
+      action: ESTIMATE_ACTIVITY_ACTIONS.attachment_deleted,
+      metadata: { fileName: attachment.originalFileName },
     });
 
     revalidateEstimatePaths(input.locale, input.workspaceSlug, input.estimateId);

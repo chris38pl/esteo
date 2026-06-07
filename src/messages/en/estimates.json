@@ -280,7 +280,10 @@
         "note_added": "Added a note",
         "note_replied": "Replied to a note",
         "note_deleted": "Deleted a note",
-        "note_deleted_with_replies": "Deleted a note and {count, plural, one {# reply} other {# replies}}"
+        "note_deleted_with_replies": "Deleted a note and {count, plural, one {# reply} other {# replies}}",
+        "attachment_added": "Added attachment \"{fileName}\"",
+        "attachment_added_multiple": "Added {count} attachments",
+        "attachment_deleted": "Removed attachment \"{fileName}\""
       }
     },
     "tabPlaceholder": "This tab will be available soon.",

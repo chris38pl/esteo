@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { serializeEstimateAttachments } from "@/features/attachments/lib/serialize-attachments";
 import { uploadPreparedAttachments } from "@/features/attachments/server/upload-service";
 import { StorageQuotaError } from "@/features/attachments/server/storage-errors";
+import { ESTIMATE_ACTIVITY_ACTIONS } from "@/features/estimates/lib/estimate-activity-types";
+import { logEstimateActivity } from "@/features/estimates/server/activity-log";
 import { assertEstimateInWorkspace } from "@/features/estimates/server/notes-repository";
 import { syncUserFromClerk } from "@/server/auth/sync-user";
 import { PermissionError } from "@/server/permissions/errors";
@@ -43,6 +45,19 @@ export async function POST(request: Request) {
       estimateId,
       uploadedById: user.id,
       files,
+    });
+
+    await logEstimateActivity({
+      estimateId,
+      workspaceId,
+      actorType: "USER",
+      actorUserId: user.id,
+      category: "ESTIMATE",
+      action: ESTIMATE_ACTIVITY_ACTIONS.attachment_added,
+      metadata: {
+        fileCount: created.length,
+        ...(created.length === 1 ? { fileName: created[0].originalFileName } : {}),
+      },
     });
 
     return NextResponse.json({

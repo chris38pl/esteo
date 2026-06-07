@@ -280,7 +280,10 @@
         "note_added": "Dodano notatkę",
         "note_replied": "Odpowiedziano na notatkę",
         "note_deleted": "Usunięto notatkę",
-        "note_deleted_with_replies": "Usunięto notatkę wraz z {count, plural, one {# odpowiedzią} few {# odpowiedziami} many {# odpowiedziami} other {# odpowiedziami}}"
+        "note_deleted_with_replies": "Usunięto notatkę wraz z {count, plural, one {# odpowiedzią} few {# odpowiedziami} many {# odpowiedziami} other {# odpowiedziami}}",
+        "attachment_added": "Dodano załącznik „{fileName}”",
+        "attachment_added_multiple": "Dodano {count} załączników",
+        "attachment_deleted": "Usunięto załącznik „{fileName}”"
       }
     },
     "tabPlaceholder": "Ta zakładka będzie dostępna wkrótce.",

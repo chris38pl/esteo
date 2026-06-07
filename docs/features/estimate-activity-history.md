@@ -131,6 +131,9 @@ type ActivityMetadata = {
   currency?: "PLN" | "EUR";
   presetId?: string;
   installmentCount?: number;
+  replyCount?: number;
+  fileName?: string;
+  fileCount?: number;
 };
 ```
 
@@ -177,6 +180,30 @@ Keeps the **first** `oldMargin` and updates `newMargin` to the latest value.
 | `payment_installment_reordered` | FINANCIAL | USER | `reorderPaymentInstallmentsAction` (coalesced 5 min) |
 | `payment_recorded` | FINANCIAL | USER | `recordPaymentInstallmentAction`, `markPaymentInstallmentPaidAction` |
 | `payment_installment_unpaid` | FINANCIAL | USER | `markPaymentInstallmentUnpaidAction` |
+| `note_added` | ESTIMATE | USER | `createEstimateNoteAction` |
+| `note_replied` | ESTIMATE | USER | `createEstimateNoteAction` (reply) |
+| `note_deleted` | ESTIMATE | USER | `deleteEstimateNoteAction` |
+| `attachment_added` | ESTIMATE | USER | `POST /api/attachments/upload` (one entry per batch) |
+| `attachment_deleted` | ESTIMATE | USER | `deleteEstimateAttachmentAction` |
+
+### Attachment logging (editor manual)
+
+Logged from the attachments orchestration layer — not from request-form promotion or public upload.
+
+| User action (Attachments tab) | Action key | Metadata |
+| --- | --- | --- |
+| Upload one or more files | `attachment_added` | `fileCount`; `fileName` when `fileCount === 1` |
+| Remove attachment | `attachment_deleted` | `fileName` |
+
+Example messages (PL):
+
+```txt
+Dodano załącznik „plan taras.png”
+Dodano 3 załączników
+Usunięto załącznik „specyfikacja.pdf”
+```
+
+See also [`estimate-attachments.md`](estimate-attachments.md) → **Activity history**.
 
 ### Schema + i18n ready; wire when feature ships
 

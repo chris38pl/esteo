@@ -2,6 +2,7 @@
 
 import { Download, FileText, Loader2, Plus, UploadCloud, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import {
@@ -94,6 +95,7 @@ export function EstimateAttachmentsPanel({
   storageSummary,
   readOnly = false,
 }: EstimateAttachmentsPanelProps) {
+  const router = useRouter();
   const t = useTranslations("estimates.attachments");
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [attachments, setAttachments] = useState(initialAttachments);
@@ -109,6 +111,10 @@ export function EstimateAttachmentsPanel({
   );
   const [previewFullUrl, setPreviewFullUrl] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
+
+  const refreshHistory = useCallback(() => {
+    router.refresh();
+  }, [router]);
 
   const fetchSignedUrl = useCallback(
     async (attachmentId: string, variant: "original" | "thumbnail" = "original") => {
@@ -221,6 +227,7 @@ export function EstimateAttachmentsPanel({
       setAttachments((current) => [...current, ...result.attachments]);
       setUploadState("idle");
       setUploadProgress(null);
+      refreshHistory();
     } catch (uploadError) {
       setUploadState("error");
       setUploadProgress(null);
@@ -267,6 +274,7 @@ export function EstimateAttachmentsPanel({
 
     setAttachments((current) => current.filter((item) => item.id !== attachmentId));
     setDeleteTarget(null);
+    refreshHistory();
   }
 
   async function handleDownload(attachment: EstimateAttachmentClient) {
