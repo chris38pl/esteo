@@ -14,6 +14,12 @@ import {
 import { calculateEstimate } from "@/features/estimates/lib/calculate-estimate";
 import { formatEstimateCurrency } from "@/features/estimates/lib/format-estimate-currency";
 import { cn } from "@/lib/utils";
+import {
+  EMPTY_ESTIMATE_ITEMS_FILTER,
+  hasActiveFilters,
+  itemIsVisible,
+  type EstimateItemsFilterState,
+} from "@/features/estimates/lib/estimate-item-filter";
 import { EstimateMobileAddRow } from "./estimate-mobile-add-row";
 import { EstimateMobilePositionCard } from "./estimate-mobile-position-card";
 import type { LineItemData } from "./estimate-line-item-row";
@@ -32,15 +38,7 @@ interface EstimateMobileSectionCardProps {
   onDeleteSection: () => void;
   onOpenItem: (itemId: string) => void;
   searchQuery?: string;
-}
-
-function itemMatchesSearch(item: LineItemData, query: string): boolean {
-  if (!query.trim()) return true;
-  const q = query.toLowerCase();
-  return (
-    item.name.toLowerCase().includes(q) ||
-    (item.unit?.toLowerCase().includes(q) ?? false)
-  );
+  tableFilter?: EstimateItemsFilterState;
 }
 
 function EstimateMobileSectionCardComponent({
@@ -57,11 +55,15 @@ function EstimateMobileSectionCardComponent({
   onDeleteSection,
   onOpenItem,
   searchQuery = "",
+  tableFilter,
 }: EstimateMobileSectionCardProps) {
   const t = useTranslations("estimates");
   const locale = useLocale();
 
-  const visibleItems = items.filter((item) => itemMatchesSearch(item, searchQuery));
+  const filter = tableFilter ?? EMPTY_ESTIMATE_ITEMS_FILTER;
+  const visibleItems = items.filter((item) =>
+    itemIsVisible(item, { searchQuery, filter }),
+  );
   const sectionCalc = calculateEstimate(
     items.map((i) => ({
       quantity: i.quantity,
@@ -71,7 +73,7 @@ function EstimateMobileSectionCardComponent({
     0,
   );
 
-  if (searchQuery.trim() && visibleItems.length === 0) {
+  if ((searchQuery.trim() || hasActiveFilters(filter)) && visibleItems.length === 0) {
     return null;
   }
 

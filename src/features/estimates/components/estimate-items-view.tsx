@@ -1,11 +1,20 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import type { SectionData } from "./estimate-items-table";
 import type { LineItemData } from "./estimate-line-item-row";
 import { EstimateItemsTable } from "./estimate-items-table";
 import { EstimateItemsMobileList } from "./estimate-items-mobile-list";
 import { EstimateItemsToolbar } from "./estimate-items-toolbar";
+import { EstimateItemsFilterSheet } from "./estimate-items-filter-sheet";
 import { EstimateMobileToolbar } from "./estimate-mobile-toolbar";
+import {
+  EMPTY_ESTIMATE_ITEMS_FILTER,
+  hasActiveFilters,
+  sanitizeFilterForMode,
+  type EstimateItemsFilterState,
+} from "@/features/estimates/lib/estimate-item-filter";
 import {
   estimateItemsDesktopClass,
   estimateItemsMobileClass,
@@ -64,6 +73,20 @@ export function EstimateItemsView({
   onToggleTopPanel,
   onMobilePositionSheetOpenChange,
 }: EstimateItemsViewProps) {
+  const [tableFilter, setTableFilter] = useState<EstimateItemsFilterState>(
+    EMPTY_ESTIMATE_ITEMS_FILTER,
+  );
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
+  const filterActive = hasActiveFilters(tableFilter);
+
+  useEffect(() => {
+    setTableFilter((prev) => sanitizeFilterForMode(prev, advancedMode));
+  }, [advancedMode]);
+
+  const applyTableFilter = (filter: EstimateItemsFilterState) => {
+    setTableFilter(sanitizeFilterForMode(filter, advancedMode));
+  };
+
   return (
     <>
       <div className={estimateItemsDesktopClass}>
@@ -79,6 +102,9 @@ export function EstimateItemsView({
           aiUsesSideLayout={aiUsesSideLayout}
           tableSearchQuery={tableSearchQuery}
           onTableSearchQueryChange={onTableSearchQueryChange}
+          filterActive={filterActive}
+          onOpenFilter={() => setFilterSheetOpen(true)}
+          onClearFilter={() => setTableFilter(EMPTY_ESTIMATE_ITEMS_FILTER)}
         />
         <EstimateItemsTable
           sections={sections}
@@ -92,6 +118,7 @@ export function EstimateItemsView({
           onReorderItems={onReorderItems}
           onBlur={onBlur}
           tableSearchQuery={tableSearchQuery}
+          tableFilter={tableFilter}
         />
       </div>
 
@@ -107,6 +134,9 @@ export function EstimateItemsView({
           onToggleTopPanel={onToggleTopPanel}
           tableSearchQuery={tableSearchQuery}
           onTableSearchQueryChange={onTableSearchQueryChange}
+          filterActive={filterActive}
+          onOpenFilter={() => setFilterSheetOpen(true)}
+          onClearFilter={() => setTableFilter(EMPTY_ESTIMATE_ITEMS_FILTER)}
         />
         <EstimateItemsMobileList
           sections={sections}
@@ -114,6 +144,7 @@ export function EstimateItemsView({
           advancedMode={advancedMode}
           marginPercent={marginPercent}
           tableSearchQuery={tableSearchQuery}
+          tableFilter={tableFilter}
           onAddSection={onAddSection}
           onUpdateSection={onUpdateSection}
           onDeleteSection={onDeleteSection}
@@ -125,6 +156,16 @@ export function EstimateItemsView({
           onPositionSheetOpenChange={onMobilePositionSheetOpenChange}
         />
       </div>
+
+      <EstimateItemsFilterSheet
+        open={filterSheetOpen}
+        onOpenChange={setFilterSheetOpen}
+        sections={sections}
+        advancedMode={advancedMode}
+        searchQuery={tableSearchQuery}
+        appliedFilter={tableFilter}
+        onApply={applyTableFilter}
+      />
     </>
   );
 }

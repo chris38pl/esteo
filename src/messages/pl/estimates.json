@@ -87,6 +87,54 @@
       "settings": "Ustawienia tabeli",
       "comingSoon": "Wkrótce"
     },
+    "filter": {
+      "title": "Filtrowanie pozycji kosztorysu",
+      "close": "Zamknij filtry",
+      "fieldsTitle": "Pola i warunki",
+      "clearAll": "Wyczyść wszystko",
+      "addFilter": "Dodaj filtr",
+      "chooseField": "Wybierz pole",
+      "closeFieldPicker": "Zamknij listę pól",
+      "cancelAdd": "Anuluj",
+      "removeCondition": "Usuń warunek",
+      "operatorAria": "Operator",
+      "valueAria": "Wartość",
+      "logicTitle": "Logika warunków",
+      "clear": "Wyczyść",
+      "showResults": "Pokaż wyniki ({count})",
+      "logic": {
+        "and": "AND (i)",
+        "or": "OR (lub)"
+      },
+      "valuePlaceholder": {
+        "text": "Wpisz tekst",
+        "number": "Wpisz liczbę",
+        "unit": "Wybierz"
+      },
+      "fields": {
+        "name": "Nazwa pozycji",
+        "unit": "Jednostka",
+        "quantity": "Ilość",
+        "unitPrice": "Cena jedn. (netto)",
+        "baseUnitPrice": "Cena bazowa",
+        "netValue": "Wartość netto",
+        "grossValue": "Wartość brutto",
+        "vatRate": "VAT (%)"
+      },
+      "operators": {
+        "contains": "Zawiera",
+        "equals": "=",
+        "notEquals": "≠",
+        "startsWith": "Zaczyna się od",
+        "endsWith": "Kończy się na",
+        "eq": "=",
+        "neq": "≠",
+        "gt": ">",
+        "gte": "≥",
+        "lt": "<",
+        "lte": "≤"
+      }
+    },
     "mode": {
       "label": "Tryb edycji",
       "view": "Widok: {mode}",

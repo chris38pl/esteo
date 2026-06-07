@@ -1,12 +1,12 @@
 "use client";
 
-import { Bot, Filter, Plus, Settings, Upload } from "lucide-react";
+import { Bot, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
-import { EstimateMarginControl } from "./estimate-margin-control";
-import { EstimateEditorModeSelect } from "./estimate-editor-mode-select";
+import { EstimateTableFilterButton } from "./estimate-table-filter-button";
 import { EstimateTableSearch } from "./estimate-table-search";
+import { EstimateToolsMenu } from "./estimate-tools-menu";
 import {
   estimateOutlineButtonClassName,
   estimatePrimaryButtonClassName,
@@ -25,6 +25,9 @@ interface EstimateItemsToolbarProps {
   aiUsesSideLayout?: boolean;
   tableSearchQuery: string;
   onTableSearchQueryChange: (query: string) => void;
+  filterActive: boolean;
+  onOpenFilter: () => void;
+  onClearFilter: () => void;
 }
 
 export function EstimateItemsToolbar({
@@ -39,6 +42,9 @@ export function EstimateItemsToolbar({
   aiUsesSideLayout = false,
   tableSearchQuery,
   onTableSearchQueryChange,
+  filterActive,
+  onOpenFilter,
+  onClearFilter,
 }: EstimateItemsToolbarProps) {
   const t = useTranslations("estimates");
 
@@ -53,30 +59,9 @@ export function EstimateItemsToolbar({
           <Plus className="size-4" />
           {t("editor.addSection")}
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className={estimateOutlineButtonClassName}
-          disabled
-          title={t("editor.toolbar.comingSoon")}
-        >
-          <Upload className="size-4" />
-          {t("editor.toolbar.importPriceList")}
-        </Button>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        {advancedMode ? (
-          <EstimateMarginControl
-            marginPercent={marginPercent}
-            onChange={onMarginChange}
-            onBlur={onMarginBlur}
-          />
-        ) : null}
-        <EstimateEditorModeSelect
-          advancedMode={advancedMode}
-          onModeChange={onAdvancedModeChange}
-        />
         {aiUsesSideLayout ? (
           <Button
             variant="outline"
@@ -92,26 +77,21 @@ export function EstimateItemsToolbar({
           query={tableSearchQuery}
           onQueryChange={onTableSearchQueryChange}
         />
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-9 shrink-0 rounded-md border-blue-200 text-blue-600 shadow-xs hover:bg-blue-50 dark:border-input dark:text-foreground dark:hover:bg-accent"
-          disabled
-          aria-label={t("editor.toolbar.filter")}
-          title={t("editor.toolbar.comingSoon")}
-        >
-          <Filter className="size-4" />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          className="size-9 shrink-0 rounded-md border-blue-200 text-blue-600 shadow-xs hover:bg-blue-50 dark:border-input dark:text-foreground dark:hover:bg-accent"
-          disabled
-          aria-label={t("editor.toolbar.settings")}
-          title={t("editor.toolbar.comingSoon")}
-        >
-          <Settings className="size-4" />
-        </Button>
+        <EstimateTableFilterButton
+          active={filterActive}
+          onClick={onOpenFilter}
+          onClear={onClearFilter}
+          className="size-9"
+        />
+        <EstimateToolsMenu
+          advancedMode={advancedMode}
+          onAdvancedModeChange={onAdvancedModeChange}
+          marginPercent={marginPercent}
+          onMarginChange={onMarginChange}
+          onMarginBlur={onMarginBlur}
+          showTopPanelToggle={false}
+          triggerButtonClassName="size-9"
+        />
       </div>
     </div>
   );

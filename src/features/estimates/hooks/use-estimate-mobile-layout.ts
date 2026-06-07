@@ -7,9 +7,18 @@ import {
   mediaQueryMax,
 } from "@/features/estimates/lib/estimate-layout-config";
 
+function readIsMobileLayout(): boolean {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  return window.matchMedia(
+    mediaQueryMax(ESTIMATE_LAYOUT_CONFIG.breakpoints.headerActionsDivider - 1),
+  ).matches;
+}
+
 /** True below the estimate editor mobile breakpoint (card list + sticky bar). */
 export function useEstimateMobileLayout(): boolean {
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(readIsMobileLayout);
 
   useEffect(() => {
     const mq = window.matchMedia(

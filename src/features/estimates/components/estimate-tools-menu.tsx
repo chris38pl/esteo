@@ -18,28 +18,37 @@ import {
   parseEstimateDecimalInput,
   roundEstimateDecimal,
 } from "@/features/estimates/lib/estimate-decimals";
-interface EstimateMobileToolsMenuProps {
+import { cn } from "@/lib/utils";
+
+interface EstimateToolsMenuProps {
   advancedMode: boolean;
   onAdvancedModeChange: (value: boolean) => void;
   marginPercent: number;
   onMarginChange: (value: number) => void;
   onMarginBlur: (value: number) => void;
-  topPanelHidden: boolean;
-  onToggleTopPanel: () => void;
+  topPanelHidden?: boolean;
+  onToggleTopPanel?: () => void;
+  showTopPanelToggle?: boolean;
+  triggerButtonClassName?: string;
 }
 
 const menuMarginInputClassName =
   "estimate-mobile-position-field m-0 h-7 w-12 border-none bg-transparent p-0 text-right text-sm tabular-nums shadow-none outline-none ring-0 focus:ring-0";
 
-export function EstimateMobileToolsMenu({
+const defaultTriggerButtonClassName =
+  "size-8 shrink-0 rounded-md border-blue-200 text-blue-600 shadow-xs hover:bg-blue-50 dark:border-input dark:text-foreground dark:hover:bg-accent";
+
+export function EstimateToolsMenu({
   advancedMode,
   onAdvancedModeChange,
   marginPercent,
   onMarginChange,
   onMarginBlur,
-  topPanelHidden,
+  topPanelHidden = false,
   onToggleTopPanel,
-}: EstimateMobileToolsMenuProps) {
+  showTopPanelToggle = true,
+  triggerButtonClassName,
+}: EstimateToolsMenuProps) {
   const t = useTranslations("estimates");
   const modeValue = advancedMode ? "advanced" : "basic";
 
@@ -69,7 +78,7 @@ export function EstimateMobileToolsMenu({
           variant="outline"
           size="icon"
           aria-label={t("editor.mobile.toolsMenu")}
-          className="size-8 shrink-0 rounded-md border-blue-200 text-blue-600 shadow-xs hover:bg-blue-50 dark:border-input dark:text-foreground dark:hover:bg-accent"
+          className={cn(defaultTriggerButtonClassName, triggerButtonClassName)}
         >
           <Settings className="size-4" />
         </Button>
@@ -125,16 +134,19 @@ export function EstimateMobileToolsMenu({
           {t("editor.toolbar.importPriceList")}
         </DropdownMenuItem>
 
-        <DropdownMenuSeparator />
-
-        <DropdownMenuItem onClick={onToggleTopPanel} className="gap-2">
-          {topPanelHidden ? (
-            <Minimize2 className="size-4" />
-          ) : (
-            <Maximize2 className="size-4" />
-          )}
-          {topPanelHidden ? t("editor.topPanel.show") : t("editor.topPanel.hide")}
-        </DropdownMenuItem>
+        {showTopPanelToggle && onToggleTopPanel ? (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={onToggleTopPanel} className="gap-2">
+              {topPanelHidden ? (
+                <Minimize2 className="size-4" />
+              ) : (
+                <Maximize2 className="size-4" />
+              )}
+              {topPanelHidden ? t("editor.topPanel.show") : t("editor.topPanel.hide")}
+            </DropdownMenuItem>
+          </>
+        ) : null}
       </DropdownMenuContent>
     </DropdownMenu>
   );

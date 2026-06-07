@@ -3,6 +3,11 @@
 import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
 
+import {
+  EMPTY_ESTIMATE_ITEMS_FILTER,
+  itemIsVisible,
+  type EstimateItemsFilterState,
+} from "@/features/estimates/lib/estimate-item-filter";
 import { cn } from "@/lib/utils";
 import { EstimateSectionRow } from "./estimate-section-row";
 import { EstimateLineItemRow, type LineItemData } from "./estimate-line-item-row";
@@ -28,6 +33,7 @@ interface EstimateItemsTableProps {
   onReorderItems: (sectionId: string, fromIndex: number, toIndex: number) => void;
   onBlur: () => void;
   tableSearchQuery?: string;
+  tableFilter?: EstimateItemsFilterState;
 }
 
 type DragState = {
@@ -47,6 +53,7 @@ export function EstimateItemsTable({
   onReorderItems,
   onBlur,
   tableSearchQuery = "",
+  tableFilter,
 }: EstimateItemsTableProps) {
   const t = useTranslations("estimates");
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(
@@ -116,6 +123,16 @@ export function EstimateItemsTable({
             {sections.map((section, sectionIndex) => {
               const sectionNumber = sectionIndex + 1;
               const expanded = isExpanded(section.id);
+              const hasVisibleItems = section.items.some((item) =>
+                itemIsVisible(item, {
+                  searchQuery: tableSearchQuery,
+                  filter: tableFilter ?? EMPTY_ESTIMATE_ITEMS_FILTER,
+                }),
+              );
+
+              if (!hasVisibleItems) {
+                return null;
+              }
 
               return (
                 <SectionRows
@@ -135,6 +152,7 @@ export function EstimateItemsTable({
                   onDeleteItem={onDeleteItem}
                   onBlur={onBlur}
                   tableSearchQuery={tableSearchQuery}
+                  tableFilter={tableFilter}
                   onDragStart={(itemIndex) =>
                     setDragState({ sectionId: section.id, itemIndex })
                   }
@@ -187,6 +205,7 @@ function SectionRows({
   onDeleteItem,
   onBlur,
   tableSearchQuery,
+  tableFilter,
   onDragStart,
   onDragOver,
   onDragLeave,
@@ -211,12 +230,22 @@ function SectionRows({
   onDeleteItem: (itemId: string) => void;
   onBlur: () => void;
   tableSearchQuery: string;
+  tableFilter?: EstimateItemsFilterState;
   onDragStart: (itemIndex: number) => void;
   onDragOver: (itemIndex: number) => void;
   onDragLeave: (itemIndex: number) => void;
   onDrop: (itemIndex: number) => void;
   onDragEnd: () => void;
 }) {
+  const visibleItemEntries = section.items
+    .map((item, index) => ({ item, index }))
+    .filter(({ item }) =>
+      itemIsVisible(item, {
+        searchQuery: tableSearchQuery,
+        filter: tableFilter ?? EMPTY_ESTIMATE_ITEMS_FILTER,
+      }),
+    );
+
   return (
     <>
       <EstimateSectionRow
@@ -238,7 +267,7 @@ function SectionRows({
         }
       />
       {expanded
-        ? section.items.map((item, index) => (
+        ? visibleItemEntries.map(({ item, index }) => (
             <EstimateLineItemRow
               key={item.id}
               item={item}

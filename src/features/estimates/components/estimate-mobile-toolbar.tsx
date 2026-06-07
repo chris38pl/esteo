@@ -1,9 +1,10 @@
 "use client";
 
 import type { SectionData } from "./estimate-items-table";
+import { EstimateTableFilterButton } from "./estimate-table-filter-button";
 import { EstimateTableSearch } from "./estimate-table-search";
 import { EstimateMobileItemsStats } from "./estimate-mobile-items-stats";
-import { EstimateMobileToolsMenu } from "./estimate-mobile-tools-menu";
+import { EstimateToolsMenu } from "./estimate-tools-menu";
 import { estimateItemsToolbarMobileClass } from "@/features/estimates/lib/estimate-layout-config";
 
 interface EstimateMobileToolbarProps {
@@ -17,6 +18,9 @@ interface EstimateMobileToolbarProps {
   onToggleTopPanel: () => void;
   tableSearchQuery: string;
   onTableSearchQueryChange: (query: string) => void;
+  filterActive: boolean;
+  onOpenFilter: () => void;
+  onClearFilter: () => void;
 }
 
 export function EstimateMobileToolbar({
@@ -30,6 +34,9 @@ export function EstimateMobileToolbar({
   onToggleTopPanel,
   tableSearchQuery,
   onTableSearchQueryChange,
+  filterActive,
+  onOpenFilter,
+  onClearFilter,
 }: EstimateMobileToolbarProps) {
   return (
     <div
@@ -45,7 +52,13 @@ export function EstimateMobileToolbar({
           query={tableSearchQuery}
           onQueryChange={onTableSearchQueryChange}
         />
-        <EstimateMobileToolsMenu
+        <EstimateTableFilterButton
+          active={filterActive}
+          onClick={onOpenFilter}
+          onClear={onClearFilter}
+          className="size-8"
+        />
+        <EstimateToolsMenu
           advancedMode={advancedMode}
           onAdvancedModeChange={onAdvancedModeChange}
           marginPercent={marginPercent}

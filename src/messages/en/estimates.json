@@ -87,6 +87,54 @@
       "settings": "Table settings",
       "comingSoon": "Coming soon"
     },
+    "filter": {
+      "title": "Filter estimate items",
+      "close": "Close filters",
+      "fieldsTitle": "Fields and conditions",
+      "clearAll": "Clear all",
+      "addFilter": "Add filter",
+      "chooseField": "Choose field",
+      "closeFieldPicker": "Close field list",
+      "cancelAdd": "Cancel",
+      "removeCondition": "Remove condition",
+      "operatorAria": "Operator",
+      "valueAria": "Value",
+      "logicTitle": "Condition logic",
+      "clear": "Clear",
+      "showResults": "Show results ({count})",
+      "logic": {
+        "and": "AND",
+        "or": "OR"
+      },
+      "valuePlaceholder": {
+        "text": "Enter text",
+        "number": "Enter number",
+        "unit": "Select"
+      },
+      "fields": {
+        "name": "Item name",
+        "unit": "Unit",
+        "quantity": "Quantity",
+        "unitPrice": "Unit price (net)",
+        "baseUnitPrice": "Base unit price",
+        "netValue": "Net value",
+        "grossValue": "Gross value",
+        "vatRate": "VAT (%)"
+      },
+      "operators": {
+        "contains": "Contains",
+        "equals": "Equals",
+        "notEquals": "Not equals",
+        "startsWith": "Starts with",
+        "endsWith": "Ends with",
+        "eq": "=",
+        "neq": "≠",
+        "gt": ">",
+        "gte": "≥",
+        "lt": "<",
+        "lte": "≤"
+      }
+    },
     "mode": {
       "label": "Editor mode",
       "view": "View: {mode}",

@@ -9,6 +9,7 @@ import { EstimateMobileAddRow } from "./estimate-mobile-add-row";
 import { EstimateMobileSectionCard } from "./estimate-mobile-section-card";
 import { EstimateMobilePositionSheet } from "./estimate-mobile-position-sheet";
 import { EstimateMobileSectionSheet } from "./estimate-mobile-section-sheet";
+import type { EstimateItemsFilterState } from "@/features/estimates/lib/estimate-item-filter";
 
 interface EstimateItemsMobileListProps {
   sections: SectionData[];
@@ -16,6 +17,7 @@ interface EstimateItemsMobileListProps {
   advancedMode: boolean;
   marginPercent: number;
   tableSearchQuery?: string;
+  tableFilter?: EstimateItemsFilterState;
   onAddSection: () => void;
   onUpdateSection: (sectionId: string, title: string) => void;
   onDeleteSection: (sectionId: string) => void;
@@ -39,6 +41,7 @@ export function EstimateItemsMobileList({
   advancedMode,
   marginPercent,
   tableSearchQuery = "",
+  tableFilter,
   onAddSection,
   onUpdateSection,
   onDeleteSection,
@@ -103,6 +106,7 @@ export function EstimateItemsMobileList({
               advancedMode={advancedMode}
               expanded={expandedSections[section.id] ?? false}
               searchQuery={tableSearchQuery}
+              tableFilter={tableFilter}
               onToggleExpanded={() => toggleSection(section.id)}
               onRename={() => setRenameSectionId(section.id)}
               onAddItem={() => onAddItem(section.id)}
