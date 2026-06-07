@@ -69,7 +69,7 @@ Purpose: context without leaving the screen. Data from `EstimateRequest` + estim
 | **Estimate** | Items table + toolbar | Yes |
 | **Summary** | Totals breakdown, optional narrative | Yes |
 | **Attachments** | Files for this estimate / request | Yes |
-| History | Change log | Post-MVP |
+| History | Activity log (who / when / roughly what) | Yes — see [`estimate-activity-history.md`](estimate-activity-history.md) |
 | Payments | Payment schedule | Post-MVP |
 | Notes | Internal threaded notes | Yes — see [`estimate-notes.md`](estimate-notes.md) |
 

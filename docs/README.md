@@ -11,6 +11,8 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 | [estimates-view-edit-ui.md](features/estimates-view-edit-ui.md) | Estimate view/edit screen UI spec |
 | [estimate-sections.md](features/estimate-sections.md) | Section templates and workspace overrides |
 | [estimate-pdf-export.md](features/estimate-pdf-export.md) | PDF export (stub) |
+| [estimate-activity-history.md](features/estimate-activity-history.md) | Estimate editor History tab — user-facing activity log |
+| [estimate-notes.md](features/estimate-notes.md) | Internal threaded notes on estimates |
 | [industry-fields.md](features/industry-fields.md) | Dynamic industry fields on documents |
 | [workspace-onboarding.md](features/workspace-onboarding.md) | Workspace creation and onboarding |
 | [admin-workspaces.md](features/admin-workspaces.md) | Platform admin workspace tools |
@@ -47,6 +49,8 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 estimate-requests.md  →  estimate-ai.md (job)  →  estimates.md
                               ↓
                     estimates-view-edit-ui.md
+                         ↓              ↓
+              estimate-activity-history.md   estimate-notes.md
                               ↓
                     estimate-pdf-export.md (later)
 ```
