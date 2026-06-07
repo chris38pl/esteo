@@ -8,7 +8,8 @@
   "scripts": {
     "dev": "next dev --webpack",
     "trigger:dev": "npx trigger.dev@latest dev",
-    "build": "next build",
+    "build": "npm run prisma:generate && next build && npm run trigger:build",
+    "trigger:build": "npx trigger.dev@latest build",
     "start": "next start",
     "lint": "eslint",
     "i18n": "npm run i18n:check && node --experimental-strip-types scripts/check-hardcoded-ui.ts",
