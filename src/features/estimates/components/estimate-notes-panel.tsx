@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import type { AvatarPreset } from "@/components/avatars/user-avatar";
@@ -36,8 +37,13 @@ export function EstimateNotesPanel({
   currentUserAvatarUrl,
   currentUserAvatarPreset = null,
 }: EstimateNotesPanelProps) {
+  const router = useRouter();
   const t = useTranslations("estimates");
   const [notes, setNotes] = useState<EstimateNoteClient[]>(initialNotes);
+
+  const refreshHistory = useCallback(() => {
+    router.refresh();
+  }, [router]);
 
   const handleCreateTopLevel = useCallback(
     async (body: string) => {
@@ -54,9 +60,10 @@ export function EstimateNotesPanel({
       }
 
       setNotes((prev) => [...prev, result.data.note]);
+      refreshHistory();
       return true;
     },
-    [estimateId, workspaceId, workspaceSlug, locale],
+    [estimateId, workspaceId, workspaceSlug, locale, refreshHistory],
   );
 
   const handleReply = useCallback(
@@ -82,9 +89,10 @@ export function EstimateNotesPanel({
             : note,
         ),
       );
+      refreshHistory();
       return true;
     },
-    [estimateId, workspaceId, workspaceSlug, locale],
+    [estimateId, workspaceId, workspaceSlug, locale, refreshHistory],
   );
 
   const handleDelete = useCallback(
@@ -112,9 +120,10 @@ export function EstimateNotesPanel({
         );
       }
 
+      refreshHistory();
       return true;
     },
-    [estimateId, workspaceId, workspaceSlug, locale],
+    [estimateId, workspaceId, workspaceSlug, locale, refreshHistory],
   );
 
   return (

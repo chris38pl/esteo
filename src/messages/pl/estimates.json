@@ -275,7 +275,11 @@
         "payment_schedule_generated": "Wygenerowano harmonogram płatności ({preset})",
         "payment_installment_reordered": "Zmieniono kolejność transz",
         "payment_recorded": "Zarejestrowano wpłatę {amount} na transzę „{name}”",
-        "payment_installment_unpaid": "Cofnięto opłacenie transzy „{name}”"
+        "payment_installment_unpaid": "Cofnięto opłacenie transzy „{name}”",
+        "note_added": "Dodano notatkę",
+        "note_replied": "Odpowiedziano na notatkę",
+        "note_deleted": "Usunięto notatkę",
+        "note_deleted_with_replies": "Usunięto notatkę wraz z {count, plural, one {# odpowiedzią} few {# odpowiedziami} many {# odpowiedziami} other {# odpowiedziami}}"
       }
     },
     "tabPlaceholder": "Ta zakładka będzie dostępna wkrótce.",

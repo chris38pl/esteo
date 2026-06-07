@@ -2,9 +2,12 @@
 
 import "server-only";
 
-import { createEstimateNoteSchema } from "@/features/estimates/schemas/estimate-note";
+import { prisma } from "@/db/client";
+import { ESTIMATE_ACTIVITY_ACTIONS } from "@/features/estimates/lib/estimate-activity-types";
 import { serializeEstimateNote } from "@/features/estimates/lib/serialize-estimate-notes";
 import type { EstimateNoteClient } from "@/features/estimates/lib/serialize-estimate-notes";
+import { createEstimateNoteSchema } from "@/features/estimates/schemas/estimate-note";
+import { logEstimateActivity } from "@/features/estimates/server/activity-log";
 import { revalidateEstimatePaths } from "@/features/estimates/server/revalidate-estimate-paths";
 import {
   assertEstimateInWorkspace,
@@ -55,6 +58,17 @@ export async function createEstimateNoteAction(input: {
       parentId: parsed.data.parentId,
     });
 
+    await logEstimateActivity({
+      estimateId: input.estimateId,
+      workspaceId: input.workspaceId,
+      actorType: "USER",
+      actorUserId: user.id,
+      category: "ESTIMATE",
+      action: parsed.data.parentId
+        ? ESTIMATE_ACTIVITY_ACTIONS.note_replied
+        : ESTIMATE_ACTIVITY_ACTIONS.note_added,
+    });
+
     revalidateEstimatePaths(input.locale, input.workspaceSlug, input.estimateId);
 
     return {
@@ -78,10 +92,33 @@ export async function deleteEstimateNoteAction(input: {
     await requireRole(user, input.workspaceId, "VIEWER");
     await assertEstimateInWorkspace(input.estimateId, input.workspaceId);
 
+    const note = await prisma.estimateNote.findFirst({
+      where: {
+        id: input.noteId,
+        estimateId: input.estimateId,
+      },
+      select: {
+        parentId: true,
+        _count: { select: { replies: true } },
+      },
+    });
+
     await deleteEstimateNote({
       noteId: input.noteId,
       estimateId: input.estimateId,
       authorUserId: user.id,
+    });
+
+    const replyCount = note?.parentId === null ? note._count.replies : 0;
+
+    await logEstimateActivity({
+      estimateId: input.estimateId,
+      workspaceId: input.workspaceId,
+      actorType: "USER",
+      actorUserId: user.id,
+      category: "ESTIMATE",
+      action: ESTIMATE_ACTIVITY_ACTIONS.note_deleted,
+      metadata: replyCount > 0 ? { replyCount } : undefined,
     });
 
     revalidateEstimatePaths(input.locale, input.workspaceSlug, input.estimateId);

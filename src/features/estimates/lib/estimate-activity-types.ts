@@ -19,6 +19,9 @@ export const ESTIMATE_ACTIVITY_ACTIONS = {
   payment_installment_reordered: "payment_installment_reordered",
   payment_recorded: "payment_recorded",
   payment_installment_unpaid: "payment_installment_unpaid",
+  note_added: "note_added",
+  note_replied: "note_replied",
+  note_deleted: "note_deleted",
 } as const;
 
 export type EstimateActivityAction =
@@ -35,4 +38,5 @@ export type ActivityMetadata = {
   currency?: "PLN" | "EUR";
   presetId?: string;
   installmentCount?: number;
+  replyCount?: number;
 };

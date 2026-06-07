@@ -146,6 +146,17 @@ function activityDescription(
       return t("editor.history.actions.payment_installment_unpaid", {
         name: meta.installmentName ?? "",
       });
+    case "note_added":
+      return t("editor.history.actions.note_added");
+    case "note_replied":
+      return t("editor.history.actions.note_replied");
+    case "note_deleted":
+      if (meta.replyCount != null && meta.replyCount > 0) {
+        return t("editor.history.actions.note_deleted_with_replies", {
+          count: meta.replyCount,
+        });
+      }
+      return t("editor.history.actions.note_deleted");
     default:
       return log.action;
   }
