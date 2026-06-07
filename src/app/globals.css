@@ -400,3 +400,9 @@ body {
   flex-direction: column;
   padding: 0.875rem;
 }
+
+/* Align route progress with the bottom edge of the dashboard top bar (h-14). */
+html[data-dashboard-nav] #nprogress .bar,
+html[data-dashboard-nav] #nprogress .peg {
+  top: 3.5rem;
+}

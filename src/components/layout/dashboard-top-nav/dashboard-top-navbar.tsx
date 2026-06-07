@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -30,6 +31,13 @@ import { NavbarUserMenu } from "./navbar-user-menu";
 
 export function DashboardTopNavbar({ locale }: { locale: Locale }) {
   const t = useTranslations("sidebar");
+
+  useEffect(() => {
+    document.documentElement.dataset.dashboardNav = "";
+    return () => {
+      delete document.documentElement.dataset.dashboardNav;
+    };
+  }, []);
 
   return (
     <header

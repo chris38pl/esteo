@@ -5,6 +5,7 @@ import { dark, experimental__simple } from "@clerk/themes";
 import { useTheme } from "@teispace/next-themes";
 import type { ReactNode } from "react";
 
+import { NavigationProgress } from "@/components/navigation-progress";
 import { ThemeProvider } from "@/components/theme-provider";
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -15,6 +16,7 @@ export function Providers({ children }: { children: ReactNode }) {
       enableSystem={false}
       disableTransitionOnChange
     >
+      <NavigationProgress />
       <ClerkThemeBridge>{children}</ClerkThemeBridge>
     </ThemeProvider>
   );
