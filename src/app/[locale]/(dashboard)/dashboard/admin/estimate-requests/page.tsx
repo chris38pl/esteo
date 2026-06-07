@@ -12,18 +12,22 @@ export default async function AdminEstimateRequestsPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ page?: string; pageSize?: string; search?: string }>;
+  searchParams: Promise<{ page?: string; pageSize?: string; search?: string; showDeleted?: string }>;
 }) {
   const { locale: localeParam } = await params;
   const query = await searchParams;
   const resolvedLocale: Locale = await resolveRequestLocale(localeParam);
+  const showDeleted = query.showDeleted === "1" || query.showDeleted === "true";
 
   setRequestLocale(resolvedLocale);
 
   await assertPlatformAdminAccess(resolvedLocale);
   const t = await getServerTranslations(resolvedLocale, "admin.estimateRequests");
   const pagination = parsePaginationParams(query);
-  const data = await listAdminEstimateRequestsPaginated(pagination, { search: query.search });
+  const data = await listAdminEstimateRequestsPaginated(pagination, {
+    search: query.search,
+    includeDeleted: showDeleted,
+  });
 
   return (
     <div className="space-y-6">
@@ -33,10 +37,11 @@ export default async function AdminEstimateRequestsPage({
       </div>
 
       <AdminEstimateRequestsPanel
-        key={`${data.page}-${data.pageSize}-${query.search ?? ""}`}
+        key={`${data.page}-${data.pageSize}-${query.search ?? ""}-${showDeleted}`}
         locale={resolvedLocale}
         initialData={data}
         initialSearch={query.search ?? ""}
+        initialShowDeleted={showDeleted}
       />
     </div>
   );

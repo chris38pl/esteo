@@ -7,6 +7,7 @@ import { setRequestLocale } from "next-intl/server";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getAdminEstimateRequestDetail } from "@/features/estimate-requests/server/admin-estimate-requests";
+import { AdminEstimateRequestDetailActions } from "@/features/estimate-requests/components/admin-estimate-request-detail-actions";
 import { getServerTranslations, resolveRequestLocale } from "@/i18n/request-locale";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
@@ -111,7 +112,7 @@ export default async function AdminEstimateRequestDetailPage({
       </Button>
 
       {/* Page header */}
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-2xl font-semibold tracking-tight">
@@ -123,6 +124,13 @@ export default async function AdminEstimateRequestDetailPage({
           </div>
           <p className="mt-1 text-sm text-muted-foreground">{request.workspace.name}</p>
         </div>
+
+        <AdminEstimateRequestDetailActions
+          requestId={request.id}
+          requestNumber={request.requestNumber}
+          locale={resolvedLocale}
+          deletedAt={request.deletedAt}
+        />
       </div>
 
       {/* Two-column detail grid */}
@@ -197,6 +205,11 @@ export default async function AdminEstimateRequestDetailPage({
             <DetailRow label={t("detail.updatedAt")}>
               {formatDateTime(resolvedLocale, request.updatedAt)}
             </DetailRow>
+            {request.deletedAt ? (
+              <DetailRow label={t("detail.deletedAt")}>
+                {formatDateTime(resolvedLocale, request.deletedAt)}
+              </DetailRow>
+            ) : null}
             <DetailRow label={t("detail.attachments")}>
               <span className="flex items-center gap-1.5">
                 <Paperclip className="size-3.5 text-muted-foreground" />

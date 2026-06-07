@@ -36,6 +36,7 @@ export type AdminEstimateRequestRow = {
   projectDescription: string;
   attachmentCount: number;
   createdAt: Date;
+  deletedAt: Date | null;
 };
 
 export type AdminEstimateRequestDetail = {
@@ -49,6 +50,7 @@ export type AdminEstimateRequestDetail = {
   aiMetadata: Record<string, unknown> | null;
   createdAt: Date;
   updatedAt: Date;
+  deletedAt: Date | null;
   workspace: {
     id: string;
     name: string;
@@ -81,6 +83,7 @@ const requestSelect = {
   projectDescription: true,
   attachments: true,
   createdAt: true,
+  deletedAt: true,
   workspace: {
     select: {
       id: true,
@@ -112,24 +115,36 @@ function mapToRow(
     projectDescription: row.projectDescription,
     attachmentCount: parseAttachmentCount(row.attachments),
     createdAt: row.createdAt,
+    deletedAt: row.deletedAt,
+  };
+}
+
+function buildListWhere(filters?: { search?: string; includeDeleted?: boolean }) {
+  const search = filters?.search?.trim();
+  const deletedFilter = filters?.includeDeleted ? {} : { deletedAt: null };
+
+  if (!search) {
+    return deletedFilter;
+  }
+
+  return {
+    AND: [
+      deletedFilter,
+      {
+        OR: [
+          { requestNumber: { contains: search, mode: "insensitive" as const } },
+          { workspace: { name: { contains: search, mode: "insensitive" as const } } },
+        ],
+      },
+    ],
   };
 }
 
 export async function listAdminEstimateRequestsPaginated(
   params: PaginationParams,
-  filters?: { search?: string },
+  filters?: { search?: string; includeDeleted?: boolean },
 ): Promise<PaginatedResult<AdminEstimateRequestRow>> {
-  const search = filters?.search?.trim();
-  const where =
-    search && search.length > 0
-      ? {
-          deletedAt: null,
-          OR: [
-            { requestNumber: { contains: search, mode: "insensitive" as const } },
-            { workspace: { name: { contains: search, mode: "insensitive" as const } } },
-          ],
-        }
-      : { deletedAt: null };
+  const where = buildListWhere(filters);
 
   const take = params.pageSize;
 
@@ -168,7 +183,7 @@ export async function getAdminEstimateRequestDetail(
   requestId: string,
 ): Promise<AdminEstimateRequestDetail | null> {
   const row = await prisma.estimateRequest.findFirst({
-    where: { id: requestId, deletedAt: null },
+    where: { id: requestId },
     select: {
       id: true,
       requestNumber: true,
@@ -180,6 +195,7 @@ export async function getAdminEstimateRequestDetail(
       aiMetadata: true,
       createdAt: true,
       updatedAt: true,
+      deletedAt: true,
       workspace: {
         select: { id: true, name: true, slug: true, industry: true },
       },
@@ -199,6 +215,7 @@ export async function getAdminEstimateRequestDetail(
     aiMetadata: row.aiMetadata as Record<string, unknown> | null,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
+    deletedAt: row.deletedAt,
     workspace: row.workspace,
   };
 }
@@ -209,21 +226,90 @@ function assertPlatformAdminUser(user: User): void {
   }
 }
 
-export async function adminArchiveEstimateRequest(admin: User, requestId: string) {
+export type AdminArchiveEstimateRequestResult = {
+  id: string;
+  estimateId: string | null;
+  workspaceSlug: string;
+};
+
+export async function adminArchiveEstimateRequest(
+  admin: User,
+  requestId: string,
+): Promise<AdminArchiveEstimateRequestResult> {
   assertPlatformAdminUser(admin);
 
   const request = await prisma.estimateRequest.findFirst({
     where: { id: requestId, deletedAt: null },
-    select: { id: true },
+    select: {
+      id: true,
+      estimateId: true,
+      workspace: { select: { slug: true } },
+    },
   });
 
   if (!request) {
     throw new PermissionError("Estimate request not found.");
   }
 
-  return prisma.estimateRequest.update({
-    where: { id: requestId },
-    data: { deletedAt: new Date() },
-    select: { id: true },
+  const deletedAt = new Date();
+
+  await prisma.$transaction(async (tx) => {
+    await tx.estimateRequest.update({
+      where: { id: requestId },
+      data: { deletedAt },
+    });
+
+    if (request.estimateId) {
+      await tx.estimate.updateMany({
+        where: { id: request.estimateId, deletedAt: null },
+        data: { deletedAt },
+      });
+    }
   });
+
+  return {
+    id: request.id,
+    estimateId: request.estimateId,
+    workspaceSlug: request.workspace.slug,
+  };
+}
+
+export async function adminRestoreEstimateRequest(
+  admin: User,
+  requestId: string,
+): Promise<AdminArchiveEstimateRequestResult> {
+  assertPlatformAdminUser(admin);
+
+  const request = await prisma.estimateRequest.findFirst({
+    where: { id: requestId, deletedAt: { not: null } },
+    select: {
+      id: true,
+      estimateId: true,
+      workspace: { select: { slug: true } },
+    },
+  });
+
+  if (!request) {
+    throw new PermissionError("Deleted estimate request not found.");
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.estimateRequest.update({
+      where: { id: requestId },
+      data: { deletedAt: null },
+    });
+
+    if (request.estimateId) {
+      await tx.estimate.updateMany({
+        where: { id: request.estimateId, deletedAt: { not: null } },
+        data: { deletedAt: null },
+      });
+    }
+  });
+
+  return {
+    id: request.id,
+    estimateId: request.estimateId,
+    workspaceSlug: request.workspace.slug,
+  };
 }

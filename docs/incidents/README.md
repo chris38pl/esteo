@@ -8,5 +8,6 @@ Short postmortems for non-obvious bugs and the patterns that fixed them. Use the
 | 2026-06-05 | [AI estimate draft blank editor](./2026-06-05-ai-estimate-draft-blank-editor.md) | Empty estimate table after create or after AI skeleton finishes; refresh shows data |
 | 2026-06-05 | [Estimate draft stuck PROCESSING / Trigger timeout](./2026-06-05-estimate-draft-stuck-processing.md) | AI skeleton never finishes; Trigger run errors at 5m; DB stays PROCESSING |
 | 2026-06-06 | [Sign-in /continue (Client Trust OTP)](./2026-06-06-sign-in-continue-blank.md) | Blank form, missing OTP email, or duplicate OTP on `/pl/sign-in/continue` after password login on untrusted browser |
+| 2026-06-07 | [Admin workspace sidebar jump / orphaned estimate](./2026-06-07-admin-workspace-sidebar-jump.md) | After admin Delete/Restore on estimate requests, sidebar workspace changes; deleted request left linked estimate visible |
 
 When adding a new note, name files `YYYY-MM-DD-short-slug.md` and add a row to this table.

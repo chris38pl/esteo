@@ -19,6 +19,7 @@ import type { WorkspaceMemberPreview } from "@/features/workspaces/server/get-ac
 import type { PinnedEstimateSidebarItem } from "@/components/layout/app-sidebar/pinned-config";
 import type { AvatarPreset } from "@/components/avatars/user-avatar";
 import type { Locale } from "@/lib/locale";
+import { setActiveWorkspaceAction } from "@/server/workspaces/actions";
 
 export type CurrentUserProfile = {
   name: string | null;
@@ -34,6 +35,9 @@ export type WorkspaceSummary = {
   slug: string;
   appearanceTheme: WorkspaceAppearanceTheme;
   isOwner: boolean;
+  storageUsedFormatted: string;
+  storageLimitFormatted: string;
+  storageUsedPercent: number;
 };
 
 type WorkspaceContextValue = {
@@ -167,12 +171,13 @@ export function WorkspaceProvider({
           return;
         }
 
-        // push then refresh: Next.js queues ACTION_REFRESH after ACTION_NAVIGATE
-        // completes, so refresh re-fetches the parent (dashboard) layout with the
-        // new canonical URL and x-pathname (see refresh-reducer.js in next@16).
-        startTransition(() => {
+        startTransition(async () => {
+          const result = await setActiveWorkspaceAction(target.id, locale);
+          if (!result.success) {
+            return;
+          }
+
           router.push(`/${locale}/dashboard/${workspaceSlug}`);
-          router.refresh();
         });
       },
     }),

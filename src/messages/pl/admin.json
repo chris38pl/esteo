@@ -154,7 +154,8 @@
     "searchPlaceholder": "Szukaj po numerze lub przestrzeni\u2026",
     "empty": "Brak zapyta\u0144 pasuj\u0105cych do wyszukiwania.",
     "bar": {
-      "allRequests": "Wszystkie zapytania"
+      "allRequests": "Wszystkie zapytania",
+      "showDeleted": "Poka\u017c usuni\u0119te"
     },
     "stats": {
       "workspace": "Przestrze\u0144",
@@ -182,11 +183,21 @@
       "delete": "Usu\u0144",
       "deleteConfirm": "Usu\u0144 zapytanie",
       "deleting": "Usuwanie\u2026",
+      "restore": "Przywr\u00f3\u0107",
+      "restoreConfirm": "Przywr\u00f3\u0107 zapytanie",
+      "restoring": "Przywracanie\u2026",
       "cancel": "Anuluj"
+    },
+    "deleted": {
+      "badge": "Usuni\u0119te"
     },
     "delete": {
       "title": "Usun\u0105\u0107 {requestNumber}?",
-      "description": "To ukrywa (soft delete) zapytanie o wycen\u0119. Zniknie z list, ale w razie potrzeby mo\u017cna je przywr\u00f3ci\u0107 w bazie."
+      "description": "To ukrywa (soft delete) zapytanie o wycen\u0119. Je\u015bli istnieje powi\u0105zana wycena, zostanie r\u00f3wnie\u017c ukryta. Oba rekordy mo\u017cna przywr\u00f3ci\u0107 w bazie."
+    },
+    "restore": {
+      "title": "Przywr\u00f3ci\u0107 {requestNumber}?",
+      "description": "Przywraca zapytanie o wycen\u0119. Je\u015bli powi\u0105zana wycena by\u0142a ukryta razem z nim, zostanie r\u00f3wnie\u017c przywr\u00f3cona."
     },
     "detail": {
       "backToList": "Wr\u00f3\u0107 do listy",
@@ -211,6 +222,7 @@
       "requestId": "ID zapytania",
       "createdAt": "Utworzono",
       "updatedAt": "Zaktualizowano",
+      "deletedAt": "Usuni\u0119to",
       "attachments": "Za\u0142\u0105czniki",
       "attachmentCount": "{count, plural, =0 {Brak} one {# plik} few {# pliki} many {# plik\u00f3w} other {# pliku}}"
     }
