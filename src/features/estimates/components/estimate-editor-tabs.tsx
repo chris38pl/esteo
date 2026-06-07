@@ -35,6 +35,7 @@ interface EstimateEditorTabsProps {
   activeTab: EstimateEditorTabId;
   onTabChange: (tab: EstimateEditorTabId) => void;
   attachmentsCount?: number;
+  overduePaymentsCount?: number;
   topPanelHidden?: boolean;
   onToggleTopPanel?: () => void;
 }
@@ -88,11 +89,24 @@ export function EstimateEditorTabs({
   activeTab,
   onTabChange,
   attachmentsCount = 0,
+  overduePaymentsCount = 0,
   topPanelHidden = false,
   onToggleTopPanel,
 }: EstimateEditorTabsProps) {
   const t = useTranslations("estimates");
   const overflowTabActive = MOBILE_OVERFLOW_TAB_IDS.includes(activeTab);
+
+  function tabLabel(tabId: EstimateEditorTabId): string {
+    if (tabId === "attachments") {
+      return t("editor.tabs.attachments", { count: attachmentsCount });
+    }
+
+    if (tabId === "payments" && overduePaymentsCount > 0) {
+      return t("editor.tabs.paymentsWithCount", { count: overduePaymentsCount });
+    }
+
+    return t(`editor.tabs.${tabId}` as "editor.tabs.items");
+  }
 
   return (
     <div className="flex items-stretch border-b border-border/60">
@@ -103,10 +117,7 @@ export function EstimateEditorTabs({
           aria-label={t("editor.tabs.ariaLabel")}
         >
           {TAB_IDS.map((tabId) => {
-            const label =
-              tabId === "attachments"
-                ? t("editor.tabs.attachments", { count: attachmentsCount })
-                : t(`editor.tabs.${tabId}` as "editor.tabs.items");
+            const label = tabLabel(tabId);
             return (
               <TabButton
                 key={tabId}
@@ -126,10 +137,7 @@ export function EstimateEditorTabs({
         aria-label={t("editor.tabs.ariaLabel")}
       >
         {MOBILE_PRIMARY_TAB_IDS.map((tabId) => {
-          const label =
-            tabId === "attachments"
-              ? t("editor.tabs.attachments", { count: attachmentsCount })
-              : t(`editor.tabs.${tabId}` as "editor.tabs.items");
+          const label = tabLabel(tabId);
           return (
             <TabButton
               key={tabId}
@@ -163,10 +171,7 @@ export function EstimateEditorTabs({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             {MOBILE_OVERFLOW_TAB_IDS.map((tabId) => {
-              const label =
-                tabId === "attachments"
-                  ? t("editor.tabs.attachments", { count: attachmentsCount })
-                  : t(`editor.tabs.${tabId}` as "editor.tabs.items");
+              const label = tabLabel(tabId);
               return (
                 <DropdownMenuItem
                   key={tabId}

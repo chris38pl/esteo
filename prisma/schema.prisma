@@ -367,10 +367,29 @@ model Estimate {
   versions        EstimateVersion[] @relation("EstimateVersions")
   latestVersion   EstimateVersion?  @relation("EstimateLatestVersion", fields: [latestVersionId], references: [id], onDelete: SetNull)
   pinnedBy        PinnedEstimate[]
-  notes           EstimateNote[]
-  activityLogs    EstimateActivityLog[]
+  notes                EstimateNote[]
+  activityLogs         EstimateActivityLog[]
+  paymentInstallments  PaymentInstallment[]
 
   @@index([workspaceId])
+}
+
+model PaymentInstallment {
+  id         String    @id @default(cuid())
+  estimateId String
+  name       String
+  amount     Decimal   @db.Decimal(12, 2)
+  paidAmount Decimal   @default(0) @db.Decimal(12, 2)
+  dueDate    DateTime? @db.Date
+  paidAt     DateTime?
+  note       String?   @db.Text
+  sortOrder  Int       @default(0)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  estimate Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+
+  @@index([estimateId, sortOrder])
 }
 
 model EstimateActivityLog {

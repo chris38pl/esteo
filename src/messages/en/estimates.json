@@ -75,6 +75,7 @@
       "attachments": "Attachments ({count})",
       "history": "History",
       "payments": "Payments",
+      "paymentsWithCount": "Payments ({count})",
       "notes": "Notes",
       "more": "More"
     },
@@ -144,6 +145,89 @@
     "topPanel": {
       "hide": "Hide top cards",
       "show": "Show top cards"
+    },
+    "payments": {
+      "title": "Payment Schedule",
+      "empty": "No payment installments yet. Add one manually or generate a schedule.",
+      "addInstallment": "Add installment",
+      "generating": "Generating…",
+      "markPaid": "Mark paid",
+      "markUnpaid": "Mark unpaid",
+      "dragHandle": "Drag to reorder",
+      "noDueDate": "No due date",
+      "deleteConfirm": "Delete this installment?",
+      "replaceConfirm": "Replace all existing installments with a new schedule?",
+      "dismissOverdueBanner": "Dismiss overdue payments notice",
+      "overdueBanner": "{count, plural, one {# overdue payment} other {# overdue payments}}",
+      "replaceDialog": {
+        "title": "Replace payment schedule?",
+        "description": "All current installments will be removed and replaced with a new schedule.",
+        "descriptionWithPreset": "All current installments will be replaced with the {preset} schedule.",
+        "cancel": "Cancel",
+        "confirm": "Replace schedule",
+        "confirming": "Replacing…"
+      },
+      "summary": {
+        "estimateValue": "Estimate value",
+        "paid": "Paid",
+        "remaining": "Remaining",
+        "overdueAmount": "Overdue amount",
+        "progress": "{percent}% paid"
+      },
+      "columns": {
+        "name": "Name",
+        "amount": "Amount",
+        "dueDate": "Due date",
+        "status": "Status",
+        "note": "Note",
+        "actions": "Actions"
+      },
+      "amountPartial": "{paid} / {total}",
+      "status": {
+        "PAID": "Paid",
+        "PARTIAL": "Partially paid",
+        "PENDING": "Pending",
+        "OVERDUE": "Overdue"
+      },
+      "actions": {
+        "more": "More actions",
+        "recordPayment": "Record payment",
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "recordPayment": {
+        "title": "Record payment",
+        "subtitle": "{name} — remaining {remaining}",
+        "amountLabel": "Payment amount",
+        "alreadyPaid": "Already paid {paid} of {total}",
+        "noteLabel": "Note (optional)",
+        "notePlaceholder": "e.g. Bank transfer ref. 12345",
+        "cancel": "Cancel",
+        "submit": "Record payment",
+        "saving": "Saving…"
+      },
+      "form": {
+        "addTitle": "Add installment",
+        "editTitle": "Edit installment",
+        "cancel": "Cancel",
+        "add": "Add",
+        "save": "Save",
+        "saving": "Saving…"
+      },
+      "presets": {
+        "100": "100%",
+        "50-50": "50 / 50",
+        "30-40-30": "30 / 40 / 30",
+        "20-30-30-20": "20 / 30 / 30 / 20"
+      },
+      "presetNames": {
+        "fullPayment": "Full payment",
+        "advancePayment": "Advance payment",
+        "finalAcceptance": "Final acceptance",
+        "implementation": "Implementation",
+        "stage1": "Stage 1",
+        "stage2": "Stage 2"
+      }
     },
     "notes": {
       "empty": "No notes yet. Add the first note for your team.",

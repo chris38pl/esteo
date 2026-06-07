@@ -38,8 +38,13 @@ import { useEstimateAiStickyMaxHeight } from "@/features/estimates/hooks/use-est
 import type { AvatarPreset } from "@/components/avatars/user-avatar";
 import type { EstimateActivityLogClient } from "@/features/estimates/lib/serialize-estimate-activity";
 import type { EstimateNoteClient } from "@/features/estimates/lib/serialize-estimate-notes";
+import type { PaymentInstallmentClient } from "@/features/estimates/lib/serialize-payment-installments";
+import { computePaymentSummary } from "@/features/estimates/lib/payment-installment-summary";
+import type { Currency } from "@/i18n/formatters";
 import { EstimateHistoryPanel } from "./estimate-history-panel";
 import { EstimateNotesPanel } from "./estimate-notes-panel";
+import { EstimatePaymentsPanel } from "./estimate-payments-panel";
+import { EstimateOverduePaymentsBanner } from "./estimate-overdue-payments-banner";
 import { EstimateEditorLayoutStyles } from "./estimate-editor-layout-styles";
 import { EstimateGeneratingSkeleton } from "./estimate-generating-skeleton";
 import { EstimateGenerationFailedBanner } from "./estimate-generation-failed-banner";
@@ -47,7 +52,10 @@ import {
   EstimateEditorTabs,
   type EstimateEditorTabId,
 } from "./estimate-editor-tabs";
-import type { LineItemCalcInput } from "@/features/estimates/lib/calculate-estimate";
+import {
+  calculateEstimate,
+  type LineItemCalcInput,
+} from "@/features/estimates/lib/calculate-estimate";
 import {
   baseUnitPriceFromUnitPrice,
   unitPriceFromBase,
@@ -74,6 +82,7 @@ interface EstimateEditorProps {
   userEmailsById?: Record<string, string>;
   initialNotes?: EstimateNoteClient[];
   initialActivityLogs?: EstimateActivityLogClient[];
+  initialPaymentInstallments?: PaymentInstallmentClient[];
   currentUserId?: string;
   currentUserAvatarUrl?: string | null;
   currentUserAvatarPreset?: AvatarPreset | null;
@@ -134,6 +143,7 @@ export function EstimateEditor({
   userEmailsById = {},
   initialNotes = [],
   initialActivityLogs = [],
+  initialPaymentInstallments = [],
   currentUserId = "",
   currentUserAvatarUrl = null,
   currentUserAvatarPreset = null,
@@ -150,10 +160,11 @@ export function EstimateEditor({
   const isAiSideLayout = useEstimateAiSideLayout();
   const [showAiPanel, setShowAiPanel] = useState(false);
   const aiStickyRef = useRef<HTMLDivElement>(null);
-  const showSideAiPanel = showAiPanel && Boolean(activeVersionId) && isAiSideLayout;
-  const aiStickyMaxHeight = useEstimateAiStickyMaxHeight(aiStickyRef, showSideAiPanel);
   const [tableSearchQuery, setTableSearchQuery] = useState("");
   const [mobilePositionSheetOpen, setMobilePositionSheetOpen] = useState(false);
+  const [paymentInstallments, setPaymentInstallments] = useState<PaymentInstallmentClient[]>(
+    initialPaymentInstallments,
+  );
 
   useEffect(() => {
     const mq = window.matchMedia(
@@ -164,6 +175,10 @@ export function EstimateEditor({
     }
   }, []);
   const [activeTab, setActiveTab] = useState<EstimateEditorTabId>("items");
+  const isItemsTab = activeTab === "items";
+  const showSideAiPanel =
+    showAiPanel && Boolean(activeVersionId) && isAiSideLayout && isItemsTab;
+  const aiStickyMaxHeight = useEstimateAiStickyMaxHeight(aiStickyRef, showSideAiPanel);
   const { advancedMode, setAdvancedMode } = useEstimateAdvancedMode();
   const { topPanelHidden, toggleTopPanel } = useEstimateFocusMode();
 
@@ -471,6 +486,10 @@ export function EstimateEditor({
     })),
   );
 
+  const customerTotalGross = calculateEstimate(allItems, marginPercent).totalGross;
+  const paymentSummary = computePaymentSummary(customerTotalGross, paymentInstallments);
+  const estimateCurrency: Currency = estimate.currency === "EUR" ? "EUR" : "PLN";
+
   const customerData = estimate.estimateRequest?.customerData as
     | { fullName?: string; email?: string }
     | null
@@ -574,17 +593,22 @@ export function EstimateEditor({
         <div
           className={cn(
             "min-w-0",
-            showAiPanel && activeVersionId && isAiSideLayout
+            showAiPanel && activeVersionId && isAiSideLayout && isItemsTab
               ? estimateEditorAiSideGridClass
               : "grid gap-6",
           )}
         >
           <div className="min-w-0 space-y-4">
+            <EstimateOverduePaymentsBanner
+              overdueCount={paymentSummary.overdueCount}
+              onOpenPayments={() => setActiveTab("payments")}
+            />
             <div className="min-w-0 overflow-hidden rounded-2xl border bg-card/95 shadow-sm">
               <EstimateEditorTabs
                 activeTab={activeTab}
                 onTabChange={setActiveTab}
                 attachmentsCount={0}
+                overduePaymentsCount={paymentSummary.overdueCount}
                 topPanelHidden={topPanelHidden}
                 onToggleTopPanel={toggleTopPanel}
               />
@@ -601,6 +625,17 @@ export function EstimateEditor({
                   currentUserId={currentUserId}
                   currentUserAvatarUrl={currentUserAvatarUrl}
                   currentUserAvatarPreset={currentUserAvatarPreset}
+                />
+              ) : activeTab === "payments" ? (
+                <EstimatePaymentsPanel
+                  estimateId={estimate.id}
+                  workspaceId={estimate.workspaceId}
+                  workspaceSlug={workspaceSlug}
+                  locale={locale}
+                  currency={estimateCurrency}
+                  customerTotalGross={customerTotalGross}
+                  installments={paymentInstallments}
+                  onInstallmentsChange={setPaymentInstallments}
                 />
               ) : activeTab === "items" ? (
                 <fieldset
@@ -686,7 +721,7 @@ export function EstimateEditor({
         <EstimateMobileStickyBar items={allItems} currency={estimate.currency} />
       ) : null}
 
-      {!isGenerating && activeVersionId && !isAiSideLayout ? (
+      {!isGenerating && activeVersionId && !isAiSideLayout && isItemsTab ? (
         <EstimateAiFloating
           open={showAiPanel}
           onOpenChange={setShowAiPanel}

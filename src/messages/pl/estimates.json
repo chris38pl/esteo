@@ -75,6 +75,7 @@
       "attachments": "Załączniki ({count})",
       "history": "Historia",
       "payments": "Płatności",
+      "paymentsWithCount": "Płatności ({count})",
       "notes": "Notatki",
       "more": "Więcej"
     },
@@ -144,6 +145,89 @@
     "topPanel": {
       "hide": "Ukryj górne karty",
       "show": "Pokaż górne karty"
+    },
+    "payments": {
+      "title": "Harmonogram płatności",
+      "empty": "Brak transz płatności. Dodaj ręcznie lub wygeneruj harmonogram.",
+      "addInstallment": "Dodaj transzę",
+      "generating": "Generowanie…",
+      "markPaid": "Oznacz jako opłacone",
+      "markUnpaid": "Oznacz jako nieopłacone",
+      "dragHandle": "Przeciągnij, aby zmienić kolejność",
+      "noDueDate": "Brak terminu",
+      "deleteConfirm": "Usunąć tę transzę?",
+      "replaceConfirm": "Zastąpić wszystkie istniejące transze nowym harmonogramem?",
+      "dismissOverdueBanner": "Zamknij informację o zaległych płatnościach",
+      "overdueBanner": "{count, plural, one {# zaległa płatność} few {# zaległe płatności} many {# zaległych płatności} other {# zaległych płatności}}",
+      "replaceDialog": {
+        "title": "Zastąpić harmonogram płatności?",
+        "description": "Wszystkie obecne transze zostaną usunięte i zastąpione nowym harmonogramem.",
+        "descriptionWithPreset": "Wszystkie obecne transze zostaną zastąpione harmonogramem {preset}.",
+        "cancel": "Anuluj",
+        "confirm": "Zastąp harmonogram",
+        "confirming": "Zastępowanie…"
+      },
+      "summary": {
+        "estimateValue": "Wartość wyceny",
+        "paid": "Opłacono",
+        "remaining": "Pozostało",
+        "overdueAmount": "Kwota zaległa",
+        "progress": "Opłacono {percent}%"
+      },
+      "columns": {
+        "name": "Nazwa",
+        "amount": "Kwota",
+        "dueDate": "Termin",
+        "status": "Status",
+        "note": "Notatka",
+        "actions": "Akcje"
+      },
+      "amountPartial": "{paid} / {total}",
+      "status": {
+        "PAID": "Opłacone",
+        "PARTIAL": "Częściowo opłacone",
+        "PENDING": "Oczekujące",
+        "OVERDUE": "Zaległe"
+      },
+      "actions": {
+        "more": "Więcej akcji",
+        "recordPayment": "Zarejestruj wpłatę",
+        "edit": "Edytuj",
+        "delete": "Usuń"
+      },
+      "recordPayment": {
+        "title": "Zarejestruj wpłatę",
+        "subtitle": "{name} — pozostało {remaining}",
+        "amountLabel": "Kwota wpłaty",
+        "alreadyPaid": "Wpłacono już {paid} z {total}",
+        "noteLabel": "Notatka (opcjonalnie)",
+        "notePlaceholder": "np. Przelew, nr ref. 12345",
+        "cancel": "Anuluj",
+        "submit": "Zarejestruj wpłatę",
+        "saving": "Zapisywanie…"
+      },
+      "form": {
+        "addTitle": "Dodaj transzę",
+        "editTitle": "Edytuj transzę",
+        "cancel": "Anuluj",
+        "add": "Dodaj",
+        "save": "Zapisz",
+        "saving": "Zapisywanie…"
+      },
+      "presets": {
+        "100": "100%",
+        "50-50": "50 / 50",
+        "30-40-30": "30 / 40 / 30",
+        "20-30-30-20": "20 / 30 / 30 / 20"
+      },
+      "presetNames": {
+        "fullPayment": "Płatność całości",
+        "advancePayment": "Zaliczka",
+        "finalAcceptance": "Odbiór końcowy",
+        "implementation": "Realizacja",
+        "stage1": "Etap 1",
+        "stage2": "Etap 2"
+      }
     },
     "notes": {
       "empty": "Brak notatek. Dodaj pierwszą notatkę dla zespołu.",

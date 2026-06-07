@@ -37,6 +37,8 @@ import { serializeEstimateNotes } from "@/features/estimates/lib/serialize-estim
 import { listActivityLogsByEstimateId } from "@/features/estimates/server/activity-log-repository";
 import { isEstimatePinned } from "@/features/estimates/server/pinned-estimates";
 import { listNotesByEstimateId } from "@/features/estimates/server/notes-repository";
+import { serializePaymentInstallments } from "@/features/estimates/lib/serialize-payment-installments";
+import { listPaymentInstallmentsByEstimateId } from "@/features/estimates/server/payment-installments-repository";
 import { resolveUserEmailsByIds } from "@/features/users/server/resolve-user-emails";
 
 export default async function EstimateEditorPage({
@@ -152,6 +154,9 @@ export default async function EstimateEditorPage({
   const activityRows = await listActivityLogsByEstimateId(estimateId);
   const initialActivityLogs = serializeEstimateActivityLogs(activityRows);
 
+  const paymentInstallmentRows = await listPaymentInstallmentsByEstimateId(estimateId);
+  const initialPaymentInstallments = serializePaymentInstallments(paymentInstallmentRows);
+
   return (
     <>
       <SyncDashboardBreadcrumbDetail label={breadcrumbLabel} />
@@ -170,6 +175,7 @@ export default async function EstimateEditorPage({
         userEmailsById={userEmailsById}
         initialNotes={initialNotes}
         initialActivityLogs={initialActivityLogs}
+        initialPaymentInstallments={initialPaymentInstallments}
         currentUserId={user.id}
         currentUserAvatarUrl={user.avatarUrl}
         currentUserAvatarPreset={
