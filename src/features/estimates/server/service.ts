@@ -37,14 +37,20 @@ import type { generateEstimateDraftTask } from "@/trigger/generate-estimate-draf
 import type { User } from "@prisma/client";
 import { requireWorkspace } from "@/server/permissions/require-workspace";
 import {
+  ESTIMATE_ACTIVITY_ACTIONS,
+  logEstimateActivity,
+} from "./activity-log";
+import {
   assertVersionEditable,
+  archiveEstimateVersion as archiveEstimateVersionInRepository,
   autoSave,
-  createEstimateWithFirstVersion,
   createVersionCopy,
+  deleteEstimateVersion as deleteEstimateVersionInRepository,
   getRevisions,
   getVersionWithTree,
   restoreRevision,
   saveRevision,
+  unarchiveEstimateVersion as unarchiveEstimateVersionInRepository,
   updateEstimateTitle as updateEstimateTitleInRepository,
   type AutoSaveData,
   type AutoSaveResult,
@@ -158,6 +164,16 @@ export async function createInternalEstimate(
     locale: input.locale,
   });
 
+  await logEstimateActivity({
+    estimateId,
+    workspaceId: input.workspaceId,
+    actorType: "USER",
+    actorUserId: input.userId,
+    category: "ESTIMATE",
+    action: ESTIMATE_ACTIVITY_ACTIONS.estimate_created,
+    metadata: { source: "manual" },
+  });
+
   return { estimateId };
 }
 
@@ -250,7 +266,127 @@ export async function createNewVersion(input: {
     newVersionNumber,
   });
 
+  await logEstimateActivity({
+    estimateId: input.estimateId,
+    workspaceId: input.workspaceId,
+    actorType: "USER",
+    actorUserId: input.userId,
+    category: "VERSION",
+    action: ESTIMATE_ACTIVITY_ACTIONS.version_created,
+    metadata: { versionNumber: newVersionNumber },
+  });
+
   return { versionId, versionNumber: newVersionNumber };
+}
+
+export async function archiveEstimateVersion(input: {
+  estimateId: string;
+  versionId: string;
+  workspaceId: string;
+  userId: string;
+}): Promise<void> {
+  const version = await prisma.estimateVersion.findFirst({
+    where: {
+      id: input.versionId,
+      workspaceId: input.workspaceId,
+      estimateId: input.estimateId,
+    },
+    select: { versionNumber: true, status: true },
+  });
+
+  if (!version) {
+    await archiveEstimateVersionInRepository(input);
+    return;
+  }
+
+  const wasArchived = version.status === "ARCHIVED";
+  await archiveEstimateVersionInRepository(input);
+
+  if (wasArchived) {
+    return;
+  }
+
+  await logEstimateActivity({
+    estimateId: input.estimateId,
+    workspaceId: input.workspaceId,
+    actorType: "USER",
+    actorUserId: input.userId,
+    category: "VERSION",
+    action: ESTIMATE_ACTIVITY_ACTIONS.version_archived,
+    metadata: { versionNumber: version.versionNumber },
+  });
+}
+
+export async function unarchiveEstimateVersion(input: {
+  estimateId: string;
+  versionId: string;
+  workspaceId: string;
+  userId: string;
+}): Promise<void> {
+  const version = await prisma.estimateVersion.findFirst({
+    where: {
+      id: input.versionId,
+      workspaceId: input.workspaceId,
+      estimateId: input.estimateId,
+    },
+    select: { versionNumber: true, status: true },
+  });
+
+  if (!version) {
+    await unarchiveEstimateVersionInRepository(input);
+    return;
+  }
+
+  const wasArchived = version.status === "ARCHIVED";
+  await unarchiveEstimateVersionInRepository(input);
+
+  if (!wasArchived) {
+    return;
+  }
+
+  await logEstimateActivity({
+    estimateId: input.estimateId,
+    workspaceId: input.workspaceId,
+    actorType: "USER",
+    actorUserId: input.userId,
+    category: "VERSION",
+    action: ESTIMATE_ACTIVITY_ACTIONS.version_unarchived,
+    metadata: { versionNumber: version.versionNumber },
+  });
+}
+
+export async function deleteEstimateVersion(input: {
+  estimateId: string;
+  versionId: string;
+  workspaceId: string;
+  userId: string;
+}): Promise<{ redirectVersionNumber: number }> {
+  const deleting = await prisma.estimateVersion.findFirst({
+    where: {
+      id: input.versionId,
+      workspaceId: input.workspaceId,
+      estimateId: input.estimateId,
+    },
+    select: { versionNumber: true },
+  });
+
+  if (!deleting) {
+    throw new Error("VERSION_NOT_FOUND");
+  }
+
+  const result = await deleteEstimateVersionInRepository(input);
+
+  await logEstimateActivity({
+    estimateId: input.estimateId,
+    workspaceId: input.workspaceId,
+    actorType: "USER",
+    actorUserId: input.userId,
+    category: "VERSION",
+    action: ESTIMATE_ACTIVITY_ACTIONS.version_deleted,
+    metadata: { versionNumber: deleting.versionNumber },
+  });
+
+  return result;
 }
 
 // ---------------------------------------------------------------------------
@@ -367,7 +503,17 @@ export async function approveEdit(input: {
 
   const updated = await prisma.estimateVersion.findUniqueOrThrow({
     where: { id: input.versionId },
-    select: { updatedAt: true },
+    select: { updatedAt: true, estimateId: true, versionNumber: true },
+  });
+
+  await logEstimateActivity({
+    estimateId: updated.estimateId,
+    workspaceId: input.workspaceId,
+    actorType: "USER",
+    actorUserId: input.userId,
+    category: "AI",
+    action: ESTIMATE_ACTIVITY_ACTIONS.ai_modified,
+    metadata: { versionNumber: updated.versionNumber },
   });
 
   return { updatedAt: updated.updatedAt };
@@ -408,7 +554,18 @@ export async function updateEstimateTitle(
   },
 ): Promise<{ title: string | null }> {
   await requireWorkspace(user, input.workspaceId);
-  return updateEstimateTitleInRepository(input);
+  const result = await updateEstimateTitleInRepository(input);
+
+  await logEstimateActivity({
+    estimateId: input.estimateId,
+    workspaceId: input.workspaceId,
+    actorType: "USER",
+    actorUserId: user.id,
+    category: "ESTIMATE",
+    action: ESTIMATE_ACTIVITY_ACTIONS.estimate_renamed,
+  });
+
+  return result;
 }
 
 // ---------------------------------------------------------------------------
@@ -422,12 +579,47 @@ export async function autoSaveVersion(input: {
   data: AutoSaveData;
   expectedUpdatedAt: Date;
 }): Promise<AutoSaveResult> {
-  return autoSave({
+  const current = await prisma.estimateVersion.findFirst({
+    where: { id: input.versionId, workspaceId: input.workspaceId },
+    select: {
+      marginPercent: true,
+      estimateId: true,
+      versionNumber: true,
+    },
+  });
+
+  if (!current) {
+    return { conflict: true };
+  }
+
+  const result = await autoSave({
     versionId: input.versionId,
     workspaceId: input.workspaceId,
     data: input.data,
     expectedUpdatedAt: input.expectedUpdatedAt,
   });
+
+  if (
+    !result.conflict &&
+    input.data.marginPercent !== undefined &&
+    Number(current.marginPercent) !== input.data.marginPercent
+  ) {
+    await logEstimateActivity({
+      estimateId: current.estimateId,
+      workspaceId: input.workspaceId,
+      actorType: "USER",
+      actorUserId: input.userId,
+      category: "FINANCIAL",
+      action: ESTIMATE_ACTIVITY_ACTIONS.margin_changed,
+      metadata: {
+        versionNumber: current.versionNumber,
+        oldMargin: Number(current.marginPercent),
+        newMargin: input.data.marginPercent,
+      },
+    });
+  }
+
+  return result;
 }
 
 // ---------------------------------------------------------------------------

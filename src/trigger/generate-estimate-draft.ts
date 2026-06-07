@@ -1,6 +1,10 @@
 import { task, logger } from "@trigger.dev/sdk";
 
 import { prisma } from "@/db/client";
+import {
+  ESTIMATE_ACTIVITY_ACTIONS,
+  logEstimateActivity,
+} from "@/features/estimates/server/activity-log";
 import { syncVersionTotals } from "@/features/estimates/lib/sync-version-totals";
 import { generateEstimateDraft } from "@/ai/services/generate-estimate-draft";
 import { validateGeneratedSectionTitles } from "@/ai/lib/validate-generated-section-titles";
@@ -263,6 +267,20 @@ export const generateEstimateDraftTask = task({
       });
 
       logger.info("Estimate draft saved successfully", { estimateId, versionId });
+
+      const version = await prisma.estimateVersion.findUnique({
+        where: { id: versionId },
+        select: { versionNumber: true },
+      });
+
+      await logEstimateActivity({
+        estimateId,
+        workspaceId,
+        actorType: "SYSTEM",
+        category: "AI",
+        action: ESTIMATE_ACTIVITY_ACTIONS.ai_generated,
+        metadata: { versionNumber: version?.versionNumber ?? 1 },
+      });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       logger.error("Failed to generate estimate draft", {

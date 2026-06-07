@@ -157,6 +157,36 @@
       "deleteConfirmWithReplies": "Usunąć tę notatkę wraz ze wszystkimi odpowiedziami?",
       "error": "Nie udało się zapisać notatki. Spróbuj ponownie."
     },
+    "history": {
+      "empty": "Brak aktywności.",
+      "actorSystem": "System",
+      "actorAi": "AI",
+      "categories": {
+        "estimate": "Kosztorys",
+        "version": "Wersja",
+        "financial": "Finanse",
+        "ai": "AI",
+        "sharing": "Udostępnianie"
+      },
+      "actions": {
+        "estimate_created": "Utworzono kosztorys",
+        "estimate_created_manual": "Utworzono kosztorys",
+        "estimate_created_public_request": "Utworzono kosztorys z formularza publicznego",
+        "estimate_renamed": "Zmieniono nazwę kosztorysu",
+        "version_created": "Utworzono wersję {versionNumber}",
+        "version_deleted": "Usunięto wersję {versionNumber}",
+        "version_archived": "Zarchiwizowano wersję {versionNumber}",
+        "version_unarchived": "Przywrócono wersję {versionNumber}",
+        "version_modified": "Wersja została zmodyfikowana",
+        "version_modified_price_list": "Wersja zmodyfikowana (import z cennika)",
+        "margin_changed": "Zmieniono marżę z {oldMargin}% na {newMargin}%",
+        "ai_generated": "AI wygenerowało szkic kosztorysu",
+        "ai_modified": "Zastosowano sugestie AI",
+        "imported_from_price_list": "Import z cennika",
+        "estimate_exported": "Wyeksportowano kosztorys",
+        "sent_to_customer": "Wysłano do klienta"
+      }
+    },
     "tabPlaceholder": "Ta zakładka będzie dostępna wkrótce.",
     "dragHandle": "Przeciągnij, aby zmienić kolejność",
     "aiAssistant": "AI Asystent",

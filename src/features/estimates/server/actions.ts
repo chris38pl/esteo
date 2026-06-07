@@ -21,20 +21,20 @@ import {
 import { updateEstimateTitleSchema } from "@/features/estimates/schemas/estimate-title";
 import {
   approveEdit,
+  archiveEstimateVersion,
   autoSaveVersion,
   createInternalEstimate,
   createNewVersion,
+  deleteEstimateVersion,
   proposeEdit,
   retryEstimateDraftGeneration,
   undoLastChange,
+  unarchiveEstimateVersion,
   updateEstimateTitle,
 } from "./service";
 import {
   addSectionToVersion,
   addLineItemToSection,
-  archiveEstimateVersion,
-  unarchiveEstimateVersion,
-  deleteEstimateVersion,
   deleteLineItem,
   deleteSection,
   getVersionWithTree,
@@ -124,11 +124,12 @@ export async function archiveEstimateVersionAction(input: {
 }): Promise<ActionResult<void>> {
   const locale = input.locale ?? "pl";
   try {
-    await requireAuth(locale);
+    const user = await requireAuth(locale);
     await archiveEstimateVersion({
       estimateId: input.estimateId,
       versionId: input.versionId,
       workspaceId: input.workspaceId,
+      userId: user.id,
     });
     revalidateEstimatePaths(locale, input.workspaceSlug, input.estimateId);
     return { success: true, data: undefined };
@@ -146,11 +147,12 @@ export async function unarchiveEstimateVersionAction(input: {
 }): Promise<ActionResult<void>> {
   const locale = input.locale ?? "pl";
   try {
-    await requireAuth(locale);
+    const user = await requireAuth(locale);
     await unarchiveEstimateVersion({
       estimateId: input.estimateId,
       versionId: input.versionId,
       workspaceId: input.workspaceId,
+      userId: user.id,
     });
     revalidateEstimatePaths(locale, input.workspaceSlug, input.estimateId);
     return { success: true, data: undefined };
@@ -168,11 +170,12 @@ export async function deleteEstimateVersionAction(input: {
 }): Promise<ActionResult<{ redirectVersionNumber: number }>> {
   const locale = input.locale ?? "pl";
   try {
-    await requireAuth(locale);
+    const user = await requireAuth(locale);
     const result = await deleteEstimateVersion({
       estimateId: input.estimateId,
       versionId: input.versionId,
       workspaceId: input.workspaceId,
+      userId: user.id,
     });
     revalidateEstimatePaths(locale, input.workspaceSlug, input.estimateId);
     return { success: true, data: result };

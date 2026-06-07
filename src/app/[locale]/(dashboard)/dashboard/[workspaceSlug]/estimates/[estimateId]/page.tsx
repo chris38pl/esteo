@@ -32,7 +32,9 @@ import {
   getLatestAiApprovedRevisionAt,
   listAiMessagesByVersionId,
 } from "@/features/estimates/server/ai-messages-repository";
+import { serializeEstimateActivityLogs } from "@/features/estimates/lib/serialize-estimate-activity";
 import { serializeEstimateNotes } from "@/features/estimates/lib/serialize-estimate-notes";
+import { listActivityLogsByEstimateId } from "@/features/estimates/server/activity-log-repository";
 import { isEstimatePinned } from "@/features/estimates/server/pinned-estimates";
 import { listNotesByEstimateId } from "@/features/estimates/server/notes-repository";
 import { resolveUserEmailsByIds } from "@/features/users/server/resolve-user-emails";
@@ -147,6 +149,9 @@ export default async function EstimateEditorPage({
   const noteRows = await listNotesByEstimateId(estimateId);
   const initialNotes = serializeEstimateNotes(noteRows);
 
+  const activityRows = await listActivityLogsByEstimateId(estimateId);
+  const initialActivityLogs = serializeEstimateActivityLogs(activityRows);
+
   return (
     <>
       <SyncDashboardBreadcrumbDetail label={breadcrumbLabel} />
@@ -164,6 +169,7 @@ export default async function EstimateEditorPage({
         isPinned={pinned}
         userEmailsById={userEmailsById}
         initialNotes={initialNotes}
+        initialActivityLogs={initialActivityLogs}
         currentUserId={user.id}
         currentUserAvatarUrl={user.avatarUrl}
         currentUserAvatarPreset={

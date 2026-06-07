@@ -97,6 +97,19 @@ enum EstimateVersionStatus {
   ARCHIVED
 }
 
+enum EstimateActivityCategory {
+  ESTIMATE
+  VERSION
+  FINANCIAL
+  AI
+  SHARING
+}
+
+enum EstimateActivityActorType {
+  USER
+  SYSTEM
+}
+
 enum EstimateAiMessageRole {
   USER
   ASSISTANT
@@ -129,6 +142,7 @@ model User {
   auditLogs            AuditLog[]
   pinnedEstimates      PinnedEstimate[]
   estimateNotes        EstimateNote[]
+  estimateActivityLogs EstimateActivityLog[]
 }
 
 model BillingAccount {
@@ -185,6 +199,7 @@ model Workspace {
   estimateSections  EstimateSection[]
   estimateLineItems EstimateLineItem[]
   estimateRevisions EstimateRevision[]
+  estimateActivityLogs EstimateActivityLog[]
   auditLogs           AuditLog[]
   lastActiveUsers     User[]              @relation("UserLastActiveWorkspace")
   documentFieldValues DocumentFieldValue[]
@@ -353,8 +368,29 @@ model Estimate {
   latestVersion   EstimateVersion?  @relation("EstimateLatestVersion", fields: [latestVersionId], references: [id], onDelete: SetNull)
   pinnedBy        PinnedEstimate[]
   notes           EstimateNote[]
+  activityLogs    EstimateActivityLog[]
 
   @@index([workspaceId])
+}
+
+model EstimateActivityLog {
+  id          String                    @id @default(cuid())
+  estimateId  String
+  workspaceId String
+  actorType   EstimateActivityActorType @default(USER)
+  actorUserId String?
+  category    EstimateActivityCategory
+  action      String
+  metadata    Json?
+  occurredAt  DateTime                  @default(now())
+  createdAt   DateTime                  @default(now())
+
+  estimate  Estimate  @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  actor     User?     @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([estimateId, occurredAt])
+  @@index([estimateId, action, actorType, actorUserId, occurredAt])
 }
 
 model PinnedEstimate {

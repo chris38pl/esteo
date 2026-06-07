@@ -36,7 +36,9 @@ import {
 import { useEstimateAiSideLayout } from "@/features/estimates/hooks/use-estimate-ai-side-layout";
 import { useEstimateAiStickyMaxHeight } from "@/features/estimates/hooks/use-estimate-ai-sticky-max-height";
 import type { AvatarPreset } from "@/components/avatars/user-avatar";
+import type { EstimateActivityLogClient } from "@/features/estimates/lib/serialize-estimate-activity";
 import type { EstimateNoteClient } from "@/features/estimates/lib/serialize-estimate-notes";
+import { EstimateHistoryPanel } from "./estimate-history-panel";
 import { EstimateNotesPanel } from "./estimate-notes-panel";
 import { EstimateEditorLayoutStyles } from "./estimate-editor-layout-styles";
 import { EstimateGeneratingSkeleton } from "./estimate-generating-skeleton";
@@ -71,6 +73,7 @@ interface EstimateEditorProps {
   isPinned?: boolean;
   userEmailsById?: Record<string, string>;
   initialNotes?: EstimateNoteClient[];
+  initialActivityLogs?: EstimateActivityLogClient[];
   currentUserId?: string;
   currentUserAvatarUrl?: string | null;
   currentUserAvatarPreset?: AvatarPreset | null;
@@ -130,6 +133,7 @@ export function EstimateEditor({
   isPinned = false,
   userEmailsById = {},
   initialNotes = [],
+  initialActivityLogs = [],
   currentUserId = "",
   currentUserAvatarUrl = null,
   currentUserAvatarPreset = null,
@@ -582,7 +586,9 @@ export function EstimateEditor({
                 onToggleTopPanel={toggleTopPanel}
               />
 
-              {activeTab === "notes" ? (
+              {activeTab === "history" ? (
+                <EstimateHistoryPanel initialLogs={initialActivityLogs} />
+              ) : activeTab === "notes" ? (
                 <EstimateNotesPanel
                   estimateId={estimate.id}
                   workspaceId={estimate.workspaceId}

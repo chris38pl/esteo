@@ -6,6 +6,10 @@ import { upsertDocumentFieldValues, validateDocumentFieldValues } from "@/featur
 import { buildEstimateTitleFromPublicRequest } from "@/features/estimates/lib/build-estimate-title-from-public-request";
 import { coerceIndustryFieldValues } from "@/features/estimate-requests/lib/coerce-industry-field-values";
 import type { PublicEstimateRequestInput } from "@/features/estimate-requests/schemas/request";
+import {
+  ESTIMATE_ACTIVITY_ACTIONS,
+  logEstimateActivity,
+} from "@/features/estimates/server/activity-log";
 import { tasks } from "@trigger.dev/sdk";
 import type { generateEstimateDraftTask } from "@/trigger/generate-estimate-draft";
 import type { Locale } from "@/lib/locale";
@@ -197,6 +201,15 @@ export async function createPublicEstimateRequest(input: {
     versionId,
     workspaceId: pageData.workspace.id,
     locale: input.locale,
+  });
+
+  await logEstimateActivity({
+    estimateId,
+    workspaceId: pageData.workspace.id,
+    actorType: "SYSTEM",
+    category: "ESTIMATE",
+    action: ESTIMATE_ACTIVITY_ACTIONS.estimate_created,
+    metadata: { source: "public_request" },
   });
 
   return request;
