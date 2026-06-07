@@ -1,54 +1,59 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-
-import { EstimateEditorModeSelect } from "./estimate-editor-mode-select";
-import { EstimateMarginControl } from "./estimate-margin-control";
+import type { SectionData } from "./estimate-items-table";
 import { EstimateTableSearch } from "./estimate-table-search";
+import { EstimateMobileItemsStats } from "./estimate-mobile-items-stats";
+import { EstimateMobileToolsMenu } from "./estimate-mobile-tools-menu";
 import { estimateItemsToolbarMobileClass } from "@/features/estimates/lib/estimate-layout-config";
 
 interface EstimateMobileToolbarProps {
+  sections: SectionData[];
   advancedMode: boolean;
   onAdvancedModeChange: (value: boolean) => void;
   marginPercent: number;
   onMarginChange: (value: number) => void;
   onMarginBlur: (value: number) => void;
+  topPanelHidden: boolean;
+  onToggleTopPanel: () => void;
   tableSearchQuery: string;
   onTableSearchQueryChange: (query: string) => void;
 }
 
 export function EstimateMobileToolbar({
+  sections,
   advancedMode,
   onAdvancedModeChange,
   marginPercent,
   onMarginChange,
   onMarginBlur,
+  topPanelHidden,
+  onToggleTopPanel,
   tableSearchQuery,
   onTableSearchQueryChange,
 }: EstimateMobileToolbarProps) {
-  const t = useTranslations("estimates");
-
   return (
     <div
-      className={`${estimateItemsToolbarMobileClass} flex items-center justify-between gap-2 border-b border-border/60 px-3 py-2.5`}
+      className={`${estimateItemsToolbarMobileClass} flex items-center justify-between gap-2 border-b border-border/60 px-2 py-2`}
     >
-      <EstimateEditorModeSelect
+      <EstimateMobileItemsStats
+        sections={sections}
         advancedMode={advancedMode}
-        onModeChange={onAdvancedModeChange}
+        marginPercent={marginPercent}
       />
-      <div className="flex items-center gap-2">
-        {advancedMode ? (
-          <EstimateMarginControl
-            marginPercent={marginPercent}
-            onChange={onMarginChange}
-            onBlur={onMarginBlur}
-          />
-        ) : null}
+      <div className="flex shrink-0 items-center gap-1.5">
         <EstimateTableSearch
           query={tableSearchQuery}
           onQueryChange={onTableSearchQueryChange}
         />
-        <span className="sr-only">{t("editor.mobile.toolbarHint")}</span>
+        <EstimateMobileToolsMenu
+          advancedMode={advancedMode}
+          onAdvancedModeChange={onAdvancedModeChange}
+          marginPercent={marginPercent}
+          onMarginChange={onMarginChange}
+          onMarginBlur={onMarginBlur}
+          topPanelHidden={topPanelHidden}
+          onToggleTopPanel={onToggleTopPanel}
+        />
       </div>
     </div>
   );

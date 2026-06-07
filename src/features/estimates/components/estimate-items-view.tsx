@@ -33,6 +33,9 @@ interface EstimateItemsViewProps {
   onDuplicateItem: (sectionId: string, itemId: string) => void;
   onReorderItems: (sectionId: string, fromIndex: number, toIndex: number) => void;
   onBlur: () => void;
+  topPanelHidden: boolean;
+  onToggleTopPanel: () => void;
+  onMobilePositionSheetOpenChange?: (open: boolean) => void;
 }
 
 export function EstimateItemsView({
@@ -57,6 +60,9 @@ export function EstimateItemsView({
   onDuplicateItem,
   onReorderItems,
   onBlur,
+  topPanelHidden,
+  onToggleTopPanel,
+  onMobilePositionSheetOpenChange,
 }: EstimateItemsViewProps) {
   return (
     <>
@@ -91,11 +97,14 @@ export function EstimateItemsView({
 
       <div className={estimateItemsMobileClass}>
         <EstimateMobileToolbar
+          sections={sections}
           advancedMode={advancedMode}
           onAdvancedModeChange={onAdvancedModeChange}
           marginPercent={marginPercent}
           onMarginChange={onMarginChange}
           onMarginBlur={onMarginBlur}
+          topPanelHidden={topPanelHidden}
+          onToggleTopPanel={onToggleTopPanel}
           tableSearchQuery={tableSearchQuery}
           onTableSearchQueryChange={onTableSearchQueryChange}
         />
@@ -105,6 +114,7 @@ export function EstimateItemsView({
           advancedMode={advancedMode}
           marginPercent={marginPercent}
           tableSearchQuery={tableSearchQuery}
+          onAddSection={onAddSection}
           onUpdateSection={onUpdateSection}
           onDeleteSection={onDeleteSection}
           onAddItem={onAddItem}
@@ -112,6 +122,7 @@ export function EstimateItemsView({
           onDeleteItem={onDeleteItem}
           onDuplicateItem={onDuplicateItem}
           onBlur={onBlur}
+          onPositionSheetOpenChange={onMobilePositionSheetOpenChange}
         />
       </div>
     </>

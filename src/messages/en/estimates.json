@@ -75,7 +75,8 @@
       "attachments": "Attachments ({count})",
       "history": "History",
       "payments": "Payments",
-      "notes": "Notes"
+      "notes": "Notes",
+      "more": "More"
     },
     "toolbar": {
       "importPriceList": "Import from price list",
@@ -115,6 +116,7 @@
     "closeAi": "Close AI assistant",
     "addSection": "Add section",
     "addItem": "Add item",
+    "sectionCount": "{count, plural, one {# section} other {# sections}}",
     "itemCount": "{count, plural, one {# item} other {# items}}",
     "collapseSection": "Collapse section",
     "expandSection": "Expand section",
@@ -151,9 +153,11 @@
     "mobile": {
       "edit": "Edit",
       "duplicate": "Duplicate",
+      "remove": "Remove",
       "save": "Save",
       "cancel": "Cancel",
       "editPosition": "Edit position",
+      "vatPercent": "VAT (%)",
       "renameSection": "Rename section",
       "sectionName": "Section name",
       "selectSection": "Select section",
@@ -165,7 +169,14 @@
       "askAi": "Ask AI",
       "openFab": "Quick actions",
       "closeFab": "Close actions menu",
-      "toolbarHint": "Mobile toolbar"
+      "toolbarHint": "Mobile toolbar",
+      "toolsMenu": "Estimate tools",
+      "viewMode": "View mode",
+      "basicView": "Basic view",
+      "advancedView": "Advanced view",
+      "marginBadge": "margin {value}%",
+      "marginBadgeAria": "Project margin: {value}%",
+      "estimateStatsAria": "{sections, plural, one {# section} other {# sections}}, {items, plural, one {# item} other {# items}}"
     }
   },
   "header": {

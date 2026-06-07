@@ -44,7 +44,7 @@ export function EstimateTableSearch({
         aria-haspopup="dialog"
         aria-label={t("editor.toolbar.search")}
         className={cn(
-          "size-9 shrink-0 rounded-md border-blue-200 text-blue-600 shadow-xs hover:bg-blue-50 dark:border-input dark:text-foreground dark:hover:bg-accent",
+          "size-8 shrink-0 rounded-md border-blue-200 text-blue-600 shadow-xs hover:bg-blue-50 dark:border-input dark:text-foreground dark:hover:bg-accent",
           open && "bg-accent",
           query.trim() && "ring-2 ring-primary/30",
         )}

@@ -12,11 +12,14 @@ import { EstimateAiPanel, type EstimateAiPanelProps } from "./estimate-ai-panel"
 type EstimateAiFloatingProps = EstimateAiPanelProps & {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Hide the FAB while another overlay is active (e.g. mobile position edit sheet). */
+  hideTrigger?: boolean;
 };
 
 export function EstimateAiFloating({
   open,
   onOpenChange,
+  hideTrigger = false,
   ...panelProps
 }: EstimateAiFloatingProps) {
   const t = useTranslations("estimates");
@@ -52,21 +55,23 @@ export function EstimateAiFloating({
         </div>
       ) : null}
 
-      <Button
-        type="button"
-        size="icon"
-        aria-expanded={open}
-        aria-controls={open ? "estimate-ai-floating-dialog" : undefined}
-        aria-label={open ? t("editor.closeAi") : t("editor.aiAssistant")}
-        className={cn(
-          "pointer-events-auto fixed bottom-4 right-4 z-[70] size-14 rounded-full shadow-lg",
-          "bg-primary text-primary-foreground hover:bg-primary/90",
-          open && "ring-2 ring-ring ring-offset-2 ring-offset-background",
-        )}
-        onClick={() => onOpenChange(!open)}
-      >
-        {open ? <X className="size-6" /> : <Bot className="size-6" />}
-      </Button>
+      {hideTrigger ? null : (
+        <Button
+          type="button"
+          size="icon"
+          aria-expanded={open}
+          aria-controls={open ? "estimate-ai-floating-dialog" : undefined}
+          aria-label={open ? t("editor.closeAi") : t("editor.aiAssistant")}
+          className={cn(
+            "pointer-events-auto fixed bottom-4 right-4 z-[70] size-14 rounded-full shadow-lg",
+            "bg-primary text-primary-foreground hover:bg-primary/90",
+            open && "ring-2 ring-ring ring-offset-2 ring-offset-background",
+          )}
+          onClick={() => onOpenChange(!open)}
+        >
+          {open ? <X className="size-6" /> : <Bot className="size-6" />}
+        </Button>
+      )}
     </div>
   );
 

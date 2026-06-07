@@ -75,7 +75,8 @@
       "attachments": "Załączniki ({count})",
       "history": "Historia",
       "payments": "Płatności",
-      "notes": "Notatki"
+      "notes": "Notatki",
+      "more": "Więcej"
     },
     "toolbar": {
       "importPriceList": "Import z cennika",
@@ -115,6 +116,7 @@
     "closeAi": "Zamknij asystenta AI",
     "addSection": "Dodaj sekcję",
     "addItem": "Dodaj pozycję",
+    "sectionCount": "{count, plural, one {# sekcja} few {# sekcje} many {# sekcji} other {# sekcji}}",
     "itemCount": "{count, plural, one {# pozycja} few {# pozycje} many {# pozycji} other {# pozycji}}",
     "collapseSection": "Zwiń sekcję",
     "expandSection": "Rozwiń sekcję",
@@ -151,9 +153,11 @@
     "mobile": {
       "edit": "Edytuj",
       "duplicate": "Duplikuj",
+      "remove": "Usuń",
       "save": "Zapisz",
       "cancel": "Anuluj",
       "editPosition": "Edytuj pozycję",
+      "vatPercent": "VAT (%)",
       "renameSection": "Zmień nazwę sekcji",
       "sectionName": "Nazwa sekcji",
       "selectSection": "Wybierz sekcję",
@@ -165,7 +169,14 @@
       "askAi": "Zapytaj AI",
       "openFab": "Szybkie akcje",
       "closeFab": "Zamknij menu akcji",
-      "toolbarHint": "Pasek narzędzi mobilnych"
+      "toolbarHint": "Pasek narzędzi mobilnych",
+      "toolsMenu": "Narzędzia wyceny",
+      "viewMode": "Tryb widoku",
+      "basicView": "Widok podstawowy",
+      "advancedView": "Widok zaawansowany",
+      "marginBadge": "marża {value}%",
+      "marginBadgeAria": "Marża projektu: {value}%",
+      "estimateStatsAria": "{sections, plural, one {# sekcja} few {# sekcje} many {# sekcji} other {# sekcji}}, {items, plural, one {# pozycja} few {# pozycje} many {# pozycji} other {# pozycji}}"
     }
   },
   "header": {

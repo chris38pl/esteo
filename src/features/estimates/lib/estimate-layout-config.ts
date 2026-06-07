@@ -91,7 +91,9 @@ const estimateLayoutTailwind = {
   itemsDesktop: "estimate-items-desktop",
   itemsMobile: "estimate-items-mobile",
   itemsToolbarMobile: "estimate-items-toolbar-mobile",
-  mobileFab: "estimate-mobile-fab",
+  editorTabsDesktop: "estimate-editor-tabs__desktop",
+  editorTabsMobile: "estimate-editor-tabs__mobile",
+  editorTabsExpandDesktop: "estimate-editor-tabs__expand-desktop",
   headerTitle:
     "estimate-header__title text-xl font-semibold tracking-tight text-foreground",
   headerStatusBadgeMinWidth: `min-w-[${b.headerStatusBadgeMinWidthPx}px]`,
@@ -167,7 +169,12 @@ export const estimateItemsMobileClass = ESTIMATE_LAYOUT_CONFIG.tailwind.itemsMob
 
 export const estimateItemsToolbarMobileClass = ESTIMATE_LAYOUT_CONFIG.tailwind.itemsToolbarMobile;
 
-export const estimateMobileFabClass = ESTIMATE_LAYOUT_CONFIG.tailwind.mobileFab;
+export const estimateEditorTabsDesktopClass = ESTIMATE_LAYOUT_CONFIG.tailwind.editorTabsDesktop;
+
+export const estimateEditorTabsMobileClass = ESTIMATE_LAYOUT_CONFIG.tailwind.editorTabsMobile;
+
+export const estimateEditorTabsExpandDesktopClass =
+  ESTIMATE_LAYOUT_CONFIG.tailwind.editorTabsExpandDesktop;
 
 export const estimateHeaderTitleClass = ESTIMATE_LAYOUT_CONFIG.tailwind.headerTitle;
 
@@ -339,6 +346,13 @@ export function getEstimateEditorResponsiveCss(): string {
 }
 .estimate-mobile-sticky-bar {
   display: flex;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
 }
 .estimate-items-desktop {
   display: none;
@@ -346,17 +360,27 @@ export function getEstimateEditorResponsiveCss(): string {
 .estimate-items-mobile {
   display: block;
 }
-.estimate-mobile-fab {
+.estimate-editor-tabs__desktop {
+  display: none;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.estimate-editor-tabs__mobile {
   display: flex;
-  right: 1rem;
-  bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px) + 0.75rem);
+}
+.estimate-editor-tabs__expand-desktop {
+  display: none;
 }
 .estimate-editor--mobile-sticky {
   padding-bottom: calc(7.5rem + env(safe-area-inset-bottom, 0px));
 }
 @media ${mediaQueryMax(breakpoints.headerActionsDivider - 1)} {
+  .estimate-top-band--basic .estimate-side-rail {
+    max-width: none;
+    width: 100%;
+  }
   [data-estimate-ai-floating] button.fixed.bottom-4 {
-    display: none !important;
+    bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px) + 0.75rem);
   }
   [data-estimate-ai-floating] .estimate-ai-floating-panel {
     bottom: calc(9.5rem + env(safe-area-inset-bottom, 0px));
@@ -393,8 +417,14 @@ export function getEstimateEditorResponsiveCss(): string {
   .estimate-items-mobile {
     display: none;
   }
-  .estimate-mobile-fab {
-    display: none !important;
+  .estimate-editor-tabs__desktop {
+    display: flex;
+  }
+  .estimate-editor-tabs__mobile {
+    display: none;
+  }
+  .estimate-editor-tabs__expand-desktop {
+    display: flex;
   }
   .estimate-mobile-sticky-bar {
     display: none !important;

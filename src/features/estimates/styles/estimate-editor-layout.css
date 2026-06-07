@@ -127,3 +127,47 @@
 .estimate-ai-sticky > .estimate-ai-panel .estimate-ai-messages {
   min-height: 7rem;
 }
+
+/* Mobile position sheet — icon wells + borderless inline fields */
+.estimate-mobile-position-icon {
+  background: color-mix(in oklab, var(--primary) 8%, var(--card));
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--primary) 10%, transparent);
+  color: var(--primary);
+}
+
+.dark .estimate-mobile-position-icon {
+  background: color-mix(in oklab, var(--border) 85%, var(--card));
+  box-shadow: none;
+  color: inherit;
+}
+
+.dark input.estimate-mobile-position-field,
+input.estimate-mobile-position-field {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.dark input.estimate-mobile-position-field:hover,
+.dark input.estimate-mobile-position-field:focus,
+.dark input.estimate-mobile-position-field:focus-visible,
+input.estimate-mobile-position-field:hover,
+input.estimate-mobile-position-field:focus,
+input.estimate-mobile-position-field:focus-visible {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.estimate-mobile-position-field[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.estimate-mobile-position-field[type="number"]::-webkit-inner-spin-button,
+.estimate-mobile-position-field[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

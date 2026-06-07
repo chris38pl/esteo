@@ -14,6 +14,7 @@ import {
 import { calculateEstimate } from "@/features/estimates/lib/calculate-estimate";
 import { formatEstimateCurrency } from "@/features/estimates/lib/format-estimate-currency";
 import { cn } from "@/lib/utils";
+import { EstimateMobileAddRow } from "./estimate-mobile-add-row";
 import { EstimateMobilePositionCard } from "./estimate-mobile-position-card";
 import type { LineItemData } from "./estimate-line-item-row";
 
@@ -30,9 +31,6 @@ interface EstimateMobileSectionCardProps {
   onAddItem: () => void;
   onDeleteSection: () => void;
   onOpenItem: (itemId: string) => void;
-  onEditItem: (itemId: string) => void;
-  onDuplicateItem: (itemId: string) => void;
-  onDeleteItem: (itemId: string) => void;
   searchQuery?: string;
 }
 
@@ -58,9 +56,6 @@ function EstimateMobileSectionCardComponent({
   onAddItem,
   onDeleteSection,
   onOpenItem,
-  onEditItem,
-  onDuplicateItem,
-  onDeleteItem,
   searchQuery = "",
 }: EstimateMobileSectionCardProps) {
   const t = useTranslations("estimates");
@@ -81,8 +76,8 @@ function EstimateMobileSectionCardComponent({
   }
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-border/70 bg-card/95 shadow-sm">
-      <div className="flex items-center gap-2 px-3.5 py-3.5">
+    <section className="overflow-hidden rounded-xl border border-border/70 bg-card/95 shadow-sm">
+      <div className="flex items-center gap-1.5 px-3 py-2.5">
         <button
           type="button"
           className="flex min-w-0 flex-1 items-center gap-2.5 text-left"
@@ -135,30 +130,26 @@ function EstimateMobileSectionCardComponent({
       </div>
 
       {expanded ? (
-        <div className="space-y-2 border-t border-border/50 px-3 pb-3 pt-2">
-          {visibleItems.length === 0 ? (
-            <p className="px-1 py-4 text-center text-xs text-muted-foreground">
-              {t("editor.mobile.noPositions")}
-            </p>
-          ) : (
-            visibleItems.map((item, index) => {
-              const originalIndex = items.findIndex((i) => i.id === item.id);
-              const positionLabel = `${sectionNumber}.${originalIndex + 1}`;
-              return (
-                <EstimateMobilePositionCard
-                  key={item.id}
-                  item={item}
-                  positionLabel={positionLabel}
-                  currency={currency}
-                  advancedMode={advancedMode}
-                  onOpen={() => onOpenItem(item.id)}
-                  onEdit={() => onEditItem(item.id)}
-                  onDuplicate={() => onDuplicateItem(item.id)}
-                  onDelete={() => onDeleteItem(item.id)}
-                />
-              );
-            })
-          )}
+        <div className="border-t border-border/50">
+          {visibleItems.map((item) => {
+            const originalIndex = items.findIndex((i) => i.id === item.id);
+            const positionLabel = `${sectionNumber}.${originalIndex + 1}`;
+            return (
+              <EstimateMobilePositionCard
+                key={item.id}
+                item={item}
+                positionLabel={positionLabel}
+                currency={currency}
+                advancedMode={advancedMode}
+                onOpen={() => onOpenItem(item.id)}
+              />
+            );
+          })}
+          <EstimateMobileAddRow
+            variant="item"
+            label={t("editor.addItem")}
+            onClick={onAddItem}
+          />
         </div>
       ) : null}
     </section>

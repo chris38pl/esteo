@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import type { SectionData } from "./estimate-items-table";
 import type { LineItemData } from "./estimate-line-item-row";
+import { EstimateMobileAddRow } from "./estimate-mobile-add-row";
 import { EstimateMobileSectionCard } from "./estimate-mobile-section-card";
 import { EstimateMobilePositionSheet } from "./estimate-mobile-position-sheet";
 import { EstimateMobileSectionSheet } from "./estimate-mobile-section-sheet";
@@ -15,6 +16,7 @@ interface EstimateItemsMobileListProps {
   advancedMode: boolean;
   marginPercent: number;
   tableSearchQuery?: string;
+  onAddSection: () => void;
   onUpdateSection: (sectionId: string, title: string) => void;
   onDeleteSection: (sectionId: string) => void;
   onAddItem: (sectionId: string) => void;
@@ -22,6 +24,7 @@ interface EstimateItemsMobileListProps {
   onDeleteItem: (itemId: string) => void;
   onDuplicateItem: (sectionId: string, itemId: string) => void;
   onBlur: () => void;
+  onPositionSheetOpenChange?: (open: boolean) => void;
 }
 
 type ActiveItemRef = {
@@ -36,6 +39,7 @@ export function EstimateItemsMobileList({
   advancedMode,
   marginPercent,
   tableSearchQuery = "",
+  onAddSection,
   onUpdateSection,
   onDeleteSection,
   onAddItem,
@@ -43,6 +47,7 @@ export function EstimateItemsMobileList({
   onDeleteItem,
   onDuplicateItem,
   onBlur,
+  onPositionSheetOpenChange,
 }: EstimateItemsMobileListProps) {
   const t = useTranslations("estimates");
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(() =>
@@ -75,42 +80,48 @@ export function EstimateItemsMobileList({
     setActiveItem({ sectionId, itemId, positionLabel });
   };
 
-  if (sections.length === 0) {
-    return (
-      <div className="px-4 py-14 text-center text-sm text-muted-foreground">
-        {t("editor.noSections")}
-      </div>
-    );
-  }
+  useEffect(() => {
+    onPositionSheetOpenChange?.(activeItem !== null);
+  }, [activeItem, onPositionSheetOpenChange]);
 
   return (
     <>
-      <div className="space-y-3 px-3 py-3">
-        {sections.map((section, sectionIndex) => (
-          <EstimateMobileSectionCard
-            key={section.id}
-            sectionId={section.id}
-            sectionNumber={sectionIndex + 1}
-            title={section.title}
-            items={section.items}
-            currency={currency}
-            advancedMode={advancedMode}
-            expanded={expandedSections[section.id] ?? false}
-            searchQuery={tableSearchQuery}
-            onToggleExpanded={() => toggleSection(section.id)}
-            onRename={() => setRenameSectionId(section.id)}
-            onAddItem={() => onAddItem(section.id)}
-            onDeleteSection={() => onDeleteSection(section.id)}
-            onOpenItem={(itemId) =>
-              openItem(section.id, itemId, `${sectionIndex + 1}.${section.items.findIndex((i) => i.id === itemId) + 1}`)
-            }
-            onEditItem={(itemId) =>
-              openItem(section.id, itemId, `${sectionIndex + 1}.${section.items.findIndex((i) => i.id === itemId) + 1}`)
-            }
-            onDuplicateItem={(itemId) => onDuplicateItem(section.id, itemId)}
-            onDeleteItem={onDeleteItem}
-          />
-        ))}
+      <div className="space-y-2 px-2 py-2">
+        {sections.length === 0 ? (
+          <p className="px-2 py-6 text-center text-sm text-muted-foreground">
+            {t("editor.noSections")}
+          </p>
+        ) : (
+          sections.map((section, sectionIndex) => (
+            <EstimateMobileSectionCard
+              key={section.id}
+              sectionId={section.id}
+              sectionNumber={sectionIndex + 1}
+              title={section.title}
+              items={section.items}
+              currency={currency}
+              advancedMode={advancedMode}
+              expanded={expandedSections[section.id] ?? false}
+              searchQuery={tableSearchQuery}
+              onToggleExpanded={() => toggleSection(section.id)}
+              onRename={() => setRenameSectionId(section.id)}
+              onAddItem={() => onAddItem(section.id)}
+              onDeleteSection={() => onDeleteSection(section.id)}
+              onOpenItem={(itemId) =>
+                openItem(
+                  section.id,
+                  itemId,
+                  `${sectionIndex + 1}.${section.items.findIndex((i) => i.id === itemId) + 1}`,
+                )
+              }
+            />
+          ))
+        )}
+        <EstimateMobileAddRow
+          variant="section"
+          label={t("editor.addSection")}
+          onClick={onAddSection}
+        />
       </div>
 
       <EstimateMobilePositionSheet
@@ -124,6 +135,14 @@ export function EstimateItemsMobileList({
         advancedMode={advancedMode}
         marginPercent={marginPercent}
         onSave={onUpdateItem}
+        onDuplicate={() => {
+          if (!activeItem) return;
+          onDuplicateItem(activeItem.sectionId, activeItem.itemId);
+        }}
+        onDelete={() => {
+          if (!activeItem) return;
+          onDeleteItem(activeItem.itemId);
+        }}
         onBlur={onBlur}
       />
 

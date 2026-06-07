@@ -1,16 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  ArrowLeft,
+  Coins,
+  Copy,
+  FileText,
+  Hash,
+  Percent,
+  Receipt,
+  Tag,
+  Trash2,
+  X,
+} from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Sheet,
   SheetContent,
   SheetFooter,
-  SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
 import { calculateLineItem } from "@/features/estimates/lib/calculate-estimate";
@@ -31,33 +40,67 @@ interface EstimateMobilePositionSheetProps {
   advancedMode: boolean;
   marginPercent: number;
   onSave: (itemId: string, data: Partial<Omit<LineItemData, "id" | "sortOrder">>) => void;
+  onDuplicate: () => void;
+  onDelete: () => void;
   onBlur: () => void;
 }
 
-function FieldRow({
+const editRowClassName = "flex gap-3 py-2.5 pl-[22px] pr-[22px]";
+
+const fieldInputClassName =
+  "estimate-mobile-position-field m-0 h-auto min-h-0 appearance-none border-none bg-transparent p-0 text-sm font-medium text-foreground shadow-none outline-none ring-0";
+
+const fieldValueClassName = "w-20 text-right tabular-nums";
+
+function EditRowIcon({ icon: Icon }: { icon: React.ElementType }) {
+  return (
+    <span className="estimate-mobile-position-icon flex size-9 shrink-0 items-center justify-center rounded-lg">
+      <Icon className="size-4 text-primary dark:text-muted-foreground" aria-hidden />
+    </span>
+  );
+}
+
+function NameEditRow({
   label,
-  children,
   value,
-  readOnly,
+  placeholder,
+  onChange,
 }: {
   label: string;
-  children?: React.ReactNode;
-  value?: string;
-  readOnly?: boolean;
+  value: string;
+  placeholder: string;
+  onChange: (value: string) => void;
 }) {
   return (
-    <div className="space-y-1.5">
-      <Label className="text-xs text-muted-foreground">{label}</Label>
-      {children ?? (
-        <div
-          className={cn(
-            "flex h-10 items-center rounded-lg border border-border/60 bg-muted/20 px-3 text-sm tabular-nums",
-            readOnly && "text-muted-foreground",
-          )}
-        >
-          {value}
-        </div>
-      )}
+    <div className={cn(editRowClassName, "items-start")}>
+      <EditRowIcon icon={FileText} />
+      <div className="min-w-0 flex-1">
+        <p className="text-xs text-muted-foreground">{label}</p>
+        <input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className={cn(fieldInputClassName, "mt-0.5 w-full")}
+        />
+      </div>
+    </div>
+  );
+}
+
+function ValueEditRow({
+  icon: Icon,
+  label,
+  children,
+}: {
+  icon: React.ElementType;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={cn(editRowClassName, "items-center")}>
+      <EditRowIcon icon={Icon} />
+      <p className="min-w-0 flex-1 text-sm text-muted-foreground">{label}</p>
+      <div className="flex shrink-0 items-center gap-1">{children}</div>
     </div>
   );
 }
@@ -71,6 +114,8 @@ export function EstimateMobilePositionSheet({
   advancedMode,
   marginPercent,
   onSave,
+  onDuplicate,
+  onDelete,
   onBlur,
 }: EstimateMobilePositionSheetProps) {
   const t = useTranslations("estimates");
@@ -125,49 +170,97 @@ export function EstimateMobilePositionSheet({
     onOpenChange(false);
   };
 
+  const handleDuplicate = () => {
+    onSave(draft.id, {
+      name: draft.name,
+      unit: draft.unit,
+      quantity: draft.quantity,
+      baseUnitPrice: draft.baseUnitPrice,
+      unitPrice: draft.unitPrice,
+      vatRate: draft.vatRate,
+    });
+    onBlur();
+    onDuplicate();
+    onOpenChange(false);
+  };
+
+  const handleDelete = () => {
+    onDelete();
+    onBlur();
+    onOpenChange(false);
+  };
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="max-h-[88dvh] gap-0 p-0" showCloseButton>
-        <SheetHeader className="border-b border-border/60 pb-4">
-          <p className="text-xs font-medium tabular-nums text-muted-foreground">{positionLabel}</p>
-          <SheetTitle>{t("editor.mobile.editPosition")}</SheetTitle>
-        </SheetHeader>
-
-        <div className="flex-1 space-y-4 overflow-y-auto px-5 py-4">
-          <FieldRow label={t("editor.columns.name")}>
-            <Input
-              value={draft.name}
-              onChange={(e) => patch({ name: e.target.value })}
-              placeholder={t("editor.itemNamePlaceholder")}
-              className="h-10"
-            />
-          </FieldRow>
-
-          <div className="grid grid-cols-2 gap-3">
-            <FieldRow label={t("editor.columns.unit")}>
-              <Input
-                value={draft.unit ?? ""}
-                onChange={(e) => patch({ unit: e.target.value || null })}
-                placeholder={t("editor.unitPlaceholder")}
-                className="h-10"
-              />
-            </FieldRow>
-            <FieldRow label={t("editor.columns.qty")}>
-              <Input
-                type="number"
-                min={0}
-                step={0.01}
-                value={draft.quantity}
-                onChange={(e) => patch({ quantity: parseEstimateDecimalInput(e.target.value) })}
-                onBlur={() => patch({ quantity: roundEstimateDecimal(draft.quantity) })}
-                className="h-10 text-right tabular-nums"
-              />
-            </FieldRow>
+      <SheetContent
+        className="z-[80] inset-0 h-dvh max-h-dvh gap-0 rounded-none border-0 bg-card/95 p-0 shadow-none"
+        overlayClassName="z-[80]"
+        showCloseButton={false}
+      >
+        <div className="flex items-center justify-between gap-2 border-b border-border/40 px-2 py-2 pt-[max(0.5rem,env(safe-area-inset-top))]">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="size-9 shrink-0 text-muted-foreground"
+            aria-label={t("editor.mobile.cancel")}
+            onClick={handleCancel}
+          >
+            <ArrowLeft className="size-5" />
+          </Button>
+          <div className="flex min-w-0 flex-1 items-center justify-center gap-2 px-1">
+            <SheetTitle className="truncate text-base font-semibold">
+              {t("editor.mobile.editPosition")}
+            </SheetTitle>
+            <span className="estimate-mobile-position-icon shrink-0 rounded-md px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
+              {positionLabel}
+            </span>
           </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="size-9 shrink-0 text-muted-foreground"
+            aria-label={t("editor.mobile.cancel")}
+            onClick={handleCancel}
+          >
+            <X className="size-5" />
+          </Button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto">
+          <div className="divide-y divide-border/40">
+          <NameEditRow
+            label={t("editor.columns.name")}
+            value={draft.name}
+            placeholder={t("editor.itemNamePlaceholder")}
+            onChange={(name) => patch({ name })}
+          />
+
+          <ValueEditRow icon={Tag} label={t("editor.columns.unit")}>
+            <input
+              value={draft.unit ?? ""}
+              onChange={(e) => patch({ unit: e.target.value || null })}
+              placeholder={t("editor.unitPlaceholder")}
+              className={cn(fieldInputClassName, fieldValueClassName)}
+            />
+          </ValueEditRow>
+
+          <ValueEditRow icon={Hash} label={t("editor.columns.qty")}>
+            <input
+              type="number"
+              min={0}
+              step={0.01}
+              value={draft.quantity}
+              onChange={(e) => patch({ quantity: parseEstimateDecimalInput(e.target.value) })}
+              onBlur={() => patch({ quantity: roundEstimateDecimal(draft.quantity) })}
+              className={cn(fieldInputClassName, fieldValueClassName)}
+            />
+          </ValueEditRow>
 
           {advancedMode ? (
-            <FieldRow label={t("editor.columns.baseUnitPrice")}>
-              <Input
+            <ValueEditRow icon={Receipt} label={t("editor.columns.baseUnitPrice")}>
+              <input
                 type="number"
                 min={0}
                 step={0.01}
@@ -178,47 +271,48 @@ export function EstimateMobilePositionSheet({
                 onBlur={() =>
                   patch({ baseUnitPrice: roundEstimateDecimal(draft.baseUnitPrice) })
                 }
-                className="h-10 text-right tabular-nums"
+                className={cn(fieldInputClassName, fieldValueClassName)}
               />
-            </FieldRow>
+            </ValueEditRow>
           ) : null}
 
-          <FieldRow
-            label={t("editor.columns.unitPrice")}
-            readOnly={advancedMode}
-          >
+          <ValueEditRow icon={Coins} label={t("editor.columns.unitPrice")}>
             {advancedMode ? (
-              <div className="flex h-10 items-center rounded-lg border border-border/60 bg-muted/20 px-3 text-sm tabular-nums text-muted-foreground">
+              <span className="text-sm font-medium tabular-nums text-foreground">
                 {formatEstimateCurrency(draft.unitPrice, currency, locale)}
-              </div>
+              </span>
             ) : (
-              <Input
+              <input
                 type="number"
                 min={0}
                 step={0.01}
                 value={draft.unitPrice}
                 onChange={(e) => patch({ unitPrice: parseEstimateDecimalInput(e.target.value) })}
                 onBlur={() => patch({ unitPrice: roundEstimateDecimal(draft.unitPrice) })}
-                className="h-10 text-right tabular-nums"
+                className={cn(fieldInputClassName, fieldValueClassName)}
               />
             )}
-          </FieldRow>
+          </ValueEditRow>
 
-          <FieldRow
-            label={t("editor.columns.vat")}
-          >
-            <Input
+          <ValueEditRow icon={Percent} label={t("editor.mobile.vatPercent")}>
+            <input
               type="number"
               min={0}
               max={100}
               step={1}
               value={(draft.vatRate * 100).toFixed(0)}
               onChange={(e) => patch({ vatRate: (parseFloat(e.target.value) || 0) / 100 })}
-              className="h-10 text-right tabular-nums"
+              className={cn(fieldInputClassName, fieldValueClassName)}
             />
-          </FieldRow>
+          </ValueEditRow>
+          </div>
 
-          <div className="rounded-xl border border-border/60 bg-muted/15 p-4 space-y-2">
+          <div
+            className={cn(
+              "mx-4 mt-4 space-y-2 rounded-xl border border-border/60 bg-muted/15 px-4",
+              advancedMode ? "py-4" : "py-6",
+            )}
+          >
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">{t("editor.columns.net")}</span>
               <span className="font-medium tabular-nums">
@@ -250,13 +344,47 @@ export function EstimateMobilePositionSheet({
           </div>
         </div>
 
-        <SheetFooter className="pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <Button type="button" variant="outline" className={estimateOutlineButtonClassName} onClick={handleCancel}>
-            {t("editor.mobile.cancel")}
-          </Button>
-          <Button type="button" className={estimatePrimaryButtonClassName} onClick={handleSave}>
-            {t("editor.mobile.save")}
-          </Button>
+        <SheetFooter className="flex-col gap-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="flex w-full gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              className={cn(estimateOutlineButtonClassName, "flex-1")}
+              onClick={handleDuplicate}
+            >
+              <Copy className="size-4" />
+              {t("editor.mobile.duplicate")}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className={cn(
+                estimateOutlineButtonClassName,
+                "flex-1 border-destructive/40 text-destructive hover:bg-destructive/5 hover:text-destructive",
+              )}
+              onClick={handleDelete}
+            >
+              <Trash2 className="size-4" />
+              {t("editor.mobile.remove")}
+            </Button>
+          </div>
+          <div className="flex w-full gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              className={cn(estimateOutlineButtonClassName, "flex-1")}
+              onClick={handleCancel}
+            >
+              {t("editor.mobile.cancel")}
+            </Button>
+            <Button
+              type="button"
+              className={cn(estimatePrimaryButtonClassName, "flex-1")}
+              onClick={handleSave}
+            >
+              {t("editor.mobile.save")}
+            </Button>
+          </div>
         </SheetFooter>
       </SheetContent>
     </Sheet>
