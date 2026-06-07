@@ -1,3 +1,4 @@
+import { AttachmentUploadSource } from "@prisma/client";
 import { task, logger } from "@trigger.dev/sdk";
 
 import { prisma } from "@/db/client";
@@ -9,6 +10,10 @@ import { syncVersionTotals } from "@/features/estimates/lib/sync-version-totals"
 import { generateEstimateDraft } from "@/ai/services/generate-estimate-draft";
 import { validateGeneratedSectionTitles } from "@/ai/lib/validate-generated-section-titles";
 import { buildProjectBrief } from "@/features/estimate-requests/lib/build-project-brief";
+import {
+  markAttachmentsPromotionFailed,
+  promoteRequestAttachmentsToEstimate,
+} from "@/features/attachments/server/promote-request-attachments";
 import { loadEstimateGenerationContext } from "@/features/workspaces/lib/load-estimate-generation-context";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
@@ -19,6 +24,54 @@ interface GenerateEstimateDraftPayload {
   versionId: string;
   workspaceId: string;
   locale: string;
+  uploadSource?: AttachmentUploadSource;
+  uploadedById?: string | null;
+}
+
+async function runAttachmentPromotion(payload: GenerateEstimateDraftPayload): Promise<void> {
+  const estimate = await prisma.estimate.findFirst({
+    where: { id: payload.estimateId, workspaceId: payload.workspaceId },
+    select: { id: true },
+  });
+
+  const version = await prisma.estimateVersion.findFirst({
+    where: { id: payload.versionId, estimateId: payload.estimateId },
+    select: { id: true },
+  });
+
+  if (!estimate || !version) {
+    logger.warn("Skipping attachment promotion — estimate or version missing", {
+      estimateRequestId: payload.estimateRequestId,
+    });
+    return;
+  }
+
+  try {
+    const result = await promoteRequestAttachmentsToEstimate({
+      estimateRequestId: payload.estimateRequestId,
+      estimateId: payload.estimateId,
+      workspaceId: payload.workspaceId,
+      uploadSource: payload.uploadSource ?? AttachmentUploadSource.PUBLIC_REQUEST,
+      uploadedById: payload.uploadedById ?? null,
+    });
+
+    logger.info("Attachment promotion completed", {
+      estimateRequestId: payload.estimateRequestId,
+      promotedCount: result.promotedCount,
+      promotedImageAttachmentIds: result.promotedImageAttachmentIds,
+    });
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    logger.error("Attachment promotion failed", {
+      estimateRequestId: payload.estimateRequestId,
+      error: errorMessage,
+    });
+
+    await markAttachmentsPromotionFailed({
+      estimateRequestId: payload.estimateRequestId,
+      errorMessage,
+    });
+  }
 }
 
 async function markEstimateRequestFailed(
@@ -138,6 +191,8 @@ export const generateEstimateDraftTask = task({
       where: { id: estimateRequestId },
       data: { status: "PROCESSING" },
     });
+
+    await runAttachmentPromotion(payload);
 
     try {
       logger.info("Loading estimate generation context", { estimateRequestId, workspaceId });

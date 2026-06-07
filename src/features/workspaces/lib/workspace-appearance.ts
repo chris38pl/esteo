@@ -54,7 +54,3 @@ export function getAppearanceConfig(
   }
   return APPEARANCE_CONFIG[WorkspaceAppearanceTheme.OCEAN_BREEZE];
 }
-
-export function getWorkspaceStorageUsageStub(): { usedPercent: number } {
-  return { usedPercent: 62 };
-}

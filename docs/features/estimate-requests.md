@@ -85,11 +85,11 @@ Industry-driven via `IndustryFieldDefinition` (e.g. property type, preferred sta
 
 - description minimum 20 characters
 - maximum 10 attachments per **request submission**
-- maximum total upload size: **10 MB** per submission (public form)
+- maximum total upload size: **10 MB** per submission (public + internal forms)
 - email must be valid
 - phone number required
 
-Workspace-level attachment storage for estimates uses a separate **500 MB** quota — see [`estimate-ai.md`](../architecture/estimate-ai.md).
+Workspace attachment storage uses a **250 MB default quota** per workspace (`Workspace.attachmentStorageLimitBytes`). When storage is exhausted and the user attached files, submit is rejected. Requests without attachments may still be submitted. See [`estimate-attachments.md`](estimate-attachments.md).
 
 ## AI behavior (pre-submit assistant)
 
@@ -152,8 +152,25 @@ Two buttons:
 ## Technical notes
 
 - Implementation: `src/features/estimate-requests`
-- Public create: `createPublicEstimateRequest`
-- Job enqueue: after successful save (implementation TBD in estimates feature)
+- Submit (public + internal): `POST /api/public/estimate-requests`, `POST /api/estimate-requests/internal` → `submitEstimateRequestWithAttachments`
+- Legacy server actions (`createPublicEstimateRequest`, `createInternalEstimate`) remain for reference; forms use multipart API routes
+- Job enqueue: after successful save via Trigger.dev `generate-estimate-draft`
+
+### Attachment submit flow
+
+```txt
+multipart FormData (payload JSON + files)
+→ validate + request limits (10 files / 10 MB)
+→ quota pre-check on processed bytes
+→ pre-generate estimateId, versionId, requestId
+→ UploadThing upload to workspace/{workspaceId}/requests/{requestId}/…
+→ DB: Estimate + EstimateRequest + version; attachments JSON; aiMetadata.attachmentsPromotionStatus PENDING
+→ Trigger.dev: promote to EstimateAttachment (independent of AI draft quality)
+```
+
+Partial upload success is allowed. If **all** uploads fail when files were provided, no entities are created.
+
+Attachment counts on request list/detail views use stored JSON metadata (`status: "stored"`). Estimate list views use `Estimate.attachmentCount` cache only.
 
 ## Attachments
 

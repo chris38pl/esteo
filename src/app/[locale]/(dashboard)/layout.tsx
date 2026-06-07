@@ -24,6 +24,7 @@ import {
 } from "@/server/permissions/entitlements";
 import { isPlatformAdmin } from "@/server/permissions/require-workspace";
 import { listPinnedEstimatesForSidebar } from "@/features/estimates/server/pinned-estimates";
+import { getWorkspaceStorageSummary } from "@/features/attachments/server/assert-workspace-storage";
 import {
   resolveActiveWorkspace,
   resolveWorkspaceBySlug,
@@ -105,13 +106,23 @@ export default async function DashboardLayout({
   ]);
   const canCreateAdditionalWorkspace = canCreateWorkspace && ownedWorkspaceCount > 0;
 
-  const workspaceSummaries = workspaces.map((workspace) => ({
-    id: workspace.id,
-    name: workspace.name,
-    slug: workspace.slug,
-    appearanceTheme: workspace.appearanceTheme,
-    isOwner: workspace.ownerId === user.id,
-  }));
+  const workspaceSummaries = workspaces.map((workspace) => {
+    const storage = getWorkspaceStorageSummary({
+      attachmentStorageUsedBytes: workspace.attachmentStorageUsedBytes,
+      attachmentStorageLimitBytes: workspace.attachmentStorageLimitBytes,
+    });
+
+    return {
+      id: workspace.id,
+      name: workspace.name,
+      slug: workspace.slug,
+      appearanceTheme: workspace.appearanceTheme,
+      isOwner: workspace.ownerId === user.id,
+      storageUsedFormatted: storage.usedFormatted,
+      storageLimitFormatted: storage.limitFormatted,
+      storageUsedPercent: storage.usedPercent,
+    };
+  });
 
   const [membersData, canInviteMembers] = activeWorkspaceId
     ? await Promise.all([

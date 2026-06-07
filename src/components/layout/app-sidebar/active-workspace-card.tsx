@@ -9,10 +9,7 @@ import { WorkspaceMemberStack } from "@/components/layout/app-sidebar/workspace-
 import { WorkspaceInvitePopover } from "@/components/layout/app-sidebar/workspace-invite-popover";
 import { WorkspacePlanBadge } from "@/components/layout/app-sidebar/workspace-plan-badge";
 import { WorkspaceSwitcherMenuContent } from "@/components/layout/app-sidebar/workspace-switcher-menu";
-import {
-  getAppearanceConfig,
-  getWorkspaceStorageUsageStub,
-} from "@/features/workspaces/lib/workspace-appearance";
+import { getAppearanceConfig } from "@/features/workspaces/lib/workspace-appearance";
 import type { WorkspaceMemberPreview } from "@/features/workspaces/server/get-active-workspace-card-data";
 import {
   DropdownMenu,
@@ -43,7 +40,11 @@ export function ActiveWorkspaceCard({
   }
 
   const appearance = getAppearanceConfig(workspace.appearanceTheme);
-  const storage = getWorkspaceStorageUsageStub();
+  const storage = {
+    usedFormatted: workspace.storageUsedFormatted,
+    limitFormatted: workspace.storageLimitFormatted,
+    usedPercent: workspace.storageUsedPercent,
+  };
   const progressFillColor =
     resolvedTheme === "dark" ? "var(--primary)" : appearance.accent;
 
@@ -146,7 +147,10 @@ export function ActiveWorkspaceCard({
             />
             <div className="flex min-w-0 flex-1 flex-col gap-1.5">
               <span className="truncate text-[10px] leading-none text-muted-foreground">
-                {t("storageUsed", { percent: storage.usedPercent })}
+                {t("storageUsed", {
+                  used: storage.usedFormatted,
+                  limit: storage.limitFormatted,
+                })}
               </span>
               <div
                 className="h-1 overflow-hidden rounded-full bg-muted/55 dark:bg-muted/40"
@@ -154,7 +158,10 @@ export function ActiveWorkspaceCard({
                 aria-valuenow={storage.usedPercent}
                 aria-valuemin={0}
                 aria-valuemax={100}
-                aria-label={t("storageUsed", { percent: storage.usedPercent })}
+                aria-label={t("storageUsed", {
+                  used: storage.usedFormatted,
+                  limit: storage.limitFormatted,
+                })}
               >
                 <div
                   className="h-full rounded-full transition-[width] duration-500 ease-out"

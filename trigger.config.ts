@@ -16,6 +16,7 @@ export default defineConfig({
     },
   },
   build: {
+    external: ["uploadthing", "sharp"],
     extensions: [prismaExtension({ schema: "prisma/schema.prisma", mode: "legacy" })],
   },
 });

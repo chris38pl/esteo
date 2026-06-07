@@ -77,7 +77,7 @@ Examples:
 - estimate-requests (implemented)
 - estimates (planned — editor, versions, agent)
 - workspaces
-- attachments (planned — UploadThing + workspace quota)
+- attachments (UploadThing + workspace quota — see `docs/features/estimate-attachments.md`)
 
 Each feature should be self-contained.
 

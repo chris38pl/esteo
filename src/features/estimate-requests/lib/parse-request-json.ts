@@ -27,5 +27,14 @@ export function parseRequestAddress(raw: unknown): RequestAddressData | null {
 }
 
 export function parseRequestAttachmentCount(raw: unknown): number {
-  return Array.isArray(raw) ? raw.length : 0;
+  if (!Array.isArray(raw)) {
+    return 0;
+  }
+
+  return raw.filter(
+    (item) =>
+      item &&
+      typeof item === "object" &&
+      (item as { status?: string }).status === "stored",
+  ).length;
 }

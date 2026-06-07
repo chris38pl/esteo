@@ -4,11 +4,15 @@ import { FileText, Plus, UploadCloud, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
+import type { PublicAttachmentAvailability } from "@/features/attachments/lib/attachment-availability";
+import { isAttachmentUploadAvailable } from "@/features/attachments/lib/attachment-availability";
+import {
+  MAX_REQUEST_ATTACHMENT_FILES,
+  MAX_REQUEST_ATTACHMENT_TOTAL_BYTES,
+} from "@/features/attachments/lib/request-limits";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-const MAX_FILES = 10;
-const MAX_TOTAL_BYTES = 10 * 1024 * 1024;
 const CARD_WIDTH_CLASS = "w-[10.5rem]";
 
 type LocalAttachment = {
@@ -29,13 +33,30 @@ function toAttachment(file: File): LocalAttachment {
   };
 }
 
-export function AttachmentDropzonePlaceholder() {
+function filesToLocalAttachments(files: File[]): LocalAttachment[] {
+  return files.map(toAttachment);
+}
+
+export function AttachmentDropzone({
+  value,
+  onChange,
+  attachmentAvailability,
+  disabled = false,
+}: {
+  value: File[];
+  onChange: (files: File[]) => void;
+  attachmentAvailability?: PublicAttachmentAvailability;
+  disabled?: boolean;
+}) {
   const t = useTranslations("estimateRequests.attachments");
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [files, setFiles] = useState<LocalAttachment[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const files = filesToLocalAttachments(value);
   const filesRef = useRef(files);
   filesRef.current = files;
+
+  const uploadsAvailable =
+    attachmentAvailability === undefined || isAttachmentUploadAvailable(attachmentAvailability);
 
   useEffect(() => {
     return () => {
@@ -47,7 +68,27 @@ export function AttachmentDropzonePlaceholder() {
     };
   }, []);
 
+  if (!uploadsAvailable) {
+    return (
+      <div className="space-y-2">
+        <div
+          className={cn(
+            "flex min-h-24 w-full flex-col items-center justify-center rounded-2xl border border-dashed border-input",
+            "bg-muted/30 px-4 py-5 text-center opacity-80",
+          )}
+        >
+          <span className="text-xs font-semibold text-foreground">{t("unavailableTitle")}</span>
+          <span className="mt-1 text-[10px] text-muted-foreground">{t("unavailableHint")}</span>
+        </div>
+      </div>
+    );
+  }
+
   function addFiles(fileList: FileList | null) {
+    if (disabled) {
+      return;
+    }
+
     setError(null);
 
     if (!fileList) {
@@ -55,48 +96,47 @@ export function AttachmentDropzonePlaceholder() {
     }
 
     const incoming = Array.from(fileList);
-    const existingIds = new Set(files.map((item) => item.id));
+    const existingIds = new Set(value.map(fileId));
     const uniqueIncoming = incoming.filter((file) => !existingIds.has(fileId(file)));
 
-    if (files.length + uniqueIncoming.length > MAX_FILES) {
+    if (value.length + uniqueIncoming.length > MAX_REQUEST_ATTACHMENT_FILES) {
       setError(t("errors.maxFiles"));
       return;
     }
 
-    const nextAttachments = [...files, ...uniqueIncoming.map(toAttachment)];
-    const totalBytes = nextAttachments.reduce((sum, item) => sum + item.file.size, 0);
+    const nextFiles = [...value, ...uniqueIncoming];
+    const totalBytes = nextFiles.reduce((sum, file) => sum + file.size, 0);
 
-    if (totalBytes > MAX_TOTAL_BYTES) {
-      for (const attachment of uniqueIncoming.map(toAttachment)) {
-        if (attachment.previewUrl) {
-          URL.revokeObjectURL(attachment.previewUrl);
-        }
-      }
+    if (totalBytes > MAX_REQUEST_ATTACHMENT_TOTAL_BYTES) {
       setError(t("errors.maxSize"));
       return;
     }
 
-    setFiles(nextAttachments);
+    onChange(nextFiles);
   }
 
   function removeFile(id: string) {
-    setFiles((current) => {
-      const removed = current.find((item) => item.id === id);
-      if (removed?.previewUrl) {
-        URL.revokeObjectURL(removed.previewUrl);
-      }
-      return current.filter((item) => item.id !== id);
-    });
+    if (disabled) {
+      return;
+    }
+
+    const removed = files.find((item) => item.id === id);
+    if (removed?.previewUrl) {
+      URL.revokeObjectURL(removed.previewUrl);
+    }
+
+    onChange(value.filter((file) => fileId(file) !== id));
   }
 
   function openFilePicker() {
-    if (files.length >= MAX_FILES) {
+    if (disabled || value.length >= MAX_REQUEST_ATTACHMENT_FILES) {
       return;
     }
+
     inputRef.current?.click();
   }
 
-  const canAddMore = files.length < MAX_FILES;
+  const canAddMore = value.length < MAX_REQUEST_ATTACHMENT_FILES;
 
   return (
     <div className="space-y-2">
@@ -104,8 +144,9 @@ export function AttachmentDropzonePlaceholder() {
         ref={inputRef}
         type="file"
         multiple
-        accept="image/*,.pdf,.doc,.docx"
+        accept="image/*,.pdf,.doc,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         className="hidden"
+        disabled={disabled}
         onChange={(event) => {
           addFiles(event.target.files);
           event.target.value = "";
@@ -116,6 +157,7 @@ export function AttachmentDropzonePlaceholder() {
         <button
           type="button"
           onClick={openFilePicker}
+          disabled={disabled}
           onDragOver={(event) => event.preventDefault()}
           onDrop={(event) => {
             event.preventDefault();
@@ -125,6 +167,7 @@ export function AttachmentDropzonePlaceholder() {
             "flex min-h-24 w-full flex-col items-center justify-center rounded-2xl border border-dashed border-input",
             "bg-background/60 px-4 py-5 text-center shadow-xs transition hover:bg-accent/50 dark:bg-input/20",
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+            "disabled:cursor-not-allowed disabled:opacity-50",
           )}
         >
           <span className="mb-3 grid size-9 place-items-center rounded-full border border-primary/25 bg-primary/10 text-primary">
@@ -146,7 +189,7 @@ export function AttachmentDropzonePlaceholder() {
             <button
               type="button"
               onClick={openFilePicker}
-              disabled={!canAddMore}
+              disabled={!canAddMore || disabled}
               className={cn(
                 CARD_WIDTH_CLASS,
                 "flex h-[11.25rem] shrink-0 flex-col items-center justify-center rounded-2xl border border-dashed border-input",
@@ -160,7 +203,7 @@ export function AttachmentDropzonePlaceholder() {
               </span>
               <span className="text-xs font-semibold text-foreground">{t("addFile")}</span>
               <span className="mt-1 text-[10px] text-muted-foreground">
-                {t("fileCount", { current: files.length, max: MAX_FILES })}
+                {t("fileCount", { current: files.length, max: MAX_REQUEST_ATTACHMENT_FILES })}
               </span>
             </button>
 
@@ -169,6 +212,7 @@ export function AttachmentDropzonePlaceholder() {
                 key={attachment.id}
                 attachment={attachment}
                 removeLabel={t("remove")}
+                disabled={disabled}
                 onRemove={() => removeFile(attachment.id)}
               />
             ))}
@@ -177,20 +221,36 @@ export function AttachmentDropzonePlaceholder() {
       )}
 
       {error ? <p className="text-[11px] text-destructive">{error}</p> : null}
-      {files.length === 0 ? (
-        <p className="text-[10px] leading-4 text-muted-foreground">{t("notUploadedYet")}</p>
-      ) : null}
     </div>
+  );
+}
+
+/** @deprecated Use AttachmentDropzone with value/onChange */
+export function AttachmentDropzonePlaceholder({
+  attachmentAvailability,
+}: {
+  attachmentAvailability?: PublicAttachmentAvailability;
+}) {
+  const [files, setFiles] = useState<File[]>([]);
+
+  return (
+    <AttachmentDropzone
+      value={files}
+      onChange={setFiles}
+      attachmentAvailability={attachmentAvailability}
+    />
   );
 }
 
 function AttachmentPreviewCard({
   attachment,
   removeLabel,
+  disabled,
   onRemove,
 }: {
   attachment: LocalAttachment;
   removeLabel: string;
+  disabled?: boolean;
   onRemove: () => void;
 }) {
   const { file, previewUrl } = attachment;
@@ -215,6 +275,7 @@ function AttachmentPreviewCard({
           type="button"
           size="icon-xs"
           variant="secondary"
+          disabled={disabled}
           className="absolute top-1.5 right-1.5 size-6 border border-border/60 bg-card/90 text-muted-foreground shadow-xs hover:text-foreground"
           aria-label={removeLabel}
           onClick={onRemove}

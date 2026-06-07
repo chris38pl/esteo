@@ -253,31 +253,24 @@ EstimateLineItem {
   marginPercent      Decimal?        // UI shows margin column
 }
 
-WorkspaceSettings {
-  attachmentStorageUsedBytes  BigInt @default(0)  // 500 MB cap per workspace
+Workspace {
+  // ...existing fields
+  attachmentStorageUsedBytes  BigInt @default(0)
+  attachmentStorageLimitBytes BigInt @default(262144000)  // 250 MB default
 }
 
-// Per-estimate AI usage (PRO: 10 prompts per estimate)
-EstimateAiUsage {
-  estimateId
-  promptCount
-}
-
-// FREE plan: lock assistant to one estimate per month (billing period)
-BillingAccountUsagePeriod {
-  aiAssistantCalls
-  aiAssistantLockedEstimateId  String?
-}
-
-// Attachments (UploadThing metadata)
+// Attachments — see docs/features/estimate-attachments.md
 EstimateAttachment {
   estimateId
   workspaceId
-  fileKey
-  fileName
+  uploadedById
+  attachmentType      // IMAGE | PDF
+  originalFileName
   mimeType
-  sizeBytes
-  ...
+  fileSizeBytes       // processed original + thumbnail
+  storageKey
+  storageProvider
+  thumbnailStorageKey // images only
 }
 
 // Undo / agent approve — recommend EstimateRevision snapshots

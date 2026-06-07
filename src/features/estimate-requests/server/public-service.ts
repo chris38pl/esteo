@@ -12,6 +12,8 @@ import {
 } from "@/features/estimates/server/activity-log";
 import { tasks } from "@trigger.dev/sdk";
 import type { generateEstimateDraftTask } from "@/trigger/generate-estimate-draft";
+import type { PublicAttachmentAvailability } from "@/features/attachments/lib/attachment-availability";
+import { getPublicAttachmentAvailability } from "@/features/attachments/server/public-attachment-availability";
 import type { Locale } from "@/lib/locale";
 
 export type PublicEstimateRequestWorkspace = {
@@ -24,6 +26,7 @@ export type PublicEstimateRequestWorkspace = {
 export type PublicEstimateRequestPageData = {
   workspace: PublicEstimateRequestWorkspace;
   fields: IndustryFieldForDocument[];
+  attachmentAvailability: PublicAttachmentAvailability;
 };
 
 export async function getPublicEstimateRequestPageData(input: {
@@ -53,7 +56,9 @@ export async function getPublicEstimateRequestPageData(input: {
     locale: input.locale,
   });
 
-  return { workspace, fields };
+  const attachmentAvailability = await getPublicAttachmentAvailability(workspace.id);
+
+  return { workspace, fields, attachmentAvailability };
 }
 
 export async function getEstimateRequestFormDataForWorkspace(input: {
@@ -83,7 +88,9 @@ export async function getEstimateRequestFormDataForWorkspace(input: {
     locale: input.locale,
   });
 
-  return { workspace, fields };
+  const attachmentAvailability = await getPublicAttachmentAvailability(workspace.id);
+
+  return { workspace, fields, attachmentAvailability };
 }
 
 export async function createPublicEstimateRequest(input: {

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FileText, MoreVertical, Pencil } from "lucide-react";
+import { FileText, MoreVertical, Paperclip, Pencil } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -77,6 +77,12 @@ export function EstimateListRow({
               {displayTitle}
             </Link>
             <p className="mt-0.5 truncate text-xs text-muted-foreground">{subline}</p>
+            {estimate.attachmentCount > 0 ? (
+              <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+                <Paperclip className="size-3 shrink-0" aria-hidden />
+                {t("list.attachmentCount", { count: estimate.attachmentCount })}
+              </p>
+            ) : null}
           </div>
         </div>
       </td>

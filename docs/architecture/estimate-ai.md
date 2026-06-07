@@ -91,10 +91,10 @@ See [`database.md`](database.md) for schema gaps (`margin`, versioning).
 
 | Context | Storage | Limits |
 | --- | --- | --- |
-| Public estimate request form | UploadThing (request `attachments` JSON) | Max 10 files, 10 MB total per submission |
-| Workspace / estimate attachments | UploadThing, workspace-scoped | **500 MB** total per workspace (planned quota on `WorkspaceSettings` or usage table) |
+| Public estimate request form | UploadThing (future) | Separate per-submission limits; shares workspace quota when implemented |
+| Workspace / estimate attachments | UploadThing, workspace-scoped | **250 MB** default per workspace (`Workspace.attachmentStorageLimitBytes`) |
 
-Draft job prompt includes attachment references (signed URLs, extracted text, or vision inputs per file type). Enforce quota on upload; reject or warn when workspace cap exceeded.
+Draft job prompt inclusion is **Phase 2**. Phase 1 stores attachments only — see [`docs/features/estimate-attachments.md`](../features/estimate-attachments.md).
 
 ---
 

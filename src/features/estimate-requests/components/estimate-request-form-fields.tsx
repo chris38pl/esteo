@@ -5,7 +5,8 @@ import type { ReactNode } from "react";
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 
-import { AttachmentDropzonePlaceholder } from "@/features/estimate-requests/components/attachment-dropzone-placeholder";
+import { AttachmentDropzone } from "@/features/estimate-requests/components/attachment-dropzone-placeholder";
+import type { PublicAttachmentAvailability } from "@/features/attachments/lib/attachment-availability";
 import { IndustryFieldInput } from "@/features/estimate-requests/components/industry-field-input";
 import { VOIVODESHIP_KEYS, getVoivodeshipLabel } from "@/features/estimate-requests/config/voivodeships";
 import { START_DATE_KEYS, getStartDateLabel } from "@/features/estimate-requests/config/start-dates";
@@ -62,6 +63,9 @@ export function EstimateRequestFormFields({
   industryFields,
   onIndustryFieldChange,
   showAttachments = true,
+  attachmentAvailability,
+  attachmentFiles = [],
+  onAttachmentFilesChange,
   disabled = false,
 }: {
   locale: Locale;
@@ -78,6 +82,9 @@ export function EstimateRequestFormFields({
   industryFields: Record<string, IndustryFieldValue>;
   onIndustryFieldChange: (key: string, value: IndustryFieldValue) => void;
   showAttachments?: boolean;
+  attachmentAvailability?: PublicAttachmentAvailability;
+  attachmentFiles?: File[];
+  onAttachmentFilesChange?: (files: File[]) => void;
   disabled?: boolean;
 }) {
   const t = useTranslations("estimateRequests");
@@ -281,7 +288,12 @@ export function EstimateRequestFormFields({
       {showAttachments ? (
         <div className="space-y-2">
           <Label className={estimateRequestLabelClassName}>{t("attachments.label")}</Label>
-          <AttachmentDropzonePlaceholder />
+          <AttachmentDropzone
+            value={attachmentFiles}
+            onChange={onAttachmentFilesChange ?? (() => undefined)}
+            attachmentAvailability={attachmentAvailability}
+            disabled={disabled || !onAttachmentFilesChange}
+          />
         </div>
       ) : null}
     </div>

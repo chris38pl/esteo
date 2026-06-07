@@ -54,12 +54,16 @@
     },
     "submit": "Send",
     "checkAi": "Check with AI",
+    "uploading": "Uploading… {percent}%",
+    "attachmentWarnings": "Some attachments could not be uploaded ({count}). Your request was still submitted.",
     "aiUnavailable": "AI checking will be enabled after the protected AI module is added.",
     "privacy": "By clicking \u201cSend\u201d, you accept the data processing rules and privacy policy.",
     "errors": {
       "invalid": "Check the required fields and try again.",
       "rate_limited": "We received too many submissions. Try again later.",
       "captcha_failed": "We could not verify the form protection. Refresh the page and try again.",
+      "storage_full": "Attachments are unavailable because storage is full. Remove files or try again later.",
+      "all_attachments_failed": "We could not upload your attachments. Check the files and try again.",
       "unavailable": "We could not send the request. Try again in a moment."
     }
   },
@@ -71,6 +75,8 @@
     "fileCount": "{current}/{max}",
     "remove": "Remove file",
     "notUploadedYet": "At this stage files are only previewed in the form and will not be sent yet.",
+    "unavailableTitle": "Attachments are currently unavailable.",
+    "unavailableHint": "You can still submit your request without attachments.",
     "errors": {
       "maxFiles": "You can add up to 10 files.",
       "maxSize": "Total file size cannot exceed 10 MB."

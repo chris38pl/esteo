@@ -35,7 +35,8 @@
     "actions": {
       "more": "Więcej opcji",
       "edit": "Edytuj"
-    }
+    },
+    "attachmentCount": "{count, plural, one {# załącznik} few {# załączniki} many {# załączników} other {# załącznika}}"
   },
   "status": {
     "DRAFT": "Szkic",
@@ -452,5 +453,38 @@
     "noDate": "Brak daty",
     "noAddress": "Brak adresu",
     "noEmail": "Brak e-maila"
+  },
+  "attachments": {
+    "storageUsage": "{used} / {limit}",
+    "storageApproachingLimit": "Zbliżasz się do limitu miejsca na załączniki.",
+    "storageExhausted": "Przesyłanie załączników jest niedostępne, ponieważ osiągnięto limit miejsca.",
+    "dropzoneTitle": "Prześlij pliki",
+    "dropzoneHint": "Obrazy (JPG, PNG, WEBP), PDF lub DOCX — do 20 MB na plik",
+    "addMore": "Dodaj pliki",
+    "uploading": "Przesyłanie… {percent}%",
+    "empty": "Brak załączników.",
+    "remove": "Usuń załącznik",
+    "deleteConfirm": "Usunąć ten załącznik?",
+    "delete": {
+      "title": "Usunąć {fileName}?",
+      "description": "Ten plik zostanie trwale usunięty z magazynu i nie będzie można go odzyskać.",
+      "cancel": "Anuluj",
+      "confirm": "Usuń",
+      "deleting": "Usuwanie…"
+    },
+    "download": "Pobierz",
+    "previewImage": "Podgląd obrazu",
+    "previewLoading": "Ładowanie podglądu…",
+    "previewFailed": "Nie udało się załadować podglądu obrazu.",
+    "downloadFailed": "Nie udało się pobrać pliku.",
+    "uploadSource": {
+      "PUBLIC_REQUEST": "Formularz publiczny",
+      "INTERNAL_REQUEST": "Formularz wewnętrzny",
+      "EDITOR": "Dodane w edytorze"
+    },
+    "errors": {
+      "batchLimit": "Możesz przesłać maksymalnie {max} plików naraz.",
+      "uploadFailed": "Przesyłanie nie powiodło się. Spróbuj ponownie."
+    }
   }
 }

@@ -87,7 +87,8 @@
     "membersMoreTitle": "Jeszcze {count} członków",
     "storageLabel": "Miejsce",
     "storagePercent": "{percent}%",
-    "storageUsed": "Wykorzystano {percent}% miejsca",
+    "storageUsed": "{used} / {limit}",
+    "storageUsedPercent": "Wykorzystano {percent}% miejsca",
     "planBadge": "PLAN {plan}"
   },
   "workspace": {

@@ -42,6 +42,11 @@ import type { PaymentInstallmentClient } from "@/features/estimates/lib/serializ
 import { computePaymentSummary } from "@/features/estimates/lib/payment-installment-summary";
 import type { Currency } from "@/i18n/formatters";
 import { EstimateHistoryPanel } from "./estimate-history-panel";
+import { EstimateAttachmentsPanel } from "@/features/attachments/components/estimate-attachments-panel";
+import type {
+  EstimateAttachmentClient,
+  WorkspaceStorageSummaryClient,
+} from "@/features/attachments/lib/serialize-attachments";
 import { EstimateNotesPanel } from "./estimate-notes-panel";
 import { EstimatePaymentsPanel } from "./estimate-payments-panel";
 import { EstimateOverduePaymentsBanner } from "./estimate-overdue-payments-banner";
@@ -83,6 +88,8 @@ interface EstimateEditorProps {
   initialNotes?: EstimateNoteClient[];
   initialActivityLogs?: EstimateActivityLogClient[];
   initialPaymentInstallments?: PaymentInstallmentClient[];
+  initialAttachments?: EstimateAttachmentClient[];
+  storageSummary?: WorkspaceStorageSummaryClient;
   currentUserId?: string;
   currentUserAvatarUrl?: string | null;
   currentUserAvatarPreset?: AvatarPreset | null;
@@ -144,6 +151,15 @@ export function EstimateEditor({
   initialNotes = [],
   initialActivityLogs = [],
   initialPaymentInstallments = [],
+  initialAttachments = [],
+  storageSummary = {
+    usedBytes: "0",
+    limitBytes: "262144000",
+    usedFormatted: "0 B",
+    limitFormatted: "250 MB",
+    usedPercent: 0,
+    level: "ok",
+  },
   currentUserId = "",
   currentUserAvatarUrl = null,
   currentUserAvatarPreset = null,
@@ -607,7 +623,7 @@ export function EstimateEditor({
               <EstimateEditorTabs
                 activeTab={activeTab}
                 onTabChange={setActiveTab}
-                attachmentsCount={0}
+                attachmentsCount={initialAttachments.length}
                 overduePaymentsCount={paymentSummary.overdueCount}
                 topPanelHidden={topPanelHidden}
                 onToggleTopPanel={toggleTopPanel}
@@ -636,6 +652,16 @@ export function EstimateEditor({
                   customerTotalGross={customerTotalGross}
                   installments={paymentInstallments}
                   onInstallmentsChange={setPaymentInstallments}
+                />
+              ) : activeTab === "attachments" ? (
+                <EstimateAttachmentsPanel
+                  estimateId={estimate.id}
+                  workspaceId={estimate.workspaceId}
+                  workspaceSlug={workspaceSlug}
+                  locale={locale}
+                  initialAttachments={initialAttachments}
+                  storageSummary={storageSummary}
+                  readOnly={isVersionReadOnly}
                 />
               ) : activeTab === "items" ? (
                 <fieldset

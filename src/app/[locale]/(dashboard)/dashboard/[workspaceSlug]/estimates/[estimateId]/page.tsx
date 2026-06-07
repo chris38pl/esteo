@@ -40,6 +40,12 @@ import { listNotesByEstimateId } from "@/features/estimates/server/notes-reposit
 import { serializePaymentInstallments } from "@/features/estimates/lib/serialize-payment-installments";
 import { listPaymentInstallmentsByEstimateId } from "@/features/estimates/server/payment-installments-repository";
 import { resolveUserEmailsByIds } from "@/features/users/server/resolve-user-emails";
+import { listAttachmentsByEstimateId } from "@/features/attachments/server/attachments-repository";
+import {
+  serializeEstimateAttachments,
+  serializeWorkspaceStorageSummary,
+} from "@/features/attachments/lib/serialize-attachments";
+import { getWorkspaceStorageSummary } from "@/features/attachments/server/assert-workspace-storage";
 
 export default async function EstimateEditorPage({
   params,
@@ -157,6 +163,15 @@ export default async function EstimateEditorPage({
   const paymentInstallmentRows = await listPaymentInstallmentsByEstimateId(estimateId);
   const initialPaymentInstallments = serializePaymentInstallments(paymentInstallmentRows);
 
+  const attachmentRows = await listAttachmentsByEstimateId(estimateId, resolved.workspace.id);
+  const initialAttachments = serializeEstimateAttachments(attachmentRows);
+  const storageSummary = serializeWorkspaceStorageSummary(
+    getWorkspaceStorageSummary({
+      attachmentStorageUsedBytes: resolved.workspace.attachmentStorageUsedBytes,
+      attachmentStorageLimitBytes: resolved.workspace.attachmentStorageLimitBytes,
+    }),
+  );
+
   return (
     <>
       <SyncDashboardBreadcrumbDetail label={breadcrumbLabel} />
@@ -176,6 +191,8 @@ export default async function EstimateEditorPage({
         initialNotes={initialNotes}
         initialActivityLogs={initialActivityLogs}
         initialPaymentInstallments={initialPaymentInstallments}
+        initialAttachments={initialAttachments}
+        storageSummary={storageSummary}
         currentUserId={user.id}
         currentUserAvatarUrl={user.avatarUrl}
         currentUserAvatarPreset={

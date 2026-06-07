@@ -1,7 +1,7 @@
 "use client";
 
 import { ClipboardList } from "lucide-react";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -21,8 +21,12 @@ import {
   type EstimateRequestCustomerForm,
   type EstimateRequestProjectForm,
 } from "@/features/estimate-requests/components/estimate-request-form-fields";
+import {
+  useEstimateRequestSubmit,
+  type EstimateRequestSubmitErrorCode,
+} from "@/features/estimate-requests/hooks/use-estimate-request-submit";
+import { internalEstimateCreateSchema } from "@/features/estimate-requests/schemas/request";
 import type { PublicEstimateRequestPageData } from "@/features/estimate-requests/server/public-service";
-import { createInternalEstimateAction } from "@/features/estimates/server/actions";
 import type { Locale } from "@/lib/locale";
 
 interface CreateEstimateModalProps {
@@ -33,6 +37,15 @@ interface CreateEstimateModalProps {
   workspaceSlug: string;
   locale: Locale;
 }
+
+const FORM_ERROR_MESSAGES = {
+  invalid: "form.errors.invalid",
+  rate_limited: "form.errors.rate_limited",
+  captcha_failed: "form.errors.captcha_failed",
+  storage_full: "form.errors.storage_full",
+  all_attachments_failed: "form.errors.all_attachments_failed",
+  unavailable: "form.errors.unavailable",
+} as const satisfies Record<EstimateRequestSubmitErrorCode, string>;
 
 function createInitialFormState(fields: PublicEstimateRequestPageData["fields"]) {
   return {
@@ -67,8 +80,6 @@ export function CreateEstimateModal({
   const router = useRouter();
   const t = useTranslations("estimates.create");
   const tForm = useTranslations("estimateRequests");
-  const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
 
   const [title, setTitle] = useState("");
   const [customer, setCustomer] = useState<EstimateRequestCustomerForm>({
@@ -89,6 +100,16 @@ export function CreateEstimateModal({
   const [industryFields, setIndustryFields] = useState(() =>
     createEmptyIndustryFieldValues(formData.fields),
   );
+  const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
+  const [validationError, setValidationError] = useState<string | null>(null);
+
+  const { submit, isSubmitting, uploadProgress, errorCode } = useEstimateRequestSubmit({
+    endpoint: `/api/estimate-requests/internal?locale=${locale}`,
+    onSuccess: (result) => {
+      onOpenChange(false);
+      router.push(`/${locale}/dashboard/${workspaceSlug}/estimates/${result.estimateId}`);
+    },
+  });
 
   useEffect(() => {
     if (!open) {
@@ -101,10 +122,14 @@ export function CreateEstimateModal({
     setAddress(initial.address);
     setProject(initial.project);
     setIndustryFields(initial.industryFields);
-    setError(null);
+    setAttachmentFiles([]);
+    setValidationError(null);
   }, [open, formData.fields]);
 
   const canSubmit = project.description.trim().length >= 20;
+  const error =
+    validationError ??
+    (errorCode ? tForm(FORM_ERROR_MESSAGES[errorCode] as "form.errors.invalid") : null);
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -112,32 +137,27 @@ export function CreateEstimateModal({
       return;
     }
 
-    setError(null);
+    setValidationError(null);
 
-    startTransition(async () => {
-      const result = await createInternalEstimateAction({
-        workspaceId,
-        locale,
-        title: title.trim() || undefined,
-        customer,
-        address,
-        project: {
-          preferredStartDate: project.preferredStartDate,
-          description: project.description.trim(),
-        },
-        industryFields,
-      });
+    const payload = {
+      title: title.trim() || undefined,
+      customer,
+      address,
+      project: {
+        preferredStartDate: project.preferredStartDate,
+        description: project.description.trim(),
+      },
+      industryFields,
+    };
 
-      if (!result.success) {
-        setError(result.error);
-        return;
-      }
+    const parsed = internalEstimateCreateSchema.safeParse(payload);
 
-      onOpenChange(false);
-      router.push(
-        `/${locale}/dashboard/${workspaceSlug}/estimates/${result.data.estimateId}`,
-      );
-    });
+    if (!parsed.success) {
+      setValidationError(tForm("form.errors.invalid"));
+      return;
+    }
+
+    void submit(parsed.data, attachmentFiles, { workspaceId });
   }
 
   return (
@@ -180,12 +200,20 @@ export function CreateEstimateModal({
               onIndustryFieldChange={(key, value) =>
                 setIndustryFields((current) => ({ ...current, [key]: value }))
               }
-              disabled={isPending}
+              attachmentAvailability={formData.attachmentAvailability}
+              attachmentFiles={attachmentFiles}
+              onAttachmentFilesChange={setAttachmentFiles}
+              disabled={isSubmitting}
             />
           </div>
 
           {error ? (
             <p className="shrink-0 px-6 pb-2 text-sm text-destructive">{error}</p>
+          ) : null}
+          {uploadProgress !== null ? (
+            <p className="shrink-0 px-6 pb-2 text-sm text-muted-foreground">
+              {tForm("form.uploading", { percent: uploadProgress })}
+            </p>
           ) : null}
 
           <DialogFooter className="shrink-0 gap-3 border-t bg-muted/20 px-6 py-4 sm:gap-3">
@@ -193,12 +221,12 @@ export function CreateEstimateModal({
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              disabled={isPending}
+              disabled={isSubmitting}
             >
               {t("cancel")}
             </Button>
-            <Button type="submit" disabled={isPending || !canSubmit}>
-              {isPending ? t("submitting") : t("submit")}
+            <Button type="submit" disabled={isSubmitting || !canSubmit}>
+              {isSubmitting ? t("submitting") : t("submit")}
             </Button>
           </DialogFooter>
         </form>

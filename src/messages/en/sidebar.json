@@ -87,7 +87,8 @@
     "membersMoreTitle": "{count} more members",
     "storageLabel": "Storage",
     "storagePercent": "{percent}%",
-    "storageUsed": "{percent}% storage used",
+    "storageUsed": "{used} / {limit}",
+    "storageUsedPercent": "{percent}% storage used",
     "planBadge": "{plan} PLAN"
   },
   "workspace": {

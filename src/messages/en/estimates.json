@@ -35,7 +35,8 @@
     "actions": {
       "more": "More options",
       "edit": "Edit"
-    }
+    },
+    "attachmentCount": "{count, plural, one {# attachment} other {# attachments}}"
   },
   "status": {
     "DRAFT": "Draft",
@@ -452,5 +453,38 @@
     "noDate": "No date",
     "noAddress": "No address",
     "noEmail": "No email"
+  },
+  "attachments": {
+    "storageUsage": "{used} / {limit}",
+    "storageApproachingLimit": "You are approaching your attachment storage limit.",
+    "storageExhausted": "Attachment uploads are unavailable because your storage limit has been reached.",
+    "dropzoneTitle": "Upload files",
+    "dropzoneHint": "Images (JPG, PNG, WEBP), PDF, or DOCX — up to 20 MB per file",
+    "addMore": "Add files",
+    "uploading": "Uploading… {percent}%",
+    "empty": "No attachments yet.",
+    "remove": "Remove attachment",
+    "deleteConfirm": "Remove this attachment?",
+    "delete": {
+      "title": "Remove {fileName}?",
+      "description": "This file will be permanently deleted from storage and cannot be recovered.",
+      "cancel": "Cancel",
+      "confirm": "Remove",
+      "deleting": "Removing…"
+    },
+    "download": "Download",
+    "previewImage": "Preview image",
+    "previewLoading": "Loading preview…",
+    "previewFailed": "Could not load the image preview.",
+    "downloadFailed": "Could not download the file.",
+    "uploadSource": {
+      "PUBLIC_REQUEST": "Public request",
+      "INTERNAL_REQUEST": "Internal request",
+      "EDITOR": "Uploaded in editor"
+    },
+    "errors": {
+      "batchLimit": "You can upload up to {max} files at once.",
+      "uploadFailed": "Upload failed. Please try again."
+    }
   }
 }

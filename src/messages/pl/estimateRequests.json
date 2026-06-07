@@ -54,12 +54,16 @@
     },
     "submit": "Wyślij",
     "checkAi": "Sprawdź z AI",
+    "uploading": "Przesyłanie… {percent}%",
+    "attachmentWarnings": "Nie udało się przesłać części załączników ({count}). Zgłoszenie zostało jednak wysłane.",
     "aiUnavailable": "Sprawdzenie z AI zostanie włączone po dodaniu chronionego modułu AI.",
     "privacy": "Klikaj\u0105c \u201eWy\u015blij\u201d, akceptujesz zasady przetwarzania danych i polityk\u0119 prywatno\u015bci.",
     "errors": {
       "invalid": "Sprawdź wymagane pola i spróbuj ponownie.",
       "rate_limited": "Otrzymaliśmy zbyt wiele zgłoszeń. Spróbuj ponownie później.",
       "captcha_failed": "Nie udało się potwierdzić zabezpieczenia formularza. Odśwież stronę i spróbuj ponownie.",
+      "storage_full": "Załączniki są niedostępne, ponieważ limit miejsca został wyczerpany. Usuń pliki lub spróbuj później.",
+      "all_attachments_failed": "Nie udało się przesłać załączników. Sprawdź pliki i spróbuj ponownie.",
       "unavailable": "Nie udało się wysłać zgłoszenia. Spróbuj ponownie za chwilę."
     }
   },
@@ -71,6 +75,8 @@
     "fileCount": "{current}/{max}",
     "remove": "Usuń plik",
     "notUploadedYet": "Na tym etapie pliki są tylko podglądem w formularzu i nie zostaną jeszcze wysłane.",
+    "unavailableTitle": "Załączniki są obecnie niedostępne.",
+    "unavailableHint": "Nadal możesz wysłać zapytanie bez załączników.",
     "errors": {
       "maxFiles": "Możesz dodać maksymalnie 10 plików.",
       "maxSize": "Łączny rozmiar plików nie może przekroczyć 10 MB."
