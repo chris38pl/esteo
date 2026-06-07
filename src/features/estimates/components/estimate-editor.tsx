@@ -224,24 +224,27 @@ export function EstimateEditor({
     autosaveOnBlur({ marginPercent });
   }, [activeVersionId, autosaveOnBlur, marginPercent]);
 
-  const handleAddSection = async () => {
-    if (!activeVersionId || isVersionReadOnly) return;
+  const handleAddSection = async (): Promise<string | undefined> => {
+    if (!activeVersionId || isVersionReadOnly) return undefined;
     const result = await addSectionAction({
       versionId: activeVersionId,
       workspaceId: estimate.workspaceId,
       locale,
     });
     if (result.success) {
+      const sectionId = result.data.sectionId;
       setSections((prev) => [
         ...prev,
         {
-          id: result.data.sectionId,
+          id: sectionId,
           title: t("editor.newSection"),
           sortOrder: prev.length,
           items: [],
         },
       ]);
+      return sectionId;
     }
+    return undefined;
   };
 
   const handleUpdateSection = (sectionId: string, title: string) => {

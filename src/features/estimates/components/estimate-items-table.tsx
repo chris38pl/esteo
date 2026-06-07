@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import {
   EMPTY_ESTIMATE_ITEMS_FILTER,
+  hasActiveFilters,
   itemIsVisible,
   type EstimateItemsFilterState,
 } from "@/features/estimates/lib/estimate-item-filter";
@@ -34,6 +35,8 @@ interface EstimateItemsTableProps {
   onBlur: () => void;
   tableSearchQuery?: string;
   tableFilter?: EstimateItemsFilterState;
+  scrollToSectionId?: string | null;
+  onScrollToSectionHandled?: () => void;
 }
 
 type DragState = {
@@ -54,6 +57,8 @@ export function EstimateItemsTable({
   onBlur,
   tableSearchQuery = "",
   tableFilter,
+  scrollToSectionId = null,
+  onScrollToSectionHandled,
 }: EstimateItemsTableProps) {
   const t = useTranslations("estimates");
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(
@@ -73,6 +78,55 @@ export function EstimateItemsTable({
       [sectionId]: !(prev[sectionId] ?? true),
     }));
   };
+
+  useEffect(() => {
+    setExpandedSections((prev) => {
+      const next = { ...prev };
+      let changed = false;
+      for (const section of sections) {
+        if (!(section.id in next)) {
+          next[section.id] = true;
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [sections]);
+
+  useEffect(() => {
+    if (!scrollToSectionId) return;
+
+    let cancelled = false;
+    let attempts = 0;
+
+    const tryScroll = () => {
+      if (cancelled) return;
+
+      const row = document.querySelector(
+        `[data-estimate-section-id="${scrollToSectionId}"]`,
+      );
+
+      if (row) {
+        row.scrollIntoView({ behavior: "smooth", block: "center" });
+        onScrollToSectionHandled?.();
+        return;
+      }
+
+      if (attempts < 12) {
+        attempts += 1;
+        requestAnimationFrame(tryScroll);
+        return;
+      }
+
+      onScrollToSectionHandled?.();
+    };
+
+    requestAnimationFrame(tryScroll);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [scrollToSectionId, sections, onScrollToSectionHandled]);
 
   const clearDrag = () => {
     setDragState(null);
@@ -123,14 +177,17 @@ export function EstimateItemsTable({
             {sections.map((section, sectionIndex) => {
               const sectionNumber = sectionIndex + 1;
               const expanded = isExpanded(section.id);
+              const filter = tableFilter ?? EMPTY_ESTIMATE_ITEMS_FILTER;
+              const hasActiveSearchOrFilter =
+                tableSearchQuery.trim().length > 0 || hasActiveFilters(filter);
               const hasVisibleItems = section.items.some((item) =>
                 itemIsVisible(item, {
                   searchQuery: tableSearchQuery,
-                  filter: tableFilter ?? EMPTY_ESTIMATE_ITEMS_FILTER,
+                  filter,
                 }),
               );
 
-              if (!hasVisibleItems) {
+              if (hasActiveSearchOrFilter && !hasVisibleItems) {
                 return null;
               }
 

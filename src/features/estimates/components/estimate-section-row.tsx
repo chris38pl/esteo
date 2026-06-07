@@ -75,7 +75,7 @@ export function EstimateSectionRow({
   const sectionCalc = calculateEstimate(calcInputs, 0);
 
   return (
-    <tr className={estimateSectionRowClassName}>
+    <tr className={estimateSectionRowClassName} data-estimate-section-id={id}>
       <td className="w-9 px-2 py-2.5 align-middle">
         <Button
           variant="ghost"

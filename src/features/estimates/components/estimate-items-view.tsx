@@ -29,7 +29,7 @@ interface EstimateItemsViewProps {
   onAdvancedModeChange: (value: boolean) => void;
   onMarginChange: (value: number) => void;
   onMarginBlur: (value: number) => void;
-  onAddSection: () => void;
+  onAddSection: () => void | Promise<string | undefined>;
   showAiPanel: boolean;
   onToggleAiPanel: () => void;
   aiUsesSideLayout?: boolean;
@@ -77,7 +77,15 @@ export function EstimateItemsView({
     EMPTY_ESTIMATE_ITEMS_FILTER,
   );
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
+  const [scrollToSectionId, setScrollToSectionId] = useState<string | null>(null);
   const filterActive = hasActiveFilters(tableFilter);
+
+  const handleDesktopAddSection = async () => {
+    const sectionId = await onAddSection();
+    if (sectionId) {
+      setScrollToSectionId(sectionId);
+    }
+  };
 
   useEffect(() => {
     setTableFilter((prev) => sanitizeFilterForMode(prev, advancedMode));
@@ -96,7 +104,7 @@ export function EstimateItemsView({
           marginPercent={marginPercent}
           onMarginChange={onMarginChange}
           onMarginBlur={onMarginBlur}
-          onAddSection={onAddSection}
+          onAddSection={handleDesktopAddSection}
           showAiPanel={showAiPanel}
           onToggleAiPanel={onToggleAiPanel}
           aiUsesSideLayout={aiUsesSideLayout}
@@ -119,6 +127,8 @@ export function EstimateItemsView({
           onBlur={onBlur}
           tableSearchQuery={tableSearchQuery}
           tableFilter={tableFilter}
+          scrollToSectionId={scrollToSectionId}
+          onScrollToSectionHandled={() => setScrollToSectionId(null)}
         />
       </div>
 

@@ -18,7 +18,7 @@ interface EstimateItemsToolbarProps {
   marginPercent: number;
   onMarginChange: (value: number) => void;
   onMarginBlur: (value: number) => void;
-  onAddSection: () => void;
+  onAddSection: () => void | Promise<void>;
   showAiPanel: boolean;
   onToggleAiPanel: () => void;
   /** Side-column AI (toolbar toggle); false = floating FAB only */
