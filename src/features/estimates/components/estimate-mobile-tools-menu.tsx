@@ -1,6 +1,6 @@
 "use client";
 
-import { Settings, Upload } from "lucide-react";
+import { Maximize2, Minimize2, Percent, Settings, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -14,8 +14,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { EstimateMarginControl } from "./estimate-margin-control";
-
+import {
+  parseEstimateDecimalInput,
+  roundEstimateDecimal,
+} from "@/features/estimates/lib/estimate-decimals";
 interface EstimateMobileToolsMenuProps {
   advancedMode: boolean;
   onAdvancedModeChange: (value: boolean) => void;
@@ -25,6 +27,9 @@ interface EstimateMobileToolsMenuProps {
   topPanelHidden: boolean;
   onToggleTopPanel: () => void;
 }
+
+const menuMarginInputClassName =
+  "estimate-mobile-position-field m-0 h-7 w-12 border-none bg-transparent p-0 text-right text-sm tabular-nums shadow-none outline-none ring-0 focus:ring-0";
 
 export function EstimateMobileToolsMenu({
   advancedMode,
@@ -37,6 +42,24 @@ export function EstimateMobileToolsMenu({
 }: EstimateMobileToolsMenuProps) {
   const t = useTranslations("estimates");
   const modeValue = advancedMode ? "advanced" : "basic";
+
+  const handleMarginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const num = parseEstimateDecimalInput(e.target.value);
+    if (num >= 0 && num <= 100) {
+      onMarginChange(num);
+    }
+  };
+
+  const handleMarginBlur = () => {
+    const num = roundEstimateDecimal(marginPercent);
+    if (num < 0 || num > 100) {
+      return;
+    }
+    if (num !== marginPercent) {
+      onMarginChange(num);
+    }
+    onMarginBlur(num);
+  };
 
   return (
     <DropdownMenu>
@@ -74,16 +97,23 @@ export function EstimateMobileToolsMenu({
           <>
             <DropdownMenuSeparator />
             <div
-              className="px-2 py-2"
+              className="relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none"
               onPointerDown={(event) => event.preventDefault()}
               onClick={(event) => event.stopPropagation()}
             >
-              <EstimateMarginControl
-                marginPercent={marginPercent}
-                onChange={onMarginChange}
-                onBlur={onMarginBlur}
-                className="h-9 min-h-9 w-full px-3"
+              <Percent className="size-4 text-muted-foreground" />
+              <span className="min-w-0 flex-1">{t("profitability.projectMargin")}</span>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                step={0.01}
+                value={marginPercent}
+                onChange={handleMarginChange}
+                onBlur={handleMarginBlur}
+                className={menuMarginInputClassName}
               />
+              <span className="text-muted-foreground">{t("margin.unit")}</span>
             </div>
           </>
         ) : null}
@@ -98,6 +128,11 @@ export function EstimateMobileToolsMenu({
         <DropdownMenuSeparator />
 
         <DropdownMenuItem onClick={onToggleTopPanel} className="gap-2">
+          {topPanelHidden ? (
+            <Minimize2 className="size-4" />
+          ) : (
+            <Maximize2 className="size-4" />
+          )}
           {topPanelHidden ? t("editor.topPanel.show") : t("editor.topPanel.hide")}
         </DropdownMenuItem>
       </DropdownMenuContent>

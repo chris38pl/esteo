@@ -94,8 +94,8 @@
       "advanced": "Zaawansowany"
     },
     "topPanel": {
-      "hide": "Ukryj karty górne",
-      "show": "Pokaż karty górne"
+      "hide": "Ukryj górne karty",
+      "show": "Pokaż górne karty"
     },
     "notes": {
       "empty": "Brak notatek. Dodaj pierwszą notatkę dla zespołu.",
