@@ -44,6 +44,12 @@ export type ActivityMetadataRecord = {
   oldMargin?: number;
   newMargin?: number;
   source?: string;
+  installmentName?: string;
+  installmentAmount?: number;
+  paymentAmount?: number;
+  currency?: string;
+  presetId?: string;
+  installmentCount?: number;
 };
 
 export async function createActivityLog(input: {

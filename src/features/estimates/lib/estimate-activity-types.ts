@@ -12,6 +12,13 @@ export const ESTIMATE_ACTIVITY_ACTIONS = {
   imported_from_price_list: "imported_from_price_list",
   estimate_exported: "estimate_exported",
   sent_to_customer: "sent_to_customer",
+  payment_installment_added: "payment_installment_added",
+  payment_installment_updated: "payment_installment_updated",
+  payment_installment_deleted: "payment_installment_deleted",
+  payment_schedule_generated: "payment_schedule_generated",
+  payment_installment_reordered: "payment_installment_reordered",
+  payment_recorded: "payment_recorded",
+  payment_installment_unpaid: "payment_installment_unpaid",
 } as const;
 
 export type EstimateActivityAction =
@@ -22,4 +29,10 @@ export type ActivityMetadata = {
   oldMargin?: number;
   newMargin?: number;
   source?: "manual" | "public_request" | "ai" | "price_list";
+  installmentName?: string;
+  installmentAmount?: number;
+  paymentAmount?: number;
+  currency?: "PLN" | "EUR";
+  presetId?: string;
+  installmentCount?: number;
 };

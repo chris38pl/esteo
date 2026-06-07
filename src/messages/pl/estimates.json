@@ -268,7 +268,14 @@
         "ai_modified": "Zastosowano sugestie AI",
         "imported_from_price_list": "Import z cennika",
         "estimate_exported": "Wyeksportowano kosztorys",
-        "sent_to_customer": "Wysłano do klienta"
+        "sent_to_customer": "Wysłano do klienta",
+        "payment_installment_added": "Dodano transzę „{name}” ({amount})",
+        "payment_installment_updated": "Zmieniono transzę „{name}”",
+        "payment_installment_deleted": "Usunięto transzę „{name}”",
+        "payment_schedule_generated": "Wygenerowano harmonogram płatności ({preset})",
+        "payment_installment_reordered": "Zmieniono kolejność transz",
+        "payment_recorded": "Zarejestrowano wpłatę {amount} na transzę „{name}”",
+        "payment_installment_unpaid": "Cofnięto opłacenie transzy „{name}”"
       }
     },
     "tabPlaceholder": "Ta zakładka będzie dostępna wkrótce.",

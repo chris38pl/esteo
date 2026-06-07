@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -88,7 +89,12 @@ export function EstimatePaymentsPanel({
   installments,
   onInstallmentsChange,
 }: EstimatePaymentsPanelProps) {
+  const router = useRouter();
   const t = useTranslations("estimates.editor.payments");
+
+  const refreshHistory = useCallback(() => {
+    router.refresh();
+  }, [router]);
 
   const [formOpen, setFormOpen] = useState(false);
   const [recordOpen, setRecordOpen] = useState(false);
@@ -162,6 +168,7 @@ export function EstimatePaymentsPanel({
             row.id === editingInstallment.id ? result.data.installment : row,
           ),
         );
+        refreshHistory();
         return true;
       }
 
@@ -169,9 +176,10 @@ export function EstimatePaymentsPanel({
       if (!result.success) return false;
 
       onInstallmentsChange([...installments, result.data.installment]);
+      refreshHistory();
       return true;
     },
-    [actionContext, editingInstallment, installments, onInstallmentsChange],
+    [actionContext, editingInstallment, installments, onInstallmentsChange, refreshHistory],
   );
 
   const handleDelete = useCallback(
@@ -188,8 +196,9 @@ export function EstimatePaymentsPanel({
       if (!result.success) return;
 
       onInstallmentsChange(installments.filter((row) => row.id !== installmentId));
+      refreshHistory();
     },
-    [actionContext, installments, onInstallmentsChange, t],
+    [actionContext, installments, onInstallmentsChange, refreshHistory, t],
   );
 
   const handleMarkPaid = useCallback(
@@ -208,8 +217,9 @@ export function EstimatePaymentsPanel({
           row.id === installmentId ? result.data.installment : row,
         ),
       );
+      refreshHistory();
     },
-    [actionContext, installments, onInstallmentsChange],
+    [actionContext, installments, onInstallmentsChange, refreshHistory],
   );
 
   const handleMarkUnpaid = useCallback(
@@ -228,8 +238,9 @@ export function EstimatePaymentsPanel({
           row.id === installmentId ? result.data.installment : row,
         ),
       );
+      refreshHistory();
     },
-    [actionContext, installments, onInstallmentsChange],
+    [actionContext, installments, onInstallmentsChange, refreshHistory],
   );
 
   const runGeneratePreset = useCallback(
@@ -246,8 +257,9 @@ export function EstimatePaymentsPanel({
       if (!result.success) return;
 
       onInstallmentsChange(result.data.installments);
+      refreshHistory();
     },
-    [actionContext, customerTotalGross, onInstallmentsChange, presetNames],
+    [actionContext, customerTotalGross, onInstallmentsChange, presetNames, refreshHistory],
   );
 
   function handlePresetClick(presetId: PaymentSchedulePresetId) {
@@ -310,8 +322,9 @@ export function EstimatePaymentsPanel({
       }
 
       onInstallmentsChange(result.data.installments);
+      refreshHistory();
     },
-    [actionContext, installments, onInstallmentsChange],
+    [actionContext, installments, onInstallmentsChange, refreshHistory],
   );
 
   function handleDrop(targetIndex: number) {
@@ -370,9 +383,10 @@ export function EstimatePaymentsPanel({
           row.id === recordingInstallment.id ? result.data.installment : row,
         ),
       );
+      refreshHistory();
       return true;
     },
-    [actionContext, installments, onInstallmentsChange, recordingInstallment],
+    [actionContext, installments, onInstallmentsChange, recordingInstallment, refreshHistory],
   );
 
   const overdueAmountLabel =

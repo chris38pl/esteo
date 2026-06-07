@@ -29,6 +29,7 @@ export type LogEstimateActivityInput = {
 const COALESCED_ACTIONS = new Set<EstimateActivityAction>([
   ESTIMATE_ACTIVITY_ACTIONS.version_modified,
   ESTIMATE_ACTIVITY_ACTIONS.margin_changed,
+  ESTIMATE_ACTIVITY_ACTIONS.payment_installment_reordered,
 ]);
 
 function matchMetadataKeysForAction(
@@ -39,6 +40,9 @@ function matchMetadataKeysForAction(
   }
   if (action === ESTIMATE_ACTIVITY_ACTIONS.margin_changed) {
     return ["versionNumber"];
+  }
+  if (action === ESTIMATE_ACTIVITY_ACTIONS.payment_installment_reordered) {
+    return ["installmentCount"];
   }
   return [];
 }

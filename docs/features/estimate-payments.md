@@ -218,6 +218,22 @@ SSR: `page.tsx` loads `initialPaymentInstallments` via `listPaymentInstallmentsB
 
 Keys under `estimates.editor.payments.*` and `estimates.editor.tabs.paymentsWithCount` in `src/messages/pl/estimates.json` and `src/messages/en/estimates.json`.
 
+### Activity history
+
+All payment mutations are logged to the **Historia** / **History** tab (category **FINANCIAL**). See [`estimate-activity-history.md`](estimate-activity-history.md) for the full action catalog.
+
+| User action | History action |
+| --- | --- |
+| Add installment | `payment_installment_added` (name + amount) |
+| Edit installment | `payment_installment_updated` |
+| Delete installment | `payment_installment_deleted` |
+| Generate / replace schedule | `payment_schedule_generated` (preset label) |
+| Drag-and-drop reorder | `payment_installment_reordered` (coalesced 5 min) |
+| Record payment / Mark paid | `payment_recorded` (exact amount) |
+| Mark unpaid | `payment_installment_unpaid` |
+
+After each successful mutation, `EstimatePaymentsPanel` calls `router.refresh()` so the history feed is up to date when switching tabs.
+
 ---
 
 ## Out of scope
@@ -228,7 +244,6 @@ Keys under `estimates.editor.payments.*` and `estimates.editor.tabs.paymentsWith
 - Accounting (ledger, VAT reporting, reconciliation)
 - Multi-currency beyond existing `estimate.currency`
 - Partial-payment ledger (multiple payment entries per installment — only cumulative `paidAmount`)
-- Activity log entries for payment changes (optional future)
 - Business-plan entitlement gate
 - REST API routes (server actions only)
 

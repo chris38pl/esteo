@@ -268,7 +268,14 @@
         "ai_modified": "AI suggestions applied",
         "imported_from_price_list": "Imported from price list",
         "estimate_exported": "Estimate exported",
-        "sent_to_customer": "Sent to customer"
+        "sent_to_customer": "Sent to customer",
+        "payment_installment_added": "Added installment \"{name}\" ({amount})",
+        "payment_installment_updated": "Updated installment \"{name}\"",
+        "payment_installment_deleted": "Deleted installment \"{name}\"",
+        "payment_schedule_generated": "Generated payment schedule ({preset})",
+        "payment_installment_reordered": "Payment installment order changed",
+        "payment_recorded": "Recorded payment of {amount} for installment \"{name}\"",
+        "payment_installment_unpaid": "Marked installment \"{name}\" as unpaid"
       }
     },
     "tabPlaceholder": "This tab will be available soon.",

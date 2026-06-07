@@ -5,6 +5,12 @@ import { useLocale, useTranslations } from "next-intl";
 import { UserAvatar } from "@/components/avatars/user-avatar";
 import { Badge } from "@/components/ui/badge";
 import type { EstimateActivityLogClient } from "@/features/estimates/lib/serialize-estimate-activity";
+import {
+  PAYMENT_SCHEDULE_PRESET_IDS,
+  type PaymentSchedulePresetId,
+} from "@/features/estimates/lib/payment-schedule-presets";
+import { formatCurrency, type Currency } from "@/i18n/formatters";
+import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
 interface EstimateHistoryItemProps {
@@ -45,11 +51,23 @@ function actorLabel(
   return t("editor.history.actorSystem");
 }
 
+function isPaymentPresetId(value: string | undefined): value is PaymentSchedulePresetId {
+  return value != null && PAYMENT_SCHEDULE_PRESET_IDS.includes(value as PaymentSchedulePresetId);
+}
+
 function activityDescription(
   log: EstimateActivityLogClient,
   t: ReturnType<typeof useTranslations<"estimates">>,
+  tPayments: ReturnType<typeof useTranslations<"estimates.editor.payments">>,
+  locale: Locale,
 ): string {
   const meta = log.metadata;
+  const currency: Currency = meta.currency ?? "PLN";
+
+  function formatAmount(value: number | undefined): string {
+    if (value == null) return "";
+    return formatCurrency(value, locale, currency);
+  }
 
   if (log.action === "estimate_created") {
     if (meta.source === "public_request") {
@@ -98,6 +116,36 @@ function activityDescription(
       return t("editor.history.actions.estimate_exported");
     case "sent_to_customer":
       return t("editor.history.actions.sent_to_customer");
+    case "payment_installment_added":
+      return t("editor.history.actions.payment_installment_added", {
+        name: meta.installmentName ?? "",
+        amount: formatAmount(meta.installmentAmount),
+      });
+    case "payment_installment_updated":
+      return t("editor.history.actions.payment_installment_updated", {
+        name: meta.installmentName ?? "",
+      });
+    case "payment_installment_deleted":
+      return t("editor.history.actions.payment_installment_deleted", {
+        name: meta.installmentName ?? "",
+      });
+    case "payment_schedule_generated": {
+      const preset = isPaymentPresetId(meta.presetId)
+        ? tPayments(`presets.${meta.presetId}`)
+        : meta.presetId ?? "";
+      return t("editor.history.actions.payment_schedule_generated", { preset });
+    }
+    case "payment_installment_reordered":
+      return t("editor.history.actions.payment_installment_reordered");
+    case "payment_recorded":
+      return t("editor.history.actions.payment_recorded", {
+        name: meta.installmentName ?? "",
+        amount: formatAmount(meta.paymentAmount),
+      });
+    case "payment_installment_unpaid":
+      return t("editor.history.actions.payment_installment_unpaid", {
+        name: meta.installmentName ?? "",
+      });
     default:
       return log.action;
   }
@@ -125,8 +173,9 @@ function categoryLabel(
 
 export function EstimateHistoryItem({ log }: EstimateHistoryItemProps) {
   const t = useTranslations("estimates");
-  const locale = useLocale();
-  const description = activityDescription(log, t);
+  const tPayments = useTranslations("estimates.editor.payments");
+  const locale = useLocale() as Locale;
+  const description = activityDescription(log, t, tPayments, locale);
   const label = actorLabel(log, t);
 
   return (
