@@ -59,6 +59,7 @@ function activityDescription(
   log: EstimateActivityLogClient,
   t: ReturnType<typeof useTranslations<"estimates">>,
   tPayments: ReturnType<typeof useTranslations<"estimates.editor.payments">>,
+  tHistoryActions: ReturnType<typeof useTranslations<"estimates.editor.history.actions">>,
   locale: Locale,
 ): string {
   const meta = log.metadata;
@@ -159,15 +160,15 @@ function activityDescription(
       return t("editor.history.actions.note_deleted");
     case "attachment_added":
       if (meta.fileCount != null && meta.fileCount > 1) {
-        return t("editor.history.actions.attachment_added_multiple", {
+        return tHistoryActions("attachment_added_multiple", {
           count: meta.fileCount,
         });
       }
-      return t("editor.history.actions.attachment_added", {
+      return tHistoryActions("attachment_added", {
         fileName: meta.fileName ?? "",
       });
     case "attachment_deleted":
-      return t("editor.history.actions.attachment_deleted", {
+      return tHistoryActions("attachment_deleted", {
         fileName: meta.fileName ?? "",
       });
     default:
@@ -198,8 +199,9 @@ function categoryLabel(
 export function EstimateHistoryItem({ log }: EstimateHistoryItemProps) {
   const t = useTranslations("estimates");
   const tPayments = useTranslations("estimates.editor.payments");
+  const tHistoryActions = useTranslations("estimates.editor.history.actions");
   const locale = useLocale() as Locale;
-  const description = activityDescription(log, t, tPayments, locale);
+  const description = activityDescription(log, t, tPayments, tHistoryActions, locale);
   const label = actorLabel(log, t);
 
   return (

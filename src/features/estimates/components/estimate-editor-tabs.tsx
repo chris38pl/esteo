@@ -94,6 +94,7 @@ export function EstimateEditorTabs({
   onToggleTopPanel,
 }: EstimateEditorTabsProps) {
   const t = useTranslations("estimates");
+  const tTopPanel = useTranslations("estimates.editor.topPanel");
   const overflowTabActive = MOBILE_OVERFLOW_TAB_IDS.includes(activeTab);
 
   function tabLabel(tabId: EstimateEditorTabId): string {
@@ -203,9 +204,7 @@ export function EstimateEditorTabs({
                   className="size-9 shrink-0 text-muted-foreground hover:text-foreground"
                   onClick={onToggleTopPanel}
                   aria-pressed={topPanelHidden}
-                  aria-label={
-                    topPanelHidden ? t("editor.topPanel.show") : t("editor.topPanel.hide")
-                  }
+                  aria-label={topPanelHidden ? tTopPanel("show") : tTopPanel("hide")}
                 >
                   {topPanelHidden ? (
                     <Minimize2 className="size-4" />
@@ -215,7 +214,7 @@ export function EstimateEditorTabs({
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="bottom">
-                {topPanelHidden ? t("editor.topPanel.show") : t("editor.topPanel.hide")}
+                {topPanelHidden ? tTopPanel("show") : tTopPanel("hide")}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

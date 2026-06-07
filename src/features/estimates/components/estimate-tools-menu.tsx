@@ -50,6 +50,7 @@ export function EstimateToolsMenu({
   triggerButtonClassName,
 }: EstimateToolsMenuProps) {
   const t = useTranslations("estimates");
+  const tTopPanel = useTranslations("estimates.editor.topPanel");
   const modeValue = advancedMode ? "advanced" : "basic";
 
   const handleMarginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -143,7 +144,7 @@ export function EstimateToolsMenu({
               ) : (
                 <Maximize2 className="size-4" />
               )}
-              {topPanelHidden ? t("editor.topPanel.show") : t("editor.topPanel.hide")}
+              {topPanelHidden ? tTopPanel("show") : tTopPanel("hide")}
             </DropdownMenuItem>
           </>
         ) : null}
