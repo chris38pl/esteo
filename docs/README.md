@@ -14,6 +14,7 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 | [industry-fields.md](features/industry-fields.md) | Dynamic industry fields on documents |
 | [workspace-onboarding.md](features/workspace-onboarding.md) | Workspace creation and onboarding |
 | [admin-workspaces.md](features/admin-workspaces.md) | Platform admin workspace tools |
+| [authentication.md](features/authentication.md) | Custom Clerk Elements sign-in, Client Trust, email second-factor |
 
 ## Architecture
 

@@ -14,9 +14,10 @@ Every estimate is tied to an **estimate request** in normal flows:
 
 - `EstimateRequest.estimateId` → optional unique link to `Estimate`.
 - When background processing finishes, request status becomes `COMPLETED` and the estimate is linked.
-- On failure, status is `FAILED`; user may retry or build manually.
+- On failure, status is `FAILED`; user may retry (empty estimates only) or build manually.
+- After successful generation, the editor should populate sections without a manual page refresh.
 
-See [`estimate-requests.md`](estimate-requests.md) for the public form and request fields.
+See [`estimate-requests.md`](estimate-requests.md) for the public form and request fields. For debugging empty tables or failed draft jobs, see [`../incidents/2026-06-05-ai-estimate-draft-blank-editor.md`](../incidents/2026-06-05-ai-estimate-draft-blank-editor.md).
 
 ```txt
 EstimateRequest (PENDING)

@@ -260,3 +260,9 @@ Trigger.dev
 ```
 
 Cross-link: [`backend.md`](backend.md), [`docs/features/estimate-requests.md`](../features/estimate-requests.md).
+
+---
+
+## Troubleshooting
+
+If draft generation leaves an empty editor (no sections, or skeleton finishes but table stays blank until refresh), see the postmortem: [`docs/incidents/2026-06-05-ai-estimate-draft-blank-editor.md`](../incidents/2026-06-05-ai-estimate-draft-blank-editor.md). Check `EstimateRequest.status` / `aiMetadata.error` in DB, industry profile completeness on the admin Industry fields page, and Trigger.dev worker in local dev.
