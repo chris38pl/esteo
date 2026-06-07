@@ -147,7 +147,26 @@
     "retryGeneration": "Ponów generowanie AI",
     "retryGenerationPending": "Ponawianie…",
     "retryGenerationError": "Nie udało się wznowić generowania. Spróbuj ponownie.",
-    "refreshStatus": "Odśwież, aby sprawdzić status"
+    "refreshStatus": "Odśwież, aby sprawdzić status",
+    "mobile": {
+      "edit": "Edytuj",
+      "duplicate": "Duplikuj",
+      "save": "Zapisz",
+      "cancel": "Anuluj",
+      "editPosition": "Edytuj pozycję",
+      "renameSection": "Zmień nazwę sekcji",
+      "sectionName": "Nazwa sekcji",
+      "selectSection": "Wybierz sekcję",
+      "noPositions": "Brak pozycji w tej sekcji.",
+      "positionActions": "Akcje pozycji",
+      "sectionActions": "Akcje sekcji",
+      "cost": "Koszt",
+      "margin": "Marża",
+      "askAi": "Zapytaj AI",
+      "openFab": "Szybkie akcje",
+      "closeFab": "Zamknij menu akcji",
+      "toolbarHint": "Pasek narzędzi mobilnych"
+    }
   },
   "header": {
     "status": {

@@ -147,7 +147,26 @@
     "retryGeneration": "Retry AI generation",
     "retryGenerationPending": "Retrying…",
     "retryGenerationError": "Could not restart generation. Try again.",
-    "refreshStatus": "Refresh to check status"
+    "refreshStatus": "Refresh to check status",
+    "mobile": {
+      "edit": "Edit",
+      "duplicate": "Duplicate",
+      "save": "Save",
+      "cancel": "Cancel",
+      "editPosition": "Edit position",
+      "renameSection": "Rename section",
+      "sectionName": "Section name",
+      "selectSection": "Select section",
+      "noPositions": "No positions in this section.",
+      "positionActions": "Position actions",
+      "sectionActions": "Section actions",
+      "cost": "Cost",
+      "margin": "Margin",
+      "askAi": "Ask AI",
+      "openFab": "Quick actions",
+      "closeFab": "Close actions menu",
+      "toolbarHint": "Mobile toolbar"
+    }
   },
   "header": {
     "status": {

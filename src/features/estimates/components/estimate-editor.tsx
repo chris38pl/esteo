@@ -23,7 +23,9 @@ import type { SectionData } from "./estimate-items-table";
 import { EstimateHeader } from "./estimate-header";
 import { EstimateMobileStickyBar } from "./estimate-mobile-sticky-bar";
 import { EstimateContextCards } from "./estimate-context-cards";
-import { EstimateItemsTable } from "./estimate-items-table";
+import { EstimateItemsView } from "./estimate-items-view";
+import { EstimateMobileFab } from "./estimate-mobile-fab";
+import { EstimateMobileSectionSheet } from "./estimate-mobile-section-sheet";
 import { EstimateRightRail } from "./estimate-right-rail";
 import { EstimateAiPanel } from "./estimate-ai-panel";
 import { EstimateAiFloating } from "./estimate-ai-floating";
@@ -45,7 +47,6 @@ import {
   EstimateEditorTabs,
   type EstimateEditorTabId,
 } from "./estimate-editor-tabs";
-import { EstimateItemsToolbar } from "./estimate-items-toolbar";
 import type { LineItemCalcInput } from "@/features/estimates/lib/calculate-estimate";
 import {
   baseUnitPriceFromUnitPrice,
@@ -150,6 +151,7 @@ export function EstimateEditor({
   const showSideAiPanel = showAiPanel && Boolean(activeVersionId) && isAiSideLayout;
   const aiStickyMaxHeight = useEstimateAiStickyMaxHeight(aiStickyRef, showSideAiPanel);
   const [tableSearchQuery, setTableSearchQuery] = useState("");
+  const [sectionPickerOpen, setSectionPickerOpen] = useState(false);
 
   useEffect(() => {
     const mq = window.matchMedia(
@@ -386,6 +388,50 @@ export function EstimateEditor({
     });
   };
 
+  const handleDuplicateItem = async (sectionId: string, itemId: string) => {
+    if (!activeVersionId || isVersionReadOnly) return;
+    const sourceSection = sections.find((s) => s.id === sectionId);
+    const sourceItem = sourceSection?.items.find((li) => li.id === itemId);
+    if (!sourceItem) return;
+
+    const result = await addLineItemAction({
+      sectionId,
+      workspaceId: estimate.workspaceId,
+      locale,
+    });
+    if (!result.success) return;
+
+    const duplicated: LineItemData = {
+      id: result.data.itemId,
+      name: sourceItem.name,
+      unit: sourceItem.unit,
+      quantity: sourceItem.quantity,
+      baseUnitPrice: sourceItem.baseUnitPrice,
+      unitPrice: sourceItem.unitPrice,
+      vatRate: sourceItem.vatRate,
+      sortOrder: sourceSection!.items.length,
+    };
+
+    setSections((prev) =>
+      prev.map((s) =>
+        s.id === sectionId ? { ...s, items: [...s.items, duplicated] } : s,
+      ),
+    );
+    triggerSave();
+  };
+
+  const handleMobileAddPosition = () => {
+    if (sections.length === 0) {
+      void handleAddSection();
+      return;
+    }
+    if (sections.length === 1) {
+      void handleAddItem(sections[0]!.id);
+      return;
+    }
+    setSectionPickerOpen(true);
+  };
+
   const handleReorderItems = useCallback(
     async (sectionId: string, fromIndex: number, toIndex: number) => {
       if (!activeVersionId || isVersionReadOnly || fromIndex === toIndex) return;
@@ -566,19 +612,6 @@ export function EstimateEditor({
                   disabled={isVersionReadOnly}
                   className="min-w-0 border-0 p-0 disabled:opacity-80"
                 >
-                  <EstimateItemsToolbar
-                    advancedMode={advancedMode}
-                    onAdvancedModeChange={handleAdvancedModeChange}
-                    marginPercent={marginPercent}
-                    onMarginChange={handleMarginChange}
-                    onMarginBlur={handleMarginBlur}
-                    onAddSection={handleAddSection}
-                    showAiPanel={showAiPanel}
-                    onToggleAiPanel={() => setShowAiPanel((v) => !v)}
-                    aiUsesSideLayout={isAiSideLayout}
-                    tableSearchQuery={tableSearchQuery}
-                    onTableSearchQueryChange={setTableSearchQuery}
-                  />
                   {generationFailed && sections.length === 0 ? (
                     <EstimateGenerationFailedBanner
                       estimateId={estimate.id}
@@ -587,18 +620,28 @@ export function EstimateEditor({
                       locale={locale}
                     />
                   ) : null}
-                  <EstimateItemsTable
+                  <EstimateItemsView
                     sections={sections}
                     currency={estimate.currency}
                     advancedMode={advancedMode}
+                    marginPercent={marginPercent}
+                    tableSearchQuery={tableSearchQuery}
+                    onAdvancedModeChange={handleAdvancedModeChange}
+                    onMarginChange={handleMarginChange}
+                    onMarginBlur={handleMarginBlur}
+                    onAddSection={handleAddSection}
+                    showAiPanel={showAiPanel}
+                    onToggleAiPanel={() => setShowAiPanel((v) => !v)}
+                    aiUsesSideLayout={isAiSideLayout}
+                    onTableSearchQueryChange={setTableSearchQuery}
                     onUpdateSection={handleUpdateSection}
                     onDeleteSection={handleDeleteSection}
                     onAddItem={handleAddItem}
                     onUpdateItem={handleUpdateItem}
                     onDeleteItem={handleDeleteItem}
+                    onDuplicateItem={handleDuplicateItem}
                     onReorderItems={handleReorderItems}
                     onBlur={triggerBlurSave}
-                    tableSearchQuery={tableSearchQuery}
                   />
                 </fieldset>
               ) : (
@@ -642,7 +685,26 @@ export function EstimateEditor({
       )}
 
       {!isGenerating ? (
-        <EstimateMobileStickyBar items={allItems} currency={estimate.currency} />
+        <>
+          <EstimateMobileStickyBar items={allItems} currency={estimate.currency} />
+          {!isVersionReadOnly ? (
+            <EstimateMobileFab
+              onAddSection={handleAddSection}
+              onAddPosition={handleMobileAddPosition}
+              onImportPriceList={() => undefined}
+              onAskAi={() => setShowAiPanel(true)}
+            />
+          ) : null}
+          <EstimateMobileSectionSheet
+            open={sectionPickerOpen}
+            onOpenChange={setSectionPickerOpen}
+            mode="pick"
+            sections={sections}
+            onPickSection={(sectionId) => {
+              void handleAddItem(sectionId);
+            }}
+          />
+        </>
       ) : null}
 
       {!isGenerating && activeVersionId && !isAiSideLayout ? (

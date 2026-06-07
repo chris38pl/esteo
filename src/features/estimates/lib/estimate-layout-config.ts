@@ -88,6 +88,10 @@ const estimateLayoutTailwind = {
   headerSendAction: "estimate-header-send",
   mobileStickyBar: "estimate-mobile-sticky-bar",
   editorMobileStickyPadding: "estimate-editor--mobile-sticky",
+  itemsDesktop: "estimate-items-desktop",
+  itemsMobile: "estimate-items-mobile",
+  itemsToolbarMobile: "estimate-items-toolbar-mobile",
+  mobileFab: "estimate-mobile-fab",
   headerTitle:
     "estimate-header__title text-xl font-semibold tracking-tight text-foreground",
   headerStatusBadgeMinWidth: `min-w-[${b.headerStatusBadgeMinWidthPx}px]`,
@@ -156,6 +160,14 @@ export const estimateMobileStickyBarClass = ESTIMATE_LAYOUT_CONFIG.tailwind.mobi
 
 export const estimateEditorMobileStickyPaddingClass =
   ESTIMATE_LAYOUT_CONFIG.tailwind.editorMobileStickyPadding;
+
+export const estimateItemsDesktopClass = ESTIMATE_LAYOUT_CONFIG.tailwind.itemsDesktop;
+
+export const estimateItemsMobileClass = ESTIMATE_LAYOUT_CONFIG.tailwind.itemsMobile;
+
+export const estimateItemsToolbarMobileClass = ESTIMATE_LAYOUT_CONFIG.tailwind.itemsToolbarMobile;
+
+export const estimateMobileFabClass = ESTIMATE_LAYOUT_CONFIG.tailwind.mobileFab;
 
 export const estimateHeaderTitleClass = ESTIMATE_LAYOUT_CONFIG.tailwind.headerTitle;
 
@@ -328,12 +340,23 @@ export function getEstimateEditorResponsiveCss(): string {
 .estimate-mobile-sticky-bar {
   display: flex;
 }
+.estimate-items-desktop {
+  display: none;
+}
+.estimate-items-mobile {
+  display: block;
+}
+.estimate-mobile-fab {
+  display: flex;
+  right: 1rem;
+  bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px) + 0.75rem);
+}
 .estimate-editor--mobile-sticky {
-  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(7.5rem + env(safe-area-inset-bottom, 0px));
 }
 @media ${mediaQueryMax(breakpoints.headerActionsDivider - 1)} {
   [data-estimate-ai-floating] button.fixed.bottom-4 {
-    bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+    display: none !important;
   }
   [data-estimate-ai-floating] .estimate-ai-floating-panel {
     bottom: calc(9.5rem + env(safe-area-inset-bottom, 0px));
@@ -363,6 +386,15 @@ export function getEstimateEditorResponsiveCss(): string {
   }
   .estimate-header-actions-divider {
     display: block !important;
+  }
+  .estimate-items-desktop {
+    display: block;
+  }
+  .estimate-items-mobile {
+    display: none;
+  }
+  .estimate-mobile-fab {
+    display: none !important;
   }
   .estimate-mobile-sticky-bar {
     display: none !important;
