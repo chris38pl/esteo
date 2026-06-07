@@ -181,6 +181,11 @@ export function EstimateEditor({
   const [paymentInstallments, setPaymentInstallments] = useState<PaymentInstallmentClient[]>(
     initialPaymentInstallments,
   );
+  const [attachmentsCount, setAttachmentsCount] = useState(initialAttachments.length);
+
+  useEffect(() => {
+    setAttachmentsCount(initialAttachments.length);
+  }, [initialAttachments]);
 
   useEffect(() => {
     const mq = window.matchMedia(
@@ -623,7 +628,7 @@ export function EstimateEditor({
               <EstimateEditorTabs
                 activeTab={activeTab}
                 onTabChange={setActiveTab}
-                attachmentsCount={initialAttachments.length}
+                attachmentsCount={attachmentsCount}
                 overduePaymentsCount={paymentSummary.overdueCount}
                 topPanelHidden={topPanelHidden}
                 onToggleTopPanel={toggleTopPanel}
@@ -662,6 +667,7 @@ export function EstimateEditor({
                   initialAttachments={initialAttachments}
                   storageSummary={storageSummary}
                   readOnly={isVersionReadOnly}
+                  onAttachmentsCountChange={setAttachmentsCount}
                 />
               ) : activeTab === "items" ? (
                 <fieldset

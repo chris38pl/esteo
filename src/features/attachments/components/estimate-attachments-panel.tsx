@@ -84,6 +84,7 @@ interface EstimateAttachmentsPanelProps {
   initialAttachments: EstimateAttachmentClient[];
   storageSummary: WorkspaceStorageSummaryClient;
   readOnly?: boolean;
+  onAttachmentsCountChange?: (count: number) => void;
 }
 
 export function EstimateAttachmentsPanel({
@@ -94,11 +95,16 @@ export function EstimateAttachmentsPanel({
   initialAttachments,
   storageSummary,
   readOnly = false,
+  onAttachmentsCountChange,
 }: EstimateAttachmentsPanelProps) {
   const router = useRouter();
   const t = useTranslations("estimates.attachments");
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [attachments, setAttachments] = useState(initialAttachments);
+
+  useEffect(() => {
+    setAttachments(initialAttachments);
+  }, [initialAttachments]);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [uploadState, setUploadState] = useState<UploadState>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -224,7 +230,11 @@ export function EstimateAttachmentsPanel({
 
     try {
       const result = await uploadWithProgress(formData, setUploadProgress);
-      setAttachments((current) => [...current, ...result.attachments]);
+      setAttachments((current) => {
+        const next = [...current, ...result.attachments];
+        onAttachmentsCountChange?.(next.length);
+        return next;
+      });
       setUploadState("idle");
       setUploadProgress(null);
       refreshHistory();
@@ -272,7 +282,11 @@ export function EstimateAttachmentsPanel({
       return;
     }
 
-    setAttachments((current) => current.filter((item) => item.id !== attachmentId));
+    setAttachments((current) => {
+      const next = current.filter((item) => item.id !== attachmentId);
+      onAttachmentsCountChange?.(next.length);
+      return next;
+    });
     setDeleteTarget(null);
     refreshHistory();
   }
