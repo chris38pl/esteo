@@ -13,7 +13,7 @@ const estimateLayoutBreakpoints = {
   headerRulesLabel: 1600,
   /** Status badge min-width in px (limits label jump between autosave states) */
   headerStatusBadgeMinWidthPx: 140,
-  /** Header vertical divider between action groups */
+  /** Header: title row vs actions row; vertical divider between action groups */
   headerActionsDivider: 900,
   /** Context cards 2×2 */
   contextTwoCol: 768,
@@ -76,6 +76,18 @@ const estimateLayoutTailwind = {
   headerInlineActionMenuItem: "estimate-header-more-menu-inline-action",
   /** Always visible in Więcej menu (not hidden when inline Preview/Share show) */
   headerMoreMenuPinAction: "estimate-header-more-menu-pin-action",
+  header:
+    "estimate-header flex min-w-0 flex-col gap-3",
+  headerPrimary: "estimate-header__primary flex min-w-0 items-center gap-2",
+  headerMobileMeta:
+    "estimate-header__mobile-meta flex min-w-0 flex-wrap items-center gap-2.5",
+  headerDesktopActions:
+    "estimate-header__desktop-actions flex min-w-0 max-w-full flex-wrap items-center gap-2.5",
+  headerActions:
+    "estimate-header__actions flex min-w-0 max-w-full flex-wrap items-center gap-2.5",
+  headerSendAction: "estimate-header-send",
+  mobileStickyBar: "estimate-mobile-sticky-bar",
+  editorMobileStickyPadding: "estimate-editor--mobile-sticky",
   headerTitle:
     "estimate-header__title text-xl font-semibold tracking-tight text-foreground",
   headerStatusBadgeMinWidth: `min-w-[${b.headerStatusBadgeMinWidthPx}px]`,
@@ -126,6 +138,24 @@ export const estimateHeaderMoreMenuPinActionClass =
 
 export const ESTIMATE_HEADER_TITLE_LARGE_MIN_PX =
   ESTIMATE_LAYOUT_CONFIG.breakpoints.headerInlineActions;
+
+export const estimateHeaderClass = ESTIMATE_LAYOUT_CONFIG.tailwind.header;
+
+export const estimateHeaderPrimaryClass = ESTIMATE_LAYOUT_CONFIG.tailwind.headerPrimary;
+
+export const estimateHeaderMobileMetaClass = ESTIMATE_LAYOUT_CONFIG.tailwind.headerMobileMeta;
+
+export const estimateHeaderDesktopActionsClass =
+  ESTIMATE_LAYOUT_CONFIG.tailwind.headerDesktopActions;
+
+export const estimateHeaderActionsClass = ESTIMATE_LAYOUT_CONFIG.tailwind.headerActions;
+
+export const estimateHeaderSendActionClass = ESTIMATE_LAYOUT_CONFIG.tailwind.headerSendAction;
+
+export const estimateMobileStickyBarClass = ESTIMATE_LAYOUT_CONFIG.tailwind.mobileStickyBar;
+
+export const estimateEditorMobileStickyPaddingClass =
+  ESTIMATE_LAYOUT_CONFIG.tailwind.editorMobileStickyPadding;
 
 export const estimateHeaderTitleClass = ESTIMATE_LAYOUT_CONFIG.tailwind.headerTitle;
 
@@ -283,9 +313,62 @@ export function getEstimateEditorResponsiveCss(): string {
 .estimate-header-actions-divider {
   display: none !important;
 }
+.estimate-header__status-desktop {
+  display: none;
+}
+.estimate-header__mobile-meta {
+  display: flex;
+}
+.estimate-header__desktop-actions {
+  display: none;
+}
+.estimate-header-send {
+  display: none !important;
+}
+.estimate-mobile-sticky-bar {
+  display: flex;
+}
+.estimate-editor--mobile-sticky {
+  padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+}
+@media ${mediaQueryMax(breakpoints.headerActionsDivider - 1)} {
+  [data-estimate-ai-floating] button.fixed.bottom-4 {
+    bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+  }
+  [data-estimate-ai-floating] .estimate-ai-floating-panel {
+    bottom: calc(9.5rem + env(safe-area-inset-bottom, 0px));
+  }
+}
 @media ${mediaQueryMin(breakpoints.headerActionsDivider)} {
+  .estimate-header {
+    flex-direction: row;
+    align-items: center;
+  }
+  .estimate-header__primary {
+    flex: 1 1 auto;
+  }
+  .estimate-header__status-desktop {
+    display: flex;
+  }
+  .estimate-header__mobile-meta {
+    display: none;
+  }
+  .estimate-header__desktop-actions {
+    display: flex;
+    margin-left: auto;
+    justify-content: flex-end;
+  }
+  .estimate-header-send {
+    display: inline-flex !important;
+  }
   .estimate-header-actions-divider {
     display: block !important;
+  }
+  .estimate-mobile-sticky-bar {
+    display: none !important;
+  }
+  .estimate-editor--mobile-sticky {
+    padding-bottom: 2rem;
   }
 }
 /* Table + side AI (≥ breakpoints.aiSideLayout via useEstimateAiSideLayout) */

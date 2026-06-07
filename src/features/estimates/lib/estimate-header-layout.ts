@@ -2,8 +2,16 @@
 export {
   ESTIMATE_HEADER_INLINE_ACTIONS_MIN_PX,
   ESTIMATE_HEADER_TITLE_LARGE_MIN_PX,
+  estimateEditorMobileStickyPaddingClass,
+  estimateHeaderActionsClass,
+  estimateHeaderClass,
+  estimateHeaderDesktopActionsClass,
   estimateHeaderInlineActionButtonClass,
   estimateHeaderInlineActionMenuItemClass,
+  estimateHeaderMobileMetaClass,
   estimateHeaderMoreMenuPinActionClass,
+  estimateHeaderPrimaryClass,
+  estimateHeaderSendActionClass,
   estimateHeaderTitleClass,
+  estimateMobileStickyBarClass,
 } from "@/features/estimates/lib/estimate-layout-config";

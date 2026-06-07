@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import type { EstimateVersionStatus } from "@prisma/client";
-import { ChevronDown, Eye, Share2 } from "lucide-react";
+import { ChevronDown, Ellipsis, Eye, Share2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,8 +25,13 @@ import { EstimateHeaderVersionMenuItems } from "./estimate-header-version-menu-i
 import type { AutoSaveStatus } from "@/features/estimates/hooks/use-estimate-autosave";
 import type { Locale } from "@/lib/locale";
 import {
+  estimateHeaderClass,
+  estimateHeaderDesktopActionsClass,
   estimateHeaderInlineActionButtonClass,
   estimateHeaderInlineActionMenuItemClass,
+  estimateHeaderMobileMetaClass,
+  estimateHeaderPrimaryClass,
+  estimateHeaderSendActionClass,
   estimateHeaderTitleClass,
 } from "@/features/estimates/lib/estimate-header-layout";
 import { cn } from "@/lib/utils";
@@ -60,6 +65,73 @@ interface EstimateHeaderProps {
   isPinned?: boolean;
 }
 
+interface EstimateHeaderMoreMenuProps {
+  title?: string | null;
+  estimateId: string;
+  workspaceId: string;
+  workspaceSlug: string;
+  locale: Locale;
+  activeVersionId: string;
+  activeStatus: EstimateVersionStatus;
+  versions: Version[];
+  isPinned: boolean;
+  trigger: React.ReactNode;
+}
+
+function EstimateHeaderMoreMenu({
+  title,
+  estimateId,
+  workspaceId,
+  workspaceSlug,
+  locale,
+  activeVersionId,
+  activeStatus,
+  versions,
+  isPinned,
+  trigger,
+}: EstimateHeaderMoreMenuProps) {
+  const t = useTranslations("estimates");
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <EstimateHeaderRenameMenuItem
+          title={title}
+          estimateId={estimateId}
+          workspaceId={workspaceId}
+          workspaceSlug={workspaceSlug}
+          locale={locale}
+        />
+        <EstimateHeaderPinMenuItem
+          estimateId={estimateId}
+          workspaceId={workspaceId}
+          workspaceSlug={workspaceSlug}
+          locale={locale}
+          isPinned={isPinned}
+        />
+        <EstimateHeaderVersionMenuItems
+          estimateId={estimateId}
+          activeVersionId={activeVersionId}
+          activeVersionStatus={activeStatus}
+          versionCount={versions.length}
+          workspaceId={workspaceId}
+          workspaceSlug={workspaceSlug}
+          locale={locale}
+        />
+        <DropdownMenuItem className={headerMoreMenuInlineActionClassName}>
+          <Eye className="size-4" />
+          {t("header.actions.preview")}
+        </DropdownMenuItem>
+        <DropdownMenuItem className={headerMoreMenuInlineActionClassName}>
+          <Share2 className="size-4" />
+          {t("header.actions.share")}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 export function EstimateHeader({
   title,
   estimateId,
@@ -78,22 +150,69 @@ export function EstimateHeader({
   const activeStatus = activeVersion?.status ?? "DRAFT";
   const headerTitle = title ?? t("editor.titleEyebrow");
 
+  const statusBadge = (
+    <EstimateHeaderStatusBadge
+      versionStatus={activeStatus}
+      autosaveStatus={autosaveStatus}
+    />
+  );
+
+  const moreMenuProps = {
+    title,
+    estimateId,
+    workspaceId,
+    workspaceSlug,
+    locale,
+    activeVersionId,
+    activeStatus,
+    versions,
+    isPinned,
+  };
+
   return (
-    <header className="flex min-w-0 flex-wrap items-center gap-3">
-      <div className="flex min-w-0 flex-1 items-center gap-2">
+    <header className={estimateHeaderClass}>
+      <div className={estimateHeaderPrimaryClass}>
         <h1 className={estimateHeaderTitleClass}>
           {t("editor.titleWithVersion", {
             title: headerTitle,
             version: activeVersionNumber,
           })}
         </h1>
-        <EstimateHeaderStatusBadge
-          versionStatus={activeStatus}
-          autosaveStatus={autosaveStatus}
+        <div className="estimate-header__status-desktop">{statusBadge}</div>
+      </div>
+
+      <div className={estimateHeaderMobileMetaClass}>
+        {statusBadge}
+        <EstimateVersionSelector
+          estimateId={estimateId}
+          workspaceId={workspaceId}
+          versions={versions}
+          activeVersionId={activeVersionId}
+          locale={locale}
+          workspaceSlug={workspaceSlug}
+        />
+        <EstimateRulesIndicator
+          workspaceSlug={workspaceSlug}
+          locale={locale}
+          rulesApplied={rulesApplied}
+        />
+        <EstimateHeaderMoreMenu
+          {...moreMenuProps}
+          trigger={
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className={estimateOutlineButtonClassName}
+              aria-label={t("header.actions.more")}
+            >
+              <Ellipsis className="size-4" />
+            </Button>
+          }
         />
       </div>
 
-      <div className="ml-auto flex min-w-0 max-w-full flex-wrap items-center justify-end gap-2.5">
+      <div className={estimateHeaderDesktopActionsClass}>
         <div className="flex min-w-0 flex-wrap items-center gap-2.5">
           <Button
             type="button"
@@ -113,11 +232,16 @@ export function EstimateHeader({
             <Share2 className="size-4" />
             {t("header.actions.share")}
           </Button>
-          <Button type="button" size="sm" className={estimatePrimaryButtonClassName}>
+          <Button
+            type="button"
+            size="sm"
+            className={cn(estimatePrimaryButtonClassName, estimateHeaderSendActionClass)}
+          >
             {t("header.actions.send")}
           </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+          <EstimateHeaderMoreMenu
+            {...moreMenuProps}
+            trigger={
               <Button
                 type="button"
                 variant="outline"
@@ -127,41 +251,8 @@ export function EstimateHeader({
                 {t("header.actions.more")}
                 <ChevronDown className="size-4" />
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <EstimateHeaderRenameMenuItem
-                title={title}
-                estimateId={estimateId}
-                workspaceId={workspaceId}
-                workspaceSlug={workspaceSlug}
-                locale={locale}
-              />
-              <EstimateHeaderPinMenuItem
-                estimateId={estimateId}
-                workspaceId={workspaceId}
-                workspaceSlug={workspaceSlug}
-                locale={locale}
-                isPinned={isPinned}
-              />
-              <EstimateHeaderVersionMenuItems
-                estimateId={estimateId}
-                activeVersionId={activeVersionId}
-                activeVersionStatus={activeStatus}
-                versionCount={versions.length}
-                workspaceId={workspaceId}
-                workspaceSlug={workspaceSlug}
-                locale={locale}
-              />
-              <DropdownMenuItem className={headerMoreMenuInlineActionClassName}>
-                <Eye className="size-4" />
-                {t("header.actions.preview")}
-              </DropdownMenuItem>
-              <DropdownMenuItem className={headerMoreMenuInlineActionClassName}>
-                <Share2 className="size-4" />
-                {t("header.actions.share")}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            }
+          />
         </div>
 
         <div

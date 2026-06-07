@@ -21,6 +21,7 @@ import type { Locale } from "@/lib/locale";
 import type { LineItemData } from "./estimate-line-item-row";
 import type { SectionData } from "./estimate-items-table";
 import { EstimateHeader } from "./estimate-header";
+import { EstimateMobileStickyBar } from "./estimate-mobile-sticky-bar";
 import { EstimateContextCards } from "./estimate-context-cards";
 import { EstimateItemsTable } from "./estimate-items-table";
 import { EstimateRightRail } from "./estimate-right-rail";
@@ -29,6 +30,7 @@ import { EstimateAiFloating } from "./estimate-ai-floating";
 import {
   ESTIMATE_LAYOUT_CONFIG,
   estimateEditorAiSideGridClass,
+  estimateEditorMobileStickyPaddingClass,
   mediaQueryMin,
 } from "@/features/estimates/lib/estimate-layout-config";
 import { useEstimateAiSideLayout } from "@/features/estimates/hooks/use-estimate-ai-side-layout";
@@ -449,6 +451,7 @@ export function EstimateEditor({
     <div
       className={cn(
         "estimate-editor mx-auto min-w-0 w-full space-y-6 pb-8",
+        !isGenerating && estimateEditorMobileStickyPaddingClass,
       )}
     >
       <EstimateEditorLayoutStyles />
@@ -637,6 +640,10 @@ export function EstimateEditor({
           ) : null}
         </div>
       )}
+
+      {!isGenerating ? (
+        <EstimateMobileStickyBar items={allItems} currency={estimate.currency} />
+      ) : null}
 
       {!isGenerating && activeVersionId && !isAiSideLayout ? (
         <EstimateAiFloating

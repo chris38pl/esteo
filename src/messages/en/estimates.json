@@ -166,6 +166,7 @@
       "deleteVersion": "Remove version",
       "morePlaceholder": "Additional actions",
       "send": "Send",
+      "sendEstimate": "Send estimate",
       "sendToClient": "Send to client",
       "rename": "Rename"
     },
