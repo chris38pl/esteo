@@ -9,7 +9,7 @@
     "dev": "next dev --webpack",
     "trigger:dev": "npx trigger.dev@latest dev",
     "trigger:deploy": "npx trigger.dev@4.4.6 deploy",
-    "build": "next build && npm run trigger:deploy",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "i18n": "npm run i18n:check && node --experimental-strip-types scripts/check-hardcoded-ui.ts",
