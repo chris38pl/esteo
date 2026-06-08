@@ -49,8 +49,26 @@ const TAB_IDS: EstimateEditorTabId[] = [
   "notes",
 ];
 
-const MOBILE_PRIMARY_TAB_IDS: EstimateEditorTabId[] = ["items", "summary", "attachments"];
+const MOBILE_PINNED_TAB_IDS = ["items", "summary"] as const;
+const MOBILE_DEFAULT_THIRD_TAB: EstimateEditorTabId = "attachments";
 const MOBILE_OVERFLOW_TAB_IDS: EstimateEditorTabId[] = ["history", "payments", "notes"];
+
+function getMobileVisibleTabIds(activeTab: EstimateEditorTabId): EstimateEditorTabId[] {
+  const third = MOBILE_OVERFLOW_TAB_IDS.includes(activeTab)
+    ? activeTab
+    : MOBILE_DEFAULT_THIRD_TAB;
+  return [...MOBILE_PINNED_TAB_IDS, third];
+}
+
+function getMobileOverflowMenuTabIds(activeTab: EstimateEditorTabId): EstimateEditorTabId[] {
+  if (MOBILE_OVERFLOW_TAB_IDS.includes(activeTab)) {
+    return [
+      MOBILE_DEFAULT_THIRD_TAB,
+      ...MOBILE_OVERFLOW_TAB_IDS.filter((id) => id !== activeTab),
+    ];
+  }
+  return MOBILE_OVERFLOW_TAB_IDS;
+}
 
 function TabButton({
   tabId,
@@ -95,7 +113,8 @@ export function EstimateEditorTabs({
 }: EstimateEditorTabsProps) {
   const t = useTranslations("estimates");
   const tTopPanel = useTranslations("estimates.editor.topPanel");
-  const overflowTabActive = MOBILE_OVERFLOW_TAB_IDS.includes(activeTab);
+  const mobileVisibleTabIds = getMobileVisibleTabIds(activeTab);
+  const mobileOverflowMenuTabIds = getMobileOverflowMenuTabIds(activeTab);
 
   function tabLabel(tabId: EstimateEditorTabId): string {
     if (tabId === "attachments") {
@@ -137,7 +156,7 @@ export function EstimateEditorTabs({
         role="tablist"
         aria-label={t("editor.tabs.ariaLabel")}
       >
-        {MOBILE_PRIMARY_TAB_IDS.map((tabId) => {
+        {mobileVisibleTabIds.map((tabId) => {
           const label = tabLabel(tabId);
           return (
             <TabButton
@@ -154,24 +173,17 @@ export function EstimateEditorTabs({
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              role="tab"
-              aria-selected={overflowTabActive}
-              className={cn(
-                "relative flex shrink-0 items-center justify-center px-3 py-3 transition-colors",
-                overflowTabActive
-                  ? "text-primary"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
+              className="relative flex shrink-0 items-center justify-center px-3 py-3 text-muted-foreground transition-colors hover:text-foreground"
               aria-label={t("editor.tabs.more")}
             >
               <Ellipsis className="size-4" />
-              {overflowTabActive ? (
-                <span className="absolute inset-x-1 bottom-0 h-0.5 bg-primary" aria-hidden />
-              ) : null}
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {MOBILE_OVERFLOW_TAB_IDS.map((tabId) => {
+          <DropdownMenuContent
+            align="end"
+            onCloseAutoFocus={(event) => event.preventDefault()}
+          >
+            {mobileOverflowMenuTabIds.map((tabId) => {
               const label = tabLabel(tabId);
               return (
                 <DropdownMenuItem
