@@ -8,7 +8,8 @@
   "scripts": {
     "dev": "next dev --webpack",
     "trigger:dev": "npx trigger.dev@latest dev",
-    "build": "next build",
+    "trigger:deploy": "npx trigger.dev@4.4.6 deploy",
+    "build": "next build && npm run trigger:deploy",
     "start": "next start",
     "lint": "eslint",
     "i18n": "npm run i18n:check && node --experimental-strip-types scripts/check-hardcoded-ui.ts",
@@ -69,6 +70,7 @@
     "eslint-config-next": "16.2.6",
     "prisma": "^6",
     "tailwindcss": "^4",
+    "trigger.dev": "4.4.6",
     "tsx": "^4.22.3",
     "typescript": "^5"
   }
