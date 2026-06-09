@@ -42,6 +42,7 @@ import {
   EstimatePaymentRecordDialog,
   type PaymentRecordFormValues,
 } from "./estimate-payment-record-dialog";
+import { EstimatePaymentInstallmentDeleteDialog } from "./estimate-payment-installment-delete-dialog";
 import { EstimatePaymentScheduleReplaceDialog } from "./estimate-payment-schedule-replace-dialog";
 
 interface EstimatePaymentsPanelProps {
@@ -107,6 +108,7 @@ export function EstimatePaymentsPanel({
   const [generatingPreset, setGeneratingPreset] = useState<PaymentSchedulePresetId | null>(null);
   const [pendingReplacePreset, setPendingReplacePreset] =
     useState<PaymentSchedulePresetId | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<PaymentInstallmentClient | null>(null);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [isReordering, setIsReordering] = useState(false);
@@ -182,24 +184,35 @@ export function EstimatePaymentsPanel({
     [actionContext, editingInstallment, installments, onInstallmentsChange, refreshHistory],
   );
 
-  const handleDelete = useCallback(
-    async (installmentId: string) => {
-      if (!window.confirm(t("deleteConfirm"))) return;
-
-      setPendingId(installmentId);
-      const result = await deletePaymentInstallmentAction({
-        ...actionContext,
-        installmentId,
-      });
-      setPendingId(null);
-
-      if (!result.success) return;
-
-      onInstallmentsChange(installments.filter((row) => row.id !== installmentId));
-      refreshHistory();
+  const openDeleteDialog = useCallback(
+    (installmentId: string) => {
+      const installment = installments.find((row) => row.id === installmentId) ?? null;
+      setDeleteTarget(installment);
     },
-    [actionContext, installments, onInstallmentsChange, refreshHistory, t],
+    [installments],
   );
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (!deleteTarget) {
+      return;
+    }
+
+    const installmentId = deleteTarget.id;
+    setPendingId(installmentId);
+    const result = await deletePaymentInstallmentAction({
+      ...actionContext,
+      installmentId,
+    });
+    setPendingId(null);
+
+    if (!result.success) {
+      return;
+    }
+
+    setDeleteTarget(null);
+    onInstallmentsChange(installments.filter((row) => row.id !== installmentId));
+    refreshHistory();
+  }, [actionContext, deleteTarget, installments, onInstallmentsChange, refreshHistory]);
 
   const handleMarkPaid = useCallback(
     async (installmentId: string) => {
@@ -396,10 +409,10 @@ export function EstimatePaymentsPanel({
 
   return (
     <div className="px-4 py-4 space-y-6">
-      <div className="space-y-4">
+      <div className="max-w-3xl space-y-4">
         <h2 className="text-base font-semibold">{t("title")}</h2>
 
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4">
           <SummaryMetric
             label={t("summary.estimateValue")}
             value={formatCurrency(customerTotalGross, locale, currency)}
@@ -483,7 +496,7 @@ export function EstimatePaymentsPanel({
                     onMarkUnpaid={handleMarkUnpaid}
                     onRecordPayment={openRecordForm}
                     onEdit={openEditForm}
-                    onDelete={handleDelete}
+                    onDelete={openDeleteDialog}
                     isPending={pendingId === installment.id}
                   />
                 ))}
@@ -506,7 +519,7 @@ export function EstimatePaymentsPanel({
                 onMarkUnpaid={handleMarkUnpaid}
                 onRecordPayment={openRecordForm}
                 onEdit={openEditForm}
-                onDelete={handleDelete}
+                onDelete={openDeleteDialog}
                 isPending={pendingId === installment.id}
               />
             ))}
@@ -528,6 +541,17 @@ export function EstimatePaymentsPanel({
         locale={locale}
         currency={currency}
         onSubmit={handleRecordSubmit}
+      />
+
+      <EstimatePaymentInstallmentDeleteDialog
+        installment={deleteTarget}
+        onOpenChange={(open) => {
+          if (!open && pendingId == null) {
+            setDeleteTarget(null);
+          }
+        }}
+        onConfirm={() => void handleConfirmDelete()}
+        isPending={deleteTarget != null && pendingId === deleteTarget.id}
       />
 
       <EstimatePaymentScheduleReplaceDialog

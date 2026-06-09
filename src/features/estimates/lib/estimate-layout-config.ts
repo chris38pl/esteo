@@ -38,6 +38,13 @@ const estimateLayoutAi = {
   gridColumnRem: 20,
 } as const;
 
+/** Tab card shell: Kosztorys + Podsumowanie = full width; other tabs = narrower reading width */
+const estimateLayoutTabShell = {
+  narrowMaxRem: 64,
+  transitionDurationMs: 300,
+  transitionEasing: "cubic-bezier(0.22, 1, 0.36, 1)",
+} as const;
+
 /** Top band when advanced: context cards (left) vs summary + profitability (right) */
 const estimateLayoutTopBandAdvanced = {
   /** Context 2×2 (< `breakpoints.contextFourCol`) — left needs less width; widen summary/profitability */
@@ -94,6 +101,8 @@ const estimateLayoutTailwind = {
   editorTabsDesktop: "estimate-editor-tabs__desktop",
   editorTabsMobile: "estimate-editor-tabs__mobile",
   editorTabsExpandDesktop: "estimate-editor-tabs__expand-desktop",
+  editorTabShell: "estimate-editor-tab-shell",
+  editorTabShellNarrow: "estimate-editor-tab-shell--narrow",
   headerTitle:
     "estimate-header__title text-xl font-semibold tracking-tight text-foreground",
   headerStatusBadgeMinWidth: `min-w-[${b.headerStatusBadgeMinWidthPx}px]`,
@@ -109,6 +118,7 @@ export const ESTIMATE_LAYOUT_CONFIG = {
   sideColumn: estimateLayoutSideColumn,
   topBandAdvanced: estimateLayoutTopBandAdvanced,
   ai: estimateLayoutAi,
+  tabShell: estimateLayoutTabShell,
   autosave: {
     savedDisplayMs: 2000,
   },
@@ -176,6 +186,11 @@ export const estimateEditorTabsMobileClass = ESTIMATE_LAYOUT_CONFIG.tailwind.edi
 export const estimateEditorTabsExpandDesktopClass =
   ESTIMATE_LAYOUT_CONFIG.tailwind.editorTabsExpandDesktop;
 
+export const estimateEditorTabShellClass = ESTIMATE_LAYOUT_CONFIG.tailwind.editorTabShell;
+
+export const estimateEditorTabShellNarrowClass =
+  ESTIMATE_LAYOUT_CONFIG.tailwind.editorTabShellNarrow;
+
 export const estimateHeaderTitleClass = ESTIMATE_LAYOUT_CONFIG.tailwind.headerTitle;
 
 export const ESTIMATE_HEADER_STATUS_BADGE_MIN_WIDTH =
@@ -199,9 +214,25 @@ export function getEstimateEditorResponsiveCss(): string {
   const topAdvanced = ESTIMATE_LAYOUT_CONFIG.topBandAdvanced;
   const ai = ESTIMATE_LAYOUT_CONFIG.ai;
 
+  const tabShell = ESTIMATE_LAYOUT_CONFIG.tabShell;
+
   return `
 .estimate-editor {
   --estimate-side-column-width: ${side.narrowRem}rem;
+}
+.estimate-editor-tab-shell {
+  width: 100%;
+  max-width: 100%;
+  margin-right: auto;
+  transition: max-width ${tabShell.transitionDurationMs}ms ${tabShell.transitionEasing};
+}
+.estimate-editor-tab-shell--narrow {
+  max-width: ${tabShell.narrowMaxRem}rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .estimate-editor-tab-shell {
+    transition: none;
+  }
 }
 @media ${mediaQueryMin(breakpoints.sideColumnWide)} {
   .estimate-editor {

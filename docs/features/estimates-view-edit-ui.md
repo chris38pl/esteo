@@ -67,7 +67,7 @@ Purpose: context without leaving the screen. Data from `EstimateRequest` + estim
 | Tab | Purpose | MVP |
 | --- | --- | --- |
 | **Estimate** | Items table + toolbar | Yes |
-| **Summary** | Totals breakdown, optional narrative | Yes |
+| **Summary** | Versions, workflow, scope, payments snapshot, client brief, recommendations — see [`estimate-summary.md`](estimate-summary.md) | Yes |
 | **Attachments** | Files for this estimate / request | Yes |
 | History | Activity log (who / when / roughly what) | Yes — see [`estimate-activity-history.md`](estimate-activity-history.md) |
 | Payments | Payment schedule (installment tracker) | Yes — see [`estimate-payments.md`](estimate-payments.md) |

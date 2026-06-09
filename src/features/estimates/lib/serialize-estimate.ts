@@ -34,6 +34,8 @@ export type EstimateForEditorClient = {
     versionNumber: number;
     status: EstimateVersionStatus;
     marginPercent: number;
+    totalNet: number;
+    totalGross: number;
     createdByUserId: string | null;
     updatedAt: string;
   } | null;
@@ -42,6 +44,8 @@ export type EstimateForEditorClient = {
     versionNumber: number;
     status: EstimateVersionStatus;
     marginPercent: number;
+    totalNet: number;
+    totalGross: number;
     createdAt: string;
     createdByUserId: string | null;
     updatedAt: string;
@@ -110,6 +114,8 @@ export function serializeEstimateForEditor(raw: RawEstimate): EstimateForEditorC
           versionNumber: raw.latestVersion.versionNumber,
           status: raw.latestVersion.status,
           marginPercent: toNumber(raw.latestVersion.marginPercent),
+          totalNet: toNumber(raw.latestVersion.totalNet),
+          totalGross: toNumber(raw.latestVersion.totalGross),
           createdByUserId: raw.latestVersion.createdByUserId,
           updatedAt: raw.latestVersion.updatedAt.toISOString(),
         }
@@ -119,6 +125,8 @@ export function serializeEstimateForEditor(raw: RawEstimate): EstimateForEditorC
       versionNumber: version.versionNumber,
       status: version.status,
       marginPercent: toNumber(version.marginPercent),
+      totalNet: toNumber(version.totalNet),
+      totalGross: toNumber(version.totalGross),
       createdAt: version.createdAt.toISOString(),
       createdByUserId: version.createdByUserId,
       updatedAt: version.updatedAt.toISOString(),

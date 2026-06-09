@@ -157,6 +157,14 @@
       "dragHandle": "Drag to reorder",
       "noDueDate": "No due date",
       "deleteConfirm": "Delete this installment?",
+      "deleteDialog": {
+        "title": "Delete installment?",
+        "titleWithName": "Delete \"{name}\"?",
+        "description": "This installment will be permanently removed from the payment schedule. This action cannot be undone.",
+        "cancel": "Cancel",
+        "confirm": "Delete installment",
+        "deleting": "Deleting…"
+      },
       "replaceConfirm": "Replace all existing installments with a new schedule?",
       "dismissOverdueBanner": "Dismiss overdue payments notice",
       "overdueBanner": "{count, plural, one {# overdue payment} other {# overdue payments}}",
@@ -284,6 +292,89 @@
         "attachment_added": "Added attachment \"{fileName}\"",
         "attachment_added_multiple": "Added {count} attachments",
         "attachment_deleted": "Removed attachment \"{fileName}\""
+      }
+    },
+    "summary": {
+      "versions": {
+        "title": "Versions",
+        "shortLabel": "V{n}",
+        "activeBadge": "Active",
+        "manageVersions": "Manage versions",
+        "manageHint": "Actions for the currently selected version V{version}.",
+        "empty": "No estimate versions.",
+        "statusActive": "Active",
+        "statusDraft": "Draft",
+        "statusSent": "Sent to client",
+        "statusArchived": "Archived"
+      },
+      "changes": {
+        "title": "Changes compared to V{n}",
+        "compareTo": "Compare to",
+        "compareWith": "Compare with",
+        "grossDelta": "Gross value change",
+        "addedItems": "+ {count, plural, one {# item} other {# items}}",
+        "addedItemsDesc": "Items added",
+        "removedItems": "− {count, plural, one {# item} other {# items}}",
+        "removedItemsDesc": "Items removed",
+        "noChanges": "No changes compared to the selected version.",
+        "viewDetails": "View details",
+        "detailsSoon": "Coming soon"
+      },
+      "workflow": {
+        "title": "Estimate status",
+        "titleWithVersion": "Estimate status (version {n})",
+        "inquiry": "Inquiry",
+        "inquiryDesc": "Client inquiry received",
+        "estimate": "Estimate",
+        "estimateDesc": "Cost estimate prepared",
+        "sent": "Sent",
+        "sentDesc": "Sent to client",
+        "negotiations": "Negotiations",
+        "negotiationsDesc": "Waiting for response",
+        "acceptance": "Acceptance",
+        "acceptanceDesc": "Waiting for acceptance"
+      },
+      "scope": {
+        "title": "Scope of work",
+        "empty": "No sections in this estimate version.",
+        "showMore": "Show more",
+        "showLess": "Show less"
+      },
+      "payments": {
+        "title": "Payments",
+        "paid": "Paid",
+        "remaining": "Remaining",
+        "overdue": "Overdue"
+      },
+      "brief": {
+        "title": "Client brief",
+        "showMore": "Show more",
+        "showLess": "Show less",
+        "empty": "No project description in the inquiry."
+      },
+      "recommendations": {
+        "title": "Recommendations",
+        "items": {
+          "add_payment_schedule": {
+            "title": "Add a payment schedule",
+            "description": "Makes it easier for the client to decide."
+          },
+          "attach_investment_photos": {
+            "title": "Attach project photos",
+            "description": "More context means a more confident quote."
+          },
+          "generate_pdf": {
+            "title": "Generate a PDF for the client",
+            "description": "A professional document improves acceptance chances."
+          }
+        }
+      },
+      "ai": {
+        "title": "AI summary",
+        "generatedBadge": "Generated",
+        "placeholder": "The AI summary will appear here once generation is connected. This is a layout preview for now.",
+        "regenerate": "Regenerate",
+        "regenerateSoon": "Coming soon"
       }
     },
     "tabPlaceholder": "This tab will be available soon.",

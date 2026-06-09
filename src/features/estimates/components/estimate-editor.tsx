@@ -51,6 +51,7 @@ import type {
 } from "@/features/attachments/lib/serialize-attachments";
 import { EstimateNotesPanel } from "./estimate-notes-panel";
 import { EstimatePaymentsPanel } from "./estimate-payments-panel";
+import { EstimateSummaryPanel } from "./summary/estimate-summary-panel";
 import { EstimateOverduePaymentsBanner } from "./estimate-overdue-payments-banner";
 import { EstimateEditorLayoutStyles } from "./estimate-editor-layout-styles";
 import { EstimateGeneratingSkeleton } from "./estimate-generating-skeleton";
@@ -216,6 +217,7 @@ export function EstimateEditor({
   }, []);
   const [activeTab, setActiveTab] = useState<EstimateEditorTabId>("items");
   const isItemsTab = activeTab === "items";
+  const isWideTabShell = activeTab === "items" || activeTab === "summary";
   const showSideAiPanel =
     showAiPanel && Boolean(activeVersionId) && isAiSideLayout && isItemsTab;
   const aiStickyMaxHeight = useEstimateAiStickyMaxHeight(aiStickyRef, showSideAiPanel);
@@ -725,7 +727,7 @@ export function EstimateEditor({
             <div
               className={cn(
                 estimateEditorTabShellClass,
-                !isItemsTab && estimateEditorTabShellNarrowClass,
+                !isWideTabShell && estimateEditorTabShellNarrowClass,
               )}
             >
               <div className="min-w-0 overflow-hidden rounded-2xl border bg-card/95 shadow-sm">
@@ -772,6 +774,20 @@ export function EstimateEditor({
                   storageSummary={storageSummary}
                   readOnly={isVersionReadOnly}
                   onAttachmentsCountChange={setAttachmentsCount}
+                />
+              ) : activeTab === "summary" ? (
+                <EstimateSummaryPanel
+                  estimate={estimate}
+                  versionTree={versionTree}
+                  activeVersionId={activeVersionId}
+                  activityLogs={initialActivityLogs}
+                  workspaceSlug={workspaceSlug}
+                  locale={locale}
+                  currency={estimateCurrency}
+                  customerTotalGross={customerTotalGross}
+                  installments={paymentInstallments}
+                  attachments={initialAttachments}
+                  onOpenTab={setActiveTab}
                 />
               ) : activeTab === "items" ? (
                 <fieldset

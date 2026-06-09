@@ -157,6 +157,14 @@
       "dragHandle": "Przeciągnij, aby zmienić kolejność",
       "noDueDate": "Brak terminu",
       "deleteConfirm": "Usunąć tę transzę?",
+      "deleteDialog": {
+        "title": "Usunąć transzę?",
+        "titleWithName": "Usunąć „{name}”?",
+        "description": "Transza zostanie trwale usunięta z harmonogramu płatności. Tej operacji nie można cofnąć.",
+        "cancel": "Anuluj",
+        "confirm": "Usuń transzę",
+        "deleting": "Usuwanie…"
+      },
       "replaceConfirm": "Zastąpić wszystkie istniejące transze nowym harmonogramem?",
       "dismissOverdueBanner": "Zamknij informację o zaległych płatnościach",
       "overdueBanner": "{count, plural, one {# zaległa płatność} few {# zaległe płatności} many {# zaległych płatności} other {# zaległych płatności}}",
@@ -284,6 +292,89 @@
         "attachment_added": "Dodano załącznik „{fileName}”",
         "attachment_added_multiple": "Dodano {count} załączników",
         "attachment_deleted": "Usunięto załącznik „{fileName}”"
+      }
+    },
+    "summary": {
+      "versions": {
+        "title": "Wersje",
+        "shortLabel": "V{n}",
+        "activeBadge": "Aktywna",
+        "manageVersions": "Zarządzaj wersjami",
+        "manageHint": "Akcje dla aktualnie wybranej wersji V{version}.",
+        "empty": "Brak wersji kosztorysu.",
+        "statusActive": "Aktywna",
+        "statusDraft": "Szkic",
+        "statusSent": "Wysłana do klienta",
+        "statusArchived": "Archiwalna"
+      },
+      "changes": {
+        "title": "Zmiany w stosunku do V{n}",
+        "compareTo": "Porównaj do",
+        "compareWith": "Porównaj z",
+        "grossDelta": "Zmiana wartości brutto",
+        "addedItems": "+ {count, plural, one {# pozycja} few {# pozycje} many {# pozycji} other {# pozycji}}",
+        "addedItemsDesc": "Dodano pozycji",
+        "removedItems": "− {count, plural, one {# pozycja} few {# pozycje} many {# pozycji} other {# pozycji}}",
+        "removedItemsDesc": "Usunięto pozycji",
+        "noChanges": "Brak zmian w stosunku do wybranej wersji.",
+        "viewDetails": "Zobacz szczegóły",
+        "detailsSoon": "Wkrótce"
+      },
+      "workflow": {
+        "title": "Status wyceny",
+        "titleWithVersion": "Status wyceny (wersja {n})",
+        "inquiry": "Zapytanie",
+        "inquiryDesc": "Otrzymane zapytanie od klienta",
+        "estimate": "Wycena",
+        "estimateDesc": "Przygotowano kosztorys",
+        "sent": "Wysłana",
+        "sentDesc": "Wysłano do klienta",
+        "negotiations": "Negocjacje",
+        "negotiationsDesc": "Oczekujemy na odpowiedź",
+        "acceptance": "Akceptacja",
+        "acceptanceDesc": "Oczekujemy na akceptację"
+      },
+      "scope": {
+        "title": "Zakres prac",
+        "empty": "Brak sekcji w tej wersji kosztorysu.",
+        "showMore": "Pokaż więcej",
+        "showLess": "Pokaż mniej"
+      },
+      "payments": {
+        "title": "Płatności",
+        "paid": "Wpłacono",
+        "remaining": "Pozostało",
+        "overdue": "Zaległe"
+      },
+      "brief": {
+        "title": "Brief klienta",
+        "showMore": "Pokaż więcej",
+        "showLess": "Pokaż mniej",
+        "empty": "Brak opisu projektu w zapytaniu."
+      },
+      "recommendations": {
+        "title": "Rekomendacje",
+        "items": {
+          "add_payment_schedule": {
+            "title": "Dodaj harmonogram płatności",
+            "description": "Ułatwi to klientowi podjęcie decyzji."
+          },
+          "attach_investment_photos": {
+            "title": "Załącz zdjęcia inwestycji",
+            "description": "Więcej kontekstu = większa pewność wyceny."
+          },
+          "generate_pdf": {
+            "title": "Wygeneruj PDF dla klienta",
+            "description": "Profesjonalny dokument zwiększa szansę akceptacji."
+          }
+        }
+      },
+      "ai": {
+        "title": "AI podsumowanie",
+        "generatedBadge": "Wygenerowane",
+        "placeholder": "Podsumowanie AI pojawi się tutaj po podłączeniu generatora. Na razie to podgląd układu karty.",
+        "regenerate": "Wygeneruj ponownie",
+        "regenerateSoon": "Wkrótce"
       }
     },
     "tabPlaceholder": "Ta zakładka będzie dostępna wkrótce.",

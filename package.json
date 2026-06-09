@@ -25,6 +25,8 @@
     "prisma:backfill-attachment-thumbnails": "tsx scripts/backfill-attachment-thumbnails.ts",
     "test:request-attachments": "tsx scripts/test-request-attachment-metadata.ts",
     "test:async-thumbnail-helpers": "tsx scripts/test-async-thumbnail-helpers.ts",
+    "test:compare-estimate-versions": "tsx scripts/verify-compare-estimate-versions.ts",
+    "test:derive-estimate-workflow": "tsx scripts/verify-derive-estimate-workflow-status.ts",
     "prisma:reset": "prisma migrate reset --skip-seed",
     "postinstall": "prisma generate"
   },
