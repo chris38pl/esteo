@@ -24,7 +24,7 @@ interface EstimateMobileSectionSheetProps {
   sections?: SectionData[];
   onRename?: (sectionId: string, title: string) => void;
   onPickSection?: (sectionId: string) => void;
-  onBlur?: () => void;
+  onBlur?: () => void | Promise<void>;
 }
 
 export function EstimateMobileSectionSheet({
@@ -46,10 +46,10 @@ export function EstimateMobileSectionSheet({
     }
   }, [open, section]);
 
-  const handleRenameSave = () => {
+  const handleRenameSave = async () => {
     if (!section || !onRename) return;
     onRename(section.id, title);
-    onBlur?.();
+    await onBlur?.();
     onOpenChange(false);
   };
 

@@ -42,7 +42,7 @@ interface EstimateMobilePositionSheetProps {
   onSave: (itemId: string, data: Partial<Omit<LineItemData, "id" | "sortOrder">>) => void;
   onDuplicate: () => void;
   onDelete: () => void;
-  onBlur: () => void;
+  onBlur: () => void | Promise<void>;
 }
 
 const editRowClassName = "flex gap-3 py-2.5 pl-[22px] pr-[22px]";
@@ -151,7 +151,7 @@ export function EstimateMobilePositionSheet({
     });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!draft) return;
     onSave(draft.id, {
       name: draft.name,
@@ -161,7 +161,7 @@ export function EstimateMobilePositionSheet({
       unitPrice: draft.unitPrice,
       vatRate: draft.vatRate,
     });
-    onBlur();
+    await onBlur();
     onOpenChange(false);
   };
 
@@ -170,7 +170,7 @@ export function EstimateMobilePositionSheet({
     onOpenChange(false);
   };
 
-  const handleDuplicate = () => {
+  const handleDuplicate = async () => {
     onSave(draft.id, {
       name: draft.name,
       unit: draft.unit,
@@ -179,14 +179,14 @@ export function EstimateMobilePositionSheet({
       unitPrice: draft.unitPrice,
       vatRate: draft.vatRate,
     });
-    onBlur();
+    await onBlur();
     onDuplicate();
     onOpenChange(false);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     onDelete();
-    onBlur();
+    await onBlur();
     onOpenChange(false);
   };
 

@@ -41,7 +41,7 @@ interface EstimateItemsViewProps {
   onDeleteItem: (itemId: string) => void;
   onDuplicateItem: (sectionId: string, itemId: string) => void;
   onReorderItems: (sectionId: string, fromIndex: number, toIndex: number) => void;
-  onBlur: () => void;
+  onBlur: () => void | Promise<void>;
   topPanelHidden: boolean;
   onToggleTopPanel: () => void;
   onMobilePositionSheetOpenChange?: (open: boolean) => void;

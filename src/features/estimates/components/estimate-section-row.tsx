@@ -32,7 +32,7 @@ interface EstimateSectionRowProps {
   onUpdateSection: (id: string, title: string) => void;
   onDeleteSection: (id: string) => void;
   onAddItem: (sectionId: string) => void;
-  onBlur: () => void;
+  onBlur: () => void | Promise<void>;
   currency?: string;
   titleColSpan: number;
 }

@@ -1,6 +1,7 @@
 import { Prisma, type EstimateVersionStatus } from "@prisma/client";
 
 import { prisma } from "@/db/client";
+import { isPersistedEntityId } from "@/features/estimates/lib/persisted-entity-id";
 import { syncVersionTotals } from "@/features/estimates/lib/sync-version-totals";
 import { isEstimateVersionEditable } from "@/features/estimates/lib/version-mutability";
 import { PermissionError } from "@/server/permissions/errors";
@@ -128,6 +129,8 @@ export async function getEstimateForEditor(estimateId: string, workspaceId: stri
           versionNumber: true,
           status: true,
           marginPercent: true,
+          totalNet: true,
+          totalGross: true,
           createdByUserId: true,
           updatedAt: true,
         },
@@ -139,6 +142,8 @@ export async function getEstimateForEditor(estimateId: string, workspaceId: stri
           versionNumber: true,
           status: true,
           marginPercent: true,
+          totalNet: true,
+          totalGross: true,
           createdAt: true,
           createdByUserId: true,
           updatedAt: true,
@@ -849,14 +854,77 @@ export async function autoSave(input: {
     return { conflict: true };
   }
 
-  const updateData: Prisma.EstimateVersionUpdateInput = {};
-  if (input.data.marginPercent !== undefined) {
-    updateData.marginPercent = input.data.marginPercent;
-  }
+  const updated = await prisma.$transaction(async (tx) => {
+    const updateData: Prisma.EstimateVersionUpdateInput = {};
+    if (input.data.marginPercent !== undefined) {
+      updateData.marginPercent = input.data.marginPercent;
+    }
 
-  const updated = await prisma.estimateVersion.update({
-    where: { id: input.versionId },
-    data: updateData,
+    if (input.data.sections) {
+      for (const section of input.data.sections) {
+        if (!isPersistedEntityId(section.id)) {
+          console.warn("[estimate autosave] server skipped section without persisted id", {
+            kind: "section",
+            id: section.id,
+            title: section.title,
+          });
+          continue;
+        }
+
+        await tx.estimateSection.updateMany({
+          where: {
+            id: section.id,
+            versionId: input.versionId,
+            workspaceId: input.workspaceId,
+            deletedAt: null,
+          },
+          data: {
+            title: section.title,
+            sortOrder: section.sortOrder,
+          },
+        });
+
+        for (const item of section.items) {
+          if (!isPersistedEntityId(item.id)) {
+            console.warn("[estimate autosave] server skipped line item without persisted id", {
+              kind: "lineItem",
+              id: item.id,
+              sectionId: section.id,
+              name: item.name,
+            });
+            continue;
+          }
+
+          await tx.estimateLineItem.updateMany({
+            where: {
+              id: item.id,
+              workspaceId: input.workspaceId,
+              deletedAt: null,
+              section: {
+                versionId: input.versionId,
+                workspaceId: input.workspaceId,
+                deletedAt: null,
+              },
+            },
+            data: {
+              name: item.name,
+              unit: item.unit ?? null,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              vatRate: item.vatRate,
+              sortOrder: item.sortOrder,
+            },
+          });
+        }
+      }
+
+      await syncVersionTotals(input.versionId, input.workspaceId, tx);
+    }
+
+    return tx.estimateVersion.update({
+      where: { id: input.versionId },
+      data: updateData,
+    });
   });
 
   return { conflict: false, updatedAt: updated.updatedAt };
@@ -875,4 +943,15 @@ export async function getVersionStatus(
     select: { status: true },
   });
   return v?.status ?? null;
+}
+
+export async function getVersionUpdatedAt(
+  versionId: string,
+  workspaceId: string,
+): Promise<string | null> {
+  const version = await prisma.estimateVersion.findFirst({
+    where: { id: versionId, workspaceId },
+    select: { updatedAt: true },
+  });
+  return version?.updatedAt.toISOString() ?? null;
 }

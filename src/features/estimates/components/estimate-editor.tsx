@@ -31,6 +31,8 @@ import {
   ESTIMATE_LAYOUT_CONFIG,
   estimateEditorAiSideGridClass,
   estimateEditorMobileStickyPaddingClass,
+  estimateEditorTabShellClass,
+  estimateEditorTabShellNarrowClass,
   mediaQueryMin,
 } from "@/features/estimates/lib/estimate-layout-config";
 import { useEstimateAiSideLayout } from "@/features/estimates/hooks/use-estimate-ai-side-layout";
@@ -70,6 +72,12 @@ import type {
 } from "@/features/estimates/lib/serialize-ai-messages";
 import type { ProposeEditResult } from "@/features/estimates/lib/estimate-agent-types";
 import { isEstimateVersionEditable } from "@/features/estimates/lib/version-mutability";
+import { sectionsToAutoSaveData } from "@/features/estimates/lib/sections-to-autosave";
+import type { AutoSaveData } from "@/features/estimates/server/repository";
+import {
+  shouldApplyVersionTreeFromServer,
+  versionTreeStructureKey,
+} from "@/features/estimates/lib/version-tree-sync";
 import { cn } from "@/lib/utils";
 import "@/features/estimates/styles/estimate-editor-layout.css";
 
@@ -169,10 +177,21 @@ export function EstimateEditor({
   const [sections, setSections] = useState<SectionData[]>(() =>
     versionTreeToSections(versionTree),
   );
+  const sectionsRef = useRef(sections);
+  sectionsRef.current = sections;
   const [marginPercent, setMarginPercent] = useState<number>(versionTree?.marginPercent ?? 0);
+  const marginPercentRef = useRef(marginPercent);
+  marginPercentRef.current = marginPercent;
   const [versionUpdatedAt, setVersionUpdatedAt] = useState(
     versionTree?.updatedAt ?? new Date().toISOString(),
   );
+  const isDirtyRef = useRef(false);
+  const dirtyGenerationRef = useRef(0);
+  const persistGenerationSnapshotRef = useRef(0);
+  const isSavingRef = useRef(false);
+  const forceApplyVersionTreeRef = useRef(false);
+  const wasGeneratingRef = useRef(false);
+  const lastAppliedStructureRef = useRef(versionTreeStructureKey(versionTree));
   const isAiSideLayout = useEstimateAiSideLayout();
   const [showAiPanel, setShowAiPanel] = useState(false);
   const aiStickyRef = useRef<HTMLDivElement>(null);
@@ -217,29 +236,98 @@ export function EstimateEditor({
     status: v.status,
   }));
 
+  const commitSections = useCallback((updater: (prev: SectionData[]) => SectionData[]) => {
+    const next = updater(sectionsRef.current);
+    sectionsRef.current = next;
+    setSections(next);
+    return next;
+  }, []);
+
+  const markDirty = useCallback(() => {
+    isDirtyRef.current = true;
+    dirtyGenerationRef.current += 1;
+  }, []);
+
+  const buildAutosavePayload = useCallback((): AutoSaveData => {
+    const { sections: sectionsPayload } = sectionsToAutoSaveData(sectionsRef.current);
+    return {
+      marginPercent: marginPercentRef.current,
+      sections: sectionsPayload,
+    };
+  }, []);
+
   const { status: autosaveStatus, save, onBlur: autosaveOnBlur } = useEstimateAutosave({
     versionId: activeVersionId ?? "",
     workspaceId: estimate.workspaceId,
     initialUpdatedAt: versionUpdatedAt,
     locale,
     enabled: !isVersionReadOnly,
+    onPersistStart: () => {
+      isSavingRef.current = true;
+      persistGenerationSnapshotRef.current = dirtyGenerationRef.current;
+    },
+    onPersisted: (updatedAt, { isQueueIdle }) => {
+      isSavingRef.current = false;
+      setVersionUpdatedAt(updatedAt);
+      if (
+        isQueueIdle &&
+        dirtyGenerationRef.current === persistGenerationSnapshotRef.current
+      ) {
+        isDirtyRef.current = false;
+      }
+    },
+    onPersistError: () => {
+      isSavingRef.current = false;
+    },
   });
 
   const applyVersionTree = useCallback((tree: VersionTreeClient | null) => {
-    setSections(versionTreeToSections(tree));
-    setMarginPercent(tree?.marginPercent ?? 0);
+    const nextSections = versionTreeToSections(tree);
+    sectionsRef.current = nextSections;
+    setSections(nextSections);
+    const nextMargin = tree?.marginPercent ?? 0;
+    marginPercentRef.current = nextMargin;
+    setMarginPercent(nextMargin);
     if (tree?.updatedAt) {
       setVersionUpdatedAt(tree.updatedAt);
     }
+    lastAppliedStructureRef.current = versionTreeStructureKey(tree);
   }, []);
 
   useEffect(() => {
-    if (!versionTree || isGenerating) return;
+    if (!versionTree) return;
+
+    const generationJustFinished = wasGeneratingRef.current && !isGenerating;
+
+    if (isGenerating) {
+      wasGeneratingRef.current = true;
+      return;
+    }
+
+    wasGeneratingRef.current = false;
+
+    const forceApply = forceApplyVersionTreeRef.current;
+    if (forceApply) {
+      forceApplyVersionTreeRef.current = false;
+    }
+
+    if (
+      !shouldApplyVersionTreeFromServer({
+        isDirty: isDirtyRef.current,
+        isSaving: isSavingRef.current,
+        generationJustFinished,
+        forceApply,
+      })
+    ) {
+      return;
+    }
+
     applyVersionTree(versionTree);
   }, [versionTree, isGenerating, applyVersionTree]);
 
   const handleAiMutation = useCallback(
     (result: { updatedAt: string; versionTree: VersionTreeClient | null }) => {
+      isDirtyRef.current = false;
       if (result.versionTree) {
         applyVersionTree(result.versionTree);
       } else if (result.updatedAt) {
@@ -252,24 +340,25 @@ export function EstimateEditor({
 
   const triggerSave = useCallback(() => {
     if (!activeVersionId) return;
-    save({ marginPercent });
-  }, [activeVersionId, save, marginPercent]);
+    save(buildAutosavePayload());
+  }, [activeVersionId, save, buildAutosavePayload]);
 
-  const triggerBlurSave = useCallback(() => {
+  const triggerBlurSave = useCallback(async () => {
     if (!activeVersionId) return;
-    autosaveOnBlur({ marginPercent });
-  }, [activeVersionId, autosaveOnBlur, marginPercent]);
+    await autosaveOnBlur(buildAutosavePayload());
+  }, [activeVersionId, autosaveOnBlur, buildAutosavePayload]);
 
   const handleAddSection = async (): Promise<string | undefined> => {
     if (!activeVersionId || isVersionReadOnly) return undefined;
     const result = await addSectionAction({
       versionId: activeVersionId,
       workspaceId: estimate.workspaceId,
+      title: t("editor.newSection"),
       locale,
     });
     if (result.success) {
       const sectionId = result.data.sectionId;
-      setSections((prev) => [
+      commitSections((prev) => [
         ...prev,
         {
           id: sectionId,
@@ -285,15 +374,16 @@ export function EstimateEditor({
 
   const handleUpdateSection = (sectionId: string, title: string) => {
     if (isVersionReadOnly) return;
-    setSections((prev) =>
+    commitSections((prev) =>
       prev.map((s) => (s.id === sectionId ? { ...s, title } : s)),
     );
+    markDirty();
     triggerSave();
   };
 
   const handleDeleteSection = async (sectionId: string) => {
     if (isVersionReadOnly) return;
-    setSections((prev) => prev.filter((s) => s.id !== sectionId));
+    commitSections((prev) => prev.filter((s) => s.id !== sectionId));
     await deleteSectionAction({
       sectionId,
       workspaceId: estimate.workspaceId,
@@ -305,7 +395,7 @@ export function EstimateEditor({
     (nextAdvanced: boolean) => {
       if (isVersionReadOnly) return;
       if (nextAdvanced && !advancedMode) {
-        setSections((prev) =>
+        commitSections((prev) =>
           prev.map((s) => ({
             ...s,
             items: s.items.map((li) => {
@@ -322,7 +412,7 @@ export function EstimateEditor({
           })),
         );
       } else if (!nextAdvanced && advancedMode) {
-        setSections((prev) =>
+        commitSections((prev) =>
           prev.map((s) => ({
             ...s,
             items: s.items.map((li) => ({
@@ -334,31 +424,35 @@ export function EstimateEditor({
       }
       setAdvancedMode(nextAdvanced);
     },
-    [advancedMode, isVersionReadOnly, marginPercent, setAdvancedMode],
+    [advancedMode, isVersionReadOnly, marginPercent, setAdvancedMode, commitSections],
   );
 
   const handleMarginChange = useCallback(
     (value: number) => {
       if (isVersionReadOnly) return;
+      marginPercentRef.current = value;
       setMarginPercent(value);
       if (advancedMode) {
-        setSections((prev) => applyMarginToSections(prev, value));
+        commitSections((prev) => applyMarginToSections(prev, value));
       }
-      if (activeVersionId) save({ marginPercent: value });
+      markDirty();
+      if (activeVersionId) save(buildAutosavePayload());
     },
-    [advancedMode, activeVersionId, isVersionReadOnly, save],
+    [advancedMode, activeVersionId, isVersionReadOnly, save, commitSections, markDirty, buildAutosavePayload],
   );
 
   const handleMarginBlur = useCallback(
     (value: number) => {
       if (isVersionReadOnly) return;
+      marginPercentRef.current = value;
       setMarginPercent(value);
       if (advancedMode) {
-        setSections((prev) => applyMarginToSections(prev, value));
+        commitSections((prev) => applyMarginToSections(prev, value));
       }
-      if (activeVersionId) autosaveOnBlur({ marginPercent: value });
+      markDirty();
+      if (activeVersionId) void autosaveOnBlur(buildAutosavePayload());
     },
-    [advancedMode, activeVersionId, isVersionReadOnly, autosaveOnBlur],
+    [advancedMode, activeVersionId, isVersionReadOnly, autosaveOnBlur, commitSections, markDirty, buildAutosavePayload],
   );
 
   const handleAddItem = async (sectionId: string) => {
@@ -369,7 +463,7 @@ export function EstimateEditor({
       locale,
     });
     if (result.success) {
-      setSections((prev) =>
+      commitSections((prev) =>
         prev.map((s) =>
           s.id === sectionId
             ? {
@@ -399,7 +493,7 @@ export function EstimateEditor({
     data: Partial<Omit<LineItemData, "id" | "sortOrder">>,
   ) => {
     if (isVersionReadOnly) return;
-    setSections((prev) =>
+    commitSections((prev) =>
       prev.map((s) => ({
         ...s,
         items: s.items.map((li) => {
@@ -414,12 +508,13 @@ export function EstimateEditor({
         }),
       })),
     );
+    markDirty();
     triggerSave();
   };
 
   const handleDeleteItem = async (itemId: string) => {
     if (isVersionReadOnly) return;
-    setSections((prev) =>
+    commitSections((prev) =>
       prev.map((s) => ({ ...s, items: s.items.filter((li) => li.id !== itemId) })),
     );
     await deleteLineItemAction({
@@ -453,11 +548,12 @@ export function EstimateEditor({
       sortOrder: sourceSection!.items.length,
     };
 
-    setSections((prev) =>
+    commitSections((prev) =>
       prev.map((s) =>
         s.id === sectionId ? { ...s, items: [...s.items, duplicated] } : s,
       ),
     );
+    markDirty();
     triggerSave();
   };
 
@@ -465,9 +561,8 @@ export function EstimateEditor({
     async (sectionId: string, fromIndex: number, toIndex: number) => {
       if (!activeVersionId || isVersionReadOnly || fromIndex === toIndex) return;
 
-      let nextSections: SectionData[] | undefined;
-      setSections((prev) => {
-        nextSections = prev.map((s) => {
+      const nextSections = commitSections((prev) =>
+        prev.map((s) => {
           if (s.id !== sectionId) return s;
           const items = [...s.items];
           const [moved] = items.splice(fromIndex, 1);
@@ -476,9 +571,8 @@ export function EstimateEditor({
             ...s,
             items: items.map((li, i) => ({ ...li, sortOrder: i })),
           };
-        });
-        return nextSections;
-      });
+        }),
+      );
 
       if (!nextSections) return;
 
@@ -496,7 +590,7 @@ export function EstimateEditor({
         locale,
       });
     },
-    [activeVersionId, estimate.workspaceId, locale],
+    [activeVersionId, estimate.workspaceId, locale, commitSections],
   );
 
   const allItems: LineItemCalcInput[] = sections.flatMap((s) =>
@@ -544,7 +638,11 @@ export function EstimateEditor({
           {t("editor.conflictBanner")}{" "}
           <button
             className="underline underline-offset-4"
-            onClick={() => router.refresh()}
+            onClick={() => {
+              forceApplyVersionTreeRef.current = true;
+              isDirtyRef.current = false;
+              router.refresh();
+            }}
           >
             {t("editor.reload")}
           </button>
@@ -624,7 +722,13 @@ export function EstimateEditor({
               overdueCount={paymentSummary.overdueCount}
               onOpenPayments={() => setActiveTab("payments")}
             />
-            <div className="min-w-0 overflow-hidden rounded-2xl border bg-card/95 shadow-sm">
+            <div
+              className={cn(
+                estimateEditorTabShellClass,
+                !isItemsTab && estimateEditorTabShellNarrowClass,
+              )}
+            >
+              <div className="min-w-0 overflow-hidden rounded-2xl border bg-card/95 shadow-sm">
               <EstimateEditorTabs
                 activeTab={activeTab}
                 onTabChange={setActiveTab}
@@ -714,6 +818,7 @@ export function EstimateEditor({
                   {t("editor.tabPlaceholder")}
                 </div>
               )}
+              </div>
             </div>
           </div>
 

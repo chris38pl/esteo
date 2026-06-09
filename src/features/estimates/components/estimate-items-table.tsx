@@ -32,7 +32,7 @@ interface EstimateItemsTableProps {
   onUpdateItem: (itemId: string, data: Partial<Omit<LineItemData, "id" | "sortOrder">>) => void;
   onDeleteItem: (itemId: string) => void;
   onReorderItems: (sectionId: string, fromIndex: number, toIndex: number) => void;
-  onBlur: () => void;
+  onBlur: () => void | Promise<void>;
   tableSearchQuery?: string;
   tableFilter?: EstimateItemsFilterState;
   scrollToSectionId?: string | null;
@@ -285,7 +285,7 @@ function SectionRows({
     data: Partial<Omit<LineItemData, "id" | "sortOrder">>,
   ) => void;
   onDeleteItem: (itemId: string) => void;
-  onBlur: () => void;
+  onBlur: () => void | Promise<void>;
   tableSearchQuery: string;
   tableFilter?: EstimateItemsFilterState;
   onDragStart: (itemIndex: number) => void;

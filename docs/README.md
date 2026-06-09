@@ -9,6 +9,7 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 | [estimate-requests.md](features/estimate-requests.md) | Public and internal estimate request intake |
 | [estimates.md](features/estimates.md) | Estimates (kosztorysy) — flows, versions, entitlements |
 | [estimates-view-edit-ui.md](features/estimates-view-edit-ui.md) | Estimate view/edit screen UI spec |
+| [estimate-autosave.md](features/estimate-autosave.md) | Estimate editor autosave — section/item persistence, sync guard, conflict queue |
 | [estimate-sections.md](features/estimate-sections.md) | Section templates and workspace overrides |
 | [estimate-pdf-export.md](features/estimate-pdf-export.md) | PDF export (stub) |
 | [estimate-activity-history.md](features/estimate-activity-history.md) | Estimate editor History tab — user-facing activity log |
@@ -51,6 +52,8 @@ estimate-requests.md  →  estimate-ai.md (job)  →  estimates.md
                     estimates-view-edit-ui.md
                          ↓              ↓
               estimate-activity-history.md   estimate-notes.md
+                         ↓
+                 estimate-autosave.md
                               ↓
                     estimate-pdf-export.md (later)
 ```

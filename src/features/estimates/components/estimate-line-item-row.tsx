@@ -38,7 +38,7 @@ interface EstimateLineItemRowProps {
   advancedMode: boolean;
   onUpdate: (id: string, data: Partial<Omit<LineItemData, "id" | "sortOrder">>) => void;
   onDelete: (id: string) => void;
-  onBlur: () => void;
+  onBlur: () => void | Promise<void>;
   isDragging?: boolean;
   isDragOver?: boolean;
   onDragHandleStart: () => void;

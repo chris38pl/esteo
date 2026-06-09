@@ -37,6 +37,7 @@ import {
   addLineItemToSection,
   deleteLineItem,
   deleteSection,
+  getVersionUpdatedAt,
   getVersionWithTree,
   reorderItems,
   type AutoSaveData,
@@ -250,6 +251,23 @@ export async function autoSaveAction(input: {
         updatedAt: result.updatedAt!.toISOString(),
       },
     };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function getVersionUpdatedAtAction(input: {
+  versionId: string;
+  workspaceId: string;
+  locale?: Locale;
+}): Promise<ActionResult<{ updatedAt: string }>> {
+  try {
+    await requireAuth(input.locale ?? "pl");
+    const updatedAt = await getVersionUpdatedAt(input.versionId, input.workspaceId);
+    if (!updatedAt) {
+      return { success: false, error: "Version not found." };
+    }
+    return { success: true, data: { updatedAt } };
   } catch (error) {
     return toActionError(error);
   }

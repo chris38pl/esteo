@@ -25,7 +25,7 @@ interface EstimateItemsMobileListProps {
   onUpdateItem: (itemId: string, data: Partial<Omit<LineItemData, "id" | "sortOrder">>) => void;
   onDeleteItem: (itemId: string) => void;
   onDuplicateItem: (sectionId: string, itemId: string) => void;
-  onBlur: () => void;
+  onBlur: () => void | Promise<void>;
   onPositionSheetOpenChange?: (open: boolean) => void;
 }
 
