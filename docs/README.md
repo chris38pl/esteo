@@ -26,6 +26,7 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 | Document | Description |
 | --- | --- |
 | [backend.md](architecture/backend.md) | Feature folders, server pattern, jobs |
+| [deployment.md](architecture/deployment.md) | Localhost, Vercel Preview/Production, Trigger.dev env mapping |
 | [database.md](architecture/database.md) | Schema, billing, planned estimate models |
 | [ai.md](architecture/ai.md) | Global AI stack and prompt layers |
 | [estimate-ai.md](architecture/estimate-ai.md) | Estimate draft job and agentic edit |

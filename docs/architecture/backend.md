@@ -512,6 +512,8 @@ Use:
 
 Never commit secrets.
 
+Pełna mapa środowisk (localhost, Vercel Preview, Production) i serwisów zewnętrznych: [deployment.md](deployment.md).
+
 Required examples:
 - DATABASE_URL
 - OPENAI_API_KEY
