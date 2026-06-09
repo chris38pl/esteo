@@ -1,5 +1,6 @@
 import { deriveEstimateWorkflowStatus } from "../src/features/estimates/lib/derive-estimate-workflow-status";
 import { ESTIMATE_ACTIVITY_ACTIONS } from "../src/features/estimates/lib/estimate-activity-types";
+import type { EstimateActivityLogClient } from "../src/features/estimates/lib/serialize-estimate-activity";
 
 function assert(condition: boolean, message: string): void {
   if (!condition) {
@@ -69,16 +70,13 @@ const sentViaActivity = deriveEstimateWorkflowStatus({
   activityLogs: [
     {
       id: "log-1",
-      estimateId: "est-1",
-      workspaceId: "ws-1",
       actorType: "USER",
       category: "SHARING",
       action: ESTIMATE_ACTIVITY_ACTIONS.sent_to_customer,
       metadata: { versionNumber: 2 },
       occurredAt: "2026-06-08T10:00:00.000Z",
-      createdAt: "2026-06-08T10:00:00.000Z",
       actor: null,
-    },
+    } satisfies EstimateActivityLogClient,
   ],
 });
 
