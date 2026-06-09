@@ -15,6 +15,30 @@
       "sent": "Wysłane",
       "conversion": "Konwersja"
     },
+    "hero": {
+      "create": {
+        "eyebrow": "Utwórz nową",
+        "title": "Stwórz nową wycenę",
+        "descriptionLine1": "Rozpocznij ręcznie lub skorzystaj z AI Asystenta,",
+        "descriptionLine2": "który przyspieszy przygotowanie wyceny.",
+        "cta": "Nowa wycena"
+      },
+      "form": {
+        "eyebrow": "Twój formularz kontaktowy",
+        "title": "Udostępnij formularz wyceny",
+        "descriptionLine1": "Klienci mogą przesłać zapytanie przez formularz.",
+        "descriptionLine2": "Ty otrzymasz gotowe dane do wyceny.",
+        "cta": "Przejdź do strony publicznej",
+        "shareLabel": "Udostępnij link",
+        "copyLink": "Kopiuj link",
+        "copied": "Skopiowano",
+        "copyFallback": "Skopiuj link do formularza:",
+        "shareMore": "Więcej opcji udostępniania",
+        "shareEmail": "Wyślij e-mailem",
+        "shareEmailSubject": "Formularz wyceny",
+        "shareNative": "Udostępnij…"
+      }
+    },
     "toolbar": {
       "filters": "Filtry",
       "dateRange": "Zakres dat",
@@ -418,6 +442,10 @@
     "retryGenerationPending": "Ponawianie…",
     "retryGenerationError": "Nie udało się wznowić generowania. Spróbuj ponownie.",
     "refreshStatus": "Odśwież, aby sprawdzić status",
+    "aiDraftMissing": "Kosztorys AI nie został wygenerowany.",
+    "aiDraftMissingHint": "Możesz ponowić generowanie AI lub dodać sekcje ręcznie.",
+    "generatingStaleHint": "Generowanie trwa dłużej niż zwykle. Możesz bezpiecznie ponowić próbę.",
+    "generationActive": "Generowanie w toku. Poczekaj chwilę lub spróbuj ponownie, gdy proces się zatrzyma.",
     "mobile": {
       "edit": "Edytuj",
       "duplicate": "Duplikuj",
@@ -466,7 +494,8 @@
       "send": "Wyślij",
       "sendEstimate": "Wyślij wycenę",
       "sendToClient": "Wyślij do klienta",
-      "rename": "Zmień nazwę"
+      "rename": "Zmień nazwę",
+      "generateAiDraft": "Wygeneruj kosztorys AI"
     },
     "rename": {
       "title": "Zmień nazwę wyceny",

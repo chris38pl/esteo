@@ -55,7 +55,7 @@ import { EstimateSummaryPanel } from "./summary/estimate-summary-panel";
 import { EstimateOverduePaymentsBanner } from "./estimate-overdue-payments-banner";
 import { EstimateEditorLayoutStyles } from "./estimate-editor-layout-styles";
 import { EstimateGeneratingSkeleton } from "./estimate-generating-skeleton";
-import { EstimateGenerationFailedBanner } from "./estimate-generation-failed-banner";
+import { EstimateAiDraftRecoveryBanner } from "./estimate-ai-draft-recovery-banner";
 import {
   EstimateEditorTabs,
   type EstimateEditorTabId,
@@ -227,7 +227,7 @@ export function EstimateEditor({
   const requestStatus = estimate.estimateRequest?.status ?? null;
   const isGenerating =
     requestStatus === "PENDING" || requestStatus === "PROCESSING";
-  const generationFailed = requestStatus === "FAILED";
+  const canManualRetryAiDraft = estimate.canManualRetryAiDraft;
 
   const activeVersion = versionTree;
   const versionStatus = activeVersion?.status ?? "DRAFT";
@@ -662,6 +662,7 @@ export function EstimateEditor({
         autosaveStatus={autosaveStatus}
         rulesApplied={rulesApplied}
         isPinned={isPinned}
+        canManualRetryAiDraft={canManualRetryAiDraft}
       />
 
       {!topPanelHidden ? (
@@ -709,6 +710,7 @@ export function EstimateEditor({
           workspaceSlug={workspaceSlug}
           locale={locale}
           initialStatus={requestStatus}
+          initialCanManualRetry={canManualRetryAiDraft}
         />
       ) : (
         <div
@@ -794,12 +796,13 @@ export function EstimateEditor({
                   disabled={isVersionReadOnly}
                   className="min-w-0 border-0 p-0 disabled:opacity-80"
                 >
-                  {generationFailed && sections.length === 0 ? (
-                    <EstimateGenerationFailedBanner
+                  {canManualRetryAiDraft && !isGenerating ? (
+                    <EstimateAiDraftRecoveryBanner
                       estimateId={estimate.id}
                       workspaceId={estimate.workspaceId}
                       workspaceSlug={workspaceSlug}
                       locale={locale}
+                      variant={requestStatus === "FAILED" ? "failed" : "missing"}
                     />
                   ) : null}
                   <EstimateItemsView

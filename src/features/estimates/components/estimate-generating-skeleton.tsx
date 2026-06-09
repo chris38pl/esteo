@@ -16,6 +16,7 @@ interface EstimateGeneratingSkeletonProps {
   workspaceSlug: string;
   locale: Locale;
   initialStatus?: string | null;
+  initialCanManualRetry?: boolean;
 }
 
 export function EstimateGeneratingSkeleton({
@@ -24,15 +25,17 @@ export function EstimateGeneratingSkeleton({
   workspaceSlug,
   locale,
   initialStatus,
+  initialCanManualRetry = false,
 }: EstimateGeneratingSkeletonProps) {
   const t = useTranslations("estimates");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [retryError, setRetryError] = useState<string | null>(null);
 
-  const { status, timedOut } = useGenerationPolling({
+  const { status, showRetry } = useGenerationPolling({
     estimateId,
     initialStatus: (initialStatus ?? "PENDING") as "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED",
+    initialCanManualRetry,
     locale,
     onFinished: (finalStatus) => {
       if (finalStatus === "COMPLETED") {
@@ -60,34 +63,41 @@ export function EstimateGeneratingSkeleton({
     });
   }
 
-  if (timedOut) {
+  if (showRetry) {
+    const isFailed = status === "FAILED";
+
     return (
-      <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-12 text-center">
-        <p className="text-muted-foreground text-sm">{t("editor.generatingTimeout")}</p>
+      <div
+        className={cn(
+          "flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-12 text-center",
+          isFailed && "border-destructive/50 bg-destructive/5",
+        )}
+      >
+        <p
+          className={cn(
+            "text-sm",
+            isFailed ? "font-medium text-destructive" : "text-muted-foreground",
+          )}
+        >
+          {isFailed ? t("editor.generatingFailed") : t("editor.generatingTimeout")}
+        </p>
+        {!isFailed ? (
+          <p className="text-muted-foreground text-xs">{t("editor.generatingStaleHint")}</p>
+        ) : (
+          <p className="text-muted-foreground text-xs">{t("editor.generatingFailedHint")}</p>
+        )}
         <div className="flex flex-wrap items-center justify-center gap-3">
-          <Button type="button" variant="default" size="sm" onClick={handleRetry} disabled={isPending}>
+          <Button type="button" variant={isFailed ? "outline" : "default"} size="sm" onClick={handleRetry} disabled={isPending}>
             {isPending ? t("editor.retryGenerationPending") : t("editor.retryGeneration")}
           </Button>
           <button
+            type="button"
             onClick={() => router.refresh()}
             className="text-sm text-primary underline-offset-4 hover:underline"
           >
             {t("editor.refreshStatus")}
           </button>
         </div>
-        {retryError ? <p className="text-destructive text-xs">{retryError}</p> : null}
-      </div>
-    );
-  }
-
-  if (status === "FAILED") {
-    return (
-      <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-dashed border-destructive/50 bg-destructive/5 p-12 text-center">
-        <p className="text-destructive text-sm font-medium">{t("editor.generatingFailed")}</p>
-        <p className="text-muted-foreground text-xs">{t("editor.generatingFailedHint")}</p>
-        <Button type="button" variant="outline" size="sm" onClick={handleRetry} disabled={isPending}>
-          {isPending ? t("editor.retryGenerationPending") : t("editor.retryGeneration")}
-        </Button>
         {retryError ? <p className="text-destructive text-xs">{retryError}</p> : null}
       </div>
     );

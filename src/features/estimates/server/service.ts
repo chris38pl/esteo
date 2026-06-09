@@ -55,6 +55,7 @@ import {
   type AutoSaveData,
   type AutoSaveResult,
 } from "./repository";
+export { retryEstimateDraftGeneration } from "./retry-estimate-draft-generation";
 
 // ---------------------------------------------------------------------------
 // Internal estimate creation
@@ -175,63 +176,6 @@ export async function createInternalEstimate(
   });
 
   return { estimateId };
-}
-
-export async function retryEstimateDraftGeneration(input: {
-  estimateId: string;
-  workspaceId: string;
-  userId: string;
-  locale: Locale;
-}): Promise<void> {
-  const estimate = await prisma.estimate.findFirst({
-    where: { id: input.estimateId, workspaceId: input.workspaceId, deletedAt: null },
-    include: {
-      estimateRequest: { select: { id: true, status: true, aiMetadata: true } },
-      latestVersion: { select: { id: true } },
-    },
-  });
-
-  if (!estimate?.estimateRequest || !estimate.latestVersion) {
-    throw new Error("ESTIMATE_NOT_FOUND");
-  }
-
-  const retryableStatuses = new Set(["FAILED", "PROCESSING"]);
-  if (!retryableStatuses.has(estimate.estimateRequest.status)) {
-    throw new Error("GENERATION_NOT_RETRYABLE");
-  }
-
-  const sectionCount = await prisma.estimateSection.count({
-    where: { versionId: estimate.latestVersion.id, deletedAt: null },
-  });
-
-  if (sectionCount > 0) {
-    throw new Error("GENERATION_HAS_SECTIONS");
-  }
-
-  await assertVersionEditable(estimate.latestVersion.id, input.workspaceId);
-
-  const priorMetadata =
-    (estimate.estimateRequest.aiMetadata as Record<string, unknown> | null) ?? {};
-
-  await prisma.estimateRequest.update({
-    where: { id: estimate.estimateRequest.id },
-    data: {
-      status: "PENDING",
-      aiMetadata: {
-        ...priorMetadata,
-        retriedAt: new Date().toISOString(),
-        retriedByUserId: input.userId,
-      },
-    },
-  });
-
-  await tasks.trigger<typeof generateEstimateDraftTask>("generate-estimate-draft", {
-    estimateRequestId: estimate.estimateRequest.id,
-    estimateId: estimate.id,
-    versionId: estimate.latestVersion.id,
-    workspaceId: input.workspaceId,
-    locale: input.locale,
-  });
 }
 
 // ---------------------------------------------------------------------------

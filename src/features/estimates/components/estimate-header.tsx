@@ -22,6 +22,7 @@ import { EstimateRulesIndicator } from "./estimate-rules-indicator";
 import { EstimateHeaderPinMenuItem } from "./estimate-header-pin-menu-item";
 import { EstimateHeaderRenameMenuItem } from "./estimate-header-rename-menu-item";
 import { EstimateHeaderVersionMenuItems } from "./estimate-header-version-menu-items";
+import { EstimateHeaderRetryAiMenuItem } from "./estimate-header-retry-ai-menu-item";
 import type { AutoSaveStatus } from "@/features/estimates/hooks/use-estimate-autosave";
 import type { Locale } from "@/lib/locale";
 import {
@@ -63,6 +64,7 @@ interface EstimateHeaderProps {
   autosaveStatus: AutoSaveStatus;
   rulesApplied?: boolean;
   isPinned?: boolean;
+  canManualRetryAiDraft?: boolean;
 }
 
 interface EstimateHeaderMoreMenuProps {
@@ -75,6 +77,7 @@ interface EstimateHeaderMoreMenuProps {
   activeStatus: EstimateVersionStatus;
   versions: Version[];
   isPinned: boolean;
+  canManualRetryAiDraft?: boolean;
   trigger: React.ReactNode;
 }
 
@@ -88,6 +91,7 @@ function EstimateHeaderMoreMenu({
   activeStatus,
   versions,
   isPinned,
+  canManualRetryAiDraft = false,
   trigger,
 }: EstimateHeaderMoreMenuProps) {
   const t = useTranslations("estimates");
@@ -119,6 +123,14 @@ function EstimateHeaderMoreMenu({
           workspaceSlug={workspaceSlug}
           locale={locale}
         />
+        {canManualRetryAiDraft ? (
+          <EstimateHeaderRetryAiMenuItem
+            estimateId={estimateId}
+            workspaceId={workspaceId}
+            workspaceSlug={workspaceSlug}
+            locale={locale}
+          />
+        ) : null}
         <DropdownMenuItem className={headerMoreMenuInlineActionClassName}>
           <Eye className="size-4" />
           {t("header.actions.preview")}
@@ -143,6 +155,7 @@ export function EstimateHeader({
   autosaveStatus,
   rulesApplied = true,
   isPinned = false,
+  canManualRetryAiDraft = false,
 }: EstimateHeaderProps) {
   const t = useTranslations("estimates");
   const activeVersion = versions.find((version) => version.id === activeVersionId) ?? versions[0];
@@ -167,6 +180,7 @@ export function EstimateHeader({
     activeStatus,
     versions,
     isPinned,
+    canManualRetryAiDraft,
   };
 
   return (

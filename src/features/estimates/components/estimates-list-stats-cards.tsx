@@ -19,21 +19,28 @@ function StatCard({
   icon: Icon,
   label,
   value,
+  iconClassName,
   className,
 }: {
   icon: LucideIcon;
   label: string;
   value: string;
+  iconClassName?: string;
   className?: string;
 }) {
   return (
-    <div className={cn("surface-card flex min-w-0 flex-col gap-3 p-5", className)}>
-      <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/8 text-primary ring-1 ring-primary/10">
-        <Icon className="size-5" />
+    <div className={cn("surface-card flex min-w-0 items-center gap-4 p-5", className)}>
+      <span
+        className={cn(
+          "flex size-11 shrink-0 items-center justify-center rounded-xl ring-1",
+          iconClassName,
+        )}
+      >
+        <Icon className="size-5" strokeWidth={2} />
       </span>
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <p className="text-sm text-muted-foreground">{label}</p>
-        <p className="mt-1 truncate text-2xl font-semibold tracking-tight tabular-nums">
+        <p className="mt-0.5 truncate text-2xl font-semibold tracking-tight tabular-nums text-foreground">
           {value}
         </p>
       </div>
@@ -64,10 +71,30 @@ export function EstimatesListStatsCards({ estimates, locale }: EstimatesListStat
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      <StatCard icon={CalendarCheck} label={t("list.stats.total")} value={stats.totalCount} />
-      <StatCard icon={Vault} label={t("list.stats.totalValue")} value={stats.totalValue} />
-      <StatCard icon={Send} label={t("list.stats.sent")} value={stats.sentCount} />
-      <StatCard icon={Clock} label={t("list.stats.conversion")} value={stats.conversion} />
+      <StatCard
+        icon={CalendarCheck}
+        label={t("list.stats.total")}
+        value={stats.totalCount}
+        iconClassName="bg-violet-500/10 text-violet-600 ring-violet-500/15 dark:text-violet-400"
+      />
+      <StatCard
+        icon={Vault}
+        label={t("list.stats.totalValue")}
+        value={stats.totalValue}
+        iconClassName="bg-blue-500/10 text-blue-600 ring-blue-500/15 dark:text-blue-400"
+      />
+      <StatCard
+        icon={Send}
+        label={t("list.stats.sent")}
+        value={stats.sentCount}
+        iconClassName="bg-emerald-500/10 text-emerald-600 ring-emerald-500/15 dark:text-emerald-400"
+      />
+      <StatCard
+        icon={Clock}
+        label={t("list.stats.conversion")}
+        value={stats.conversion}
+        iconClassName="bg-violet-500/10 text-violet-600 ring-violet-500/15 dark:text-violet-400"
+      />
     </div>
   );
 }

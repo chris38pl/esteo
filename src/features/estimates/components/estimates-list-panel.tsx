@@ -1,19 +1,21 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { PaginationControls } from "@/components/shared/pagination-controls";
 import { Button } from "@/components/ui/button";
+import { estimateEditorMaxWidthClass } from "@/features/estimates/lib/estimate-layout-config";
+import type { Locale } from "@/lib/locale";
+import { cn } from "@/lib/utils";
 import { CreateEstimateModal } from "./create-estimate-modal";
+import { EstimateEditorLayoutStyles } from "./estimate-editor-layout-styles";
+import { EstimatesListHeroCards } from "./estimates-list-hero-cards";
 import { EstimatesListStatsCards } from "./estimates-list-stats-cards";
 import { EstimatesListTable } from "./estimates-list-table";
 import { EstimatesListToolbar } from "./estimates-list-toolbar";
-import { estimatePrimaryButtonClassName } from "./estimate-action-button-styles";
 import type { EstimateListPageItem } from "@/features/estimates/server/list-estimates-page-data";
 import type { PublicEstimateRequestPageData } from "@/features/estimate-requests/server/public-service";
-import type { Locale } from "@/lib/locale";
 
 interface EstimatesListPanelProps {
   estimates: EstimateListPageItem[];
@@ -94,20 +96,13 @@ export function EstimatesListPanel({
   const hasFilteredResults = filteredEstimates.length > 0;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0 space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight">{t("page.title")}</h1>
-          <p className="text-sm text-muted-foreground">{t("page.subtitle")}</p>
-        </div>
-        <Button
-          onClick={() => setCreateOpen(true)}
-          className={estimatePrimaryButtonClassName}
-        >
-          <Plus className="size-4" />
-          {t("page.newEstimate")}
-        </Button>
-      </div>
+    <div className={cn("mx-auto min-w-0 w-full space-y-6", estimateEditorMaxWidthClass)}>
+      <EstimateEditorLayoutStyles />
+      <EstimatesListHeroCards
+        workspaceSlug={workspaceSlug}
+        locale={locale}
+        onCreateClick={() => setCreateOpen(true)}
+      />
 
       <EstimatesListStatsCards estimates={estimates} locale={locale} />
 

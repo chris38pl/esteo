@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 
 import type { EstimateAgentPatch } from "@/ai/schemas/estimate-agent-patch";
 import type { ProposeEditResult } from "@/features/estimates/lib/estimate-agent-types";
+import { computeEstimateDraftRecoveryFlags } from "@/features/estimates/lib/estimate-generation-stale";
 import { prisma } from "@/db/client";
 import type { Locale } from "@/lib/locale";
 import {
@@ -477,6 +478,12 @@ export async function retryEstimateGenerationAction(input: {
           error: "Cannot retry AI generation when the estimate already has sections.",
         };
       }
+      if (error.message === "GENERATION_ACTIVE") {
+        return {
+          success: false,
+          error: "Generation is still in progress. Wait a moment and try again.",
+        };
+      }
     }
     return toActionError(error);
   }
@@ -490,15 +497,60 @@ export async function getGenerationStatusAction(
   estimateId: string,
   locale: Locale = "pl",
 ): Promise<
-  ActionResult<{ requestStatus: string | null }>
+  ActionResult<{
+    requestStatus: string | null;
+    sectionCount: number;
+    isStale: boolean;
+    canManualRetry: boolean;
+  }>
 > {
   try {
     await requireAuth(locale);
-    const request = await prisma.estimateRequest.findFirst({
-      where: { estimateId },
-      select: { status: true },
+    const estimate = await prisma.estimate.findFirst({
+      where: { id: estimateId, deletedAt: null },
+      select: {
+        latestVersion: {
+          select: {
+            id: true,
+            status: true,
+            _count: {
+              select: {
+                sections: { where: { deletedAt: null } },
+              },
+            },
+          },
+        },
+        estimateRequest: {
+          select: { status: true, updatedAt: true },
+        },
+      },
     });
-    return { success: true, data: { requestStatus: request?.status ?? null } };
+
+    if (!estimate) {
+      return { success: true, data: { requestStatus: null, sectionCount: 0, isStale: false, canManualRetry: false } };
+    }
+
+    const sectionCount = estimate.latestVersion?._count.sections ?? 0;
+    const request = estimate.estimateRequest;
+    const requestUpdatedAt = request?.updatedAt ?? new Date(0);
+
+    const recoveryFlags = computeEstimateDraftRecoveryFlags({
+      hasEstimateRequest: request != null,
+      status: request?.status,
+      sectionCount,
+      versionStatus: estimate.latestVersion?.status,
+      updatedAt: requestUpdatedAt,
+    });
+
+    return {
+      success: true,
+      data: {
+        requestStatus: request?.status ?? null,
+        sectionCount,
+        isStale: recoveryFlags.isStale,
+        canManualRetry: recoveryFlags.canManualRetryAiDraft,
+      },
+    };
   } catch (error) {
     return toActionError(error);
   }

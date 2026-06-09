@@ -177,7 +177,7 @@ export default async function EstimateEditorPage({
       <SyncDashboardBreadcrumbDetail label={breadcrumbLabel} />
       <EstimateEditor
         key={editorKey}
-        estimate={serializeEstimateForEditor(estimate)}
+        estimate={serializeEstimateForEditor(estimate, sectionCount)}
         versionTree={serializedTree}
         activeVersionId={activeVersionId ?? null}
         workspaceSlug={workspaceSlug}

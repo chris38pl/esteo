@@ -1,5 +1,6 @@
 import type { EstimateRequestStatus, EstimateVersionStatus, Prisma } from "@prisma/client";
 
+import { computeEstimateDraftRecoveryFlags } from "@/features/estimates/lib/estimate-generation-stale";
 import type {
   getEstimateForEditor,
   getVersionWithTree,
@@ -28,6 +29,7 @@ export type EstimateForEditorClient = {
     address: Prisma.JsonValue;
     projectDescription: string;
     createdAt: string;
+    updatedAt: string;
   } | null;
   latestVersion: {
     id: string;
@@ -50,6 +52,10 @@ export type EstimateForEditorClient = {
     createdByUserId: string | null;
     updatedAt: string;
   }>;
+  sectionCount: number;
+  isIncompleteAiDraft: boolean;
+  canManualRetryAiDraft: boolean;
+  isGenerationStale: boolean;
 };
 
 export type VersionTreeClient = {
@@ -88,7 +94,20 @@ export type VersionTreeClient = {
   }>;
 };
 
-export function serializeEstimateForEditor(raw: RawEstimate): EstimateForEditorClient {
+export function serializeEstimateForEditor(
+  raw: RawEstimate,
+  sectionCount = 0,
+): EstimateForEditorClient {
+  const versionStatus = raw.latestVersion?.status ?? null;
+  const requestUpdatedAt = raw.estimateRequest?.updatedAt ?? raw.updatedAt;
+  const recoveryFlags = computeEstimateDraftRecoveryFlags({
+    hasEstimateRequest: raw.estimateRequest != null,
+    status: raw.estimateRequest?.status,
+    sectionCount,
+    versionStatus,
+    updatedAt: requestUpdatedAt,
+  });
+
   return {
     id: raw.id,
     workspaceId: raw.workspaceId,
@@ -106,6 +125,7 @@ export function serializeEstimateForEditor(raw: RawEstimate): EstimateForEditorC
           address: raw.estimateRequest.address,
           projectDescription: raw.estimateRequest.projectDescription,
           createdAt: raw.estimateRequest.createdAt.toISOString(),
+          updatedAt: raw.estimateRequest.updatedAt.toISOString(),
         }
       : null,
     latestVersion: raw.latestVersion
@@ -131,6 +151,10 @@ export function serializeEstimateForEditor(raw: RawEstimate): EstimateForEditorC
       createdByUserId: version.createdByUserId,
       updatedAt: version.updatedAt.toISOString(),
     })),
+    sectionCount,
+    isIncompleteAiDraft: recoveryFlags.isIncompleteAiDraft,
+    canManualRetryAiDraft: recoveryFlags.canManualRetryAiDraft,
+    isGenerationStale: recoveryFlags.isStale,
   };
 }
 

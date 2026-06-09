@@ -15,6 +15,30 @@
       "sent": "Sent",
       "conversion": "Conversion"
     },
+    "hero": {
+      "create": {
+        "eyebrow": "Create new",
+        "title": "Create a new estimate",
+        "descriptionLine1": "Start manually or use the AI assistant,",
+        "descriptionLine2": "which will speed up preparing your estimate.",
+        "cta": "New estimate"
+      },
+      "form": {
+        "eyebrow": "Your contact form",
+        "title": "Share the estimate form",
+        "descriptionLine1": "Clients can submit a request through the form.",
+        "descriptionLine2": "You will receive ready-to-use data for the estimate.",
+        "cta": "Open public page",
+        "shareLabel": "Share link",
+        "copyLink": "Copy link",
+        "copied": "Copied",
+        "copyFallback": "Copy the form link:",
+        "shareMore": "More sharing options",
+        "shareEmail": "Send by email",
+        "shareEmailSubject": "Estimate request form",
+        "shareNative": "Share…"
+      }
+    },
     "toolbar": {
       "filters": "Filters",
       "dateRange": "Date range",
@@ -418,6 +442,10 @@
     "retryGenerationPending": "Retrying…",
     "retryGenerationError": "Could not restart generation. Try again.",
     "refreshStatus": "Refresh to check status",
+    "aiDraftMissing": "The AI cost estimate was not generated.",
+    "aiDraftMissingHint": "You can retry AI generation or add sections manually.",
+    "generatingStaleHint": "Generation is taking longer than usual. You can safely retry.",
+    "generationActive": "Generation is in progress. Wait a moment or try again once it stops.",
     "mobile": {
       "edit": "Edit",
       "duplicate": "Duplicate",
@@ -466,7 +494,8 @@
       "send": "Send",
       "sendEstimate": "Send estimate",
       "sendToClient": "Send to client",
-      "rename": "Rename"
+      "rename": "Rename",
+      "generateAiDraft": "Generate AI cost estimate"
     },
     "rename": {
       "title": "Rename estimate",
