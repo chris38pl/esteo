@@ -28,7 +28,19 @@ export function EstimatesListTable({
 
   return (
     <>
-      <div className="overflow-x-auto">
+      <div className="space-y-3 p-3 md:hidden">
+        {estimates.map((estimate) => (
+          <EstimateListRow
+            key={estimate.id}
+            estimate={estimate}
+            workspaceSlug={workspaceSlug}
+            locale={locale}
+            layout="list"
+          />
+        ))}
+      </div>
+
+      <div className="hidden overflow-x-auto md:block">
         <table className="w-full min-w-[36rem] text-sm">
           <thead className="border-b border-border/60 bg-muted/30">
             <tr>
@@ -60,6 +72,7 @@ export function EstimatesListTable({
                 estimate={estimate}
                 workspaceSlug={workspaceSlug}
                 locale={locale}
+                layout="table"
               />
             ))}
           </tbody>
