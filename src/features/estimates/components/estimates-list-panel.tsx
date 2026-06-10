@@ -6,10 +6,18 @@ import { useTranslations } from "next-intl";
 import { PaginationControls } from "@/components/shared/pagination-controls";
 import { Button } from "@/components/ui/button";
 import { estimateEditorMaxWidthClass } from "@/features/estimates/lib/estimate-layout-config";
+import {
+  EMPTY_ESTIMATE_LIST_DATE_RANGE,
+  EMPTY_ESTIMATE_LIST_FILTER,
+  estimateIsVisible,
+  hasActiveDateRange,
+  hasActiveListFilters,
+} from "@/features/estimates/lib/estimate-list-filter";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import { CreateEstimateModal } from "./create-estimate-modal";
 import { EstimateEditorLayoutStyles } from "./estimate-editor-layout-styles";
+import { EstimatesListFilterSheet } from "./estimates-list-filter-sheet";
 import { EstimatesListHeroCards } from "./estimates-list-hero-cards";
 import { EstimatesListStatsCards } from "./estimates-list-stats-cards";
 import { EstimatesListTable } from "./estimates-list-table";
@@ -27,25 +35,6 @@ interface EstimatesListPanelProps {
 
 const DEFAULT_PAGE_SIZE = 10;
 
-function matchesSearch(estimate: EstimateListPageItem, query: string): boolean {
-  const ctx = estimate.listContext;
-  const request = estimate.estimateRequest;
-  const haystack = [
-    estimate.title,
-    request?.requestNumber,
-    ctx.customerName,
-    ctx.customerEmail,
-    ctx.investmentPropertyType,
-    ctx.investmentStreet,
-    ctx.investmentCity,
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase();
-
-  return haystack.includes(query);
-}
-
 export function EstimatesListPanel({
   estimates,
   createFormData,
@@ -56,14 +45,25 @@ export function EstimatesListPanel({
   const t = useTranslations("estimates");
   const [createOpen, setCreateOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [listFilter, setListFilter] = useState(EMPTY_ESTIMATE_LIST_FILTER);
+  const [dateRange, setDateRange] = useState(EMPTY_ESTIMATE_LIST_DATE_RANGE);
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 
+  const filterActive = hasActiveListFilters(listFilter);
+  const dateRangeActive = hasActiveDateRange(dateRange);
+  const hasActiveQuery =
+    searchQuery.trim().length > 0 || filterActive || dateRangeActive;
+
   const filteredEstimates = useMemo(() => {
-    const normalizedQuery = searchQuery.trim().toLowerCase();
-    const list = normalizedQuery
-      ? estimates.filter((estimate) => matchesSearch(estimate, normalizedQuery))
-      : [...estimates];
+    const list = estimates.filter((estimate) =>
+      estimateIsVisible(estimate, {
+        searchQuery,
+        filter: listFilter,
+        dateRange,
+      }),
+    );
 
     list.sort((a, b) => {
       const aDate = a.latestVersion?.updatedAt ?? a.createdAt;
@@ -72,7 +72,7 @@ export function EstimatesListPanel({
     });
 
     return list;
-  }, [estimates, searchQuery]);
+  }, [estimates, searchQuery, listFilter, dateRange]);
 
   const totalCount = filteredEstimates.length;
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
@@ -84,7 +84,7 @@ export function EstimatesListPanel({
 
   useEffect(() => {
     setPage(1);
-  }, [searchQuery]);
+  }, [searchQuery, listFilter, dateRange]);
 
   useEffect(() => {
     if (page !== safePage) {
@@ -107,7 +107,16 @@ export function EstimatesListPanel({
       <EstimatesListStatsCards estimates={estimates} locale={locale} />
 
       <div className="surface-card overflow-hidden p-0">
-        <EstimatesListToolbar searchQuery={searchQuery} onSearchQueryChange={setSearchQuery} />
+        <EstimatesListToolbar
+          locale={locale}
+          searchQuery={searchQuery}
+          onSearchQueryChange={setSearchQuery}
+          filterActive={filterActive}
+          onOpenFilter={() => setFilterSheetOpen(true)}
+          onClearFilter={() => setListFilter(EMPTY_ESTIMATE_LIST_FILTER)}
+          dateRange={dateRange}
+          onDateRangeChange={setDateRange}
+        />
 
         {!hasEstimates ? (
           <div className="flex flex-col items-center justify-center gap-3 px-6 py-16 text-center">
@@ -118,7 +127,9 @@ export function EstimatesListPanel({
           </div>
         ) : !hasFilteredResults ? (
           <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
-            <p className="text-sm text-muted-foreground">{t("list.noSearchResults")}</p>
+            <p className="text-sm text-muted-foreground">
+              {hasActiveQuery ? t("list.noSearchResults") : t("page.empty")}
+            </p>
           </div>
         ) : (
           <EstimatesListTable
@@ -141,6 +152,16 @@ export function EstimatesListPanel({
           />
         )}
       </div>
+
+      <EstimatesListFilterSheet
+        open={filterSheetOpen}
+        onOpenChange={setFilterSheetOpen}
+        estimates={estimates}
+        searchQuery={searchQuery}
+        appliedDateRange={dateRange}
+        appliedFilter={listFilter}
+        onApply={setListFilter}
+      />
 
       <CreateEstimateModal
         open={createOpen}

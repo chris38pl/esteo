@@ -44,6 +44,75 @@
       "dateRange": "Date range",
       "more": "More"
     },
+    "filter": {
+      "title": "Filter estimates",
+      "close": "Close filters",
+      "fieldsTitle": "Fields and conditions",
+      "clearAll": "Clear all",
+      "addFilter": "Add filter",
+      "chooseField": "Choose field",
+      "closeFieldPicker": "Close field list",
+      "cancelAdd": "Cancel",
+      "removeCondition": "Remove condition",
+      "operatorAria": "Operator",
+      "valueAria": "Value",
+      "logicTitle": "Condition logic",
+      "clear": "Clear",
+      "showResults": "Show results ({count})",
+      "logic": {
+        "and": "AND",
+        "or": "OR"
+      },
+      "valuePlaceholder": {
+        "text": "Enter text",
+        "number": "Enter number",
+        "status": "Select status"
+      },
+      "fields": {
+        "title": "Estimate title",
+        "status": "Status",
+        "requestNumber": "Request number",
+        "customerName": "Client name",
+        "customerEmail": "Client email",
+        "investmentPropertyType": "Investment type",
+        "investmentStreet": "Street",
+        "investmentCity": "City",
+        "totalGross": "Gross value",
+        "totalNet": "Net value",
+        "attachmentCount": "Attachments",
+        "versionCount": "Versions"
+      },
+      "operators": {
+        "contains": "Contains",
+        "equals": "=",
+        "notEquals": "≠",
+        "startsWith": "Starts with",
+        "endsWith": "Ends with",
+        "eq": "=",
+        "neq": "≠",
+        "gt": ">",
+        "gte": "≥",
+        "lt": "<",
+        "lte": "≤"
+      }
+    },
+    "dateRange": {
+      "title": "Date range",
+      "triggerAria": "Choose date range",
+      "fieldLabel": "Filter by",
+      "clear": "Clear",
+      "apply": "Apply",
+      "fields": {
+        "updated": "Last updated",
+        "created": "Created",
+        "requestCreated": "Request created"
+      },
+      "presets": {
+        "last7": "Last 7 days",
+        "last30": "Last 30 days",
+        "thisMonth": "This month"
+      }
+    },
     "columns": {
       "estimate": "Estimate",
       "estimateName": "Estimate name",
@@ -97,12 +166,24 @@
       "ariaLabel": "Estimate tabs",
       "items": "Estimate",
       "summary": "Summary",
+      "documents": "Documents",
       "attachments": "Attachments ({count})",
       "history": "History",
       "payments": "Payments",
       "paymentsWithCount": "Payments ({count})",
       "notes": "Notes",
       "more": "More"
+    },
+    "documents": {
+      "empty": "No generated PDFs yet. Use “Save as PDF” in the header to create a document for the current version.",
+      "itemTitle": "PDF v{version}",
+      "generatedAt": "Generated: {date}",
+      "download": "Download"
+    },
+    "pdfExport": {
+      "saveBeforeExport": "Save your changes before exporting the PDF.",
+      "timeout": "Could not confirm PDF generation. Refresh the page and try again.",
+      "failed": "PDF generation failed. Please try again."
     },
     "toolbar": {
       "importPriceList": "Import from price list",
@@ -494,6 +575,7 @@
       "send": "Send",
       "sendEstimate": "Send estimate",
       "sendToClient": "Send to client",
+      "savePdf": "Save as PDF",
       "rename": "Rename",
       "generateAiDraft": "Generate AI cost estimate"
     },

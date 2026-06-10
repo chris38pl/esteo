@@ -44,6 +44,75 @@
       "dateRange": "Zakres dat",
       "more": "Więcej"
     },
+    "filter": {
+      "title": "Filtrowanie wycen",
+      "close": "Zamknij filtry",
+      "fieldsTitle": "Pola i warunki",
+      "clearAll": "Wyczyść wszystko",
+      "addFilter": "Dodaj filtr",
+      "chooseField": "Wybierz pole",
+      "closeFieldPicker": "Zamknij listę pól",
+      "cancelAdd": "Anuluj",
+      "removeCondition": "Usuń warunek",
+      "operatorAria": "Operator",
+      "valueAria": "Wartość",
+      "logicTitle": "Logika warunków",
+      "clear": "Wyczyść",
+      "showResults": "Pokaż wyniki ({count})",
+      "logic": {
+        "and": "AND (i)",
+        "or": "OR (lub)"
+      },
+      "valuePlaceholder": {
+        "text": "Wpisz tekst",
+        "number": "Wpisz liczbę",
+        "status": "Wybierz status"
+      },
+      "fields": {
+        "title": "Nazwa wyceny",
+        "status": "Status",
+        "requestNumber": "Numer zapytania",
+        "customerName": "Nazwa klienta",
+        "customerEmail": "E-mail klienta",
+        "investmentPropertyType": "Typ inwestycji",
+        "investmentStreet": "Ulica",
+        "investmentCity": "Miasto",
+        "totalGross": "Wartość brutto",
+        "totalNet": "Wartość netto",
+        "attachmentCount": "Załączniki",
+        "versionCount": "Wersje"
+      },
+      "operators": {
+        "contains": "Zawiera",
+        "equals": "=",
+        "notEquals": "≠",
+        "startsWith": "Zaczyna się od",
+        "endsWith": "Kończy się na",
+        "eq": "=",
+        "neq": "≠",
+        "gt": ">",
+        "gte": "≥",
+        "lt": "<",
+        "lte": "≤"
+      }
+    },
+    "dateRange": {
+      "title": "Zakres dat",
+      "triggerAria": "Wybierz zakres dat",
+      "fieldLabel": "Filtruj według",
+      "clear": "Wyczyść",
+      "apply": "Zastosuj",
+      "fields": {
+        "updated": "Ostatnia aktualizacja",
+        "created": "Data utworzenia",
+        "requestCreated": "Data zapytania"
+      },
+      "presets": {
+        "last7": "Ostatnie 7 dni",
+        "last30": "Ostatnie 30 dni",
+        "thisMonth": "Ten miesiąc"
+      }
+    },
     "columns": {
       "estimate": "Wycena",
       "estimateName": "Nazwa wyceny",
@@ -97,12 +166,24 @@
       "ariaLabel": "Zakładki wyceny",
       "items": "Kosztorys",
       "summary": "Podsumowanie",
+      "documents": "Dokumenty",
       "attachments": "Załączniki ({count})",
       "history": "Historia",
       "payments": "Płatności",
       "paymentsWithCount": "Płatności ({count})",
       "notes": "Notatki",
       "more": "Więcej"
+    },
+    "documents": {
+      "empty": "Brak wygenerowanych PDF. Użyj „Zapisz jako PDF” w nagłówku, aby utworzyć dokument dla bieżącej wersji.",
+      "itemTitle": "PDF v{version}",
+      "generatedAt": "Wygenerowano: {date}",
+      "download": "Pobierz"
+    },
+    "pdfExport": {
+      "saveBeforeExport": "Zapisz zmiany przed eksportem PDF.",
+      "timeout": "Nie udało się potwierdzić wygenerowania PDF. Odśwież stronę i spróbuj ponownie.",
+      "failed": "Generowanie PDF nie powiodło się. Spróbuj ponownie."
     },
     "toolbar": {
       "importPriceList": "Import z cennika",
@@ -494,6 +575,7 @@
       "send": "Wyślij",
       "sendEstimate": "Wyślij wycenę",
       "sendToClient": "Wyślij do klienta",
+      "savePdf": "Zapisz jako PDF",
       "rename": "Zmień nazwę",
       "generateAiDraft": "Wygeneruj kosztorys AI"
     },
