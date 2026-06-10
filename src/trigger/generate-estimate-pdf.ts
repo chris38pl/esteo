@@ -35,6 +35,11 @@ export const generateEstimatePdfTask = task({
     });
 
     try {
+      logger.info("Launching PDF browser", {
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+        nodeEnv: process.env.NODE_ENV,
+      });
+
       const result = await generateAndStoreEstimatePdf({
         estimateId: payload.estimateId,
         versionId: payload.versionId,

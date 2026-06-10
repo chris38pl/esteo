@@ -11,5 +11,6 @@ Short postmortems for non-obvious bugs and the patterns that fixed them. Use the
 | 2026-06-07 | [Admin workspace sidebar jump / orphaned estimate](./2026-06-07-admin-workspace-sidebar-jump.md) | After admin Delete/Restore on estimate requests, sidebar workspace changes; deleted request left linked estimate visible |
 | 2026-06-07 | [UploadThing batch upload partial failure (customId)](./2026-06-07-uploadthing-customid-batch-upload-partial-failure.md) | Public form with 7 attachments saves only 1; UT ingest HTTP 500 on long customId paths |
 | 2026-06-08 | [Trigger.dev + Vercel Preview env](./2026-06-08-trigger-dev-vercel-preview.md) | Public estimate submit 500; TRIGGER_SECRET_KEY missing on Preview |
+| 2026-06-10 | [Estimate PDF Chromium on Trigger worker](./2026-06-10-estimate-pdf-chromium-trigger-worker.md) | `generate-estimate-pdf` fails with `libnss3.so`; Sparticuz on wrong runtime |
 
 When adding a new note, name files `YYYY-MM-DD-short-slug.md` and add a row to this table.

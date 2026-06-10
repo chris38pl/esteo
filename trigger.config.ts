@@ -1,5 +1,6 @@
 import { defineConfig } from "@trigger.dev/sdk";
 import { prismaExtension } from "@trigger.dev/build/extensions/prisma";
+import { puppeteer } from "@trigger.dev/build/extensions/puppeteer";
 
 export default defineConfig({
   project: process.env.TRIGGER_PROJECT_ID ?? "proj_qoakmklufatitghsdkqt",
@@ -16,7 +17,10 @@ export default defineConfig({
     },
   },
   build: {
-    external: ["uploadthing", "sharp", "puppeteer-core", "@sparticuz/chromium"],
-    extensions: [prismaExtension({ schema: "prisma/schema.prisma", mode: "legacy" })],
+    external: ["uploadthing", "sharp", "puppeteer-core"],
+    extensions: [
+      prismaExtension({ schema: "prisma/schema.prisma", mode: "legacy" }),
+      puppeteer(),
+    ],
   },
 });

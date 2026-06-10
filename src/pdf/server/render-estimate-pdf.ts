@@ -1,21 +1,22 @@
-import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
 
-import { buildEstimatePdfHtml } from "@/pdf/templates/estimate-pdf-template";
 import type { EstimatePdfViewModel } from "@/pdf/lib/build-pdf-view-model";
+import { buildEstimatePdfHtml } from "@/pdf/templates/estimate-pdf-template";
 
 export async function renderEstimatePdfBuffer(model: EstimatePdfViewModel): Promise<Buffer> {
   const html = buildEstimatePdfHtml(model);
-  const isDev = process.env.NODE_ENV === "development";
+
+  if (!process.env.PUPPETEER_EXECUTABLE_PATH) {
+    throw new Error(
+      "PUPPETEER_EXECUTABLE_PATH is not configured. Trigger.dev Puppeteer extension may not be loaded.",
+    );
+  }
 
   const browser = await puppeteer.launch({
-    args: isDev ? ["--no-sandbox", "--disable-setuid-sandbox"] : chromium.args,
-    defaultViewport: { width: 794, height: 1123 },
-    executablePath: isDev
-      ? process.env.PUPPETEER_EXECUTABLE_PATH ||
-        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
-      : await chromium.executablePath(),
     headless: true,
+    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+    defaultViewport: { width: 794, height: 1123 },
+    args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
   });
 
   try {

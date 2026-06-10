@@ -137,8 +137,14 @@ Preview is not logged in v1.
 
 ## Trigger.dev
 
-- Task id: `generate-estimate-pdf` (`trigger.config.ts` — external: `uploadthing`, `puppeteer-core`, `@sparticuz/chromium`).
+- PDF generation runs on Trigger.dev workers (not on Vercel serverless).
+- Task id: `generate-estimate-pdf` (`trigger.config.ts` — build extension: `puppeteer()`; external: `uploadthing`, `puppeteer-core`, `sharp`).
+- The Trigger.dev Puppeteer extension installs Chrome in the worker image during deploy.
+- `PUPPETEER_EXECUTABLE_PATH` is injected automatically during deploy — do not set it manually in the Trigger dashboard unless the extension env is missing after redeploy.
+- For local `trigger:dev`, define `PUPPETEER_EXECUTABLE_PATH` in `.env.local` (path to your local Chrome; the extension does not install Chrome in dev mode).
 - Worker env must include `UPLOADTHING_TOKEN`, `DATABASE_URL` (see [`deployment.md`](../architecture/deployment.md)).
+- Diagnostic log `Launching PDF browser` (with `executablePath`) is emitted in `generate-estimate-pdf` before rendering.
+- If `PUPPETEER_EXECUTABLE_PATH` is unset, rendering fails with a clear error before Puppeteer launch.
 
 ## Dev diagnostics and logging
 
@@ -175,3 +181,4 @@ UploadThing uses the Effect-TS library. Duplicate `effect` versions (e.g. Prisma
 - [`estimate-attachments.md`](estimate-attachments.md) — user uploads only (separate domain)
 - [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md)
 - [`workspace-branding-and-company-profile.md`](workspace-branding-and-company-profile.md)
+- [Incident: PDF Chromium on Trigger worker](../incidents/2026-06-10-estimate-pdf-chromium-trigger-worker.md)

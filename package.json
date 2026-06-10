@@ -39,7 +39,6 @@
     "@paralleldrive/cuid2": "^3.3.0",
     "@prisma/client": "^6",
     "@radix-ui/react-tooltip": "^1.2.8",
-    "@sparticuz/chromium": "^133.0.0",
     "@teispace/next-themes": "^0.5.0",
     "@trigger.dev/sdk": "4.4.6",
     "ai": "^6.0.195",
