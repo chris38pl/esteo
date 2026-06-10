@@ -18,6 +18,7 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 | [estimate-payments.md](features/estimate-payments.md) | Payment schedule (installment tracker) |
 | [industry-fields.md](features/industry-fields.md) | Dynamic industry fields on documents |
 | [workspace-onboarding.md](features/workspace-onboarding.md) | Workspace creation and onboarding |
+| [workspace-branding-and-company-profile.md](features/workspace-branding-and-company-profile.md) | Company logo (UploadThing) and company profile tab for PDF/client docs |
 | [admin-workspaces.md](features/admin-workspaces.md) | Platform admin workspace tools |
 | [authentication.md](features/authentication.md) | Custom Clerk Elements sign-in, Client Trust, email second-factor |
 

@@ -76,8 +76,8 @@ Contains application domains/features.
 Examples:
 - estimate-requests (implemented)
 - estimates (planned — editor, versions, agent)
-- workspaces
-- attachments (UploadThing + workspace quota — see `docs/features/estimate-attachments.md`)
+- workspaces (settings, branding, company profile — see `docs/features/workspace-branding-and-company-profile.md`)
+- attachments (UploadThing + workspace quota — see `docs/features/estimate-attachments.md`; workspace logos use the same provider but a separate key namespace and **no** attachment quota)
 
 Each feature should be self-contained.
 

@@ -66,6 +66,7 @@ Two namespaces in UploadThing:
 | --- | --- | --- |
 | Estimate request submit | `{workspaceId}/requests/{requestId}/{fileId}/original-{name}` (+ optional `thumb-`) | Upload before DB create |
 | Estimate editor | `{workspaceId}/{estimateId}/{attachmentId}/original-{name}` | Direct upload to estimate |
+| Workspace logo | `{workspaceId}/branding/logo/{fileId}/original-{name}` | Settings → General; **not** in attachment quota — see [workspace branding](workspace-branding-and-company-profile.md) |
 
 Helper: `buildRequestStorageKey()` in `upload-service.ts`.
 
