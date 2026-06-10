@@ -16,7 +16,7 @@ export default defineConfig({
     },
   },
   build: {
-    external: ["uploadthing", "sharp"],
+    external: ["uploadthing", "sharp", "puppeteer-core", "@sparticuz/chromium"],
     extensions: [prismaExtension({ schema: "prisma/schema.prisma", mode: "legacy" })],
   },
 });

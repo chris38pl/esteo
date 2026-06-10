@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils";
 export type EstimateEditorTabId =
   | "items"
   | "summary"
+  | "documents"
   | "attachments"
   | "history"
   | "payments"
@@ -43,6 +44,7 @@ interface EstimateEditorTabsProps {
 const TAB_IDS: EstimateEditorTabId[] = [
   "items",
   "summary",
+  "documents",
   "attachments",
   "history",
   "payments",
@@ -51,7 +53,12 @@ const TAB_IDS: EstimateEditorTabId[] = [
 
 const MOBILE_PINNED_TAB_IDS = ["items", "summary"] as const;
 const MOBILE_DEFAULT_THIRD_TAB: EstimateEditorTabId = "attachments";
-const MOBILE_OVERFLOW_TAB_IDS: EstimateEditorTabId[] = ["history", "payments", "notes"];
+const MOBILE_OVERFLOW_TAB_IDS: EstimateEditorTabId[] = [
+  "documents",
+  "history",
+  "payments",
+  "notes",
+];
 
 function getMobileVisibleTabIds(activeTab: EstimateEditorTabId): EstimateEditorTabId[] {
   const third = MOBILE_OVERFLOW_TAB_IDS.includes(activeTab)

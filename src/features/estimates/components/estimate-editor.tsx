@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEstimateAutosave } from "@/features/estimates/hooks/use-estimate-autosave";
+import { useEstimatePdfExport } from "@/features/estimates/hooks/use-estimate-pdf-export";
+import { useEstimatePdfPreview } from "@/features/estimates/hooks/use-estimate-pdf-preview";
 import { useEstimateAdvancedMode } from "@/features/estimates/hooks/use-estimate-advanced-mode";
 import { useEstimateFocusMode } from "@/features/estimates/hooks/use-estimate-focus-mode";
 import type {
@@ -21,6 +23,8 @@ import type { Locale } from "@/lib/locale";
 import type { LineItemData } from "./estimate-line-item-row";
 import type { SectionData } from "./estimate-items-table";
 import { EstimateHeader } from "./estimate-header";
+import { EstimatePdfPreviewDialog } from "./estimate-pdf-preview-dialog";
+import { EstimatePdfDocumentsSection } from "./estimate-pdf-documents-section";
 import { EstimateMobileStickyBar } from "./estimate-mobile-sticky-bar";
 import { EstimateContextCards } from "./estimate-context-cards";
 import { EstimateItemsView } from "./estimate-items-view";
@@ -49,6 +53,7 @@ import type {
   EstimateAttachmentClient,
   WorkspaceStorageSummaryClient,
 } from "@/features/attachments/lib/serialize-attachments";
+import type { EstimatePdfClient } from "@/features/estimates/lib/serialize-estimate-pdfs";
 import { EstimateNotesPanel } from "./estimate-notes-panel";
 import { EstimatePaymentsPanel } from "./estimate-payments-panel";
 import { EstimateSummaryPanel } from "./summary/estimate-summary-panel";
@@ -98,6 +103,7 @@ interface EstimateEditorProps {
   initialActivityLogs?: EstimateActivityLogClient[];
   initialPaymentInstallments?: PaymentInstallmentClient[];
   initialAttachments?: EstimateAttachmentClient[];
+  initialPdfDocuments?: EstimatePdfClient[];
   storageSummary?: WorkspaceStorageSummaryClient;
   currentUserId?: string;
   currentUserAvatarUrl?: string | null;
@@ -161,6 +167,7 @@ export function EstimateEditor({
   initialActivityLogs = [],
   initialPaymentInstallments = [],
   initialAttachments = [],
+  initialPdfDocuments = [],
   storageSummary = {
     usedBytes: "0",
     limitBytes: "262144000",
@@ -282,6 +289,49 @@ export function EstimateEditor({
       isSavingRef.current = false;
     },
   });
+
+  const ensureSavedBeforePdfExport = useCallback(async (): Promise<boolean> => {
+    if (isVersionReadOnly) {
+      return true;
+    }
+
+    if (!isDirtyRef.current && autosaveStatus !== "saving" && !isSavingRef.current) {
+      return true;
+    }
+
+    await autosaveOnBlur(buildAutosavePayload());
+
+    for (let attempt = 0; attempt < 24; attempt += 1) {
+      if (!isSavingRef.current && !isDirtyRef.current) {
+        return true;
+      }
+
+      await new Promise((resolve) => {
+        setTimeout(resolve, 250);
+      });
+    }
+
+    return false;
+  }, [autosaveOnBlur, autosaveStatus, buildAutosavePayload, isVersionReadOnly]);
+
+  const { exportPdf } = useEstimatePdfExport({
+    estimateId: estimate.id,
+    versionId: activeVersionId,
+    workspaceId: estimate.workspaceId,
+    workspaceSlug,
+    locale,
+    onBeforeExport: ensureSavedBeforePdfExport,
+  });
+
+  const { previewPdf, isPreviewLoading, previewState, closePreview } =
+    useEstimatePdfPreview({
+      estimateId: estimate.id,
+      versionId: activeVersionId,
+      workspaceId: estimate.workspaceId,
+      workspaceSlug,
+      locale,
+      onBeforeExport: ensureSavedBeforePdfExport,
+    });
 
   const applyVersionTree = useCallback((tree: VersionTreeClient | null) => {
     const nextSections = versionTreeToSections(tree);
@@ -663,6 +713,18 @@ export function EstimateEditor({
         rulesApplied={rulesApplied}
         isPinned={isPinned}
         canManualRetryAiDraft={canManualRetryAiDraft}
+        onBeforePdfExport={ensureSavedBeforePdfExport}
+        onPreviewPdf={previewPdf}
+        isPreviewLoading={isPreviewLoading}
+      />
+
+      <EstimatePdfPreviewDialog
+        state={previewState}
+        onOpenChange={(open) => {
+          if (!open) {
+            closePreview();
+          }
+        }}
       />
 
       {!topPanelHidden ? (
@@ -777,6 +839,13 @@ export function EstimateEditor({
                   readOnly={isVersionReadOnly}
                   onAttachmentsCountChange={setAttachmentsCount}
                 />
+              ) : activeTab === "documents" ? (
+                <EstimatePdfDocumentsSection
+                  estimateId={estimate.id}
+                  workspaceId={estimate.workspaceId}
+                  locale={locale}
+                  documents={initialPdfDocuments}
+                />
               ) : activeTab === "summary" ? (
                 <EstimateSummaryPanel
                   estimate={estimate}
@@ -790,6 +859,7 @@ export function EstimateEditor({
                   installments={paymentInstallments}
                   attachments={initialAttachments}
                   onOpenTab={setActiveTab}
+                  onExportPdf={exportPdf}
                 />
               ) : activeTab === "items" ? (
                 <fieldset

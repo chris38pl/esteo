@@ -7,6 +7,7 @@ import type { ReactNode } from "react";
 
 import { NavigationProgress } from "@/components/navigation-progress";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -18,6 +19,7 @@ export function Providers({ children }: { children: ReactNode }) {
     >
       <NavigationProgress />
       <ClerkThemeBridge>{children}</ClerkThemeBridge>
+      <Toaster richColors closeButton position="top-center" />
     </ThemeProvider>
   );
 }

@@ -23,6 +23,7 @@ import { EstimateHeaderPinMenuItem } from "./estimate-header-pin-menu-item";
 import { EstimateHeaderRenameMenuItem } from "./estimate-header-rename-menu-item";
 import { EstimateHeaderVersionMenuItems } from "./estimate-header-version-menu-items";
 import { EstimateHeaderRetryAiMenuItem } from "./estimate-header-retry-ai-menu-item";
+import { EstimateHeaderPdfExportMenuItem } from "./estimate-header-pdf-export-menu-item";
 import type { AutoSaveStatus } from "@/features/estimates/hooks/use-estimate-autosave";
 import type { Locale } from "@/lib/locale";
 import {
@@ -65,6 +66,9 @@ interface EstimateHeaderProps {
   rulesApplied?: boolean;
   isPinned?: boolean;
   canManualRetryAiDraft?: boolean;
+  onBeforePdfExport?: () => Promise<boolean>;
+  onPreviewPdf?: () => void;
+  isPreviewLoading?: boolean;
 }
 
 interface EstimateHeaderMoreMenuProps {
@@ -78,6 +82,9 @@ interface EstimateHeaderMoreMenuProps {
   versions: Version[];
   isPinned: boolean;
   canManualRetryAiDraft?: boolean;
+  onBeforePdfExport?: () => Promise<boolean>;
+  onPreviewPdf?: () => void;
+  isPreviewLoading?: boolean;
   trigger: React.ReactNode;
 }
 
@@ -92,6 +99,9 @@ function EstimateHeaderMoreMenu({
   versions,
   isPinned,
   canManualRetryAiDraft = false,
+  onBeforePdfExport,
+  onPreviewPdf,
+  isPreviewLoading = false,
   trigger,
 }: EstimateHeaderMoreMenuProps) {
   const t = useTranslations("estimates");
@@ -131,7 +141,21 @@ function EstimateHeaderMoreMenu({
             locale={locale}
           />
         ) : null}
-        <DropdownMenuItem className={headerMoreMenuInlineActionClassName}>
+        <EstimateHeaderPdfExportMenuItem
+          estimateId={estimateId}
+          versionId={activeVersionId}
+          workspaceId={workspaceId}
+          workspaceSlug={workspaceSlug}
+          locale={locale}
+          onBeforeExport={onBeforePdfExport}
+        />
+        <DropdownMenuItem
+          className={headerMoreMenuInlineActionClassName}
+          disabled={!onPreviewPdf || isPreviewLoading}
+          onSelect={() => {
+            onPreviewPdf?.();
+          }}
+        >
           <Eye className="size-4" />
           {t("header.actions.preview")}
         </DropdownMenuItem>
@@ -156,6 +180,9 @@ export function EstimateHeader({
   rulesApplied = true,
   isPinned = false,
   canManualRetryAiDraft = false,
+  onBeforePdfExport,
+  onPreviewPdf,
+  isPreviewLoading = false,
 }: EstimateHeaderProps) {
   const t = useTranslations("estimates");
   const activeVersion = versions.find((version) => version.id === activeVersionId) ?? versions[0];
@@ -181,6 +208,9 @@ export function EstimateHeader({
     versions,
     isPinned,
     canManualRetryAiDraft,
+    onBeforePdfExport,
+    onPreviewPdf,
+    isPreviewLoading,
   };
 
   return (
@@ -233,6 +263,8 @@ export function EstimateHeader({
             variant="outline"
             size="sm"
             className={headerInlineActionButtonClassName}
+            disabled={!onPreviewPdf || isPreviewLoading}
+            onClick={() => onPreviewPdf?.()}
           >
             <Eye className="size-4" />
             {t("header.actions.preview")}

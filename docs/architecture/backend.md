@@ -576,7 +576,7 @@ Focus on:
 1. Estimate requests (public + internal auto-request)
 2. AI estimate draft generation ([`estimate-ai.md`](estimate-ai.md))
 3. Estimate view/edit ([`docs/features/estimates.md`](../features/estimates.md), [`estimates-view-edit-ui.md`](../features/estimates-view-edit-ui.md))
-4. PDF export stub → implementation ([`estimate-pdf-export.md`](../features/estimate-pdf-export.md))
+4. PDF export and preview ([`estimate-pdf-export.md`](../features/estimate-pdf-export.md))
 
 Planned in estimate MVP (schema/docs ready):
 - Estimate versioning (v1, v2, …)

@@ -30,6 +30,7 @@ interface EstimateSummaryPanelProps {
   installments: PaymentInstallmentClient[];
   attachments: EstimateAttachmentClient[];
   onOpenTab?: (tab: EstimateEditorTabId) => void;
+  onExportPdf?: () => void;
 }
 
 export function EstimateSummaryPanel({
@@ -44,6 +45,7 @@ export function EstimateSummaryPanel({
   installments,
   attachments,
   onOpenTab,
+  onExportPdf,
 }: EstimateSummaryPanelProps) {
   const resolvedActiveVersionId =
     activeVersionId ?? estimate.latestVersionId ?? estimate.versions[0]?.id ?? "";
@@ -93,6 +95,7 @@ export function EstimateSummaryPanel({
             installments={installments}
             attachments={attachments}
             onOpenTab={onOpenTab}
+            onExportPdf={onExportPdf}
             wide={!showVersionChanges}
           />
         </div>

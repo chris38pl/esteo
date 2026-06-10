@@ -1,7 +1,13 @@
 export interface StorageUploadResult {
   key: string;
+  /** UploadThing customId used for the upload. */
+  customId?: string;
   /** Public CDN URL returned by UploadThing (when available). */
   url?: string;
+}
+
+export interface StorageDeleteOptions {
+  keyType?: "fileKey" | "customId";
 }
 
 export interface StorageProvider {
@@ -17,7 +23,7 @@ export interface StorageProvider {
     fileIndex?: number;
   }): Promise<StorageUploadResult>;
 
-  delete(keys: string[]): Promise<void>;
+  delete(keys: string[], opts?: StorageDeleteOptions): Promise<void>;
 
   getSignedUrl(key: string, opts?: { expiresInSeconds?: number }): Promise<string>;
 

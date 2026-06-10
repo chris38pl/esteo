@@ -9,6 +9,7 @@ import type { EstimateEditorTabId } from "@/features/estimates/components/estima
 import {
   getSummaryRecommendationDefinition,
   resolveSummaryRecommendations,
+  SUMMARY_RECOMMENDATION_IDS,
   type SummaryRecommendationId,
 } from "@/features/estimates/lib/estimate-summary-recommendations-config";
 import type { PaymentInstallmentClient } from "@/features/estimates/lib/serialize-payment-installments";
@@ -21,6 +22,7 @@ interface EstimateSummaryRecommendationsCardProps {
   installments: PaymentInstallmentClient[];
   attachments: EstimateAttachmentClient[];
   onOpenTab?: (tab: EstimateEditorTabId) => void;
+  onExportPdf?: () => void;
   /** Wider card layout — split recommendation items into two columns */
   wide?: boolean;
 }
@@ -72,6 +74,7 @@ export function EstimateSummaryRecommendationsCard({
   installments,
   attachments,
   onOpenTab,
+  onExportPdf,
   wide = false,
 }: EstimateSummaryRecommendationsCardProps) {
   const t = useTranslations("estimates");
@@ -111,9 +114,11 @@ export function EstimateSummaryRecommendationsCard({
         {recommendationIds.map((id) => {
           const definition = getSummaryRecommendationDefinition(id);
           const handleSelect =
-            definition?.targetTab && onOpenTab
-              ? () => onOpenTab(definition.targetTab!)
-              : undefined;
+            id === SUMMARY_RECOMMENDATION_IDS.generate_pdf && onExportPdf
+              ? onExportPdf
+              : definition?.targetTab && onOpenTab
+                ? () => onOpenTab(definition.targetTab!)
+                : undefined;
 
           return <RecommendationRow key={id} id={id} onSelect={handleSelect} />;
         })}

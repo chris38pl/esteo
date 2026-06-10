@@ -175,15 +175,29 @@
       "more": "Więcej"
     },
     "documents": {
-      "empty": "Brak wygenerowanych PDF. Użyj „Zapisz jako PDF” w nagłówku, aby utworzyć dokument dla bieżącej wersji.",
+      "empty": "Brak wygenerowanych PDF. Użyj „Zapisz jako PDF” w menu Więcej, aby utworzyć dokument dla bieżącej wersji.",
       "itemTitle": "PDF v{version}",
       "generatedAt": "Wygenerowano: {date}",
-      "download": "Pobierz"
+      "download": "Pobierz",
+      "opening": "Otwieranie PDF…",
+      "openingHint": "Przygotowujemy podgląd dokumentu."
     },
     "pdfExport": {
       "saveBeforeExport": "Zapisz zmiany przed eksportem PDF.",
+      "generating": "Generowanie PDF…",
+      "generatingHint": "Przygotowujemy dokument. To może potrwać kilka sekund.",
+      "popupBlocked": "PDF otworzył się w nowej karcie lub został pobrany. Jeśli go nie widzisz, sprawdź pobrane pliki.",
       "timeout": "Nie udało się potwierdzić wygenerowania PDF. Odśwież stronę i spróbuj ponownie.",
       "failed": "Generowanie PDF nie powiodło się. Spróbuj ponownie."
+    },
+    "pdfPreview": {
+      "title": "Podgląd PDF",
+      "description": "Podgląd wygenerowanego dokumentu PDF dla bieżącej wersji wyceny.",
+      "loading": "Generowanie podglądu…",
+      "loadingHint": "Przygotowujemy dokument. To może potrwać kilka sekund.",
+      "loadFailed": "Nie udało się wczytać PDF.",
+      "close": "Zamknij",
+      "download": "Pobierz PDF"
     },
     "toolbar": {
       "importPriceList": "Import z cennika",

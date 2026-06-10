@@ -81,5 +81,8 @@
     "trigger.dev": "4.4.6",
     "tsx": "^4.22.3",
     "typescript": "^5"
+  },
+  "overrides": {
+    "effect": "3.17.7"
   }
 }

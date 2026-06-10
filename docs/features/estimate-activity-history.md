@@ -288,8 +288,8 @@ Document and implement when the product ships the underlying feature:
 | Topic | Likely actions / notes |
 | --- | --- |
 | **Send to customer** | `sent_to_customer` (SHARING); may tie to `EstimateVersionStatus.SENT` |
-| **Preview** | New action e.g. `estimate_previewed` or fold into sharing — decide per UX |
-| **Export PDF / XLSX** | `estimate_exported` with `metadata.format` |
+| **Preview** | Optional `estimate_previewed` — not logged in v1 (export logs `estimate_exported`) |
+| **Export PDF** | `estimate_exported` with `metadata.format: "pdf"` — wired in `generate-estimate-pdf` task |
 | **Price-list import** | `imported_from_price_list` or `version_modified` + `source: price_list` |
 | **Status changes** | e.g. draft → sent → archived at estimate or version level — new actions or extend version lifecycle |
 | **Manual version edits** | `version_modified` via `recordVersionContentSaved()` after bulk persistence |
@@ -306,5 +306,5 @@ Document and implement when the product ships the underlying feature:
 - [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md) — editor tabs and layout
 - [`estimate-notes.md`](estimate-notes.md) — internal notes (not activity)
 - [`estimate-payments.md`](estimate-payments.md) — payment schedule + history wiring
-- [`estimate-pdf-export.md`](estimate-pdf-export.md) — export stub (future `estimate_exported`)
+- [`estimate-pdf-export.md`](estimate-pdf-export.md) — export + preview; `estimate_exported` activity
 - [`estimate-ai.md`](../architecture/estimate-ai.md) — AI draft and `approveEdit`

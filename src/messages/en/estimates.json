@@ -175,15 +175,29 @@
       "more": "More"
     },
     "documents": {
-      "empty": "No generated PDFs yet. Use “Save as PDF” in the header to create a document for the current version.",
-      "itemTitle": "PDF v{version}",
+      "empty": "No generated PDFs yet. Use “Save as PDF” in the More menu to create a document for the current version.",
+      "itemTitle": "Estimate PDF v{version}",
       "generatedAt": "Generated: {date}",
-      "download": "Download"
+      "download": "Download",
+      "opening": "Opening PDF…",
+      "openingHint": "Preparing the document preview."
     },
     "pdfExport": {
       "saveBeforeExport": "Save your changes before exporting the PDF.",
+      "generating": "Generating PDF…",
+      "generatingHint": "Preparing your document. This may take a few seconds.",
+      "popupBlocked": "The PDF opened in a new tab or was downloaded. If you do not see it, check your downloads.",
       "timeout": "Could not confirm PDF generation. Refresh the page and try again.",
       "failed": "PDF generation failed. Please try again."
+    },
+    "pdfPreview": {
+      "title": "PDF preview",
+      "description": "Preview of the generated PDF for the current estimate version.",
+      "loading": "Generating preview…",
+      "loadingHint": "Preparing your document. This may take a few seconds.",
+      "loadFailed": "Failed to load PDF.",
+      "close": "Close",
+      "download": "Download PDF"
     },
     "toolbar": {
       "importPriceList": "Import from price list",

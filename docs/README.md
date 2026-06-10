@@ -11,7 +11,7 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 | [estimates-view-edit-ui.md](features/estimates-view-edit-ui.md) | Estimate view/edit screen UI spec |
 | [estimate-autosave.md](features/estimate-autosave.md) | Estimate editor autosave — section/item persistence, sync guard, conflict queue |
 | [estimate-sections.md](features/estimate-sections.md) | Section templates and workspace overrides |
-| [estimate-pdf-export.md](features/estimate-pdf-export.md) | PDF export (stub) |
+| [estimate-pdf-export.md](features/estimate-pdf-export.md) | PDF export, preview, and Dokumenty tab |
 | [estimate-activity-history.md](features/estimate-activity-history.md) | Estimate editor History tab — user-facing activity log |
 | [estimate-summary.md](features/estimate-summary.md) | Estimate editor Summary tab — versions, workflow, scope, payments snapshot, brief, recommendations |
 | [estimate-notes.md](features/estimate-notes.md) | Internal threaded notes on estimates |
@@ -61,7 +61,7 @@ estimate-requests.md  →  estimate-ai.md (job)  →  estimates.md
                          ↓
                  estimate-autosave.md
                               ↓
-                    estimate-pdf-export.md (later)
+                    estimate-pdf-export.md
 ```
 
 Supporting: `estimate-sections.md`, `industry-fields.md`, `database.md`.

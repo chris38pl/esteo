@@ -43,4 +43,8 @@ export type ActivityMetadata = {
   replyCount?: number;
   fileName?: string;
   fileCount?: number;
+  format?: "pdf" | "xlsx";
+  versionId?: string;
+  estimatePdfId?: string;
+  cached?: boolean;
 };

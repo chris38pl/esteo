@@ -46,6 +46,8 @@ import {
   serializeWorkspaceStorageSummary,
 } from "@/features/attachments/lib/serialize-attachments";
 import { getWorkspaceStorageSummary } from "@/features/attachments/server/assert-workspace-storage";
+import { listEstimatePdfsByEstimateId } from "@/features/estimates/server/estimate-pdf-repository";
+import { serializeEstimatePdfs } from "@/features/estimates/lib/serialize-estimate-pdfs";
 
 export default async function EstimateEditorPage({
   params,
@@ -172,6 +174,9 @@ export default async function EstimateEditorPage({
     }),
   );
 
+  const pdfRows = await listEstimatePdfsByEstimateId(estimateId);
+  const initialPdfDocuments = serializeEstimatePdfs(pdfRows);
+
   return (
     <>
       <SyncDashboardBreadcrumbDetail label={breadcrumbLabel} />
@@ -192,6 +197,7 @@ export default async function EstimateEditorPage({
         initialActivityLogs={initialActivityLogs}
         initialPaymentInstallments={initialPaymentInstallments}
         initialAttachments={initialAttachments}
+        initialPdfDocuments={initialPdfDocuments}
         storageSummary={storageSummary}
         currentUserId={user.id}
         currentUserAvatarUrl={user.avatarUrl}

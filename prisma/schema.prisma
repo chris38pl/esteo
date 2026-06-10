@@ -168,6 +168,7 @@ model User {
   estimateNotes        EstimateNote[]
   estimateActivityLogs EstimateActivityLog[]
   estimateAttachments  EstimateAttachment[]
+  estimatePdfs         EstimatePdf[]
 }
 
 model BillingAccount {
@@ -404,8 +405,36 @@ model Estimate {
   activityLogs         EstimateActivityLog[]
   paymentInstallments  PaymentInstallment[]
   attachments          EstimateAttachment[]
+  pdfs                 EstimatePdf[]
 
   @@index([workspaceId])
+}
+
+enum EstimatePdfStatus {
+  PENDING
+  GENERATING
+  READY
+  FAILED
+}
+
+model EstimatePdf {
+  id              String            @id @default(cuid())
+  estimateId      String
+  versionId       String
+  fileKey         String?
+  storageCustomId String?
+  status          EstimatePdfStatus @default(PENDING)
+  errorMessage    String?
+  generatedAt     DateTime          @default(now())
+  generatedLocale String?
+  createdById     String?
+
+  estimate  Estimate        @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+  version   EstimateVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  createdBy User?           @relation(fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@unique([versionId])
+  @@index([estimateId])
 }
 
 model EstimateAttachment {
@@ -510,6 +539,7 @@ model EstimateVersion {
   sections   EstimateSection[]
   revisions  EstimateRevision[]
   aiMessages EstimateAiMessage[]
+  pdf        EstimatePdf?
 
   @@unique([estimateId, versionNumber])
   @@index([estimateId])

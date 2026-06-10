@@ -273,6 +273,19 @@ EstimateAttachment {
   thumbnailStorageKey // images only
 }
 
+// Generated estimate PDFs — separate from user attachments; see docs/features/estimate-pdf-export.md
+EstimatePdf {
+  estimateId
+  versionId           @unique   // one PDF per version
+  fileKey             // UploadThing file key — null until READY
+  storageCustomId     // UploadThing customId from upload
+  status              // PENDING | GENERATING | READY | FAILED
+  errorMessage
+  generatedAt
+  generatedLocale     // UI locale at generation (freshness)
+  createdById
+}
+
 // Undo / agent approve — recommend EstimateRevision snapshots
 EstimateRevision {
   estimateId

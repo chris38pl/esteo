@@ -38,7 +38,7 @@ On narrow viewports: right rail stacks below table; AI panel full-width sheet or
 | Breadcrumbs | Estimates list → project name → version | Yes |
 | Title | Estimate name + “Version N”; inline rename if permitted | Yes |
 | Status badge | Draft / sent / etc. | Draft only in MVP |
-| Preview | Opens read-only preview | Stub |
+| Preview | Opens PDF preview modal (same pipeline as export) | Yes |
 | Share | Shareable link | Post-MVP |
 | More menu | Duplicate, archive, etc. | Post-MVP |
 | Primary CTA | “Wyślij do klienta” / Send to client | Post-MVP |
@@ -183,14 +183,28 @@ Storage: UploadThing; workspace **500 MB** cap (see [`estimate-ai.md`](../archit
 
 ---
 
+## Header actions
+
+| Action | MVP |
+| --- | --- |
+| Podgląd | Yes — modal with blob URL iframe; shared PDF pipeline |
+| Udostępnij | Post-MVP |
+| **Zapisz jako PDF** | Yes — More menu; Trigger.dev generation |
+| Wyślij | Post-MVP (Phase 2) |
+
+## Documents tab
+
+Generated PDFs appear under **Dokumenty** / **Documents** (powered by `EstimatePdf`, not attachments).
+
+---
+
 ## 9. Footer actions
 
 | Action | MVP |
 | --- | --- |
 | Wróć do listy | Yes |
-| Eksportuj PDF | Link to PDF feature (stub) |
 | Duplikuj | Post-MVP |
-| **Zapisz zmiany** | Yes — primary persist |
+| **Zapisz zmiany** | Yes — primary persist (autosave) |
 
 Unsaved changes: warn on navigate away.
 

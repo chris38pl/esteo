@@ -134,17 +134,17 @@ Implementation reference: `src/server/permissions/entitlements.ts` (extend for p
 
 - Header: title, version label, draft status, save
 - Project context cards (inquiry, client, meta)
-- Tabs: **Estimate** (table), **Summary** (totals), **Attachments**
+- Tabs: **Estimate** (table), **Summary** (totals), **Attachments**, **Dokumenty** (generated PDFs)
 - Items table: sections, line items, inline edit, add section/item, reorder
 - Right rail: net / VAT / gross summary, basic margin display
 - AI assistant panel with approve/reject and toggle
 - Rules indicator → settings
-- Footer: back, save; PDF entry links to stub doc
+- Header: **Podgląd** (PDF preview modal), **Zapisz jako PDF** (More menu), autosave
 
 ### Post-MVP (documented, not first ship)
 
 - Tabs: History, Payments, Notes
-- Send to client, share link, preview
+- Send to client, share link
 - Price list import, templates, statements dropdown
 - Full key indicators (cost per m², duration, point count)
 - Duplicate estimate, extended header actions
@@ -172,4 +172,4 @@ Platform admin: internal routes only, not workspace member role.
 - [`estimate-sections.md`](estimate-sections.md) — section templates and AI structure
 - [`estimate-ai.md`](../architecture/estimate-ai.md) — jobs, prompts, quotas
 - [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md) — screen specification
-- [`estimate-pdf-export.md`](estimate-pdf-export.md) — PDF feature (stub)
+- [`estimate-pdf-export.md`](estimate-pdf-export.md) — PDF export, preview, storage lifecycle

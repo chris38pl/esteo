@@ -163,16 +163,21 @@ export class UploadThingStorageProvider implements StorageProvider {
       fullFirstResult: serializeUnknownForLog(first),
     });
 
-    return { key: uploadedKey, url: uploadedUrl };
+    return {
+      key: uploadedKey,
+      customId: first.data?.customId ?? customId,
+      url: uploadedUrl,
+    };
   }
 
-  async delete(keys: string[]): Promise<void> {
+  async delete(keys: string[], opts?: { keyType?: "fileKey" | "customId" }): Promise<void> {
     if (keys.length === 0) {
       return;
     }
 
     const utapi = getUtApi();
-    await utapi.deleteFiles(keys);
+    const keyType = opts?.keyType ?? "fileKey";
+    await utapi.deleteFiles(keys, { keyType });
   }
 
   async getSignedUrl(key: string, opts?: { expiresInSeconds?: number }): Promise<string> {

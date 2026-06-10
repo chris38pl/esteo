@@ -157,6 +157,6 @@ See also: [`estimate-pdf-export.md`](estimate-pdf-export.md).
 ## Related
 
 - [Estimate attachments](estimate-attachments.md) — shared UploadThing / `StorageProvider` pattern
-- [Estimate PDF export (stub)](estimate-pdf-export.md)
+- [Estimate PDF export](estimate-pdf-export.md)
 - [Database — WorkspaceSettings](../architecture/database.md)
 - [Workspace onboarding](workspace-onboarding.md) — settings access (OWNER)

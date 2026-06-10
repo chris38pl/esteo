@@ -139,7 +139,7 @@ Config-driven checklist (`estimate-summary-recommendations-config.ts`).
 | --- | --- | --- |
 | `add_payment_schedule` | No installments | Opens **Payments** tab |
 | `attach_investment_photos` | Fewer than 2 image attachments | Opens **Attachments** tab |
-| `generate_pdf` | Always | No action yet (PDF export stub) |
+| `generate_pdf` | Always | Triggers PDF export from summary recommendations |
 
 Title: **Recommendations** (not “AI recommendations”).
 
@@ -213,10 +213,11 @@ Sub-keys: `versions`, `changes`, `workflow`, `scope`, `payments`, `brief`, `reco
 ## Phase 2 (not implemented)
 
 - AI summary generation and regenerate action  
-- PDF recommendation → export flow  
 - Version changes **View details** drawer (full line-level diff)  
 - Negotiations / acceptance workflow tied to real client events  
 - Manage versions sheet (removed from Summary; version actions remain in header menu)
+
+(PDF recommendation → export flow is implemented — see [`estimate-pdf-export.md`](estimate-pdf-export.md).)
 
 ---
 
