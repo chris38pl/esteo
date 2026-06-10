@@ -38,7 +38,7 @@ function parseWorkspaceSectionRoute(
   pathname: string,
   locale: Locale,
   workspaceSlug: string | null,
-  section: "estimates" | "requests",
+  section: "estimates" | "requests" | "payments",
 ): WorkspaceSectionRoute | null {
   if (!workspaceSlug) {
     return null;
@@ -74,6 +74,14 @@ function parseRequestsRoute(
   workspaceSlug: string | null,
 ): WorkspaceSectionRoute | null {
   return parseWorkspaceSectionRoute(pathname, locale, workspaceSlug, "requests");
+}
+
+function parsePaymentsRoute(
+  pathname: string,
+  locale: Locale,
+  workspaceSlug: string | null,
+): WorkspaceSectionRoute | null {
+  return parseWorkspaceSectionRoute(pathname, locale, workspaceSlug, "payments");
 }
 
 function resolvePageLabelKey(
@@ -127,6 +135,7 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
     : `/${locale}/dashboard`;
   const estimatesRoute = parseEstimatesRoute(pathname, locale, workspaceSlug);
   const requestsRoute = parseRequestsRoute(pathname, locale, workspaceSlug);
+  const paymentsRoute = parsePaymentsRoute(pathname, locale, workspaceSlug);
   const pageKey = resolvePageLabelKey(pathname, locale, section, workspaceSlug);
   const isAdminPath = pathname.startsWith(`/${locale}/dashboard/admin`);
 
@@ -174,6 +183,14 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
         label: detailLabel?.trim() || requestsRoute.id,
       });
     }
+
+    return crumbs;
+  }
+
+  if (paymentsRoute && workspaceSlug) {
+    crumbs.push({
+      label: t("payments"),
+    });
 
     return crumbs;
   }

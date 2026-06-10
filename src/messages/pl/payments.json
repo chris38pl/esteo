@@ -1,0 +1,64 @@
+{
+  "page": {
+    "title": "Płatności",
+    "subtitle": "Przeglądaj wszystkie płatności w jednym miejscu.",
+    "empty": "Brak zaplanowanych płatności. Dodaj harmonogram w zakładce Płatności w wycenie."
+  },
+  "list": {
+    "searchPlaceholder": "Szukaj płatności, klienta, wyceny…",
+    "noSearchResults": "Brak wyników dla podanej frazy.",
+    "noDueDate": "Bez terminu",
+    "unknownClient": "Nieznany klient",
+    "estimateFallback": "Wycena",
+    "stats": {
+      "totalGross": "Wartość brutto",
+      "received": "Otrzymano",
+      "remaining": "Do zapłaty",
+      "overdue": "Po terminie",
+      "count": "Liczba płatności"
+    },
+    "statusTabs": {
+      "label": "Filtruj według statusu",
+      "more": "Więcej filtrów",
+      "ALL": "Wszystkie",
+      "PAID": "Otrzymane",
+      "PARTIAL": "Częściowe",
+      "PENDING": "Oczekujące",
+      "OVERDUE": "Po terminie"
+    },
+    "status": {
+      "PAID": "Opłacone",
+      "PARTIAL": "Częściowo opłacone",
+      "PENDING": "Oczekujące",
+      "OVERDUE": "Po terminie"
+    },
+    "columns": {
+      "payment": "Płatność",
+      "client": "Klient",
+      "estimate": "Wycena",
+      "dueDate": "Termin",
+      "grossValue": "Wartość brutto",
+      "received": "Otrzymano",
+      "remaining": "Pozostało",
+      "status": "Status"
+    },
+    "dateRange": {
+      "title": "Zakres dat",
+      "placeholder": "Zakres dat",
+      "range": "{from} – {to}",
+      "fromOnly": "Od {from}",
+      "toOnly": "Do {to}",
+      "clear": "Wyczyść",
+      "apply": "Zastosuj",
+      "presets": {
+        "last30": "Ostatnie 30 dni",
+        "thisMonth": "Ten miesiąc",
+        "next30": "Następne 30 dni"
+      }
+    },
+    "actions": {
+      "more": "Więcej akcji",
+      "openEstimate": "Otwórz wycenę"
+    }
+  }
+}

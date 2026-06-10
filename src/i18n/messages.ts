@@ -7,6 +7,7 @@ import enCommon from "@/messages/en/common.json";
 import enDashboard from "@/messages/en/dashboard.json";
 import enEstimateRequests from "@/messages/en/estimateRequests.json";
 import enEstimates from "@/messages/en/estimates.json";
+import enPayments from "@/messages/en/payments.json";
 import enRequests from "@/messages/en/requests.json";
 import enNavbar from "@/messages/en/navbar.json";
 import enSidebar from "@/messages/en/sidebar.json";
@@ -19,6 +20,7 @@ import plCommon from "@/messages/pl/common.json";
 import plDashboard from "@/messages/pl/dashboard.json";
 import plEstimateRequests from "@/messages/pl/estimateRequests.json";
 import plEstimates from "@/messages/pl/estimates.json";
+import plPayments from "@/messages/pl/payments.json";
 import plRequests from "@/messages/pl/requests.json";
 import plNavbar from "@/messages/pl/navbar.json";
 import plSidebar from "@/messages/pl/sidebar.json";
@@ -33,6 +35,7 @@ export const namespaces = [
   "dashboard",
   "estimateRequests",
   "estimates",
+  "payments",
   "requests",
   "sidebar",
   "styleguide",
@@ -56,6 +59,7 @@ type MessagesByNamespace = {
   dashboard: typeof enDashboard;
   estimateRequests: typeof enEstimateRequests;
   estimates: typeof enEstimates;
+  payments: typeof enPayments;
   requests: typeof enRequests;
   navbar: typeof enNavbar;
   sidebar: typeof enSidebar;
@@ -77,6 +81,7 @@ function forLocale(locale: Locale): Messages {
         dashboard: plDashboard,
         estimateRequests: plEstimateRequests,
         estimates: plEstimates,
+        payments: plPayments,
         requests: plRequests,
         navbar: plNavbar,
         sidebar: plSidebar,
@@ -91,6 +96,7 @@ function forLocale(locale: Locale): Messages {
         dashboard: enDashboard,
         estimateRequests: enEstimateRequests,
         estimates: enEstimates,
+        payments: enPayments,
         requests: enRequests,
         navbar: enNavbar,
         sidebar: enSidebar,

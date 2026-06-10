@@ -4,6 +4,7 @@
     "requests": "Requests",
     "estimateRequestPage": "Estimate request page",
     "estimates": "Estimates",
+    "payments": "Payments",
     "settings": "Settings",
     "settingsOwnerOnly": "Only workspace owners can change settings"
   },

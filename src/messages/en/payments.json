@@ -1,0 +1,64 @@
+{
+  "page": {
+    "title": "Payments",
+    "subtitle": "Browse all payments in one place.",
+    "empty": "No scheduled payments yet. Add a payment schedule in the Payments tab of an estimate."
+  },
+  "list": {
+    "searchPlaceholder": "Search payments, clients, estimates…",
+    "noSearchResults": "No results for your search.",
+    "noDueDate": "No due date",
+    "unknownClient": "Unknown client",
+    "estimateFallback": "Estimate",
+    "stats": {
+      "totalGross": "Gross value",
+      "received": "Received",
+      "remaining": "To pay",
+      "overdue": "Overdue",
+      "count": "Payment count"
+    },
+    "statusTabs": {
+      "label": "Filter by status",
+      "more": "More filters",
+      "ALL": "All",
+      "PAID": "Received",
+      "PARTIAL": "Partial",
+      "PENDING": "Pending",
+      "OVERDUE": "Overdue"
+    },
+    "status": {
+      "PAID": "Paid",
+      "PARTIAL": "Partially paid",
+      "PENDING": "Pending",
+      "OVERDUE": "Overdue"
+    },
+    "columns": {
+      "payment": "Payment",
+      "client": "Client",
+      "estimate": "Estimate",
+      "dueDate": "Due date",
+      "grossValue": "Gross value",
+      "received": "Received",
+      "remaining": "Remaining",
+      "status": "Status"
+    },
+    "dateRange": {
+      "title": "Date range",
+      "placeholder": "Date range",
+      "range": "{from} – {to}",
+      "fromOnly": "From {from}",
+      "toOnly": "Until {to}",
+      "clear": "Clear",
+      "apply": "Apply",
+      "presets": {
+        "last30": "Last 30 days",
+        "thisMonth": "This month",
+        "next30": "Next 30 days"
+      }
+    },
+    "actions": {
+      "more": "More actions",
+      "openEstimate": "Open estimate"
+    }
+  }
+}

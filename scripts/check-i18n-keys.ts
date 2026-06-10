@@ -45,6 +45,7 @@ const namespaces = [
   "dashboard",
   "estimateRequests",
   "estimates",
+  "payments",
   "navbar",
   "requests",
   "sidebar",

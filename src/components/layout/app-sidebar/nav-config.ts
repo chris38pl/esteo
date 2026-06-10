@@ -1,5 +1,12 @@
 import type { LucideIcon } from "lucide-react";
-import { BarChart3, ClipboardList, FileText, LayoutDashboard, Settings } from "lucide-react";
+import {
+  BarChart3,
+  ClipboardList,
+  FileText,
+  LayoutDashboard,
+  Settings,
+  Wallet,
+} from "lucide-react";
 
 import type { Locale } from "@/lib/locale";
 import { getPublicEstimateRequestPath } from "@/features/estimate-requests/routes";
@@ -9,6 +16,7 @@ export type NavItemKey =
   | "requests"
   | "estimateRequestPage"
   | "estimates"
+  | "payments"
   | "settings";
 
 export type SidebarNavItem = {
@@ -58,6 +66,15 @@ export const navItems: SidebarNavItem[] = [
         ? `/${locale}/dashboard/${workspaceSlug}/estimates`
         : `/${locale}/dashboard`,
     labelKey: "nav.estimates",
+  },
+  {
+    key: "payments",
+    icon: Wallet,
+    href: (locale, workspaceSlug) =>
+      workspaceSlug
+        ? `/${locale}/dashboard/${workspaceSlug}/payments`
+        : `/${locale}/dashboard`,
+    labelKey: "nav.payments",
   },
   {
     key: "settings",
