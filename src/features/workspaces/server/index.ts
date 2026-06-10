@@ -16,10 +16,12 @@ export {
   listWorkspaceRulesAction,
   revokeWorkspaceInvitationAction,
   updateWorkspaceAction,
+  updateWorkspaceCompanyProfileAction,
   updateWorkspaceProfileAction,
   updateWorkspaceRuleAction,
   updateWorkspaceEstimateSectionsAction,
   resetWorkspaceEstimateSectionsAction,
+  removeWorkspaceLogoAction,
   updateWorkspaceSettingsAction,
 } from "@/features/workspaces/server/actions";
 export { getWorkspacePromptContext } from "@/features/workspaces/server/service";

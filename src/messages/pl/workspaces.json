@@ -140,12 +140,52 @@
     "save": "Zapisz zmiany",
     "saving": "Zapisywanie…",
     "saved": "Zmiany zapisane.",
+    "logo": {
+      "label": "Logo firmy",
+      "hint": "PNG, JPG lub WebP, maks. 2 MB. Najlepiej kwadratowe tło lub przezroczyste.",
+      "dropHint": "Upuść plik tutaj lub wybierz z dysku",
+      "upload": "Wgraj logo",
+      "change": "Zmień logo",
+      "remove": "Usuń logo",
+      "uploading": "Wgrywanie… {percent}%",
+      "removeConfirmTitle": "Usunąć logo firmy?",
+      "removeConfirmDescription": "Logo zostanie trwale usunięte z tej przestrzeni. Możesz wgrać nowe w dowolnym momencie.",
+      "removeConfirmCancel": "Anuluj",
+      "removeConfirmAction": "Usuń logo",
+      "removing": "Usuwanie…",
+      "errors": {
+        "uploadFailed": "Nie udało się wgrać logo. Spróbuj ponownie.",
+        "invalidType": "Dozwolone formaty: PNG, JPG, WebP.",
+        "tooLarge": "Plik jest za duży (maks. 2 MB)."
+      }
+    },
     "tabs": {
       "general": "Ogólne",
+      "company": "Dane",
       "users": "Użytkownicy",
       "rules": "Reguły",
+      "companyDescription": "Dane firmy widoczne na dokumentach dla klienta — adres, NIP, kontakt.",
       "usersDescription": "Zarządzaj członkami przestrzeni i zaproszeniami do współpracy.",
       "rulesDescription": "Definiuj reguły AI używane przy generowaniu wycen i odpowiedzi."
+    },
+    "company": {
+      "nameLabel": "Nazwa firmy",
+      "nameHint": "Nazwę edytujesz w zakładce Ogólne.",
+      "addressLabel": "Adres",
+      "addressPlaceholder": "ul. Przykładowa 1, 00-000 Warszawa",
+      "taxIdLabel": "NIP",
+      "taxIdPlaceholder": "0000000000",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "kontakt@firma.pl",
+      "phoneLabel": "Telefon",
+      "phonePlaceholder": "+48 123 456 789",
+      "saved": "Dane firmy zapisane.",
+      "errors": {
+        "generic": "Sprawdź wprowadzone dane i spróbuj ponownie.",
+        "invalidTaxId": "NIP musi składać się z 10 cyfr.",
+        "invalidEmail": "Podaj prawidłowy adres e-mail.",
+        "invalidPhone": "Telefon musi mieć od 6 do 40 znaków."
+      }
     },
     "users": {
       "membersTitle": "Członkowie",

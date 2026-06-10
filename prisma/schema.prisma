@@ -256,6 +256,10 @@ model WorkspaceSettings {
   branding           Json?
   aiInstructions     String?
   companyDescription String?
+  companyAddress     String?
+  companyTaxId       String?
+  companyEmail       String?
+  companyPhone       String?
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 

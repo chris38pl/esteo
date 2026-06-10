@@ -122,6 +122,10 @@ export async function updateWorkspaceSettingsRecord(
     branding?: WorkspaceBranding | null;
     aiInstructions?: string | null;
     companyDescription?: string | null;
+    companyAddress?: string | null;
+    companyTaxId?: string | null;
+    companyEmail?: string | null;
+    companyPhone?: string | null;
   },
 ) {
   return prisma.workspaceSettings.upsert({
@@ -131,11 +135,19 @@ export async function updateWorkspaceSettingsRecord(
       branding: data.branding ?? undefined,
       aiInstructions: data.aiInstructions ?? undefined,
       companyDescription: data.companyDescription ?? undefined,
+      companyAddress: data.companyAddress ?? undefined,
+      companyTaxId: data.companyTaxId ?? undefined,
+      companyEmail: data.companyEmail ?? undefined,
+      companyPhone: data.companyPhone ?? undefined,
     },
     update: {
       branding: data.branding ?? undefined,
       aiInstructions: data.aiInstructions ?? undefined,
       companyDescription: data.companyDescription ?? undefined,
+      companyAddress: data.companyAddress ?? undefined,
+      companyTaxId: data.companyTaxId ?? undefined,
+      companyEmail: data.companyEmail ?? undefined,
+      companyPhone: data.companyPhone ?? undefined,
     },
   });
 }

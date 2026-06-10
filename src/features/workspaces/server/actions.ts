@@ -12,6 +12,8 @@ import {
   workspaceEstimateSectionsSchema,
 } from "@/features/workspaces/schemas/estimate-sections";
 import { findWorkspaceSettings } from "@/features/workspaces/server/repository";
+import { removeWorkspaceLogo } from "@/features/workspaces/server/logo-service";
+import { updateWorkspaceCompanyProfileSchema } from "@/features/workspaces/schemas/company-profile";
 import { updateWorkspaceProfileSchema } from "@/features/workspaces/schemas/update-workspace-profile";
 import {
   acceptWorkspaceInvitation,
@@ -30,6 +32,7 @@ import {
   listReceivedInvitationsForUser,
   listWorkspaceRules,
   revokeWorkspaceInvitation,
+  updateWorkspaceCompanyProfile,
   updateWorkspaceDetails,
   updateWorkspaceProfile,
   updateWorkspaceRule,
@@ -182,6 +185,41 @@ export async function updateWorkspaceSettingsAction(
     const settings = await updateWorkspaceSettings(user, workspaceId, input);
     revalidatePath(`/${locale}/dashboard`, "layout");
     return { success: true as const, data: settings };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function updateWorkspaceCompanyProfileAction(
+  workspaceId: string,
+  input: {
+    companyAddress?: string | null;
+    companyTaxId?: string | null;
+    companyEmail?: string | null;
+    companyPhone?: string | null;
+  },
+  locale: Locale = "pl",
+) {
+  try {
+    const user = await requireAuth(locale);
+    const parsed = updateWorkspaceCompanyProfileSchema.parse(input);
+    const settings = await updateWorkspaceCompanyProfile(user, workspaceId, parsed);
+    revalidatePath(`/${locale}/dashboard`, "layout");
+    return { success: true as const, data: settings };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function removeWorkspaceLogoAction(
+  workspaceId: string,
+  locale: Locale = "pl",
+) {
+  try {
+    const user = await requireAuth(locale);
+    await removeWorkspaceLogo(user, workspaceId);
+    revalidatePath(`/${locale}/dashboard`, "layout");
+    return { success: true as const };
   } catch (error) {
     return toActionError(error);
   }

@@ -6,6 +6,7 @@ import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 
 import { CompanyDescriptionField } from "@/features/workspaces/components/company-description-field";
+import { WorkspaceLogoField } from "@/features/workspaces/components/workspace-logo-field";
 import {
   WorkspaceIconPicker,
   type WorkspaceIconKey,
@@ -21,6 +22,7 @@ export function WorkspaceSettingsForm({
   workspaceId,
   initialName,
   initialCompanyDescription,
+  initialLogoUrl,
   appearanceTheme,
   onPendingChange,
   locale,
@@ -28,6 +30,7 @@ export function WorkspaceSettingsForm({
   workspaceId: string;
   initialName: string;
   initialCompanyDescription: string;
+  initialLogoUrl: string | null;
   appearanceTheme: WorkspaceAppearanceTheme;
   onPendingChange?: (pending: boolean) => void;
   locale: Locale;
@@ -108,6 +111,12 @@ export function WorkspaceSettingsForm({
         onChange={setCompanyDescription}
         disabled={isPending}
         variant="create"
+      />
+
+      <WorkspaceLogoField
+        workspaceId={workspaceId}
+        initialLogoUrl={initialLogoUrl}
+        locale={locale}
       />
 
       {error ? (

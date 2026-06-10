@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 
+import { WorkspaceSettingsCompanyTab } from "@/features/workspaces/components/workspace-settings-company-tab";
 import { WorkspaceSettingsDeleteSection } from "@/features/workspaces/components/workspace-settings-delete-section";
 import { WorkspaceSettingsForm } from "@/features/workspaces/components/workspace-settings-form";
 import { WorkspaceSettingsRulesTab } from "@/features/workspaces/components/workspace-settings-rules-tab";
@@ -21,7 +22,7 @@ import type { AvatarPreset } from "@/components/avatars/user-avatar";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
-type SettingsTab = "general" | "users" | "rules";
+type SettingsTab = "general" | "company" | "users" | "rules";
 
 type MemberRow = {
   id: string;
@@ -34,10 +35,10 @@ type MemberRow = {
   };
 };
 
-const TABS: SettingsTab[] = ["general", "users", "rules"];
+const TABS: SettingsTab[] = ["general", "company", "users", "rules"];
 
 function parseTab(value: string | null): SettingsTab {
-  if (value === "users" || value === "rules") {
+  if (value === "company" || value === "users" || value === "rules") {
     return value;
   }
   return "general";
@@ -49,6 +50,10 @@ export function WorkspaceSettingsPanel({
   initialName,
   initialAppearanceTheme,
   initialCompanyDescription,
+  initialCompanyAddress,
+  initialCompanyTaxId,
+  initialCompanyEmail,
+  initialCompanyPhone,
   members,
   invitations,
   rules,
@@ -62,6 +67,10 @@ export function WorkspaceSettingsPanel({
   initialName: string;
   initialAppearanceTheme: WorkspaceAppearanceTheme;
   initialCompanyDescription: string;
+  initialCompanyAddress: string;
+  initialCompanyTaxId: string;
+  initialCompanyEmail: string;
+  initialCompanyPhone: string;
   members: MemberRow[];
   invitations: WorkspaceInvitation[];
   rules: WorkspaceRule[];
@@ -95,9 +104,11 @@ export function WorkspaceSettingsPanel({
   const tabDescription =
     activeTab === "general"
       ? t("description")
-      : activeTab === "users"
-        ? t("tabs.usersDescription")
-        : t("tabs.rulesDescription");
+      : activeTab === "company"
+        ? t("tabs.companyDescription")
+        : activeTab === "users"
+          ? t("tabs.usersDescription")
+          : t("tabs.rulesDescription");
 
   return (
     <div className="flex w-full justify-center px-3 sm:px-4 lg:px-6">
@@ -148,6 +159,7 @@ export function WorkspaceSettingsPanel({
               workspaceId={workspaceId}
               initialName={initialName}
               initialCompanyDescription={initialCompanyDescription}
+              initialLogoUrl={initialBranding?.logoUrl ?? null}
               appearanceTheme={appearanceTheme}
               onPendingChange={setThemePickerDisabled}
               locale={locale}
@@ -158,6 +170,18 @@ export function WorkspaceSettingsPanel({
               locale={locale}
             />
           </>
+        ) : null}
+
+        {activeTab === "company" ? (
+          <WorkspaceSettingsCompanyTab
+            workspaceId={workspaceId}
+            workspaceName={initialName}
+            initialCompanyAddress={initialCompanyAddress}
+            initialCompanyTaxId={initialCompanyTaxId}
+            initialCompanyEmail={initialCompanyEmail}
+            initialCompanyPhone={initialCompanyPhone}
+            locale={locale}
+          />
         ) : null}
 
         {activeTab === "users" ? (

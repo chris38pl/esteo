@@ -78,7 +78,12 @@ export function WorkspaceSwitcherMenuContent({
           className="gap-2 text-xs"
           onSelect={() => switchWorkspace(workspace.slug)}
         >
-          <WorkspaceAvatar name={workspace.name} size={20} className="rounded-md ring-0" />
+          <WorkspaceAvatar
+            name={workspace.name}
+            logoUrl={workspace.logoUrl}
+            size={20}
+            className="rounded-md ring-0"
+          />
           <span className="min-w-0 flex-1 truncate">{workspace.name}</span>
           {workspace.id === activeWorkspace?.id ? (
             <Check className="size-3.5 shrink-0 text-primary" />

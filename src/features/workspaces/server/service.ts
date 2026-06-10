@@ -41,7 +41,9 @@ import {
 } from "@/features/workspaces/server/repository";
 import type { WorkspaceBranding } from "@/features/workspaces/schemas/branding";
 import { workspaceBrandingSchema } from "@/features/workspaces/schemas/branding";
+import { cleanupWorkspaceLogoStorage } from "@/features/workspaces/server/logo-service";
 import { parseCompanyDescription } from "@/features/workspaces/schemas/company-description";
+import { parseCompanyProfileFields } from "@/features/workspaces/schemas/company-profile";
 import { loadEstimateGenerationContext } from "@/features/workspaces/lib/load-estimate-generation-context";
 import { buildWorkspacePromptContext } from "@/features/workspaces/lib/prompt-context";
 import { workspaceLocaleToAppLocale } from "@/lib/workspace-locale";
@@ -231,6 +233,8 @@ export async function archiveWorkspace(user: User, workspaceId: string) {
 
   await revokeAllPendingWorkspaceInvitations(workspaceId);
 
+  await cleanupWorkspaceLogoStorage(workspaceId);
+
   const workspace = await softDeleteWorkspaceRecord(workspaceId);
 
   await logAuditEvent({
@@ -347,6 +351,38 @@ export async function updateWorkspaceSettings(
     entityType: "WorkspaceSettings",
     entityId: settings.id,
     action: "updated",
+  });
+
+  return settings;
+}
+
+export async function updateWorkspaceCompanyProfile(
+  user: User,
+  workspaceId: string,
+  input: {
+    companyAddress?: string | null;
+    companyTaxId?: string | null;
+    companyEmail?: string | null;
+    companyPhone?: string | null;
+  },
+) {
+  await requireRole(user, workspaceId, "OWNER");
+
+  const parsed = parseCompanyProfileFields(input);
+
+  const settings = await updateWorkspaceSettingsRecord(workspaceId, {
+    companyAddress: parsed.companyAddress,
+    companyTaxId: parsed.companyTaxId,
+    companyEmail: parsed.companyEmail,
+    companyPhone: parsed.companyPhone,
+  });
+
+  await logAuditEvent({
+    actorUserId: user.id,
+    workspaceId,
+    entityType: "WorkspaceSettings",
+    entityId: settings.id,
+    action: "company_profile_updated",
   });
 
   return settings;

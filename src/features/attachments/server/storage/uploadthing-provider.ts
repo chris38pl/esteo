@@ -144,6 +144,12 @@ export class UploadThingStorageProvider implements StorageProvider {
     }
 
     const uploadedKey = first.data?.key ?? params.key;
+    const uploadedUrl =
+      typeof first.data?.url === "string" && first.data.url.length > 0
+        ? first.data.url
+        : typeof first.data?.ufsUrl === "string" && first.data.ufsUrl.length > 0
+          ? first.data.ufsUrl
+          : undefined;
 
     logUploadThingDiagnostic("upload success", {
       fileLabel,
@@ -153,10 +159,11 @@ export class UploadThingStorageProvider implements StorageProvider {
       uploadSucceeded: new Date().toISOString(),
       utFileKey: first.data?.key,
       utCustomId: first.data?.customId,
+      utFileUrl: uploadedUrl,
       fullFirstResult: serializeUnknownForLog(first),
     });
 
-    return { key: uploadedKey };
+    return { key: uploadedKey, url: uploadedUrl };
   }
 
   async delete(keys: string[]): Promise<void> {

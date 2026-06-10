@@ -140,12 +140,52 @@
     "save": "Save changes",
     "saving": "Saving…",
     "saved": "Changes saved.",
+    "logo": {
+      "label": "Company logo",
+      "hint": "PNG, JPG, or WebP, max 2 MB. Square or transparent background works best.",
+      "dropHint": "Drop a file here or choose from disk",
+      "upload": "Upload logo",
+      "change": "Change logo",
+      "remove": "Remove logo",
+      "uploading": "Uploading… {percent}%",
+      "removeConfirmTitle": "Remove company logo?",
+      "removeConfirmDescription": "The logo will be permanently removed from this workspace. You can upload a new one at any time.",
+      "removeConfirmCancel": "Cancel",
+      "removeConfirmAction": "Remove logo",
+      "removing": "Removing…",
+      "errors": {
+        "uploadFailed": "Could not upload the logo. Please try again.",
+        "invalidType": "Allowed formats: PNG, JPG, WebP.",
+        "tooLarge": "File is too large (max 2 MB)."
+      }
+    },
     "tabs": {
       "general": "General",
+      "company": "Company",
       "users": "Users",
       "rules": "Rules",
+      "companyDescription": "Company details shown on client-facing documents — address, tax ID, contact.",
       "usersDescription": "Manage workspace members and collaboration invites.",
       "rulesDescription": "Define AI rules used when generating estimates and responses."
+    },
+    "company": {
+      "nameLabel": "Company name",
+      "nameHint": "Edit the name in the General tab.",
+      "addressLabel": "Address",
+      "addressPlaceholder": "1 Example St, 00-000 Warsaw",
+      "taxIdLabel": "Tax ID (NIP)",
+      "taxIdPlaceholder": "0000000000",
+      "emailLabel": "Email",
+      "emailPlaceholder": "contact@company.com",
+      "phoneLabel": "Phone",
+      "phonePlaceholder": "+48 123 456 789",
+      "saved": "Company details saved.",
+      "errors": {
+        "generic": "Check the entered details and try again.",
+        "invalidTaxId": "Tax ID must be 10 digits.",
+        "invalidEmail": "Enter a valid email address.",
+        "invalidPhone": "Phone must be between 6 and 40 characters."
+      }
     },
     "users": {
       "membersTitle": "Members",

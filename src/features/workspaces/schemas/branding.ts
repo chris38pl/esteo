@@ -9,6 +9,7 @@ const estimateSystemRuleStateSchema = z.record(
 );
 
 export const workspaceBrandingSchema = z.object({
+  logoStorageKey: z.string().min(1).optional(),
   logoUrl: z.string().url().optional(),
   primaryColor: z.string().min(1).optional(),
   accentColor: z.string().min(1).optional(),

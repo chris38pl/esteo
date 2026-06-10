@@ -51,6 +51,10 @@ export default async function WorkspaceSettingsPage({
         initialName={workspace.name}
         initialAppearanceTheme={workspace.appearanceTheme}
         initialCompanyDescription={workspace.settings?.companyDescription ?? ""}
+        initialCompanyAddress={workspace.settings?.companyAddress ?? ""}
+        initialCompanyTaxId={workspace.settings?.companyTaxId ?? ""}
+        initialCompanyEmail={workspace.settings?.companyEmail ?? ""}
+        initialCompanyPhone={workspace.settings?.companyPhone ?? ""}
         initialAiInstructions={workspace.settings?.aiInstructions ?? ""}
         initialBranding={initialBranding}
         members={members.map((member) => ({

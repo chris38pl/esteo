@@ -1,5 +1,7 @@
 export interface StorageUploadResult {
   key: string;
+  /** Public CDN URL returned by UploadThing (when available). */
+  url?: string;
 }
 
 export interface StorageProvider {

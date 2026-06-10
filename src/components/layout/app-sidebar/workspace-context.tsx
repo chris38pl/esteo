@@ -35,6 +35,7 @@ export type WorkspaceSummary = {
   slug: string;
   appearanceTheme: WorkspaceAppearanceTheme;
   isOwner: boolean;
+  logoUrl?: string | null;
   storageUsedFormatted: string;
   storageLimitFormatted: string;
   storageUsedPercent: number;

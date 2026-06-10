@@ -44,7 +44,12 @@ export function SidebarAccount({
           collapsed && "mx-auto size-8 justify-center border-0 bg-transparent p-0 hover:bg-[var(--sidebar-nav-hover)]",
         )}
       >
-        <WorkspaceAvatar name={workspaceName} size={collapsed ? 28 : 26} className="ring-0" />
+        <WorkspaceAvatar
+          name={workspaceName}
+          logoUrl={activeWorkspace?.logoUrl}
+          size={collapsed ? 28 : 26}
+          className="ring-0"
+        />
         {!collapsed ? (
           <>
             <span className="sidebar-heading min-w-0 flex-1 truncate text-xs font-medium leading-tight">

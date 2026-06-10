@@ -25,6 +25,7 @@ import {
 import { isPlatformAdmin } from "@/server/permissions/require-workspace";
 import { listPinnedEstimatesForSidebar } from "@/features/estimates/server/pinned-estimates";
 import { getWorkspaceStorageSummary } from "@/features/attachments/server/assert-workspace-storage";
+import { getWorkspaceLogoUrlsByIds } from "@/features/workspaces/server/logo-service";
 import {
   resolveActiveWorkspace,
   resolveWorkspaceBySlug,
@@ -106,6 +107,10 @@ export default async function DashboardLayout({
   ]);
   const canCreateAdditionalWorkspace = canCreateWorkspace && ownedWorkspaceCount > 0;
 
+  const logoUrlsByWorkspaceId = await getWorkspaceLogoUrlsByIds(
+    workspaces.map((workspace) => workspace.id),
+  );
+
   const workspaceSummaries = workspaces.map((workspace) => {
     const storage = getWorkspaceStorageSummary({
       attachmentStorageUsedBytes: workspace.attachmentStorageUsedBytes,
@@ -118,6 +123,7 @@ export default async function DashboardLayout({
       slug: workspace.slug,
       appearanceTheme: workspace.appearanceTheme,
       isOwner: workspace.ownerId === user.id,
+      logoUrl: logoUrlsByWorkspaceId.get(workspace.id) ?? null,
       storageUsedFormatted: storage.usedFormatted,
       storageLimitFormatted: storage.limitFormatted,
       storageUsedPercent: storage.usedPercent,
