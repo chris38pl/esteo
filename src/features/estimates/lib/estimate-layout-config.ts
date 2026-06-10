@@ -85,7 +85,7 @@ const estimateLayoutTailwind = {
   headerMoreMenuPinAction: "estimate-header-more-menu-pin-action",
   header:
     "estimate-header flex min-w-0 flex-col gap-3",
-  headerPrimary: "estimate-header__primary flex min-w-0 items-center gap-2",
+  headerPrimary: "estimate-header__primary flex min-w-0 items-start gap-2",
   headerMobileMeta:
     "estimate-header__mobile-meta flex min-w-0 flex-wrap items-center gap-2.5",
   headerDesktopActions:
@@ -420,7 +420,7 @@ export function getEstimateEditorResponsiveCss(): string {
 @media ${mediaQueryMin(breakpoints.headerActionsDivider)} {
   .estimate-header {
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
   }
   .estimate-header__primary {
     flex: 1 1 auto;
