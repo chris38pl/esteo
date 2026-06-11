@@ -312,6 +312,14 @@ body {
   color: #0f172a;
 }
 
+.section-row-index {
+  margin-right: 6px;
+}
+
+.section-row-title {
+  letter-spacing: 0.025em;
+}
+
 .doc-footer {
   display: grid;
   grid-template-columns: 1.15fr 0.85fr;
@@ -411,6 +419,11 @@ body {
   letter-spacing: 0.04em;
 }
 
+.page-footer-contact-sep {
+  padding: 0 14px;
+  color: #94a3b8;
+}
+
 .esteo-promo {
   margin-top: 18px;
   padding: 10px 12px;
@@ -426,8 +439,8 @@ body {
   width: 100%;
   /* 12 : 28 : 22 : 20 : 18 — gap subtracted so columns never expand */
   grid-template-columns:
-    calc((100% - 24px) * 0.12)
-    calc((100% - 24px) * 0.28)
+    calc((100% - 24px) * 0.16)
+    calc((100% - 24px) * 0.24)
     calc((100% - 24px) * 0.22)
     calc((100% - 24px) * 0.20)
     calc((100% - 24px) * 0.18);
@@ -452,8 +465,9 @@ body {
   justify-content: center;
   gap: 2px;
   padding: 0 4px 0 0;
-  border-right: 1px solid #d8e6f8;
+  border-right: 1px solid #eef2f7;
   align-self: center;
+  margin-left: 10px;
 }
 
 .esteo-promo-powered {
@@ -477,21 +491,22 @@ body {
 .esteo-promo-logo {
   width: auto;
   height: auto;
-  max-width: 30px;
-  max-height: 30px;
+  max-width: 40px;
+  max-height: 40px;
   object-fit: contain;
   border-radius: 999px;
   flex-shrink: 0;
 }
 
 .esteo-promo-name {
-  font-size: 9px;
+  font-size: 15px;
   font-weight: 600;
-  color: #3d4f6a;
+  color: #0f172a;
   line-height: 1.05;
   letter-spacing: -0.01em;
   min-width: 0;
   overflow-wrap: anywhere;
+  margin-left: 5px
 }
 
 .esteo-promo-copy {
@@ -502,6 +517,7 @@ body {
   max-height: 100%;
   padding: 0 4px;
   overflow: hidden;
+  margin-left: 20px
 }
 
 .esteo-promo-headline {
@@ -534,6 +550,7 @@ body {
   justify-content: center;
   padding: 0 2px;
   align-self: center;
+  transform: translateY(-2px);
 }
 
 .esteo-promo-illustration {
@@ -588,41 +605,47 @@ body {
 .esteo-promo-cta {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 5px;
   width: 100%;
   height: 100%;
-  padding: 3px 4px;
-  border-radius: 10px;
-  background: #eef5ff;
-  border: 1px solid #d8e8ff;
+  padding: 6px 8px;
+  border-radius: 12px;
+  background: #eef4ff;
+  border: 1px solid #d4e4f8;
   text-align: center;
+  box-sizing: border-box;
 }
 
 .esteo-promo-cta-text {
   margin: 0;
+  width: 100%;
   font-size: 6.5px;
-  font-weight: 600;
-  line-height: 1.3;
-  color: #334155;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #001b44;
+  text-align: center;
   overflow-wrap: anywhere;
 }
 
 .esteo-promo-cta-button {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  width: 100%;
+  gap: 3px;
+  width: auto;
+  max-width: 100%;
   min-width: 0;
-  padding: 5px 8px;
+  align-self: center;
+  padding: 4px 10px;
   border-radius: 999px;
   background: __PRIMARY__;
   color: #fff;
-  font-size: 7.5px;
+  font-size: 7px;
   font-weight: 700;
   line-height: 1;
+  white-space: nowrap;
 }
 
 .esteo-promo-cta-globe {

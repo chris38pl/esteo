@@ -62,7 +62,7 @@ export type EstimatePdfViewModel = {
   leadTimeLabel: string;
   sections: EstimatePdfSectionView[];
   notes: string;
-  footerContact: string;
+  footerContactParts: string[];
 };
 
 type CustomerData = {
@@ -268,6 +268,6 @@ export function buildEstimatePdfViewModel(input: {
     leadTimeLabel: locale === "pl" ? "do uzgodnienia" : "to be agreed",
     sections: sectionViews,
     notes,
-    footerContact: footerParts.join("  •  "),
+    footerContactParts: footerParts as string[],
   };
 }
