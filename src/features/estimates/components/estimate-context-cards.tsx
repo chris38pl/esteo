@@ -89,8 +89,8 @@ export function EstimateContextCards({
   ];
 
   return (
-    <section className="flex h-full min-h-[8.75rem] min-w-0 flex-col overflow-hidden rounded-xl border border-border/70 bg-card/95 shadow-sm">
-      <div className="estimate-context-grid">
+    <section className="flex h-full min-h-[8.75rem] min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-border/70 bg-card/95 shadow-sm">
+      <div className="estimate-context-grid min-h-0 flex-1">
         {cards.map((card) => {
           const Icon = card.icon;
 
@@ -98,7 +98,7 @@ export function EstimateContextCards({
             <div
               key={card.key}
               className={cn(
-                "estimate-context-card flex min-w-0 items-center gap-3 px-5 py-4",
+                "estimate-context-card flex h-full min-h-full min-w-0 items-center gap-3 self-stretch px-5 py-4",
                 "bg-card/95",
               )}
             >

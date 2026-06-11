@@ -40,7 +40,12 @@ export type WorkspaceRequestListItem = {
   status: EstimateRequestStatus;
   customerFullName: string | null;
   customerEmail: string | null;
+  customerPhone: string | null;
+  streetAddress: string | null;
   city: string | null;
+  postalCode: string | null;
+  propertyType: string | null;
+  floorArea: number | null;
   attachmentCount: number;
   estimateId: string | null;
   estimateTitle: string | null;
@@ -71,12 +76,16 @@ export type WorkspaceRequestDetail = {
   industryFields: WorkspaceRequestIndustryFieldRow[];
 };
 
+type RequestListRow = Awaited<
+  ReturnType<typeof prisma.estimateRequest.findMany<{ select: typeof listSelect }>>
+>[number];
+
 function mapListRow(
-  row: Awaited<
-    ReturnType<
-      typeof prisma.estimateRequest.findMany<{ select: typeof listSelect }>
-    >
-  >[number],
+  row: RequestListRow,
+  industryFields: {
+    propertyType: string | null;
+    floorArea: number | null;
+  },
 ): WorkspaceRequestListItem {
   const customerData = parseRequestCustomerData(row.customerData);
   const address = parseRequestAddress(row.address);
@@ -87,7 +96,12 @@ function mapListRow(
     status: row.status,
     customerFullName: customerData?.fullName ?? null,
     customerEmail: customerData?.email ?? null,
+    customerPhone: customerData?.phone ?? null,
+    streetAddress: address?.streetAddress ?? null,
     city: address?.city ?? null,
+    postalCode: address?.postalCode ?? null,
+    propertyType: industryFields.propertyType,
+    floorArea: industryFields.floorArea,
     attachmentCount: parseRequestAttachmentCount(row.attachments),
     estimateId: row.estimateId,
     estimateTitle: row.estimate?.title ?? null,
@@ -96,8 +110,58 @@ function mapListRow(
   };
 }
 
+const REQUEST_AREA_FIELD_KEYS = ["area_size", "floor_area"] as const;
+
+function parseNumericFieldValue(raw: unknown): number | null {
+  if (typeof raw === "number" && Number.isFinite(raw)) {
+    return raw;
+  }
+
+  if (typeof raw === "string" && raw.trim().length > 0) {
+    const parsed = Number.parseFloat(raw.trim().replace(",", "."));
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  return null;
+}
+
+function resolveAreaSizeValue(byKey: Map<string, unknown> | undefined): number | null {
+  if (!byKey) {
+    return null;
+  }
+
+  for (const key of REQUEST_AREA_FIELD_KEYS) {
+    const parsed = parseNumericFieldValue(byKey.get(key));
+    if (parsed !== null) {
+      return parsed;
+    }
+  }
+
+  return null;
+}
+
+function resolveIndustryListFields(
+  requestId: string,
+  fieldValues: Map<string, Map<string, unknown>>,
+  locale: Locale,
+): { propertyType: string | null; floorArea: number | null } {
+  const byKey = fieldValues.get(requestId);
+  const rawPropertyType = byKey?.get("property_type");
+
+  const propertyType =
+    typeof rawPropertyType === "string" && rawPropertyType.length > 0
+      ? getIndustryOptionLabel("property_type", rawPropertyType, locale, "label")
+      : null;
+
+  return {
+    propertyType,
+    floorArea: resolveAreaSizeValue(byKey),
+  };
+}
+
 export async function listWorkspaceEstimateRequests(
   workspaceId: string,
+  locale: Locale,
 ): Promise<WorkspaceRequestListItem[]> {
   const rows = await prisma.estimateRequest.findMany({
     where: { workspaceId, deletedAt: null },
@@ -105,7 +169,31 @@ export async function listWorkspaceEstimateRequests(
     select: listSelect,
   });
 
-  return rows.map(mapListRow);
+  const requestIds = rows.map((row) => row.id);
+
+  const industryRows =
+    requestIds.length > 0
+      ? await prisma.documentFieldValue.findMany({
+          where: {
+            workspaceId,
+            documentType: BusinessDocumentType.ESTIMATE_REQUEST,
+            documentId: { in: requestIds },
+            fieldKey: { in: ["property_type", ...REQUEST_AREA_FIELD_KEYS] },
+          },
+        })
+      : [];
+
+  const fieldValuesByRequestId = new Map<string, Map<string, unknown>>();
+
+  for (const row of industryRows) {
+    const values = fieldValuesByRequestId.get(row.documentId) ?? new Map<string, unknown>();
+    values.set(row.fieldKey, readTypedFieldValue(row));
+    fieldValuesByRequestId.set(row.documentId, values);
+  }
+
+  return rows.map((row) =>
+    mapListRow(row, resolveIndustryListFields(row.id, fieldValuesByRequestId, locale)),
+  );
 }
 
 function formatIndustryFieldValue(

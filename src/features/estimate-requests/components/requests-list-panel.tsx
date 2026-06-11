@@ -1,12 +1,25 @@
 "use client";
 
-import Link from "next/link";
-import { Paperclip } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
+import { PaginationControls } from "@/components/shared/pagination-controls";
+import { EstimateEditorLayoutStyles } from "@/features/estimates/components/estimate-editor-layout-styles";
+import { estimateEditorMaxWidthClass } from "@/features/estimates/lib/estimate-layout-config";
+import { EstimateRequestFormHeroCard } from "@/features/estimate-requests/components/estimate-request-form-hero-card";
+import { RequestsListFilterSheet } from "@/features/estimate-requests/components/requests-list-filter-sheet";
+import { RequestsListTable } from "@/features/estimate-requests/components/requests-list-table";
+import { RequestsListToolbar } from "@/features/estimate-requests/components/requests-list-toolbar";
+import {
+  EMPTY_REQUEST_LIST_DATE_RANGE,
+  EMPTY_REQUEST_LIST_FILTER,
+  hasActiveRequestDateRange,
+  hasActiveRequestListFilters,
+  requestIsVisible,
+} from "@/features/estimate-requests/lib/requests-list-filter";
 import type { WorkspaceRequestListItem } from "@/features/estimate-requests/server/workspace-requests";
-import { RequestStatusBadge } from "@/features/estimate-requests/components/request-status-badge";
 import type { Locale } from "@/lib/locale";
+import { cn } from "@/lib/utils";
 
 interface RequestsListPanelProps {
   requests: WorkspaceRequestListItem[];
@@ -14,102 +27,120 @@ interface RequestsListPanelProps {
   locale: Locale;
 }
 
+const DEFAULT_PAGE_SIZE = 10;
+
 export function RequestsListPanel({
   requests,
   workspaceSlug,
   locale,
 }: RequestsListPanelProps) {
   const t = useTranslations("requests");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [listFilter, setListFilter] = useState(EMPTY_REQUEST_LIST_FILTER);
+  const [dateRange, setDateRange] = useState(EMPTY_REQUEST_LIST_DATE_RANGE);
+  const [filterSheetOpen, setFilterSheetOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 
-  const dateLocale = locale === "pl" ? "pl-PL" : "en-US";
-  const formatDate = (value: Date) =>
-    new Intl.DateTimeFormat(dateLocale, {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    }).format(value);
+  const filterActive = hasActiveRequestListFilters(listFilter);
+  const dateRangeActive = hasActiveRequestDateRange(dateRange);
+  const hasActiveQuery =
+    searchQuery.trim().length > 0 || filterActive || dateRangeActive;
+
+  const filteredRequests = useMemo(() => {
+    const list = requests.filter((request) =>
+      requestIsVisible(request, {
+        searchQuery,
+        filter: listFilter,
+        dateRange,
+      }),
+    );
+
+    list.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+    return list;
+  }, [requests, searchQuery, listFilter, dateRange]);
+
+  const totalCount = filteredRequests.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const pageRequests = filteredRequests.slice(
+    (safePage - 1) * pageSize,
+    safePage * pageSize,
+  );
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, listFilter, dateRange]);
+
+  useEffect(() => {
+    if (page !== safePage) {
+      setPage(safePage);
+    }
+  }, [page, safePage]);
+
+  const hasRequests = requests.length > 0;
+  const hasFilteredResults = filteredRequests.length > 0;
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{t("page.title")}</h1>
+    <div className={cn("mx-auto min-w-0 w-full space-y-6", estimateEditorMaxWidthClass)}>
+      <EstimateEditorLayoutStyles />
+
+      <EstimateRequestFormHeroCard workspaceSlug={workspaceSlug} locale={locale} />
+
+      <div className="surface-card overflow-hidden p-0">
+        <RequestsListToolbar
+          locale={locale}
+          searchQuery={searchQuery}
+          onSearchQueryChange={setSearchQuery}
+          filterActive={filterActive}
+          onOpenFilter={() => setFilterSheetOpen(true)}
+          onClearFilter={() => setListFilter(EMPTY_REQUEST_LIST_FILTER)}
+          dateRange={dateRange}
+          onDateRangeChange={setDateRange}
+        />
+
+        {!hasRequests ? (
+          <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+            <p className="text-sm text-muted-foreground">{t("page.empty")}</p>
+          </div>
+        ) : !hasFilteredResults ? (
+          <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+            <p className="text-sm text-muted-foreground">
+              {hasActiveQuery ? t("list.noSearchResults") : t("page.empty")}
+            </p>
+          </div>
+        ) : (
+          <RequestsListTable
+            requests={pageRequests}
+            workspaceSlug={workspaceSlug}
+            locale={locale}
+            footer={
+              <PaginationControls
+                className="px-4 pb-4"
+                page={safePage}
+                pageSize={pageSize}
+                totalCount={totalCount}
+                totalPages={totalPages}
+                hasPreviousPage={safePage > 1}
+                hasNextPage={safePage < totalPages}
+                onPageChange={setPage}
+                onPageSizeChange={setPageSize}
+              />
+            }
+          />
+        )}
       </div>
 
-      {requests.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed py-16 text-center">
-          <p className="text-sm text-muted-foreground">{t("page.empty")}</p>
-        </div>
-      ) : (
-        <div className="overflow-hidden rounded-md border">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/50">
-              <tr className="border-b text-xs text-muted-foreground">
-                <th className="px-4 py-3 text-left font-medium">{t("list.columns.request")}</th>
-                <th className="px-4 py-3 text-left font-medium">{t("list.columns.status")}</th>
-                <th className="px-4 py-3 text-left font-medium">{t("list.columns.location")}</th>
-                <th className="px-4 py-3 text-left font-medium">{t("list.columns.estimate")}</th>
-                <th className="px-4 py-3 text-left font-medium">{t("list.columns.received")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {requests.map((request) => {
-                const displayName =
-                  request.customerFullName ?? request.customerEmail ?? t("list.unknownClient");
-                const detailHref = `/${locale}/dashboard/${workspaceSlug}/requests/${request.id}`;
-
-                return (
-                  <tr
-                    key={request.id}
-                    className="border-b transition-colors last:border-0 hover:bg-muted/30"
-                  >
-                    <td className="px-4 py-3">
-                      <Link
-                        href={detailHref}
-                        className="font-medium underline-offset-4 hover:text-primary hover:underline"
-                      >
-                        {request.requestNumber ?? t("list.noRequestNumber")}
-                      </Link>
-                      <p className="text-xs text-muted-foreground">{displayName}</p>
-                    </td>
-                    <td className="px-4 py-3">
-                      <RequestStatusBadge
-                        status={request.status}
-                        label={t(`status.${request.status}`)}
-                      />
-                    </td>
-                    <td className="px-4 py-3 text-muted-foreground">
-                      {request.city ?? "—"}
-                    </td>
-                    <td className="px-4 py-3">
-                      {request.estimateId ? (
-                        <Link
-                          href={`/${locale}/dashboard/${workspaceSlug}/estimates/${request.estimateId}`}
-                          className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-                        >
-                          {request.estimateTitle ?? t("list.linkedEstimate")}
-                        </Link>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">—</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-xs text-muted-foreground tabular-nums">
-                        {formatDate(request.createdAt)}
-                      </span>
-                      {request.attachmentCount > 0 ? (
-                        <p className="mt-0.5 flex items-center gap-1 text-[11px] text-muted-foreground">
-                          <Paperclip className="size-3" />
-                          {request.attachmentCount}
-                        </p>
-                      ) : null}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <RequestsListFilterSheet
+        open={filterSheetOpen}
+        onOpenChange={setFilterSheetOpen}
+        requests={requests}
+        searchQuery={searchQuery}
+        appliedDateRange={dateRange}
+        appliedFilter={listFilter}
+        onApply={setListFilter}
+      />
     </div>
   );
 }

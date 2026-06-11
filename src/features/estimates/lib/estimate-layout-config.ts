@@ -258,14 +258,28 @@ export function getEstimateEditorResponsiveCss(): string {
   .estimate-context-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .estimate-context-grid > * {
-    border-right: 1px solid var(--estimate-context-divider);
+  .estimate-context-grid > *:not(:last-child)::before {
+    content: none;
   }
-  .estimate-context-grid > *:nth-child(2n) {
-    border-right: none;
+  .estimate-context-grid > *:nth-child(-n + 2)::before {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    bottom: 0;
+    left: 12.5%;
+    width: 75%;
+    height: 1px;
+    background: var(--estimate-context-divider);
   }
-  .estimate-context-grid > *:nth-child(n + 3) {
-    border-bottom: none;
+  .estimate-context-grid > *:not(:nth-child(2n))::after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    top: 12.5%;
+    right: 0;
+    width: 1px;
+    height: 75%;
+    background: var(--estimate-context-divider);
   }
 }
 @media ${mediaQueryMin(breakpoints.contextTwoCol)} and ${mediaQueryMax(breakpoints.contextFourCol - 1)} {
@@ -297,13 +311,23 @@ export function getEstimateEditorResponsiveCss(): string {
   }
   .estimate-context-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: minmax(8.75rem, 1fr);
   }
-  .estimate-context-grid > * {
-    border-bottom: none;
-    border-right: 1px solid var(--estimate-context-divider);
+  .estimate-context-grid > *::before {
+    content: none;
   }
-  .estimate-context-grid > *:last-child {
-    border-right: none;
+  .estimate-context-grid > *:not(:nth-child(2n))::after {
+    content: none;
+  }
+  .estimate-context-grid > *:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    top: 12.5%;
+    right: 0;
+    width: 1px;
+    height: 75%;
+    background: var(--estimate-context-divider);
   }
 }
 .estimate-rules-indicator__label {

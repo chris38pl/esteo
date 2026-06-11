@@ -1,19 +1,102 @@
 {
   "page": {
     "title": "Zapytania",
-    "empty": "Brak zapytań o wycenę. Pojawią się tutaj, gdy klient wypełni formularz publiczny lub gdy utworzysz wycenę z panelu."
+    "empty": "Brak zapytań o wycenę. Pojawią się tutaj, gdy klient wypełni formularz publiczny."
   },
   "list": {
+    "searchPlaceholder": "Szukaj zapytania, klienta, lokalizacji…",
+    "noSearchResults": "Brak wyników dla podanej frazy.",
     "columns": {
       "request": "Zapytanie",
       "status": "Status",
-      "location": "Lokalizacja",
+      "email": "E-mail",
+      "phone": "Telefon",
+      "contact": "Kontakt",
+      "street": "Ulica",
+      "city": "Miasto",
+      "postalCode": "Kod pocztowy",
+      "propertyType": "Typ nieruchomości",
+      "floorArea": "Powierzchnia",
       "estimate": "Wycena",
       "received": "Otrzymano"
     },
     "unknownClient": "Nieznany klient",
     "noRequestNumber": "Zapytanie",
-    "linkedEstimate": "Zobacz wycenę"
+    "linkedEstimate": "Zobacz wycenę",
+    "createdEstimate": "Utworzona wycena",
+    "toolbar": {
+      "filters": "Filtry",
+      "dateRange": "Zakres dat",
+      "more": "Więcej"
+    },
+    "filter": {
+      "title": "Filtrowanie zapytań",
+      "close": "Zamknij filtry",
+      "fieldsTitle": "Pola i warunki",
+      "clearAll": "Wyczyść wszystko",
+      "addFilter": "Dodaj filtr",
+      "chooseField": "Wybierz pole",
+      "closeFieldPicker": "Zamknij listę pól",
+      "cancelAdd": "Anuluj",
+      "removeCondition": "Usuń warunek",
+      "operatorAria": "Operator",
+      "valueAria": "Wartość",
+      "logicTitle": "Logika warunków",
+      "clear": "Wyczyść",
+      "showResults": "Pokaż wyniki ({count})",
+      "logic": {
+        "and": "AND (i)",
+        "or": "OR (lub)"
+      },
+      "valuePlaceholder": {
+        "text": "Wpisz tekst",
+        "number": "Wpisz liczbę",
+        "status": "Wybierz status"
+      },
+      "fields": {
+        "requestNumber": "Numer zapytania",
+        "status": "Status",
+        "customerName": "Nazwa klienta",
+        "customerEmail": "E-mail klienta",
+        "customerPhone": "Telefon klienta",
+        "streetAddress": "Ulica",
+        "city": "Miasto",
+        "postalCode": "Kod pocztowy",
+        "propertyType": "Typ nieruchomości",
+        "floorArea": "Powierzchnia",
+        "estimateTitle": "Nazwa wyceny",
+        "attachmentCount": "Załączniki"
+      },
+      "operators": {
+        "contains": "Zawiera",
+        "equals": "=",
+        "notEquals": "≠",
+        "startsWith": "Zaczyna się od",
+        "endsWith": "Kończy się na",
+        "eq": "=",
+        "neq": "≠",
+        "gt": ">",
+        "gte": "≥",
+        "lt": "<",
+        "lte": "≤"
+      }
+    },
+    "dateRange": {
+      "title": "Zakres dat",
+      "triggerAria": "Wybierz zakres dat",
+      "fieldLabel": "Filtruj według",
+      "clear": "Wyczyść",
+      "apply": "Zastosuj",
+      "fields": {
+        "received": "Data otrzymania",
+        "updated": "Ostatnia aktualizacja"
+      },
+      "presets": {
+        "last7": "Ostatnie 7 dni",
+        "last30": "Ostatnie 30 dni",
+        "thisMonth": "Ten miesiąc"
+      }
+    }
   },
   "status": {
     "PENDING": "Oczekuje",
@@ -30,8 +113,11 @@
     "customerSection": "Klient",
     "projectSection": "Projekt",
     "addressSection": "Adres inwestycji",
+    "additionalSection": "Informacje dodatkowe",
     "industrySection": "Szczegóły projektu",
     "estimateSection": "Wycena",
+    "showMore": "Pokaż więcej",
+    "showLess": "Pokaż mniej",
     "name": "Imię i nazwisko",
     "email": "E-mail",
     "phone": "Telefon",

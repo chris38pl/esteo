@@ -22,6 +22,9 @@ export async function renderEstimatePdfBuffer(model: EstimatePdfViewModel): Prom
   try {
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "load" });
+    await page.evaluate(async () => {
+      await document.fonts.ready;
+    });
     const pdf = await page.pdf({
       format: "A4",
       printBackground: true,

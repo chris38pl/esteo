@@ -264,5 +264,15 @@
       "rulePl": "Reguła (PL)",
       "ruleEn": "Reguła (EN)"
     }
+  },
+  "pdfPreview": {
+    "title": "Podgląd szablonu PDF",
+    "subtitle": "Render HTML z danymi testowymi — ten sam pipeline co eksport wyceny (bez Puppeteera).",
+    "locale": "Język dokumentu",
+    "primaryColor": "Kolor primary",
+    "watermark": "Znak wodny (plan Free)",
+    "refresh": "Odśwież",
+    "openInNewTab": "Otwórz w nowej karcie",
+    "iframeTitle": "Podgląd HTML wyceny PDF"
   }
 }

@@ -8,6 +8,7 @@ import { readTypedFieldValue } from "@/features/industry-fields/server/map-field
 import { listDocumentFieldValues } from "@/features/industry-fields/server/repository";
 import { buildEstimatePdfViewModel } from "@/pdf/lib/build-pdf-view-model";
 import type { EstimatePdfViewModel } from "@/pdf/lib/build-pdf-view-model";
+import { resolvePdfLogoDataUri } from "@/pdf/lib/resolve-pdf-logo-data-uri";
 import { renderEstimatePdfBuffer } from "@/pdf/server/render-estimate-pdf";
 import { workspaceBrandingSchema } from "@/features/workspaces/schemas/branding";
 import type { Locale } from "@/lib/locale";
@@ -72,7 +73,9 @@ export async function loadEstimatePdfGenerationContext(input: {
     : [];
 
   const propertyTypeValue = requestFieldValues.find((field) => field.fieldKey === "property_type");
-  const floorAreaValue = requestFieldValues.find((field) => field.fieldKey === "floor_area");
+  const floorAreaValue = requestFieldValues.find(
+    (field) => field.fieldKey === "area_size" || field.fieldKey === "floor_area",
+  );
 
   const rawPropertyType = propertyTypeValue ? readTypedFieldValue(propertyTypeValue) : null;
   const rawFloorArea = floorAreaValue ? readTypedFieldValue(floorAreaValue) : null;
@@ -91,7 +94,16 @@ export async function loadEstimatePdfGenerationContext(input: {
       typeof rawPropertyType === "string" && rawPropertyType.length > 0
         ? getIndustryOptionLabel("property_type", rawPropertyType, input.locale, "label")
         : null,
-    floorArea: typeof rawFloorArea === "number" ? rawFloorArea : null,
+    floorArea: (() => {
+      if (typeof rawFloorArea === "number" && Number.isFinite(rawFloorArea)) {
+        return rawFloorArea;
+      }
+      if (typeof rawFloorArea === "string" && rawFloorArea.trim().length > 0) {
+        const parsed = Number.parseFloat(rawFloorArea.replace(",", "."));
+        return Number.isFinite(parsed) ? parsed : null;
+      }
+      return null;
+    })(),
     workspace: {
       name: workspace.name,
       settings: workspace.settings,
@@ -124,7 +136,15 @@ export async function renderEstimatePdfForVersion(input: {
   userId: string;
 }): Promise<Buffer> {
   const viewModel = await loadEstimatePdfGenerationContext(input);
-  return renderEstimatePdfBuffer(viewModel);
+  const logoDataUri = await resolvePdfLogoDataUri({
+    logoUrl: viewModel.logoUrl,
+    logoStorageKey: viewModel.logoStorageKey,
+  });
+
+  return renderEstimatePdfBuffer({
+    ...viewModel,
+    logoDataUri,
+  });
 }
 
 export function isEstimatePdfFresh(input: {

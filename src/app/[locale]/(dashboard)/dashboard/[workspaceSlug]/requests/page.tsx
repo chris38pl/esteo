@@ -25,7 +25,10 @@ export default async function WorkspaceRequestsPage({
     redirect(`/${resolvedLocale}/dashboard`);
   }
 
-  const requests = await listWorkspaceEstimateRequests(resolved.workspace.id);
+  const requests = await listWorkspaceEstimateRequests(
+    resolved.workspace.id,
+    resolvedLocale,
+  );
 
   return (
     <RequestsListPanel

@@ -22,8 +22,10 @@
 }
 
 .estimate-top-band-card {
+  display: flex;
   min-height: 8.75rem;
   min-width: 0;
+  flex-direction: column;
 }
 
 .estimate-top-band--stacked {
@@ -34,16 +36,33 @@
   --estimate-context-divider: color-mix(in oklab, var(--border) 70%, transparent);
   display: grid;
   grid-template-columns: 1fr;
+  align-items: stretch;
   min-width: 0;
+  min-height: 8.75rem;
   height: 100%;
+  flex: 1 1 auto;
 }
 
 .estimate-context-grid > * {
-  border-bottom: 1px solid var(--estimate-context-divider);
+  position: relative;
+  min-height: 100%;
 }
 
-.estimate-context-grid > *:last-child {
-  border-bottom: none;
+/* Mobile stack — horizontal divider, 75% width */
+.estimate-context-grid > *:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  bottom: 0;
+  left: 12.5%;
+  width: 75%;
+  height: 1px;
+  background: var(--estimate-context-divider);
+}
+
+.estimate-context-card {
+  height: 100%;
+  min-height: 100%;
 }
 
 /**

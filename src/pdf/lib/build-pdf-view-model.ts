@@ -32,6 +32,9 @@ export type EstimatePdfViewModel = {
   primaryColor: string;
   accentColor: string;
   logoUrl: string | null;
+  logoStorageKey: string | null;
+  logoDataUri: string | null;
+  workspaceName: string;
   provider: {
     name: string;
     address: string | null;
@@ -59,7 +62,6 @@ export type EstimatePdfViewModel = {
   leadTimeLabel: string;
   sections: EstimatePdfSectionView[];
   notes: string;
-  sellingPoints: string[];
   footerContact: string;
 };
 
@@ -216,25 +218,10 @@ export function buildEstimatePdfViewModel(input: {
     company.phone,
   ].filter(Boolean);
 
-  const sellingPoints =
-    locale === "pl"
-      ? [
-          "Profesjonalne wykonanie",
-          "Terminowość i rzetelność",
-          "Materiały wysokiej jakości",
-          "Gwarancja na prace",
-        ]
-      : [
-          "Professional workmanship",
-          "Timeliness and reliability",
-          "High-quality materials",
-          "Workmanship warranty",
-        ];
-
   const notes =
     locale === "pl"
-      ? "Niniejsza wycena ma charakter informacyjny i nie stanowi oferty w rozumieniu Kodeksu cywilnego. Ostateczna cena może ulec zmianie po weryfikacji zakresu prac na miejscu."
-      : "This estimate is for information purposes only and does not constitute an offer within the meaning of the Civil Code. The final price may change after on-site scope verification.";
+      ? "Wycena ma charakter orientacyjny i nie stanowi oferty handlowej w rozumieniu Kodeksu Cywilnego."
+      : "This estimate is indicative and does not constitute a commercial offer within the meaning of the Civil Code.";
 
   return {
     locale,
@@ -246,6 +233,9 @@ export function buildEstimatePdfViewModel(input: {
     primaryColor: input.brandingPrimaryColor ?? "#2563eb",
     accentColor: input.brandingAccentColor ?? "#dbeafe",
     logoUrl: company.logoUrl,
+    logoStorageKey: company.logoStorageKey,
+    logoDataUri: null,
+    workspaceName: input.workspace.name,
     provider: {
       name: company.name,
       address: company.address,
@@ -278,7 +268,6 @@ export function buildEstimatePdfViewModel(input: {
     leadTimeLabel: locale === "pl" ? "do uzgodnienia" : "to be agreed",
     sections: sectionViews,
     notes,
-    sellingPoints,
-    footerContact: footerParts.join(" · "),
+    footerContact: footerParts.join("  •  "),
   };
 }

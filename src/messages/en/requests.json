@@ -1,19 +1,102 @@
 {
   "page": {
     "title": "Requests",
-    "empty": "No estimate requests yet. Requests appear here when customers submit the public form or when you create an estimate from the dashboard."
+    "empty": "No estimate requests yet. Requests appear here when customers submit the public form."
   },
   "list": {
+    "searchPlaceholder": "Search request, client, location…",
+    "noSearchResults": "No results match your search.",
     "columns": {
       "request": "Request",
       "status": "Status",
-      "location": "Location",
+      "email": "Email",
+      "phone": "Phone",
+      "contact": "Contact",
+      "street": "Street",
+      "city": "City",
+      "postalCode": "Postal code",
+      "propertyType": "Property type",
+      "floorArea": "Floor area",
       "estimate": "Estimate",
       "received": "Received"
     },
     "unknownClient": "Unknown client",
     "noRequestNumber": "Request",
-    "linkedEstimate": "View estimate"
+    "linkedEstimate": "View estimate",
+    "createdEstimate": "Created estimate",
+    "toolbar": {
+      "filters": "Filters",
+      "dateRange": "Date range",
+      "more": "More"
+    },
+    "filter": {
+      "title": "Filter requests",
+      "close": "Close filters",
+      "fieldsTitle": "Fields and conditions",
+      "clearAll": "Clear all",
+      "addFilter": "Add filter",
+      "chooseField": "Choose field",
+      "closeFieldPicker": "Close field list",
+      "cancelAdd": "Cancel",
+      "removeCondition": "Remove condition",
+      "operatorAria": "Operator",
+      "valueAria": "Value",
+      "logicTitle": "Condition logic",
+      "clear": "Clear",
+      "showResults": "Show results ({count})",
+      "logic": {
+        "and": "AND",
+        "or": "OR"
+      },
+      "valuePlaceholder": {
+        "text": "Enter text",
+        "number": "Enter number",
+        "status": "Select status"
+      },
+      "fields": {
+        "requestNumber": "Request number",
+        "status": "Status",
+        "customerName": "Client name",
+        "customerEmail": "Client email",
+        "customerPhone": "Client phone",
+        "streetAddress": "Street address",
+        "city": "City",
+        "postalCode": "Postal code",
+        "propertyType": "Property type",
+        "floorArea": "Floor area",
+        "estimateTitle": "Estimate name",
+        "attachmentCount": "Attachments"
+      },
+      "operators": {
+        "contains": "Contains",
+        "equals": "=",
+        "notEquals": "≠",
+        "startsWith": "Starts with",
+        "endsWith": "Ends with",
+        "eq": "=",
+        "neq": "≠",
+        "gt": ">",
+        "gte": "≥",
+        "lt": "<",
+        "lte": "≤"
+      }
+    },
+    "dateRange": {
+      "title": "Date range",
+      "triggerAria": "Select date range",
+      "fieldLabel": "Filter by",
+      "clear": "Clear",
+      "apply": "Apply",
+      "fields": {
+        "received": "Received date",
+        "updated": "Last updated"
+      },
+      "presets": {
+        "last7": "Last 7 days",
+        "last30": "Last 30 days",
+        "thisMonth": "This month"
+      }
+    }
   },
   "status": {
     "PENDING": "Pending",
@@ -30,8 +113,11 @@
     "customerSection": "Customer",
     "projectSection": "Project",
     "addressSection": "Investment address",
+    "additionalSection": "Additional information",
     "industrySection": "Project details",
     "estimateSection": "Estimate",
+    "showMore": "Show more",
+    "showLess": "Show less",
     "name": "Full name",
     "email": "Email",
     "phone": "Phone",

@@ -264,5 +264,15 @@
       "rulePl": "Rule (PL)",
       "ruleEn": "Rule (EN)"
     }
+  },
+  "pdfPreview": {
+    "title": "PDF template preview",
+    "subtitle": "HTML render with fixture data — same template as estimate export (no Puppeteer).",
+    "locale": "Document locale",
+    "primaryColor": "Primary color",
+    "watermark": "Watermark (Free plan)",
+    "refresh": "Refresh",
+    "openInNewTab": "Open in new tab",
+    "iframeTitle": "Estimate PDF HTML preview"
   }
 }

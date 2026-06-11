@@ -1,10 +1,11 @@
 import type { LucideIcon } from "lucide-react";
-import { BookOpen, Building2, ClipboardList, Layers3, UserRoundSearch, Users } from "lucide-react";
+import { BookOpen, Building2, ClipboardList, FileText, Layers3, UserRoundSearch, Users } from "lucide-react";
 
 export type AdminNavItemKey =
   | "accountInspector"
   | "estimateRequests"
   | "industryFields"
+  | "pdfPreview"
   | "users"
   | "workspaces"
   | "styleguide";
@@ -46,6 +47,12 @@ export const adminNavItems: AdminNavItem[] = [
     icon: Layers3,
     href: (locale) => `/${locale}/dashboard/admin/industry-fields`,
     labelKey: "admin.nav.industryFields",
+  },
+  {
+    key: "pdfPreview",
+    icon: FileText,
+    href: (locale) => `/${locale}/dashboard/admin/pdf-preview`,
+    labelKey: "admin.nav.pdfPreview",
   },
   {
     key: "styleguide",
