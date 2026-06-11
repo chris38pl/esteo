@@ -1,4 +1,8 @@
 import type { EstimatePdfViewModel } from "@/pdf/lib/build-pdf-view-model";
+import {
+  getPdfEsteoLogoDataUri,
+  getPdfEsteoPromoIllustrationDataUri,
+} from "@/pdf/lib/pdf-esteo-promo-assets";
 import { getPdfHeroImageDataUri } from "@/pdf/lib/pdf-hero-image";
 import {
   pdfInfoClientIcon,
@@ -42,6 +46,71 @@ function infoBlock(title: string, icon: string, lines: string): string {
       </div>
       <div class="info-body">${lines}</div>
     </div>`;
+}
+
+type EsteoPromoLabels = {
+  poweredBy: string;
+  headlineLine1: string;
+  headlineLine2Before: string;
+  headlineAccent: string;
+  subline: string;
+  features: [string, string, string, string];
+  cta: string;
+  ctaButton: string;
+};
+
+function promoCheckIcon(): string {
+  return `<span class="esteo-promo-check" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="currentColor"/><path d="m5.25 8 1.75 1.75L10.75 6" stroke="#fff" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
+}
+
+function buildEsteoPromoBanner(labels: EsteoPromoLabels): string {
+  const logoDataUri = getPdfEsteoLogoDataUri();
+  const illustrationDataUri = getPdfEsteoPromoIllustrationDataUri();
+
+  const logoMarkup = logoDataUri
+    ? `<img src="${logoDataUri}" alt="" class="esteo-promo-logo" />`
+    : "";
+
+  const illustrationMarkup = illustrationDataUri
+    ? `<img src="${illustrationDataUri}" alt="" class="esteo-promo-illustration" />`
+    : "";
+
+  const featuresMarkup = labels.features
+    .map(
+      (feature) =>
+        `<li class="esteo-promo-feature">${promoCheckIcon()}<span>${escapeHtml(feature)}</span></li>`,
+    )
+    .join("");
+
+  return `
+    <section class="esteo-promo" aria-label="Esteo">
+      <div class="esteo-promo-inner">
+        <div class="esteo-promo-brand">
+          <div class="esteo-promo-powered">${escapeHtml(labels.poweredBy)}</div>
+          <div class="esteo-promo-brand-row">
+            ${logoMarkup}
+            <span class="esteo-promo-name">Esteo</span>
+          </div>
+        </div>
+        <div class="esteo-promo-copy">
+          <p class="esteo-promo-headline">
+            ${escapeHtml(labels.headlineLine1)}<br />
+            ${escapeHtml(labels.headlineLine2Before)}<span class="esteo-promo-headline-accent">${escapeHtml(labels.headlineAccent)}</span>
+          </p>
+          <p class="esteo-promo-subline">${escapeHtml(labels.subline)}</p>
+        </div>
+        <div class="esteo-promo-visual" aria-hidden="true">${illustrationMarkup}</div>
+        <ul class="esteo-promo-features">${featuresMarkup}</ul>
+        <div class="esteo-promo-cta">
+          <p class="esteo-promo-cta-text">${escapeHtml(labels.cta)}</p>
+          <div class="esteo-promo-cta-button">
+            <span class="esteo-promo-cta-globe" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.25" stroke="currentColor" stroke-width="1.1"/><path d="M2.25 8h11.5M8 2.25c2 2.25 2 9.25 0 11.5M8 2.25c-2 2.25-2 9.25 0 11.5" stroke="currentColor" stroke-width="1.1"/></svg></span>
+            <span>${escapeHtml(labels.ctaButton)}</span>
+            <span class="esteo-promo-cta-arrow" aria-hidden="true">→</span>
+          </div>
+        </div>
+      </div>
+    </section>`;
 }
 
 function summaryMetric(
@@ -100,6 +169,21 @@ export function buildEstimatePdfHtml(
           email: "E-mail",
           phone: "Tel.",
           propertySize: "Metraż",
+          promo: {
+            poweredBy: "Powered by",
+            headlineLine1: "Nowoczesny system dla firm,",
+            headlineLine2Before: "które chcą ",
+            headlineAccent: "działać mądrzej.",
+            subline: "Wyceny, klienci i płatności w jednym miejscu.",
+            features: [
+              "Szybkie tworzenie wycen",
+              "Pełna kontrola płatności",
+              "Przejrzyste raporty",
+              "Bezpieczne dane",
+            ],
+            cta: "Dowiedz się więcej i zobacz demo",
+            ctaButton: "esteo.app",
+          } satisfies EsteoPromoLabels,
         }
       : {
           documentTitle: "ESTIMATE",
@@ -128,6 +212,21 @@ export function buildEstimatePdfHtml(
           email: "Email",
           phone: "Phone",
           propertySize: "Area",
+          promo: {
+            poweredBy: "Powered by",
+            headlineLine1: "A modern system for companies",
+            headlineLine2Before: "that want to ",
+            headlineAccent: "work smarter.",
+            subline: "Estimates, clients, and payments in one place.",
+            features: [
+              "Fast estimate creation",
+              "Full payment control",
+              "Clear reports",
+              "Secure data",
+            ],
+            cta: "Learn more and see the demo",
+            ctaButton: "esteo.app",
+          } satisfies EsteoPromoLabels,
         };
 
   const providerLines = [
@@ -328,6 +427,8 @@ export function buildEstimatePdfHtml(
       <div class="page-footer-thanks">${escapeHtml(labels.footerThanks)}</div>
       <div class="page-footer-contact">${escapeHtml(model.footerContact)}</div>
     </footer>
+
+    ${buildEsteoPromoBanner(labels.promo)}
   </div>
   ${screenPaginationScript}
 </body>

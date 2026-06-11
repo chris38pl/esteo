@@ -1,3 +1,7 @@
-Optional hero image for estimate PDF export. Place `hero-house.jpg` here for the bundled PDF template.
+Assets for the estimate PDF template. Copied to Trigger.dev workers via `additionalFiles` in `trigger.config.ts`.
 
-If missing, the renderer falls back to a gradient placeholder. On Trigger.dev, `trigger.config.ts` copies this folder via `additionalFiles`.
+| File | Purpose |
+|------|---------|
+| `hero-house.webp` | Hero image (top right of page 1). Gradient fallback if missing. |
+| `esteo-logo.png` | Owl logo in the Esteo promo banner (copy from `public/logo.png`). |
+| `esteo-promo.webp` | Center illustration in the Esteo promo banner at the bottom. |

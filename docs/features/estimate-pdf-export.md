@@ -139,7 +139,7 @@ Preview is not logged in v1.
 ## PDF template assets (Trigger.dev)
 
 - **Styles:** inlined in [`estimate-pdf-styles.ts`](../../src/pdf/templates/estimate-pdf-styles.ts) and imported by the HTML template. Do **not** read `estimate-pdf.css` from `process.cwd()/src/...` at runtime — Trigger workers have no full repo tree; a silent miss produced unstyled PDFs on Vercel Preview. Keep `estimate-pdf.css` in sync when editing layout.
-- **Hero image:** optional `public/images/pdf/hero-house.jpg`; copied via `additionalFiles` in [`trigger.config.ts`](../../trigger.config.ts). Missing file → SVG gradient fallback.
+- **Hero image:** optional `public/images/pdf/hero-house.webp`; copied via `additionalFiles` in [`trigger.config.ts`](../../trigger.config.ts). Missing file → SVG gradient fallback.
 
 ## Trigger.dev
 

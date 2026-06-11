@@ -12,8 +12,8 @@ export function getPdfHeroImageDataUri(): string {
   }
 
   try {
-    const buffer = readPdfAssetBuffer("public/images/pdf/hero-house.jpg");
-    cachedHeroDataUri = `data:image/jpeg;base64,${buffer.toString("base64")}`;
+    const buffer = readPdfAssetBuffer("public/images/pdf/hero-house.webp");
+    cachedHeroDataUri = `data:image/webp;base64,${buffer.toString("base64")}`;
     return cachedHeroDataUri;
   } catch {
     cachedHeroDataUri = PDF_HERO_GRADIENT_FALLBACK;
