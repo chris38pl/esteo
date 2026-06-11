@@ -25,19 +25,6 @@ function escapeHtml(value: string): string {
     .replace(/"/g, "&quot;");
 }
 
-function footerContactMarkup(parts: string[]): string {
-  return parts
-    .map((part, index) => {
-      const text = escapeHtml(part);
-      if (index === 0) {
-        return text;
-      }
-
-      return `<span class="page-footer-contact-sep" aria-hidden="true">•</span>${text}`;
-    })
-    .join("");
-}
-
 function optionalLine(label: string, value: string | null | undefined): string {
   if (!value?.trim()) {
     return "";
@@ -68,8 +55,7 @@ type EsteoPromoLabels = {
   headlineAccent: string;
   subline: string;
   features: [string, string, string, string];
-  ctaLine1: string;
-  ctaLine2: string;
+  cta: string;
   ctaButton: string;
 };
 
@@ -116,10 +102,7 @@ function buildEsteoPromoBanner(labels: EsteoPromoLabels): string {
         <div class="esteo-promo-visual" aria-hidden="true">${illustrationMarkup}</div>
         <ul class="esteo-promo-features">${featuresMarkup}</ul>
         <div class="esteo-promo-cta">
-          <p class="esteo-promo-cta-text">
-            ${escapeHtml(labels.ctaLine1)}<br />
-            ${escapeHtml(labels.ctaLine2)}
-          </p>
+          <p class="esteo-promo-cta-text">${escapeHtml(labels.cta)}</p>
           <div class="esteo-promo-cta-button">
             <span class="esteo-promo-cta-globe" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.25" stroke="currentColor" stroke-width="1.1"/><path d="M2.25 8h11.5M8 2.25c2 2.25 2 9.25 0 11.5M8 2.25c-2 2.25-2 9.25 0 11.5" stroke="currentColor" stroke-width="1.1"/></svg></span>
             <span>${escapeHtml(labels.ctaButton)}</span>
@@ -198,8 +181,7 @@ export function buildEstimatePdfHtml(
               "Przejrzyste raporty",
               "Bezpieczne dane",
             ],
-            ctaLine1: "Dowiedz się więcej",
-            ctaLine2: "i zobacz demo",
+            cta: "Dowiedz się więcej i zobacz demo",
             ctaButton: "esteo.app",
           } satisfies EsteoPromoLabels,
         }
@@ -242,8 +224,7 @@ export function buildEstimatePdfHtml(
               "Clear reports",
               "Secure data",
             ],
-            ctaLine1: "Learn more",
-            ctaLine2: "and see the demo",
+            cta: "Learn more and see the demo",
             ctaButton: "esteo.app",
           } satisfies EsteoPromoLabels,
         };
@@ -287,7 +268,7 @@ export function buildEstimatePdfHtml(
     .map(
       (section) => `
       <tr class="section-row">
-        <td colspan="5"><strong><span class="section-row-index">${section.index}.</span><span class="section-row-title">${escapeHtml(section.title)}</span></strong></td>
+        <td colspan="5"><strong>${section.index}. ${escapeHtml(section.title)}</strong></td>
         <td class="num"><strong>${escapeHtml(section.sectionNet)}</strong></td>
       </tr>
       ${section.items
@@ -444,7 +425,7 @@ export function buildEstimatePdfHtml(
 
     <footer class="page-footer">
       <div class="page-footer-thanks">${escapeHtml(labels.footerThanks)}</div>
-      <div class="page-footer-contact">${footerContactMarkup(model.footerContactParts)}</div>
+      <div class="page-footer-contact">${escapeHtml(model.footerContact)}</div>
     </footer>
 
     ${buildEsteoPromoBanner(labels.promo)}
