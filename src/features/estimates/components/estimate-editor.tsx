@@ -333,6 +333,14 @@ export function EstimateEditor({
       onBeforeExport: ensureSavedBeforePdfExport,
     });
 
+  const isPdfPreviewOpen = previewState.status !== "closed";
+
+  useEffect(() => {
+    if (isPdfPreviewOpen) {
+      setShowAiPanel(false);
+    }
+  }, [isPdfPreviewOpen]);
+
   const applyVersionTree = useCallback((tree: VersionTreeClient | null) => {
     const nextSections = versionTreeToSections(tree);
     sectionsRef.current = nextSections;
@@ -952,6 +960,7 @@ export function EstimateEditor({
           open={showAiPanel}
           onOpenChange={setShowAiPanel}
           hideTrigger={mobilePositionSheetOpen}
+          suppressed={isPdfPreviewOpen}
           versionId={activeVersionId}
           workspaceId={estimate.workspaceId}
           workspaceSlug={workspaceSlug}

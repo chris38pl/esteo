@@ -14,12 +14,15 @@ type EstimateAiFloatingProps = EstimateAiPanelProps & {
   onOpenChange: (open: boolean) => void;
   /** Hide the FAB while another overlay is active (e.g. mobile position edit sheet). */
   hideTrigger?: boolean;
+  /** Hide the entire floating AI (FAB + panel) while a higher overlay is active (e.g. PDF preview). */
+  suppressed?: boolean;
 };
 
 export function EstimateAiFloating({
   open,
   onOpenChange,
   hideTrigger = false,
+  suppressed = false,
   ...panelProps
 }: EstimateAiFloatingProps) {
   const t = useTranslations("estimates");
@@ -75,6 +78,6 @@ export function EstimateAiFloating({
     </div>
   );
 
-  if (!mounted) return null;
+  if (!mounted || suppressed) return null;
   return createPortal(ui, document.body);
 }
