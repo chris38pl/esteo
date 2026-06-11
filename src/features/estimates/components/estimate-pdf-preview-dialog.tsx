@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Download, Loader2 } from "lucide-react";
+import { Download, ExternalLink, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useEstimateMobileLayout } from "@/features/estimates/hooks/use-estimate-mobile-layout";
 
 export type EstimatePdfPreviewDialogState =
   | { status: "closed" }
@@ -34,6 +35,7 @@ export function EstimatePdfPreviewDialog({
   onOpenChange,
 }: EstimatePdfPreviewDialogProps) {
   const t = useTranslations("estimates");
+  const isMobile = useEstimateMobileLayout();
   const isOpen = state.status !== "closed";
 
   function handleDownload() {
@@ -48,6 +50,14 @@ export function EstimatePdfPreviewDialog({
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
+  }
+
+  function handleOpenPdf() {
+    if (state.status !== "ready") {
+      return;
+    }
+
+    window.open(state.blobUrl, "_blank", "noopener,noreferrer");
   }
 
   return (
@@ -74,7 +84,9 @@ export function EstimatePdfPreviewDialog({
               ? t("editor.pdfPreview.loadingHint")
               : state.status === "error"
                 ? state.message
-                : t("editor.pdfPreview.description")}
+                : isMobile && state.status === "ready"
+                  ? t("editor.pdfPreview.mobileHint")
+                  : t("editor.pdfPreview.description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -97,7 +109,19 @@ export function EstimatePdfPreviewDialog({
             </div>
           ) : null}
 
-          {state.status === "ready" ? (
+          {state.status === "ready" && isMobile ? (
+            <div className="flex h-full min-h-[16rem] flex-col items-center justify-center gap-4 px-6 text-center">
+              <p className="max-w-sm text-sm text-muted-foreground">
+                {t("editor.pdfPreview.mobileHint")}
+              </p>
+              <Button type="button" size="lg" onClick={handleOpenPdf}>
+                <ExternalLink className="size-4" />
+                {t("editor.pdfPreview.open")}
+              </Button>
+            </div>
+          ) : null}
+
+          {state.status === "ready" && !isMobile ? (
             <iframe
               src={state.blobUrl}
               title={state.viewerTitle}
@@ -111,10 +135,18 @@ export function EstimatePdfPreviewDialog({
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               {t("editor.pdfPreview.close")}
             </Button>
-            <Button type="button" onClick={handleDownload}>
-              <Download className="size-4" />
-              {t("editor.pdfPreview.download")}
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              {isMobile ? (
+                <Button type="button" onClick={handleOpenPdf}>
+                  <ExternalLink className="size-4" />
+                  {t("editor.pdfPreview.open")}
+                </Button>
+              ) : null}
+              <Button type="button" onClick={handleDownload}>
+                <Download className="size-4" />
+                {t("editor.pdfPreview.download")}
+              </Button>
+            </div>
           </DialogFooter>
         ) : null}
 

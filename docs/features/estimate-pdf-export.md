@@ -107,8 +107,9 @@ DB status is the source of truth. Trigger.dev `runs.retrieve(runId)` is used for
 - Inline header button + More menu item.
 - Opens `EstimatePdfPreviewDialog` with loading spinner.
 - Same server pipeline as export (`useEstimatePdfOutput`, `mode: "preview"`).
-- Fetches signed URL into a **blob URL** for iframe display (UploadThing blocks X-Frame-Options).
-- Dialog footer: Close (revokes blob URL) and Download PDF.
+- **Desktop:** fetches signed URL into a **blob URL** and shows an iframe (UploadThing blocks X-Frame-Options on direct URLs).
+- **Mobile:** iframe PDF preview is unreliable on iOS Safari and many Android browsers (native “Open PDF” UI). Below the estimate mobile breakpoint, the dialog shows an **Otwórz PDF** / **Open PDF** action instead of the iframe.
+- Dialog footer: Close (revokes blob URL), Open PDF (mobile), Download PDF.
 - Errors shown in the dialog (no export toast).
 
 ### Dokumenty tab
@@ -135,10 +136,15 @@ Successful generation logs `estimate_exported` (`SHARING`) with `metadata.format
 
 Preview is not logged in v1.
 
+## PDF template assets (Trigger.dev)
+
+- **Styles:** inlined in [`estimate-pdf-styles.ts`](../../src/pdf/templates/estimate-pdf-styles.ts) and imported by the HTML template. Do **not** read `estimate-pdf.css` from `process.cwd()/src/...` at runtime — Trigger workers have no full repo tree; a silent miss produced unstyled PDFs on Vercel Preview. Keep `estimate-pdf.css` in sync when editing layout.
+- **Hero image:** optional `public/images/pdf/hero-house.jpg`; copied via `additionalFiles` in [`trigger.config.ts`](../../trigger.config.ts). Missing file → SVG gradient fallback.
+
 ## Trigger.dev
 
 - PDF generation runs on Trigger.dev workers (not on Vercel serverless).
-- Task id: `generate-estimate-pdf` (`trigger.config.ts` — build extension: `puppeteer()`; external: `uploadthing`, `puppeteer-core`, `sharp`).
+- Task id: `generate-estimate-pdf` (`trigger.config.ts` — extensions: `additionalFiles` for `public/images/pdf/**`, `puppeteer()`; external: `uploadthing`, `puppeteer-core`, `sharp`).
 - The Trigger.dev Puppeteer extension installs Chrome in the worker image during deploy.
 - `PUPPETEER_EXECUTABLE_PATH` is injected automatically during deploy — do not set it manually in the Trigger dashboard unless the extension env is missing after redeploy.
 - For local `trigger:dev`, define `PUPPETEER_EXECUTABLE_PATH` in `.env.local` (path to your local Chrome; the extension does not install Chrome in dev mode).
@@ -182,3 +188,4 @@ UploadThing uses the Effect-TS library. Duplicate `effect` versions (e.g. Prisma
 - [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md)
 - [`workspace-branding-and-company-profile.md`](workspace-branding-and-company-profile.md)
 - [Incident: PDF Chromium on Trigger worker](../incidents/2026-06-10-estimate-pdf-chromium-trigger-worker.md)
+- [Incident: PDF missing CSS on Trigger worker](../incidents/2026-06-11-estimate-pdf-missing-css-trigger-worker.md)

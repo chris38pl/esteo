@@ -7,7 +7,7 @@
  */
 
 const estimateLayoutBreakpoints = {
-  /** Header: Podgląd / Udostępnij inline; title text-2xl */
+  /** Header: Podgląd inline; title text-2xl */
   headerInlineActions: 1424,
   /** Reguły zastosowane — label visible at/above; icon-only below */
   headerRulesLabel: 1600,
@@ -81,7 +81,7 @@ const estimateLayoutTailwind = {
   editorMaxWidth: "estimate-editor-max-width",
   headerInlineActionButton: "estimate-header-inline-action",
   headerInlineActionMenuItem: "estimate-header-more-menu-inline-action",
-  /** Always visible in Więcej menu (not hidden when inline Preview/Share show) */
+  /** Always visible in Więcej menu (not hidden when inline Preview shows) */
   headerMoreMenuPinAction: "estimate-header-more-menu-pin-action",
   header:
     "estimate-header flex min-w-0 flex-col gap-3",

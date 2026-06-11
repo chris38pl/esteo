@@ -1,4 +1,5 @@
 import { defineConfig } from "@trigger.dev/sdk";
+import { additionalFiles } from "@trigger.dev/build/extensions/core";
 import { prismaExtension } from "@trigger.dev/build/extensions/prisma";
 import { puppeteer } from "@trigger.dev/build/extensions/puppeteer";
 
@@ -19,6 +20,9 @@ export default defineConfig({
   build: {
     external: ["uploadthing", "sharp", "puppeteer-core"],
     extensions: [
+      additionalFiles({
+        files: ["public/images/pdf/**"],
+      }),
       prismaExtension({ schema: "prisma/schema.prisma", mode: "legacy" }),
       puppeteer(),
     ],

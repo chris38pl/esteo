@@ -1,8 +1,6 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-
 import type { EstimatePdfViewModel } from "@/pdf/lib/build-pdf-view-model";
 import { getPdfHeroImageDataUri } from "@/pdf/lib/pdf-hero-image";
+import { estimatePdfStyles } from "@/pdf/templates/estimate-pdf-styles";
 
 function escapeHtml(value: string): string {
   return value
@@ -21,11 +19,7 @@ function optionalLine(label: string, value: string | null | undefined): string {
 }
 
 function loadPdfStyles(): string {
-  try {
-    return readFileSync(join(process.cwd(), "src", "pdf", "templates", "estimate-pdf.css"), "utf8");
-  } catch {
-    return "";
-  }
+  return estimatePdfStyles;
 }
 
 function infoBlock(title: string, icon: string, lines: string): string {

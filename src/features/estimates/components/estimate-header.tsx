@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import type { EstimateVersionStatus } from "@prisma/client";
-import { ChevronDown, Ellipsis, Eye, Share2 } from "lucide-react";
+import { ChevronDown, Ellipsis, Eye } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +14,7 @@ import {
 import {
   estimateHeaderActionsDividerClassName,
   estimateOutlineButtonClassName,
+  estimateOutlineIconButtonClassName,
   estimatePrimaryButtonClassName,
 } from "./estimate-action-button-styles";
 import { EstimateVersionSelector } from "./estimate-version-selector";
@@ -159,10 +160,6 @@ function EstimateHeaderMoreMenu({
           <Eye className="size-4" />
           {t("header.actions.preview")}
         </DropdownMenuItem>
-        <DropdownMenuItem className={headerMoreMenuInlineActionClassName}>
-          <Share2 className="size-4" />
-          {t("header.actions.share")}
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -247,7 +244,7 @@ export function EstimateHeader({
               type="button"
               variant="outline"
               size="icon"
-              className={estimateOutlineButtonClassName}
+              className={estimateOutlineIconButtonClassName}
               aria-label={t("header.actions.more")}
             >
               <Ellipsis className="size-4" />
@@ -268,15 +265,6 @@ export function EstimateHeader({
           >
             <Eye className="size-4" />
             {t("header.actions.preview")}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className={headerInlineActionButtonClassName}
-          >
-            <Share2 className="size-4" />
-            {t("header.actions.share")}
           </Button>
           <Button
             type="button"

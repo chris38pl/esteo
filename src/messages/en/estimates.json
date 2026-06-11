@@ -196,6 +196,8 @@
       "loading": "Generating preview…",
       "loadingHint": "Preparing your document. This may take a few seconds.",
       "loadFailed": "Failed to load PDF.",
+      "mobileHint": "Mobile browsers usually cannot show PDFs inline in a preview. Open the document in a new tab or download the file.",
+      "open": "Open PDF",
       "close": "Close",
       "download": "Download PDF"
     },

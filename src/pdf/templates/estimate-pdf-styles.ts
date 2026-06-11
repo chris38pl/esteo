@@ -1,6 +1,9 @@
-/* Keep in sync with estimate-pdf-styles.ts (bundled for Trigger.dev workers). */
-
-@page {
+/**
+ * PDF stylesheet bundled for Puppeteer HTML.
+ * Source of truth for editing: estimate-pdf.css (keep in sync when changing layout).
+ * Inlined here so Trigger.dev workers do not depend on src/ at runtime.
+ */
+export const estimatePdfStyles = `@page {
   size: A4;
   margin: 0;
 }
@@ -282,4 +285,4 @@ body {
   text-align: center;
   color: __PRIMARY__;
   font-size: 8px;
-}
+}`;

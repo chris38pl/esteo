@@ -196,6 +196,8 @@
       "loading": "Generowanie podglądu…",
       "loadingHint": "Przygotowujemy dokument. To może potrwać kilka sekund.",
       "loadFailed": "Nie udało się wczytać PDF.",
+      "mobileHint": "Przeglądarki mobilne zwykle nie wyświetlają PDF w oknie podglądu. Otwórz dokument w nowej karcie lub pobierz plik.",
+      "open": "Otwórz PDF",
       "close": "Zamknij",
       "download": "Pobierz PDF"
     },
