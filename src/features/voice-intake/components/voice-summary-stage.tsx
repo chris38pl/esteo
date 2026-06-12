@@ -27,10 +27,6 @@ import type { MissingFieldInfo } from "@/features/voice-intake/types";
 
 import type { Locale } from "@/lib/locale";
 
-import { cn } from "@/lib/utils";
-
-
-
 export function VoiceSummaryStage({
 
   extraction,
@@ -103,19 +99,9 @@ export function VoiceSummaryStage({
 
   return (
 
-    <div
+    <div className="flex w-full flex-col">
 
-      className={cn(
-
-        "flex flex-col",
-
-        isPreview ? undefined : "sidebar-scroll min-h-0 flex-1 overflow-y-auto",
-
-      )}
-
-    >
-
-      <div className="mx-auto flex w-full max-w-md flex-col items-center gap-3.5 px-6 pt-4 pb-10">
+      <div className="mx-auto flex w-full max-w-md flex-col items-center gap-3.5 px-4 pt-2 pb-10 sm:px-6 sm:pt-4">
 
         <VoiceSummaryHeroIcon />
 

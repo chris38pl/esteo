@@ -249,7 +249,7 @@ export function EstimateRequestFormFields({
           {t("form.fields.preferredStartDate")}
           <span className="text-primary">*</span>
         </Label>
-        <div className="flex w-full min-w-0 max-w-full gap-2 overflow-x-auto pb-1">
+        <div className="grid w-full min-w-0 grid-cols-3 gap-2 sm:flex sm:flex-wrap">
           {START_DATE_KEYS.map((option) => {
             const selected = project.preferredStartDate === option;
             return (
@@ -261,8 +261,8 @@ export function EstimateRequestFormFields({
                   onProjectChange({ ...project, preferredStartDate: option })
                 }
                 className={cn(
-                  "shrink-0 rounded-xl border px-3 py-2 text-[11px] font-semibold transition",
-                  "border-input bg-background/70 text-muted-foreground hover:bg-accent hover:text-foreground dark:bg-input/20",
+                  "w-full rounded-xl border px-2 py-2 text-center text-[10px] font-semibold leading-tight transition sm:w-auto sm:shrink-0 sm:px-3 sm:text-[11px]",
+                  "whitespace-normal border-input bg-background/70 text-muted-foreground hover:bg-accent hover:text-foreground dark:bg-input/20",
                   !disabled && "cursor-pointer",
                   selected && "border-primary/50 bg-primary/10 text-foreground",
                 )}

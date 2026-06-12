@@ -17,6 +17,8 @@ Record of non-obvious choices and bugs fixed during the initial voice assistant 
 | Error owl | Single asset wrong in dark/light | `error-owl-light.webp` + `error-owl-dark.webp`; CSS `dark:hidden` / `dark:block`. |
 | Mobile close button | Top bar reserved layout space and overlapped recording title | Floating `absolute` X with safe-area insets; no header row. Recording: minimal top padding; scroll screens: extra `pt` under button. |
 | Click-through after floating X | Clicks hit estimate form under portal during recording | Dedicated full-screen capture layer (`absolute inset-0`, `bg-background/95`); `isolate` + `pointer-events-auto` on shell; `inert` on other `body` children while open. |
+| Mobile scroll (summary etc.) | Nested `overflow-y-auto` on stage + portal; `touch-none` on shell blocked iOS momentum | Single scroll container on portal content; remove inner scroll from `VoiceSummaryStage`; drop `touch-none` from shell. |
+| Mobile recording margins | Card border/padding wasted horizontal space on phone | `voiceRecordingStageShellClassName`: `max-sm` removes card chrome; portal recording area uses `px-0` on mobile. |
 | Admin mobile preview | Fixed height + inner scroll clipped content | `fitMobileContent` grows shell height on narrow viewport toggle. |
 | Recording glow | Asset optically off-center | `VOICE_RECORDING_GLOW_OFFSET` in `recording-visual-assets.ts`. |
 | Summary hero | Generic icon | `understand-your-project.webp` + separate subtle ring (not recording glow). |

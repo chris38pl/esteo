@@ -182,8 +182,8 @@ export function CreateEstimateModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[min(90vh,880px)] w-[calc(100%-2rem)] max-w-[min(92vw,56rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-[min(92vw,56rem)]">
-        <DialogHeader className="shrink-0 border-b px-6 py-5 text-left">
+      <DialogContent className="flex max-h-[min(90vh,880px)] w-[calc(100%-2rem)] max-w-[min(92vw,56rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-[min(92vw,56rem)] max-sm:fixed max-sm:inset-0 max-sm:h-[100dvh] max-sm:max-h-[100dvh] max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-none max-sm:border-0">
+        <DialogHeader className="shrink-0 border-b px-4 py-4 text-left sm:px-6 sm:py-5">
           <div className="flex items-start gap-3 pr-8">
             <div
               className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"
@@ -203,7 +203,7 @@ export function CreateEstimateModal({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
-          <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 py-5 [-webkit-overflow-scrolling:touch] sm:px-6">
             <EstimateRequestFormFields
               locale={locale}
               fields={formData.fields}
@@ -225,47 +225,48 @@ export function CreateEstimateModal({
               onAttachmentFilesChange={setAttachmentFiles}
               disabled={isSubmitting}
             />
+
+            <div className="mt-8">
+              <VoiceIntakeController
+                locale={locale}
+                fields={formData.fields}
+                endpoint={`/api/estimate-requests/voice-intake?locale=${locale}`}
+                workspaceId={workspaceId}
+                disabled={isSubmitting}
+                setters={{
+                  setTitle,
+                  getTitle: () => title,
+                  setCustomer,
+                  setAddress,
+                  setProject,
+                  setIndustryFields,
+                  getIndustryFields: () => industryFields,
+                }}
+                onMetadataReady={(metadata) => {
+                  voiceIntakeMetadataRef.current = metadata;
+                }}
+                onAppliedValuesReady={(values) => {
+                  voiceAppliedValuesRef.current = values;
+                }}
+                renderTrigger={({ onClick, disabled }) => (
+                  <VoiceIntakeFooterBar onClick={onClick} disabled={disabled} className="w-full" />
+                )}
+              />
+            </div>
+
+            {error ? <p className="mt-4 text-sm text-destructive">{error}</p> : null}
+            {uploadProgress !== null ? (
+              <p className="mt-4 text-sm text-muted-foreground">
+                {tForm("form.uploading", { percent: uploadProgress })}
+              </p>
+            ) : null}
           </div>
 
-          {error ? (
-            <p className="shrink-0 px-6 pb-2 text-sm text-destructive">{error}</p>
-          ) : null}
-          {uploadProgress !== null ? (
-            <p className="shrink-0 px-6 pb-2 text-sm text-muted-foreground">
-              {tForm("form.uploading", { percent: uploadProgress })}
-            </p>
-          ) : null}
-
-          <DialogFooter className="shrink-0 flex-col gap-3 border-t bg-muted/20 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-            <VoiceIntakeController
-              locale={locale}
-              fields={formData.fields}
-              endpoint={`/api/estimate-requests/voice-intake?locale=${locale}`}
-              workspaceId={workspaceId}
-              disabled={isSubmitting}
-              setters={{
-                setTitle,
-                getTitle: () => title,
-                setCustomer,
-                setAddress,
-                setProject,
-                setIndustryFields,
-                getIndustryFields: () => industryFields,
-              }}
-              onMetadataReady={(metadata) => {
-                voiceIntakeMetadataRef.current = metadata;
-              }}
-              onAppliedValuesReady={(values) => {
-                voiceAppliedValuesRef.current = values;
-              }}
-              renderTrigger={({ onClick, disabled }) => (
-                <VoiceIntakeFooterBar onClick={onClick} disabled={disabled} className="w-full" />
-              )}
-            />
+          <DialogFooter className="shrink-0 border-t bg-muted/20 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-6 sm:py-4">
             <Button
               type="submit"
               disabled={isSubmitting || !canSubmit}
-              className="h-12 shrink-0 rounded-xl px-8 py-3 sm:ml-auto"
+              className="h-12 w-full rounded-xl px-8 py-3 sm:ml-auto sm:w-auto"
             >
               {isSubmitting ? t("submitting") : t("submit")}
             </Button>

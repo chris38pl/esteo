@@ -16,7 +16,7 @@ export function VoiceErrorStage({
   const t = useTranslations("voiceIntake.errors");
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center px-6 py-10">
+    <div className="flex w-full flex-col items-center px-4 py-8 sm:px-6 sm:py-10">
       <div className="flex w-full max-w-sm flex-col items-center text-center">
         <div className="relative size-44 max-w-[min(70vw,11rem)]">
           <img

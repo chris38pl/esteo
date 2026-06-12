@@ -16,6 +16,7 @@ import {
   type VoiceRecordingPreviewState,
 } from "@/features/voice-intake/lib/voice-recording-preview";
 import type { MissingFieldInfo, VoiceIntakeErrorCode } from "@/features/voice-intake/types";
+import { voiceRecordingStageShellClassName } from "@/features/voice-intake/lib/voice-recording-stage-shell";
 
 export function VoiceFollowUpRecordingStage({
   missingFields,
@@ -88,7 +89,7 @@ export function VoiceFollowUpRecordingStage({
   );
 
   return (
-    <div className="w-full max-w-[26rem] shrink-0 rounded-[1.75rem] border border-border/50 bg-card/95 px-5 py-5 shadow-2xl shadow-black/10 backdrop-blur-md sm:px-6 sm:py-7 dark:bg-card/90 dark:shadow-black/40">
+    <div className={voiceRecordingStageShellClassName}>
       <div className="text-center">
         <h2 className="text-xl font-bold leading-tight tracking-tight text-foreground sm:text-2xl">
           {t("followUpTitleLine1")}
