@@ -65,24 +65,22 @@ export function VoiceExperiencePortal({
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.06),transparent_70%)]" />
 
-      <div className="relative z-10 flex items-center justify-end px-4 py-3">
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="rounded-xl"
-          onClick={handleClose}
-          aria-label={t("portal.close")}
-        >
-          <X className="size-5" />
-        </Button>
-      </div>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="absolute top-[max(0.75rem,env(safe-area-inset-top))] right-[max(0.75rem,env(safe-area-inset-right))] z-20 size-10 rounded-full border border-border/45 bg-background/55 shadow-md backdrop-blur-md hover:bg-background/75"
+        onClick={handleClose}
+        aria-label={t("portal.close")}
+      >
+        <X className="size-5" />
+      </Button>
 
       <div
         className={
           voice.phase === "recording_initial" || voice.phase === "recording_follow_up"
-            ? "relative z-10 flex min-h-0 flex-1 items-center justify-center overflow-y-auto px-4 pb-8"
-            : "relative z-10 flex min-h-0 flex-1 flex-col"
+            ? "relative z-10 flex min-h-0 flex-1 items-center justify-center overflow-y-auto px-4 pb-8 pt-[max(0.75rem,env(safe-area-inset-top))]"
+            : "relative z-10 flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pb-8 pt-[max(3.25rem,calc(env(safe-area-inset-top)+2.75rem))]"
         }
       >
         {voice.phase === "recording_initial" ? (

@@ -129,22 +129,23 @@ function VoiceIntakePreviewShell({
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.06),transparent_70%)]" />
 
       {!isTriggerOnly ? (
-        <div className="relative z-10 flex shrink-0 items-center justify-end px-4 py-3">
-          <button
-            type="button"
-            className="inline-flex size-9 items-center justify-center rounded-xl text-muted-foreground"
-            aria-hidden
-            tabIndex={-1}
-          >
-            <X className="size-5" />
-          </button>
-        </div>
+        <button
+          type="button"
+          className="absolute top-3 right-3 z-20 inline-flex size-10 items-center justify-center rounded-full border border-border/45 bg-background/55 text-muted-foreground shadow-md backdrop-blur-md"
+          aria-hidden
+          tabIndex={-1}
+        >
+          <X className="size-5" />
+        </button>
       ) : null}
 
       <div
         className={cn(
           "relative z-10 flex w-full flex-col",
-          isRecordingScreen && "items-center px-4 py-2",
+          isRecordingScreen && "items-center px-4 py-2 pt-3",
+          !isTriggerOnly &&
+            !isRecordingScreen &&
+            "pt-12",
           usesPortalViewport && !fitMobileContent && "min-h-0 flex-1 overflow-hidden",
         )}
       >
