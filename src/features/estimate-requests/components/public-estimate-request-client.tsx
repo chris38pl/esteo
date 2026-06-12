@@ -40,9 +40,11 @@ const benefits = [
 export function PublicEstimateRequestClient({
   locale,
   pageData,
+  canAccessWorkspace = false,
 }: {
   locale: Locale;
   pageData: PublicEstimateRequestPageData;
+  canAccessWorkspace?: boolean;
 }) {
   const t = useTranslations("estimateRequests");
   const formState = useEstimateRequestFormState({ locale, pageData });
@@ -95,7 +97,12 @@ export function PublicEstimateRequestClient({
       </section>
 
       <section className="min-w-0 w-full">
-        <EstimateRequestFormPanel locale={locale} pageData={pageData} formState={formState} />
+        <EstimateRequestFormPanel
+          locale={locale}
+          pageData={pageData}
+          formState={formState}
+          redirectToEstimateOnSuccess={canAccessWorkspace}
+        />
       </section>
     </div>
   );

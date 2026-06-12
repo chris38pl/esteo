@@ -97,7 +97,11 @@ export default async function PublicEstimateRequestPage({ params }: { params: Pa
           <div className="absolute inset-0 bg-gradient-to-b from-background/35 via-background/55 to-background/95" />
         </div>
 
-        <PublicEstimateRequestClient locale={resolvedLocale} pageData={pageData} />
+        <PublicEstimateRequestClient
+          locale={resolvedLocale}
+          pageData={pageData}
+          canAccessWorkspace={memberHeader !== null}
+        />
       </div>
     </main>
   );

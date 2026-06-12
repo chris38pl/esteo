@@ -59,6 +59,7 @@ export function useEstimateRequestFormState({
   const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
   const [companyWebsite, setCompanyWebsite] = useState("");
   const [requestNumber, setRequestNumber] = useState<string | null>(null);
+  const [estimateId, setEstimateId] = useState<string | null>(null);
   const voiceIntakeMetadataRef = useRef<VoiceIntakeMetadata | null>(null);
   const voiceAppliedValuesRef = useRef<VoiceAppliedValues | null>(null);
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -68,6 +69,7 @@ export function useEstimateRequestFormState({
       endpoint: `/api/public/estimate-requests?locale=${locale}`,
       onSuccess: (result) => {
         setRequestNumber(result.requestNumber);
+        setEstimateId(result.estimateId || null);
       },
     });
 
@@ -142,6 +144,7 @@ export function useEstimateRequestFormState({
     companyWebsite,
     setCompanyWebsite,
     requestNumber,
+    estimateId,
     isSubmitting,
     uploadProgress,
     attachmentWarnings,

@@ -1,6 +1,8 @@
 "use client";
 
 import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 import {
   EstimateRequestFormFields,
@@ -13,15 +15,20 @@ import { Button } from "@/components/ui/button";
 
 type FormState = ReturnType<typeof useEstimateRequestFormState>;
 
+const SUCCESS_REDIRECT_DELAY_MS = 2_500;
+
 export function EstimateRequestFormPanel({
   locale,
   pageData,
   formState,
+  redirectToEstimateOnSuccess = false,
 }: {
   locale: Locale;
   pageData: PublicEstimateRequestPageData;
   formState: FormState;
+  redirectToEstimateOnSuccess?: boolean;
 }) {
+  const router = useRouter();
   const {
     t,
     customer,
@@ -37,12 +44,34 @@ export function EstimateRequestFormPanel({
     companyWebsite,
     setCompanyWebsite,
     requestNumber,
+    estimateId,
     isSubmitting,
     uploadProgress,
     attachmentWarnings,
     error,
     handleSubmit,
   } = formState;
+
+  useEffect(() => {
+    if (!redirectToEstimateOnSuccess || requestNumber === null || !estimateId) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      router.push(
+        `/${locale}/dashboard/${pageData.workspace.slug}/estimates/${estimateId}`,
+      );
+    }, SUCCESS_REDIRECT_DELAY_MS);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [
+    estimateId,
+    locale,
+    pageData.workspace.slug,
+    redirectToEstimateOnSuccess,
+    requestNumber,
+    router,
+  ]);
 
   if (requestNumber !== null) {
     return (
