@@ -7,6 +7,8 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 | Document | Description |
 | --- | --- |
 | [estimate-requests.md](features/estimate-requests.md) | Public and internal estimate request intake |
+| [voice-intake.md](features/voice-intake.md) | AI voice assistant — record, extract, fill estimate form |
+| [voice-intake-decisions.md](features/voice-intake-decisions.md) | Voice intake UX/tech decisions and solved problems |
 | [estimates.md](features/estimates.md) | Estimates (kosztorysy) — flows, versions, entitlements |
 | [estimates-view-edit-ui.md](features/estimates-view-edit-ui.md) | Estimate view/edit screen UI spec |
 | [estimate-autosave.md](features/estimate-autosave.md) | Estimate editor autosave — section/item persistence, sync guard, conflict queue |
@@ -31,6 +33,7 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 | [database.md](architecture/database.md) | Schema, billing, planned estimate models |
 | [ai.md](architecture/ai.md) | Global AI stack and prompt layers |
 | [estimate-ai.md](architecture/estimate-ai.md) | Estimate draft job and agentic edit |
+| [voice-intake.md](architecture/voice-intake.md) | Voice intake — API, state machine, AI pipeline |
 
 ## Standards
 
@@ -51,6 +54,8 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 ## Estimate feature map
 
 ```txt
+estimate-requests.md  →  voice-intake.md (optional voice fill)
+        ↓
 estimate-requests.md  →  estimate-ai.md (job)  →  estimates.md
                               ↓
                     estimates-view-edit-ui.md

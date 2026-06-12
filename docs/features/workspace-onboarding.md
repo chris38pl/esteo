@@ -132,7 +132,7 @@ Switch: `setActiveWorkspaceAction` in `src/server/workspaces/actions.ts`
 - Slug: auto-generated from name, not editable
 - Slug collision: silent suffix retry (`acme`, `acme-2`, `acme-3`, …) in `createWorkspace`
 
-After create: set active workspace cookie + `lastActiveWorkspaceId`, redirect to dashboard.
+After create: set active workspace cookie + `lastActiveWorkspaceId`, redirect to the estimates list (`/dashboard/[slug]/estimates` for onboarding; `/dashboard/[slug]` for additional workspaces).
 
 ## Workspace settings
 

@@ -29,11 +29,22 @@ export function VoiceExperiencePortal({
   useEffect(() => {
     if (!voice.open) return;
 
-    const previous = document.body.style.overflow;
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
+    const inertedRoots: HTMLElement[] = [];
+    for (const child of document.body.children) {
+      if (child instanceof HTMLElement && child.getAttribute("role") !== "dialog") {
+        child.setAttribute("inert", "");
+        inertedRoots.push(child);
+      }
+    }
+
     return () => {
-      document.body.style.overflow = previous;
+      document.body.style.overflow = previousOverflow;
+      for (const root of inertedRoots) {
+        root.removeAttribute("inert");
+      }
     };
   }, [voice.open]);
 
@@ -60,16 +71,23 @@ export function VoiceExperiencePortal({
       role="dialog"
       aria-modal="true"
       aria-label={t("portal.ariaLabel")}
-      className="fixed inset-0 z-[100] flex flex-col bg-background/95 backdrop-blur-xl"
+      className="fixed inset-0 z-[100] isolate flex flex-col pointer-events-auto touch-none"
       style={{ height: "100dvh" }}
     >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.06),transparent_70%)]" />
+      {/* Full-screen capture layer — blocks clicks to the page behind the portal */}
+      <div
+        className="absolute inset-0 z-0 bg-background/95 backdrop-blur-xl"
+        aria-hidden
+        onClick={(event) => event.stopPropagation()}
+      />
+
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.06),transparent_70%)]" />
 
       <Button
         type="button"
         variant="ghost"
         size="icon"
-        className="absolute top-[max(0.75rem,env(safe-area-inset-top))] right-[max(0.75rem,env(safe-area-inset-right))] z-20 size-10 rounded-full border border-border/45 bg-background/55 shadow-md backdrop-blur-md hover:bg-background/75"
+        className="absolute top-[max(0.75rem,env(safe-area-inset-top))] right-[max(0.75rem,env(safe-area-inset-right))] z-30 size-10 rounded-full border border-border/45 bg-background/55 shadow-md backdrop-blur-md hover:bg-background/75"
         onClick={handleClose}
         aria-label={t("portal.close")}
       >
@@ -79,8 +97,8 @@ export function VoiceExperiencePortal({
       <div
         className={
           voice.phase === "recording_initial" || voice.phase === "recording_follow_up"
-            ? "relative z-10 flex min-h-0 flex-1 items-center justify-center overflow-y-auto px-4 pb-8 pt-[max(0.75rem,env(safe-area-inset-top))]"
-            : "relative z-10 flex min-h-0 flex-1 flex-col overflow-y-auto px-4 pb-8 pt-[max(3.25rem,calc(env(safe-area-inset-top)+2.75rem))]"
+            ? "relative z-10 flex h-full min-h-0 w-full flex-1 touch-auto items-center justify-center overflow-y-auto px-4 pb-8 pt-[max(0.75rem,env(safe-area-inset-top))]"
+            : "relative z-10 flex h-full min-h-0 w-full flex-1 touch-auto flex-col overflow-y-auto px-4 pb-8 pt-[max(3.25rem,calc(env(safe-area-inset-top)+2.75rem))]"
         }
       >
         {voice.phase === "recording_initial" ? (

@@ -100,7 +100,12 @@ export function CreateWorkspaceForm({
         return;
       }
 
-      router.replace(`/${locale}/dashboard/${result.data.slug}`);
+      const destination =
+        mode === "onboarding"
+          ? `/${locale}/dashboard/${result.data.slug}/estimates`
+          : `/${locale}/dashboard/${result.data.slug}`;
+
+      router.replace(destination);
     });
   }
 

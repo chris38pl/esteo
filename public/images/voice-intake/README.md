@@ -1,31 +1,32 @@
-# Voice intake — nagrywanie (tło świetlne)
+# Voice intake — image assets
 
-Umieść grafikę efektu świetlnego w **tym folderze**:
+Place WebP files in this folder. Paths are defined in `src/features/voice-intake/lib/recording-visual-assets.ts`.
 
-```
-public/images/voice-intake/
-```
+## Files
 
-## Nazwy plików (ważne — dokładnie tak)
+| File | Use |
+| --- | --- |
+| `recording-glow-dark.webp` | Recording halo — dark mode (fallback in light) |
+| `recording-glow-light.webp` | Recording halo — light mode |
+| `recording-glow.webp` | Optional single-file fallback |
+| `understand-your-project.webp` | Summary (“Podsumowanie”) hero |
+| `error-owl-dark.webp` | Error screen — dark mode |
+| `error-owl-light.webp` | Error screen — light mode |
 
-| Plik | Kiedy używany |
-|------|----------------|
-| `recording-glow-dark.webp` | Dark mode (lub fallback w light) |
-| `recording-glow-light.webp` | Light mode (opcjonalnie) |
-| `recording-glow.webp` | Jeden plik na oba tryby (opcjonalnie) |
+## Requirements
 
-Wystarczy **jeden** plik — np. samo `recording-glow-dark.webp` (aplikacja spróbuje go też w light mode).
+- Transparent background (glow + owl + hero)
+- Recording glow: ~640×640 px square
+- Theme pairs (owl, glow): tune separately for light/dark contrast
 
-## Wymagania
+## Verify locally
 
-- Format: WebP (lub PNG — wtedy zmień rozszerzenie w `src/features/voice-intake/lib/recording-visual-assets.ts`)
-- Przezroczyste tło
-- ~640×640 px, kwadrat
+After `npm run dev`:
 
-## Sprawdzenie
+- `http://localhost:3000/images/voice-intake/recording-glow-dark.webp`
+- `http://localhost:3000/images/voice-intake/understand-your-project.webp`
+- `http://localhost:3000/images/voice-intake/error-owl-light.webp`
 
-Po `npm run dev` otwórz w przeglądarce:
+## Docs
 
-`http://localhost:3000/images/voice-intake/recording-glow-dark.webp`
-
-Jeśli widzisz obrazek — ścieżka jest OK.
+Full feature documentation: [`docs/features/voice-intake.md`](../../../docs/features/voice-intake.md)

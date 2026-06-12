@@ -13,6 +13,14 @@ Allow structured estimate requests that are automatically transformed into AI-ge
 
 For internal creation, the user enters the same logical fields as the public form. The system **auto-creates** an `EstimateRequest` in the background, then runs the **same** background job as the public flow. There is one pipeline and one link model (`EstimateRequest.estimateId`).
 
+## Voice assistant (optional intake)
+
+On the **public** form and in the **create estimate** modal, users can open the AI voice assistant instead of typing manually. Flow: record → transcribe/extract → summary → optional follow-up → animated form fill → normal submit.
+
+Voice session metadata is attached to the request payload as `voiceIntake` when the user applies voice data and submits.
+
+See [`voice-intake.md`](voice-intake.md).
+
 ## User flow
 
 ### Customer (public)
@@ -225,3 +233,4 @@ For construction business (MVP focus):
 - [`estimates.md`](estimates.md)
 - [`estimate-sections.md`](estimate-sections.md)
 - [`estimate-ai.md`](../architecture/estimate-ai.md)
+- [`voice-intake.md`](voice-intake.md)

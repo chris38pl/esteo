@@ -44,6 +44,13 @@ Estimate **draft generation** and **agentic editing** are documented in depth he
 
 Product flows: [`docs/features/estimates.md`](../features/estimates.md).
 
+## Voice intake AI
+
+Speech-to-form for estimate requests — Whisper transcription + structured extraction (initial and follow-up merge):
+
+- **[`voice-intake.md`](voice-intake.md)** — API, pipeline, schema
+- **[`docs/features/voice-intake.md`](../features/voice-intake.md)** — product flow
+
 ## AI cost strategy
 
 - Model usage tiers
