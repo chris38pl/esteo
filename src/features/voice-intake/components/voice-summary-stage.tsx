@@ -101,13 +101,11 @@ export function VoiceSummaryStage({
 
     <div className="flex w-full flex-col">
 
-      <div className="mx-auto flex w-full max-w-md flex-col items-center gap-3.5 px-4 pt-2 pb-10 sm:px-6 sm:pt-4">
+      <div className="mx-auto flex w-full max-w-md flex-col items-center gap-3 pb-10 sm:gap-3.5 sm:px-6 sm:pt-4">
 
         <VoiceSummaryHeroIcon />
 
-
-
-        <div className="mb-2 w-full space-y-6 text-center">
+        <div className="mb-1 w-full space-y-4 text-center sm:mb-2 sm:space-y-6">
           <h2 className="text-xl font-semibold tracking-tight text-foreground">
             {tReview("understoodHeading")}
           </h2>

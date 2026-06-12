@@ -84,7 +84,7 @@ function SummaryHeroGlowStyles() {
 
 export function VoiceSummaryHeroIcon() {
   return (
-    <div className="relative mx-auto size-48" aria-hidden>
+    <div className="relative mx-auto size-40 -mt-2.5 sm:mt-0 sm:size-48" aria-hidden>
       <SummaryHeroGlowStyles />
 
       <img

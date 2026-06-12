@@ -10,7 +10,9 @@ import { VoiceErrorStage } from "@/features/voice-intake/components/voice-error-
 import { VoiceRecordingStage } from "@/features/voice-intake/components/voice-recording-stage";
 import { VoiceSummaryStage } from "@/features/voice-intake/components/voice-summary-stage";
 import type { useVoiceIntake } from "@/features/voice-intake/hooks/use-voice-intake";
+import { voicePortalScrollClassName } from "@/features/voice-intake/lib/voice-portal-scroll";
 import type { Locale } from "@/lib/locale";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 type VoiceIntakeState = ReturnType<typeof useVoiceIntake>;
@@ -98,13 +100,15 @@ export function VoiceExperiencePortal({
       </Button>
 
       <div
-        className={
+        className={cn(
+          voicePortalScrollClassName,
           isRecordingPhase
-            ? "relative z-10 flex h-full min-h-0 w-full flex-1 flex-col overflow-y-auto overscroll-y-contain px-0 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(3.25rem,calc(env(safe-area-inset-top)+2.75rem))] [-webkit-overflow-scrolling:touch] sm:items-center sm:justify-center sm:px-4 sm:pb-8"
-            : "relative z-10 flex h-full min-h-0 w-full flex-1 flex-col overflow-y-auto overscroll-y-contain px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(3.25rem,calc(env(safe-area-inset-top)+2.75rem))] [-webkit-overflow-scrolling:touch]"
-        }
+            ? "px-0 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(3.25rem,calc(env(safe-area-inset-top)+2.75rem))] sm:px-4 sm:pb-8"
+            : "px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(3.25rem,calc(env(safe-area-inset-top)+2.75rem))] sm:px-6",
+        )}
       >
         {voice.phase === "recording_initial" ? (
+          <div className="w-full sm:flex sm:min-h-full sm:flex-col sm:items-center sm:justify-center">
           <VoiceRecordingStage
             key="initial"
             mode="initial"
@@ -119,9 +123,11 @@ export function VoiceExperiencePortal({
               voice.setPhase("error");
             }}
           />
+          </div>
         ) : null}
 
         {voice.phase === "recording_follow_up" ? (
+          <div className="w-full sm:flex sm:min-h-full sm:flex-col sm:items-center sm:justify-center">
           <VoiceRecordingStage
             key="follow-up"
             mode="follow_up"
@@ -137,10 +143,13 @@ export function VoiceExperiencePortal({
               voice.setPhase("error");
             }}
           />
+          </div>
         ) : null}
 
         {voice.phase === "analyzing" || voice.phase === "analyzing_follow_up" ? (
-          <VoiceAnalyzingStage isFollowUp={voice.phase === "analyzing_follow_up"} />
+          <div className="flex min-h-full w-full flex-col">
+            <VoiceAnalyzingStage isFollowUp={voice.phase === "analyzing_follow_up"} />
+          </div>
         ) : null}
 
         {voice.phase === "review" &&

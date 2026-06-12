@@ -44,17 +44,21 @@ export function VoiceFollowUpMissingList({ items }: { items: MissingFieldInfo[] 
   }
 
   return (
-    <section className="w-full space-y-5 pt-2 text-center">
-      <div className="space-y-2.5">
-        <h3 className="text-lg font-semibold tracking-tight text-foreground">
+    <section className="w-full space-y-3 pt-1 text-center sm:space-y-5 sm:pt-2">
+      <div className="space-y-1.5 sm:space-y-2.5">
+        <h3 className="text-base font-semibold tracking-tight text-foreground sm:text-lg">
           {t("followUpMissingTitle")}
         </h3>
-        <p className="text-sm text-muted-foreground">{t("followUpMissingSubtitle")}</p>
+        <p className="text-xs leading-relaxed text-muted-foreground sm:text-sm">
+          {t("followUpMissingSubtitle")}
+        </p>
       </div>
 
-      <div className="space-y-2.5 pb-1 text-left">
-        <p className="text-sm text-muted-foreground">{t("followUpMissingListHeading")}</p>
-        <ul className="space-y-2">
+      <div className="space-y-1.5 pb-1 text-left sm:space-y-2.5">
+        <p className="text-center text-[11px] text-muted-foreground sm:text-left sm:text-sm">
+          {t("followUpMissingListHeading")}
+        </p>
+        <ul className="space-y-1.5 sm:space-y-2">
           {displayItems.map((item) => {
             const key = FRIENDLY_KEY_MAP[item.fieldKey];
             const label = key ? tMissing(key) : item.label;
@@ -63,12 +67,12 @@ export function VoiceFollowUpMissingList({ items }: { items: MissingFieldInfo[] 
             return (
               <li
                 key={item.fieldKey}
-                className="flex items-center gap-3 rounded-xl border border-border/50 bg-card/60 px-4 py-3"
+                className="flex items-center gap-2 rounded-lg border border-border/50 bg-card/60 px-2.5 py-2 sm:gap-3 sm:rounded-xl sm:px-4 sm:py-3"
               >
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
-                  <Icon className="size-4" aria-hidden />
+                <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-primary/15 text-primary sm:size-9 sm:rounded-lg">
+                  <Icon className="size-3.5 sm:size-4" aria-hidden />
                 </span>
-                <span className="text-sm font-medium text-foreground">{label}</span>
+                <span className="text-xs font-medium text-foreground sm:text-sm">{label}</span>
               </li>
             );
           })}

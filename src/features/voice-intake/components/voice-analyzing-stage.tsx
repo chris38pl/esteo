@@ -103,7 +103,7 @@ export function VoiceAnalyzingStage({ isFollowUp }: { isFollowUp: boolean }) {
     : { opacity: 0, y: -8, scale: 0.98 };
 
   return (
-    <div className="flex w-full flex-col items-center px-4 py-8 sm:px-6 sm:py-10">
+    <div className="flex min-h-full w-full flex-col items-center justify-center px-4 py-6 sm:px-6 sm:py-8">
       <div className="flex w-full max-w-sm flex-col items-center">
         <div className="w-full opacity-45">
           <VoiceRecordingVisualizer

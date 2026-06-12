@@ -151,11 +151,9 @@ function VoiceIntakePreviewShell({
       >
         <div
           className={cn(
-            "w-full",
-            usesPortalViewport &&
-              !fitMobileContent &&
-              "flex min-h-0 flex-1 flex-col overflow-hidden",
-            fitMobileContent && "flex flex-col",
+            "sidebar-scroll w-full touch-pan-y overflow-x-hidden overflow-y-auto overscroll-y-contain [-webkit-overflow-scrolling:touch]",
+            (usesPortalViewport || fitMobileContent) && "min-h-0 flex-1 basis-0",
+            usesPortalViewport && !fitMobileContent && "flex flex-col",
           )}
         >
           {children}
