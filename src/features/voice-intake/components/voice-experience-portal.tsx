@@ -66,6 +66,9 @@ export function VoiceExperiencePortal({
     onApply();
   }
 
+  const isRecordingPhase =
+    voice.phase === "recording_initial" || voice.phase === "recording_follow_up";
+
   return createPortal(
     <div
       role="dialog"
@@ -96,44 +99,48 @@ export function VoiceExperiencePortal({
 
       <div
         className={
-          voice.phase === "recording_initial" || voice.phase === "recording_follow_up"
-            ? "relative z-10 flex h-full min-h-0 w-full flex-1 touch-auto items-center justify-center overflow-y-auto px-4 pb-8 pt-[max(0.75rem,env(safe-area-inset-top))]"
+          isRecordingPhase
+            ? "relative z-10 flex h-full min-h-0 w-full flex-1 touch-auto overflow-y-auto px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(3.25rem,calc(env(safe-area-inset-top)+2.75rem))]"
             : "relative z-10 flex h-full min-h-0 w-full flex-1 touch-auto flex-col overflow-y-auto px-4 pb-8 pt-[max(3.25rem,calc(env(safe-area-inset-top)+2.75rem))]"
         }
       >
         {voice.phase === "recording_initial" ? (
-          <VoiceRecordingStage
-            key="initial"
-            mode="initial"
-            extraction={null}
-            cleanedTranscript=""
-            locale={locale}
-            missingFields={voice.missingFields}
-            onComplete={(blob, durationMs) => void voice.submitAudio(blob, durationMs, false)}
-            onCancel={handleClose}
-            onError={(code) => {
-              voice.setError(code);
-              voice.setPhase("error");
-            }}
-          />
+          <div className="flex min-h-full w-full flex-col items-center justify-center py-4">
+            <VoiceRecordingStage
+              key="initial"
+              mode="initial"
+              extraction={null}
+              cleanedTranscript=""
+              locale={locale}
+              missingFields={voice.missingFields}
+              onComplete={(blob, durationMs) => void voice.submitAudio(blob, durationMs, false)}
+              onCancel={handleClose}
+              onError={(code) => {
+                voice.setError(code);
+                voice.setPhase("error");
+              }}
+            />
+          </div>
         ) : null}
 
         {voice.phase === "recording_follow_up" ? (
-          <VoiceRecordingStage
-            key="follow-up"
-            mode="follow_up"
-            locale={locale}
-            missingFields={voice.missingFields}
-            onComplete={(blob, durationMs) => void voice.submitAudio(blob, durationMs, true)}
-            onCancel={handleClose}
-            onError={(code) => {
-              if (code === "recording_too_short") {
-                return;
-              }
-              voice.setError(code);
-              voice.setPhase("error");
-            }}
-          />
+          <div className="flex min-h-full w-full flex-col items-center justify-center py-4">
+            <VoiceRecordingStage
+              key="follow-up"
+              mode="follow_up"
+              locale={locale}
+              missingFields={voice.missingFields}
+              onComplete={(blob, durationMs) => void voice.submitAudio(blob, durationMs, true)}
+              onCancel={handleClose}
+              onError={(code) => {
+                if (code === "recording_too_short") {
+                  return;
+                }
+                voice.setError(code);
+                voice.setPhase("error");
+              }}
+            />
+          </div>
         ) : null}
 
         {voice.phase === "analyzing" || voice.phase === "analyzing_follow_up" ? (

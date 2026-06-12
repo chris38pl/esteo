@@ -78,14 +78,16 @@ export function VoiceInitialRecordingStage({
   const warningThreshold = 150_000;
 
   return (
-    <div className="w-full max-w-[26rem] shrink-0 rounded-[1.75rem] border border-border/50 bg-card/95 px-6 py-7 shadow-2xl shadow-black/10 backdrop-blur-md dark:bg-card/90 dark:shadow-black/40">
+    <div className="w-full max-w-[26rem] shrink-0 rounded-[1.75rem] border border-border/50 bg-card/95 px-5 py-5 shadow-2xl shadow-black/10 backdrop-blur-md sm:px-6 sm:py-7 dark:bg-card/90 dark:shadow-black/40">
       <div className="text-center">
-        <h2 className="text-2xl font-bold leading-tight tracking-tight text-foreground">
+        <h2 className="text-xl font-bold leading-tight tracking-tight text-foreground sm:text-2xl">
           {t("initialTitleLine1")}
           <br />
           <span className="text-primary">{t("initialTitleHighlight")}</span>
         </h2>
-        <p className="mt-[21px] text-sm leading-relaxed text-muted-foreground">{t("initialSubtitle")}</p>
+        <p className="mt-4 text-xs leading-relaxed text-muted-foreground sm:mt-[21px] sm:text-sm">
+          {t("initialSubtitle")}
+        </p>
       </div>
 
       <VoiceRecordingVisualizer
@@ -101,10 +103,12 @@ export function VoiceInitialRecordingStage({
         <p className="mt-9 text-center text-sm text-muted-foreground">{t("maxDuration")}</p>
       </div>
 
-      <p className="mt-6 text-center text-sm leading-relaxed text-foreground">{t("speakFreely")}</p>
+      <p className="mt-6 text-center text-xs leading-relaxed text-foreground sm:text-sm">
+        {t("speakFreely")}
+      </p>
 
-      <div className="mt-5 flex items-center justify-center gap-2 text-sm text-muted-foreground">
-        <Shield className="size-3.5 shrink-0" aria-hidden />
+      <div className="mt-5 flex items-center justify-center gap-2 text-xs text-muted-foreground sm:text-sm">
+        <Shield className="size-3 shrink-0 sm:size-3.5" aria-hidden />
         <p>{t("privacy")}</p>
       </div>
     </div>
