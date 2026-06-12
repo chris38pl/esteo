@@ -42,6 +42,7 @@
       "workspaces": "Workspaces",
       "estimateRequests": "Estimate Requests",
       "pdfPreview": "PDF preview",
+      "voiceIntakePreview": "Voice preview",
       "styleguide": "Styleguide"
     }
   },

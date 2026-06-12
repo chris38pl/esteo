@@ -406,3 +406,80 @@ html[data-dashboard-nav] #nprogress .bar,
 html[data-dashboard-nav] #nprogress .peg {
   top: 3.5rem;
 }
+
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+/* Voice intake — animated form fill */
+[data-voice-field] {
+  position: relative;
+  border-radius: 1rem;
+  transition: transform 0.25s ease;
+}
+
+[data-voice-field].voice-apply-active {
+  z-index: 2;
+}
+
+[data-voice-field].voice-apply-active::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 1rem;
+  pointer-events: none;
+  z-index: -1;
+  background: color-mix(in oklab, var(--primary) 5%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--primary) 16%, transparent),
+    0 0 14px color-mix(in oklab, var(--primary) 10%, transparent);
+  animation: voice-apply-glow 1.8s ease-in-out infinite;
+}
+
+[data-voice-field].voice-apply-active input,
+[data-voice-field].voice-apply-active textarea,
+[data-voice-field].voice-apply-active select {
+  border-color: color-mix(in oklab, var(--primary) 32%, var(--border));
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 8%, transparent);
+}
+
+[data-voice-field].voice-apply-typing input,
+[data-voice-field].voice-apply-typing textarea {
+  caret-color: var(--primary);
+}
+
+[data-voice-field].voice-apply-active input.voice-apply-char,
+[data-voice-field].voice-apply-active textarea.voice-apply-char {
+  animation: voice-apply-char 0.14s ease-out;
+}
+
+@keyframes voice-apply-glow {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes voice-apply-char {
+  0% {
+    filter: brightness(1);
+  }
+  40% {
+    filter: brightness(1.04);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-voice-field].voice-apply-active::before,
+  [data-voice-field].voice-apply-active input.voice-apply-char,
+  [data-voice-field].voice-apply-active textarea.voice-apply-char {
+    animation: none;
+  }
+}

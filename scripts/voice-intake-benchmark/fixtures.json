@@ -1,0 +1,367 @@
+[
+  {
+    "id": "B01",
+    "transcript": "Potrzebuję wyceny remontu mieszkania 68 metrów w Poznaniu. Chcę zrobić nową łazienkę, wymienić instalację elektryczną oraz pomalować całe mieszkanie. Termin realizacji najlepiej we wrześniu.",
+    "locale": "pl",
+    "expected": {
+      "city": "Poznań",
+      "area": 68,
+      "preferredStartDate": "1_3_months",
+      "propertyType": "apartment",
+      "scopeOfWork": ["łazienka", "elektryka", "malowanie"]
+    }
+  },
+  {
+    "id": "B02",
+    "transcript": "Dom jednorodzinny 120 metrów kwadratowych pod Warszawą, potrzebuję wymiany dachu i elewacji, jak najszybciej.",
+    "locale": "pl",
+    "expected": {
+      "city": "Warszawa",
+      "area": 120,
+      "preferredStartDate": "asap",
+      "propertyType": "house",
+      "scopeOfWork": ["dach", "elewacja"]
+    }
+  },
+  {
+    "id": "B03",
+    "transcript": "Biuro 45 metrów w Krakowie, malowanie i wymiana podłóg, termin za 3 do 6 miesięcy.",
+    "locale": "pl",
+    "expected": {
+      "city": "Kraków",
+      "area": 45,
+      "preferredStartDate": "3_6_months",
+      "propertyType": "office",
+      "scopeOfWork": ["malowanie", "podłogi"]
+    }
+  },
+  {
+    "id": "B04",
+    "transcript": "Lokal użytkowy we Wrocławiu około 200 metrów kwadratowych, remont generalny, termin elastyczny.",
+    "locale": "pl",
+    "expected": {
+      "city": "Wrocław",
+      "area": 200,
+      "preferredStartDate": "flexible",
+      "propertyType": "commercial",
+      "scopeOfWork": ["remont"]
+    }
+  },
+  {
+    "id": "B05",
+    "transcript": "Mieszkanie 52 metry w Gdańsku, tylko kuchnia i łazienka, w ciągu jednych do trzech miesięcy.",
+    "locale": "pl",
+    "expected": {
+      "city": "Gdańsk",
+      "area": 52,
+      "preferredStartDate": "1_3_months",
+      "propertyType": "apartment",
+      "scopeOfWork": ["kuchnia", "łazienka"]
+    }
+  },
+  {
+    "id": "B06",
+    "transcript": "Dom w Swarzędzu 150 metrów, malowanie całego domu, realizacja w sierpniu.",
+    "locale": "pl",
+    "expected": {
+      "city": "Swarzędz",
+      "area": 150,
+      "preferredStartDate": "1_3_months",
+      "propertyType": "house",
+      "scopeOfWork": ["malowanie"]
+    }
+  },
+  {
+    "id": "B07",
+    "transcript": "Kawalerka 28 metrów Łódź, gładzie i malowanie, jak najszybciej.",
+    "locale": "pl",
+    "expected": {
+      "city": "Łódź",
+      "area": 28,
+      "preferredStartDate": "asap",
+      "propertyType": "apartment",
+      "scopeOfWork": ["gładzie", "malowanie"]
+    }
+  },
+  {
+    "id": "B08",
+    "transcript": "Mieszkanie w Poznaniu na Jeżycach około 75 metrów kwadratowych, wymiana okien i parapetów.",
+    "locale": "pl",
+    "expected": {
+      "city": "Poznań",
+      "area": 75,
+      "preferredStartDate": null,
+      "propertyType": "apartment",
+      "scopeOfWork": ["okna", "parapety"]
+    }
+  },
+  {
+    "id": "B09",
+    "transcript": "Dom letniskowy na Mazurach 90 metrów, remont drewnianej elewacji, przyszły rok.",
+    "locale": "pl",
+    "expected": {
+      "city": null,
+      "area": 90,
+      "preferredStartDate": "6_12_months",
+      "propertyType": "house",
+      "scopeOfWork": ["elewacja"]
+    }
+  },
+  {
+    "id": "B10",
+    "transcript": "Apartament inwestycyjny Katowice 62 metry kwadratowe, łazienka z prysznicem i płytki.",
+    "locale": "pl",
+    "expected": {
+      "city": "Katowice",
+      "area": 62,
+      "preferredStartDate": null,
+      "propertyType": "apartment",
+      "scopeOfWork": ["łazienka", "płytki"]
+    }
+  },
+  {
+    "id": "B11",
+    "transcript": "Biuro open space 180 metrów Warszawa centrum, instalacja elektryczna i sieć komputerowa, za 3-6 miesięcy.",
+    "locale": "pl",
+    "expected": {
+      "city": "Warszawa",
+      "area": 180,
+      "preferredStartDate": "3_6_months",
+      "propertyType": "office",
+      "scopeOfWork": ["elektryka", "sieć"]
+    }
+  },
+  {
+    "id": "B12",
+    "transcript": "Mieszkanie trzypokojowe 85 metrów Szczecin, kompleksowy remont, 6 do 12 miesięcy.",
+    "locale": "pl",
+    "expected": {
+      "city": "Szczecin",
+      "area": 85,
+      "preferredStartDate": "6_12_months",
+      "propertyType": "apartment",
+      "scopeOfWork": ["remont"]
+    }
+  },
+  {
+    "id": "B13",
+    "transcript": "Dom 110 metrów Lublin, ocieplenie i tynk, wiosna przyszłego roku.",
+    "locale": "pl",
+    "expected": {
+      "city": "Lublin",
+      "area": 110,
+      "preferredStartDate": "6_12_months",
+      "propertyType": "house",
+      "scopeOfWork": ["ocieplenie", "tynk"]
+    }
+  },
+  {
+    "id": "B14",
+    "transcript": "Mieszkanie 40 metrów Białystok, tylko malowanie sufitów i ścian.",
+    "locale": "pl",
+    "expected": {
+      "city": "Białystok",
+      "area": 40,
+      "preferredStartDate": null,
+      "propertyType": "apartment",
+      "scopeOfWork": ["malowanie"]
+    }
+  },
+  {
+    "id": "B15",
+    "transcript": "Lokal handlowy 30 metrów Rzeszów, remont witryny i posadzki, za 1-3 miesiące.",
+    "locale": "pl",
+    "expected": {
+      "city": "Rzeszów",
+      "area": 30,
+      "preferredStartDate": "1_3_months",
+      "propertyType": "commercial",
+      "scopeOfWork": ["witryna", "posadzka"]
+    }
+  },
+  {
+    "id": "B16",
+    "transcript": "Penthouse 200 metrów Gdynia, łazienka marmur, kuchnia, smart home, 3-6 miesięcy.",
+    "locale": "pl",
+    "expected": {
+      "city": "Gdynia",
+      "area": 200,
+      "preferredStartDate": "3_6_months",
+      "propertyType": "apartment",
+      "scopeOfWork": ["łazienka", "kuchnia"]
+    }
+  },
+  {
+    "id": "B17",
+    "transcript": "Dom szeregowy 95 metrów Toruń, wymiana instalacji gazowej i centralnego ogrzewania.",
+    "locale": "pl",
+    "expected": {
+      "city": "Toruń",
+      "area": 95,
+      "preferredStartDate": null,
+      "propertyType": "house",
+      "scopeOfWork": ["gaz", "co"]
+    }
+  },
+  {
+    "id": "B18",
+    "transcript": "Mieszkanie 58 metrów Olsztyn, gładzie gipsowe i malowanie, za miesiąc.",
+    "locale": "pl",
+    "expected": {
+      "city": "Olsztyn",
+      "area": 58,
+      "preferredStartDate": "1_3_months",
+      "propertyType": "apartment",
+      "scopeOfWork": ["gładzie", "malowanie"]
+    }
+  },
+  {
+    "id": "B19",
+    "transcript": "Biuro 70 metrów Opole, sufit podwieszany i oświetlenie LED, termin elastyczny.",
+    "locale": "pl",
+    "expected": {
+      "city": "Opole",
+      "area": 70,
+      "preferredStartDate": "flexible",
+      "propertyType": "office",
+      "scopeOfWork": ["sufit", "oświetlenie"]
+    }
+  },
+  {
+    "id": "B20",
+    "transcript": "Dom 130 metrów Zielona Góra, dachówka i rynny, pilne.",
+    "locale": "pl",
+    "expected": {
+      "city": "Zielona Góra",
+      "area": 130,
+      "preferredStartDate": "asap",
+      "propertyType": "house",
+      "scopeOfWork": ["dach", "rynny"]
+    }
+  },
+  {
+    "id": "B21",
+    "transcript": "Mieszkanie 48 metrów, tylko tapetowanie, bez podania miasta.",
+    "locale": "pl",
+    "expected": {
+      "city": null,
+      "area": 48,
+      "preferredStartDate": null,
+      "propertyType": "apartment",
+      "scopeOfWork": ["tapetowanie"]
+    }
+  },
+  {
+    "id": "B22",
+    "transcript": "Remont łazienki 6 metrów Poznań Wilda, płytki i armatura, grudzień.",
+    "locale": "pl",
+    "expected": {
+      "city": "Poznań",
+      "area": null,
+      "preferredStartDate": "1_3_months",
+      "propertyType": "apartment",
+      "scopeOfWork": ["łazienka", "płytki", "armatura"]
+    }
+  },
+  {
+    "id": "B23",
+    "transcript": "Hala magazynowa 500 metrów pod Poznaniem, posadzka przemysłowa, za pół roku do roku.",
+    "locale": "pl",
+    "expected": {
+      "city": "Poznań",
+      "area": 500,
+      "preferredStartDate": "6_12_months",
+      "propertyType": "commercial",
+      "scopeOfWork": ["posadzka"]
+    }
+  },
+  {
+    "id": "B24",
+    "transcript": "Mieszkanie 72 metry Wrocław Krzyki, elektryka i hydraulika, drugi kwartał.",
+    "locale": "pl",
+    "expected": {
+      "city": "Wrocław",
+      "area": 72,
+      "preferredStartDate": "3_6_months",
+      "propertyType": "apartment",
+      "scopeOfWork": ["elektryka", "hydraulika"]
+    }
+  },
+  {
+    "id": "B25",
+    "transcript": "Dom jednorodzinny około 160 metrów, tynki maszynowe, nie podałem lokalizacji.",
+    "locale": "pl",
+    "expected": {
+      "city": null,
+      "area": 160,
+      "preferredStartDate": null,
+      "propertyType": "house",
+      "scopeOfWork": ["tynki"]
+    }
+  },
+  {
+    "id": "B26",
+    "transcript": "Potrzebuję wyceny remontu.",
+    "locale": "pl",
+    "ambiguity": true,
+    "expected": {
+      "city": null,
+      "area": null,
+      "preferredStartDate": null,
+      "propertyType": null,
+      "scopeOfWork": []
+    }
+  },
+  {
+    "id": "B27",
+    "transcript": "I need a renovation quote.",
+    "locale": "en",
+    "ambiguity": true,
+    "expected": {
+      "city": null,
+      "area": null,
+      "preferredStartDate": null,
+      "propertyType": null,
+      "scopeOfWork": []
+    }
+  },
+  {
+    "id": "B28",
+    "transcript": "Chciałbym wycenę prac wykończeniowych.",
+    "locale": "pl",
+    "ambiguity": true,
+    "expected": {
+      "city": null,
+      "area": null,
+      "preferredStartDate": null,
+      "propertyType": null,
+      "scopeOfWork": []
+    }
+  },
+  {
+    "id": "B29",
+    "transcript": "Looking for an estimate for some work.",
+    "locale": "en",
+    "ambiguity": true,
+    "expected": {
+      "city": null,
+      "area": null,
+      "preferredStartDate": null,
+      "propertyType": null,
+      "scopeOfWork": []
+    }
+  },
+  {
+    "id": "B30",
+    "transcript": "Proszę o wycenę, zadzwonię później z detalami.",
+    "locale": "pl",
+    "ambiguity": true,
+    "expected": {
+      "city": null,
+      "area": null,
+      "preferredStartDate": null,
+      "propertyType": null,
+      "scopeOfWork": []
+    }
+  }
+]

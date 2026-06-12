@@ -42,6 +42,7 @@
       "workspaces": "Przestrzenie",
       "estimateRequests": "Zapytania",
       "pdfPreview": "Podgląd PDF",
+      "voiceIntakePreview": "Podgląd voice",
       "styleguide": "Styleguide"
     }
   },

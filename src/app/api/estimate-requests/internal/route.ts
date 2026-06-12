@@ -59,15 +59,18 @@ export async function POST(request: Request) {
       .getAll("files")
       .filter((entry): entry is File => entry instanceof File);
 
+    const { voiceIntake, title, ...body } = parsed.data;
+
     const result = await submitEstimateRequestWithAttachments({
       locale,
       source: "INTERNAL_REQUEST",
-      body: parsed.data,
+      body,
       files,
       workspaceId,
       uploadedById: user.id,
       userId: user.id,
-      explicitTitle: parsed.data.title?.trim() || undefined,
+      explicitTitle: title?.trim() || undefined,
+      voiceIntakeMetadata: voiceIntake,
     });
 
     return NextResponse.json({

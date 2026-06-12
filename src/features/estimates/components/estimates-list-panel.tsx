@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { PaginationControls } from "@/components/shared/pagination-controls";
@@ -20,6 +20,11 @@ import { EstimateEditorLayoutStyles } from "./estimate-editor-layout-styles";
 import { EstimatesListFilterSheet } from "./estimates-list-filter-sheet";
 import { EstimatesListHeroCards } from "./estimates-list-hero-cards";
 import { EstimatesListStatsCards } from "./estimates-list-stats-cards";
+import { useEstimatesListPreferences } from "@/features/estimates/hooks/use-estimates-list-preferences";
+import {
+  buildEstimatesListCsv,
+  downloadEstimatesListCsv,
+} from "@/features/estimates/lib/estimate-list-export";
 import { EstimatesListTable } from "./estimates-list-table";
 import { EstimatesListToolbar } from "./estimates-list-toolbar";
 import type { EstimateListPageItem } from "@/features/estimates/server/list-estimates-page-data";
@@ -33,8 +38,6 @@ interface EstimatesListPanelProps {
   locale: Locale;
 }
 
-const DEFAULT_PAGE_SIZE = 10;
-
 export function EstimatesListPanel({
   estimates,
   createFormData,
@@ -43,13 +46,23 @@ export function EstimatesListPanel({
   locale,
 }: EstimatesListPanelProps) {
   const t = useTranslations("estimates");
+  const { preferences, toggleOptionalColumn, setPageSize } =
+    useEstimatesListPreferences(workspaceSlug);
+  const { visibleColumns, pageSize } = preferences;
   const [createOpen, setCreateOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [listFilter, setListFilter] = useState(EMPTY_ESTIMATE_LIST_FILTER);
   const [dateRange, setDateRange] = useState(EMPTY_ESTIMATE_LIST_DATE_RANGE);
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+
+  const handlePageSizeChange = (nextPageSize: number) => {
+    if (nextPageSize !== 10 && nextPageSize !== 20 && nextPageSize !== 50) {
+      return;
+    }
+    setPageSize(nextPageSize);
+    setPage(1);
+  };
 
   const filterActive = hasActiveListFilters(listFilter);
   const dateRangeActive = hasActiveDateRange(dateRange);
@@ -95,6 +108,29 @@ export function EstimatesListPanel({
   const hasEstimates = estimates.length > 0;
   const hasFilteredResults = filteredEstimates.length > 0;
 
+  const handleExportCsv = useCallback(() => {
+    if (filteredEstimates.length === 0) {
+      return;
+    }
+
+    const csv = buildEstimatesListCsv(
+      filteredEstimates,
+      {
+        estimateName: t("list.columns.estimateName"),
+        inquiry: t("list.columns.inquiry"),
+        investment: t("list.columns.investment"),
+        client: t("list.columns.client"),
+        updated: t("list.columns.updated"),
+        value: t("list.columns.value"),
+        status: t("list.columns.status"),
+      },
+      locale,
+      (status) => t(`status.${status}`),
+    );
+
+    downloadEstimatesListCsv(csv, workspaceSlug);
+  }, [filteredEstimates, locale, t, workspaceSlug]);
+
   return (
     <div className={cn("mx-auto min-w-0 w-full space-y-6", estimateEditorMaxWidthClass)}>
       <EstimateEditorLayoutStyles />
@@ -116,6 +152,11 @@ export function EstimatesListPanel({
           onClearFilter={() => setListFilter(EMPTY_ESTIMATE_LIST_FILTER)}
           dateRange={dateRange}
           onDateRangeChange={setDateRange}
+          preferences={preferences}
+          onToggleColumn={toggleOptionalColumn}
+          onPageSizeChange={handlePageSizeChange}
+          onExportCsv={handleExportCsv}
+          canExportCsv={hasFilteredResults}
         />
 
         {!hasEstimates ? (
@@ -136,6 +177,7 @@ export function EstimatesListPanel({
             estimates={pageEstimates}
             workspaceSlug={workspaceSlug}
             locale={locale}
+            visibleColumns={visibleColumns}
             footer={
               <PaginationControls
                 className="px-4 pb-4"
@@ -146,7 +188,7 @@ export function EstimatesListPanel({
                 hasPreviousPage={safePage > 1}
                 hasNextPage={safePage < totalPages}
                 onPageChange={setPage}
-                onPageSizeChange={setPageSize}
+                onPageSizeChange={handlePageSizeChange}
               />
             }
           />

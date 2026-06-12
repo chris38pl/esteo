@@ -1,0 +1,48 @@
+"use client";
+
+import { AlertTriangle } from "lucide-react";
+import { useTranslations } from "next-intl";
+
+import type { MissingFieldInfo } from "@/features/voice-intake/types";
+
+type FriendlyKey = "propertyType" | "city" | "area" | "timeline" | "scope" | "contact";
+
+const FRIENDLY_KEY_MAP: Record<string, FriendlyKey> = {
+  propertyType: "propertyType",
+  city: "city",
+  area: "area",
+  preferredStartDate: "timeline",
+  scopeOfWork: "scope",
+  contact: "contact",
+};
+
+export function VoiceReviewMissingSection({ items }: { items: MissingFieldInfo[] }) {
+  const t = useTranslations("voiceIntake.review");
+  const tMissing = useTranslations("voiceIntake.review.missingFriendly");
+
+  const displayItems = items.filter((item) => item.priority === "key" || item.priority === "contact");
+
+  if (displayItems.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="space-y-2 rounded-2xl border border-amber-500/20 bg-amber-500/[0.04] px-4 py-3">
+      <h4 className="flex items-center gap-2 text-sm font-medium text-foreground">
+        <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400" aria-hidden />
+        {t("stillMissingHeading")}
+      </h4>
+      <ul className="space-y-1.5 pl-6">
+        {displayItems.map((item) => {
+          const key = FRIENDLY_KEY_MAP[item.fieldKey];
+          const prompt = key ? tMissing(key) : item.label;
+          return (
+            <li key={item.fieldKey} className="text-sm text-foreground/90">
+              {prompt}
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}

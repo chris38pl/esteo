@@ -1,6 +1,7 @@
 import { zodSchema } from "ai";
 import { estimateDraftOutputSchema } from "../src/ai/schemas/estimate-draft-output.ts";
 import { estimateAgentPatchSchema } from "../src/ai/schemas/estimate-agent-patch.ts";
+import { voiceIntakeExtractionSchema } from "../src/ai/schemas/voice-intake-extraction.ts";
 
 function assertRequiredIncludesAllProperties(jsonSchema, label) {
   const json = jsonSchema.jsonSchema;
@@ -32,10 +33,12 @@ function assertRequiredIncludesAllProperties(jsonSchema, label) {
 
 const draft = zodSchema(estimateDraftOutputSchema);
 const patch = zodSchema(estimateAgentPatchSchema);
+const voiceIntake = zodSchema(voiceIntakeExtractionSchema);
 
 const violations = [
   ...assertRequiredIncludesAllProperties(draft, "EstimateDraft"),
   ...assertRequiredIncludesAllProperties(patch, "EstimateAgentPatch"),
+  ...assertRequiredIncludesAllProperties(voiceIntake, "VoiceIntakeExtraction"),
 ];
 
 if (violations.length) {

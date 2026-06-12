@@ -42,7 +42,15 @@
     "toolbar": {
       "filters": "Filters",
       "dateRange": "Date range",
-      "more": "More"
+      "export": "Export",
+      "exportCsv": "CSV",
+      "exportExcel": "Excel (.xlsx) — Coming soon",
+      "exportPdf": "PDF — Coming soon",
+      "viewSettings": "View settings"
+    },
+    "settings": {
+      "columns": "Columns",
+      "pageSize": "Rows per page"
     },
     "filter": {
       "title": "Filter estimates",

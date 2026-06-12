@@ -57,6 +57,7 @@ export const publicEstimateRequestSchema = z.object({
       captchaToken: optionalTextField(2000),
     })
     .optional(),
+  voiceIntake: z.record(z.string(), z.unknown()).optional(),
 });
 
 export type PublicEstimateRequestInput = z.infer<typeof publicEstimateRequestSchema>;

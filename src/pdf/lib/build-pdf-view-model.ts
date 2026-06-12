@@ -51,7 +51,8 @@ export type EstimatePdfViewModel = {
   };
   investment: {
     propertyType: string | null;
-    address: string | null;
+    addressStreet: string | null;
+    addressCityLine: string | null;
   };
   totals: {
     net: string;
@@ -90,6 +91,26 @@ function formatAddress(address: AddressData | null | undefined): string | null {
   ].filter((part) => part && part.trim().length > 0);
 
   return parts.length > 0 ? parts.join(", ") : null;
+}
+
+function formatInvestmentAddress(address: AddressData | null | undefined): {
+  addressStreet: string | null;
+  addressCityLine: string | null;
+} {
+  if (!address) {
+    return { addressStreet: null, addressCityLine: null };
+  }
+
+  const street = address.streetAddress?.trim() || null;
+  const cityLine = [address.postalCode, address.city]
+    .filter((part) => part && part.trim().length > 0)
+    .join(" ")
+    .trim();
+
+  return {
+    addressStreet: street,
+    addressCityLine: cityLine.length > 0 ? cityLine : null,
+  };
 }
 
 function parseJsonRecord<T>(value: unknown): T | null {
@@ -257,7 +278,7 @@ export function buildEstimatePdfViewModel(input: {
     },
     investment: {
       propertyType: input.propertyTypeLabel,
-      address: formatAddress(address),
+      ...formatInvestmentAddress(address),
     },
     totals: {
       net: formatPdfCurrency(calc.totalNet, input.currency, locale),

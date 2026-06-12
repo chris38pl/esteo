@@ -11,9 +11,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { EstimatesListDateRangePicker } from "./estimates-list-date-range-picker";
-import { estimateOutlineButtonClassName } from "./estimate-action-button-styles";
+import type {
+  EstimatesListPageSize,
+  EstimatesListPreferences,
+  OptionalColumnId,
+} from "@/features/estimates/hooks/use-estimates-list-preferences";
 import type { EstimateListDateRange } from "@/features/estimates/lib/estimate-list-filter";
+import { EstimatesListDateRangePicker } from "./estimates-list-date-range-picker";
+import { EstimatesListViewSettings } from "./estimates-list-view-settings";
+import { estimateOutlineButtonClassName } from "./estimate-action-button-styles";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +32,11 @@ interface EstimatesListToolbarProps {
   onClearFilter: () => void;
   dateRange: EstimateListDateRange;
   onDateRangeChange: (range: EstimateListDateRange) => void;
+  preferences: EstimatesListPreferences;
+  onToggleColumn: (id: OptionalColumnId, visible: boolean) => void;
+  onPageSizeChange: (pageSize: EstimatesListPageSize) => void;
+  onExportCsv: () => void;
+  canExportCsv: boolean;
 }
 
 export function EstimatesListToolbar({
@@ -37,9 +48,13 @@ export function EstimatesListToolbar({
   onClearFilter,
   dateRange,
   onDateRangeChange,
+  preferences,
+  onToggleColumn,
+  onPageSizeChange,
+  onExportCsv,
+  canExportCsv,
 }: EstimatesListToolbarProps) {
   const t = useTranslations("estimates");
-  const comingSoon = t("editor.toolbar.comingSoon");
 
   return (
     <div className="flex items-center gap-2 border-b border-border/60 p-4">
@@ -102,28 +117,39 @@ export function EstimatesListToolbar({
                 variant="outline"
                 size="sm"
                 className={estimateOutlineButtonClassName}
-                disabled
-                title={comingSoon}
               >
-                {t("list.toolbar.more")}
+                {t("list.toolbar.export")}
                 <ChevronDown className="size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem disabled>{comingSoon}</DropdownMenuItem>
+              <DropdownMenuItem onClick={onExportCsv} disabled={!canExportCsv}>
+                {t("list.toolbar.exportCsv")}
+              </DropdownMenuItem>
+              <DropdownMenuItem disabled>{t("list.toolbar.exportExcel")}</DropdownMenuItem>
+              <DropdownMenuItem disabled>{t("list.toolbar.exportPdf")}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            className="size-9 shrink-0 rounded-md border-blue-200 text-blue-600 shadow-xs hover:bg-blue-50 dark:border-input dark:text-foreground dark:hover:bg-accent"
-            disabled
-            aria-label={t("editor.toolbar.settings")}
-            title={comingSoon}
-          >
-            <Settings className="size-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="size-9 shrink-0 rounded-md border-blue-200 text-blue-600 shadow-xs hover:bg-blue-50 dark:border-input dark:text-foreground dark:hover:bg-accent"
+                aria-label={t("list.toolbar.viewSettings")}
+              >
+                <Settings className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <EstimatesListViewSettings
+                preferences={preferences}
+                onToggleColumn={onToggleColumn}
+                onPageSizeChange={onPageSizeChange}
+              />
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </div>

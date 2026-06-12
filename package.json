@@ -28,6 +28,9 @@
     "test:async-thumbnail-helpers": "tsx scripts/test-async-thumbnail-helpers.ts",
     "test:compare-estimate-versions": "tsx scripts/verify-compare-estimate-versions.ts",
     "test:derive-estimate-workflow": "tsx scripts/verify-derive-estimate-workflow-status.ts",
+    "voice-intake:benchmark": "tsx scripts/voice-intake-benchmark/run-benchmark.mjs",
+    "test:voice-intake-helpers": "tsx scripts/test-voice-intake-helpers.ts",
+    "validate:ai-schemas": "tsx scripts/validate-ai-schemas.mjs",
     "prisma:reset": "prisma migrate reset --skip-seed",
     "postinstall": "prisma generate"
   },
@@ -73,6 +76,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
+    "dotenv": "^17.4.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "prisma": "^6",

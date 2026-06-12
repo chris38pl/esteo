@@ -102,6 +102,7 @@ export function EstimateRequestFormFields({
   return (
     <div className="min-w-0 space-y-5">
       {showTitle ? (
+        <div data-voice-field="title">
         <EstimateRequestTextInput
           id="internal-estimate-title"
           label={tCreate("titleLabel")}
@@ -110,81 +111,95 @@ export function EstimateRequestFormFields({
           onChange={(value) => onTitleChange?.(value)}
           disabled={disabled}
         />
+        </div>
       ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <EstimateRequestTextInput
-          id="estimate-full-name"
-          label={t("form.fields.fullName")}
-          placeholder={t("form.placeholders.fullName")}
-          value={customer.fullName}
-          onChange={(value) => onCustomerChange({ ...customer, fullName: value })}
-          required
-          disabled={disabled}
-        />
-        <EstimateRequestTextInput
-          id="estimate-email"
-          type="email"
-          label={t("form.fields.email")}
-          placeholder={t("form.placeholders.email")}
-          value={customer.email}
-          onChange={(value) => onCustomerChange({ ...customer, email: value })}
-          required
-          disabled={disabled}
-        />
-        <EstimateRequestTextInput
-          id="estimate-phone"
-          label={t("form.fields.phone")}
-          placeholder={t("form.placeholders.phone")}
-          value={customer.phone}
-          onChange={(value) => onCustomerChange({ ...customer, phone: value })}
-          required
-          disabled={disabled}
-        />
-        {secondaryFields.map((field) => (
-          <IndustryFieldInput
-            key={field.key}
-            field={field}
-            value={industryFields[field.key] ?? ""}
-            onChange={onIndustryFieldChange}
-            locale={locale}
-            selectPlaceholder={t("form.selectPlaceholder")}
+        <div data-voice-field="customer.fullName">
+          <EstimateRequestTextInput
+            id="estimate-full-name"
+            label={t("form.fields.fullName")}
+            placeholder={t("form.placeholders.fullName")}
+            value={customer.fullName}
+            onChange={(value) => onCustomerChange({ ...customer, fullName: value })}
+            required
             disabled={disabled}
           />
+        </div>
+        <div data-voice-field="customer.email">
+          <EstimateRequestTextInput
+            id="estimate-email"
+            type="email"
+            label={t("form.fields.email")}
+            placeholder={t("form.placeholders.email")}
+            value={customer.email}
+            onChange={(value) => onCustomerChange({ ...customer, email: value })}
+            required
+            disabled={disabled}
+          />
+        </div>
+        <div data-voice-field="customer.phone">
+          <EstimateRequestTextInput
+            id="estimate-phone"
+            label={t("form.fields.phone")}
+            placeholder={t("form.placeholders.phone")}
+            value={customer.phone}
+            onChange={(value) => onCustomerChange({ ...customer, phone: value })}
+            required
+            disabled={disabled}
+          />
+        </div>
+        {secondaryFields.map((field) => (
+          <div key={field.key} data-voice-field={`industryFields.${field.key}`}>
+            <IndustryFieldInput
+              field={field}
+              value={industryFields[field.key] ?? ""}
+              onChange={onIndustryFieldChange}
+              locale={locale}
+              selectPlaceholder={t("form.selectPlaceholder")}
+              disabled={disabled}
+            />
+          </div>
         ))}
       </div>
 
       <div className="space-y-4">
-        <EstimateRequestTextInput
-          id="estimate-address"
-          label={t("form.fields.streetAddress")}
-          placeholder={t("form.placeholders.streetAddress")}
-          value={address.streetAddress}
-          onChange={(value) => onAddressChange({ ...address, streetAddress: value })}
-          icon={<MapPin className="size-4" />}
-          required
-          disabled={disabled}
-        />
+        <div data-voice-field="address.streetAddress">
+          <EstimateRequestTextInput
+            id="estimate-address"
+            label={t("form.fields.streetAddress")}
+            placeholder={t("form.placeholders.streetAddress")}
+            value={address.streetAddress}
+            onChange={(value) => onAddressChange({ ...address, streetAddress: value })}
+            icon={<MapPin className="size-4" />}
+            required
+            disabled={disabled}
+          />
+        </div>
         <div className="grid gap-3 sm:grid-cols-[1fr_0.8fr_0.9fr]">
-          <EstimateRequestTextInput
-            id="estimate-city"
-            ariaLabel={t("form.fields.city")}
-            placeholder={t("form.placeholders.city")}
-            value={address.city}
-            onChange={(value) => onAddressChange({ ...address, city: value })}
-            required
-            disabled={disabled}
-          />
-          <EstimateRequestTextInput
-            id="estimate-postal-code"
-            ariaLabel={t("form.fields.postalCode")}
-            placeholder={t("form.placeholders.postalCode")}
-            value={address.postalCode}
-            onChange={(value) => onAddressChange({ ...address, postalCode: value })}
-            required
-            disabled={disabled}
-          />
-          <div className="space-y-2">
+          <div data-voice-field="address.city">
+            <EstimateRequestTextInput
+              id="estimate-city"
+              ariaLabel={t("form.fields.city")}
+              placeholder={t("form.placeholders.city")}
+              value={address.city}
+              onChange={(value) => onAddressChange({ ...address, city: value })}
+              required
+              disabled={disabled}
+            />
+          </div>
+          <div data-voice-field="address.postalCode">
+            <EstimateRequestTextInput
+              id="estimate-postal-code"
+              ariaLabel={t("form.fields.postalCode")}
+              placeholder={t("form.placeholders.postalCode")}
+              value={address.postalCode}
+              onChange={(value) => onAddressChange({ ...address, postalCode: value })}
+              required
+              disabled={disabled}
+            />
+          </div>
+          <div className="space-y-2" data-voice-field="address.voivodeship">
             <select
               id="estimate-voivodeship"
               value={address.voivodeship}
@@ -215,20 +230,21 @@ export function EstimateRequestFormFields({
       {primaryFields.length > 0 ? (
         <div className="space-y-4">
           {primaryFields.map((field) => (
-            <IndustryFieldInput
-              key={field.key}
-              field={field}
-              value={industryFields[field.key] ?? ""}
-              onChange={onIndustryFieldChange}
-              locale={locale}
-              selectPlaceholder={t("form.selectPlaceholder")}
-              disabled={disabled}
-            />
+            <div key={field.key} data-voice-field={`industryFields.${field.key}`}>
+              <IndustryFieldInput
+                field={field}
+                value={industryFields[field.key] ?? ""}
+                onChange={onIndustryFieldChange}
+                locale={locale}
+                selectPlaceholder={t("form.selectPlaceholder")}
+                disabled={disabled}
+              />
+            </div>
           ))}
         </div>
       ) : null}
 
-      <div className="space-y-3">
+      <div className="space-y-3" data-voice-field="project.preferredStartDate">
         <Label className={estimateRequestLabelClassName}>
           {t("form.fields.preferredStartDate")}
           <span className="text-primary">*</span>
@@ -258,7 +274,7 @@ export function EstimateRequestFormFields({
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2" data-voice-field="project.description">
         <Label htmlFor="estimate-description" className={estimateRequestLabelClassName}>
           {t("form.fields.description")}
           <span className="text-primary">*</span>

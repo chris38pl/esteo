@@ -274,5 +274,41 @@
     "refresh": "Odśwież",
     "openInNewTab": "Otwórz w nowej karcie",
     "iframeTitle": "Podgląd HTML wyceny PDF"
+  },
+  "voiceIntakePreview": {
+    "title": "Podgląd voice intake",
+    "subtitle": "Galeria ekranów nagrywania i podsumowania z danymi testowymi — bez mikrofonu i API.",
+    "phase": "Ekran",
+    "scenario": "Scenariusz danych",
+    "locale": "Język UI",
+    "errorCode": "Kod błędu",
+    "mobileViewport": "Wąski viewport (mobile)",
+    "forceDark": "Wymuś ciemny motyw w podglądzie",
+    "waveLevel": "Poziom fali",
+    "timerMs": "Czas nagrywania (ms)",
+    "duration2s": "00:02",
+    "duration90s": "01:30",
+    "duration150s": "02:30 (warning)",
+    "duration12s": "00:12",
+    "duration45s": "00:45 (warning)",
+    "duration55s": "00:55",
+    "recordingActive": "Stan nagrywania (aktywne)",
+    "showAdded": "Dodano (po dograniu)",
+    "phases": {
+      "trigger": "Trigger (karta)",
+      "footer_trigger": "Trigger (footer)",
+      "recording_initial": "Nagrywanie — start",
+      "recording_follow_up": "Nagrywanie — dogranie",
+      "summary": "Podsumowanie",
+      "analyzing": "Analiza",
+      "analyzing_follow_up": "Analiza follow-up",
+      "error": "Błąd"
+    },
+    "scenarios": {
+      "rich": "Pełne dane",
+      "sparse": "Mało danych",
+      "after_follow_up": "Po follow-up",
+      "no_new_info": "Brak nowych informacji"
+    }
   }
 }

@@ -274,5 +274,41 @@
     "refresh": "Refresh",
     "openInNewTab": "Open in new tab",
     "iframeTitle": "Estimate PDF HTML preview"
+  },
+  "voiceIntakePreview": {
+    "title": "Voice intake preview",
+    "subtitle": "Gallery of recording and review screens with fixture data — no microphone or API.",
+    "phase": "Screen",
+    "scenario": "Data scenario",
+    "locale": "UI locale",
+    "errorCode": "Error code",
+    "mobileViewport": "Narrow viewport (mobile)",
+    "forceDark": "Force dark theme in preview",
+    "waveLevel": "Wave level",
+    "timerMs": "Recording time (ms)",
+    "duration2s": "00:02",
+    "duration90s": "01:30",
+    "duration150s": "02:30 (warning)",
+    "duration12s": "00:12",
+    "duration45s": "00:45 (warning)",
+    "duration55s": "00:55",
+    "recordingActive": "Recording active state",
+    "showAdded": "Added (after follow-up)",
+    "phases": {
+      "trigger": "Trigger (card)",
+      "footer_trigger": "Trigger (footer)",
+      "recording_initial": "Recording — initial",
+      "recording_follow_up": "Recording — follow-up",
+      "summary": "Summary",
+      "analyzing": "Analyzing",
+      "analyzing_follow_up": "Analyzing follow-up",
+      "error": "Error"
+    },
+    "scenarios": {
+      "rich": "Rich data",
+      "sparse": "Sparse data",
+      "after_follow_up": "After follow-up",
+      "no_new_info": "No new info"
+    }
   }
 }

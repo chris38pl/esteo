@@ -148,6 +148,7 @@ export async function submitEstimateRequestWithAttachments(input: {
   uploadedById?: string | null;
   userId?: string;
   explicitTitle?: string;
+  voiceIntakeMetadata?: Record<string, unknown>;
 }): Promise<SubmitEstimateRequestResult> {
   const attachmentWarnings: string[] = [];
 
@@ -198,8 +199,20 @@ export async function submitEstimateRequestWithAttachments(input: {
     industryFields: input.body.industryFields,
   });
 
+  const voiceGeneratedTitle =
+    typeof input.voiceIntakeMetadata?.generatedTitle === "string"
+      ? input.voiceIntakeMetadata.generatedTitle.trim()
+      : "";
+  const voiceTitleConfidence =
+    typeof input.voiceIntakeMetadata?.overallConfidence === "number"
+      ? input.voiceIntakeMetadata.overallConfidence
+      : 0;
+
   const estimateTitle =
     input.explicitTitle?.trim() ||
+    (voiceGeneratedTitle && voiceTitleConfidence >= 0.75
+      ? voiceGeneratedTitle.slice(0, 60)
+      : null) ||
     buildEstimateTitleFromPublicRequest({
       industry: workspace.industry,
       fullName: input.body.customer.fullName,
@@ -256,6 +269,10 @@ export async function submitEstimateRequestWithAttachments(input: {
 
   if (storedCount > 0) {
     baseAiMetadata.attachmentsPromotionStatus = "PENDING";
+  }
+
+  if (input.voiceIntakeMetadata) {
+    baseAiMetadata.voiceIntake = input.voiceIntakeMetadata;
   }
 
   try {

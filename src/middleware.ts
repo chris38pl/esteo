@@ -20,6 +20,7 @@ const isPublicRoute = createRouteMatcher([
   "/:locale/wycena(.*)",
   "/:locale/estimate-request(.*)",
   "/api/health",
+  "/api/public/voice-intake",
 ]);
 
 export default clerkMiddleware(async (auth, request) => {

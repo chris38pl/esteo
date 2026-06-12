@@ -280,7 +280,12 @@ export function buildEstimatePdfHtml(
     model.investment.propertyType
       ? `<div class="info-line info-strong">${escapeHtml(model.investment.propertyType)}</div>`
       : "",
-    model.investment.address ? `<div class="info-line">${escapeHtml(model.investment.address)}</div>` : "",
+    model.investment.addressStreet
+      ? `<div class="info-line">${escapeHtml(model.investment.addressStreet)}</div>`
+      : "",
+    model.investment.addressCityLine
+      ? `<div class="info-line">${escapeHtml(model.investment.addressCityLine)}</div>`
+      : "",
   ].join("");
 
   const sectionRows = model.sections

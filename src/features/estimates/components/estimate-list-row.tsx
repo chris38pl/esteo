@@ -12,6 +12,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { EstimateListStatusBadge } from "@/features/estimates/components/estimate-list-status-badge";
+import type { EstimatesListPreferences } from "@/features/estimates/hooks/use-estimates-list-preferences";
+import { optionalColumnClassName } from "@/features/estimates/hooks/use-estimates-list-preferences";
 import type { EstimateListPageItem } from "@/features/estimates/server/list-estimates-page-data";
 import { formatCurrency, type Currency } from "@/i18n/formatters";
 import type { Locale } from "@/lib/locale";
@@ -22,6 +24,7 @@ interface EstimateListRowProps {
   workspaceSlug: string;
   locale: Locale;
   layout?: "table" | "list";
+  visibleColumns?: EstimatesListPreferences["visibleColumns"];
 }
 
 const iconClassName =
@@ -34,6 +37,11 @@ export function EstimateListRow({
   workspaceSlug,
   locale,
   layout = "table",
+  visibleColumns = {
+    inquiry: true,
+    investment: true,
+    client: true,
+  },
 }: EstimateListRowProps) {
   const t = useTranslations("estimates");
   const dateLocale = locale === "pl" ? "pl-PL" : "en-US";
@@ -181,7 +189,7 @@ export function EstimateListRow({
     <tr className="border-b border-border/60 transition-colors last:border-0 hover:bg-muted/30">
       <td className="px-4 py-3">{titleCell(true)}</td>
 
-      <td className="hidden px-4 py-3 md:table-cell">
+      <td className={optionalColumnClassName("inquiry", visibleColumns.inquiry)}>
         <p className="truncate font-medium">{request?.requestNumber ?? t("context.empty")}</p>
         <p className="mt-0.5 truncate text-xs text-muted-foreground">
           {request?.createdAt
@@ -190,7 +198,7 @@ export function EstimateListRow({
         </p>
       </td>
 
-      <td className="hidden px-4 py-3 lg:table-cell">
+      <td className={optionalColumnClassName("investment", visibleColumns.investment)}>
         <p className="truncate font-medium">
           {ctx.investmentPropertyType ?? t("context.investmentFallback")}
         </p>
@@ -200,7 +208,7 @@ export function EstimateListRow({
         </p>
       </td>
 
-      <td className="hidden px-4 py-3 xl:table-cell">
+      <td className={optionalColumnClassName("client", visibleColumns.client)}>
         <p className="truncate font-medium">
           {ctx.customerName ?? ctx.customerEmail ?? t("context.empty")}
         </p>

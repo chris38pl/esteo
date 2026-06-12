@@ -648,51 +648,25 @@ body {
   font-weight: 700;
   line-height: 1;
   white-space: nowrap;
+155;
+  overflow-wrap: anywhere;
 }
 
-.esteo-promo-cta-globe {
+.esteo-promo-cta-button {
   display: flex;
-  flex-shrink: 0;
-  width: 10px;
-  height: 10px;
-}
-
-.esteo-promo-cta-globe svg {
-  width: 10px;
-  height: 10px;
-}
-
-.esteo-promo-cta-arrow {
-  flex-shrink: 0;
-  font-size: 8px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: __PRIMARY__;
+  color: #fff;
+  font-size: 7.5px;
+  font-weight: 700;
   line-height: 1;
-}
-
-/* Print / PDF pagination (Puppeteer uses the same rules as Chromium print) */
-.hero-header,
-.info-grid,
-.summary-box {
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
-
-.items-table thead {
-  display: table-header-group;
-}
-
-.items-table tr {
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
-
-.doc-footer,
-.page-footer,
-.esteo-promo {
-  break-inside: avoid;
-  page-break-inside: avoid;
-}
-
-/* Admin HTML preview — discrete A4 sheets (Paged.js polyfill) */
+HTML preview — discrete A4 sheets (Paged.js polyfill) */
 @media screen {
   body.pdf-screen-preview {
     background: #f1f5f9;

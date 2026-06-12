@@ -1,7 +1,7 @@
 "use client";
 
 import { ClipboardList } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -27,6 +27,11 @@ import {
 } from "@/features/estimate-requests/hooks/use-estimate-request-submit";
 import { internalEstimateCreateSchema } from "@/features/estimate-requests/schemas/request";
 import type { PublicEstimateRequestPageData } from "@/features/estimate-requests/server/public-service";
+import { VoiceIntakeController } from "@/features/voice-intake/components/voice-intake-controller";
+import { VoiceIntakeFooterBar } from "@/features/voice-intake/components/voice-intake-footer-bar";
+import type { VoiceAppliedValues } from "@/features/voice-intake/lib/map-extraction-to-form";
+import { trackVoiceCorrectionsOnSubmit } from "@/features/voice-intake/lib/track-voice-corrections";
+import type { VoiceIntakeMetadata } from "@/features/voice-intake/types";
 import type { Locale } from "@/lib/locale";
 
 interface CreateEstimateModalProps {
@@ -102,6 +107,8 @@ export function CreateEstimateModal({
   );
   const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const voiceIntakeMetadataRef = useRef<VoiceIntakeMetadata | null>(null);
+  const voiceAppliedValuesRef = useRef<VoiceAppliedValues | null>(null);
 
   const { submit, isSubmitting, uploadProgress, errorCode } = useEstimateRequestSubmit({
     endpoint: `/api/estimate-requests/internal?locale=${locale}`,
@@ -124,6 +131,8 @@ export function CreateEstimateModal({
     setIndustryFields(initial.industryFields);
     setAttachmentFiles([]);
     setValidationError(null);
+    voiceIntakeMetadataRef.current = null;
+    voiceAppliedValuesRef.current = null;
   }, [open, formData.fields]);
 
   const canSubmit = project.description.trim().length >= 20;
@@ -148,6 +157,7 @@ export function CreateEstimateModal({
         description: project.description.trim(),
       },
       industryFields,
+      voiceIntake: voiceIntakeMetadataRef.current ?? undefined,
     };
 
     const parsed = internalEstimateCreateSchema.safeParse(payload);
@@ -156,6 +166,16 @@ export function CreateEstimateModal({
       setValidationError(tForm("form.errors.invalid"));
       return;
     }
+
+    trackVoiceCorrectionsOnSubmit(voiceAppliedValuesRef.current, {
+      city: address.city,
+      area:
+        typeof industryFields.area_size === "number"
+          ? industryFields.area_size
+          : String(industryFields.area_size ?? ""),
+      preferredStartDate: project.preferredStartDate,
+      propertyType: String(industryFields.property_type ?? ""),
+    });
 
     void submit(parsed.data, attachmentFiles, { workspaceId });
   }
@@ -216,16 +236,37 @@ export function CreateEstimateModal({
             </p>
           ) : null}
 
-          <DialogFooter className="shrink-0 gap-3 border-t bg-muted/20 px-6 py-4 sm:gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
+          <DialogFooter className="shrink-0 flex-col gap-3 border-t bg-muted/20 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <VoiceIntakeController
+              locale={locale}
+              fields={formData.fields}
+              endpoint={`/api/estimate-requests/voice-intake?locale=${locale}`}
+              workspaceId={workspaceId}
               disabled={isSubmitting}
+              setters={{
+                setTitle,
+                getTitle: () => title,
+                setCustomer,
+                setAddress,
+                setProject,
+                setIndustryFields,
+                getIndustryFields: () => industryFields,
+              }}
+              onMetadataReady={(metadata) => {
+                voiceIntakeMetadataRef.current = metadata;
+              }}
+              onAppliedValuesReady={(values) => {
+                voiceAppliedValuesRef.current = values;
+              }}
+              renderTrigger={({ onClick, disabled }) => (
+                <VoiceIntakeFooterBar onClick={onClick} disabled={disabled} className="w-full" />
+              )}
+            />
+            <Button
+              type="submit"
+              disabled={isSubmitting || !canSubmit}
+              className="h-12 shrink-0 rounded-xl px-8 py-3 sm:ml-auto"
             >
-              {t("cancel")}
-            </Button>
-            <Button type="submit" disabled={isSubmitting || !canSubmit}>
               {isSubmitting ? t("submitting") : t("submit")}
             </Button>
           </DialogFooter>

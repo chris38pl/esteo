@@ -42,7 +42,15 @@
     "toolbar": {
       "filters": "Filtry",
       "dateRange": "Zakres dat",
-      "more": "Więcej"
+      "export": "Eksport",
+      "exportCsv": "CSV",
+      "exportExcel": "Excel (.xlsx) — Wkrótce",
+      "exportPdf": "PDF — Wkrótce",
+      "viewSettings": "Ustawienia widoku"
+    },
+    "settings": {
+      "columns": "Kolumny",
+      "pageSize": "Wierszy na stronę"
     },
     "filter": {
       "title": "Filtrowanie wycen",

@@ -1,0 +1,25 @@
+[
+  {
+    "id": "F01",
+    "previousTranscript": "Remont mieszkania 68 metrów w Poznaniu, łazienka i malowanie.",
+    "previousExtraction": {
+      "city": { "value": "Poznań", "confidence": 0.92 },
+      "area": { "value": 68, "confidence": 0.9 },
+      "propertyType": { "value": "apartment", "confidence": 0.88 },
+      "preferredStartDate": { "value": null, "confidence": 0 },
+      "scopeOfWork": {
+        "items": [
+          { "label": "łazienka", "confidence": 0.9 },
+          { "label": "malowanie", "confidence": 0.85 }
+        ],
+        "confidence": 0.88
+      }
+    },
+    "followUpTranscript": "Chciałbym rozpocząć we wrześniu, mój numer telefonu to 600 123 456.",
+    "expected": {
+      "preferredStartDate": "1_3_months",
+      "phone": "600 123 456",
+      "city": "Poznań"
+    }
+  }
+]

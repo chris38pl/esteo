@@ -5,13 +5,17 @@ import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
 import { EstimateListRow } from "@/features/estimates/components/estimate-list-row";
+import type { EstimatesListPreferences } from "@/features/estimates/hooks/use-estimates-list-preferences";
+import { optionalColumnClassName } from "@/features/estimates/hooks/use-estimates-list-preferences";
 import type { EstimateListPageItem } from "@/features/estimates/server/list-estimates-page-data";
 import type { Locale } from "@/lib/locale";
+import { cn } from "@/lib/utils";
 
 interface EstimatesListTableProps {
   estimates: EstimateListPageItem[];
   workspaceSlug: string;
   locale: Locale;
+  visibleColumns: EstimatesListPreferences["visibleColumns"];
   footer?: ReactNode;
 }
 
@@ -22,6 +26,7 @@ export function EstimatesListTable({
   estimates,
   workspaceSlug,
   locale,
+  visibleColumns,
   footer,
 }: EstimatesListTableProps) {
   const t = useTranslations("estimates");
@@ -45,13 +50,28 @@ export function EstimatesListTable({
           <thead className="border-b border-border/60 bg-muted/30">
             <tr>
               <th className={thClassName}>{t("list.columns.estimateName")}</th>
-              <th className={`${thClassName} hidden md:table-cell`}>
+              <th
+                className={cn(
+                  thClassName,
+                  optionalColumnClassName("inquiry", visibleColumns.inquiry, ""),
+                )}
+              >
                 {t("list.columns.inquiry")}
               </th>
-              <th className={`${thClassName} hidden lg:table-cell`}>
+              <th
+                className={cn(
+                  thClassName,
+                  optionalColumnClassName("investment", visibleColumns.investment, ""),
+                )}
+              >
                 {t("list.columns.investment")}
               </th>
-              <th className={`${thClassName} hidden xl:table-cell`}>
+              <th
+                className={cn(
+                  thClassName,
+                  optionalColumnClassName("client", visibleColumns.client, ""),
+                )}
+              >
                 {t("list.columns.client")}
               </th>
               <th className={`${thClassName} hidden 2xl:table-cell`}>
@@ -73,6 +93,7 @@ export function EstimatesListTable({
                 workspaceSlug={workspaceSlug}
                 locale={locale}
                 layout="table"
+                visibleColumns={visibleColumns}
               />
             ))}
           </tbody>

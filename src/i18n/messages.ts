@@ -12,6 +12,7 @@ import enRequests from "@/messages/en/requests.json";
 import enNavbar from "@/messages/en/navbar.json";
 import enSidebar from "@/messages/en/sidebar.json";
 import enStyleguide from "@/messages/en/styleguide.json";
+import enVoiceIntake from "@/messages/en/voiceIntake.json";
 import enWorkspaces from "@/messages/en/workspaces.json";
 import plAdmin from "@/messages/pl/admin.json";
 import plAuth from "@/messages/pl/auth.json";
@@ -25,6 +26,7 @@ import plRequests from "@/messages/pl/requests.json";
 import plNavbar from "@/messages/pl/navbar.json";
 import plSidebar from "@/messages/pl/sidebar.json";
 import plStyleguide from "@/messages/pl/styleguide.json";
+import plVoiceIntake from "@/messages/pl/voiceIntake.json";
 import plWorkspaces from "@/messages/pl/workspaces.json";
 
 export const namespaces = [
@@ -39,6 +41,7 @@ export const namespaces = [
   "requests",
   "sidebar",
   "styleguide",
+  "voiceIntake",
   "workspaces",
 ] as const;
 
@@ -50,6 +53,7 @@ export type Namespace =
   | "admin.industryFields"
   | "admin.estimateRequests"
   | "admin.pdfPreview"
+  | "admin.voiceIntakePreview"
   | "workspaces.invitations";
 
 type MessagesByNamespace = {
@@ -65,6 +69,7 @@ type MessagesByNamespace = {
   navbar: typeof enNavbar;
   sidebar: typeof enSidebar;
   styleguide: typeof enStyleguide;
+  voiceIntake: typeof enVoiceIntake;
   workspaces: typeof enWorkspaces;
 };
 
@@ -87,6 +92,7 @@ function forLocale(locale: Locale): Messages {
         navbar: plNavbar,
         sidebar: plSidebar,
         styleguide: plStyleguide,
+        voiceIntake: plVoiceIntake,
         workspaces: plWorkspaces,
       }
     : {
@@ -102,6 +108,7 @@ function forLocale(locale: Locale): Messages {
         navbar: enNavbar,
         sidebar: enSidebar,
         styleguide: enStyleguide,
+        voiceIntake: enVoiceIntake,
         workspaces: enWorkspaces,
       };
 }
