@@ -9,6 +9,7 @@ import { EstimateMobileAddRow } from "./estimate-mobile-add-row";
 import { EstimateMobileSectionCard } from "./estimate-mobile-section-card";
 import { EstimateMobilePositionSheet } from "./estimate-mobile-position-sheet";
 import { EstimateMobileSectionSheet } from "./estimate-mobile-section-sheet";
+import type { AutoSaveStatus } from "@/features/estimates/hooks/use-estimate-autosave";
 import type { EstimateItemsFilterState } from "@/features/estimates/lib/estimate-item-filter";
 
 interface EstimateItemsMobileListProps {
@@ -18,13 +19,20 @@ interface EstimateItemsMobileListProps {
   marginPercent: number;
   tableSearchQuery?: string;
   tableFilter?: EstimateItemsFilterState;
-  onAddSection: () => void;
+  onAddSection: () => void | Promise<string | undefined>;
+  isAddingSection?: boolean;
+  addingItemSectionIds?: string[];
+  autosaveStatus?: AutoSaveStatus;
   onUpdateSection: (sectionId: string, title: string) => void;
   onDeleteSection: (sectionId: string) => void;
   onAddItem: (sectionId: string) => void;
   onUpdateItem: (itemId: string, data: Partial<Omit<LineItemData, "id" | "sortOrder">>) => void;
-  onDeleteItem: (itemId: string) => void;
-  onDuplicateItem: (sectionId: string, itemId: string) => void;
+  onPersistItem: (
+    itemId: string,
+    data: Partial<Omit<LineItemData, "id" | "sortOrder">>,
+  ) => Promise<void>;
+  onDeleteItem: (itemId: string) => void | Promise<void>;
+  onDuplicateItem: (sectionId: string, itemId: string) => void | Promise<void>;
   onBlur: () => void | Promise<void>;
   onPositionSheetOpenChange?: (open: boolean) => void;
 }
@@ -43,10 +51,14 @@ export function EstimateItemsMobileList({
   tableSearchQuery = "",
   tableFilter,
   onAddSection,
+  isAddingSection = false,
+  addingItemSectionIds = [],
+  autosaveStatus = "idle",
   onUpdateSection,
   onDeleteSection,
   onAddItem,
   onUpdateItem,
+  onPersistItem,
   onDeleteItem,
   onDuplicateItem,
   onBlur,
@@ -110,6 +122,7 @@ export function EstimateItemsMobileList({
               onToggleExpanded={() => toggleSection(section.id)}
               onRename={() => setRenameSectionId(section.id)}
               onAddItem={() => onAddItem(section.id)}
+              isAddingItem={addingItemSectionIds.includes(section.id)}
               onDeleteSection={() => onDeleteSection(section.id)}
               onOpenItem={(itemId) =>
                 openItem(
@@ -124,7 +137,10 @@ export function EstimateItemsMobileList({
         <EstimateMobileAddRow
           variant="section"
           label={t("editor.addSection")}
+          pendingLabel={t("editor.addingSection")}
           onClick={onAddSection}
+          isPending={isAddingSection}
+          disabled={isAddingSection}
         />
       </div>
 
@@ -138,16 +154,17 @@ export function EstimateItemsMobileList({
         currency={currency}
         advancedMode={advancedMode}
         marginPercent={marginPercent}
-        onSave={onUpdateItem}
-        onDuplicate={() => {
+        onPersistItem={onPersistItem}
+        onDuplicate={async () => {
           if (!activeItem) return;
-          onDuplicateItem(activeItem.sectionId, activeItem.itemId);
+          await onDuplicateItem(activeItem.sectionId, activeItem.itemId);
         }}
-        onDelete={() => {
+        onDelete={async () => {
           if (!activeItem) return;
-          onDeleteItem(activeItem.itemId);
+          await onDeleteItem(activeItem.itemId);
         }}
         onBlur={onBlur}
+        autosaveStatus={autosaveStatus}
       />
 
       <EstimateMobileSectionSheet

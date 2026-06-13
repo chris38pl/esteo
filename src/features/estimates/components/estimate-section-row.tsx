@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Minus, MoreHorizontal, Plus, Trash2 } from "lucide-react";
+import { Loader2, Minus, MoreHorizontal, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,7 @@ interface EstimateSectionRowProps {
   onUpdateSection: (id: string, title: string) => void;
   onDeleteSection: (id: string) => void;
   onAddItem: (sectionId: string) => void;
+  isAddingItem?: boolean;
   onBlur: () => void | Promise<void>;
   currency?: string;
   titleColSpan: number;
@@ -56,6 +57,7 @@ export function EstimateSectionRow({
   onUpdateSection,
   onDeleteSection,
   onAddItem,
+  isAddingItem = false,
   onBlur,
   currency = "PLN",
   titleColSpan,
@@ -122,9 +124,17 @@ export function EstimateSectionRow({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => onAddItem(id)} className="gap-2">
-              <Plus className="size-4" />
-              {t("editor.addItem")}
+            <DropdownMenuItem
+              onClick={() => onAddItem(id)}
+              disabled={isAddingItem}
+              className="gap-2"
+            >
+              {isAddingItem ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Plus className="size-4" />
+              )}
+              {isAddingItem ? t("editor.addingItem") : t("editor.addItem")}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => onDeleteSection(id)}

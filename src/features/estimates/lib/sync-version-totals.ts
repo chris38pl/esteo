@@ -5,6 +5,39 @@ import { calculateEstimate } from "@/features/estimates/lib/calculate-estimate";
 
 type TxClient = Prisma.TransactionClient;
 
+type AutosaveSectionsPayload = Array<{
+  items: Array<{
+    quantity: number;
+    unitPrice: number;
+    vatRate: number;
+  }>;
+}>;
+
+export async function syncVersionTotalsFromPayload(
+  sections: AutosaveSectionsPayload,
+  versionId: string,
+  tx?: TxClient,
+): Promise<{ totalNet: number; totalGross: number }> {
+  const items = sections.flatMap((section) =>
+    section.items.map((lineItem) => ({
+      quantity: lineItem.quantity,
+      unitPrice: lineItem.unitPrice,
+      vatRate: lineItem.vatRate,
+    })),
+  );
+
+  const { totalNet, totalGross } = calculateEstimate(items, 0);
+  const client = tx ?? prisma;
+
+  await client.$executeRaw`
+    UPDATE "EstimateVersion"
+    SET "totalNet" = ${totalNet}, "totalGross" = ${totalGross}
+    WHERE "id" = ${versionId}
+  `;
+
+  return { totalNet, totalGross };
+}
+
 export async function syncVersionTotals(
   versionId: string,
   workspaceId: string,

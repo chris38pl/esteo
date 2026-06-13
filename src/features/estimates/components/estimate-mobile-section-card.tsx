@@ -1,7 +1,7 @@
 "use client";
 
 import { memo } from "react";
-import { ChevronDown, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
+import { ChevronDown, Loader2, MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,7 @@ interface EstimateMobileSectionCardProps {
   onToggleExpanded: () => void;
   onRename: () => void;
   onAddItem: () => void;
+  isAddingItem?: boolean;
   onDeleteSection: () => void;
   onOpenItem: (itemId: string) => void;
   searchQuery?: string;
@@ -52,6 +53,7 @@ function EstimateMobileSectionCardComponent({
   onToggleExpanded,
   onRename,
   onAddItem,
+  isAddingItem = false,
   onDeleteSection,
   onOpenItem,
   searchQuery = "",
@@ -115,9 +117,13 @@ function EstimateMobileSectionCardComponent({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={onAddItem} className="gap-2">
-              <Plus className="size-4" />
-              {t("editor.addItem")}
+            <DropdownMenuItem onClick={onAddItem} disabled={isAddingItem} className="gap-2">
+              {isAddingItem ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Plus className="size-4" />
+              )}
+              {isAddingItem ? t("editor.addingItem") : t("editor.addItem")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={onRename} className="gap-2">
               <Pencil className="size-4" />
@@ -150,7 +156,10 @@ function EstimateMobileSectionCardComponent({
           <EstimateMobileAddRow
             variant="item"
             label={t("editor.addItem")}
+            pendingLabel={t("editor.addingItem")}
             onClick={onAddItem}
+            isPending={isAddingItem}
+            disabled={isAddingItem}
           />
         </div>
       ) : null}

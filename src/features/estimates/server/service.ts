@@ -55,6 +55,7 @@ import {
   type AutoSaveData,
   type AutoSaveResult,
 } from "./repository";
+import { serverPerfEnd, serverPerfStart } from "@/features/estimates/lib/server-perf";
 export { retryEstimateDraftGeneration } from "./retry-estimate-draft-generation";
 
 // ---------------------------------------------------------------------------
@@ -523,6 +524,7 @@ export async function autoSaveVersion(input: {
   data: AutoSaveData;
   expectedUpdatedAt: Date;
 }): Promise<AutoSaveResult> {
+  serverPerfStart("autoSaveAction.autoSaveVersion.preamble");
   const current = await prisma.estimateVersion.findFirst({
     where: { id: input.versionId, workspaceId: input.workspaceId },
     select: {
@@ -531,23 +533,27 @@ export async function autoSaveVersion(input: {
       versionNumber: true,
     },
   });
+  serverPerfEnd("autoSaveAction.autoSaveVersion.preamble");
 
   if (!current) {
     return { conflict: true };
   }
 
+  serverPerfStart("autoSaveAction.autoSaveVersion.autoSave");
   const result = await autoSave({
     versionId: input.versionId,
     workspaceId: input.workspaceId,
     data: input.data,
     expectedUpdatedAt: input.expectedUpdatedAt,
   });
+  serverPerfEnd("autoSaveAction.autoSaveVersion.autoSave");
 
   if (
     !result.conflict &&
     input.data.marginPercent !== undefined &&
     Number(current.marginPercent) !== input.data.marginPercent
   ) {
+    serverPerfStart("autoSaveAction.autoSaveVersion.logMarginActivity");
     await logEstimateActivity({
       estimateId: current.estimateId,
       workspaceId: input.workspaceId,
@@ -561,6 +567,7 @@ export async function autoSaveVersion(input: {
         newMargin: input.data.marginPercent,
       },
     });
+    serverPerfEnd("autoSaveAction.autoSaveVersion.logMarginActivity");
   }
 
   return result;

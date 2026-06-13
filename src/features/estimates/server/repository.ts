@@ -2,7 +2,8 @@ import { Prisma, type EstimateVersionStatus } from "@prisma/client";
 
 import { prisma } from "@/db/client";
 import { isPersistedEntityId } from "@/features/estimates/lib/persisted-entity-id";
-import { syncVersionTotals } from "@/features/estimates/lib/sync-version-totals";
+import { serverPerfEnd, serverPerfStart } from "@/features/estimates/lib/server-perf";
+import { syncVersionTotals, syncVersionTotalsFromPayload } from "@/features/estimates/lib/sync-version-totals";
 import { isEstimateVersionEditable } from "@/features/estimates/lib/version-mutability";
 import { PermissionError } from "@/server/permissions/errors";
 
@@ -533,10 +534,6 @@ export async function addLineItemToSection(input: {
     orderBy: { sortOrder: "desc" },
     select: { sortOrder: true },
   });
-  const section = await prisma.estimateSection.findFirstOrThrow({
-    where: { id: input.sectionId, workspaceId: input.workspaceId },
-    select: { versionId: true },
-  });
 
   const item = await prisma.estimateLineItem.create({
     data: {
@@ -550,7 +547,6 @@ export async function addLineItemToSection(input: {
     },
   });
 
-  await syncVersionTotals(section.versionId, input.workspaceId);
   return item;
 }
 
@@ -840,20 +836,27 @@ export async function autoSave(input: {
   data: AutoSaveData;
   expectedUpdatedAt: Date;
 }): Promise<AutoSaveResult> {
-  await assertVersionEditable(input.versionId, input.workspaceId);
-
+  serverPerfStart("autoSaveAction.autoSaveVersion.autoSave.conflictCheck");
   const current = await prisma.estimateVersion.findFirst({
     where: { id: input.versionId, workspaceId: input.workspaceId },
-    select: { updatedAt: true },
+    select: { status: true, updatedAt: true },
   });
 
   if (!current) {
+    serverPerfEnd("autoSaveAction.autoSaveVersion.autoSave.conflictCheck");
     return { conflict: true };
   }
 
+  if (!isEstimateVersionEditable(current.status)) {
+    serverPerfEnd("autoSaveAction.autoSaveVersion.autoSave.conflictCheck");
+    throw new PermissionError("Archived versions cannot be modified.");
+  }
+
   if (current.updatedAt.toISOString() !== input.expectedUpdatedAt.toISOString()) {
+    serverPerfEnd("autoSaveAction.autoSaveVersion.autoSave.conflictCheck");
     return { conflict: true };
   }
+  serverPerfEnd("autoSaveAction.autoSaveVersion.autoSave.conflictCheck");
 
   const updated = await prisma.$transaction(async (tx) => {
     const updateData: Prisma.EstimateVersionUpdateInput = {};
@@ -862,70 +865,162 @@ export async function autoSave(input: {
     }
 
     if (input.data.sections) {
-      for (const section of input.data.sections) {
-        if (!isPersistedEntityId(section.id)) {
-          console.warn("[estimate autosave] server skipped section without persisted id", {
-            kind: "section",
-            id: section.id,
-            title: section.title,
-          });
-          continue;
-        }
-
-        await tx.estimateSection.updateMany({
-          where: {
-            id: section.id,
-            versionId: input.versionId,
-            workspaceId: input.workspaceId,
-            deletedAt: null,
-          },
-          data: {
-            title: section.title,
-            sortOrder: section.sortOrder,
-          },
-        });
-
-        for (const item of section.items) {
-          if (!isPersistedEntityId(item.id)) {
-            console.warn("[estimate autosave] server skipped line item without persisted id", {
-              kind: "lineItem",
-              id: item.id,
-              sectionId: section.id,
-              name: item.name,
+      serverPerfStart("autoSaveAction.autoSaveVersion.autoSave.tx.updates");
+      await Promise.all(
+        input.data.sections.map(async (section) => {
+          if (!isPersistedEntityId(section.id)) {
+            console.warn("[estimate autosave] server skipped section without persisted id", {
+              kind: "section",
+              id: section.id,
+              title: section.title,
             });
-            continue;
+            return;
           }
 
-          await tx.estimateLineItem.updateMany({
+          await tx.estimateSection.updateMany({
             where: {
-              id: item.id,
+              id: section.id,
+              versionId: input.versionId,
               workspaceId: input.workspaceId,
               deletedAt: null,
-              section: {
-                versionId: input.versionId,
-                workspaceId: input.workspaceId,
-                deletedAt: null,
-              },
             },
             data: {
-              name: item.name,
-              unit: item.unit ?? null,
-              quantity: item.quantity,
-              unitPrice: item.unitPrice,
-              vatRate: item.vatRate,
-              sortOrder: item.sortOrder,
+              title: section.title,
+              sortOrder: section.sortOrder,
             },
           });
-        }
-      }
 
-      await syncVersionTotals(input.versionId, input.workspaceId, tx);
+          await Promise.all(
+            section.items.map(async (item) => {
+              if (!isPersistedEntityId(item.id)) {
+                console.warn("[estimate autosave] server skipped line item without persisted id", {
+                  kind: "lineItem",
+                  id: item.id,
+                  sectionId: section.id,
+                  name: item.name,
+                });
+                return;
+              }
+
+              await tx.estimateLineItem.updateMany({
+                where: {
+                  id: item.id,
+                  workspaceId: input.workspaceId,
+                  deletedAt: null,
+                  section: {
+                    versionId: input.versionId,
+                    workspaceId: input.workspaceId,
+                    deletedAt: null,
+                  },
+                },
+                data: {
+                  name: item.name,
+                  unit: item.unit ?? null,
+                  quantity: item.quantity,
+                  unitPrice: item.unitPrice,
+                  vatRate: item.vatRate,
+                  sortOrder: item.sortOrder,
+                },
+              });
+            }),
+          );
+        }),
+      );
+      serverPerfEnd("autoSaveAction.autoSaveVersion.autoSave.tx.updates");
+
+      serverPerfStart("autoSaveAction.autoSaveVersion.autoSave.tx.syncTotals");
+      await syncVersionTotalsFromPayload(input.data.sections, input.versionId, tx);
+      serverPerfEnd("autoSaveAction.autoSaveVersion.autoSave.tx.syncTotals");
     }
 
-    return tx.estimateVersion.update({
+    serverPerfStart("autoSaveAction.autoSaveVersion.autoSave.tx.versionUpdate");
+    const version = await tx.estimateVersion.update({
       where: { id: input.versionId },
       data: updateData,
     });
+    serverPerfEnd("autoSaveAction.autoSaveVersion.autoSave.tx.versionUpdate");
+    return version;
+  });
+
+  return { conflict: false, updatedAt: updated.updatedAt };
+}
+
+export interface PatchLineItemData {
+  name: string;
+  unit?: string | null;
+  quantity: number;
+  unitPrice: number;
+  vatRate: number;
+}
+
+export async function patchLineItem(input: {
+  versionId: string;
+  workspaceId: string;
+  itemId: string;
+  data: PatchLineItemData;
+  sections: NonNullable<AutoSaveData["sections"]>;
+  expectedUpdatedAt: Date;
+}): Promise<AutoSaveResult> {
+  if (!isPersistedEntityId(input.itemId)) {
+    throw new Error("Line item id is not persisted.");
+  }
+
+  serverPerfStart("patchLineItemAction.patchLineItem.conflictCheck");
+  const current = await prisma.estimateVersion.findFirst({
+    where: { id: input.versionId, workspaceId: input.workspaceId },
+    select: { status: true, updatedAt: true },
+  });
+
+  if (!current) {
+    serverPerfEnd("patchLineItemAction.patchLineItem.conflictCheck");
+    return { conflict: true };
+  }
+
+  if (!isEstimateVersionEditable(current.status)) {
+    serverPerfEnd("patchLineItemAction.patchLineItem.conflictCheck");
+    throw new PermissionError("Archived versions cannot be modified.");
+  }
+
+  if (current.updatedAt.toISOString() !== input.expectedUpdatedAt.toISOString()) {
+    serverPerfEnd("patchLineItemAction.patchLineItem.conflictCheck");
+    return { conflict: true };
+  }
+  serverPerfEnd("patchLineItemAction.patchLineItem.conflictCheck");
+
+  const updated = await prisma.$transaction(async (tx) => {
+    serverPerfStart("patchLineItemAction.patchLineItem.tx.update");
+    await tx.estimateLineItem.updateMany({
+      where: {
+        id: input.itemId,
+        workspaceId: input.workspaceId,
+        deletedAt: null,
+        section: {
+          versionId: input.versionId,
+          workspaceId: input.workspaceId,
+          deletedAt: null,
+        },
+      },
+      data: {
+        name: input.data.name,
+        unit: input.data.unit ?? null,
+        quantity: input.data.quantity,
+        unitPrice: input.data.unitPrice,
+        vatRate: input.data.vatRate,
+      },
+    });
+    serverPerfEnd("patchLineItemAction.patchLineItem.tx.update");
+
+    serverPerfStart("patchLineItemAction.patchLineItem.tx.syncTotals");
+    await syncVersionTotalsFromPayload(input.sections, input.versionId, tx);
+    serverPerfEnd("patchLineItemAction.patchLineItem.tx.syncTotals");
+
+    serverPerfStart("patchLineItemAction.patchLineItem.tx.versionUpdate");
+    const version = await tx.estimateVersion.update({
+      where: { id: input.versionId },
+      data: {},
+    });
+    serverPerfEnd("patchLineItemAction.patchLineItem.tx.versionUpdate");
+    return version;
   });
 
   return { conflict: false, updatedAt: updated.updatedAt };

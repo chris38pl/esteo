@@ -1,6 +1,6 @@
 "use client";
 
-import { Bot, Plus } from "lucide-react";
+import { Bot, Loader2, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ interface EstimateItemsToolbarProps {
   onMarginChange: (value: number) => void;
   onMarginBlur: (value: number) => void;
   onAddSection: () => void | Promise<void>;
+  isAddingSection?: boolean;
   showAiPanel: boolean;
   onToggleAiPanel: () => void;
   /** Side-column AI (toolbar toggle); false = floating FAB only */
@@ -37,6 +38,7 @@ export function EstimateItemsToolbar({
   onMarginChange,
   onMarginBlur,
   onAddSection,
+  isAddingSection = false,
   showAiPanel,
   onToggleAiPanel,
   aiUsesSideLayout = false,
@@ -55,9 +57,14 @@ export function EstimateItemsToolbar({
           size="sm"
           className={estimatePrimaryButtonClassName}
           onClick={onAddSection}
+          disabled={isAddingSection}
         >
-          <Plus className="size-4" />
-          {t("editor.addSection")}
+          {isAddingSection ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Plus className="size-4" />
+          )}
+          {isAddingSection ? t("editor.addingSection") : t("editor.addSection")}
         </Button>
       </div>
 

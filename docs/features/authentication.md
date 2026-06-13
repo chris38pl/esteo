@@ -50,6 +50,12 @@ Not yet implemented: `reset-password` (add if Clerk dashboard enables that path)
 
 `SignIn.Root` receives `fallback={<AuthLoadingIndicator message={t("signIn.loading")} />}`. Shown while Clerk initializes — notably on `/continue` before the active step renders. Do not remove without a replacement.
 
+## Session lifetime / Remember me
+
+Clerk does **not** expose a per-login “remember me” API. Session duration is configured **globally** in the Clerk Dashboard under **Sessions** (`Maximum lifetime`, `Inactivity timeout`). `setActive()` and Clerk Elements do not accept a parameter to extend or shorten the session for a single sign-in.
+
+A “Remember me” checkbox was intentionally removed from [`sign-in-form.tsx`](../../src/components/auth/sign-in-form.tsx) so the UI does not imply behavior Clerk cannot provide. If Clerk ships native support (currently on their [roadmap backlog](https://feedback.clerk.com/roadmap)), re-add the control and wire it to the official API. To change session length for all users, adjust Clerk Dashboard settings only — no app code change required.
+
 ## Client Trust vs user MFA
 
 Clerk **Client Trust** can require email verification on **untrusted browsers** even when per-user MFA is disabled in the Clerk dashboard.

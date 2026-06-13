@@ -3,7 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useEstimateAutosave } from "@/features/estimates/hooks/use-estimate-autosave";
+import { toast } from "sonner";
+import {
+  useEstimateAutosave,
+} from "@/features/estimates/hooks/use-estimate-autosave";
 import { useEstimatePdfExport } from "@/features/estimates/hooks/use-estimate-pdf-export";
 import { useEstimatePdfPreview } from "@/features/estimates/hooks/use-estimate-pdf-preview";
 import { useEstimateAdvancedMode } from "@/features/estimates/hooks/use-estimate-advanced-mode";
@@ -17,6 +20,7 @@ import {
   addSectionAction,
   deleteLineItemAction,
   deleteSectionAction,
+  patchLineItemAction,
   reorderAction,
 } from "@/features/estimates/server/actions";
 import type { Locale } from "@/lib/locale";
@@ -85,6 +89,7 @@ import {
   versionTreeStructureKey,
 } from "@/features/estimates/lib/version-tree-sync";
 import { cn } from "@/lib/utils";
+import { devTime, devTimeEnd, devPerfLog } from "@/features/estimates/lib/dev-perf";
 import "@/features/estimates/styles/estimate-editor-layout.css";
 
 interface EstimateEditorProps {
@@ -205,6 +210,9 @@ export function EstimateEditor({
   const aiStickyRef = useRef<HTMLDivElement>(null);
   const [tableSearchQuery, setTableSearchQuery] = useState("");
   const [mobilePositionSheetOpen, setMobilePositionSheetOpen] = useState(false);
+  const [isAddingSection, setIsAddingSection] = useState(false);
+  const [addingItemSectionIds, setAddingItemSectionIds] = useState<string[]>([]);
+  const addingItemSectionIdsRef = useRef(new Set<string>());
   const [paymentInstallments, setPaymentInstallments] = useState<PaymentInstallmentClient[]>(
     initialPaymentInstallments,
   );
@@ -248,7 +256,9 @@ export function EstimateEditor({
   const commitSections = useCallback((updater: (prev: SectionData[]) => SectionData[]) => {
     const next = updater(sectionsRef.current);
     sectionsRef.current = next;
+    devTime("setSections");
     setSections(next);
+    devTimeEnd("setSections");
     return next;
   }, []);
 
@@ -258,11 +268,14 @@ export function EstimateEditor({
   }, []);
 
   const buildAutosavePayload = useCallback((): AutoSaveData => {
+    devTime("buildAutosavePayload");
     const { sections: sectionsPayload } = sectionsToAutoSaveData(sectionsRef.current);
-    return {
+    const payload = {
       marginPercent: marginPercentRef.current,
       sections: sectionsPayload,
     };
+    devTimeEnd("buildAutosavePayload");
+    return payload;
   }, []);
 
   const { status: autosaveStatus, save, onBlur: autosaveOnBlur } = useEstimateAutosave({
@@ -405,31 +418,61 @@ export function EstimateEditor({
 
   const triggerBlurSave = useCallback(async () => {
     if (!activeVersionId) return;
+    devTime("blurSave");
     await autosaveOnBlur(buildAutosavePayload());
+    devTimeEnd("blurSave");
   }, [activeVersionId, autosaveOnBlur, buildAutosavePayload]);
 
+  const applyItemPatch = useCallback(
+    (
+      prev: SectionData[],
+      itemId: string,
+      data: Partial<Omit<LineItemData, "id" | "sortOrder">>,
+    ): SectionData[] =>
+      prev.map((s) => ({
+        ...s,
+        items: s.items.map((li) => {
+          if (li.id !== itemId) return li;
+          const next = { ...li, ...data };
+          if (advancedMode && data.baseUnitPrice !== undefined) {
+            next.unitPrice = unitPriceFromBase(next.baseUnitPrice, marginPercent);
+          } else if (!advancedMode && data.unitPrice !== undefined) {
+            next.baseUnitPrice = next.unitPrice;
+          }
+          return next;
+        }),
+      })),
+    [advancedMode, marginPercent],
+  );
+
   const handleAddSection = async (): Promise<string | undefined> => {
-    if (!activeVersionId || isVersionReadOnly) return undefined;
-    const result = await addSectionAction({
-      versionId: activeVersionId,
-      workspaceId: estimate.workspaceId,
-      title: t("editor.newSection"),
-      locale,
-    });
-    if (result.success) {
-      const sectionId = result.data.sectionId;
-      commitSections((prev) => [
-        ...prev,
-        {
-          id: sectionId,
-          title: t("editor.newSection"),
-          sortOrder: prev.length,
-          items: [],
-        },
-      ]);
-      return sectionId;
+    if (!activeVersionId || isVersionReadOnly || isAddingSection) return undefined;
+    setIsAddingSection(true);
+    try {
+      const result = await addSectionAction({
+        versionId: activeVersionId,
+        workspaceId: estimate.workspaceId,
+        title: t("editor.newSection"),
+        locale,
+      });
+      if (result.success) {
+        const sectionId = result.data.sectionId;
+        commitSections((prev) => [
+          ...prev,
+          {
+            id: sectionId,
+            title: t("editor.newSection"),
+            sortOrder: prev.length,
+            items: [],
+          },
+        ]);
+        return sectionId;
+      }
+      toast.error(t("editor.addSectionError"));
+      return undefined;
+    } finally {
+      setIsAddingSection(false);
     }
-    return undefined;
   };
 
   const handleUpdateSection = (sectionId: string, title: string) => {
@@ -517,34 +560,50 @@ export function EstimateEditor({
 
   const handleAddItem = async (sectionId: string) => {
     if (!activeVersionId || isVersionReadOnly) return;
-    const result = await addLineItemAction({
-      sectionId,
-      workspaceId: estimate.workspaceId,
-      locale,
-    });
-    if (result.success) {
-      commitSections((prev) =>
-        prev.map((s) =>
-          s.id === sectionId
-            ? {
-                ...s,
-                items: [
-                  ...s.items,
-                  {
-                    id: result.data.itemId,
-                    name: "",
-                    unit: null,
-                    quantity: 0,
-                    baseUnitPrice: 0,
-                    unitPrice: 0,
-                    vatRate: 0.23,
-                    sortOrder: s.items.length,
-                  },
-                ],
-              }
-            : s,
-        ),
-      );
+    if (addingItemSectionIdsRef.current.has(sectionId)) return;
+
+    addingItemSectionIdsRef.current.add(sectionId);
+    setAddingItemSectionIds((prev) => [...prev, sectionId]);
+
+    try {
+      devTime("addItem.total");
+      const result = await addLineItemAction({
+        sectionId,
+        workspaceId: estimate.workspaceId,
+        locale,
+      });
+      if (result.success) {
+        devTime("addItem.commit");
+        commitSections((prev) =>
+          prev.map((s) =>
+            s.id === sectionId
+              ? {
+                  ...s,
+                  items: [
+                    ...s.items,
+                    {
+                      id: result.data.itemId,
+                      name: "",
+                      unit: null,
+                      quantity: 0,
+                      baseUnitPrice: 0,
+                      unitPrice: 0,
+                      vatRate: 0.23,
+                      sortOrder: s.items.length,
+                    },
+                  ],
+                }
+              : s,
+          ),
+        );
+        devTimeEnd("addItem.commit");
+      } else {
+        toast.error(t("editor.addItemError"));
+      }
+      devTimeEnd("addItem.total");
+    } finally {
+      addingItemSectionIdsRef.current.delete(sectionId);
+      setAddingItemSectionIds((prev) => prev.filter((id) => id !== sectionId));
     }
   };
 
@@ -553,40 +612,96 @@ export function EstimateEditor({
     data: Partial<Omit<LineItemData, "id" | "sortOrder">>,
   ) => {
     if (isVersionReadOnly) return;
-    commitSections((prev) =>
-      prev.map((s) => ({
-        ...s,
-        items: s.items.map((li) => {
-          if (li.id !== itemId) return li;
-          const next = { ...li, ...data };
-          if (advancedMode && data.baseUnitPrice !== undefined) {
-            next.unitPrice = unitPriceFromBase(next.baseUnitPrice, marginPercent);
-          } else if (!advancedMode && data.unitPrice !== undefined) {
-            next.baseUnitPrice = next.unitPrice;
-          }
-          return next;
-        }),
-      })),
-    );
+    commitSections((prev) => applyItemPatch(prev, itemId, data));
     markDirty();
     triggerSave();
   };
 
+  const handlePersistItem = useCallback(
+    async (
+      itemId: string,
+      data: Partial<Omit<LineItemData, "id" | "sortOrder">>,
+    ) => {
+      if (isVersionReadOnly || !activeVersionId) return;
+      devTime("persist.total");
+      devTime("persist.commit");
+      commitSections((prev) => applyItemPatch(prev, itemId, data));
+      devTimeEnd("persist.commit");
+
+      const payload = buildAutosavePayload();
+      const patchedItem = sectionsRef.current
+        .flatMap((s) => s.items)
+        .find((li) => li.id === itemId);
+      if (!patchedItem || !payload.sections) {
+        throw new Error("Line item not found.");
+      }
+
+      devTime("persist.autosave");
+      const result = await patchLineItemAction({
+        versionId: activeVersionId,
+        workspaceId: estimate.workspaceId,
+        itemId,
+        data: {
+          name: patchedItem.name,
+          unit: patchedItem.unit,
+          quantity: patchedItem.quantity,
+          unitPrice: patchedItem.unitPrice,
+          vatRate: patchedItem.vatRate,
+        },
+        sections: payload.sections,
+        expectedUpdatedAt: versionUpdatedAt,
+        locale,
+      });
+      devTimeEnd("persist.autosave");
+
+      if (!result.success) {
+        toast.error(result.error);
+        devTimeEnd("persist.total");
+        throw new Error(result.error);
+      }
+
+      if (result.data.conflict) {
+        toast.error(t("editor.conflictBanner"));
+        devTimeEnd("persist.total");
+        throw new Error("conflict");
+      }
+
+      setVersionUpdatedAt(result.data.updatedAt);
+      isDirtyRef.current = false;
+      devTimeEnd("persist.total");
+    },
+    [
+      activeVersionId,
+      applyItemPatch,
+      buildAutosavePayload,
+      commitSections,
+      estimate.workspaceId,
+      isVersionReadOnly,
+      locale,
+      t,
+      versionUpdatedAt,
+    ],
+  );
+
   const handleDeleteItem = async (itemId: string) => {
     if (isVersionReadOnly) return;
+    devTime("deleteItem.total");
+    devTime("deleteItem.commit");
     commitSections((prev) =>
       prev.map((s) => ({ ...s, items: s.items.filter((li) => li.id !== itemId) })),
     );
+    devTimeEnd("deleteItem.commit");
     await deleteLineItemAction({
       itemId,
       workspaceId: estimate.workspaceId,
       locale,
     });
+    devTimeEnd("deleteItem.total");
   };
 
   const handleDuplicateItem = async (sectionId: string, itemId: string) => {
     if (!activeVersionId || isVersionReadOnly) return;
-    const sourceSection = sections.find((s) => s.id === sectionId);
+    const sourceSection = sectionsRef.current.find((s) => s.id === sectionId);
     const sourceItem = sourceSection?.items.find((li) => li.id === itemId);
     if (!sourceItem) return;
 
@@ -896,6 +1011,9 @@ export function EstimateEditor({
                     onMarginChange={handleMarginChange}
                     onMarginBlur={handleMarginBlur}
                     onAddSection={handleAddSection}
+                    isAddingSection={isAddingSection}
+                    addingItemSectionIds={addingItemSectionIds}
+                    autosaveStatus={autosaveStatus}
                     showAiPanel={showAiPanel}
                     onToggleAiPanel={() => setShowAiPanel((v) => !v)}
                     aiUsesSideLayout={isAiSideLayout}
@@ -904,6 +1022,7 @@ export function EstimateEditor({
                     onDeleteSection={handleDeleteSection}
                     onAddItem={handleAddItem}
                     onUpdateItem={handleUpdateItem}
+                    onPersistItem={handlePersistItem}
                     onDeleteItem={handleDeleteItem}
                     onDuplicateItem={handleDuplicateItem}
                     onReorderItems={handleReorderItems}

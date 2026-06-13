@@ -29,6 +29,7 @@ interface EstimateItemsTableProps {
   onUpdateSection: (sectionId: string, title: string) => void;
   onDeleteSection: (sectionId: string) => void;
   onAddItem: (sectionId: string) => void;
+  addingItemSectionIds?: string[];
   onUpdateItem: (itemId: string, data: Partial<Omit<LineItemData, "id" | "sortOrder">>) => void;
   onDeleteItem: (itemId: string) => void;
   onReorderItems: (sectionId: string, fromIndex: number, toIndex: number) => void;
@@ -51,6 +52,7 @@ export function EstimateItemsTable({
   onUpdateSection,
   onDeleteSection,
   onAddItem,
+  addingItemSectionIds = [],
   onUpdateItem,
   onDeleteItem,
   onReorderItems,
@@ -205,6 +207,7 @@ export function EstimateItemsTable({
                   onUpdateSection={onUpdateSection}
                   onDeleteSection={onDeleteSection}
                   onAddItem={onAddItem}
+                  isAddingItem={addingItemSectionIds.includes(section.id)}
                   onUpdateItem={onUpdateItem}
                   onDeleteItem={onDeleteItem}
                   onBlur={onBlur}
@@ -258,6 +261,7 @@ function SectionRows({
   onUpdateSection,
   onDeleteSection,
   onAddItem,
+  isAddingItem = false,
   onUpdateItem,
   onDeleteItem,
   onBlur,
@@ -280,6 +284,7 @@ function SectionRows({
   onUpdateSection: (sectionId: string, title: string) => void;
   onDeleteSection: (sectionId: string) => void;
   onAddItem: (sectionId: string) => void;
+  isAddingItem?: boolean;
   onUpdateItem: (
     itemId: string,
     data: Partial<Omit<LineItemData, "id" | "sortOrder">>,
@@ -315,6 +320,7 @@ function SectionRows({
         onUpdateSection={onUpdateSection}
         onDeleteSection={onDeleteSection}
         onAddItem={onAddItem}
+        isAddingItem={isAddingItem}
         onBlur={onBlur}
         currency={currency}
         titleColSpan={

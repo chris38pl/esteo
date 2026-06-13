@@ -15,6 +15,7 @@ import {
   sanitizeFilterForMode,
   type EstimateItemsFilterState,
 } from "@/features/estimates/lib/estimate-item-filter";
+import type { AutoSaveStatus } from "@/features/estimates/hooks/use-estimate-autosave";
 import {
   estimateItemsDesktopClass,
   estimateItemsMobileClass,
@@ -30,6 +31,9 @@ interface EstimateItemsViewProps {
   onMarginChange: (value: number) => void;
   onMarginBlur: (value: number) => void;
   onAddSection: () => void | Promise<string | undefined>;
+  isAddingSection?: boolean;
+  addingItemSectionIds?: string[];
+  autosaveStatus?: AutoSaveStatus;
   showAiPanel: boolean;
   onToggleAiPanel: () => void;
   aiUsesSideLayout?: boolean;
@@ -38,6 +42,10 @@ interface EstimateItemsViewProps {
   onDeleteSection: (sectionId: string) => void;
   onAddItem: (sectionId: string) => void;
   onUpdateItem: (itemId: string, data: Partial<Omit<LineItemData, "id" | "sortOrder">>) => void;
+  onPersistItem: (
+    itemId: string,
+    data: Partial<Omit<LineItemData, "id" | "sortOrder">>,
+  ) => Promise<void>;
   onDeleteItem: (itemId: string) => void;
   onDuplicateItem: (sectionId: string, itemId: string) => void;
   onReorderItems: (sectionId: string, fromIndex: number, toIndex: number) => void;
@@ -57,6 +65,9 @@ export function EstimateItemsView({
   onMarginChange,
   onMarginBlur,
   onAddSection,
+  isAddingSection = false,
+  addingItemSectionIds = [],
+  autosaveStatus = "idle",
   showAiPanel,
   onToggleAiPanel,
   aiUsesSideLayout = false,
@@ -65,6 +76,7 @@ export function EstimateItemsView({
   onDeleteSection,
   onAddItem,
   onUpdateItem,
+  onPersistItem,
   onDeleteItem,
   onDuplicateItem,
   onReorderItems,
@@ -105,6 +117,7 @@ export function EstimateItemsView({
           onMarginChange={onMarginChange}
           onMarginBlur={onMarginBlur}
           onAddSection={handleDesktopAddSection}
+          isAddingSection={isAddingSection}
           showAiPanel={showAiPanel}
           onToggleAiPanel={onToggleAiPanel}
           aiUsesSideLayout={aiUsesSideLayout}
@@ -121,6 +134,7 @@ export function EstimateItemsView({
           onUpdateSection={onUpdateSection}
           onDeleteSection={onDeleteSection}
           onAddItem={onAddItem}
+          addingItemSectionIds={addingItemSectionIds}
           onUpdateItem={onUpdateItem}
           onDeleteItem={onDeleteItem}
           onReorderItems={onReorderItems}
@@ -156,10 +170,14 @@ export function EstimateItemsView({
           tableSearchQuery={tableSearchQuery}
           tableFilter={tableFilter}
           onAddSection={onAddSection}
+          isAddingSection={isAddingSection}
+          addingItemSectionIds={addingItemSectionIds}
+          autosaveStatus={autosaveStatus}
           onUpdateSection={onUpdateSection}
           onDeleteSection={onDeleteSection}
           onAddItem={onAddItem}
           onUpdateItem={onUpdateItem}
+          onPersistItem={onPersistItem}
           onDeleteItem={onDeleteItem}
           onDuplicateItem={onDuplicateItem}
           onBlur={onBlur}

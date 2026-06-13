@@ -40,9 +40,12 @@ import {
   deleteSection,
   getVersionUpdatedAt,
   getVersionWithTree,
+  patchLineItem,
   reorderItems,
   type AutoSaveData,
+  type PatchLineItemData,
 } from "./repository";
+import { serverPerfEnd, serverPerfStart } from "@/features/estimates/lib/server-perf";
 import { revalidateEstimatePaths } from "./revalidate-estimate-paths";
 
 // ---------------------------------------------------------------------------
@@ -231,8 +234,13 @@ export async function autoSaveAction(input: {
   expectedUpdatedAt: string;
   locale?: Locale;
 }): Promise<ActionResult<{ updatedAt: string; conflict: boolean }>> {
+  serverPerfStart("autoSaveAction");
   try {
+    serverPerfStart("autoSaveAction.requireAuth");
     const user = await requireAuth(input.locale ?? "pl");
+    serverPerfEnd("autoSaveAction.requireAuth");
+
+    serverPerfStart("autoSaveAction.autoSaveVersion");
     const result = await autoSaveVersion({
       versionId: input.versionId,
       workspaceId: input.workspaceId,
@@ -240,6 +248,7 @@ export async function autoSaveAction(input: {
       data: input.data,
       expectedUpdatedAt: new Date(input.expectedUpdatedAt),
     });
+    serverPerfEnd("autoSaveAction.autoSaveVersion");
 
     if (result.conflict) {
       return { success: true, data: { conflict: true, updatedAt: "" } };
@@ -254,6 +263,52 @@ export async function autoSaveAction(input: {
     };
   } catch (error) {
     return toActionError(error);
+  } finally {
+    serverPerfEnd("autoSaveAction");
+  }
+}
+
+export async function patchLineItemAction(input: {
+  versionId: string;
+  workspaceId: string;
+  itemId: string;
+  data: PatchLineItemData;
+  sections: NonNullable<AutoSaveData["sections"]>;
+  expectedUpdatedAt: string;
+  locale?: Locale;
+}): Promise<ActionResult<{ updatedAt: string; conflict: boolean }>> {
+  serverPerfStart("patchLineItemAction");
+  try {
+    serverPerfStart("patchLineItemAction.requireAuth");
+    await requireAuth(input.locale ?? "pl");
+    serverPerfEnd("patchLineItemAction.requireAuth");
+
+    serverPerfStart("patchLineItemAction.patchLineItem");
+    const result = await patchLineItem({
+      versionId: input.versionId,
+      workspaceId: input.workspaceId,
+      itemId: input.itemId,
+      data: input.data,
+      sections: input.sections,
+      expectedUpdatedAt: new Date(input.expectedUpdatedAt),
+    });
+    serverPerfEnd("patchLineItemAction.patchLineItem");
+
+    if (result.conflict) {
+      return { success: true, data: { conflict: true, updatedAt: "" } };
+    }
+
+    return {
+      success: true,
+      data: {
+        conflict: false,
+        updatedAt: result.updatedAt!.toISOString(),
+      },
+    };
+  } catch (error) {
+    return toActionError(error);
+  } finally {
+    serverPerfEnd("patchLineItemAction");
   }
 }
 
@@ -302,6 +357,7 @@ export async function addLineItemAction(input: {
   workspaceId: string;
   locale?: Locale;
 }): Promise<ActionResult<{ itemId: string }>> {
+  serverPerfStart("addLineItemAction");
   try {
     await requireAuth(input.locale ?? "pl");
     const item = await addLineItemToSection({
@@ -311,6 +367,8 @@ export async function addLineItemAction(input: {
     return { success: true, data: { itemId: item.id } };
   } catch (error) {
     return toActionError(error);
+  } finally {
+    serverPerfEnd("addLineItemAction");
   }
 }
 
@@ -319,12 +377,15 @@ export async function deleteLineItemAction(input: {
   workspaceId: string;
   locale?: Locale;
 }): Promise<ActionResult<void>> {
+  serverPerfStart("deleteLineItemAction");
   try {
     await requireAuth(input.locale ?? "pl");
     await deleteLineItem(input.itemId, input.workspaceId);
     return { success: true, data: undefined };
   } catch (error) {
     return toActionError(error);
+  } finally {
+    serverPerfEnd("deleteLineItemAction");
   }
 }
 

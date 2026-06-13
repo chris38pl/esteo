@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 import {
   ArrowLeft,
+  Check,
   Coins,
   Copy,
   FileText,
@@ -27,6 +29,8 @@ import { calculateLineItem } from "@/features/estimates/lib/calculate-estimate";
 import { roundEstimateDecimal } from "@/features/estimates/lib/estimate-decimals";
 import { formatEstimateCurrency } from "@/features/estimates/lib/format-estimate-currency";
 import { unitPriceFromBase } from "@/features/estimates/lib/margin-pricing";
+import type { AutoSaveStatus } from "@/features/estimates/hooks/use-estimate-autosave";
+import { devTime, devTimeEnd, devPerfLog } from "@/features/estimates/lib/dev-perf";
 import { estimatePrimaryButtonClassName } from "./estimate-action-button-styles";
 import { estimateOutlineButtonClassName } from "./estimate-action-button-styles";
 import type { LineItemData } from "./estimate-line-item-row";
@@ -40,10 +44,14 @@ interface EstimateMobilePositionSheetProps {
   currency: string;
   advancedMode: boolean;
   marginPercent: number;
-  onSave: (itemId: string, data: Partial<Omit<LineItemData, "id" | "sortOrder">>) => void;
-  onDuplicate: () => void;
-  onDelete: () => void;
+  onPersistItem: (
+    itemId: string,
+    data: Partial<Omit<LineItemData, "id" | "sortOrder">>,
+  ) => Promise<void>;
+  onDuplicate: () => void | Promise<void>;
+  onDelete: () => void | Promise<void>;
   onBlur: () => void | Promise<void>;
+  autosaveStatus?: AutoSaveStatus;
 }
 
 const editRowClassName = "flex gap-3 py-2.5 pl-[22px] pr-[22px]";
@@ -114,14 +122,18 @@ export function EstimateMobilePositionSheet({
   currency,
   advancedMode,
   marginPercent,
-  onSave,
+  onPersistItem,
   onDuplicate,
   onDelete,
   onBlur,
+  autosaveStatus = "idle",
 }: EstimateMobilePositionSheetProps) {
   const t = useTranslations("estimates");
   const locale = useLocale();
   const [draft, setDraft] = useState<LineItemData | null>(item);
+  const [isSaveInProgress, setIsSaveInProgress] = useState(false);
+  const [isDuplicateInProgress, setIsDuplicateInProgress] = useState(false);
+  const [isDeleteInProgress, setIsDeleteInProgress] = useState(false);
 
   useEffect(() => {
     if (open && item) {
@@ -129,14 +141,35 @@ export function EstimateMobilePositionSheet({
     }
   }, [open, item]);
 
-  if (!draft) return null;
+  useEffect(() => {
+    if (open) {
+      devPerfLog("mobile sheet opened");
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) {
+      setIsSaveInProgress(false);
+      setIsDuplicateInProgress(false);
+      setIsDeleteInProgress(false);
+    }
+  }, [open]);
+
+  const isBusy =
+    isSaveInProgress ||
+    isDuplicateInProgress ||
+    isDeleteInProgress ||
+    autosaveStatus === "saving";
+  const effectiveDraft = draft ?? item;
+
+  if (!effectiveDraft) return null;
 
   const calc = calculateLineItem({
-    quantity: draft.quantity,
-    unitPrice: draft.unitPrice,
-    vatRate: draft.vatRate,
+    quantity: effectiveDraft.quantity,
+    unitPrice: effectiveDraft.unitPrice,
+    vatRate: effectiveDraft.vatRate,
   });
-  const costBasis = draft.quantity * draft.baseUnitPrice;
+  const costBasis = effectiveDraft.quantity * effectiveDraft.baseUnitPrice;
   const margin = calc.netValue - costBasis;
 
   const patch = (partial: Partial<LineItemData>) => {
@@ -152,43 +185,59 @@ export function EstimateMobilePositionSheet({
     });
   };
 
+  const draftPayload = (): Partial<Omit<LineItemData, "id" | "sortOrder">> => ({
+    name: effectiveDraft.name,
+    unit: effectiveDraft.unit,
+    quantity: effectiveDraft.quantity,
+    baseUnitPrice: effectiveDraft.baseUnitPrice,
+    unitPrice: effectiveDraft.unitPrice,
+    vatRate: effectiveDraft.vatRate,
+  });
+
   const handleSave = async () => {
-    if (!draft) return;
-    onSave(draft.id, {
-      name: draft.name,
-      unit: draft.unit,
-      quantity: draft.quantity,
-      baseUnitPrice: draft.baseUnitPrice,
-      unitPrice: draft.unitPrice,
-      vatRate: draft.vatRate,
-    });
-    await onBlur();
-    onOpenChange(false);
+    if (!effectiveDraft || isBusy) return;
+    flushSync(() => setIsSaveInProgress(true));
+    devTime("handleSave");
+    try {
+      await onPersistItem(effectiveDraft.id, draftPayload());
+      onOpenChange(false);
+    } finally {
+      devTimeEnd("handleSave");
+      setIsSaveInProgress(false);
+    }
   };
 
   const handleCancel = () => {
+    if (isBusy) return;
     setDraft(item);
     onOpenChange(false);
   };
 
   const handleDuplicate = async () => {
-    onSave(draft.id, {
-      name: draft.name,
-      unit: draft.unit,
-      quantity: draft.quantity,
-      baseUnitPrice: draft.baseUnitPrice,
-      unitPrice: draft.unitPrice,
-      vatRate: draft.vatRate,
-    });
-    await onBlur();
-    onDuplicate();
-    onOpenChange(false);
+    if (!effectiveDraft || isBusy) return;
+    flushSync(() => setIsDuplicateInProgress(true));
+    devTime("handleDuplicate");
+    try {
+      await onPersistItem(effectiveDraft.id, draftPayload());
+      await onDuplicate();
+      onOpenChange(false);
+    } finally {
+      devTimeEnd("handleDuplicate");
+      setIsDuplicateInProgress(false);
+    }
   };
 
   const handleDelete = async () => {
-    onDelete();
-    await onBlur();
-    onOpenChange(false);
+    if (isBusy) return;
+    flushSync(() => setIsDeleteInProgress(true));
+    devTime("handleDelete");
+    try {
+      await onDelete();
+      onOpenChange(false);
+    } finally {
+      devTimeEnd("handleDelete");
+      setIsDeleteInProgress(false);
+    }
   };
 
   return (
@@ -198,6 +247,7 @@ export function EstimateMobilePositionSheet({
         overlayClassName="z-[80]"
         showCloseButton={false}
       >
+        <div className="flex min-h-0 flex-1 flex-col">
         <div className="flex items-center justify-between gap-2 border-b border-border/40 px-2 py-2 pt-[max(0.5rem,env(safe-area-inset-top))]">
           <Button
             type="button"
@@ -206,16 +256,25 @@ export function EstimateMobilePositionSheet({
             className="size-9 shrink-0 text-muted-foreground"
             aria-label={t("editor.mobile.cancel")}
             onClick={handleCancel}
+            disabled={isBusy}
           >
             <ArrowLeft className="size-5" />
           </Button>
-          <div className="flex min-w-0 flex-1 items-center justify-center gap-2 px-1">
-            <SheetTitle className="truncate text-base font-semibold">
-              {t("editor.mobile.editPosition")}
-            </SheetTitle>
-            <span className="estimate-mobile-position-icon shrink-0 rounded-md px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
-              {positionLabel}
-            </span>
+          <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-1">
+            <div className="flex min-w-0 items-center justify-center gap-2">
+              <SheetTitle className="truncate text-base font-semibold">
+                {t("editor.mobile.editPosition")}
+              </SheetTitle>
+              <span className="estimate-mobile-position-icon shrink-0 rounded-md px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
+                {positionLabel}
+              </span>
+            </div>
+            {autosaveStatus === "saved" ? (
+              <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Check className="size-3" />
+                {t("editor.mobile.saved")}
+              </span>
+            ) : null}
           </div>
           <Button
             type="button"
@@ -224,6 +283,7 @@ export function EstimateMobilePositionSheet({
             className="size-9 shrink-0 text-muted-foreground"
             aria-label={t("editor.mobile.cancel")}
             onClick={handleCancel}
+            disabled={isBusy}
           >
             <X className="size-5" />
           </Button>
@@ -233,14 +293,14 @@ export function EstimateMobilePositionSheet({
           <div className="divide-y divide-border/40">
           <NameEditRow
             label={t("editor.columns.name")}
-            value={draft.name}
+            value={effectiveDraft.name}
             placeholder={t("editor.itemNamePlaceholder")}
             onChange={(name) => patch({ name })}
           />
 
           <ValueEditRow icon={Tag} label={t("editor.columns.unit")}>
             <input
-              value={draft.unit ?? ""}
+              value={effectiveDraft.unit ?? ""}
               onChange={(e) => patch({ unit: e.target.value || null })}
               placeholder={t("editor.unitPlaceholder")}
               className={cn(fieldInputClassName, fieldValueClassName)}
@@ -250,9 +310,11 @@ export function EstimateMobilePositionSheet({
           <ValueEditRow icon={Hash} label={t("editor.columns.qty")}>
             <DecimalInput
               min={0}
-              value={draft.quantity}
+              value={effectiveDraft.quantity}
               onValueChange={(quantity) => patch({ quantity })}
-              onBlurCommit={() => patch({ quantity: roundEstimateDecimal(draft.quantity) })}
+              onBlurCommit={() =>
+                patch({ quantity: roundEstimateDecimal(effectiveDraft.quantity) })
+              }
               className={cn(fieldInputClassName, fieldValueClassName)}
             />
           </ValueEditRow>
@@ -261,10 +323,10 @@ export function EstimateMobilePositionSheet({
             <ValueEditRow icon={Receipt} label={t("editor.columns.baseUnitPrice")}>
               <DecimalInput
                 min={0}
-                value={draft.baseUnitPrice}
+                value={effectiveDraft.baseUnitPrice}
                 onValueChange={(baseUnitPrice) => patch({ baseUnitPrice })}
                 onBlurCommit={() =>
-                  patch({ baseUnitPrice: roundEstimateDecimal(draft.baseUnitPrice) })
+                  patch({ baseUnitPrice: roundEstimateDecimal(effectiveDraft.baseUnitPrice) })
                 }
                 className={cn(fieldInputClassName, fieldValueClassName)}
               />
@@ -274,14 +336,16 @@ export function EstimateMobilePositionSheet({
           <ValueEditRow icon={Coins} label={t("editor.columns.unitPrice")}>
             {advancedMode ? (
               <span className="text-sm font-medium tabular-nums text-foreground">
-                {formatEstimateCurrency(draft.unitPrice, currency, locale)}
+                {formatEstimateCurrency(effectiveDraft.unitPrice, currency, locale)}
               </span>
             ) : (
               <DecimalInput
                 min={0}
-                value={draft.unitPrice}
+                value={effectiveDraft.unitPrice}
                 onValueChange={(unitPrice) => patch({ unitPrice })}
-                onBlurCommit={() => patch({ unitPrice: roundEstimateDecimal(draft.unitPrice) })}
+                onBlurCommit={() =>
+                  patch({ unitPrice: roundEstimateDecimal(effectiveDraft.unitPrice) })
+                }
                 className={cn(fieldInputClassName, fieldValueClassName)}
               />
             )}
@@ -289,7 +353,7 @@ export function EstimateMobilePositionSheet({
 
           <ValueEditRow icon={Percent} label={t("editor.mobile.vatPercent")}>
             <PercentInput
-              value={draft.vatRate}
+              value={effectiveDraft.vatRate}
               onValueChange={(vatRate) => patch({ vatRate })}
               emptyZero={false}
               className={cn(fieldInputClassName, fieldValueClassName)}
@@ -341,9 +405,12 @@ export function EstimateMobilePositionSheet({
               variant="outline"
               className={cn(estimateOutlineButtonClassName, "flex-1")}
               onClick={handleDuplicate}
+              disabled={isBusy}
             >
               <Copy className="size-4" />
-              {t("editor.mobile.duplicate")}
+              {isDuplicateInProgress
+                ? t("editor.mobile.duplicating")
+                : t("editor.mobile.duplicate")}
             </Button>
             <Button
               type="button"
@@ -353,9 +420,10 @@ export function EstimateMobilePositionSheet({
                 "flex-1 border-destructive/40 text-destructive hover:bg-destructive/5 hover:text-destructive",
               )}
               onClick={handleDelete}
+              disabled={isBusy}
             >
               <Trash2 className="size-4" />
-              {t("editor.mobile.remove")}
+              {isDeleteInProgress ? t("editor.mobile.removing") : t("editor.mobile.remove")}
             </Button>
           </div>
           <div className="flex w-full gap-2">
@@ -364,6 +432,7 @@ export function EstimateMobilePositionSheet({
               variant="outline"
               className={cn(estimateOutlineButtonClassName, "flex-1")}
               onClick={handleCancel}
+              disabled={isBusy}
             >
               {t("editor.mobile.cancel")}
             </Button>
@@ -371,11 +440,13 @@ export function EstimateMobilePositionSheet({
               type="button"
               className={cn(estimatePrimaryButtonClassName, "flex-1")}
               onClick={handleSave}
+              disabled={isBusy}
             >
-              {t("editor.mobile.save")}
+              {isSaveInProgress ? t("editor.mobile.saving") : t("editor.mobile.save")}
             </Button>
           </div>
         </SheetFooter>
+        </div>
       </SheetContent>
     </Sheet>
   );
