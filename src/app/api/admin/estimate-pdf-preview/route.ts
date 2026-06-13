@@ -18,7 +18,7 @@ export async function GET(request: Request) {
   const primaryColor = searchParams.get("primaryColor")?.trim() || undefined;
   const accentColor = searchParams.get("accentColor")?.trim() || undefined;
 
-  const html = buildEstimatePdfPreviewHtml({
+  const html = await buildEstimatePdfPreviewHtml({
     locale,
     showWatermark,
     primaryColor,

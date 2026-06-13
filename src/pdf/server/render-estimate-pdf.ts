@@ -1,9 +1,11 @@
 import puppeteer from "puppeteer-core";
 
 import type { EstimatePdfViewModel } from "@/pdf/lib/build-pdf-view-model";
+import { ensurePdfTemplateAssetsReady } from "@/pdf/lib/ensure-pdf-template-assets";
 import { buildEstimatePdfHtml } from "@/pdf/templates/estimate-pdf-template";
 
 export async function renderEstimatePdfBuffer(model: EstimatePdfViewModel): Promise<Buffer> {
+  await ensurePdfTemplateAssetsReady();
   const html = buildEstimatePdfHtml(model);
 
   if (!process.env.PUPPETEER_EXECUTABLE_PATH) {
@@ -25,6 +27,9 @@ export async function renderEstimatePdfBuffer(model: EstimatePdfViewModel): Prom
     await page.evaluate(async () => {
       await document.fonts.ready;
     });
+    await page.evaluate((title) => {
+      document.title = title;
+    }, model.viewerTitle);
     const pdf = await page.pdf({
       format: "A4",
       printBackground: true,

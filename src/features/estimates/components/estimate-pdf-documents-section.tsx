@@ -7,9 +7,9 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   closeEstimatePdfWindow,
-  navigateEstimatePdfWindow,
   openEstimatePdfFallback,
   openEstimatePdfPlaceholder,
+  showEstimatePdfInWindow,
 } from "@/features/estimates/lib/open-estimate-pdf-document";
 import { getEstimatePdfDownloadUrlAction } from "@/features/estimates/server/pdf-export-actions";
 import type { EstimatePdfClient } from "@/features/estimates/lib/serialize-estimate-pdfs";
@@ -57,9 +57,14 @@ export function EstimatePdfDocumentsSection({
       return;
     }
 
-    const navigated = navigateEstimatePdfWindow(viewerWindow, result.data.url);
+    const shown = await showEstimatePdfInWindow(viewerWindow, {
+      url: result.data.url,
+      viewerTitle: result.data.viewerTitle,
+      fileName: result.data.fileName,
+      downloadLabel: t("editor.documents.download"),
+    });
 
-    if (!navigated) {
+    if (!shown) {
       openEstimatePdfFallback(result.data.url, result.data.fileName);
       toast.info(t("editor.pdfExport.popupBlocked"));
     }

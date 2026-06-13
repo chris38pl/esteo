@@ -9,6 +9,7 @@
     "dev": "next dev --webpack",
     "trigger:dev": "npx trigger.dev@latest dev",
     "trigger:deploy": "npx trigger.dev@4.4.6 deploy",
+    "trigger:deploy:staging": "npx trigger.dev@4.4.6 deploy --project-ref proj_lkorkbyjorynapnptmqa",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
@@ -28,6 +29,7 @@
     "test:async-thumbnail-helpers": "tsx scripts/test-async-thumbnail-helpers.ts",
     "test:compare-estimate-versions": "tsx scripts/verify-compare-estimate-versions.ts",
     "test:derive-estimate-workflow": "tsx scripts/verify-derive-estimate-workflow-status.ts",
+    "test:estimate-pdf-size": "tsx scripts/verify-estimate-pdf-size.ts",
     "voice-intake:benchmark": "tsx scripts/voice-intake-benchmark/run-benchmark.mjs",
     "test:voice-intake-helpers": "tsx scripts/test-voice-intake-helpers.ts",
     "validate:ai-schemas": "tsx scripts/validate-ai-schemas.mjs",
@@ -69,6 +71,7 @@
     "zustand": "^5.0.13"
   },
   "devDependencies": {
+    "@fontsource/inter": "^5.2.8",
     "@shadcn/ui": "^0.0.4",
     "@tailwindcss/postcss": "^4",
     "@trigger.dev/build": "4.4.6",

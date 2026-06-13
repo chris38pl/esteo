@@ -3,6 +3,7 @@ import "server-only";
 import { EstimatePdfStatus } from "@prisma/client";
 
 import { prisma } from "@/db/client";
+import { PDF_TEMPLATE_REVISION } from "@/pdf/lib/pdf-template-revision";
 
 export async function findEstimatePdfByVersionId(versionId: string) {
   return prisma.estimatePdf.findUnique({
@@ -102,6 +103,7 @@ export async function upsertEstimatePdfReady(input: {
       fileKey: input.fileKey,
       storageCustomId: input.storageCustomId,
       generatedLocale: input.generatedLocale,
+      pdfTemplateRevision: PDF_TEMPLATE_REVISION,
       status: EstimatePdfStatus.READY,
       errorMessage: null,
       createdById: input.createdById,
@@ -111,6 +113,7 @@ export async function upsertEstimatePdfReady(input: {
       fileKey: input.fileKey,
       storageCustomId: input.storageCustomId,
       generatedLocale: input.generatedLocale,
+      pdfTemplateRevision: PDF_TEMPLATE_REVISION,
       status: EstimatePdfStatus.READY,
       errorMessage: null,
       createdById: input.createdById,

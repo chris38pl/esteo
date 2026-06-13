@@ -10,8 +10,7 @@ export type AvatarPreset =
   | "carpenter"
   | "constructor"
   | "electrician"
-  | "engineer"
-  | "sowy";
+  | "engineer";
 
 function presetSrc(preset: AvatarPreset) {
   return `/avatars/${preset}.png`;

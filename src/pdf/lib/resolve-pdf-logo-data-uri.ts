@@ -1,8 +1,13 @@
 import "server-only";
 
 import { getStorageProvider } from "@/features/attachments/server/storage";
+import {
+  optimizePdfImage,
+  toPdfImageDataUri,
+} from "@/pdf/lib/optimize-pdf-image";
+import { PDF_WORKSPACE_LOGO_TARGET } from "@/pdf/lib/pdf-image-targets";
 
-async function fetchImageAsDataUri(url: string): Promise<string | null> {
+async function fetchImageBuffer(url: string): Promise<Buffer | null> {
   try {
     const response = await fetch(url, {
       signal: AbortSignal.timeout(20_000),
@@ -12,14 +17,13 @@ async function fetchImageAsDataUri(url: string): Promise<string | null> {
       return null;
     }
 
-    const contentType = response.headers.get("content-type")?.split(";")[0]?.trim() ?? "image/png";
     const buffer = Buffer.from(await response.arrayBuffer());
 
     if (buffer.length === 0) {
       return null;
     }
 
-    return `data:${contentType};base64,${buffer.toString("base64")}`;
+    return buffer;
   } catch {
     return null;
   }
@@ -30,23 +34,31 @@ export async function resolvePdfLogoDataUri(input: {
   logoUrl: string | null;
   logoStorageKey: string | null;
 }): Promise<string | null> {
+  let buffer: Buffer | null = null;
+
   if (input.logoUrl) {
-    const fromUrl = await fetchImageAsDataUri(input.logoUrl);
-    if (fromUrl) {
-      return fromUrl;
+    buffer = await fetchImageBuffer(input.logoUrl);
+  }
+
+  if (!buffer && input.logoStorageKey?.trim()) {
+    try {
+      const storage = getStorageProvider();
+      const signedUrl = await storage.getSignedUrl(input.logoStorageKey, {
+        expiresInSeconds: 15 * 60,
+      });
+      buffer = await fetchImageBuffer(signedUrl);
+    } catch {
+      buffer = null;
     }
   }
 
-  if (!input.logoStorageKey?.trim()) {
+  if (!buffer) {
     return null;
   }
 
   try {
-    const storage = getStorageProvider();
-    const signedUrl = await storage.getSignedUrl(input.logoStorageKey, {
-      expiresInSeconds: 15 * 60,
-    });
-    return await fetchImageAsDataUri(signedUrl);
+    const optimized = await optimizePdfImage(buffer, PDF_WORKSPACE_LOGO_TARGET);
+    return toPdfImageDataUri(optimized);
   } catch {
     return null;
   }

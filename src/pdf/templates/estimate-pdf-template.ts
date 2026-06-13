@@ -3,6 +3,7 @@ import {
   getPdfEsteoLogoDataUri,
   getPdfEsteoPromoIllustrationDataUri,
 } from "@/pdf/lib/pdf-esteo-promo-assets";
+import { getPdfInterFontFaceCss } from "@/pdf/lib/pdf-inter-font-face";
 import { getPdfHeroImageDataUri } from "@/pdf/lib/pdf-hero-image";
 import {
   pdfInfoClientIcon,
@@ -325,10 +326,9 @@ export function buildEstimatePdfHtml(
     ? `<div class="watermark">Wygenerowano w Esteo</div>`
     : "";
 
-  const styles = loadPdfStyles().replaceAll("__PRIMARY__", model.primaryColor).replaceAll(
-    "__ACCENT__",
-    model.accentColor,
-  );
+  const styles = `${getPdfInterFontFaceCss()}\n${loadPdfStyles()}`
+    .replaceAll("__PRIMARY__", model.primaryColor)
+    .replaceAll("__ACCENT__", model.accentColor);
 
   const screenPaginationScript = options?.screenPagination
     ? `<script src="https://unpkg.com/pagedjs@0.4.3/dist/paged.polyfill.js"></script>
@@ -364,12 +364,7 @@ export function buildEstimatePdfHtml(
 <html lang="${model.locale}">
 <head>
   <meta charset="utf-8" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-    rel="stylesheet"
-  />
+  <title>${escapeHtml(model.viewerTitle)}</title>
   <style>${styles}</style>
 </head>
 <body${options?.screenPagination ? ' class="pdf-screen-preview"' : ""}>

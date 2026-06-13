@@ -11,9 +11,9 @@ import {
 } from "@/features/estimates/server/pdf-export-actions";
 import {
   closeEstimatePdfWindow,
-  navigateEstimatePdfWindow,
   openEstimatePdfFallback,
   openEstimatePdfPlaceholder,
+  showEstimatePdfInWindow,
 } from "@/features/estimates/lib/open-estimate-pdf-document";
 import type { Locale } from "@/lib/locale";
 
@@ -105,12 +105,17 @@ export function useEstimatePdfOutput(input: {
   );
 
   const handleExportReady = useCallback(
-    (payload: EstimatePdfReadyPayload) => {
+    async (payload: EstimatePdfReadyPayload) => {
       dismissExportProgress();
 
-      const navigated = navigateEstimatePdfWindow(viewerWindowRef.current, payload.url);
+      const shown = await showEstimatePdfInWindow(viewerWindowRef.current, {
+        url: payload.url,
+        viewerTitle: payload.viewerTitle,
+        fileName: payload.fileName,
+        downloadLabel: t("editor.pdfPreview.download"),
+      });
 
-      if (!navigated) {
+      if (!shown) {
         openEstimatePdfFallback(payload.url, payload.fileName);
         toast.info(t("editor.pdfExport.popupBlocked"), {
           position: PDF_EXPORT_TOAST_POSITION,
@@ -126,7 +131,7 @@ export function useEstimatePdfOutput(input: {
   const handleReady = useCallback(
     async (payload: EstimatePdfReadyPayload) => {
       if (isExportMode) {
-        handleExportReady(payload);
+        await handleExportReady(payload);
         return;
       }
 

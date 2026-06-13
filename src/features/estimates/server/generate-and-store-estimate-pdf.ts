@@ -63,6 +63,7 @@ export async function generateAndStoreEstimatePdf(input: {
       versionUpdatedAt: version.updatedAt,
       generatedLocale: existing.generatedLocale,
       requestLocale: input.locale,
+      pdfTemplateRevision: existing.pdfTemplateRevision,
     })
   ) {
     return { estimatePdfId: existing.id, cached: true };

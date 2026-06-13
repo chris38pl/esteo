@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useEstimateMobileLayout } from "@/features/estimates/hooks/use-estimate-mobile-layout";
+import { downloadEstimatePdfFile } from "@/features/estimates/lib/fetch-estimate-pdf-blob-url";
 
 export type EstimatePdfPreviewDialogState =
   | { status: "closed" }
@@ -43,13 +43,7 @@ export function EstimatePdfPreviewDialog({
       return;
     }
 
-    const anchor = document.createElement("a");
-    anchor.href = state.blobUrl;
-    anchor.download = state.fileName;
-    anchor.rel = "noopener noreferrer";
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
+    downloadEstimatePdfFile(state.blobUrl, state.fileName);
   }
 
   function handleOpenPdf() {

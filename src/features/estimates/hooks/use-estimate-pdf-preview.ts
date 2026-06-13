@@ -39,7 +39,7 @@ export function useEstimatePdfPreview(input: {
     async (payload: { url: string; fileName: string; viewerTitle: string }) => {
       try {
         clearBlobUrl();
-        const blobUrl = await fetchEstimatePdfBlobUrl(payload.url);
+        const blobUrl = await fetchEstimatePdfBlobUrl(payload.url, payload.fileName);
         blobUrlRef.current = blobUrl;
         setPreviewState({
           status: "ready",

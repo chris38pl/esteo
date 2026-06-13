@@ -426,8 +426,9 @@ model EstimatePdf {
   status          EstimatePdfStatus @default(PENDING)
   errorMessage    String?
   generatedAt     DateTime          @default(now())
-  generatedLocale String?
-  createdById     String?
+  generatedLocale   String?
+  pdfTemplateRevision Int?
+  createdById       String?
 
   estimate  Estimate        @relation(fields: [estimateId], references: [id], onDelete: Cascade)
   version   EstimateVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)

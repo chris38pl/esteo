@@ -765,6 +765,9 @@ export function EstimateEditor({
                 className="h-full w-full min-w-0"
                 items={allItems}
                 marginPercent={marginPercent}
+                onMarginChange={handleMarginChange}
+                onMarginBlur={handleMarginBlur}
+                readOnly={isVersionReadOnly}
                 currency={estimate.currency}
                 advancedMode={advancedMode}
               />

@@ -515,5 +515,23 @@ export function getEstimateEditorResponsiveCss(): string {
   border-top: none;
   border-left: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
 }
+.estimate-profitability-margin-badge__input,
+.estimate-profitability-margin-badge__input:focus,
+.estimate-profitability-margin-badge__input:focus-visible {
+  appearance: none;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+@media ${mediaQueryMax(breakpoints.headerActionsDivider - 1)} {
+  .estimate-right-rail__grid--advanced {
+    grid-template-columns: 1fr;
+  }
+  .estimate-right-rail__profitability {
+    border-left: none;
+    border-top: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
+  }
+}
 `.trim();
 }

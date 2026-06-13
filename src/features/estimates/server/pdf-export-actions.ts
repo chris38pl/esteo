@@ -11,10 +11,12 @@ import {
   findEstimatePdfByVersionId,
   upsertEstimatePdfExportPending,
 } from "@/features/estimates/server/estimate-pdf-repository";
-import { isEstimatePdfFresh } from "@/features/estimates/server/pdf-export-service";
+import {
+  isEstimatePdfAvailableForDownload,
+  isEstimatePdfCacheHit,
+} from "@/features/estimates/server/pdf-export-service";
 import {
   createEstimatePdfId,
-  needsEstimatePdfStorageHeal,
 } from "@/features/estimates/server/pdf-storage-service";
 import { revalidateEstimatePaths } from "@/features/estimates/server/revalidate-estimate-paths";
 import { assertEstimateInWorkspace } from "@/features/estimates/server/notes-repository";
@@ -41,16 +43,20 @@ function isReadyForDownload(
   versionUpdatedAt: Date,
   requestLocale: Locale,
 ): boolean {
-  return (
-    existing.status === EstimatePdfStatus.READY &&
-    !needsEstimatePdfStorageHeal(existing, workspaceId, existing.id) &&
-    isEstimatePdfFresh({
-      generatedAt: existing.generatedAt,
-      versionUpdatedAt,
-      generatedLocale: existing.generatedLocale,
-      requestLocale,
-    })
+  return isEstimatePdfCacheHit(
+    existing,
+    workspaceId,
+    existing.id,
+    versionUpdatedAt,
+    requestLocale,
   );
+}
+
+function isReadyAfterGeneration(
+  existing: NonNullable<Awaited<ReturnType<typeof findEstimatePdfByVersionId>>>,
+  workspaceId: string,
+): boolean {
+  return isEstimatePdfAvailableForDownload(existing, workspaceId, existing.id);
 }
 
 export async function exportEstimatePdfAction(input: {
@@ -203,7 +209,7 @@ export async function pollEstimatePdfExportAction(input: {
       };
     }
 
-    if (isReadyForDownload(existing, input.workspaceId, version.updatedAt, input.locale)) {
+    if (isReadyAfterGeneration(existing, input.workspaceId)) {
       const download = await getEstimatePdfDownloadUrl({
         estimatePdfId: existing.id,
         workspaceId: input.workspaceId,

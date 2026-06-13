@@ -7,7 +7,6 @@ export const AVATAR_PRESETS: readonly AvatarPreset[] = [
   "constructor",
   "electrician",
   "engineer",
-  "sowy",
 ] as const;
 
 export function isAvatarPreset(value: string | null | undefined): value is AvatarPreset {

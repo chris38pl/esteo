@@ -57,6 +57,7 @@ export function EstimateMobileItemsStats({
         items: itemCount,
       })}
     >
+      {advancedMode ? <EstimateMobileMarginBadge marginPercent={marginPercent} /> : null}
       <SoftStatBadge
         icon={Folder}
         label={t("editor.sectionCount", { count: sectionCount })}
@@ -65,7 +66,6 @@ export function EstimateMobileItemsStats({
         icon={List}
         label={t("editor.itemCount", { count: itemCount })}
       />
-      {advancedMode ? <EstimateMobileMarginBadge marginPercent={marginPercent} /> : null}
     </div>
   );
 }

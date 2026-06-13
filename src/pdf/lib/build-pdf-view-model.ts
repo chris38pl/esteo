@@ -1,6 +1,7 @@
 import type { SubscriptionPlan } from "@prisma/client";
 
 import { calculateEstimate, calculateLineItem } from "@/features/estimates/lib/calculate-estimate";
+import { buildEstimatePdfViewerTitle } from "@/features/estimates/lib/estimate-pdf-filename";
 import { buildWorkspaceCompanyProfileExport } from "@/features/workspaces/lib/company-profile-for-export";
 import type { Locale } from "@/lib/locale";
 import { buildPdfIssueDates } from "@/pdf/lib/format-pdf-dates";
@@ -24,6 +25,7 @@ export type EstimatePdfSectionView = {
 
 export type EstimatePdfViewModel = {
   locale: Locale;
+  viewerTitle: string;
   referenceNumber: string;
   issueDateFormatted: string;
   validUntilFormatted: string;
@@ -246,6 +248,12 @@ export function buildEstimatePdfViewModel(input: {
 
   return {
     locale,
+    viewerTitle: buildEstimatePdfViewerTitle({
+      requestNumber: input.requestNumber,
+      estimateId: input.estimateId,
+      versionNumber: input.versionNumber,
+      locale,
+    }),
     referenceNumber,
     issueDateFormatted: issueDates.issueDateFormatted,
     validUntilFormatted: issueDates.validUntilFormatted,

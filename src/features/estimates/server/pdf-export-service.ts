@@ -6,10 +6,14 @@ import { prisma } from "@/db/client";
 import { getIndustryOptionLabel } from "@/features/estimate-requests/config/industry-option-labels";
 import { readTypedFieldValue } from "@/features/industry-fields/server/map-field-value";
 import { listDocumentFieldValues } from "@/features/industry-fields/server/repository";
+import { EstimatePdfStatus, type EstimatePdf } from "@prisma/client";
+
 import { buildEstimatePdfViewModel } from "@/pdf/lib/build-pdf-view-model";
 import type { EstimatePdfViewModel } from "@/pdf/lib/build-pdf-view-model";
+import { PDF_TEMPLATE_REVISION } from "@/pdf/lib/pdf-template-revision";
 import { resolvePdfLogoDataUri } from "@/pdf/lib/resolve-pdf-logo-data-uri";
 import { renderEstimatePdfBuffer } from "@/pdf/server/render-estimate-pdf";
+import { needsEstimatePdfStorageHeal } from "@/features/estimates/server/pdf-storage-service";
 import { workspaceBrandingSchema } from "@/features/workspaces/schemas/branding";
 import type { Locale } from "@/lib/locale";
 import { getVersionWithTree } from "@/features/estimates/server/repository";
@@ -152,10 +156,52 @@ export function isEstimatePdfFresh(input: {
   versionUpdatedAt: Date;
   generatedLocale: string | null | undefined;
   requestLocale: Locale;
+  pdfTemplateRevision: number | null | undefined;
 }): boolean {
   if (!input.generatedLocale || input.generatedLocale !== input.requestLocale) {
     return false;
   }
 
+  if (input.pdfTemplateRevision !== PDF_TEMPLATE_REVISION) {
+    return false;
+  }
+
   return input.generatedAt.getTime() >= input.versionUpdatedAt.getTime();
+}
+
+type EstimatePdfDownloadRecord = Pick<
+  EstimatePdf,
+  "status" | "fileKey" | "storageCustomId" | "generatedAt" | "generatedLocale" | "pdfTemplateRevision"
+>;
+
+/** READY row with valid UploadThing keys — used while polling an in-flight export. */
+export function isEstimatePdfAvailableForDownload(
+  existing: EstimatePdfDownloadRecord,
+  workspaceId: string,
+  estimatePdfId: string,
+): boolean {
+  return (
+    existing.status === EstimatePdfStatus.READY &&
+    !needsEstimatePdfStorageHeal(existing, workspaceId, estimatePdfId)
+  );
+}
+
+/** Cached PDF can be reused without regenerating (export action fast path). */
+export function isEstimatePdfCacheHit(
+  existing: EstimatePdfDownloadRecord,
+  workspaceId: string,
+  estimatePdfId: string,
+  versionUpdatedAt: Date,
+  requestLocale: Locale,
+): boolean {
+  return (
+    isEstimatePdfAvailableForDownload(existing, workspaceId, estimatePdfId) &&
+    isEstimatePdfFresh({
+      generatedAt: existing.generatedAt,
+      versionUpdatedAt,
+      generatedLocale: existing.generatedLocale,
+      requestLocale,
+      pdfTemplateRevision: existing.pdfTemplateRevision,
+    })
+  );
 }
