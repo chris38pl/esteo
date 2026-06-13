@@ -1,16 +1,17 @@
 const PERF_PREFIX = "[estimate-perf]";
 
-/** Default ON. Disable in browser: localStorage.setItem("estimate-perf", "0") */
+/** Dev only (default ON). Disable in browser: localStorage.setItem("estimate-perf", "0") */
 export function isEstimatePerfEnabled(): boolean {
-  if (typeof window === "undefined") {
-    return process.env.NODE_ENV !== "production";
-  }
+  if (process.env.NODE_ENV === "production") return false;
+
+  if (typeof window === "undefined") return false;
+
   try {
     const flag = localStorage.getItem("estimate-perf");
     if (flag === "0") return false;
     if (flag === "1") return true;
   } catch {
-    // localStorage blocked — still log
+    // localStorage blocked — still log in dev
   }
   return true;
 }
