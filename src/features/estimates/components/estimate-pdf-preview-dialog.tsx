@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useEstimateMobileLayout } from "@/features/estimates/hooks/use-estimate-mobile-layout";
 import { downloadEstimatePdfFile } from "@/features/estimates/lib/fetch-estimate-pdf-blob-url";
 
 export type EstimatePdfPreviewDialogState =

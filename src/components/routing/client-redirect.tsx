@@ -2,9 +2,13 @@
 
 import { useLayoutEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+
+import { AuthLoadingIndicator } from "@/components/auth/auth-loading-indicator";
 
 /** Reliable redirect during client navigations when server `redirect()` can stall RSC. */
 export function ClientRedirect({ href }: { href: string }) {
+  const t = useTranslations("common");
   const router = useRouter();
   const hasRedirected = useRef(false);
 
@@ -14,5 +18,5 @@ export function ClientRedirect({ href }: { href: string }) {
     router.replace(href);
   }, [href, router]);
 
-  return null;
+  return <AuthLoadingIndicator message={t("redirecting")} />;
 }
