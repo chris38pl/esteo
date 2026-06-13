@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { isValidDecimalDraft } from "@/lib/decimal-input";
 import {
   Sheet,
   SheetContent,
@@ -231,11 +232,19 @@ export function RequestsListFilterSheet({
                   </select>
                 ) : (
                   <Input
-                    type={isTextRequestListFilterField(condition.field) ? "text" : "number"}
+                    type="text"
+                    inputMode={isTextRequestListFilterField(condition.field) ? undefined : "decimal"}
                     value={condition.value}
-                    onChange={(event) =>
-                      updateCondition(condition.id, { value: event.target.value })
-                    }
+                    onChange={(event) => {
+                      const next = event.target.value;
+                      if (
+                        !isTextRequestListFilterField(condition.field) &&
+                        !isValidDecimalDraft(next)
+                      ) {
+                        return;
+                      }
+                      updateCondition(condition.id, { value: next });
+                    }}
                     placeholder={
                       isTextRequestListFilterField(condition.field)
                         ? t("list.filter.valuePlaceholder.text")

@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { isValidDecimalDraft } from "@/lib/decimal-input";
 import { getInstallmentRemainingAmount } from "@/features/estimates/lib/payment-installment-status";
 import type { PaymentInstallmentClient } from "@/features/estimates/lib/serialize-payment-installments";
 import { formatCurrency, type Currency } from "@/i18n/formatters";
@@ -90,12 +91,16 @@ export function EstimatePaymentRecordDialog({
             <Label htmlFor="payment-amount">{t("amountLabel")}</Label>
             <Input
               id="payment-amount"
-              type="number"
-              min="0.01"
-              max={remaining}
-              step="0.01"
+              type="text"
+              inputMode="decimal"
               value={values.paymentAmount}
-              onChange={(e) => setValues((prev) => ({ ...prev, paymentAmount: e.target.value }))}
+              onChange={(e) => {
+                const next = e.target.value;
+                if (!isValidDecimalDraft(next)) {
+                  return;
+                }
+                setValues((prev) => ({ ...prev, paymentAmount: next }));
+              }}
               required
             />
             {installment && installment.paidAmount > 0 ? (

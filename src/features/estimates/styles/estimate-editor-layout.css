@@ -179,14 +179,3 @@ input.estimate-mobile-position-field:focus-visible {
   box-shadow: none !important;
   outline: none !important;
 }
-
-.estimate-mobile-position-field[type="number"] {
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
-
-.estimate-mobile-position-field[type="number"]::-webkit-inner-spin-button,
-.estimate-mobile-position-field[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}

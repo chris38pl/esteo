@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { isValidDecimalDraft } from "@/lib/decimal-input";
 import {
   Sheet,
   SheetContent,
@@ -231,11 +232,16 @@ export function EstimatesListFilterSheet({
                   </select>
                 ) : (
                   <Input
-                    type={isTextListFilterField(condition.field) ? "text" : "number"}
+                    type="text"
+                    inputMode={isTextListFilterField(condition.field) ? undefined : "decimal"}
                     value={condition.value}
-                    onChange={(event) =>
-                      updateCondition(condition.id, { value: event.target.value })
-                    }
+                    onChange={(event) => {
+                      const next = event.target.value;
+                      if (!isTextListFilterField(condition.field) && !isValidDecimalDraft(next)) {
+                        return;
+                      }
+                      updateCondition(condition.id, { value: next });
+                    }}
                     placeholder={
                       isTextListFilterField(condition.field)
                         ? t("list.filter.valuePlaceholder.text")

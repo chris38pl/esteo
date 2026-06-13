@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { isValidDecimalDraft } from "@/lib/decimal-input";
 import type { PaymentInstallmentClient } from "@/features/estimates/lib/serialize-payment-installments";
 
 export type PaymentInstallmentFormValues = {
@@ -89,11 +90,16 @@ export function EstimatePaymentInstallmentFormDialog({
             <Label htmlFor="installment-amount">{t("columns.amount")}</Label>
             <Input
               id="installment-amount"
-              type="number"
-              min="0.01"
-              step="0.01"
+              type="text"
+              inputMode="decimal"
               value={values.amount}
-              onChange={(e) => setValues((prev) => ({ ...prev, amount: e.target.value }))}
+              onChange={(e) => {
+                const next = e.target.value;
+                if (!isValidDecimalDraft(next)) {
+                  return;
+                }
+                setValues((prev) => ({ ...prev, amount: next }));
+              }}
               required
             />
           </div>

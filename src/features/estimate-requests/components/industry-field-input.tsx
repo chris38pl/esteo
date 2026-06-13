@@ -6,6 +6,7 @@ import type { IndustryFieldForDocument } from "@/features/industry-fields/server
 import { getIndustryOptionLabel } from "@/features/estimate-requests/config/industry-option-labels";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
+import { DecimalFieldInput } from "@/components/ui/decimal-input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -115,18 +116,27 @@ export function IndustryFieldInput({
     <div className="space-y-2">
       <FieldLabel field={field} />
       <div className="relative">
-        <Input
-          type={field.valueType === "NUMBER" ? "number" : field.valueType === "DATE" ? "date" : "text"}
-          value={typeof value === "boolean" || value === null ? "" : String(value)}
-          onChange={(event) => {
-            const next = event.target.value;
-            onChange(field.key, field.valueType === "NUMBER" && next ? Number(next) : next);
-          }}
-          required={field.required}
-          disabled={disabled}
-          placeholder={field.placeholder ?? undefined}
-          className={cn(fieldInputClassName, field.valueType === "NUMBER" && "pr-10")}
-        />
+        {field.valueType === "NUMBER" ? (
+          <DecimalFieldInput
+            value={typeof value === "boolean" || value === null ? "" : value}
+            onChange={(next) => onChange(field.key, next)}
+            required={field.required}
+            disabled={disabled}
+            placeholder={field.placeholder ?? undefined}
+            min={0}
+            className={cn(fieldInputClassName, "pr-10")}
+          />
+        ) : (
+          <Input
+            type={field.valueType === "DATE" ? "date" : "text"}
+            value={typeof value === "boolean" || value === null ? "" : String(value)}
+            onChange={(event) => onChange(field.key, event.target.value)}
+            required={field.required}
+            disabled={disabled}
+            placeholder={field.placeholder ?? undefined}
+            className={fieldInputClassName}
+          />
+        )}
         {field.valueType === "DATE" ? (
           <CalendarDays className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         ) : null}

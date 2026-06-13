@@ -22,8 +22,9 @@ import {
   SheetFooter,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { DecimalInput, PercentInput } from "@/components/ui/decimal-input";
 import { calculateLineItem } from "@/features/estimates/lib/calculate-estimate";
-import { parseEstimateDecimalInput, roundEstimateDecimal } from "@/features/estimates/lib/estimate-decimals";
+import { roundEstimateDecimal } from "@/features/estimates/lib/estimate-decimals";
 import { formatEstimateCurrency } from "@/features/estimates/lib/format-estimate-currency";
 import { unitPriceFromBase } from "@/features/estimates/lib/margin-pricing";
 import { estimatePrimaryButtonClassName } from "./estimate-action-button-styles";
@@ -247,28 +248,22 @@ export function EstimateMobilePositionSheet({
           </ValueEditRow>
 
           <ValueEditRow icon={Hash} label={t("editor.columns.qty")}>
-            <input
-              type="number"
+            <DecimalInput
               min={0}
-              step={0.01}
               value={draft.quantity}
-              onChange={(e) => patch({ quantity: parseEstimateDecimalInput(e.target.value) })}
-              onBlur={() => patch({ quantity: roundEstimateDecimal(draft.quantity) })}
+              onValueChange={(quantity) => patch({ quantity })}
+              onBlurCommit={() => patch({ quantity: roundEstimateDecimal(draft.quantity) })}
               className={cn(fieldInputClassName, fieldValueClassName)}
             />
           </ValueEditRow>
 
           {advancedMode ? (
             <ValueEditRow icon={Receipt} label={t("editor.columns.baseUnitPrice")}>
-              <input
-                type="number"
+              <DecimalInput
                 min={0}
-                step={0.01}
                 value={draft.baseUnitPrice}
-                onChange={(e) =>
-                  patch({ baseUnitPrice: parseEstimateDecimalInput(e.target.value) })
-                }
-                onBlur={() =>
+                onValueChange={(baseUnitPrice) => patch({ baseUnitPrice })}
+                onBlurCommit={() =>
                   patch({ baseUnitPrice: roundEstimateDecimal(draft.baseUnitPrice) })
                 }
                 className={cn(fieldInputClassName, fieldValueClassName)}
@@ -282,26 +277,21 @@ export function EstimateMobilePositionSheet({
                 {formatEstimateCurrency(draft.unitPrice, currency, locale)}
               </span>
             ) : (
-              <input
-                type="number"
+              <DecimalInput
                 min={0}
-                step={0.01}
                 value={draft.unitPrice}
-                onChange={(e) => patch({ unitPrice: parseEstimateDecimalInput(e.target.value) })}
-                onBlur={() => patch({ unitPrice: roundEstimateDecimal(draft.unitPrice) })}
+                onValueChange={(unitPrice) => patch({ unitPrice })}
+                onBlurCommit={() => patch({ unitPrice: roundEstimateDecimal(draft.unitPrice) })}
                 className={cn(fieldInputClassName, fieldValueClassName)}
               />
             )}
           </ValueEditRow>
 
           <ValueEditRow icon={Percent} label={t("editor.mobile.vatPercent")}>
-            <input
-              type="number"
-              min={0}
-              max={100}
-              step={1}
-              value={(draft.vatRate * 100).toFixed(0)}
-              onChange={(e) => patch({ vatRate: (parseFloat(e.target.value) || 0) / 100 })}
+            <PercentInput
+              value={draft.vatRate}
+              onValueChange={(vatRate) => patch({ vatRate })}
+              emptyZero={false}
               className={cn(fieldInputClassName, fieldValueClassName)}
             />
           </ValueEditRow>

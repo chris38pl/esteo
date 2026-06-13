@@ -26,6 +26,7 @@ import { getMessagesForLocale } from "@/i18n/messages";
 import type { Locale } from "@/lib/locale";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { DecimalInput } from "@/components/ui/decimal-input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
@@ -336,13 +337,13 @@ export function AdminVoiceIntakePreviewPanel({ pageLocale }: { pageLocale: Local
 
           <div className="min-w-[12rem] flex-1 space-y-2">
             <Label htmlFor="voice-preview-duration">{t("timerMs")}</Label>
-            <input
+            <DecimalInput
               id="voice-preview-duration"
-              type="number"
               min={0}
-              step={1000}
+              decimalPlaces={0}
+              emptyZero={false}
               value={recordingDurationMs}
-              onChange={(event) => setRecordingDurationMs(Number(event.target.value) || 0)}
+              onValueChange={setRecordingDurationMs}
               className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm"
             />
           </div>

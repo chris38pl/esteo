@@ -11,11 +11,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
+import { DecimalInput, PercentInput } from "@/components/ui/decimal-input";
 import { EstimateHighlightedInput } from "./estimate-highlighted-input";
 import { cn } from "@/lib/utils";
 import { calculateLineItem } from "@/features/estimates/lib/calculate-estimate";
-import { parseEstimateDecimalInput, roundEstimateDecimal } from "@/features/estimates/lib/estimate-decimals";
+import { roundEstimateDecimal } from "@/features/estimates/lib/estimate-decimals";
 import {
   estimateLineItemFlatInputClassName,
   estimateLineItemRowClassName,
@@ -85,15 +85,17 @@ export function EstimateLineItemRow({
     vatRate: local.vatRate,
   });
 
+  const handleNumericChange = (
+    key: "quantity" | "unitPrice" | "baseUnitPrice",
+    value: number,
+  ) => {
+    const updated = { ...local, [key]: value };
+    setLocal(updated);
+    onUpdate(item.id, { [key]: value });
+  };
+
   const handleChange = <K extends keyof LineItemData>(key: K, raw: string) => {
-    let value: LineItemData[K];
-    if (key === "quantity" || key === "unitPrice" || key === "baseUnitPrice") {
-      value = parseEstimateDecimalInput(raw) as LineItemData[K];
-    } else if (key === "vatRate") {
-      value = (parseFloat(raw) / 100 || 0) as LineItemData[K];
-    } else {
-      value = raw as LineItemData[K];
-    }
+    const value = raw as LineItemData[K];
     const updated = { ...local, [key]: value };
     setLocal(updated);
     onUpdate(item.id, { [key]: value });
@@ -159,36 +161,32 @@ export function EstimateLineItemRow({
         />
       </td>
       <td className={cn(cellClass, "w-20")}>
-        <Input
-          type="number"
+        <DecimalInput
           min={0}
-          step={0.01}
           value={local.quantity}
-          onChange={(e) => handleChange("quantity", e.target.value)}
-          onBlur={() => {
+          onValueChange={(value) => handleNumericChange("quantity", value)}
+          onBlurCommit={() => {
             const rounded = roundEstimateDecimal(local.quantity);
             if (rounded !== local.quantity) {
-              handleChange("quantity", String(rounded));
+              handleNumericChange("quantity", rounded);
             }
-            onBlur();
+            void onBlur();
           }}
           className={cn(estimateLineItemFlatInputClassName, "text-right tabular-nums")}
         />
       </td>
       {advancedMode ? (
         <td className={cn(cellClass, "w-28")}>
-          <Input
-            type="number"
+          <DecimalInput
             min={0}
-            step={0.01}
             value={local.baseUnitPrice}
-            onChange={(e) => handleChange("baseUnitPrice", e.target.value)}
-            onBlur={() => {
+            onValueChange={(value) => handleNumericChange("baseUnitPrice", value)}
+            onBlurCommit={() => {
               const rounded = roundEstimateDecimal(local.baseUnitPrice);
               if (rounded !== local.baseUnitPrice) {
-                handleChange("baseUnitPrice", String(rounded));
+                handleNumericChange("baseUnitPrice", rounded);
               }
-              onBlur();
+              void onBlur();
             }}
             className={cn(estimateLineItemFlatInputClassName, "text-right")}
           />
@@ -200,18 +198,16 @@ export function EstimateLineItemRow({
             {formatCurrency(local.unitPrice)}
           </span>
         ) : (
-          <Input
-            type="number"
+          <DecimalInput
             min={0}
-            step={0.01}
             value={local.unitPrice}
-            onChange={(e) => handleChange("unitPrice", e.target.value)}
-            onBlur={() => {
+            onValueChange={(value) => handleNumericChange("unitPrice", value)}
+            onBlurCommit={() => {
               const rounded = roundEstimateDecimal(local.unitPrice);
               if (rounded !== local.unitPrice) {
-                handleChange("unitPrice", String(rounded));
+                handleNumericChange("unitPrice", rounded);
               }
-              onBlur();
+              void onBlur();
             }}
             className={cn(estimateLineItemFlatInputClassName, "text-right")}
           />
@@ -221,14 +217,15 @@ export function EstimateLineItemRow({
         {formatCurrency(calc.netValue)}
       </td>
       <td className={cn(cellClass, "w-16")}>
-        <Input
-          type="number"
-          min={0}
-          max={100}
-          step={1}
-          value={(local.vatRate * 100).toFixed(0)}
-          onChange={(e) => handleChange("vatRate", e.target.value)}
-          onBlur={onBlur}
+        <PercentInput
+          value={local.vatRate}
+          onValueChange={(value) => {
+            const updated = { ...local, vatRate: value };
+            setLocal(updated);
+            onUpdate(item.id, { vatRate: value });
+          }}
+          onBlurCommit={() => void onBlur()}
+          emptyZero={false}
           className={cn(estimateLineItemFlatInputClassName, "text-right")}
         />
       </td>

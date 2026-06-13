@@ -3,6 +3,7 @@
 import { Maximize2, Minimize2, Percent, Settings, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { DecimalInput } from "@/components/ui/decimal-input";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,10 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  parseEstimateDecimalInput,
-  roundEstimateDecimal,
-} from "@/features/estimates/lib/estimate-decimals";
+import { roundEstimateDecimal } from "@/features/estimates/lib/estimate-decimals";
 import { cn } from "@/lib/utils";
 
 interface EstimateToolsMenuProps {
@@ -52,13 +50,6 @@ export function EstimateToolsMenu({
   const t = useTranslations("estimates");
   const tTopPanel = useTranslations("estimates.editor.topPanel");
   const modeValue = advancedMode ? "advanced" : "basic";
-
-  const handleMarginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const num = parseEstimateDecimalInput(e.target.value);
-    if (num >= 0 && num <= 100) {
-      onMarginChange(num);
-    }
-  };
 
   const handleMarginBlur = () => {
     const num = roundEstimateDecimal(marginPercent);
@@ -113,14 +104,13 @@ export function EstimateToolsMenu({
             >
               <Percent className="size-4 text-muted-foreground" />
               <span className="min-w-0 flex-1">{t("profitability.projectMargin")}</span>
-              <input
-                type="number"
+              <DecimalInput
                 min={0}
                 max={100}
-                step={0.01}
                 value={marginPercent}
-                onChange={handleMarginChange}
-                onBlur={handleMarginBlur}
+                onValueChange={onMarginChange}
+                onBlurCommit={handleMarginBlur}
+                emptyZero={false}
                 className={menuMarginInputClassName}
               />
               <span className="text-muted-foreground">{t("margin.unit")}</span>

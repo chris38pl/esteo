@@ -21,6 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { DecimalInput } from "@/components/ui/decimal-input";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -407,12 +408,14 @@ export function IndustryFieldsAdminPanel({
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="field-sort-order">{t("dialog.sortOrder")}</Label>
-                <Input
+                <DecimalInput
                   id="field-sort-order"
-                  type="number"
                   min={0}
+                  max={9999}
+                  decimalPlaces={0}
+                  emptyZero={false}
                   value={sortOrder}
-                  onChange={(event) => setSortOrder(Number(event.target.value))}
+                  onValueChange={setSortOrder}
                 />
               </div>
               <div className="flex items-center justify-between rounded-lg border p-3">

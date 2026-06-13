@@ -2,13 +2,10 @@
 
 import { useTranslations } from "next-intl";
 
-import { Input } from "@/components/ui/input";
+import { DecimalInput } from "@/components/ui/decimal-input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import {
-  parseEstimateDecimalInput,
-  roundEstimateDecimal,
-} from "@/features/estimates/lib/estimate-decimals";
+import { roundEstimateDecimal } from "@/features/estimates/lib/estimate-decimals";
 import { estimateOutlineButtonClassName } from "./estimate-action-button-styles";
 
 interface EstimateMarginControlProps {
@@ -28,14 +25,7 @@ export function EstimateMarginControl({
 }: EstimateMarginControlProps) {
   const t = useTranslations("estimates");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const num = parseEstimateDecimalInput(e.target.value);
-    if (num >= 0 && num <= 100) {
-      onChange(num);
-    }
-  };
-
-  const handleBlur = () => {
+  const handleBlurCommit = () => {
     const num = roundEstimateDecimal(marginPercent);
     if (num < 0 || num > 100) {
       return;
@@ -58,15 +48,14 @@ export function EstimateMarginControl({
         {t("profitability.projectMargin")}
       </Label>
       <div className="flex items-center gap-1">
-        <Input
-          type="number"
+        <DecimalInput
           min={0}
           max={100}
-          step={0.01}
           value={marginPercent}
-          onChange={handleChange}
-          onBlur={handleBlur}
+          onValueChange={onChange}
+          onBlurCommit={handleBlurCommit}
           disabled={disabled}
+          emptyZero={false}
           className="h-7 w-14 border-transparent bg-transparent px-1 text-right text-sm font-semibold text-current shadow-none focus-visible:ring-0"
         />
         <span className="text-sm font-semibold text-current">{t("margin.unit")}</span>
