@@ -40,6 +40,21 @@
     "title": "Workspaces",
     "subtitle": "Browse and manage all active workspaces across the platform.",
     "searchPlaceholder": "Search workspaces…",
+    "views": {
+      "general": "General",
+      "billing": "Billing View"
+    },
+    "billingColumns": {
+      "workspace": "Workspace",
+      "plan": "Plan",
+      "planVersion": "Plan version",
+      "status": "Status",
+      "aiUsage": "AI usage",
+      "estimateUsage": "Estimate usage",
+      "seats": "Seats",
+      "storage": "Storage",
+      "noVersion": "—"
+    },
     "empty": "No workspaces match your search.",
     "bar": {
       "addWorkspace": "Add new workspace",
@@ -47,8 +62,24 @@
     },
     "stats": {
       "industry": "Industry",
+      "plan": "Plan",
       "estimateRequests": "Requests",
       "estimates": "Estimates"
+    },
+    "plan": {
+      "FREE": "Free",
+      "PRO": "Pro",
+      "BUSINESS": "Business"
+    },
+    "effectiveStatus": {
+      "INCOMPLETE": "incomplete",
+      "ACTIVE": "active",
+      "PAST_DUE": "past due",
+      "GRACE_PERIOD": "grace period",
+      "EXPIRED": "expired",
+      "ARCHIVED": "archived",
+      "SUSPENDED": "suspended",
+      "PENDING_DELETION": "pending deletion"
     },
     "row": {
       "meta": "by {owner} · Created {created} · Updated {updated}",
@@ -62,10 +93,12 @@
     },
     "actions": {
       "menu": "Workspace actions",
+      "view": "View",
       "rename": "Rename",
       "invite": "Invite",
       "delete": "Delete",
       "cancel": "Cancel",
+      "close": "Close",
       "save": "Save",
       "saving": "Saving…",
       "deleteConfirm": "Delete workspace",
@@ -88,6 +121,37 @@
       "description": "Send a member invitation to the email address below.",
       "emailLabel": "Email address",
       "emailPlaceholder": "jane@company.com"
+    },
+    "preview": {
+      "title": "View: {name}",
+      "description": "Workspace billing and entitlement state (same as dev:workspace-state).",
+      "loading": "Loading workspace state…",
+      "sections": {
+        "overview": "Overview",
+        "subscription": "Subscription",
+        "features": "Features",
+        "usage": "Usage",
+        "stripe": "Stripe"
+      },
+      "fields": {
+        "slug": "Slug",
+        "owner": "Owner",
+        "plan": "Plan",
+        "planVersion": "Plan version",
+        "subscriptionStatus": "Subscription status",
+        "effectiveStatus": "Effective status",
+        "provisioningStatus": "Provisioning status",
+        "isActiveFree": "isActiveFree",
+        "aiUsage": "AI usage",
+        "estimateUsage": "Estimate usage",
+        "seats": "Seats",
+        "storage": "Storage",
+        "stripeCustomerId": "Stripe customer",
+        "stripeSubscriptionId": "Stripe subscription",
+        "cancelAtPeriodEnd": "Cancel at period end",
+        "currentPeriodEnd": "Current period end",
+        "graceEndsAt": "Grace ends at"
+      }
     }
   },
   "industryFields": {

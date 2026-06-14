@@ -2,7 +2,6 @@ import { currentUser } from "@clerk/nextjs/server";
 import type { AvatarSource, User } from "@prisma/client";
 import { cache } from "react";
 
-import { ensureBillingAccount } from "@/features/billing/server/provision-billing-account";
 import { prisma } from "@/db/client";
 import { isAvatarPreset, pickDefaultAvatarPreset } from "@/lib/avatars/user-avatar-presets";
 import { resolveUserDisplayName } from "@/server/auth/resolve-user-display-name";
@@ -95,8 +94,7 @@ export const syncUserFromClerk = cache(async (): Promise<User | null> => {
       },
     });
 
-    await ensureBillingAccount(user.id);
-
+    // Billing is provisioned per workspace at creation time, not per user at login.
     return user;
   } catch (error) {
     throwIfDatabaseUnavailable(error, "syncUserFromClerk");

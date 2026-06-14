@@ -14,6 +14,11 @@ import { tasks } from "@trigger.dev/sdk";
 import type { generateEstimateDraftTask } from "@/trigger/generate-estimate-draft";
 import type { PublicAttachmentAvailability } from "@/features/attachments/lib/attachment-availability";
 import { getPublicAttachmentAvailability } from "@/features/attachments/server/public-attachment-availability";
+import {
+  getClientPortalAccess,
+  type ClientPortalAccess,
+} from "@/server/billing/client-portal-access";
+import { resolvePublicWorkspaceBySlug } from "@/server/workspaces/resolve-public-slug";
 import type { Locale } from "@/lib/locale";
 
 export type PublicEstimateRequestWorkspace = {
@@ -27,15 +32,29 @@ export type PublicEstimateRequestPageData = {
   workspace: PublicEstimateRequestWorkspace;
   fields: IndustryFieldForDocument[];
   attachmentAvailability: PublicAttachmentAvailability;
+  portalAccess: ClientPortalAccess;
+  canonicalSlug: string;
+  matchedViaAlias: boolean;
 };
 
 export async function getPublicEstimateRequestPageData(input: {
   workspaceSlug: string;
   locale: Locale;
 }): Promise<PublicEstimateRequestPageData | null> {
+  const resolved = await resolvePublicWorkspaceBySlug(input.workspaceSlug);
+
+  if (!resolved) {
+    return null;
+  }
+
+  const portalAccess = await getClientPortalAccess(resolved.workspaceId);
+  if (portalAccess === "INACTIVE") {
+    return null;
+  }
+
   const workspace = await prisma.workspace.findFirst({
     where: {
-      slug: input.workspaceSlug,
+      id: resolved.workspaceId,
       deletedAt: null,
     },
     select: {
@@ -58,7 +77,14 @@ export async function getPublicEstimateRequestPageData(input: {
 
   const attachmentAvailability = await getPublicAttachmentAvailability(workspace.id);
 
-  return { workspace, fields, attachmentAvailability };
+  return {
+    workspace,
+    fields,
+    attachmentAvailability,
+    portalAccess,
+    canonicalSlug: resolved.canonicalSlug,
+    matchedViaAlias: resolved.matchedViaAlias,
+  };
 }
 
 export async function getEstimateRequestFormDataForWorkspace(input: {
@@ -89,8 +115,16 @@ export async function getEstimateRequestFormDataForWorkspace(input: {
   });
 
   const attachmentAvailability = await getPublicAttachmentAvailability(workspace.id);
+  const portalAccess = await getClientPortalAccess(workspace.id);
 
-  return { workspace, fields, attachmentAvailability };
+  return {
+    workspace,
+    fields,
+    attachmentAvailability,
+    portalAccess,
+    canonicalSlug: workspace.slug,
+    matchedViaAlias: false,
+  };
 }
 
 export async function createPublicEstimateRequest(input: {

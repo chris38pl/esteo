@@ -1,9 +1,24 @@
-export { ensureBillingAccount, getSubscriptionForUser } from "@/features/billing/server/provision-billing-account";
 export {
-  downgradeSubscriptionToFree,
+  ensureWorkspaceBillingAccount,
+  getWorkspaceSubscription,
+  provisionWorkspaceBilling,
+} from "@/features/billing/server/provision-billing-account";
+export {
+  cancelAtPeriodEnd,
+  changeWorkspaceSubscriptionPlan,
+  createCheckout,
+  openPortal,
+  reactivate,
+  resolveBillingCustomer,
+  type WorkspacePlanChangeResult,
+} from "@/features/billing/server/billing-service";
+export {
+  expireWorkspaceSubscription,
+  syncSubscriptionFromStripe,
+  syncWorkspaceSubscriptionAfterCheckout,
+  syncWorkspaceSubscriptionFromStripe,
   handleCheckoutSessionCompleted,
   mapStripeStatus,
-  syncSubscriptionFromStripe,
 } from "@/features/billing/server/subscription-sync";
 export { getStripeClient } from "@/features/billing/server/stripe-client";
 export {

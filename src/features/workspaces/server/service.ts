@@ -1,5 +1,6 @@
 import type {
   InviteRole,
+  SubscriptionPlan,
   User,
   WorkspaceAppearanceTheme,
   WorkspaceIndustry,
@@ -8,10 +9,11 @@ import type {
 } from "@prisma/client";
 import { randomUUID } from "crypto";
 
-import { ensureBillingAccount } from "@/features/billing/server/provision-billing-account";
+import { defaultPlanVersion } from "@/server/billing/plan-catalog";
+import { isUniqueConstraintError } from "@/lib/database/is-unique-constraint-error";
 import { countAccessibleWorkspaces } from "@/features/workspaces/server/accessible-workspaces";
 import { isValidWorkspaceSlug, normalizeWorkspaceSlug } from "@/features/workspaces/lib/slug";
-import { isSlugAvailable } from "@/features/workspaces/server/slug-availability";
+import { isSlugAvailable, recordSlugAlias } from "@/features/workspaces/server/slug-availability";
 import {
   findReceivedInvitationById,
   listReceivedInvitations,
@@ -55,7 +57,10 @@ import {
 import { appLocaleToWorkspaceLocale } from "@/lib/workspace-locale";
 import type { Locale } from "@/lib/locale";
 import { prisma } from "@/db/client";
-import { assertCanAcceptInvitation, assertCanCreateWorkspace, assertCanInviteMember } from "@/server/permissions/entitlements";
+import {
+  assertCanCreateFreeWorkspace,
+  assertCanInviteMember,
+} from "@/server/permissions/entitlements";
 import { PermissionError, WorkspaceError } from "@/server/permissions/errors";
 import { filterWorkspaceMembersForUi, getWorkspaceMembership, requireRole } from "@/server/permissions/require-workspace";
 import {
@@ -103,6 +108,7 @@ export async function createWorkspace(
   input: {
     name: string;
     slug?: string;
+    plan?: SubscriptionPlan;
     industry: WorkspaceIndustry;
     industryOtherText?: string;
     appearanceTheme?: WorkspaceAppearanceTheme;
@@ -112,9 +118,16 @@ export async function createWorkspace(
     companyDescription?: string | null;
   },
 ) {
-  await assertCanCreateWorkspace(user.id);
+  const plan: SubscriptionPlan = input.plan ?? "FREE";
 
-  const billingAccount = await ensureBillingAccount(user.id);
+  if (plan === "FREE") {
+    await prisma.$transaction(async (tx) => {
+      const { lockOwner } = await import("@/server/billing/workspace-billing-maintenance");
+      await lockOwner(tx, user.id);
+      await assertCanCreateFreeWorkspace(user.id, tx);
+    });
+  }
+
   const slug = input.slug
     ? normalizeWorkspaceSlug(input.slug)
     : await resolveAvailableSlug(input.name);
@@ -137,19 +150,61 @@ export async function createWorkspace(
       ? undefined
       : parseCompanyDescription(input.companyDescription);
 
-  const workspace = await createWorkspaceRecord({
-    billingAccountId: billingAccount.id,
-    ownerId: user.id,
-    name: input.name.trim(),
-    slug,
-    industry: input.industry,
-    industryOtherText: input.industryOtherText,
-    defaultLocale: appLocaleToWorkspaceLocale(input.locale ?? "pl"),
-    appearanceTheme: input.appearanceTheme,
-    branding,
-    aiInstructions: input.aiInstructions,
-    companyDescription,
+  // Per-workspace billing: create the 1:1 BillingAccount first (workspaceId linked after the
+  // workspace exists, since the FK is bidirectional and the workspace id is generated on create).
+  const billingAccount = await prisma.billingAccount.create({
+    data: { ownerUserId: user.id, payerUserId: user.id },
   });
+
+  let workspace;
+  try {
+    workspace = await createWorkspaceRecord({
+      billingAccountId: billingAccount.id,
+      ownerId: user.id,
+      name: input.name.trim(),
+      slug,
+      slugIsCustom: Boolean(input.slug),
+      industry: input.industry,
+      industryOtherText: input.industryOtherText,
+      defaultLocale: appLocaleToWorkspaceLocale(input.locale ?? "pl"),
+      appearanceTheme: input.appearanceTheme,
+      branding,
+      aiInstructions: input.aiInstructions,
+      companyDescription,
+      isActiveFree: plan === "FREE",
+      // Paid workspaces are provisioned INCOMPLETE and activated by the checkout webhook.
+      provisioningStatus: plan === "FREE" ? "ACTIVE" : "INCOMPLETE",
+    });
+  } catch (error) {
+    // Clean up the orphaned billing account before surfacing the error.
+    await prisma.billingAccount.delete({ where: { id: billingAccount.id } }).catch(() => {});
+
+    if (plan === "FREE" && isUniqueConstraintError(error)) {
+      throw new WorkspaceError("You already have an active free workspace.");
+    }
+    throw error;
+  }
+
+  // Link the billing account to the workspace and provision the subscription.
+  await prisma.billingAccount.update({
+    where: { id: billingAccount.id },
+    data: {
+      workspaceId: workspace.id,
+      subscription: {
+        create: {
+          plan,
+          planVersion: defaultPlanVersion(plan),
+          // FREE is immediately usable; paid plans stay INACTIVE until checkout completes.
+          status: plan === "FREE" ? "ACTIVE" : "INACTIVE",
+        },
+      },
+    },
+  });
+
+  const { syncWorkspaceStorageLimitFromPlan } = await import(
+    "@/server/billing/workspace-plan-sync"
+  );
+  await syncWorkspaceStorageLimitFromPlan(workspace.id);
 
   await logAuditEvent({
     actorUserId: user.id,
@@ -196,13 +251,21 @@ export async function updateWorkspaceDetails(
   workspaceId: string,
   input: {
     name?: string;
+    slug?: string;
     defaultLocale?: WorkspaceLocale;
   },
 ) {
   await requireRole(user, workspaceId, "OWNER");
 
+  const existing = await findWorkspaceById(workspaceId);
+  if (!existing) {
+    throw new WorkspaceError("Workspace not found.");
+  }
+
   const data: {
     name?: string;
+    slug?: string;
+    slugIsCustom?: boolean;
     defaultLocale?: WorkspaceLocale;
   } = {};
 
@@ -212,6 +275,27 @@ export async function updateWorkspaceDetails(
 
   if (input.defaultLocale !== undefined) {
     data.defaultLocale = input.defaultLocale;
+  }
+
+  if (input.slug !== undefined) {
+    const slug = normalizeWorkspaceSlug(input.slug);
+    if (!isValidWorkspaceSlug(slug)) {
+      throw new WorkspaceError("Invalid workspace slug.");
+    }
+    if (!(await isSlugAvailable(slug, workspaceId))) {
+      throw new WorkspaceError("Workspace slug is already taken.");
+    }
+    if (slug !== existing.slug) {
+      await recordSlugAlias(workspaceId, existing.slug);
+      data.slug = slug;
+      data.slugIsCustom = true;
+    }
+  } else if (input.name !== undefined && !existing.slugIsCustom) {
+    const nextSlug = await resolveAvailableSlug(data.name!);
+    if (nextSlug !== existing.slug) {
+      await recordSlugAlias(workspaceId, existing.slug);
+      data.slug = nextSlug;
+    }
   }
 
   const workspace = await updateWorkspaceRecord(workspaceId, data);
@@ -236,6 +320,11 @@ export async function archiveWorkspace(user: User, workspaceId: string) {
   await cleanupWorkspaceLogoStorage(workspaceId);
 
   const workspace = await softDeleteWorkspaceRecord(workspaceId);
+
+  const { recomputeIsActiveFree } = await import(
+    "@/server/billing/workspace-billing-maintenance"
+  );
+  await recomputeIsActiveFree(workspaceId);
 
   await logAuditEvent({
     actorUserId: user.id,
@@ -516,7 +605,8 @@ async function acceptPendingInvitation(
     throw new WorkspaceError("Invitation email does not match your account.");
   }
 
-  await assertCanAcceptInvitation(user.id);
+  // Invitee-side billing gating removed: the owner's workspace pays for seats. The single gate is
+  // workspace seat availability, re-checked here at accept-time to close the invite/accept race.
   await assertCanInviteMember(invitation.workspaceId);
 
   const result = await acceptInvitationRecord({

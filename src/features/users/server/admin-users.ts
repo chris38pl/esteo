@@ -1,7 +1,9 @@
 import type { SubscriptionPlan, User } from "@prisma/client";
 
 import { prisma } from "@/db/client";
-import { ensureBillingAccount } from "@/features/billing/server/provision-billing-account";
+import { ensureWorkspaceBillingAccount } from "@/features/billing/server/provision-billing-account";
+import { defaultPlanVersion } from "@/server/billing/plan-catalog";
+import { recomputeIsActiveFree } from "@/server/billing/workspace-billing-maintenance";
 import { fetchClerkMetadataForUsers } from "@/features/users/server/clerk-user-metadata";
 import { logAuditEvent } from "@/features/workspaces/server/repository";
 import { buildPaginatedResult, toPrismaSkipTake } from "@/lib/pagination";
@@ -102,6 +104,22 @@ function aggregateUserWorkspaceStats(user: {
   };
 }
 
+const PLAN_RANK: Record<SubscriptionPlan, number> = { FREE: 0, PRO: 1, BUSINESS: 2 };
+
+/** A user's representative plan = the highest plan across their owned workspaces' subscriptions. */
+function highestOwnedPlan(
+  billingAccounts: Array<{ subscription: { plan: SubscriptionPlan } | null }>,
+): SubscriptionPlan {
+  let best: SubscriptionPlan = "FREE";
+  for (const account of billingAccounts) {
+    const plan = account.subscription?.plan;
+    if (plan && PLAN_RANK[plan] > PLAN_RANK[best]) {
+      best = plan;
+    }
+  }
+  return best;
+}
+
 async function mapUsersToRows(
   users: Array<{
     id: string;
@@ -111,9 +129,9 @@ async function mapUsersToRows(
     avatarUrl: string | null;
     avatarPreset: string | null;
     createdAt: Date;
-    billingAccount: {
+    billingAccounts: Array<{
       subscription: { plan: SubscriptionPlan } | null;
-    } | null;
+    }>;
     ownedWorkspaces: Array<{
       id: string;
       _count: { estimateRequests: number; estimates: number };
@@ -138,7 +156,7 @@ async function mapUsersToRows(
       email: user.email,
       avatarUrl: user.avatarUrl,
       avatarPreset: user.avatarPreset,
-      plan: user.billingAccount?.subscription?.plan ?? "FREE",
+      plan: highestOwnedPlan(user.billingAccounts),
       provider: clerk?.provider ?? "standard",
       workspaceCount: stats.workspaceCount,
       estimateRequestCount: stats.estimateRequestCount,
@@ -150,8 +168,8 @@ async function mapUsersToRows(
 }
 
 const userListInclude = {
-  billingAccount: {
-    include: {
+  billingAccounts: {
+    select: {
       subscription: {
         select: { plan: true },
       },
@@ -208,6 +226,10 @@ export async function listAdminUsersPaginated(
   return buildPaginatedResult(rows, totalCount, { ...params, page: normalizedPage });
 }
 
+/**
+ * Admin override: applies a plan to every workspace the user owns (billing is per-workspace now).
+ * Each owned workspace's subscription is upserted; the FREE-slot flag is recomputed afterward.
+ */
 export async function adminSetUserPlan(admin: User, userId: string, plan: SubscriptionPlan) {
   assertPlatformAdminUser(admin);
 
@@ -220,28 +242,39 @@ export async function adminSetUserPlan(admin: User, userId: string, plan: Subscr
     throw new PermissionError("User not found.");
   }
 
-  const billingAccount = await ensureBillingAccount(userId);
-
-  const subscription = await prisma.subscription.upsert({
-    where: { billingAccountId: billingAccount.id },
-    create: {
-      billingAccountId: billingAccount.id,
-      plan,
-      status: "ACTIVE",
-    },
-    update: {
-      plan,
-      status: "ACTIVE",
-    },
+  const ownedWorkspaces = await prisma.workspace.findMany({
+    where: { ownerId: userId, deletedAt: null },
+    select: { id: true },
   });
+
+  for (const workspace of ownedWorkspaces) {
+    const billingAccount = await ensureWorkspaceBillingAccount(workspace.id);
+
+    await prisma.subscription.upsert({
+      where: { billingAccountId: billingAccount.id },
+      create: {
+        billingAccountId: billingAccount.id,
+        plan,
+        planVersion: defaultPlanVersion(plan),
+        status: "ACTIVE",
+      },
+      update: {
+        plan,
+        planVersion: defaultPlanVersion(plan),
+        status: "ACTIVE",
+      },
+    });
+
+    await recomputeIsActiveFree(workspace.id);
+  }
 
   await logAuditEvent({
     actorUserId: admin.id,
-    entityType: "Subscription",
-    entityId: subscription.id,
+    entityType: "User",
+    entityId: userId,
     action: "admin_plan_updated",
-    diff: { userId, plan },
+    diff: { userId, plan, workspaces: ownedWorkspaces.length },
   });
 
-  return subscription;
+  return { plan, updatedWorkspaces: ownedWorkspaces.length };
 }

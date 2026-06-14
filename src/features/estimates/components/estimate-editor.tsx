@@ -113,6 +113,8 @@ interface EstimateEditorProps {
   currentUserId?: string;
   currentUserAvatarUrl?: string | null;
   currentUserAvatarPreset?: AvatarPreset | null;
+  /** Undo depth available for AI edits, resolved from the workspace plan. */
+  maxUndoSteps?: number;
 }
 
 function lineItemFromServer(
@@ -184,6 +186,7 @@ export function EstimateEditor({
   currentUserId = "",
   currentUserAvatarUrl = null,
   currentUserAvatarPreset = null,
+  maxUndoSteps = 1,
 }: EstimateEditorProps) {
   const t = useTranslations("estimates");
   const router = useRouter();
@@ -1062,7 +1065,7 @@ export function EstimateEditor({
                 workspaceSlug={workspaceSlug}
                 estimateId={estimate.id}
                 locale={locale}
-                maxUndoSteps={3}
+                maxUndoSteps={maxUndoSteps}
                 readOnly={isVersionReadOnly}
                 onApproved={handleAiMutation}
                 initialMessages={initialAiMessages}
@@ -1088,7 +1091,7 @@ export function EstimateEditor({
           workspaceSlug={workspaceSlug}
           estimateId={estimate.id}
           locale={locale}
-          maxUndoSteps={3}
+          maxUndoSteps={maxUndoSteps}
           readOnly={isVersionReadOnly}
           onApproved={handleAiMutation}
           initialMessages={initialAiMessages}

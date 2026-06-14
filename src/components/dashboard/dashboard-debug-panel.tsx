@@ -89,7 +89,7 @@ export async function DashboardDebugPanel({
         />
         <DebugField
           label={t("fields.stripeCustomerId")}
-          value={formatValue(billingAccount?.stripeCustomerId, locale)}
+          value={formatValue(billingAccount?.billingCustomer?.stripeCustomerId, locale)}
           mono
         />
         <DebugField

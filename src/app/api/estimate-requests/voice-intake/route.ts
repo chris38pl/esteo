@@ -49,7 +49,7 @@ export async function POST(request: Request) {
     await requireRole(user, workspaceId, "MEMBER");
 
     assertInternalVoiceIntakeRateLimit({ userId: user.id });
-    await assertCanUseAiAssistant(user.id);
+    await assertCanUseAiAssistant(workspaceId);
 
     const localeParam = new URL(request.url).searchParams.get("locale");
     const locale: Locale =
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
       followUpContext,
     });
 
-    await incrementAiAssistantUsage(user.id);
+    await incrementAiAssistantUsage(workspaceId, user.id);
 
     return NextResponse.json(result);
   } catch (error) {

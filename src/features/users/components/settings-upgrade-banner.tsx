@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import type { BillingSidebarState } from "@/features/billing/billing-sidebar-state";
-import { dashboardBillingHref } from "@/lib/dashboard-routes";
+import { dashboardBillingHref, ownedWorkspaceBillingHref } from "@/lib/dashboard-routes";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -20,13 +20,20 @@ function shouldShowUpgrade(state: BillingSidebarState) {
 
 export function SettingsUpgradeBanner() {
   const t = useTranslations("sidebar.planCards");
-  const { billingSidebarState, locale } = useWorkspaceContext();
+  const { billingSidebarState, locale, activeWorkspace, workspaces } = useWorkspaceContext();
 
   if (!shouldShowUpgrade(billingSidebarState)) {
     return null;
   }
 
-  const billingHref = dashboardBillingHref(locale);
+  const billingHref =
+    activeWorkspace?.isOwner && activeWorkspace.slug
+      ? dashboardBillingHref(locale, activeWorkspace.slug)
+      : ownedWorkspaceBillingHref(locale, workspaces);
+
+  if (!billingHref) {
+    return null;
+  }
 
   return (
     <div

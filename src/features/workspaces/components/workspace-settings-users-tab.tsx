@@ -25,7 +25,8 @@ import {
   inviteWorkspaceMemberAction,
   revokeWorkspaceInvitationAction,
 } from "@/features/workspaces/server/actions";
-import { dashboardBillingHref } from "@/lib/dashboard-routes";
+import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
+import { dashboardBillingHref, ownedWorkspaceBillingHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -60,7 +61,11 @@ export function WorkspaceSettingsUsersTab({
 }) {
   const t = useTranslations("workspaces.settings.users");
   const router = useRouter();
-  const billingHref = dashboardBillingHref(locale);
+  const { activeWorkspace, workspaces } = useWorkspaceContext();
+  const billingHref =
+    activeWorkspace?.isOwner && activeWorkspace.slug
+      ? dashboardBillingHref(locale, activeWorkspace.slug)
+      : ownedWorkspaceBillingHref(locale, workspaces);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<InviteRole>("MEMBER");
   const [error, setError] = useState<string | null>(null);
@@ -250,12 +255,14 @@ export function WorkspaceSettingsUsersTab({
         ) : (
           <div className="mt-4 rounded-xl border border-border/60 bg-muted/20 px-4 py-4">
             <p className="text-sm text-muted-foreground">{t("inviteUpgradeDescription")}</p>
-            <Link
-              href={billingHref}
-              className="mt-3 inline-flex text-sm font-medium text-primary underline-offset-4 hover:underline"
-            >
-              {t("inviteUpgradeCta")}
-            </Link>
+            {billingHref ? (
+              <Link
+                href={billingHref}
+                className="mt-3 inline-flex text-sm font-medium text-primary underline-offset-4 hover:underline"
+              >
+                {t("inviteUpgradeCta")}
+              </Link>
+            ) : null}
           </div>
         )}
       </div>

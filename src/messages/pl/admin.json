@@ -40,6 +40,21 @@
     "title": "Przestrzenie",
     "subtitle": "Przeglądaj i zarządzaj wszystkimi aktywnymi przestrzeniami na platformie.",
     "searchPlaceholder": "Szukaj przestrzeni…",
+    "views": {
+      "general": "Ogólny",
+      "billing": "Billing View"
+    },
+    "billingColumns": {
+      "workspace": "Przestrzeń",
+      "plan": "Plan",
+      "planVersion": "Wersja planu",
+      "status": "Status",
+      "aiUsage": "Wykorzystanie AI",
+      "estimateUsage": "Wykorzystanie kosztorysów",
+      "seats": "Miejsca",
+      "storage": "Magazyn",
+      "noVersion": "—"
+    },
     "empty": "Brak przestrzeni pasujących do wyszukiwania.",
     "bar": {
       "addWorkspace": "Dodaj nową przestrzeń",
@@ -47,8 +62,24 @@
     },
     "stats": {
       "industry": "Branża",
+      "plan": "Plan",
       "estimateRequests": "Zapytania",
       "estimates": "Kosztorysy"
+    },
+    "plan": {
+      "FREE": "Free",
+      "PRO": "Pro",
+      "BUSINESS": "Business"
+    },
+    "effectiveStatus": {
+      "INCOMPLETE": "niekompletna",
+      "ACTIVE": "aktywna",
+      "PAST_DUE": "zaległa płatność",
+      "GRACE_PERIOD": "okres karencji",
+      "EXPIRED": "wygasła",
+      "ARCHIVED": "zarchiwizowana",
+      "SUSPENDED": "zawieszona",
+      "PENDING_DELETION": "oczekuje na usunięcie"
     },
     "row": {
       "meta": "autor: {owner} · Utworzono {created} · Zaktualizowano {updated}",
@@ -62,10 +93,12 @@
     },
     "actions": {
       "menu": "Akcje przestrzeni",
+      "view": "Podgląd",
       "rename": "Zmień nazwę",
       "invite": "Zaproś",
       "delete": "Usuń",
       "cancel": "Anuluj",
+      "close": "Zamknij",
       "save": "Zapisz",
       "saving": "Zapisywanie…",
       "deleteConfirm": "Usuń przestrzeń",
@@ -88,6 +121,37 @@
       "description": "Wyślij zaproszenie członka na podany adres e-mail.",
       "emailLabel": "Adres e-mail",
       "emailPlaceholder": "jan@firma.pl"
+    },
+    "preview": {
+      "title": "Podgląd: {name}",
+      "description": "Stan rozliczeń i uprawnień przestrzeni (jak dev:workspace-state).",
+      "loading": "Ładowanie stanu przestrzeni…",
+      "sections": {
+        "overview": "Przegląd",
+        "subscription": "Subskrypcja",
+        "features": "Funkcje",
+        "usage": "Wykorzystanie",
+        "stripe": "Stripe"
+      },
+      "fields": {
+        "slug": "Slug",
+        "owner": "Właściciel",
+        "plan": "Plan",
+        "planVersion": "Wersja planu",
+        "subscriptionStatus": "Status subskrypcji",
+        "effectiveStatus": "Status efektywny",
+        "provisioningStatus": "Status provisioning",
+        "isActiveFree": "isActiveFree",
+        "aiUsage": "Wykorzystanie AI",
+        "estimateUsage": "Wykorzystanie kosztorysów",
+        "seats": "Miejsca",
+        "storage": "Magazyn",
+        "stripeCustomerId": "Stripe Customer",
+        "stripeSubscriptionId": "Stripe Subscription",
+        "cancelAtPeriodEnd": "Anulowanie na koniec okresu",
+        "currentPeriodEnd": "Koniec bieżącego okresu",
+        "graceEndsAt": "Koniec okresu karencji"
+      }
     }
   },
   "industryFields": {

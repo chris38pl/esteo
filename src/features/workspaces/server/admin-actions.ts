@@ -4,10 +4,12 @@ import { revalidatePath } from "next/cache";
 
 import {
   adminArchiveWorkspace,
+  adminGetWorkspaceBillingReport,
   adminInviteToWorkspace,
   adminUpdateWorkspace,
   listAdminWorkspacesPaginated,
 } from "@/features/workspaces/server/admin-workspaces";
+import type { WorkspaceBillingReport } from "@/server/billing/dev-toolkit/report";
 import type { Locale } from "@/lib/locale";
 import { assertPlatformAdminAccess } from "@/server/auth/require-platform-admin";
 import { PermissionError, WorkspaceError } from "@/server/permissions/errors";
@@ -79,6 +81,19 @@ export async function adminInviteToWorkspaceAction(
     const invitation = await adminInviteToWorkspace(admin, workspaceId, email);
     revalidateAdminWorkspaces(locale);
     return { success: true as const, data: invitation };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function adminGetWorkspaceBillingReportAction(
+  workspaceSlug: string,
+  locale: Locale = "pl",
+): Promise<ActionResult<WorkspaceBillingReport>> {
+  try {
+    const admin = await assertPlatformAdminAccess(locale);
+    const report = await adminGetWorkspaceBillingReport(admin, workspaceSlug);
+    return { success: true, data: report };
   } catch (error) {
     return toActionError(error);
   }

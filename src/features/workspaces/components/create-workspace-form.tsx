@@ -1,7 +1,12 @@
 "use client";
 
 import { ChevronDown, Rocket } from "lucide-react";
-import { WorkspaceAppearanceTheme, WorkspaceIndustry } from "@prisma/client";
+import Link from "next/link";
+import {
+  SubscriptionPlan,
+  WorkspaceAppearanceTheme,
+  WorkspaceIndustry,
+} from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
@@ -30,16 +35,26 @@ const selectClassName = cn(
   "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
 );
 
+const PLAN_OPTIONS: SubscriptionPlan[] = [
+  SubscriptionPlan.FREE,
+  SubscriptionPlan.PRO,
+  SubscriptionPlan.BUSINESS,
+];
+
 export function CreateWorkspaceForm({
   locale,
   mode = "onboarding",
   appearanceTheme,
   onPendingChange,
+  freeSlotTaken = false,
+  manageFreeWorkspaceSlug = null,
 }: {
   locale: Locale;
   mode?: CreateWorkspaceFormMode;
   appearanceTheme: WorkspaceAppearanceTheme;
   onPendingChange?: (pending: boolean) => void;
+  freeSlotTaken?: boolean;
+  manageFreeWorkspaceSlug?: string | null;
 }) {
   const t = useTranslations("workspaces");
   const tForm = useTranslations("workspaces.createForm");
@@ -51,6 +66,12 @@ export function CreateWorkspaceForm({
   const [industryOtherText, setIndustryOtherText] = useState("");
   const [companyDescription, setCompanyDescription] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  // The plan picker is only shown for additional workspaces; onboarding is always FREE.
+  const showPlanPicker = mode === "new";
+  const [plan, setPlan] = useState<SubscriptionPlan>(
+    freeSlotTaken ? SubscriptionPlan.PRO : SubscriptionPlan.FREE,
+  );
 
   const showOtherText = industry === WorkspaceIndustry.OTHER;
 
@@ -72,6 +93,7 @@ export function CreateWorkspaceForm({
       industry,
       industryOtherText: showOtherText ? industryOtherText : undefined,
       appearanceTheme,
+      plan: showPlanPicker ? plan : SubscriptionPlan.FREE,
       companyDescription: companyDescription.trim() || undefined,
     });
 
@@ -90,6 +112,7 @@ export function CreateWorkspaceForm({
           industry: parsed.data.industry,
           industryOtherText: parsed.data.industryOtherText,
           appearanceTheme: parsed.data.appearanceTheme,
+          plan: parsed.data.plan,
           companyDescription: parsed.data.companyDescription,
         },
         locale,
@@ -100,10 +123,16 @@ export function CreateWorkspaceForm({
         return;
       }
 
+      // Paid plans return a Stripe checkout URL; the workspace is INCOMPLETE until payment.
+      if (result.data.checkoutUrl) {
+        window.location.href = result.data.checkoutUrl;
+        return;
+      }
+
       const destination =
         mode === "onboarding"
-          ? `/${locale}/dashboard/${result.data.slug}/estimates`
-          : `/${locale}/dashboard/${result.data.slug}`;
+          ? `/${locale}/dashboard/${result.data.workspace.slug}/estimates`
+          : `/${locale}/dashboard/${result.data.workspace.slug}`;
 
       router.replace(destination);
     });
@@ -179,6 +208,55 @@ export function CreateWorkspaceForm({
         disabled={isPending}
         variant="create"
       />
+
+      {showPlanPicker ? (
+        <div className="space-y-2">
+          <Label>{tForm("planLabel")}</Label>
+          <div className="grid grid-cols-3 gap-2">
+            {PLAN_OPTIONS.map((option) => {
+              const disabled = option === SubscriptionPlan.FREE && freeSlotTaken;
+              const selected = plan === option;
+              return (
+                <button
+                  key={option}
+                  type="button"
+                  disabled={disabled || isPending}
+                  onClick={() => setPlan(option)}
+                  aria-pressed={selected}
+                  className={cn(
+                    "flex h-11 items-center justify-center rounded-xl border text-sm font-medium transition-colors",
+                    selected
+                      ? "border-blue-600 bg-blue-600/10 text-blue-700 dark:text-blue-300"
+                      : "border-input bg-transparent text-foreground hover:bg-muted",
+                    disabled && "cursor-not-allowed opacity-50 hover:bg-transparent",
+                  )}
+                >
+                  {tForm(`plans.${option}`)}
+                </button>
+              );
+            })}
+          </div>
+          {freeSlotTaken ? (
+            <p className="text-xs text-muted-foreground">
+              {tForm("freeTaken")}
+              {manageFreeWorkspaceSlug ? (
+                <>
+                  {" "}
+                  <Link
+                    href={`/${locale}/dashboard/${manageFreeWorkspaceSlug}/billing`}
+                    className="font-medium text-blue-600 underline-offset-2 hover:underline dark:text-blue-400"
+                  >
+                    {tForm("manageFree")}
+                  </Link>
+                </>
+              ) : null}
+            </p>
+          ) : null}
+          {plan !== SubscriptionPlan.FREE ? (
+            <p className="text-xs text-muted-foreground">{tForm("paidHint")}</p>
+          ) : null}
+        </div>
+      ) : null}
 
       {error ? (
         <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">

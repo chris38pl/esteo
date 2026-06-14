@@ -5,6 +5,7 @@ import {
   SubscriptionStatus,
   WorkspaceIndustry,
   WorkspaceLocale,
+  WorkspaceProvisioningStatus,
   WorkspaceRole,
 } from "@prisma/client";
 
@@ -104,24 +105,24 @@ async function main() {
     },
   });
 
-  const billingAccount = await prisma.billingAccount.upsert({
-    where: { ownerUserId: owner.id },
-    update: {},
-    create: { ownerUserId: owner.id },
+  // Per-workspace billing: each workspace owns a 1:1 BillingAccount + Subscription. Reuse the
+  // dev workspace's existing account when re-seeding so we don't orphan rows.
+  const existingWorkspace = await prisma.workspace.findUnique({
+    where: { slug: DEV_WORKSPACE.slug },
+    select: { billingAccountId: true },
   });
 
-  await prisma.subscription.upsert({
-    where: { billingAccountId: billingAccount.id },
-    update: {
-      plan: subscriptionPlan,
-      status: SubscriptionStatus.ACTIVE,
-    },
-    create: {
-      billingAccountId: billingAccount.id,
-      plan: subscriptionPlan,
-      status: SubscriptionStatus.ACTIVE,
-    },
-  });
+  const billingAccount = existingWorkspace
+    ? await prisma.billingAccount.update({
+        where: { id: existingWorkspace.billingAccountId },
+        data: { ownerUserId: owner.id, payerUserId: owner.id },
+      })
+    : await prisma.billingAccount.create({
+        data: { ownerUserId: owner.id, payerUserId: owner.id },
+      });
+
+  const isFreePlan = subscriptionPlan === SubscriptionPlan.FREE;
+  const planVersion = `${subscriptionPlan}_2026`;
 
   const workspace = await prisma.workspace.upsert({
     where: { slug: DEV_WORKSPACE.slug },
@@ -130,6 +131,8 @@ async function main() {
       industry: DEV_WORKSPACE.industry,
       ownerId: owner.id,
       billingAccountId: billingAccount.id,
+      isActiveFree: isFreePlan,
+      provisioningStatus: WorkspaceProvisioningStatus.ACTIVE,
       deletedAt: null,
     },
     create: {
@@ -139,6 +142,29 @@ async function main() {
       slug: DEV_WORKSPACE.slug,
       industry: DEV_WORKSPACE.industry,
       defaultLocale: WorkspaceLocale.PL,
+      isActiveFree: isFreePlan,
+      provisioningStatus: WorkspaceProvisioningStatus.ACTIVE,
+    },
+  });
+
+  // Link the billing account to its workspace (1:1) and provision the subscription.
+  await prisma.billingAccount.update({
+    where: { id: billingAccount.id },
+    data: { workspaceId: workspace.id },
+  });
+
+  await prisma.subscription.upsert({
+    where: { billingAccountId: billingAccount.id },
+    update: {
+      plan: subscriptionPlan,
+      planVersion,
+      status: SubscriptionStatus.ACTIVE,
+    },
+    create: {
+      billingAccountId: billingAccount.id,
+      plan: subscriptionPlan,
+      planVersion,
+      status: SubscriptionStatus.ACTIVE,
     },
   });
 

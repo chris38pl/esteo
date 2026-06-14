@@ -61,7 +61,16 @@
     },
     "errors": {
       "industryRequired": "Please select an industry."
-    }
+    },
+    "planLabel": "Plan",
+    "plans": {
+      "FREE": "Free",
+      "PRO": "Pro",
+      "BUSINESS": "Business"
+    },
+    "freeTaken": "You already use your free workspace. Upgrade it or free the slot to create another free workspace.",
+    "manageFree": "Manage your free workspace",
+    "paidHint": "You'll be redirected to secure checkout to activate this workspace."
   },
   "industries": {
     "CONSTRUCTION": "Construction",

@@ -21,11 +21,6 @@ const legacyDashboardRedirects = LOCALES.flatMap((locale) => [
     destination: `/${locale}/dashboard/account`,
     permanent: true,
   },
-  {
-    source: `/${locale}/dashboard/:workspaceSlug/billing`,
-    destination: `/${locale}/dashboard/billing`,
-    permanent: true,
-  },
 ]);
 
 const nextConfig: NextConfig = {

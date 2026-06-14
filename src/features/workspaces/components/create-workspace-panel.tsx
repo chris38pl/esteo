@@ -15,10 +15,14 @@ export function CreateWorkspacePanel({
   locale,
   mode,
   layout = "fullscreen",
+  freeSlotTaken = false,
+  manageFreeWorkspaceSlug = null,
 }: {
   locale: Locale;
   mode: CreateWorkspacePanelMode;
   layout?: CreateWorkspacePanelLayout;
+  freeSlotTaken?: boolean;
+  manageFreeWorkspaceSlug?: string | null;
 }) {
   const [appearanceTheme, setAppearanceTheme] = useState<WorkspaceAppearanceTheme>(
     WorkspaceAppearanceTheme.OCEAN_BREEZE,
@@ -43,6 +47,8 @@ export function CreateWorkspacePanel({
         mode={mode}
         appearanceTheme={appearanceTheme}
         onPendingChange={setThemePickerDisabled}
+        freeSlotTaken={freeSlotTaken}
+        manageFreeWorkspaceSlug={manageFreeWorkspaceSlug}
       />
     </WorkspaceCreateShell>
   );

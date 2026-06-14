@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { BillingSidebarState } from "@/features/billing/billing-sidebar-state";
-import { dashboardAccountHref, dashboardBillingHref } from "@/lib/dashboard-routes";
+import { dashboardAccountHref, dashboardBillingHref, ownedWorkspaceBillingHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -42,14 +42,18 @@ function StatRow({ label, value }: { label: string; value: string }) {
 export function NavbarUserMenu({ locale }: { locale: Locale }) {
   const t = useTranslations("navbar.userMenu");
   const tInvitations = useTranslations("workspaces.invitations");
-  const { billingSidebarState, pendingInvitationCount, currentUser } = useWorkspaceContext();
+  const { billingSidebarState, pendingInvitationCount, currentUser, activeWorkspace, workspaces } =
+    useWorkspaceContext();
 
   const userName = currentUser.name?.trim() || currentUser.email;
   const userEmail = currentUser.email;
 
   const planKey = resolvePlanKey(billingSidebarState);
   const planLabel = t(`plans.${planKey}`);
-  const billingHref = dashboardBillingHref(locale);
+  const billingHref =
+    activeWorkspace?.isOwner && activeWorkspace.slug
+      ? dashboardBillingHref(locale, activeWorkspace.slug)
+      : ownedWorkspaceBillingHref(locale, workspaces);
   const accountHref = dashboardAccountHref(locale);
   const showBadge = pendingInvitationCount > 0;
   const badgeLabel = tInvitations("pendingBadge", { count: pendingInvitationCount });
@@ -131,13 +135,15 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
               {planLabel}
             </span>
           </div>
-          <Link
-            href={billingHref}
-            className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
-          >
-            {t("updatePlan")}
-            <ArrowRight className="size-3.5" strokeWidth={2} />
-          </Link>
+          {billingHref ? (
+            <Link
+              href={billingHref}
+              className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+            >
+              {t("updatePlan")}
+              <ArrowRight className="size-3.5" strokeWidth={2} />
+            </Link>
+          ) : null}
         </div>
 
         <DropdownMenuSeparator className="mx-0" />

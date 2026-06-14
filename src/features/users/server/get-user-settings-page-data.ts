@@ -1,5 +1,6 @@
 import { toReceivedInvitationView } from "@/features/workspaces/components/invitation-types";
 import { listReceivedInvitations } from "@/features/workspaces/server/invitation-inbox";
+import { getOwnedWorkspacesBlockingDeletion } from "@/features/users/server/account-deletion-guard";
 import { isAvatarPreset } from "@/lib/avatars/user-avatar-presets";
 import type { AvatarPreset } from "@/components/avatars/user-avatar";
 import type { AvatarSource } from "@prisma/client";
@@ -17,7 +18,10 @@ export async function getUserSettingsPageData(user: {
   avatarPreset: string | null;
   avatarSource: AvatarSource;
 }) {
-  const invitations = await listReceivedInvitations(user.email);
+  const [invitations, ownedWorkspacesBlockingDeletion] = await Promise.all([
+    listReceivedInvitations(user.email),
+    getOwnedWorkspacesBlockingDeletion(user.id),
+  ]);
 
   return {
     profile: {
@@ -26,5 +30,6 @@ export async function getUserSettingsPageData(user: {
       avatarSource: user.avatarSource,
     } satisfies UserSettingsPageData,
     invitations: invitations.map(toReceivedInvitationView),
+    ownedWorkspacesBlockingDeletion,
   };
 }

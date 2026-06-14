@@ -8,6 +8,7 @@ import { ProfileSettingsTab } from "@/features/users/components/profile-settings
 import { SettingsUpgradeBanner } from "@/features/users/components/settings-upgrade-banner";
 import { UserSettingsBillingTab } from "@/features/users/components/user-settings-billing-tab";
 import { UserSettingsNotificationsTab } from "@/features/users/components/user-settings-notifications-tab";
+import type { OwnedWorkspaceBlockingDeletion } from "@/features/users/server/account-deletion-guard";
 import type { ReceivedInvitationView } from "@/features/workspaces/components/invitation-types";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
@@ -27,10 +28,12 @@ export function UserSettingsPanel({
   locale,
   avatarPreset,
   invitations,
+  ownedWorkspacesBlockingDeletion,
 }: {
   locale: Locale;
   avatarPreset: AvatarPreset | null;
   invitations: ReceivedInvitationView[];
+  ownedWorkspacesBlockingDeletion: OwnedWorkspaceBlockingDeletion[];
 }) {
   const tSidebar = useTranslations("sidebar.settings");
   const tInvitations = useTranslations("workspaces.invitations");
@@ -92,7 +95,12 @@ export function UserSettingsPanel({
       </div>
 
       {activeTab === "profile" ? (
-        <ProfileSettingsTab locale={locale} avatarPreset={avatarPreset} invitations={invitations} />
+        <ProfileSettingsTab
+          locale={locale}
+          avatarPreset={avatarPreset}
+          invitations={invitations}
+          ownedWorkspacesBlockingDeletion={ownedWorkspacesBlockingDeletion}
+        />
       ) : null}
       {activeTab === "billing" ? <UserSettingsBillingTab /> : null}
       {activeTab === "notifications" ? <UserSettingsNotificationsTab /> : null}

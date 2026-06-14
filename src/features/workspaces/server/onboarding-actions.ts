@@ -1,8 +1,13 @@
 "use server";
 
-import type { WorkspaceAppearanceTheme, WorkspaceIndustry } from "@prisma/client";
+import type {
+  SubscriptionPlan,
+  WorkspaceAppearanceTheme,
+  WorkspaceIndustry,
+} from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
+import { changeWorkspaceSubscriptionPlan } from "@/features/billing/server/billing-service";
 import { createWorkspace } from "@/features/workspaces/server/service";
 import type { Locale } from "@/lib/locale";
 import { requireAuth } from "@/server/auth/require-auth";
@@ -12,6 +17,12 @@ import {
   PermissionError,
   WorkspaceError,
 } from "@/server/permissions/errors";
+
+type CreateWorkspaceResult = {
+  workspace: Awaited<ReturnType<typeof createWorkspace>>;
+  /** When set, the workspace is INCOMPLETE and the client must redirect to Stripe checkout. */
+  checkoutUrl: string | null;
+};
 
 type ActionResult<T> =
   | { success: true; data: T }
@@ -30,45 +41,40 @@ function toActionError(error: unknown): ActionResult<never> {
   return { success: false, error: "Something went wrong." };
 }
 
+type CreateWorkspaceActionInput = {
+  name: string;
+  industry: WorkspaceIndustry;
+  industryOtherText?: string;
+  appearanceTheme?: WorkspaceAppearanceTheme;
+  companyDescription?: string | null;
+  plan?: SubscriptionPlan;
+};
+
 export async function createWorkspaceOnboardingAction(
-  input: {
-    name: string;
-    industry: WorkspaceIndustry;
-    industryOtherText?: string;
-    appearanceTheme?: WorkspaceAppearanceTheme;
-    companyDescription?: string | null;
-  },
+  input: CreateWorkspaceActionInput,
   locale: Locale = "pl",
-): Promise<ActionResult<Awaited<ReturnType<typeof createWorkspace>>>> {
+): Promise<ActionResult<CreateWorkspaceResult>> {
   return createWorkspaceAndActivate(input, locale, "onboarding");
 }
 
 export async function createAdditionalWorkspaceAction(
-  input: {
-    name: string;
-    industry: WorkspaceIndustry;
-    industryOtherText?: string;
-    appearanceTheme?: WorkspaceAppearanceTheme;
-    companyDescription?: string | null;
-  },
+  input: CreateWorkspaceActionInput,
   locale: Locale = "pl",
-): Promise<ActionResult<Awaited<ReturnType<typeof createWorkspace>>>> {
+): Promise<ActionResult<CreateWorkspaceResult>> {
   return createWorkspaceAndActivate(input, locale, "additional");
 }
 
 async function createWorkspaceAndActivate(
-  input: {
-    name: string;
-    industry: WorkspaceIndustry;
-    industryOtherText?: string;
-    appearanceTheme?: WorkspaceAppearanceTheme;
-    companyDescription?: string | null;
-  },
+  input: CreateWorkspaceActionInput,
   locale: Locale,
   flow: "onboarding" | "additional",
-): Promise<ActionResult<Awaited<ReturnType<typeof createWorkspace>>>> {
+): Promise<ActionResult<CreateWorkspaceResult>> {
   try {
     const user = await requireAuth(locale);
+
+    // First workspace (onboarding) is always frictionless FREE; only additional workspaces
+    // may pick a paid plan.
+    const plan: SubscriptionPlan = flow === "onboarding" ? "FREE" : input.plan ?? "FREE";
 
     if (flow === "additional") {
       const { countOwnedWorkspaces, canUserCreateWorkspace } = await import(
@@ -90,8 +96,20 @@ async function createWorkspaceAndActivate(
       industryOtherText: input.industryOtherText,
       appearanceTheme: input.appearanceTheme,
       companyDescription: input.companyDescription,
+      plan,
       locale,
     });
+
+    // Paid plans are provisioned INCOMPLETE; send the owner to Stripe checkout. The webhook
+    // (checkout.session.completed) activates the workspace + subscription.
+    let checkoutUrl: string | null = null;
+    if (plan !== "FREE") {
+      const result = await changeWorkspaceSubscriptionPlan({
+        workspaceId: workspace.id,
+        plan,
+      });
+      checkoutUrl = result.kind === "checkout" ? result.url : null;
+    }
 
     await persistActiveWorkspace(user.id, workspace.id);
 
@@ -100,7 +118,7 @@ async function createWorkspaceAndActivate(
     revalidatePath(`/${locale}/dashboard/onboarding`);
     revalidatePath(`/${locale}/dashboard/workspaces/new`);
 
-    return { success: true, data: workspace };
+    return { success: true, data: { workspace, checkoutUrl } };
   } catch (error) {
     return toActionError(error);
   }

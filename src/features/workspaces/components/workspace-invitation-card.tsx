@@ -1,12 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Building2, UsersRound } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 
-import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ReceivedInvitationView } from "@/features/workspaces/components/invitation-types";
@@ -15,7 +14,6 @@ import {
   declineReceivedInvitationAction,
   dismissInvitationPromptAction,
 } from "@/features/workspaces/server/actions";
-import { dashboardBillingHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -24,7 +22,7 @@ function daysUntilExpiry(expiresAt: string) {
   return Math.max(0, Math.ceil(ms / (1000 * 60 * 60 * 24)));
 }
 
-type InvitationActionErrorCode = "INVITEE_PLAN_LIMIT" | "WORKSPACE_SEAT_LIMIT";
+type InvitationActionErrorCode = "WORKSPACE_SEAT_LIMIT";
 
 export function WorkspaceInvitationCard({
   invitation,
@@ -40,9 +38,7 @@ export function WorkspaceInvitationCard({
   onResolved?: () => void;
 }) {
   const t = useTranslations("workspaces.invitations");
-  const { locale: contextLocale } = useWorkspaceContext();
   const router = useRouter();
-  const billingHref = dashboardBillingHref(contextLocale);
   const [errorCode, setErrorCode] = useState<InvitationActionErrorCode | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -56,7 +52,7 @@ export function WorkspaceInvitationCard({
   const expiresInDays = daysUntilExpiry(invitation.expiresAt);
 
   function handleError(result: { success: false; error: string; code?: string }) {
-    if (result.code === "INVITEE_PLAN_LIMIT" || result.code === "WORKSPACE_SEAT_LIMIT") {
+    if (result.code === "WORKSPACE_SEAT_LIMIT") {
       setErrorCode(result.code);
     }
     setErrorMessage(result.error);
@@ -82,14 +78,6 @@ export function WorkspaceInvitationCard({
   const errorBlock = errorMessage ? (
     <div className="space-y-2 rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
       <p>{errorCode ? t(`errors.${errorCode}`) : errorMessage}</p>
-      {errorCode === "INVITEE_PLAN_LIMIT" ? (
-        <Link
-          href={billingHref}
-          className="inline-block font-medium text-primary underline-offset-4 hover:underline"
-        >
-          {t("upgradePlan")}
-        </Link>
-      ) : null}
       {errorCode === "WORKSPACE_SEAT_LIMIT" ? (
         <p className="text-destructive/90">{t("contactOwner")}</p>
       ) : null}

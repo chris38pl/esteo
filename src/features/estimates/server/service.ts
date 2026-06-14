@@ -69,7 +69,7 @@ export async function createInternalEstimate(
     locale: Locale;
   } & InternalEstimateCreateInput,
 ): Promise<{ estimateId: string }> {
-  await assertCanCreateEstimate(input.userId);
+  await assertCanCreateEstimate(input.workspaceId);
 
   const workspace = await prisma.workspace.findFirst({
     where: { id: input.workspaceId, deletedAt: null },
@@ -156,7 +156,7 @@ export async function createInternalEstimate(
     });
   }
 
-  await incrementEstimateUsage(input.userId);
+  await incrementEstimateUsage(input.workspaceId, input.userId);
 
   await tasks.trigger<typeof generateEstimateDraftTask>("generate-estimate-draft", {
     estimateRequestId: requestId,
@@ -367,7 +367,7 @@ export async function proposeEdit(input: {
   message: string;
   locale: string;
 }): Promise<ProposeEditResult> {
-  await assertCanUseAiAssistant(input.userId);
+  await assertCanUseAiAssistant(input.workspaceId);
   await assertVersionEditable(input.versionId, input.workspaceId);
 
   const version = await getVersionWithTree(input.versionId, input.workspaceId);
@@ -444,7 +444,7 @@ export async function approveEdit(input: {
   });
 
   await applyPatch(input.versionId, input.workspaceId, input.patch);
-  await incrementAiAssistantUsage(input.userId);
+  await incrementAiAssistantUsage(input.workspaceId, input.userId);
 
   const updated = await prisma.estimateVersion.findUniqueOrThrow({
     where: { id: input.versionId },
@@ -475,7 +475,7 @@ export async function undoLastChange(input: {
 }): Promise<void> {
   await assertVersionEditable(input.versionId, input.workspaceId);
 
-  const maxSteps = await getMaxUndoSteps(input.userId);
+  const maxSteps = await getMaxUndoSteps(input.workspaceId);
   const revisions = await getRevisions(input.versionId, maxSteps);
 
   if (revisions.length === 0) {

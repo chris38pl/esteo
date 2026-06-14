@@ -5,7 +5,8 @@ import Link from "next/link";
 import { ArrowRight, BadgeCheck, Check, Crown, Sparkles, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-import { dashboardBillingHref } from "@/lib/dashboard-routes";
+import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
+import { dashboardBillingHref, ownedWorkspaceBillingHref } from "@/lib/dashboard-routes";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -53,7 +54,16 @@ export function SidebarPlanCard({
   onDismiss?: () => void;
 }) {
   const t = useTranslations("sidebar.planCards");
-  const billingHref = dashboardBillingHref(locale as "pl" | "en");
+  const { activeWorkspace, workspaces } = useWorkspaceContext();
+  const billingHref =
+    activeWorkspace?.isOwner && activeWorkspace.slug
+      ? dashboardBillingHref(locale as "pl" | "en", activeWorkspace.slug)
+      : ownedWorkspaceBillingHref(locale as "pl" | "en", workspaces);
+
+  if (!billingHref) {
+    return null;
+  }
+
   const featureKeys = FEATURE_KEYS[variant];
   const isBusiness = variant === "business";
 

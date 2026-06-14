@@ -17,7 +17,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { INVITE_ROLES } from "@/features/workspaces/lib/invite-role";
 import { inviteWorkspaceMemberAction } from "@/features/workspaces/server/actions";
-import { dashboardBillingHref } from "@/lib/dashboard-routes";
+import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
+import { dashboardBillingHref, ownedWorkspaceBillingHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -44,7 +45,11 @@ export function WorkspaceInvitePopover({
   const tSidebar = useTranslations("sidebar.workspaceCard");
   const t = useTranslations("workspaces.settings.users");
   const router = useRouter();
-  const billingHref = dashboardBillingHref(locale);
+  const { activeWorkspace, workspaces } = useWorkspaceContext();
+  const billingHref =
+    activeWorkspace?.isOwner && activeWorkspace.slug
+      ? dashboardBillingHref(locale, activeWorkspace.slug)
+      : ownedWorkspaceBillingHref(locale, workspaces);
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<InviteRole>("MEMBER");
@@ -158,13 +163,15 @@ export function WorkspaceInvitePopover({
           <div className="space-y-3">
             <p className="text-sm font-medium leading-tight">{t("inviteTitle")}</p>
             <p className="text-xs text-muted-foreground">{t("inviteUpgradeDescription")}</p>
-            <Link
-              href={billingHref}
-              className="inline-flex text-xs font-medium text-primary underline-offset-4 hover:underline"
-              onClick={() => setOpen(false)}
-            >
-              {t("inviteUpgradeCta")}
-            </Link>
+            {billingHref ? (
+              <Link
+                href={billingHref}
+                className="inline-flex text-xs font-medium text-primary underline-offset-4 hover:underline"
+                onClick={() => setOpen(false)}
+              >
+                {t("inviteUpgradeCta")}
+              </Link>
+            ) : null}
           </div>
         )}
       </DropdownMenuContent>

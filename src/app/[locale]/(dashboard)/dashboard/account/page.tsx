@@ -18,7 +18,8 @@ export default async function AccountPage({
   setRequestLocale(resolvedLocale);
 
   const user = await requireAuth(resolvedLocale);
-  const { profile, invitations } = await getUserSettingsPageData(user);
+  const { profile, invitations, ownedWorkspacesBlockingDeletion } =
+    await getUserSettingsPageData(user);
 
   return (
     <Suspense>
@@ -26,6 +27,7 @@ export default async function AccountPage({
         locale={resolvedLocale}
         avatarPreset={profile.avatarPreset}
         invitations={invitations}
+        ownedWorkspacesBlockingDeletion={ownedWorkspacesBlockingDeletion}
       />
     </Suspense>
   );

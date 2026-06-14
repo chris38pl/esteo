@@ -4,6 +4,7 @@ import type {
   WorkspaceAppearanceTheme,
   WorkspaceIndustry,
   WorkspaceLocale,
+  WorkspaceProvisioningStatus,
   WorkspaceRuleType,
 } from "@prisma/client";
 
@@ -49,6 +50,7 @@ export async function createWorkspaceRecord(input: {
   ownerId: string;
   name: string;
   slug: string;
+  slugIsCustom?: boolean;
   industry: WorkspaceIndustry;
   industryOtherText?: string | null;
   defaultLocale: WorkspaceLocale;
@@ -56,6 +58,8 @@ export async function createWorkspaceRecord(input: {
   branding?: WorkspaceBranding;
   aiInstructions?: string;
   companyDescription?: string | null;
+  isActiveFree?: boolean;
+  provisioningStatus?: WorkspaceProvisioningStatus;
 }) {
   return prisma.$transaction(async (tx) => {
     const workspace = await tx.workspace.create({
@@ -64,10 +68,15 @@ export async function createWorkspaceRecord(input: {
         ownerId: input.ownerId,
         name: input.name,
         slug: input.slug,
+        slugIsCustom: input.slugIsCustom ?? false,
         industry: input.industry,
         industryOtherText:
           input.industry === "OTHER" ? input.industryOtherText?.trim() ?? null : null,
         defaultLocale: input.defaultLocale,
+        ...(input.isActiveFree != null ? { isActiveFree: input.isActiveFree } : {}),
+        ...(input.provisioningStatus != null
+          ? { provisioningStatus: input.provisioningStatus }
+          : {}),
         ...(input.appearanceTheme != null
           ? { appearanceTheme: input.appearanceTheme }
           : {}),

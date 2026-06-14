@@ -61,7 +61,16 @@
     },
     "errors": {
       "industryRequired": "Wybierz branżę."
-    }
+    },
+    "planLabel": "Plan",
+    "plans": {
+      "FREE": "Darmowy",
+      "PRO": "Pro",
+      "BUSINESS": "Biznes"
+    },
+    "freeTaken": "Masz już darmowy obszar roboczy. Ulepsz go lub zwolnij miejsce, aby utworzyć kolejny darmowy obszar.",
+    "manageFree": "Zarządzaj darmowym obszarem roboczym",
+    "paidHint": "Nastąpi przekierowanie do bezpiecznej płatności, aby aktywować ten obszar roboczy."
   },
   "industries": {
     "CONSTRUCTION": "Budownictwo",

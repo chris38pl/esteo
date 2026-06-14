@@ -1,4 +1,4 @@
-import type { SubscriptionPlan } from "@prisma/client";
+import type { SubscriptionPlan, SubscriptionStatus } from "@prisma/client";
 
 import {
   assertCanCreateEstimate,
@@ -13,6 +13,7 @@ export type EntitlementAction =
   | "invite_member"
   | "create_estimate";
 
+/** Entitlement-only gate. Callers must independently satisfy RBAC. */
 export async function assertEntitlement(
   action: EntitlementAction,
   context: { userId: string; workspaceId?: string },
@@ -26,7 +27,10 @@ export async function assertEntitlement(
       }
       return assertCanInviteMember(context.workspaceId);
     case "create_estimate":
-      return assertCanCreateEstimate(context.userId);
+      if (!context.workspaceId) {
+        throw new Error("workspaceId is required for create_estimate entitlement.");
+      }
+      return assertCanCreateEstimate(context.workspaceId);
     default: {
       const _exhaustive: never = action;
       return _exhaustive;
@@ -35,7 +39,7 @@ export async function assertEntitlement(
 }
 
 export function assertPaidPlan(plan: SubscriptionPlan, status: string): void {
-  if (!isPaidSubscriptionStatus(status as "ACTIVE" | "TRIAL" | "CANCELED" | "INACTIVE")) {
+  if (!isPaidSubscriptionStatus(status as SubscriptionStatus)) {
     throw new Error("An active subscription is required.");
   }
 

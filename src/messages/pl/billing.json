@@ -2,5 +2,128 @@
   "title": "Płatności",
   "description": "Zarządzanie płatnościami wkrótce. Tutaj będziesz mógł przeglądać faktury, aktualizować metody płatności i zarządzać subskrypcją.",
   "soon": "Wkrótce",
-  "backToDashboard": "Wróć do panelu"
+  "backToDashboard": "Wróć do panelu",
+  "workspace": {
+    "title": "Płatności",
+    "currentPlan": "Aktualny plan: {plan} · {status}",
+    "statusNotice": {
+      "PAST_DUE": "Ostatnia płatność nie powiodła się. Zaktualizuj metodę płatności, aby uniknąć przerwania usługi.",
+      "GRACE_PERIOD": "Subskrypcja jest w okresie karencji. Nowe kosztorysy, zaproszenia i AI są wstrzymane — odnów subskrypcję, aby przywrócić pełny dostęp.",
+      "EXPIRED": "Ta przestrzeń jest tylko do odczytu. Istniejące dane można przeglądać i eksportować — reaktywuj subskrypcję, aby wznowić pracę.",
+      "ARCHIVED": "Ta przestrzeń jest zarchiwizowana (tylko do odczytu). Reaktywuj rozliczenia, aby wznowić pracę.",
+      "INCOMPLETE": "Płatność nie została ukończona. Dokończ checkout, aby aktywować tę przestrzeń.",
+      "SUSPENDED": "Ta przestrzeń jest zawieszona. Skontaktuj się z pomocą techniczną.",
+      "cancelAtPeriodEnd": "Subskrypcja zostanie anulowana {date}. Do tego czasu zachowujesz pełny dostęp do planu."
+    },
+    "effectiveStatus": {
+      "INCOMPLETE": "niekompletna",
+      "ACTIVE": "aktywna",
+      "PAST_DUE": "zaległa płatność",
+      "GRACE_PERIOD": "okres karencji",
+      "EXPIRED": "wygasła",
+      "ARCHIVED": "zarchiwizowana",
+      "SUSPENDED": "zawieszona",
+      "PENDING_DELETION": "oczekuje na usunięcie"
+    },
+    "usage": {
+      "aiUsage": "Wykorzystanie AI",
+      "estimates": "Kosztorysy",
+      "users": "Użytkownicy",
+      "storage": "Magazyn",
+      "usedThisMonth": "Wykorzystane w tym miesiącu",
+      "percentUsed": "{percent}% wykorzystane",
+      "unlimited": "Bez limitu",
+      "estimatesThisMonth": "Kosztorysy w tym miesiącu",
+      "aiCallsThisMonth": "Wywołania AI w tym miesiącu",
+      "seatsUsed": "Wykorzystane miejsca"
+    },
+    "actions": {
+      "upgradeToPro": "Przejdź na PRO",
+      "upgradeToBusiness": "Przejdź na BUSINESS",
+      "manageBilling": "Zarządzaj płatnościami",
+      "resumeSubscription": "Wznów subskrypcję",
+      "cancelAtPeriodEnd": "Anuluj na koniec okresu"
+    },
+    "memberUsage": {
+      "title": "Wykorzystanie wg członków",
+      "member": "Członek",
+      "aiCalls": "Wywołania AI",
+      "estimates": "Kosztorysy"
+    },
+    "plan": {
+      "FREE": "Free",
+      "PRO": "Pro",
+      "BUSINESS": "Business"
+    },
+    "planHero": {
+      "badge": {
+        "active": "Aktywny plan",
+        "canceling": "Anuluje się",
+        "status": {
+          "INCOMPLETE": "Niekompletna",
+          "PAST_DUE": "Zaległa płatność",
+          "GRACE_PERIOD": "Okres karencji",
+          "EXPIRED": "Wygasła",
+          "ARCHIVED": "Zarchiwizowana",
+          "SUSPENDED": "Zawieszona",
+          "PENDING_DELETION": "Oczekuje na usunięcie"
+        }
+      },
+      "planName": {
+        "FREE": "Free",
+        "PRO": "Pro",
+        "BUSINESS": "Business"
+      },
+      "description": {
+        "FREE": "Podstawowe funkcje Esteo dla jednego workspace.",
+        "PRO": "Więcej mocy dla rozwijającego się zespołu.",
+        "BUSINESS": "Wszystkie funkcje odblokowane."
+      },
+      "renewal": "Odnowienie: {date}",
+      "cancelsOn": "Anulowanie: {date}",
+      "daysUntil": "Za {days} dni",
+      "price": {
+        "FREE": "0 zł",
+        "PRO": "99 zł",
+        "BUSINESS": "199 zł"
+      },
+      "perMonth": "/ miesiąc",
+      "changePlan": "Zmień plan",
+      "managePayment": "Zarządzaj płatnością",
+      "changePlanDialog": {
+        "title": "Zmień plan",
+        "description": "Wybierz plan docelowy dla tego workspace."
+      }
+    },
+    "banners": {
+      "storageOverLimit": "Magazyn jest ponad limitem planu. Usuń pliki lub przejdź na wyższy plan, aby wznawiać przesyłanie.",
+      "seatOverLimit": "Liczba członków przekracza limit planu. Zawieś członków lub przejdź na wyższy plan."
+    },
+    "dangerZone": {
+      "title": "Strefa niebezpieczna",
+      "description": "Anulowanie subskrypcji spowoduje przejście workspace na plan FREE po zakończeniu bieżącego okresu rozliczeniowego.",
+      "activeUntilLabel": "Subskrypcja pozostanie aktywna do:",
+      "stripeSecured": "Płatności są bezpiecznie obsługiwane przez Stripe."
+    },
+    "addons": {
+      "title": "Aktywne dodatki",
+      "extraUsers": "Dodatkowi użytkownicy",
+      "extraUsersPackage": "Pakiet +5 użytkowników",
+      "extraUsersPrice": "49 zł / miesiąc",
+      "extraStorage": "Dodatkowa przestrzeń",
+      "extraStoragePackage": "Pakiet +20 GB",
+      "extraStoragePrice": "100 zł / miesiąc",
+      "activeBadge": "Aktywne",
+      "manageAddons": "Zarządzaj dodatkami"
+    },
+    "nextInvoice": {
+      "title": "Następna faktura",
+      "description": "Faktura zostanie wystawiona automatycznie na koniec okresu rozliczeniowego.",
+      "empty": {
+        "free_plan": "Brak aktywnej subskrypcji płatnej.",
+        "canceling": "Subskrypcja kończy się — kolejna faktura nie zostanie wystawiona.",
+        "no_subscription": "Brak zaplanowanej faktury."
+      }
+    }
+  }
 }

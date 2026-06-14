@@ -21,6 +21,8 @@ const isPublicRoute = createRouteMatcher([
   "/:locale/estimate-request(.*)",
   "/api/health",
   "/api/public/voice-intake",
+  // Stripe webhooks authenticate via signature, not Clerk session.
+  "/api/webhooks/stripe",
 ]);
 
 export default clerkMiddleware(async (auth, request) => {

@@ -1,7 +1,7 @@
 import type Stripe from "stripe";
 
 import {
-  downgradeSubscriptionToFree,
+  expireWorkspaceSubscription,
   handleCheckoutSessionCompleted,
   recordStripeWebhookEvent,
   syncSubscriptionFromStripe,
@@ -31,11 +31,32 @@ export async function processStripeWebhookEvent(event: Stripe.Event) {
     }
     case "customer.subscription.deleted": {
       const subscription = event.data.object;
+      // Wind down to EXPIRED but keep the plan (no auto-downgrade to FREE).
+      await expireWorkspaceSubscription(subscription.id);
+      break;
+    }
+    case "invoice.payment_failed": {
+      const invoice = event.data.object as Stripe.Invoice & {
+        subscription?: string | Stripe.Subscription | null;
+      };
+      const subscriptionRef = invoice.subscription;
+      const subscriptionId =
+        typeof subscriptionRef === "string" ? subscriptionRef : subscriptionRef?.id;
+
+      if (!subscriptionId) {
+        break;
+      }
+
+      const stripe = getStripeClient();
+      const subscription = await stripe.subscriptions.retrieve(subscriptionId);
       const customerId =
         typeof subscription.customer === "string"
           ? subscription.customer
           : subscription.customer.id;
-      await downgradeSubscriptionToFree(customerId);
+      await syncSubscriptionFromStripe(
+        { ...subscription, status: "past_due" },
+        customerId,
+      );
       break;
     }
     default:

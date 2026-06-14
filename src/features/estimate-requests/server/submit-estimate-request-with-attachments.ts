@@ -176,7 +176,7 @@ export async function submitEstimateRequestWithAttachments(input: {
   }
 
   if (input.source === AttachmentUploadSource.INTERNAL_REQUEST && input.userId) {
-    await assertCanCreateEstimate(input.userId);
+    await assertCanCreateEstimate(workspace.id);
   }
 
   if (input.files.length > 0) {
@@ -343,7 +343,7 @@ export async function submitEstimateRequestWithAttachments(input: {
     }
 
     if (input.source === AttachmentUploadSource.INTERNAL_REQUEST && input.userId) {
-      await incrementEstimateUsage(input.userId);
+      await incrementEstimateUsage(workspace.id, input.userId);
     }
 
     await tasks.trigger<typeof generateEstimateDraftTask>("generate-estimate-draft", {

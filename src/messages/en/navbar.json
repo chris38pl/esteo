@@ -46,6 +46,10 @@
       "requests": "Requests",
       "estimates": "Estimates",
       "spaceUsage": "Space usage"
+    },
+    "deletionGuard": {
+      "title": "Account deletion",
+      "description": "You cannot delete your account while you own these workspaces. Transfer ownership or delete each one (and cancel subscriptions) first."
     }
   }
 }

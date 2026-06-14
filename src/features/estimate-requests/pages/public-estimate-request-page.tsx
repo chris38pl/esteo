@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 
 import { PublicEstimateRequestClient } from "@/features/estimate-requests/components/public-estimate-request-client";
@@ -50,6 +50,10 @@ export default async function PublicEstimateRequestPage({ params }: { params: Pa
 
   if (!pageData) {
     notFound();
+  }
+
+  if (pageData.matchedViaAlias) {
+    redirect(getPublicEstimateRequestPath(resolvedLocale, pageData.canonicalSlug));
   }
 
   let memberHeader: { backHref: string; currentUser: ReturnType<typeof toCurrentUserProfile> } | null =

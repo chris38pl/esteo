@@ -17,14 +17,13 @@ import { needsEstimatePdfStorageHeal } from "@/features/estimates/server/pdf-sto
 import { workspaceBrandingSchema } from "@/features/workspaces/schemas/branding";
 import type { Locale } from "@/lib/locale";
 import { getVersionWithTree } from "@/features/estimates/server/repository";
+import { getWorkspacePlan } from "@/server/billing/entitlement-service";
 
-export async function getUserSubscriptionPlan(userId: string): Promise<SubscriptionPlan> {
-  const billingAccount = await prisma.billingAccount.findUnique({
-    where: { ownerUserId: userId },
-    include: { subscription: true },
-  });
-
-  return billingAccount?.subscription?.plan ?? "FREE";
+/** Watermarking is driven by the WORKSPACE plan (workspace billing), not the exporting user. */
+export async function getWorkspaceSubscriptionPlan(
+  workspaceId: string,
+): Promise<SubscriptionPlan> {
+  return getWorkspacePlan(workspaceId);
 }
 
 export async function loadEstimatePdfGenerationContext(input: {
@@ -34,7 +33,7 @@ export async function loadEstimatePdfGenerationContext(input: {
   locale: Locale;
   userId: string;
 }): Promise<EstimatePdfViewModel> {
-  const [estimate, versionTree, workspace, userPlan] = await Promise.all([
+  const [estimate, versionTree, workspace, workspacePlan] = await Promise.all([
     prisma.estimate.findFirst({
       where: {
         id: input.estimateId,
@@ -57,7 +56,7 @@ export async function loadEstimatePdfGenerationContext(input: {
       where: { id: input.workspaceId, deletedAt: null },
       include: { settings: true },
     }),
-    getUserSubscriptionPlan(input.userId),
+    getWorkspaceSubscriptionPlan(input.workspaceId),
   ]);
 
   if (!estimate || !versionTree || !workspace) {
@@ -128,7 +127,7 @@ export async function loadEstimatePdfGenerationContext(input: {
         sortOrder: item.sortOrder,
       })),
     })),
-    userPlan,
+    userPlan: workspacePlan,
   });
 }
 

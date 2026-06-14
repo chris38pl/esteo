@@ -126,22 +126,39 @@ export function EstimatePdfPreviewDialog({
         </div>
 
         {state.status === "ready" ? (
-          <DialogFooter className="shrink-0 border-t border-border/60 px-5 py-4 sm:justify-between">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              {t("editor.pdfPreview.close")}
-            </Button>
-            <div className="flex flex-wrap gap-2">
-              {isMobile ? (
-                <Button type="button" onClick={handleOpenPdf}>
-                  <ExternalLink className="size-4" />
-                  {t("editor.pdfPreview.open")}
+          <DialogFooter
+            className={
+              isMobile
+                ? "shrink-0 border-t border-border/60 px-5 py-4"
+                : "shrink-0 border-t border-border/60 px-5 py-4 sm:justify-between"
+            }
+          >
+            {isMobile ? (
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => onOpenChange(false)}
+                >
+                  {t("editor.pdfPreview.close")}
                 </Button>
-              ) : null}
-              <Button type="button" onClick={handleDownload}>
-                <Download className="size-4" />
-                {t("editor.pdfPreview.download")}
-              </Button>
-            </div>
+                <Button type="button" className="w-full" onClick={handleDownload}>
+                  <Download className="size-4" />
+                  {t("editor.pdfPreview.download")}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                  {t("editor.pdfPreview.close")}
+                </Button>
+                <Button type="button" onClick={handleDownload}>
+                  <Download className="size-4" />
+                  {t("editor.pdfPreview.download")}
+                </Button>
+              </>
+            )}
           </DialogFooter>
         ) : null}
 

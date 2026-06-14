@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import type { BillingSidebarState } from "@/features/billing/billing-sidebar-state";
-import { dashboardBillingHref } from "@/lib/dashboard-routes";
+import { dashboardBillingHref, ownedWorkspaceBillingHref } from "@/lib/dashboard-routes";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
@@ -33,8 +33,15 @@ function planVariantFromBillingState(state: BillingSidebarState): PlanCardVarian
 
 export function SidebarUpgrade({ collapsedOverride }: { collapsedOverride?: boolean } = {}) {
   const tPlan = useTranslations("sidebar.planCards");
-  const { billingSidebarState, locale } = useWorkspaceContext();
-  const billingHref = dashboardBillingHref(locale);
+  const { billingSidebarState, locale, activeWorkspace, workspaces } = useWorkspaceContext();
+  const billingHref =
+    activeWorkspace?.isOwner && activeWorkspace.slug
+      ? dashboardBillingHref(locale, activeWorkspace.slug)
+      : ownedWorkspaceBillingHref(locale, workspaces);
+
+  if (!billingHref) {
+    return null;
+  }
   const collapsedFromStore = useSidebarStore((s) => s.collapsed);
   const collapsed = collapsedOverride ?? collapsedFromStore;
   const { inDrawer } = useSidebarLayout();

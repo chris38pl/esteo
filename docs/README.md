@@ -20,6 +20,7 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 | [estimate-payments.md](features/estimate-payments.md) | Payment schedule (installment tracker) |
 | [industry-fields.md](features/industry-fields.md) | Dynamic industry fields on documents |
 | [workspace-onboarding.md](features/workspace-onboarding.md) | Workspace creation and onboarding |
+| [workspace-billing.md](features/workspace-billing.md) | Workspace billing page — plans, Stripe, usage, invoices |
 | [workspace-branding-and-company-profile.md](features/workspace-branding-and-company-profile.md) | Company logo (UploadThing) and company profile tab for PDF/client docs |
 | [admin-workspaces.md](features/admin-workspaces.md) | Platform admin workspace tools |
 | [authentication.md](features/authentication.md) | Custom Clerk Elements sign-in, Client Trust, email second-factor |
@@ -31,6 +32,7 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 | [backend.md](architecture/backend.md) | Feature folders, server pattern, jobs |
 | [deployment.md](architecture/deployment.md) | Localhost, Vercel Preview/Production, Trigger.dev env mapping |
 | [database.md](architecture/database.md) | Schema, billing, planned estimate models |
+| [billing-stripe.md](architecture/billing-stripe.md) | Stripe subscriptions, plan changes, portal sync, webhooks |
 | [ai.md](architecture/ai.md) | Global AI stack and prompt layers |
 | [estimate-ai.md](architecture/estimate-ai.md) | Estimate draft job and agentic edit |
 | [voice-intake.md](architecture/voice-intake.md) | Voice intake — API, state machine, AI pipeline |
@@ -50,6 +52,12 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 | --- | --- |
 | [adr/001-workspace-deletion-and-slug-policy.md](adr/001-workspace-deletion-and-slug-policy.md) | Workspace archive and slug policy |
 | [incidents/README.md](incidents/README.md) | Incident index |
+
+## Dev tooling
+
+| Document | Description |
+| --- | --- |
+| [dev/billing-toolkit.md](dev/billing-toolkit.md) | CLI commands for local billing tests |
 
 ## Estimate feature map
 

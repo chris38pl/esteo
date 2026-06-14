@@ -2,5 +2,128 @@
   "title": "Billing",
   "description": "Billing management is coming soon. You will be able to view invoices, update payment methods, and manage your subscription here.",
   "soon": "Soon",
-  "backToDashboard": "Back to dashboard"
+  "backToDashboard": "Back to dashboard",
+  "workspace": {
+    "title": "Billing",
+    "currentPlan": "Current plan: {plan} · {status}",
+    "statusNotice": {
+      "PAST_DUE": "A recent payment failed. Update your payment method to avoid interruption.",
+      "GRACE_PERIOD": "Your subscription is in its grace period. New estimates, invites and AI are paused; renew to restore full access.",
+      "EXPIRED": "This workspace is read-only. Existing data is viewable and exportable — reactivate to resume work.",
+      "ARCHIVED": "This workspace is archived (read-only). Reactivate billing to resume work.",
+      "INCOMPLETE": "Payment hasn't completed yet. Finish checkout to activate this workspace.",
+      "SUSPENDED": "This workspace is suspended. Contact support.",
+      "cancelAtPeriodEnd": "Your subscription will cancel on {date}. You keep full plan access until then."
+    },
+    "effectiveStatus": {
+      "INCOMPLETE": "incomplete",
+      "ACTIVE": "active",
+      "PAST_DUE": "past due",
+      "GRACE_PERIOD": "grace period",
+      "EXPIRED": "expired",
+      "ARCHIVED": "archived",
+      "SUSPENDED": "suspended",
+      "PENDING_DELETION": "pending deletion"
+    },
+    "usage": {
+      "aiUsage": "AI usage",
+      "estimates": "Estimates",
+      "users": "Users",
+      "storage": "Storage",
+      "usedThisMonth": "Used this month",
+      "percentUsed": "{percent}% used",
+      "unlimited": "Unlimited",
+      "estimatesThisMonth": "Estimates this month",
+      "aiCallsThisMonth": "AI calls this month",
+      "seatsUsed": "Seats used"
+    },
+    "actions": {
+      "upgradeToPro": "Upgrade to PRO",
+      "upgradeToBusiness": "Upgrade to BUSINESS",
+      "manageBilling": "Manage billing",
+      "resumeSubscription": "Resume subscription",
+      "cancelAtPeriodEnd": "Cancel at period end"
+    },
+    "memberUsage": {
+      "title": "Usage by member",
+      "member": "Member",
+      "aiCalls": "AI calls",
+      "estimates": "Estimates"
+    },
+    "plan": {
+      "FREE": "Free",
+      "PRO": "Pro",
+      "BUSINESS": "Business"
+    },
+    "planHero": {
+      "badge": {
+        "active": "Active plan",
+        "canceling": "Canceling",
+        "status": {
+          "INCOMPLETE": "Incomplete",
+          "PAST_DUE": "Past due",
+          "GRACE_PERIOD": "Grace period",
+          "EXPIRED": "Expired",
+          "ARCHIVED": "Archived",
+          "SUSPENDED": "Suspended",
+          "PENDING_DELETION": "Pending deletion"
+        }
+      },
+      "planName": {
+        "FREE": "Free",
+        "PRO": "Pro",
+        "BUSINESS": "Business"
+      },
+      "description": {
+        "FREE": "Core Esteo features for one workspace.",
+        "PRO": "More power for a growing team.",
+        "BUSINESS": "All features unlocked."
+      },
+      "renewal": "Renews: {date}",
+      "cancelsOn": "Cancels: {date}",
+      "daysUntil": "In {days} days",
+      "price": {
+        "FREE": "PLN 0",
+        "PRO": "PLN 99",
+        "BUSINESS": "PLN 199"
+      },
+      "perMonth": "/ month",
+      "changePlan": "Change plan",
+      "managePayment": "Manage payment",
+      "changePlanDialog": {
+        "title": "Change plan",
+        "description": "Choose a target plan for this workspace."
+      }
+    },
+    "banners": {
+      "storageOverLimit": "Storage is over your plan limit. Delete files or upgrade to resume uploads.",
+      "seatOverLimit": "Member count exceeds your plan limit. Suspend members or upgrade your plan."
+    },
+    "dangerZone": {
+      "title": "Danger zone",
+      "description": "Canceling your subscription will move this workspace to the FREE plan after the current billing period ends.",
+      "activeUntilLabel": "Subscription stays active until:",
+      "stripeSecured": "Payments are securely handled by Stripe."
+    },
+    "addons": {
+      "title": "Active add-ons",
+      "extraUsers": "Additional users",
+      "extraUsersPackage": "+5 users pack",
+      "extraUsersPrice": "PLN 49 / month",
+      "extraStorage": "Additional storage",
+      "extraStoragePackage": "+20 GB pack",
+      "extraStoragePrice": "PLN 100 / month",
+      "activeBadge": "Active",
+      "manageAddons": "Manage add-ons"
+    },
+    "nextInvoice": {
+      "title": "Next invoice",
+      "description": "The invoice will be issued automatically at the end of the billing period.",
+      "empty": {
+        "free_plan": "No active paid subscription.",
+        "canceling": "Subscription is ending — no further invoice will be issued.",
+        "no_subscription": "No upcoming invoice scheduled."
+      }
+    }
+  }
 }

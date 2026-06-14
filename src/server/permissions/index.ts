@@ -4,19 +4,41 @@ export {
   assertPaidPlan,
 } from "@/server/permissions/assert-entitlement";
 export {
-  assertCanAcceptInvitation,
   assertCanCreateEstimate,
+  assertCanCreateFreeWorkspace,
   assertCanCreateWorkspace,
   assertCanInviteMember,
+  canInviteWorkspaceMembers,
+  canUserCreateWorkspace,
+  countActiveFreeWorkspaces,
   countInvitedSeats,
   countOwnedWorkspaces,
   getEntitlements,
+  getMaxUndoSteps,
   incrementAiAssistantUsage,
   incrementEstimateUsage,
   isPaidSubscriptionStatus,
   PLAN_ENTITLEMENTS,
   type PlanEntitlements,
 } from "@/server/permissions/entitlements";
+export type {
+  Feature,
+  FeatureState,
+  WorkspaceEffectiveStatus,
+} from "@/server/permissions/domain";
+export {
+  assertCanCreateEstimateInWorkspace,
+  assertCanUploadAttachmentInWorkspace,
+  assertCanUseAiAssistantInWorkspace,
+  assertWorkspaceHasSeat,
+  deriveFeatureState,
+  getFeatureState,
+  getMaxUndoStepsForWorkspace,
+  getSeatUsage,
+  getWorkspaceEntitlements,
+  getWorkspacePlan,
+  type WorkspaceEntitlements,
+} from "@/server/billing/entitlement-service";
 export {
   compareRoles,
   hasMinimumRole,

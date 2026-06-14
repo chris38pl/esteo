@@ -101,7 +101,7 @@ export default async function DashboardLayout({
     await Promise.all([
     canUserCreateWorkspace(user.id),
     countOwnedWorkspaces(user.id),
-    getBillingSidebarState(user.id),
+    getBillingSidebarState(activeWorkspaceId),
     countPendingInvitations(user.email),
     getNextModalInvitation(user.email),
   ]);

@@ -46,6 +46,10 @@
       "requests": "Zapytania",
       "estimates": "Wyceny",
       "spaceUsage": "Użycie przestrzeni"
+    },
+    "deletionGuard": {
+      "title": "Usuwanie konta",
+      "description": "Nie możesz usunąć konta, dopóki jesteś właścicielem tych przestrzeni. Przenieś własność lub usuń każdą z nich (i anuluj subskrypcje)."
     }
   }
 }
