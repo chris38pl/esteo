@@ -2,7 +2,7 @@
 
 Central reference for how Esteo runs across **localhost**, **Vercel Preview (staging)**, and **Vercel Production (main)** — which external services are involved, where environment variables live, and how Trigger.dev background jobs connect.
 
-Related: [estimate-requests](../features/estimate-requests.md), [estimate-ai](estimate-ai.md), [database](database.md), [backend](backend.md). Incident: [Trigger.dev + Vercel Preview](../incidents/2026-06-08-trigger-dev-vercel-preview.md).
+Related: [estimate-requests](../features/estimate-requests.md), [estimate-ai](estimate-ai.md), [database](database.md), [backend](backend.md), [database migrations](../dev/database-migrations.md). Incident: [Trigger.dev + Vercel Preview](../incidents/2026-06-08-trigger-dev-vercel-preview.md).
 
 ---
 
@@ -79,7 +79,7 @@ Setting `DATABASE_URL` on Vercel does **not** automatically give it to Trigger w
 | --- | --- | --- | --- | --- |
 | **Vercel** | Host Next.js app | — | Preview deploys from `staging` | Production deploys from `main` |
 | **GitHub** (`chris38pl/esteo`) | Source repo | local clone | connected | connected |
-| **Neon Postgres** | Prisma database | staging branch (shared with Preview) | staging branch | prod branch (at launch) |
+| **Neon Postgres** | Prisma database | **development** branch | **staging** branch | **production** branch (at launch) |
 | **Clerk** | Authentication | test keys (shared with Preview) | same test keys | prod keys (at launch) |
 | **OpenAI** | AI estimate draft | via Trigger dev worker (`.env`) | Trigger **Esteo-Staging** dashboard | Trigger **Esteo** dashboard |
 | **UploadThing** | Attachment storage | `.env` + Trigger worker | Vercel + Trigger Staging dashboard | Vercel + Trigger main dashboard |
@@ -140,7 +140,9 @@ flowchart TB
   - `npm run dev` — Next.js local server
   - `npm run trigger:dev` — local Trigger worker (Development, main Esteo project)
   - `npm run trigger:deploy` — deploy tasks to cloud (`npx trigger.dev@4.4.6 deploy`)
-  - `npm run build` — `next build` only (no Trigger step in Vercel build)
+  - `npm run build` — `next build` (local)
+  - `npm run build:vercel` — Preview migrate deploy + `next build` (Vercel via [`vercel.json`](../../vercel.json))
+  - `npm run prisma:migrate:staging` — manual `migrate deploy` to Neon staging (local `.env` `_STAGING` vars)
   - `postinstall` — `prisma generate`
 
 ### GitHub integration
@@ -183,8 +185,9 @@ Trigger.dev Vercel integration can sync env vars and trigger deploys. **Not requ
 
 | Variable | Value source | Required |
 | --- | --- | --- |
-| `DATABASE_URL` | Neon staging branch (pooler) | Yes |
-| `DIRECT_URL` | Neon staging branch (direct) | Yes for migrations |
+| `DATABASE_URL` | Neon **development** branch (pooler) | Yes |
+| `DIRECT_URL` | Neon **development** branch (direct) | Yes for migrations |
+| `DATABASE_URL_STAGING`, `DIRECT_URL_STAGING` | Neon **staging** branch | Optional — for `npm run prisma:migrate:staging` only |
 | `NEXT_PUBLIC_CLERK_*`, `CLERK_SECRET_KEY` | Clerk test app | Yes |
 | `OPENAI_API_KEY` | OpenAI | Yes (worker uses via `.env` in dev) |
 | `UPLOADTHING_TOKEN` | UploadThing | Yes if testing attachments |
@@ -203,7 +206,7 @@ npm run trigger:dev
 
 Without `trigger:dev`, tasks queue in Development and expire (no cloud worker on free tier for dev without local process).
 
-**Shared with Preview today:** Clerk test keys, Neon staging branch, UploadThing app token.
+**Isolated from Preview:** localhost uses Neon **development**; Vercel Preview uses Neon **staging**. See [database migrations](../dev/database-migrations.md).
 
 ---
 
@@ -215,7 +218,7 @@ Without `trigger:dev`, tasks queue in Development and expire (no cloud worker on
 
 | Variable | Value source | Preview checkbox |
 | --- | --- | --- |
-| `DATABASE_URL`, `DIRECT_URL` | Neon staging | Preview |
+| `DATABASE_URL`, `DIRECT_URL` | Neon **staging** branch | Preview |
 | Clerk keys | Same test app as localhost | Preview |
 | `UPLOADTHING_TOKEN` | UploadThing | Preview |
 | `TRIGGER_PROJECT_ID` | **Esteo-Staging** project ref | **Preview** |
@@ -231,7 +234,9 @@ Without `trigger:dev`, tasks queue in Development and expire (no cloud worker on
 | `OPENAI_API_KEY` | Staging/dev key |
 | `UPLOADTHING_TOKEN` | Same as Vercel |
 
-**Build on Vercel:** `npm run build` → `next build`. Prisma client via `postinstall`. Task deploy via GitHub integration or manual `trigger:deploy`.
+**Build on Vercel:** `npm run build:vercel` → `prisma migrate deploy` (Preview only) → `next build`. Prisma client via `postinstall`. Task deploy via GitHub integration or manual `trigger:deploy`.
+
+**Preview migrations:** automatic on every Preview deploy when `DATABASE_URL` and `DIRECT_URL` point at Neon staging. Details: [database migrations](../dev/database-migrations.md).
 
 **After changing env vars:** redeploy Preview (env changes do not always apply to running instances).
 
@@ -276,7 +281,9 @@ If step 5 fails → HTTP 500, user message „Nie udało się wysłać zgłoszen
 | Vercel Production deploy | `git push` to `main` |
 | Trigger Staging task deploy | GitHub integration on push to `staging`, or manual `trigger:deploy` |
 | Trigger main task deploy | GitHub integration on push to `main` (at launch) |
-| Prisma migrations (local) | `npm run prisma:migrate` against `DIRECT_URL` |
+| Prisma migrations (local dev) | `npm run prisma:migrate` against Neon **development** `DIRECT_URL` |
+| Prisma migrations (staging, manual) | `npm run prisma:migrate:staging` |
+| Prisma migrations (Preview deploy) | automatic via `build:vercel` on Vercel Preview |
 | Prisma generate (Vercel) | automatic via `postinstall` |
 
 ---
@@ -286,7 +293,7 @@ If step 5 fails → HTTP 500, user message „Nie udało się wysłać zgłoszen
 ### New developer (localhost)
 
 1. Clone `chris38pl/esteo`
-2. Copy `.env.example` → `.env`, fill secrets (ask team for staging Neon, Clerk test, etc.)
+2. Copy `.env.example` → `.env`, fill secrets (Neon **development** branch, Clerk test, etc.)
 3. `TRIGGER_PROJECT_ID` + `TRIGGER_SECRET_KEY` = **main Esteo Development** (`tr_dev_...`)
 4. `npm install`
 5. `npm run prisma:migrate` (if schema changed)
