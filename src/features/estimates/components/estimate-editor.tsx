@@ -8,6 +8,7 @@ import {
   useEstimateAutosave,
 } from "@/features/estimates/hooks/use-estimate-autosave";
 import { useEstimatePdfExport } from "@/features/estimates/hooks/use-estimate-pdf-export";
+import { useEstimatePdfBeforeExport } from "@/features/estimates/hooks/use-estimate-pdf-before-export";
 import { useEstimatePdfPreview } from "@/features/estimates/hooks/use-estimate-pdf-preview";
 import { useEstimateAdvancedMode } from "@/features/estimates/hooks/use-estimate-advanced-mode";
 import { useEstimateFocusMode } from "@/features/estimates/hooks/use-estimate-focus-mode";
@@ -58,6 +59,7 @@ import type {
   WorkspaceStorageSummaryClient,
 } from "@/features/attachments/lib/serialize-attachments";
 import type { EstimatePdfClient } from "@/features/estimates/lib/serialize-estimate-pdfs";
+import type { WorkspaceCompanyProfileClient } from "@/features/workspaces/lib/company-profile-for-export";
 import { EstimateNotesPanel } from "./estimate-notes-panel";
 import { EstimatePaymentsPanel } from "./estimate-payments-panel";
 import { EstimateSummaryPanel } from "./summary/estimate-summary-panel";
@@ -109,6 +111,7 @@ interface EstimateEditorProps {
   initialPaymentInstallments?: PaymentInstallmentClient[];
   initialAttachments?: EstimateAttachmentClient[];
   initialPdfDocuments?: EstimatePdfClient[];
+  workspaceCompanyProfile: WorkspaceCompanyProfileClient;
   storageSummary?: WorkspaceStorageSummaryClient;
   currentUserId?: string;
   currentUserAvatarUrl?: string | null;
@@ -175,6 +178,7 @@ export function EstimateEditor({
   initialPaymentInstallments = [],
   initialAttachments = [],
   initialPdfDocuments = [],
+  workspaceCompanyProfile,
   storageSummary = {
     usedBytes: "0",
     limitBytes: "262144000",
@@ -330,13 +334,21 @@ export function EstimateEditor({
     return false;
   }, [autosaveOnBlur, autosaveStatus, buildAutosavePayload, isVersionReadOnly]);
 
+  const { onBeforeExport: onBeforePdfExport, dialog: companyProfilePdfWarningDialog } =
+    useEstimatePdfBeforeExport({
+      workspaceCompanyProfile,
+      ensureSaved: ensureSavedBeforePdfExport,
+      workspaceSlug,
+      locale,
+    });
+
   const { exportPdf } = useEstimatePdfExport({
     estimateId: estimate.id,
     versionId: activeVersionId,
     workspaceId: estimate.workspaceId,
     workspaceSlug,
     locale,
-    onBeforeExport: ensureSavedBeforePdfExport,
+    onBeforeExport: onBeforePdfExport,
   });
 
   const { previewPdf, isPreviewLoading, previewState, closePreview } =
@@ -346,7 +358,7 @@ export function EstimateEditor({
       workspaceId: estimate.workspaceId,
       workspaceSlug,
       locale,
-      onBeforeExport: ensureSavedBeforePdfExport,
+      onBeforeExport: onBeforePdfExport,
     });
 
   const isPdfPreviewOpen = previewState.status !== "closed";
@@ -839,7 +851,7 @@ export function EstimateEditor({
         rulesApplied={rulesApplied}
         isPinned={isPinned}
         canManualRetryAiDraft={canManualRetryAiDraft}
-        onBeforePdfExport={ensureSavedBeforePdfExport}
+        onBeforePdfExport={onBeforePdfExport}
         onPreviewPdf={previewPdf}
         isPreviewLoading={isPreviewLoading}
       />
@@ -852,6 +864,8 @@ export function EstimateEditor({
           }
         }}
       />
+
+      {companyProfilePdfWarningDialog}
 
       {!topPanelHidden ? (
         <div

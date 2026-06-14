@@ -23,6 +23,14 @@ const PDF_EXPORT_TOAST_POSITION = "bottom-center" as const;
 
 export type EstimatePdfOutputMode = "export" | "preview";
 
+export type EstimatePdfBeforeExportResult =
+  | { proceed: true }
+  | { proceed: false; reason: "unsaved" | "cancelled" };
+
+export type EstimatePdfOutputResult =
+  | { ok: true }
+  | { ok: false; message: string; cancelled?: boolean };
+
 export type EstimatePdfReadyPayload = {
   url: string;
   fileName: string;
@@ -36,7 +44,8 @@ export function useEstimatePdfOutput(input: {
   workspaceSlug: string;
   locale: Locale;
   mode: EstimatePdfOutputMode;
-  onBeforeExport?: () => Promise<boolean>;
+  onBeforeExport?: () => Promise<EstimatePdfBeforeExportResult>;
+  onPreviewGenerationStarted?: () => void;
   onPreviewReady?: (payload: EstimatePdfReadyPayload) => void | Promise<void>;
 }) {
   const t = useTranslations("estimates");
@@ -142,7 +151,7 @@ export function useEstimatePdfOutput(input: {
   );
 
   const pollUntilReady = useCallback(
-    async (runId: string): Promise<{ ok: true } | { ok: false; message: string }> => {
+    async (runId: string): Promise<EstimatePdfOutputResult> => {
       if (!input.versionId) {
         return { ok: false, message: t("editor.pdfExport.failed") };
       }
@@ -195,9 +204,7 @@ export function useEstimatePdfOutput(input: {
     [handleReady, input, showError, t],
   );
 
-  const runPdfOutput = useCallback(async (): Promise<
-    { ok: true } | { ok: false; message: string }
-  > => {
+  const runPdfOutput = useCallback(async (): Promise<EstimatePdfOutputResult> => {
     if (!input.versionId || isRunning) {
       return { ok: false, message: t("editor.pdfExport.failed") };
     }
@@ -207,25 +214,36 @@ export function useEstimatePdfOutput(input: {
     clearPollTimer();
     clearViewerWindow();
 
-    if (isExportMode) {
-      viewerWindowRef.current = openEstimatePdfPlaceholder({
-        title: t("editor.pdfExport.generating"),
-        hint: t("editor.pdfExport.generatingHint"),
-      });
-      showExportProgress();
-    }
-
-    const fail = (message: string): { ok: false; message: string } => {
+    const fail = (message: string): EstimatePdfOutputResult => {
       showError(message);
       return { ok: false, message };
     };
 
+    const abort = (): EstimatePdfOutputResult => {
+      dismissExportProgress();
+      clearViewerWindow();
+      return { ok: false, message: "", cancelled: true };
+    };
+
     try {
       if (input.onBeforeExport) {
-        const canProceed = await input.onBeforeExport();
-        if (!canProceed) {
-          return fail(t("editor.pdfExport.saveBeforeExport"));
+        const gate = await input.onBeforeExport();
+        if (!gate.proceed) {
+          if (gate.reason === "unsaved") {
+            return fail(t("editor.pdfExport.saveBeforeExport"));
+          }
+          return abort();
         }
+      }
+
+      if (isExportMode) {
+        viewerWindowRef.current = openEstimatePdfPlaceholder({
+          title: t("editor.pdfExport.generating"),
+          hint: t("editor.pdfExport.generatingHint"),
+        });
+        showExportProgress();
+      } else {
+        input.onPreviewGenerationStarted?.();
       }
 
       const result = await exportEstimatePdfAction({

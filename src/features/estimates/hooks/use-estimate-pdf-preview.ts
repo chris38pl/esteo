@@ -8,7 +8,7 @@ import {
   fetchEstimatePdfBlobUrl,
   revokeEstimatePdfBlobUrl,
 } from "@/features/estimates/lib/fetch-estimate-pdf-blob-url";
-import { useEstimatePdfOutput } from "@/features/estimates/hooks/use-estimate-pdf-output";
+import { useEstimatePdfOutput, type EstimatePdfBeforeExportResult } from "@/features/estimates/hooks/use-estimate-pdf-output";
 import type { Locale } from "@/lib/locale";
 
 export function useEstimatePdfPreview(input: {
@@ -17,7 +17,7 @@ export function useEstimatePdfPreview(input: {
   workspaceId: string;
   workspaceSlug: string;
   locale: Locale;
-  onBeforeExport?: () => Promise<boolean>;
+  onBeforeExport?: () => Promise<EstimatePdfBeforeExportResult>;
 }) {
   const t = useTranslations("estimates");
   const blobUrlRef = useRef<string | null>(null);
@@ -60,6 +60,9 @@ export function useEstimatePdfPreview(input: {
   const { runPdfOutput, isRunning } = useEstimatePdfOutput({
     ...input,
     mode: "preview",
+    onPreviewGenerationStarted: () => {
+      setPreviewState({ status: "loading" });
+    },
     onPreviewReady: handlePreviewReady,
   });
 
@@ -69,11 +72,15 @@ export function useEstimatePdfPreview(input: {
     }
 
     clearBlobUrl();
-    setPreviewState({ status: "loading" });
 
     const result = await runPdfOutput();
 
     if (!result.ok) {
+      if (result.cancelled) {
+        setPreviewState({ status: "closed" });
+        return;
+      }
+
       setPreviewState({ status: "error", message: result.message });
     }
   }, [clearBlobUrl, input.versionId, isRunning, runPdfOutput]);

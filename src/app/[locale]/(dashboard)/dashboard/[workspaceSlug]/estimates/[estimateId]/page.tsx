@@ -49,6 +49,8 @@ import { getWorkspaceStorageSummary } from "@/features/attachments/server/assert
 import { listEstimatePdfsByEstimateId } from "@/features/estimates/server/estimate-pdf-repository";
 import { serializeEstimatePdfs } from "@/features/estimates/lib/serialize-estimate-pdfs";
 import { getMaxUndoSteps } from "@/server/permissions/entitlements";
+import { findWorkspaceSettings } from "@/features/workspaces/server/repository";
+import { serializeWorkspaceCompanyProfileClient } from "@/features/workspaces/lib/company-profile-for-export";
 
 export default async function EstimateEditorPage({
   params,
@@ -179,6 +181,11 @@ export default async function EstimateEditorPage({
   const initialPdfDocuments = serializeEstimatePdfs(pdfRows);
 
   const maxUndoSteps = await getMaxUndoSteps(resolved.workspace.id);
+  const workspaceSettings = await findWorkspaceSettings(resolved.workspace.id);
+  const workspaceCompanyProfile = serializeWorkspaceCompanyProfileClient({
+    name: resolved.workspace.name,
+    settings: workspaceSettings,
+  });
 
   return (
     <>
@@ -208,6 +215,7 @@ export default async function EstimateEditorPage({
           isAvatarPreset(user.avatarPreset) ? user.avatarPreset : null
         }
         maxUndoSteps={maxUndoSteps}
+        workspaceCompanyProfile={workspaceCompanyProfile}
       />
     </>
   );

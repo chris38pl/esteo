@@ -206,7 +206,21 @@
       "generatingHint": "Przygotowujemy dokument. To może potrwać kilka sekund.",
       "popupBlocked": "PDF otworzył się w nowej karcie lub został pobrany. Jeśli go nie widzisz, sprawdź pobrane pliki.",
       "timeout": "Nie udało się potwierdzić wygenerowania PDF. Odśwież stronę i spróbuj ponownie.",
-      "failed": "Generowanie PDF nie powiodło się. Spróbuj ponownie."
+      "failed": "Generowanie PDF nie powiodło się. Spróbuj ponownie.",
+      "companyProfileIncomplete": {
+        "title": "Uzupełnij dane firmy",
+        "description": "Na PDF brakuje danych firmy z ustawień przestrzeni. Uzupełnij je, aby dokument wyglądał profesjonalnie — albo kontynuuj z pustymi polami.",
+        "missingFieldsLabel": "Brakujące elementy:",
+        "fields": {
+          "logo": "Logo firmy",
+          "address": "Adres",
+          "taxId": "NIP",
+          "email": "E-mail",
+          "phone": "Telefon"
+        },
+        "fillData": "Uzupełnij dane",
+        "proceedAnyway": "Kontynuuj bez danych"
+      }
     },
     "pdfPreview": {
       "title": "Podgląd PDF",

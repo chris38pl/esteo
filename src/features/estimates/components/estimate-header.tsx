@@ -25,6 +25,7 @@ import { EstimateHeaderRenameMenuItem } from "./estimate-header-rename-menu-item
 import { EstimateHeaderVersionMenuItems } from "./estimate-header-version-menu-items";
 import { EstimateHeaderRetryAiMenuItem } from "./estimate-header-retry-ai-menu-item";
 import { EstimateHeaderPdfExportMenuItem } from "./estimate-header-pdf-export-menu-item";
+import type { EstimatePdfBeforeExportResult } from "@/features/estimates/hooks/use-estimate-pdf-output";
 import type { AutoSaveStatus } from "@/features/estimates/hooks/use-estimate-autosave";
 import type { Locale } from "@/lib/locale";
 import {
@@ -67,7 +68,7 @@ interface EstimateHeaderProps {
   rulesApplied?: boolean;
   isPinned?: boolean;
   canManualRetryAiDraft?: boolean;
-  onBeforePdfExport?: () => Promise<boolean>;
+  onBeforePdfExport?: () => Promise<EstimatePdfBeforeExportResult>;
   onPreviewPdf?: () => void;
   isPreviewLoading?: boolean;
 }
@@ -83,7 +84,7 @@ interface EstimateHeaderMoreMenuProps {
   versions: Version[];
   isPinned: boolean;
   canManualRetryAiDraft?: boolean;
-  onBeforePdfExport?: () => Promise<boolean>;
+  onBeforePdfExport?: () => Promise<EstimatePdfBeforeExportResult>;
   onPreviewPdf?: () => void;
   isPreviewLoading?: boolean;
   trigger: React.ReactNode;

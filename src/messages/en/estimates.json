@@ -206,7 +206,21 @@
       "generatingHint": "Preparing your document. This may take a few seconds.",
       "popupBlocked": "The PDF opened in a new tab or was downloaded. If you do not see it, check your downloads.",
       "timeout": "Could not confirm PDF generation. Refresh the page and try again.",
-      "failed": "PDF generation failed. Please try again."
+      "failed": "PDF generation failed. Please try again.",
+      "companyProfileIncomplete": {
+        "title": "Complete company details",
+        "description": "Your workspace is missing company details used on PDFs. Add them for a professional document — or continue with empty fields.",
+        "missingFieldsLabel": "Missing items:",
+        "fields": {
+          "logo": "Company logo",
+          "address": "Address",
+          "taxId": "Tax ID (NIP)",
+          "email": "Email",
+          "phone": "Phone"
+        },
+        "fillData": "Complete details",
+        "proceedAnyway": "Continue without details"
+      }
     },
     "pdfPreview": {
       "title": "PDF preview",

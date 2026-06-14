@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { FileDown, Loader2 } from "lucide-react";
 
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import type { EstimatePdfBeforeExportResult } from "@/features/estimates/hooks/use-estimate-pdf-output";
 import { useEstimatePdfExport } from "@/features/estimates/hooks/use-estimate-pdf-export";
 import { estimateHeaderMoreMenuPinActionClass } from "@/features/estimates/lib/estimate-header-layout";
 import type { Locale } from "@/lib/locale";
@@ -22,7 +23,7 @@ export function EstimateHeaderPdfExportMenuItem({
   workspaceId: string;
   workspaceSlug: string;
   locale: Locale;
-  onBeforeExport?: () => Promise<boolean>;
+  onBeforeExport?: () => Promise<EstimatePdfBeforeExportResult>;
 }) {
   const t = useTranslations("estimates");
   const { exportPdf, isExporting } = useEstimatePdfExport({

@@ -1,13 +1,23 @@
 import { workspaceBrandingSchema } from "@/features/workspaces/schemas/branding";
 
-export type WorkspaceCompanyProfileExport = {
-  name: string;
+export type WorkspaceCompanyProfileField =
+  | "logo"
+  | "address"
+  | "taxId"
+  | "email"
+  | "phone";
+
+export type WorkspaceCompanyProfileClient = {
   address: string | null;
   taxId: string | null;
   email: string | null;
   phone: string | null;
-  logoUrl: string | null;
   logoStorageKey: string | null;
+};
+
+export type WorkspaceCompanyProfileExport = WorkspaceCompanyProfileClient & {
+  name: string;
+  logoUrl: string | null;
 };
 
 type WorkspaceWithSettings = {
@@ -38,4 +48,52 @@ export function buildWorkspaceCompanyProfileExport(
     logoUrl: branding?.logoUrl ?? null,
     logoStorageKey: branding?.logoStorageKey ?? null,
   };
+}
+
+export function serializeWorkspaceCompanyProfileClient(
+  workspace: WorkspaceWithSettings,
+): WorkspaceCompanyProfileClient {
+  const profile = buildWorkspaceCompanyProfileExport(workspace);
+
+  return {
+    address: profile.address,
+    taxId: profile.taxId,
+    email: profile.email,
+    phone: profile.phone,
+    logoStorageKey: profile.logoStorageKey,
+  };
+}
+
+function hasValue(value: string | null | undefined): boolean {
+  return Boolean(value?.trim());
+}
+
+export function getMissingWorkspaceCompanyProfileFields(
+  profile: WorkspaceCompanyProfileClient,
+): WorkspaceCompanyProfileField[] {
+  const missing: WorkspaceCompanyProfileField[] = [];
+
+  if (!hasValue(profile.logoStorageKey)) {
+    missing.push("logo");
+  }
+  if (!hasValue(profile.address)) {
+    missing.push("address");
+  }
+  if (!hasValue(profile.taxId)) {
+    missing.push("taxId");
+  }
+  if (!hasValue(profile.email)) {
+    missing.push("email");
+  }
+  if (!hasValue(profile.phone)) {
+    missing.push("phone");
+  }
+
+  return missing;
+}
+
+export function isWorkspaceCompanyProfileComplete(
+  profile: WorkspaceCompanyProfileClient,
+): boolean {
+  return getMissingWorkspaceCompanyProfileFields(profile).length === 0;
 }
