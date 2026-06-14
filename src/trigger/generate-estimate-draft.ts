@@ -179,12 +179,32 @@ export const generateEstimateDraftTask = task({
       return;
     }
 
-    if (request.status === "COMPLETED" || request.status === "FAILED") {
-      logger.info("Skipping — request already processed", {
+    if (request.status === "COMPLETED") {
+      logger.info("Skipping — request already completed", {
         estimateRequestId,
         status: request.status,
       });
       return;
+    }
+
+    if (request.status === "FAILED") {
+      const priorError =
+        request.aiMetadata &&
+        typeof request.aiMetadata === "object" &&
+        "error" in request.aiMetadata &&
+        typeof (request.aiMetadata as { error?: unknown }).error === "string"
+          ? (request.aiMetadata as { error: string }).error
+          : null;
+
+      logger.warn("Skipping retry — request already failed", {
+        estimateRequestId,
+        status: request.status,
+        priorError,
+      });
+
+      throw new Error(
+        priorError ?? "Estimate request already failed; not retrying generation.",
+      );
     }
 
     await prisma.estimateRequest.update({
