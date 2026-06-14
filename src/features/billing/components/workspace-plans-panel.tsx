@@ -186,7 +186,7 @@ export function WorkspacePlansPanel({ workspaceId, workspaceSlug, locale, data }
         </div>
       ) : null}
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-6">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:items-stretch lg:gap-6">
         {PLAN_ORDER.map((plan) => {
           const limits = data.planLimits[plan];
           const labels = formatPlanLimitLabels(limits, unlimitedLabel);
@@ -212,13 +212,13 @@ export function WorkspacePlansPanel({ workspaceId, workspaceSlug, locale, data }
                 cardRefs.current[plan] = node;
               }}
               className={cn(
-                "flex min-w-0 flex-col rounded-xl border bg-card p-6 shadow-sm transition-shadow",
+                "flex h-full min-h-[460px] min-w-0 flex-col rounded-xl border bg-card p-6 shadow-sm transition-shadow lg:min-h-[540px]",
                 accent.border,
                 isCurrent && "ring-2 ring-primary/30",
                 isHighlighted && !isCurrent && "ring-2 ring-primary/20",
               )}
             >
-              <div className="space-y-4">
+              <div className="flex flex-1 flex-col space-y-4">
                 <div className="space-y-2">
                   <span
                     className={cn(
@@ -259,7 +259,7 @@ export function WorkspacePlansPanel({ workspaceId, workspaceSlug, locale, data }
                 </ul>
               </div>
 
-              <div className="mt-6 pt-2">
+              <div className="mt-auto flex min-h-[5.5rem] flex-col justify-end pt-6">
                 {action.kind === "current" ? (
                   <Button variant="outline" className="h-11 w-full" disabled>
                     {t("currentPlan")}

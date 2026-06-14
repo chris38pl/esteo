@@ -92,7 +92,9 @@
     "storagePercent": "{percent}%",
     "storageUsed": "{used} / {limit}",
     "storageUsedPercent": "{percent}% storage used",
-    "planBadge": "{plan} PLAN"
+    "planBadge": "{plan} PLAN",
+    "openBilling": "Go to billing",
+    "openWorkspaceUsage": "Go to workspace usage"
   },
   "workspace": {
     "placeholderName": "Esteo Workspace",

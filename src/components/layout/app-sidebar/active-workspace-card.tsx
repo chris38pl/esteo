@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown, Database } from "lucide-react";
+import Link from "next/link";
 import { useTheme } from "@teispace/next-themes";
 import { useTranslations } from "next-intl";
 
@@ -10,6 +11,7 @@ import { WorkspaceInvitePopover } from "@/components/layout/app-sidebar/workspac
 import { WorkspacePlanBadge } from "@/components/layout/app-sidebar/workspace-plan-badge";
 import { WorkspaceSwitcherMenuContent } from "@/components/layout/app-sidebar/workspace-switcher-menu";
 import { getAppearanceConfig } from "@/features/workspaces/lib/workspace-appearance";
+import { dashboardBillingHref, dashboardWorkspaceUsageHref } from "@/lib/dashboard-routes";
 import type { WorkspaceMemberPreview } from "@/features/workspaces/server/get-active-workspace-card-data";
 import {
   DropdownMenu,
@@ -47,6 +49,52 @@ export function ActiveWorkspaceCard({
   };
   const progressFillColor =
     resolvedTheme === "dark" ? "var(--primary)" : appearance.accent;
+  const billingHref =
+    workspace.isOwner && workspace.slug
+      ? dashboardBillingHref(locale, workspace.slug)
+      : null;
+  const workspaceUsageHref = workspace.slug
+    ? dashboardWorkspaceUsageHref(locale, workspace.slug)
+    : null;
+  const storageLabel = t("storageUsed", {
+    used: storage.usedFormatted,
+    limit: storage.limitFormatted,
+  });
+
+  const storageSectionClassName = cn(
+    "relative z-10 border-t border-border/35 bg-card/97 py-3.5 backdrop-blur-sm",
+    SIDEBAR_INSET,
+  );
+  const storageSectionContent = (
+    <div className={cn("flex min-w-0 items-center gap-2.5", SIDEBAR_ITEM_INSET_X)}>
+      <Database
+        className="size-3.5 shrink-0 self-center text-muted-foreground/70"
+        strokeWidth={1.75}
+        aria-hidden
+      />
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+        <span className="truncate text-[10px] leading-none text-muted-foreground">
+          {storageLabel}
+        </span>
+        <div
+          className="h-1 overflow-hidden rounded-full bg-muted/55 dark:bg-muted/40"
+          role="progressbar"
+          aria-valuenow={storage.usedPercent}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label={storageLabel}
+        >
+          <div
+            className="h-full rounded-full transition-[width] duration-500 ease-out"
+            style={{
+              width: `${storage.usedPercent}%`,
+              backgroundColor: progressFillColor,
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <DropdownMenu modal={false}>
@@ -81,6 +129,7 @@ export function ActiveWorkspaceCard({
               <WorkspacePlanBadge
                 billingSidebarState={billingSidebarState}
                 variant="hero"
+                href={billingHref}
               />
               <DropdownMenuTrigger asChild>
                 <button
@@ -133,47 +182,20 @@ export function ActiveWorkspaceCard({
           </div>
         </div>
 
-        <div
-          className={cn(
-            "relative z-10 border-t border-border/35 bg-card/97 py-3.5 backdrop-blur-sm",
-            SIDEBAR_INSET,
-          )}
-        >
-          <div className={cn("flex min-w-0 items-center gap-2.5", SIDEBAR_ITEM_INSET_X)}>
-            <Database
-              className="size-3.5 shrink-0 self-center text-muted-foreground/70"
-              strokeWidth={1.75}
-              aria-hidden
-            />
-            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-              <span className="truncate text-[10px] leading-none text-muted-foreground">
-                {t("storageUsed", {
-                  used: storage.usedFormatted,
-                  limit: storage.limitFormatted,
-                })}
-              </span>
-              <div
-                className="h-1 overflow-hidden rounded-full bg-muted/55 dark:bg-muted/40"
-                role="progressbar"
-                aria-valuenow={storage.usedPercent}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-label={t("storageUsed", {
-                  used: storage.usedFormatted,
-                  limit: storage.limitFormatted,
-                })}
-              >
-                <div
-                  className="h-full rounded-full transition-[width] duration-500 ease-out"
-                  style={{
-                    width: `${storage.usedPercent}%`,
-                    backgroundColor: progressFillColor,
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        {workspaceUsageHref ? (
+          <Link
+            href={workspaceUsageHref}
+            aria-label={t("openWorkspaceUsage")}
+            className={cn(
+              storageSectionClassName,
+              "block transition hover:bg-muted/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35 focus-visible:ring-inset",
+            )}
+          >
+            {storageSectionContent}
+          </Link>
+        ) : (
+          <div className={storageSectionClassName}>{storageSectionContent}</div>
+        )}
       </div>
 
       <WorkspaceSwitcherMenuContent side="bottom" align="start" />
