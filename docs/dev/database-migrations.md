@@ -24,6 +24,8 @@ Localhost and Preview use **separate** Neon branches so `prisma migrate dev` on 
 | --- | --- | --- |
 | `npm run prisma:migrate` | localhost (`development`) | Creating and applying migrations during feature work |
 | `npm run prisma:migrate:staging` | Neon `staging` | Manual apply before first Preview switch, or debugging staging schema |
+| `npm run prisma:seed:catalog` | localhost (`development`) | Platform catalog only (industry field definitions) |
+| `npm run prisma:seed:catalog:staging` | Neon `staging` | Same — uses `DATABASE_URL_STAGING` / `DIRECT_URL_STAGING` |
 | Vercel Preview build (`build:vercel`) | Neon `staging` | **Automatic** on every Preview deploy |
 
 ### Local staging migrate
@@ -77,7 +79,13 @@ Local `npm run build` is unchanged (`next build` only).
    npm run prisma:migrate:staging
    ```
 
-`migrate deploy` applies **schema only** — it does not copy rows from `development` to `staging`. Use Neon branch restore or `prisma db seed` if Preview needs specific test data.
+`migrate deploy` applies **schema only** — it does not copy rows from `development` to `staging`. Seed platform catalog on staging:
+
+```powershell
+npm run prisma:seed:catalog:staging
+```
+
+For full dev workspace data use `npm run prisma:seed` (development only) or Neon branch restore.
 
 ---
 
@@ -87,6 +95,7 @@ Local `npm run build` is unchanged (`next build` only).
 | --- | --- |
 | [`scripts/prisma-migrate-deploy.mjs`](../../scripts/prisma-migrate-deploy.mjs) | Shared `migrate status` + `migrate deploy` helper |
 | [`scripts/prisma-migrate-staging.mjs`](../../scripts/prisma-migrate-staging.mjs) | Local staging migrate via `_STAGING` env vars |
+| [`scripts/seed-catalog.mjs`](../../scripts/seed-catalog.mjs) | Catalog seed; `--staging` uses `_STAGING` env vars |
 | [`scripts/vercel-build.mjs`](../../scripts/vercel-build.mjs) | Preview-only migrate + Next.js build |
 
 ---

@@ -47,12 +47,20 @@ Module: `src/features/industry-fields/`
 
 ## Seed data
 
-Construction + `ESTIMATE_REQUEST` fields seeded via `prisma/seed-industry-fields.ts`:
+Construction + `ESTIMATE_REQUEST` fields are defined in `prisma/seed-industry-fields.ts` (repo catalog):
 
 - `property_type` (SELECT)
 - `area_size` (NUMBER)
 
-Run `npm run prisma:seed` after reset.
+| Command | Target DB | What it seeds |
+| --- | --- | --- |
+| `npm run prisma:seed` | `DATABASE_URL` (development) | Catalog + dev user/workspace/billing |
+| `npm run prisma:seed:catalog` | `DATABASE_URL` (development) | Platform catalog only (industry fields) |
+| `npm run prisma:seed:catalog:staging` | `DATABASE_URL_STAGING` | Same catalog on Neon **staging** |
+
+Catalog seed is **idempotent** (upsert). It does **not** copy admin-defined fields created only on another branch — add those to `INDUSTRY_FIELD_CATALOG` in git or export via SQL.
+
+Run `npm run prisma:seed` after reset for full dev workspace.
 
 ## AI prompt context
 

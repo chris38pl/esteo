@@ -13,6 +13,40 @@
 
 ---
 
+## **Baza danych — Neon development vs staging**
+
+Środowiska mają **osobne** branche Neon: localhost → `development`, Vercel Preview → `staging`.  
+W `.env` trzymaj `DATABASE_URL_STAGING` + `DIRECT_URL_STAGING` (tylko lokalnie, nie commituj).
+
+|                            |                                                                                    |                                                                                                                                                                      |                                                                                                                                                          |                                                                                                                                                                                                 |
+| -------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `prisma:migrate`           | Tworzy i aplikuje migracje na **development** (`migrate dev`)                    | `npm run prisma:migrate`                                                                                                                                             | Nowy folder w `prisma/migrations/`, schema na dev zsynchronizowana                                                                                        | Codzienna praca lokalna. **Nie** uruchamiaj na staging — używa `DIRECT_URL` z `.env`.                                                                                                          |
+| `prisma:migrate:staging`   | `migrate deploy` na Neon **staging** (ręcznie)                                     | `npm run prisma:migrate:staging`                                                                                                                                     | `Applying migrations to Neon staging branch…` → `All migrations have been successfully applied` lub brak pending                                           | Przed pierwszym przełączeniem Preview, albo debug schemy. Wymaga `DATABASE_URL_STAGING` + `DIRECT_URL_STAGING` w `.env`. Na Preview deploy migracje lecą **automatycznie** (`build:vercel`). |
+| `prisma:seed:catalog`      | Seed **katalogu platformowego** (industry fields) — bez userów/workspace’ów      | `npm run prisma:seed:catalog`                                                                                                                                        | `Industry fields: N created, M updated (2 in repo catalog)`                                                                                              | Uzupełnia `IndustryFieldDefinition` z `prisma/seed-industry-fields.ts`. Idempotentny (upsert).                                                                                                  |
+| `prisma:seed:catalog:staging` | To samo na Neon **staging**                                                     | `npm run prisma:seed:catalog:staging`                                                                                                                                  | Jak wyżej, na branchu staging                                                                                                                            | Po `migrate:staging` gdy Preview nie ma pól branżowych. **Nie** kopiuje pól dodanych tylko w adminie na dev — dodaj je do `INDUSTRY_FIELD_CATALOG` w repo.                                    |
+| `prisma:seed`              | Pełny seed dev: user, workspace `esteo-dev`, billing FREE/PRO, + katalog           | `npm run prisma:seed` `npm run prisma:seed:pro`                                                                                                                      | `Seed completed.` + owner, workspace, plan                                                                                                               | Tylko **development** (`DATABASE_URL`).                                                                                                                                                         |
+| `prisma:seed:staging`      | Pełny seed na Neon **staging** (admin + workspace `esteo-dev`)                     | `npm run prisma:seed:staging` `npm run prisma:seed:staging -- --plan PRO`                                                                                            | `Platform role: PLATFORM_ADMIN`, workspace `/esteo-dev`                                                                                                  | Używa `DATABASE_URL_STAGING`. Owner z `prisma/seed.ts` (`chris38pl@gmail.com` + Clerk ID z seed).                                                                                             |
+| `trigger:deploy:staging`   | Deploy tasków Trigger.dev do projektu **Esteo-Staging**                            | `npm run trigger:deploy:staging`                                                                                                                                     | `Successfully deployed version …` w CLI                                                                                                                  | Po zmianie kodu w `src/trigger/`. Samo podmienienie env w Trigger **nie** wystarczy.                                                                                                           |
+
+**Neon branch → env:**
+
+| Gdzie | Branch Neon | Zmienne |
+| --- | --- | --- |
+| localhost | `development` | `DATABASE_URL`, `DIRECT_URL` |
+| Vercel Preview | `staging` | `DATABASE_URL`, `DIRECT_URL` (Preview w Vercel) |
+| staging z laptopa | `staging` | `DATABASE_URL_STAGING`, `DIRECT_URL_STAGING` |
+
+**Typowy workflow (schema + katalog na Preview):**
+
+1. `npm run prisma:migrate` — lokalnie na dev
+2. commit + push na `staging` — Vercel robi `migrate deploy` przy buildzie
+3. `npm run prisma:seed:catalog:staging` — industry fields na staging
+4. `npm run trigger:deploy:staging` — gdy zmienił się kod tasków
+
+Więcej: `docs/dev/database-migrations.md`.
+
+---
+
 ## **set-plan vs billing-reset**
 
 
