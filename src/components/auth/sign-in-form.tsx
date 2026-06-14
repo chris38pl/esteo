@@ -61,14 +61,12 @@ export function SignInForm({ locale }: { locale: string }) {
               {t("signIn.rememberMe")}
             </label>
 
-            <SignIn.Action asChild navigate="forgot-password">
-              <button
-                type="button"
-                className="text-xs font-medium text-primary hover:underline"
-              >
-                {t("signIn.forgotPassword")}
-              </button>
-            </SignIn.Action>
+            <Link
+              href={`/${locale}/sign-in/forgot-password`}
+              className="text-xs font-medium text-primary hover:underline"
+            >
+              {t("signIn.forgotPassword")}
+            </Link>
           </div>
 
           <SignIn.Action submit asChild>
@@ -181,37 +179,6 @@ export function SignInForm({ locale }: { locale: string }) {
           </div>
         </SignIn.Strategy>
       </SignIn.Step>
-
-      <SignIn.Step name="forgot-password">
-        <div className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            {t("forgotPassword.hint")}
-          </p>
-
-          <Clerk.Field name="identifier" className="space-y-2">
-            <Clerk.Label asChild>
-              <Label>{t("fields.email")}</Label>
-            </Clerk.Label>
-            <Clerk.Input asChild type="email" required autoComplete="email">
-              <Input />
-            </Clerk.Input>
-            <Clerk.FieldError className="text-xs text-destructive" />
-          </Clerk.Field>
-
-          <SignIn.Action submit asChild>
-            <Button type="submit" className="w-full">
-              {t("forgotPassword.submit")}
-            </Button>
-          </SignIn.Action>
-
-          <SignIn.Action asChild navigate="start">
-            <Button type="button" variant="ghost" className="w-full">
-              {c("actions.back")}
-            </Button>
-          </SignIn.Action>
-        </div>
-      </SignIn.Step>
     </SignIn.Root>
   );
 }
-

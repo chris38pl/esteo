@@ -40,11 +40,39 @@ sequenceDiagram
 
 | `SignIn.Step` | Purpose |
 | --- | --- |
-| `start` | Email, password, OAuth (Google, Apple), forgot-password link |
-| `verifications` | `email_code` strategy — Client Trust second factor |
-| `forgot-password` | Password reset identifier |
+| `start` | Single-screen email + password, OAuth (Google, Apple), forgot-password link |
+| `verifications` | `email_code` only — Client Trust second factor |
 
-Not yet implemented: `reset-password` (add if Clerk dashboard enables that path).
+Password reset is **not** implemented in Clerk Elements steps (see below).
+
+### Forgot-password flow (custom, outside Elements)
+
+```mermaid
+sequenceDiagram
+  participant User
+  participant Start as SignIn_start
+  participant Forgot as ForgotPasswordForm
+  participant Clerk as Clerk_API
+  participant Session as Active_session
+
+  User->>Start: click forgot password link
+  Start->>Forgot: /sign-in/forgot-password
+  User->>Forgot: email + send code
+  Forgot->>Clerk: signIn.create reset_password_email_code
+  User->>Forgot: code + new password
+  Forgot->>Clerk: attemptFirstFactor + setActive
+  Clerk-->>Session: auto-login redirect dashboard
+```
+
+Clerk Elements cannot expose forgot-password from a single-screen `start` step (`navigate="forgot-password"` is only valid from `verifications` / `password`). A direct URL such as `/sign-in/forgot-password` also does **not** activate Elements steps — Clerk falls back to `start` while the URL may still show `/forgot-password`.
+
+Implementation: [`forgot-password-form.tsx`](../../src/components/auth/forgot-password-form.tsx) on `useSignIn()` (classic Clerk API), rendered by [`page.tsx`](../../src/app/[locale]/(auth)/sign-in/[[...sign-in]]/page.tsx) when the catch-all segment is `forgot-password`. No `SignIn.Root` on that route.
+
+Flow:
+
+1. `signIn.create({ strategy: "reset_password_email_code", identifier })` — sends OTP email
+2. `signIn.attemptFirstFactor({ strategy: "reset_password_email_code", code, password })`
+3. `setActive({ session })` → redirect to `/{locale}/dashboard`
 
 ### Loading state
 
@@ -54,7 +82,7 @@ Not yet implemented: `reset-password` (add if Clerk dashboard enables that path)
 
 Clerk does **not** expose a per-login “remember me” API. Session duration is configured **globally** in the Clerk Dashboard under **Sessions** (`Maximum lifetime`, `Inactivity timeout`). `setActive()` and Clerk Elements do not accept a parameter to extend or shorten the session for a single sign-in.
 
-A “Remember me” checkbox was intentionally removed from [`sign-in-form.tsx`](../../src/components/auth/sign-in-form.tsx) so the UI does not imply behavior Clerk cannot provide. If Clerk ships native support (currently on their [roadmap backlog](https://feedback.clerk.com/roadmap)), re-add the control and wire it to the official API. To change session length for all users, adjust Clerk Dashboard settings only — no app code change required.
+A “Remember me” checkbox is shown in [`sign-in-form.tsx`](../../src/components/auth/sign-in-form.tsx) for UX parity with password managers, but it does not change session length. If Clerk ships native support (currently on their [roadmap backlog](https://feedback.clerk.com/roadmap)), wire it to the official API. To change session length for all users, adjust Clerk Dashboard settings only — no app code change required.
 
 ## Client Trust vs user MFA
 
@@ -114,21 +142,43 @@ Keep `SignIn.Action submit` on the verifications step. Elements handles `attempt
 
 | File | Role |
 | --- | --- |
-| [`sign-in-form.tsx`](../../src/components/auth/sign-in-form.tsx) | Clerk Elements steps, OAuth, fallback, wires prepare/resend |
+| [`sign-in-form.tsx`](../../src/components/auth/sign-in-form.tsx) | Clerk Elements: single-screen sign-in, Client Trust OTP |
+| [`forgot-password-form.tsx`](../../src/components/auth/forgot-password-form.tsx) | Custom reset flow on `useSignIn()` (not Elements) |
 | [`sign-in-second-factor-prepare.tsx`](../../src/components/auth/sign-in-second-factor-prepare.tsx) | Auto-prepare, in-flight lock, custom resend |
 | [`auth-loading-indicator.tsx`](../../src/components/auth/auth-loading-indicator.tsx) | Spinner + message for `SignIn.Root` fallback |
 | [`auth-shell.tsx`](../../src/components/auth/auth-shell.tsx) | Page chrome (not Clerk-managed) |
 | [`sign-up-form.tsx`](../../src/components/auth/sign-up-form.tsx) | Sign-up equivalent (separate flow) |
 
-## i18n keys (`auth.signIn.*`)
+## i18n keys
+
+### Sign-in (`auth.signIn.*`)
 
 | Key | Usage |
 | --- | --- |
 | `loading` | `SignIn.Root` fallback |
-| `verifyEmailTitle` | OTP step intro (with `SignIn.SafeIdentifier`) |
-| `verifySubmit` | Submit code button |
-| `resendCode` | Resend button label |
-| `resendCodeWait` | Cooldown text (`{seconds}`) |
+| `verifyEmailTitle` | Client Trust OTP step intro (with `SignIn.SafeIdentifier`) |
+| `verifySubmit` | Submit Client Trust code button |
+| `resendCode` | Client Trust resend button label |
+| `resendCodeWait` | Client Trust cooldown text (`{seconds}`) |
+
+### Forgot password (`auth.forgotPassword.*`)
+
+| Key | Usage |
+| --- | --- |
+| `title` / `subtitle` | Auth shell on `/sign-in/forgot-password` |
+| `hint` | Email step intro |
+| `submit` | Send reset code button |
+| `verifyTitle` | Code + password step intro (shows entered email) |
+| `newPasswordSubmit` | Change password button |
+| `error` | Generic API / validation error |
+| `passwordMismatch` | Client-side confirm password mismatch |
+| `mfaRequired` | Account requires MFA during reset |
+
+### Fields (`auth.fields.*`)
+
+| Key | Usage |
+| --- | --- |
+| `confirmPassword` | Reset-password confirmation field |
 
 Defined in [`src/messages/pl/auth.json`](../../src/messages/pl/auth.json) and [`src/messages/en/auth.json`](../../src/messages/en/auth.json).
 
@@ -142,22 +192,36 @@ When `NODE_ENV === "development"`, prepare logs to console:
 
 ## Testing checklist
 
+### Sign-in (Client Trust)
+
 1. Incognito window — untrusted browser triggers Client Trust.
-2. Start at `/pl/sign-in` — do not refresh `/continue` mid-flow.
-3. Avoid HMR during login (can stop Clerk Elements second-factor actor).
-4. Network: one `prepare_second_factor` on `/continue` load; one OTP email.
-5. Resend: second prepare request + second email after cooldown.
-6. Submit code: session active, redirect to dashboard.
-7. Brief loading spinner visible during Clerk init (not a blank shell).
+2. `/pl/sign-in` — email and password visible on one screen; password manager autofill works.
+3. Do not refresh `/continue` mid-flow.
+4. Avoid HMR during login (can stop Clerk Elements second-factor actor).
+5. Network: one `prepare_second_factor` on `/continue` load; one OTP email.
+6. Resend: second prepare request + second email after cooldown.
+7. Submit code: session active, redirect to dashboard.
+8. Brief loading spinner visible during Clerk init (not a blank shell).
+
+### Forgot password
+
+1. `/pl/sign-in` → click „Nie pamiętasz hasła?” → `/pl/sign-in/forgot-password` shows reset form (not sign-in form).
+2. Enter email → „Wyślij kod” → reset OTP email arrives (check Network).
+3. Enter code + new password + confirm → auto-login → redirect to dashboard.
+4. Sign out → sign in with new password on single-screen `/pl/sign-in`.
+5. Repeat on `/en/sign-in`.
+6. Wrong code / mismatched passwords → readable error message.
+7. Confirm Client Trust sign-in (checklist above) still works.
 
 ## When changing auth
 
 Before merging sign-in changes:
 
-- [ ] All reachable `SignIn.Step` names still implemented
-- [ ] `SignInSecondFactorPrepare` still mounted in `email_code` strategy
-- [ ] Resend still uses explicit `prepareSecondFactor`, not `SignIn.Action resend`
-- [ ] `SignIn.Action submit` unchanged for password and OTP steps
+- [ ] `SignIn.Step` names still implemented: `start`, `verifications` (`email_code` only)
+- [ ] Forgot password remains outside Elements (`forgot-password-form.tsx` on `/sign-in/forgot-password`)
+- [ ] `SignInSecondFactorPrepare` still mounted in `email_code` strategy only
+- [ ] Client Trust resend still uses explicit `prepareSecondFactor`, not `SignIn.Action resend`
+- [ ] `SignIn.Action submit` unchanged for sign-in and OTP steps
 - [ ] `inFlightAttemptIds` lock acquired before `await`
 - [ ] `SignIn.Root` fallback present
 - [ ] If upgrading `@clerk/elements`, re-test `email_code` prepare on `/continue` in incognito
