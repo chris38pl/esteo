@@ -48,7 +48,8 @@
       "title": "Wykorzystanie wg członków",
       "member": "Członek",
       "aiCalls": "Wywołania AI",
-      "estimates": "Kosztorysy"
+      "estimates": "Kosztorysy",
+      "empty": "Brak zarejestrowanej aktywności członków w tym miesiącu."
     },
     "plan": {
       "FREE": "Free",
@@ -119,6 +120,7 @@
     "nextInvoice": {
       "title": "Następna faktura",
       "description": "Faktura zostanie wystawiona automatycznie na koniec okresu rozliczeniowego.",
+      "viewInvoiceHistory": "Pokaż historyczne faktury",
       "empty": {
         "free_plan": "Brak aktywnej subskrypcji płatnej.",
         "canceling": "Subskrypcja kończy się — kolejna faktura nie zostanie wystawiona.",

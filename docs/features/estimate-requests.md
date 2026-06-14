@@ -25,6 +25,8 @@ See [`voice-intake.md`](voice-intake.md).
 
 ### Customer (public)
 
+When the workspace **can** create estimates (plan active, under monthly limit), the public form runs the full pipeline below. When it **cannot** (monthly cap, grace, expired read-only, incomplete), the form still accepts the lead but saves **request only** (`estimateId = null`, `aiMetadata.processingMode = "queued_for_manual"`) — no estimate, no AI job, no usage meter increment.
+
 ```txt
 Customer fills form
 ↓
@@ -32,16 +34,20 @@ Optionally check with AI (pre-submit suggestions)
 ↓
 Customer submits request
 ↓
-Request saved (status: PENDING)
+[Gate] workspace can create estimates?
+  ├─ YES → Request + Estimate + AI job (full pipeline)
+  └─ NO  → Request only (queued for manual conversion)
 ↓
-AI estimate generation job triggered (Trigger.dev)
+(Full path) AI estimate generation job triggered (Trigger.dev)
 ↓
-status → PROCESSING
-↓
-Estimate draft generated
-↓
-status → COMPLETED, estimateId linked
+status → PROCESSING → COMPLETED, estimateId linked
 ```
+
+Success copy differs: full path promises a preliminary estimate; request-only promises contact soon.
+
+### Manual conversion (queued requests)
+
+Workspace members with estimate creation entitlement see **Create estimate** on requests without a linked estimate (list + detail). `convertRequestToEstimate` asserts plan limits, creates estimate + version, links the request, increments `ESTIMATE_CREATED`, and triggers `generate-estimate-draft`.
 
 ### Workspace user (internal)
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
@@ -19,6 +20,7 @@ import { CreateEstimateModal } from "./create-estimate-modal";
 import { EstimateEditorLayoutStyles } from "./estimate-editor-layout-styles";
 import { EstimatesListFilterSheet } from "./estimates-list-filter-sheet";
 import { EstimatesListHeroCards } from "./estimates-list-hero-cards";
+import { EstimatesListPlanLimitBanner } from "./estimates-list-plan-limit-banner";
 import { EstimatesListStatsCards } from "./estimates-list-stats-cards";
 import { useEstimatesListPreferences } from "@/features/estimates/hooks/use-estimates-list-preferences";
 import {
@@ -28,11 +30,14 @@ import {
 import { EstimatesListTable } from "./estimates-list-table";
 import { EstimatesListToolbar } from "./estimates-list-toolbar";
 import type { EstimateListPageItem } from "@/features/estimates/server/list-estimates-page-data";
+import type { CreateEstimateGate } from "@/features/estimates/lib/create-estimate-gate";
 import type { PublicEstimateRequestPageData } from "@/features/estimate-requests/server/public-service";
 
 interface EstimatesListPanelProps {
   estimates: EstimateListPageItem[];
   createFormData: PublicEstimateRequestPageData;
+  createEstimateGate: CreateEstimateGate;
+  billingHref: string | null;
   workspaceId: string;
   workspaceSlug: string;
   locale: Locale;
@@ -41,6 +46,8 @@ interface EstimatesListPanelProps {
 export function EstimatesListPanel({
   estimates,
   createFormData,
+  createEstimateGate,
+  billingHref,
   workspaceId,
   workspaceSlug,
   locale,
@@ -50,6 +57,7 @@ export function EstimatesListPanel({
     useEstimatesListPreferences(workspaceSlug);
   const { visibleColumns, pageSize } = preferences;
   const [createOpen, setCreateOpen] = useState(false);
+  const [openingEstimateId, setOpeningEstimateId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [listFilter, setListFilter] = useState(EMPTY_ESTIMATE_LIST_FILTER);
   const [dateRange, setDateRange] = useState(EMPTY_ESTIMATE_LIST_DATE_RANGE);
@@ -133,11 +141,30 @@ export function EstimatesListPanel({
 
   return (
     <div className={cn("mx-auto min-w-0 w-full space-y-6", estimateEditorMaxWidthClass)}>
+      {openingEstimateId ? (
+        <div
+          role="status"
+          aria-live="polite"
+          aria-busy="true"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 bg-background/85 backdrop-blur-sm"
+        >
+          <Loader2 className="size-8 animate-spin text-primary" />
+          <p className="text-sm font-medium text-foreground">{t("create.opening")}</p>
+          <p className="max-w-xs text-center text-xs text-muted-foreground">
+            {t("create.openingHint")}
+          </p>
+        </div>
+      ) : null}
       <EstimateEditorLayoutStyles />
       <EstimatesListHeroCards
         workspaceSlug={workspaceSlug}
         locale={locale}
         onCreateClick={() => setCreateOpen(true)}
+      />
+
+      <EstimatesListPlanLimitBanner
+        createEstimateGate={createEstimateGate}
+        billingHref={billingHref}
       />
 
       <EstimatesListStatsCards estimates={estimates} locale={locale} />
@@ -209,9 +236,11 @@ export function EstimatesListPanel({
         open={createOpen}
         onOpenChange={setCreateOpen}
         formData={createFormData}
+        createEstimateGate={createEstimateGate}
         workspaceId={workspaceId}
         workspaceSlug={workspaceSlug}
         locale={locale}
+        onEstimateOpening={setOpeningEstimateId}
       />
     </div>
   );

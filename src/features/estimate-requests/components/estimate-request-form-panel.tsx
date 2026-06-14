@@ -45,6 +45,7 @@ export function EstimateRequestFormPanel({
     setCompanyWebsite,
     requestNumber,
     estimateId,
+    queuedForManual,
     isSubmitting,
     uploadProgress,
     attachmentWarnings,
@@ -81,7 +82,9 @@ export function EstimateRequestFormPanel({
         </div>
         <h2 className="text-2xl font-bold text-foreground">{t("success.title")}</h2>
         <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-muted-foreground">
-          {t("success.description", { workspaceName: pageData.workspace.name })}
+          {queuedForManual
+            ? t("success.descriptionQueued", { workspaceName: pageData.workspace.name })
+            : t("success.description", { workspaceName: pageData.workspace.name })}
         </p>
         {attachmentWarnings.length > 0 ? (
           <p className="mx-auto mt-4 max-w-md text-xs text-amber-700 dark:text-amber-300">

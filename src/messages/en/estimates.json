@@ -39,6 +39,11 @@
         "shareNative": "Share…"
       }
     },
+    "planLimitBanner": {
+      "title": "Monthly estimate limit reached",
+      "description": "You have used {used} of {limit} estimates this month. New estimates and automatic request processing are blocked until your limit resets or you upgrade your plan.",
+      "cta": "Go to billing"
+    },
     "toolbar": {
       "filters": "Filters",
       "dateRange": "Date range",
@@ -160,7 +165,12 @@
     "descriptionHint": "AI will use this description to generate the estimate draft.",
     "cancel": "Cancel",
     "submit": "Create estimate",
-    "submitting": "Creating…"
+    "submitting": "Creating…",
+    "opening": "Opening estimate…",
+    "openingHint": "Preparing the estimate editor. This may take a few seconds.",
+    "limitReached": "Monthly estimate limit reached ({used}/{limit}).",
+    "upgradeCta": "Upgrade plan",
+    "createUnavailable": "Estimate creation is not available for this workspace right now."
   },
   "editor": {
     "titleEyebrow": "Estimate",

@@ -30,8 +30,8 @@ import {
   assertCanUseAiAssistant,
   getMaxUndoSteps,
   incrementAiAssistantUsage,
-  incrementEstimateUsage,
 } from "@/server/permissions/entitlements";
+import { recordUsageInTx } from "@/server/billing/usage-service";
 import { tasks } from "@trigger.dev/sdk";
 import type { generateEstimateDraftTask } from "@/trigger/generate-estimate-draft";
 import type { User } from "@prisma/client";
@@ -143,6 +143,12 @@ export async function createInternalEstimate(
       select: { id: true },
     });
 
+    await recordUsageInTx(tx, {
+      workspaceId: input.workspaceId,
+      userId: input.userId,
+      meter: "ESTIMATE_CREATED",
+    });
+
     return { estimateId: eid, versionId: vid, requestId: createdRequest.id };
   });
 
@@ -155,8 +161,6 @@ export async function createInternalEstimate(
       values: dynamicValues,
     });
   }
-
-  await incrementEstimateUsage(input.workspaceId, input.userId);
 
   await tasks.trigger<typeof generateEstimateDraftTask>("generate-estimate-draft", {
     estimateRequestId: requestId,

@@ -24,6 +24,19 @@
     "noRequestNumber": "Zapytanie",
     "linkedEstimate": "Zobacz wycenę",
     "createdEstimate": "Utworzona wycena",
+    "actions": {
+      "more": "Więcej akcji",
+      "groups": {
+        "request": "Zapytanie klienta",
+        "estimate": "Wycena"
+      },
+      "viewRequest": "Wyświetl",
+      "viewEstimate": "Wyświetl wycenę",
+      "deleteEstimate": "Usuń wycenę",
+      "createEstimate": "Utwórz wycenę",
+      "limitTooltip": "Przekroczono miesięczny limit wycen w Twoim planie.",
+      "limitTooltipLink": "Przejdź do płatności"
+    },
     "toolbar": {
       "filters": "Filtry",
       "dateRange": "Zakres dat",
@@ -98,6 +111,7 @@
       }
     }
   },
+  "convertToEstimate": "Utwórz kosztorys",
   "status": {
     "PENDING": "Oczekuje",
     "PROCESSING": "W trakcie",
@@ -108,6 +122,7 @@
     "eyebrow": "Zapytanie o wycenę",
     "requestLabel": "Zapytanie",
     "backToList": "Wszystkie zapytania",
+    "createEstimate": "Utwórz wycenę",
     "openEstimate": "Otwórz wycenę",
     "metaLine": "Otrzymano {created} · Aktualizacja {updated}",
     "customerSection": "Klient",

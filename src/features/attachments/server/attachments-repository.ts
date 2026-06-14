@@ -24,6 +24,14 @@ const attachmentInclude = {
 
 
 
+export async function listAttachmentsByWorkspaceId(workspaceId: string) {
+  return prisma.estimateAttachment.findMany({
+    where: { workspaceId },
+    orderBy: { createdAt: "desc" },
+    include: attachmentInclude,
+  });
+}
+
 export async function listAttachmentsByEstimateId(estimateId: string, workspaceId: string) {
 
   await assertEstimateInWorkspace(estimateId, workspaceId);

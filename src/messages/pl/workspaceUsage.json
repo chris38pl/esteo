@@ -1,0 +1,55 @@
+{
+  "title": "Wykorzystanie workspace",
+  "description": "Podgląd limitów planu, aktywności członków i załączników w przestrzeni roboczej.",
+  "attachments": {
+    "title": "Załączniki",
+    "subtitle": "Zarządzaj swoimi plikami",
+    "description": "Wszystkie pliki powiązane z kosztorysami w tym workspace.",
+    "empty": "Brak załączników w tym workspace.",
+    "emptyFiltered": "Brak plików dla wybranych filtrów.",
+    "addFile": "Dodaj plik",
+    "addFileHint": "Pliki dodajesz przy kosztorysach. Upload z tego widoku wkrótce.",
+    "viewGrid": "Widok siatki",
+    "viewList": "Widok listy",
+    "refresh": "Odśwież",
+    "download": "Pobierz",
+    "downloadFailed": "Nie udało się pobrać pliku.",
+    "deleteFile": "Usuń",
+    "fileActions": "Akcje pliku",
+    "selectFile": "Zaznacz {fileName}",
+    "selectedFiles": "Zaznaczone pliki",
+    "deleteSelected": "Usuń zaznaczone",
+    "cancelSelection": "Anuluj",
+    "fileCount": "{count, plural, one {# plik} few {# pliki} many {# plików} other {# pliku}}",
+    "filters": {
+      "type": "Typ:",
+      "sort": "Sortuj:"
+    },
+    "types": {
+      "ALL": "Wszystkie typy",
+      "IMAGE": "Obrazy",
+      "PDF": "PDF",
+      "DOCX": "Dokumenty"
+    },
+    "sort": {
+      "dateDesc": "Data dodania",
+      "dateAsc": "Najstarsze",
+      "nameAsc": "Nazwa A-Z",
+      "nameDesc": "Nazwa Z-A",
+      "sizeDesc": "Największe",
+      "sizeAsc": "Najmniejsze"
+    },
+    "list": {
+      "name": "Nazwa",
+      "added": "Data dodania",
+      "size": "Rozmiar"
+    },
+    "delete": {
+      "title": "Usuń załączniki",
+      "descriptionSingle": "Czy na pewno chcesz usunąć „{fileName}”? Tej operacji nie można cofnąć.",
+      "descriptionMultiple": "Czy na pewno chcesz usunąć {count} załączników? Tej operacji nie można cofnąć.",
+      "cancel": "Anuluj",
+      "confirm": "Usuń"
+    }
+  }
+}

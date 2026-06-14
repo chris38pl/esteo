@@ -84,7 +84,8 @@
   },
   "success": {
     "title": "Dziękujemy za zgłoszenie",
-    "description": "Zespół {workspaceName} otrzymał Twoje zapytanie i skontaktuje się z Tobą po analizie zakresu prac.",
+    "description": "Zespół {workspaceName} otrzymał Twoje zapytanie i przygotuje wstępną wycenę po analizie zakresu prac.",
+    "descriptionQueued": "Zespół {workspaceName} otrzymał Twoje zapytanie. Skontaktujemy się wkrótce.",
     "requestNumberLabel": "Numer Twojego zgłoszenia",
     "requestNumberHint": "Zachowaj ten numer \u2014 możesz go podać przy kontakcie z nami."
   }

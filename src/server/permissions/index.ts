@@ -32,11 +32,15 @@ export {
   assertCanUseAiAssistantInWorkspace,
   assertWorkspaceHasSeat,
   deriveFeatureState,
+  deriveEstimateProcessingGate,
+  getEstimateProcessingGate,
   getFeatureState,
   getMaxUndoStepsForWorkspace,
   getSeatUsage,
   getWorkspaceEntitlements,
   getWorkspacePlan,
+  type EstimateProcessingGate,
+  type EstimateProcessingGateReason,
   type WorkspaceEntitlements,
 } from "@/server/billing/entitlement-service";
 export {

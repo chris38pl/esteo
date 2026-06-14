@@ -8,6 +8,11 @@ import { redirect } from "next/navigation";
 import { loadEstimatesForListPage } from "@/features/estimates/server/list-estimates-page-data";
 import { EstimatesListPanel } from "@/features/estimates/components/estimates-list-panel";
 import { getEstimateRequestFormDataForWorkspace } from "@/features/estimate-requests/server/public-service";
+import { dashboardBillingHref } from "@/lib/dashboard-routes";
+import {
+  deriveEstimateProcessingGate,
+  getWorkspaceEntitlements,
+} from "@/server/billing/entitlement-service";
 
 export default async function EstimatesPage({
   params,
@@ -28,13 +33,24 @@ export default async function EstimatesPage({
 
   const workspaceId = resolved.workspace.id;
 
-  const [estimates, createFormData] = await Promise.all([
+  const [estimates, createFormData, entitlements] = await Promise.all([
     loadEstimatesForListPage(workspaceId, resolvedLocale),
     getEstimateRequestFormDataForWorkspace({
       workspaceId,
       locale: resolvedLocale,
     }),
+    getWorkspaceEntitlements(workspaceId),
   ]);
+
+  const processingGate = deriveEstimateProcessingGate(entitlements);
+  const createEstimateGate = {
+    allowed: processingGate.allowed,
+    reason: processingGate.allowed ? undefined : processingGate.reason,
+    estimatesThisMonth: entitlements.usage.estimatesThisMonth,
+    maxEstimatesPerMonth: entitlements.limits.maxEstimatesPerMonth,
+  };
+  const isOwner = resolved.workspace.ownerId === user.id;
+  const billingHref = isOwner ? dashboardBillingHref(resolvedLocale, workspaceSlug) : null;
 
   if (!createFormData) {
     redirect(`/${resolvedLocale}/dashboard`);
@@ -44,6 +60,8 @@ export default async function EstimatesPage({
     <EstimatesListPanel
       estimates={estimates}
       createFormData={createFormData}
+      createEstimateGate={createEstimateGate}
+      billingHref={billingHref}
       workspaceId={resolved.workspace.id}
       workspaceSlug={workspaceSlug}
       locale={resolvedLocale}

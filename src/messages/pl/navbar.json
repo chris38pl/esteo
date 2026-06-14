@@ -36,6 +36,9 @@
     "avatarHint": "Wybierz swojego awatara",
     "theme": "Motyw",
     "yourPlan": "Twój plan",
+    "activeWorkspace": "Aktywna przestrzeń",
+    "userAccount": "Konto użytkownika",
+    "options": "Opcje",
     "updatePlan": "Aktualizuj plan",
     "plans": {
       "free": "FREE",

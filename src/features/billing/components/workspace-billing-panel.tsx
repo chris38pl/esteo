@@ -45,7 +45,7 @@ function formatPeriodEndDate(value: Date | string): string {
 
 export function WorkspaceBillingPanel({ workspaceId, data }: Props) {
   const t = useTranslations("billing.workspace");
-  const { entitlements, cancelAtPeriodEnd, currentPeriodEnd, memberUsage, storageOverLimit, seatOverLimit } =
+  const { entitlements, cancelAtPeriodEnd, currentPeriodEnd, storageOverLimit, seatOverLimit } =
     data;
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -151,33 +151,7 @@ export function WorkspaceBillingPanel({ workspaceId, data }: Props) {
 
       <BillingUsageStatsSection data={data} />
 
-      <BillingSecondaryCardsSection data={data} />
-
-      {memberUsage.length > 0 && (
-        <section className="space-y-3">
-          <h2 className="text-lg font-medium">{t("memberUsage.title")}</h2>
-          <div className="overflow-hidden rounded-md border">
-            <table className="w-full text-sm">
-              <thead className="bg-muted/50 text-left text-muted-foreground">
-                <tr>
-                  <th className="px-3 py-2 font-medium">{t("memberUsage.member")}</th>
-                  <th className="px-3 py-2 font-medium">{t("memberUsage.aiCalls")}</th>
-                  <th className="px-3 py-2 font-medium">{t("memberUsage.estimates")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {memberUsage.map((member) => (
-                  <tr key={member.userId} className="border-t">
-                    <td className="px-3 py-2">{member.name ?? member.email}</td>
-                    <td className="px-3 py-2">{member.aiCalls}</td>
-                    <td className="px-3 py-2">{member.estimates}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      )}
+      <BillingSecondaryCardsSection data={data} workspaceId={workspaceId} />
 
       {entitlements.plan !== "FREE" ? (
         <BillingDangerZone

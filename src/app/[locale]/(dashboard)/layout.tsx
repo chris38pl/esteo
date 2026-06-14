@@ -10,6 +10,7 @@ import { toReceivedInvitationView } from "@/features/workspaces/components/invit
 import { getBillingSidebarState } from "@/features/billing/server/get-billing-sidebar-state";
 import { getAccessibleWorkspaces } from "@/features/workspaces/server/accessible-workspaces";
 import { getActiveWorkspaceMembersData } from "@/features/workspaces/server/get-active-workspace-card-data";
+import { getActiveWorkspaceMenuStats } from "@/features/workspaces/server/get-active-workspace-menu-stats";
 import {
   countPendingInvitations,
   getNextModalInvitation,
@@ -130,12 +131,13 @@ export default async function DashboardLayout({
     };
   });
 
-  const [membersData, canInviteMembers] = activeWorkspaceId
+  const [membersData, canInviteMembers, activeWorkspaceStats] = activeWorkspaceId
     ? await Promise.all([
         getActiveWorkspaceMembersData(activeWorkspaceId),
         canInviteWorkspaceMembers(activeWorkspaceId),
+        getActiveWorkspaceMenuStats(activeWorkspaceId),
       ])
-    : [{ previews: [], totalCount: 0 }, false];
+    : [{ previews: [], totalCount: 0 }, false, null];
 
   const activeWorkspaceSummary = workspaceSummaries.find((w) => w.id === activeWorkspaceId);
   const pinnedEstimates =
@@ -165,6 +167,7 @@ export default async function DashboardLayout({
         nextModalInvitation ? toReceivedInvitationView(nextModalInvitation) : null
       }
       pinnedEstimates={pinnedEstimates}
+      activeWorkspaceStats={activeWorkspaceStats}
     >
       <DashboardShell locale={resolvedLocale}>{children}</DashboardShell>
     </WorkspaceProvider>

@@ -26,6 +26,7 @@ import { EstimateEditorLayoutStyles } from "@/features/estimates/components/esti
 import { estimateEditorMaxWidthClass } from "@/features/estimates/lib/estimate-layout-config";
 import "@/features/estimates/styles/estimate-editor-layout.css";
 import { RequestStatusBadge } from "@/features/estimate-requests/components/request-status-badge";
+import { ConvertRequestToEstimateButton } from "@/features/estimate-requests/components/convert-request-to-estimate-button";
 import type { WorkspaceRequestDetail } from "@/features/estimate-requests/server/workspace-requests";
 import {
   formatPreferredStartDate,
@@ -157,6 +158,10 @@ function ProjectDescriptionBlock({ description }: { description: string }) {
 interface RequestDetailPanelProps {
   request: WorkspaceRequestDetail;
   workspaceSlug: string;
+  workspaceId: string;
+  canCreateEstimate: boolean;
+  estimateLimitReached: boolean;
+  billingHref: string | null;
   locale: Locale;
   investmentPropertyType: string | null;
 }
@@ -164,6 +169,10 @@ interface RequestDetailPanelProps {
 export function RequestDetailPanel({
   request,
   workspaceSlug,
+  workspaceId,
+  canCreateEstimate,
+  estimateLimitReached,
+  billingHref,
   locale,
   investmentPropertyType,
 }: RequestDetailPanelProps) {
@@ -221,6 +230,17 @@ export function RequestDetailPanel({
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
+          ) : !request.estimate ? (
+            <ConvertRequestToEstimateButton
+              requestId={request.id}
+              workspaceId={workspaceId}
+              workspaceSlug={workspaceSlug}
+              locale={locale}
+              variant="primary"
+              canCreateEstimate={canCreateEstimate}
+              estimateLimitReached={estimateLimitReached}
+              billingHref={billingHref}
+            />
           ) : null}
         </div>
       </header>
@@ -312,6 +332,19 @@ export function RequestDetailPanel({
                   <ExternalLink className="size-3.5 shrink-0" aria-hidden />
                 </Link>
               </DetailRow>
+            ) : !request.estimate ? (
+              <div className="px-5 py-4">
+                <ConvertRequestToEstimateButton
+                  requestId={request.id}
+                  workspaceId={workspaceId}
+                  workspaceSlug={workspaceSlug}
+                  locale={locale}
+                  variant="outline"
+                  canCreateEstimate={canCreateEstimate}
+                  estimateLimitReached={estimateLimitReached}
+                  billingHref={billingHref}
+                />
+              </div>
             ) : (
               <DetailRow label={t("detail.linkedEstimate")}>
                 <span className="text-muted-foreground">{t("detail.noEstimateYet")}</span>

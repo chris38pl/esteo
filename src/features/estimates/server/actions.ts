@@ -89,6 +89,7 @@ export async function createInternalEstimateAction(
     });
 
     revalidatePath(`/${locale}/dashboard`);
+    revalidatePath(`/${locale}/dashboard`, "layout");
     return { success: true, data: result };
   } catch (error) {
     return toActionError(error);

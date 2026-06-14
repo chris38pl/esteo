@@ -41,10 +41,16 @@ export type WorkspaceSummary = {
   storageUsedPercent: number;
 };
 
+export type ActiveWorkspaceMenuStats = {
+  requestCount: number;
+  estimateCount: number;
+};
+
 type WorkspaceContextValue = {
   workspaces: WorkspaceSummary[];
   activeWorkspaceId: string | null;
   activeWorkspace: WorkspaceSummary | null;
+  activeWorkspaceStats: ActiveWorkspaceMenuStats | null;
   memberPreviews: WorkspaceMemberPreview[];
   memberTotalCount: number;
   canCreateWorkspace: boolean;
@@ -98,6 +104,7 @@ export function WorkspaceProvider({
   pendingInvitationCount = 0,
   modalInvitation = null,
   pinnedEstimates = [],
+  activeWorkspaceStats = null,
   children,
 }: {
   workspaces: WorkspaceSummary[];
@@ -114,6 +121,7 @@ export function WorkspaceProvider({
   pendingInvitationCount?: number;
   modalInvitation?: ReceivedInvitationView | null;
   pinnedEstimates?: PinnedEstimateSidebarItem[];
+  activeWorkspaceStats?: ActiveWorkspaceMenuStats | null;
   children: ReactNode;
 }) {
   const router = useRouter();
@@ -153,6 +161,7 @@ export function WorkspaceProvider({
       workspaces,
       activeWorkspaceId,
       activeWorkspace,
+      activeWorkspaceStats,
       memberPreviews,
       memberTotalCount,
       canCreateWorkspace,
@@ -186,6 +195,7 @@ export function WorkspaceProvider({
       workspaces,
       activeWorkspaceId,
       activeWorkspace,
+      activeWorkspaceStats,
       memberPreviews,
       memberTotalCount,
       canCreateWorkspace,

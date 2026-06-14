@@ -40,10 +40,9 @@ import {
   validateDocumentFieldValues,
 } from "@/features/industry-fields/server/validate-document-values";
 import type { Locale } from "@/lib/locale";
-import {
-  assertCanCreateEstimate,
-  incrementEstimateUsage,
-} from "@/server/permissions/entitlements";
+import { getEstimateProcessingGate } from "@/server/billing/entitlement-service";
+import { recordUsageInTx } from "@/server/billing/usage-service";
+import { assertCanCreateEstimate } from "@/server/permissions/entitlements";
 import type { generateEstimateDraftTask } from "@/trigger/generate-estimate-draft";
 
 export class SubmitEstimateRequestError extends Error {
@@ -64,9 +63,10 @@ export class SubmitEstimateRequestError extends Error {
 export type SubmitEstimateRequestResult = {
   requestId: string;
   requestNumber: string;
-  estimateId: string;
-  versionId: string;
+  estimateId: string | null;
+  versionId: string | null;
   attachmentWarnings: string[];
+  queued?: boolean;
 };
 
 type SharedBody = InternalEstimateCreateInput;
@@ -179,6 +179,13 @@ export async function submitEstimateRequestWithAttachments(input: {
     await assertCanCreateEstimate(workspace.id);
   }
 
+  const processingGate =
+    input.source === AttachmentUploadSource.PUBLIC_REQUEST
+      ? await getEstimateProcessingGate(workspace.id)
+      : ({ allowed: true } as const);
+
+  const runFullPipeline = processingGate.allowed;
+
   if (input.files.length > 0) {
     const availability = await getPublicAttachmentAvailability(workspace.id);
 
@@ -192,7 +199,7 @@ export async function submitEstimateRequestWithAttachments(input: {
     await precheckRequestUploadQuota(workspace.id, input.files);
   }
 
-  const { fields, dynamicValues } = await validateIndustryFields({
+  const { dynamicValues } = await validateIndustryFields({
     workspaceId: workspace.id,
     industry: workspace.industry,
     locale: input.locale,
@@ -221,8 +228,8 @@ export async function submitEstimateRequestWithAttachments(input: {
       locale: input.locale,
     });
 
-  const estimateId = createId();
-  const versionId = createId();
+  const estimateId = runFullPipeline ? createId() : null;
+  const versionId = runFullPipeline ? createId() : null;
   const requestId = createId();
 
   let attachmentRecords: RequestAttachmentRecord[] = [];
@@ -275,53 +282,70 @@ export async function submitEstimateRequestWithAttachments(input: {
     baseAiMetadata.voiceIntake = input.voiceIntakeMetadata;
   }
 
+  if (!runFullPipeline) {
+    baseAiMetadata.processingMode = "queued_for_manual";
+  }
+
+  const requestCustomerData = {
+    fullName: input.body.customer.fullName,
+    email: input.body.customer.email,
+    phone: input.body.customer.phone,
+    project: {
+      preferredStartDate: input.body.project.preferredStartDate,
+    },
+  };
+
   try {
     const requestNumber = await prisma.$transaction(async (tx) => {
       const generatedRequestNumber = await generateRequestNumber(tx, workspace.id);
 
-      await tx.estimate.create({
-        data: {
-          id: estimateId,
-          workspaceId: workspace.id,
-          title: estimateTitle,
-          latestVersionId: null,
-        },
-      });
+      if (runFullPipeline && estimateId && versionId) {
+        await tx.estimate.create({
+          data: {
+            id: estimateId,
+            workspaceId: workspace.id,
+            title: estimateTitle,
+            latestVersionId: null,
+          },
+        });
 
-      await tx.estimateVersion.create({
-        data: {
-          id: versionId,
-          estimateId,
+        await tx.estimateVersion.create({
+          data: {
+            id: versionId,
+            estimateId,
+            workspaceId: workspace.id,
+            versionNumber: 1,
+            status: "DRAFT",
+            marginPercent: 0,
+            createdByUserId:
+              input.source === AttachmentUploadSource.INTERNAL_REQUEST
+                ? input.userId ?? null
+                : null,
+          },
+        });
+
+        await tx.estimate.update({
+          where: { id: estimateId },
+          data: { latestVersionId: versionId },
+        });
+
+        await recordUsageInTx(tx, {
           workspaceId: workspace.id,
-          versionNumber: 1,
-          status: "DRAFT",
-          marginPercent: 0,
-          createdByUserId:
+          userId:
             input.source === AttachmentUploadSource.INTERNAL_REQUEST
-              ? input.userId ?? null
+              ? input.userId
               : null,
-        },
-      });
-
-      await tx.estimate.update({
-        where: { id: estimateId },
-        data: { latestVersionId: versionId },
-      });
+          meter: "ESTIMATE_CREATED",
+        });
+      }
 
       await tx.estimateRequest.create({
         data: {
           id: requestId,
           workspaceId: workspace.id,
           requestNumber: generatedRequestNumber,
-          estimateId,
-          customerData: {
-            fullName: input.body.customer.fullName,
-            email: input.body.customer.email,
-            phone: input.body.customer.phone,
-            project: {
-              preferredStartDate: input.body.project.preferredStartDate,
-            },
-          },
+          estimateId: runFullPipeline ? estimateId : null,
+          customerData: requestCustomerData,
           address: input.body.address,
           projectDescription: input.body.project.description,
           attachments: attachmentRecords as unknown as Prisma.InputJsonValue,
@@ -342,36 +366,34 @@ export async function submitEstimateRequestWithAttachments(input: {
       });
     }
 
-    if (input.source === AttachmentUploadSource.INTERNAL_REQUEST && input.userId) {
-      await incrementEstimateUsage(workspace.id, input.userId);
+    if (runFullPipeline && estimateId && versionId) {
+      await tasks.trigger<typeof generateEstimateDraftTask>("generate-estimate-draft", {
+        estimateRequestId: requestId,
+        estimateId,
+        versionId,
+        workspaceId: workspace.id,
+        locale: input.locale,
+        uploadSource: input.source,
+        uploadedById: input.uploadedById ?? null,
+      });
+
+      await logEstimateActivity({
+        estimateId,
+        workspaceId: workspace.id,
+        actorType:
+          input.source === AttachmentUploadSource.INTERNAL_REQUEST ? "USER" : "SYSTEM",
+        actorUserId:
+          input.source === AttachmentUploadSource.INTERNAL_REQUEST ? input.userId : undefined,
+        category: "ESTIMATE",
+        action: ESTIMATE_ACTIVITY_ACTIONS.estimate_created,
+        metadata: {
+          source:
+            input.source === AttachmentUploadSource.PUBLIC_REQUEST
+              ? "public_request"
+              : "manual",
+        },
+      });
     }
-
-    await tasks.trigger<typeof generateEstimateDraftTask>("generate-estimate-draft", {
-      estimateRequestId: requestId,
-      estimateId,
-      versionId,
-      workspaceId: workspace.id,
-      locale: input.locale,
-      uploadSource: input.source,
-      uploadedById: input.uploadedById ?? null,
-    });
-
-    await logEstimateActivity({
-      estimateId,
-      workspaceId: workspace.id,
-      actorType:
-        input.source === AttachmentUploadSource.INTERNAL_REQUEST ? "USER" : "SYSTEM",
-      actorUserId:
-        input.source === AttachmentUploadSource.INTERNAL_REQUEST ? input.userId : undefined,
-      category: "ESTIMATE",
-      action: ESTIMATE_ACTIVITY_ACTIONS.estimate_created,
-      metadata: {
-        source:
-          input.source === AttachmentUploadSource.PUBLIC_REQUEST
-            ? "public_request"
-            : "manual",
-      },
-    });
 
     return {
       requestId,
@@ -379,6 +401,7 @@ export async function submitEstimateRequestWithAttachments(input: {
       estimateId,
       versionId,
       attachmentWarnings,
+      queued: !runFullPipeline,
     };
   } catch (error) {
     await rollbackStoredRequestUploads(workspace.id, attachmentRecords);

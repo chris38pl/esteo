@@ -33,7 +33,7 @@ export const PLAN_ENTITLEMENTS: Record<SubscriptionPlan, PlanEntitlements> = {
     maxUndoSteps: 1,
   },
   PRO: {
-    maxInvitedSeats: 3,
+    maxInvitedSeats: 0,
     maxEstimatesPerMonth: null,
     maxAiAssistantCallsPerMonth: 100,
     maxUndoSteps: 3,

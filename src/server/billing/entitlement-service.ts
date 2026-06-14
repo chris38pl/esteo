@@ -7,6 +7,7 @@ import { resolvePlanLimits, type PlanLimits } from "@/server/billing/plan-catalo
 import {
   currentPeriodKey,
   getWorkspaceMeterUsage,
+  reconcileEstimateUsageAggregate,
 } from "@/server/billing/usage-service";
 import type {
   Feature,
@@ -142,6 +143,8 @@ export async function getFeatureState(
 export const getWorkspaceEntitlements = cache(
   async (workspaceId: string): Promise<WorkspaceEntitlements> => {
     const periodKey = currentPeriodKey();
+    await reconcileEstimateUsageAggregate(workspaceId, periodKey);
+
     const [{ plan, planVersion }, effectiveStatus, estimatesThisMonth, aiCallsThisMonth, seats] =
       await Promise.all([
         loadWorkspacePlan(workspaceId),
@@ -169,24 +172,57 @@ export const getWorkspaceEntitlements = cache(
 // Guards (entitlement-only; callers must independently satisfy RBAC).
 // ---------------------------------------------------------------------------
 
-export async function assertCanCreateEstimateInWorkspace(workspaceId: string): Promise<void> {
-  const ent = await getWorkspaceEntitlements(workspaceId);
+export type EstimateProcessingGateReason = "PLAN_LIMIT" | "READ_ONLY" | "FEATURE_DISABLED";
+
+export type EstimateProcessingGate =
+  | { allowed: true }
+  | { allowed: false; reason: EstimateProcessingGateReason };
+
+/** Non-throwing gate for public intake — same rules as {@link assertCanCreateEstimateInWorkspace}. */
+export function deriveEstimateProcessingGate(
+  ent: Pick<WorkspaceEntitlements, "effectiveStatus" | "plan" | "limits" | "usage">,
+): EstimateProcessingGate {
   const state = deriveFeatureState(ent.effectiveStatus, ent.plan, ent.limits, "ESTIMATES");
 
   if (state !== "ACTIVE") {
-    throw new EntitlementError(
-      "Estimate creation is not available for this workspace right now.",
-      ent.effectiveStatus === "GRACE_PERIOD" || ent.effectiveStatus === "EXPIRED"
-        ? "READ_ONLY_EXPIRED"
-        : "FEATURE_DISABLED",
-    );
+    return {
+      allowed: false,
+      reason:
+        ent.effectiveStatus === "GRACE_PERIOD" || ent.effectiveStatus === "EXPIRED"
+          ? "READ_ONLY"
+          : "FEATURE_DISABLED",
+    };
   }
 
   if (
     ent.limits.maxEstimatesPerMonth !== null &&
     ent.usage.estimatesThisMonth >= ent.limits.maxEstimatesPerMonth
   ) {
-    throw new EntitlementError("Monthly estimate limit reached for your plan.", "PLAN_LIMIT");
+    return { allowed: false, reason: "PLAN_LIMIT" };
+  }
+
+  return { allowed: true };
+}
+
+export async function getEstimateProcessingGate(
+  workspaceId: string,
+): Promise<EstimateProcessingGate> {
+  const ent = await getWorkspaceEntitlements(workspaceId);
+  return deriveEstimateProcessingGate(ent);
+}
+
+export async function assertCanCreateEstimateInWorkspace(workspaceId: string): Promise<void> {
+  const gate = await getEstimateProcessingGate(workspaceId);
+
+  if (!gate.allowed) {
+    if (gate.reason === "PLAN_LIMIT") {
+      throw new EntitlementError("Monthly estimate limit reached for your plan.", "PLAN_LIMIT");
+    }
+
+    throw new EntitlementError(
+      "Estimate creation is not available for this workspace right now.",
+      gate.reason === "READ_ONLY" ? "READ_ONLY_EXPIRED" : "FEATURE_DISABLED",
+    );
   }
 }
 

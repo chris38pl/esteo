@@ -5,6 +5,7 @@ import { Brain, Database, FileText, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import type { WorkspaceBillingPageData } from "@/features/billing/billing-page-data";
+import { workspaceUserUsage } from "@/features/billing/workspace-user-usage";
 import { cn } from "@/lib/utils";
 
 type UsageTheme = "purple" | "green" | "orange";
@@ -58,11 +59,12 @@ function usageProgressPercent(used: number, limit: number | null): number {
   return Math.min(100, Math.round((used / limit) * 100));
 }
 
-export function BillingUsageStatsSection({ data }: { data: WorkspaceBillingPageData }) {
+export type WorkspaceUsageStatsInput = Pick<WorkspaceBillingPageData, "entitlements" | "storage">;
+
+export function BillingUsageStatsSection({ data }: { data: WorkspaceUsageStatsInput }) {
   const t = useTranslations("billing.workspace.usage");
   const { entitlements, storage } = data;
-  const seatsUsed = entitlements.seats.used + entitlements.seats.reserved;
-  const seatsLimit = entitlements.seats.limit;
+  const { used: seatsUsed, limit: seatsLimit } = workspaceUserUsage(entitlements.seats);
   const seatsPercent = usageProgressPercent(seatsUsed, seatsLimit);
   const storagePercent = Math.round(storage.usedPercent);
 

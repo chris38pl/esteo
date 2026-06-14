@@ -33,7 +33,7 @@ export type ActivityMetadata = {
   versionNumber?: number;
   oldMargin?: number;
   newMargin?: number;
-  source?: "manual" | "public_request" | "ai" | "price_list";
+  source?: "manual" | "public_request" | "request_conversion" | "ai" | "price_list";
   installmentName?: string;
   installmentAmount?: number;
   paymentAmount?: number;

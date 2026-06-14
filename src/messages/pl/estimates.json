@@ -39,6 +39,11 @@
         "shareNative": "Udostępnij…"
       }
     },
+    "planLimitBanner": {
+      "title": "Osiągnięto miesięczny limit wycen",
+      "description": "Wykorzystano {used} z {limit} wycen w tym miesiącu. Nowe wyceny i automatyczne przetwarzanie zapytań są zablokowane do odnowienia limitu lub zmiany planu.",
+      "cta": "Przejdź do płatności"
+    },
     "toolbar": {
       "filters": "Filtry",
       "dateRange": "Zakres dat",
@@ -160,7 +165,12 @@
     "descriptionHint": "AI użyje tego opisu do wygenerowania szkicu wyceny.",
     "cancel": "Anuluj",
     "submit": "Utwórz wycenę",
-    "submitting": "Tworzenie…"
+    "submitting": "Tworzenie…",
+    "opening": "Otwieranie wyceny…",
+    "openingHint": "Przygotowujemy edytor wyceny. To może potrwać kilka sekund.",
+    "limitReached": "Osiągnięto miesięczny limit wycen ({used}/{limit}).",
+    "upgradeCta": "Ulepsz plan",
+    "createUnavailable": "Tworzenie wycen jest obecnie niedostępne dla tej przestrzeni."
   },
   "editor": {
     "titleEyebrow": "Kosztorys",

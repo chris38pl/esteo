@@ -7,6 +7,7 @@ import { PaginationControls } from "@/components/shared/pagination-controls";
 import { EstimateEditorLayoutStyles } from "@/features/estimates/components/estimate-editor-layout-styles";
 import { estimateEditorMaxWidthClass } from "@/features/estimates/lib/estimate-layout-config";
 import { EstimateRequestFormHeroCard } from "@/features/estimate-requests/components/estimate-request-form-hero-card";
+import { EstimatesListPlanLimitBanner } from "@/features/estimates/components/estimates-list-plan-limit-banner";
 import { RequestsListFilterSheet } from "@/features/estimate-requests/components/requests-list-filter-sheet";
 import { RequestsListTable } from "@/features/estimate-requests/components/requests-list-table";
 import { RequestsListToolbar } from "@/features/estimate-requests/components/requests-list-toolbar";
@@ -18,12 +19,16 @@ import {
   requestIsVisible,
 } from "@/features/estimate-requests/lib/requests-list-filter";
 import type { WorkspaceRequestListItem } from "@/features/estimate-requests/server/workspace-requests";
+import type { CreateEstimateGate } from "@/features/estimates/lib/create-estimate-gate";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
 interface RequestsListPanelProps {
   requests: WorkspaceRequestListItem[];
   workspaceSlug: string;
+  workspaceId: string;
+  createEstimateGate: CreateEstimateGate;
+  billingHref: string | null;
   locale: Locale;
 }
 
@@ -32,9 +37,14 @@ const DEFAULT_PAGE_SIZE = 10;
 export function RequestsListPanel({
   requests,
   workspaceSlug,
+  workspaceId,
+  createEstimateGate,
+  billingHref,
   locale,
 }: RequestsListPanelProps) {
   const t = useTranslations("requests");
+  const canCreateEstimate = createEstimateGate.allowed;
+  const estimateLimitReached = createEstimateGate.reason === "PLAN_LIMIT";
   const [searchQuery, setSearchQuery] = useState("");
   const [listFilter, setListFilter] = useState(EMPTY_REQUEST_LIST_FILTER);
   const [dateRange, setDateRange] = useState(EMPTY_REQUEST_LIST_DATE_RANGE);
@@ -88,6 +98,11 @@ export function RequestsListPanel({
 
       <EstimateRequestFormHeroCard workspaceSlug={workspaceSlug} locale={locale} />
 
+      <EstimatesListPlanLimitBanner
+        createEstimateGate={createEstimateGate}
+        billingHref={billingHref}
+      />
+
       <div className="surface-card overflow-hidden p-0">
         <RequestsListToolbar
           locale={locale}
@@ -114,6 +129,10 @@ export function RequestsListPanel({
           <RequestsListTable
             requests={pageRequests}
             workspaceSlug={workspaceSlug}
+            workspaceId={workspaceId}
+            canCreateEstimate={canCreateEstimate}
+            estimateLimitReached={estimateLimitReached}
+            billingHref={billingHref}
             locale={locale}
             footer={
               <PaginationControls

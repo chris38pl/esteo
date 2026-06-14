@@ -48,7 +48,8 @@
       "title": "Usage by member",
       "member": "Member",
       "aiCalls": "AI calls",
-      "estimates": "Estimates"
+      "estimates": "Estimates",
+      "empty": "No member activity recorded this month."
     },
     "plan": {
       "FREE": "Free",
@@ -119,6 +120,7 @@
     "nextInvoice": {
       "title": "Next invoice",
       "description": "The invoice will be issued automatically at the end of the billing period.",
+      "viewInvoiceHistory": "View invoice history",
       "empty": {
         "free_plan": "No active paid subscription.",
         "canceling": "Subscription is ending — no further invoice will be issued.",

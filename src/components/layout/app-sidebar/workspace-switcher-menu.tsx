@@ -93,10 +93,14 @@ export function WorkspaceSwitcherMenuContent({
 
       <DropdownMenuSeparator className="bg-[color:var(--sidebar-divider)]" />
 
-      <DropdownMenuItem className="gap-2 text-xs">
-        <BarChart3 className="size-3.5 text-muted-foreground" />
-        {t("account.workspaceUsage")}
-      </DropdownMenuItem>
+      {activeWorkspace ? (
+        <DropdownMenuItem asChild className="gap-2 text-xs">
+          <Link href={`/${locale}/dashboard/${activeWorkspace.slug}/workspace-usage`}>
+            <BarChart3 className="size-3.5 text-muted-foreground" />
+            {t("account.workspaceUsage")}
+          </Link>
+        </DropdownMenuItem>
+      ) : null}
       {activeWorkspace?.isOwner ? (
         <DropdownMenuItem asChild className="gap-2 text-xs">
           <Link href={`/${locale}/dashboard/${activeWorkspace.slug}/settings`}>

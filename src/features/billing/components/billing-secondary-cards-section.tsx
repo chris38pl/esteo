@@ -1,10 +1,12 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useTransition } from "react";
 import { ChevronRight, Coins, FileText, Puzzle, Users } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
 import type { WorkspaceBillingPageData } from "@/features/billing/billing-page-data";
+import { openWorkspacePortalAction } from "@/features/billing/server/billing-actions";
 import { formatCurrency, formatDate } from "@/i18n/formatters";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
@@ -40,11 +42,23 @@ const placeholderAddons: AddonPlaceholder[] = [
   },
 ];
 
-export function BillingSecondaryCardsSection({ data }: { data: WorkspaceBillingPageData }) {
+export function BillingSecondaryCardsSection({
+  data,
+  workspaceId,
+}: {
+  data: WorkspaceBillingPageData;
+  workspaceId: string;
+}) {
+  const canViewInvoiceHistory = data.entitlements.plan !== "FREE";
+
   return (
-    <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+    <section className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-2">
       <BillingActiveAddonsCard />
-      <BillingNextInvoiceCard nextInvoice={data.nextInvoice} />
+      <BillingNextInvoiceCard
+        nextInvoice={data.nextInvoice}
+        workspaceId={workspaceId}
+        canViewInvoiceHistory={canViewInvoiceHistory}
+      />
     </section>
   );
 }
@@ -66,22 +80,53 @@ function BillingCardShell({
 }) {
   return (
     <article className="flex min-h-full flex-col rounded-xl border border-border/60 bg-card p-5 sm:p-6">
-      <header className="mb-5 flex items-center gap-3">
+      <div className="flex min-h-0 flex-1 gap-4">
         <div
           className={cn(
-            "flex size-10 shrink-0 items-center justify-center rounded-lg border",
+            "flex size-10 shrink-0 items-center justify-center self-start rounded-lg border",
             iconBoxClassName,
           )}
         >
           <Icon className={cn("size-5", iconClassName)} aria-hidden />
         </div>
-        <h2 className="text-base font-semibold tracking-tight">{title}</h2>
-      </header>
 
-      <div className="flex flex-1 flex-col gap-5">{children}</div>
+        <div className="flex min-h-0 flex-1 flex-col">
+          <h2 className="text-base font-semibold tracking-tight">{title}</h2>
 
-      {footer ? <footer className="mt-6 border-t border-border/50 pt-4">{footer}</footer> : null}
+          <div className="mt-5 flex flex-1 flex-col gap-5">{children}</div>
+
+          {footer ? (
+            <footer className="mt-5 border-t border-border/50 pt-4">{footer}</footer>
+          ) : null}
+        </div>
+      </div>
     </article>
+  );
+}
+
+function BillingCardFooterLink({
+  label,
+  disabled,
+  onClick,
+}: {
+  label: string;
+  disabled?: boolean;
+  onClick?: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={onClick}
+      className={cn(
+        "inline-flex w-full items-center justify-between text-sm font-medium",
+        disabled ? "text-primary/70" : "text-primary hover:text-primary/90",
+      )}
+      aria-disabled={disabled}
+    >
+      <span>{label}</span>
+      <ChevronRight className="size-4 shrink-0" aria-hidden />
+    </button>
   );
 }
 
@@ -94,17 +139,7 @@ function BillingActiveAddonsCard() {
       iconBoxClassName="border-violet-500/25 bg-violet-500/10"
       iconClassName="text-violet-400"
       title={t("title")}
-      footer={
-        <button
-          type="button"
-          disabled
-          className="inline-flex w-full items-center justify-between text-sm font-medium text-primary/70"
-          aria-disabled
-        >
-          <span>{t("manageAddons")}</span>
-          <ChevronRight className="size-4 shrink-0" aria-hidden />
-        </button>
-      }
+      footer={<BillingCardFooterLink label={t("manageAddons")} disabled />}
     >
       <ul className="space-y-4">
         {placeholderAddons.map((addon) => (
@@ -148,13 +183,27 @@ function BillingAddonPlaceholderRow({ addon }: { addon: AddonPlaceholder }) {
 
 function BillingNextInvoiceCard({
   nextInvoice,
+  workspaceId,
+  canViewInvoiceHistory,
 }: {
   nextInvoice: WorkspaceBillingPageData["nextInvoice"];
+  workspaceId: string;
+  canViewInvoiceHistory: boolean;
 }) {
   const t = useTranslations("billing.workspace.nextInvoice");
   const locale = useLocale() as Locale;
+  const [pending, startTransition] = useTransition();
 
   const hasInvoice = nextInvoice.kind === "invoice";
+
+  function handleViewInvoiceHistory() {
+    startTransition(async () => {
+      const result = await openWorkspacePortalAction(workspaceId);
+      if (result.success) {
+        window.location.href = result.data.url;
+      }
+    });
+  }
 
   return (
     <BillingCardShell
@@ -162,6 +211,13 @@ function BillingNextInvoiceCard({
       iconBoxClassName="border-blue-500/25 bg-blue-500/10"
       iconClassName="text-blue-400"
       title={t("title")}
+      footer={
+        <BillingCardFooterLink
+          label={t("viewInvoiceHistory")}
+          disabled={!canViewInvoiceHistory || pending}
+          onClick={canViewInvoiceHistory ? handleViewInvoiceHistory : undefined}
+        />
+      }
     >
       {hasInvoice ? (
         <div className="space-y-2">
@@ -179,7 +235,7 @@ function BillingNextInvoiceCard({
         </div>
       )}
 
-      <p className="mt-auto text-sm leading-relaxed text-muted-foreground">{t("description")}</p>
+      <p className="text-sm leading-relaxed text-muted-foreground">{t("description")}</p>
     </BillingCardShell>
   );
 }

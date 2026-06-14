@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 
 import { RequestStatusBadge } from "@/features/estimate-requests/components/request-status-badge";
+import { RequestListRowActions } from "@/features/estimate-requests/components/request-list-row-actions";
 import type { WorkspaceRequestListItem } from "@/features/estimate-requests/server/workspace-requests";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,10 @@ import { cn } from "@/lib/utils";
 interface RequestListRowProps {
   request: WorkspaceRequestListItem;
   workspaceSlug: string;
+  workspaceId: string;
+  canCreateEstimate: boolean;
+  estimateLimitReached: boolean;
+  billingHref: string | null;
   locale: Locale;
   layout?: "table" | "list";
 }
@@ -104,6 +109,10 @@ function MobileInfoRow({
 export function RequestListRow({
   request,
   workspaceSlug,
+  workspaceId,
+  canCreateEstimate,
+  estimateLimitReached,
+  billingHref,
   locale,
   layout = "table",
 }: RequestListRowProps) {
@@ -186,27 +195,45 @@ export function RequestListRow({
 
     return (
       <div className="surface-card overflow-hidden rounded-xl border border-border/60">
+        <div className="flex items-start gap-2 p-4 pb-0">
+          <Link
+            href={detailHref}
+            className="min-w-0 flex-1 transition-colors hover:opacity-90"
+          >
+            <div className="flex items-start justify-between gap-3">
+              {listTitleCell}
+              <div className="flex shrink-0 flex-col items-end gap-1">
+                <RequestStatusBadge
+                  status={request.status}
+                  label={t(`status.${request.status}`)}
+                />
+                {propertySummary ? (
+                  <p className="max-w-[10rem] truncate text-right text-xs text-muted-foreground">
+                    {propertySummary}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+          </Link>
+          <RequestListRowActions
+            requestId={request.id}
+            estimateId={request.estimateId}
+            workspaceId={workspaceId}
+            workspaceSlug={workspaceSlug}
+            locale={locale}
+            canCreateEstimate={canCreateEstimate}
+            estimateLimitReached={estimateLimitReached}
+            billingHref={billingHref}
+            className="shrink-0"
+          />
+        </div>
+
         <Link
           href={detailHref}
-          className="block p-4 transition-colors hover:bg-muted/20 active:bg-muted/30"
+          className="block px-4 pb-4 pt-3 transition-colors hover:bg-muted/20 active:bg-muted/30"
         >
-          <div className="flex items-start justify-between gap-3">
-            {listTitleCell}
-            <div className="flex shrink-0 flex-col items-end gap-1">
-              <RequestStatusBadge
-                status={request.status}
-                label={t(`status.${request.status}`)}
-              />
-              {propertySummary ? (
-                <p className="max-w-[10rem] truncate text-right text-xs text-muted-foreground">
-                  {propertySummary}
-                </p>
-              ) : null}
-            </div>
-          </div>
-
           {email || phone || street || cityLine ? (
-            <div className="mt-3 flex items-start justify-between gap-4">
+            <div className="flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1 space-y-0.5">
                 {email ? (
                   <MobileInfoRow icon={<Mail className={mobileInfoIconClassName} aria-hidden />}>
@@ -292,6 +319,18 @@ export function RequestListRow({
       </td>
       <td className={`hidden px-4 py-3 2xl:table-cell ${cellClassName}`}>
         {displayCell(floorAreaLabel)}
+      </td>
+      <td className="w-12 px-2 py-3">
+        <RequestListRowActions
+          requestId={request.id}
+          estimateId={request.estimateId}
+          workspaceId={workspaceId}
+          workspaceSlug={workspaceSlug}
+          locale={locale}
+          canCreateEstimate={canCreateEstimate}
+          estimateLimitReached={estimateLimitReached}
+          billingHref={billingHref}
+        />
       </td>
     </tr>
   );

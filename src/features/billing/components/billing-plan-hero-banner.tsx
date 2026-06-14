@@ -166,19 +166,20 @@ export function BillingPlanHeroBanner({
               </div>
             ) : null}
 
-            {isPaidPlan ? (
-              <p className="flex items-baseline gap-2">
-                <span className="text-3xl font-semibold tracking-tight md:text-4xl">
-                  {t(`price.${plan}`)}
-                </span>
-                <span className="text-sm text-muted-foreground">{t("perMonth")}</span>
-              </p>
-            ) : null}
+            <p className="flex items-baseline gap-2">
+              <span className="text-3xl font-semibold tracking-tight md:text-4xl">
+                {t(`price.${plan}`)}
+              </span>
+              <span className="text-sm text-muted-foreground">{t("perMonth")}</span>
+            </p>
           </div>
 
           <div className="billing-plan-hero-actions hero-card-content flex w-full flex-col gap-3 sm:flex-row">
             <Button
-              className="h-11 w-full justify-center gap-2 sm:flex-1"
+              className={cn(
+                "h-11 justify-center gap-2",
+                isPaidPlan ? "w-full sm:flex-1" : "w-full sm:w-auto sm:flex-none",
+              )}
               disabled={pending}
               onClick={() => setChangePlanOpen(true)}
             >

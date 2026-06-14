@@ -84,7 +84,8 @@
   },
   "success": {
     "title": "Thank you for your request",
-    "description": "{workspaceName} received your request and will contact you after reviewing the scope.",
+    "description": "{workspaceName} received your request and will prepare a preliminary estimate after reviewing the scope.",
+    "descriptionQueued": "{workspaceName} received your request. We will contact you shortly.",
     "requestNumberLabel": "Your request number",
     "requestNumberHint": "Save this number — you may need it when contacting us."
   }

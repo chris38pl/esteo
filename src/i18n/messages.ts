@@ -14,6 +14,7 @@ import enSidebar from "@/messages/en/sidebar.json";
 import enStyleguide from "@/messages/en/styleguide.json";
 import enVoiceIntake from "@/messages/en/voiceIntake.json";
 import enWorkspaces from "@/messages/en/workspaces.json";
+import enWorkspaceUsage from "@/messages/en/workspaceUsage.json";
 import plAdmin from "@/messages/pl/admin.json";
 import plAuth from "@/messages/pl/auth.json";
 import plBilling from "@/messages/pl/billing.json";
@@ -28,6 +29,7 @@ import plSidebar from "@/messages/pl/sidebar.json";
 import plStyleguide from "@/messages/pl/styleguide.json";
 import plVoiceIntake from "@/messages/pl/voiceIntake.json";
 import plWorkspaces from "@/messages/pl/workspaces.json";
+import plWorkspaceUsage from "@/messages/pl/workspaceUsage.json";
 
 export const namespaces = [
   "common",
@@ -42,6 +44,7 @@ export const namespaces = [
   "sidebar",
   "styleguide",
   "voiceIntake",
+  "workspaceUsage",
   "workspaces",
 ] as const;
 
@@ -70,6 +73,7 @@ type MessagesByNamespace = {
   sidebar: typeof enSidebar;
   styleguide: typeof enStyleguide;
   voiceIntake: typeof enVoiceIntake;
+  workspaceUsage: typeof enWorkspaceUsage;
   workspaces: typeof enWorkspaces;
 };
 
@@ -93,6 +97,7 @@ function forLocale(locale: Locale): Messages {
         sidebar: plSidebar,
         styleguide: plStyleguide,
         voiceIntake: plVoiceIntake,
+        workspaceUsage: plWorkspaceUsage,
         workspaces: plWorkspaces,
       }
     : {
@@ -109,6 +114,7 @@ function forLocale(locale: Locale): Messages {
         sidebar: enSidebar,
         styleguide: enStyleguide,
         voiceIntake: enVoiceIntake,
+        workspaceUsage: enWorkspaceUsage,
         workspaces: enWorkspaces,
       };
 }

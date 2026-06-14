@@ -91,6 +91,7 @@ export async function POST(request: Request) {
       requestNumber: result.requestNumber,
       requestId: result.requestId,
       estimateId: result.estimateId,
+      queued: result.queued ?? false,
       attachmentWarnings:
         result.attachmentWarnings.length > 0 ? result.attachmentWarnings : undefined,
     });

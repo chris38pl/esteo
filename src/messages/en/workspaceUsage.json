@@ -1,0 +1,55 @@
+{
+  "title": "Workspace usage",
+  "description": "Overview of plan limits, member activity, and attachments in this workspace.",
+  "attachments": {
+    "title": "Attachments",
+    "subtitle": "Manage your files",
+    "description": "All files linked to estimates in this workspace.",
+    "empty": "No attachments in this workspace yet.",
+    "emptyFiltered": "No files match the selected filters.",
+    "addFile": "Add file",
+    "addFileHint": "Files are added on estimates. Upload from this view is coming soon.",
+    "viewGrid": "Grid view",
+    "viewList": "List view",
+    "refresh": "Refresh",
+    "download": "Download",
+    "downloadFailed": "Could not download the file.",
+    "deleteFile": "Delete",
+    "fileActions": "File actions",
+    "selectFile": "Select {fileName}",
+    "selectedFiles": "Selected files",
+    "deleteSelected": "Delete selected",
+    "cancelSelection": "Cancel",
+    "fileCount": "{count, plural, one {# file} other {# files}}",
+    "filters": {
+      "type": "Type:",
+      "sort": "Sort:"
+    },
+    "types": {
+      "ALL": "All types",
+      "IMAGE": "Images",
+      "PDF": "PDF",
+      "DOCX": "Documents"
+    },
+    "sort": {
+      "dateDesc": "Date added",
+      "dateAsc": "Oldest first",
+      "nameAsc": "Name A-Z",
+      "nameDesc": "Name Z-A",
+      "sizeDesc": "Largest first",
+      "sizeAsc": "Smallest first"
+    },
+    "list": {
+      "name": "Name",
+      "added": "Date added",
+      "size": "Size"
+    },
+    "delete": {
+      "title": "Delete attachments",
+      "descriptionSingle": "Are you sure you want to delete “{fileName}”? This cannot be undone.",
+      "descriptionMultiple": "Are you sure you want to delete {count} attachments? This cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    }
+  }
+}

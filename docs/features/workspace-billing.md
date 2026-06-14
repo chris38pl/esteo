@@ -60,8 +60,21 @@ Mobile: artwork offset right so owl stays visible; buttons full-width (stacked &
 | --- | --- |
 | AI | `entitlements.usage.aiCallsThisMonth` / `limits.maxAiAssistantCallsPerMonth` |
 | Estimates | `entitlements.usage.estimatesThisMonth` / `limits.maxEstimatesPerMonth` |
-| Users | `seats.used + seats.reserved` / `seats.limit` |
+| Users | `(seats.used + seats.reserved + 1)` / `(seats.limit + 1)` — owner always counts as one user; `null` limit → unlimited |
 | Storage | `storage.usedFormatted` / `storage.limitFormatted` |
+
+**What increments `ESTIMATE_CREATED`**
+
+| Action | Counts toward limit? |
+| --- | --- |
+| Dashboard create estimate (internal) | Yes — `recordUsageInTx` in create transaction |
+| Public form (full pipeline, gate allowed) | Yes |
+| Public form (request-only, gate blocked) | No |
+| Manual convert queued request | Yes — at conversion time |
+
+Usage is recorded atomically with estimate creation via `recordUsageInTx` (`usage-service.ts`).
+
+On billing/entitlement reads, `reconcileEstimateUsageAggregate` heals drift when estimate rows exist in the period but metering was missed (e.g. submissions before metering shipped).
 
 ### Secondary cards
 

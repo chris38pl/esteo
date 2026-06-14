@@ -36,6 +36,9 @@
     "avatarHint": "Choose your avatar",
     "theme": "Theme",
     "yourPlan": "Your plan",
+    "activeWorkspace": "Active workspace",
+    "userAccount": "User account",
+    "options": "Options",
     "updatePlan": "Update plan",
     "plans": {
       "free": "FREE",

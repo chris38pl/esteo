@@ -5,7 +5,8 @@ import { useCallback, useState } from "react";
 export type EstimateRequestSubmitResponse = {
   requestNumber: string;
   requestId: string;
-  estimateId: string;
+  estimateId: string | null;
+  queued?: boolean;
   attachmentWarnings?: string[];
 };
 
@@ -62,7 +63,8 @@ export function useEstimateRequestSubmit(input: {
             const body = JSON.parse(xhr.responseText) as {
               requestNumber?: string;
               requestId?: string;
-              estimateId?: string;
+              estimateId?: string | null;
+              queued?: boolean;
               attachmentWarnings?: string[];
               error?: EstimateRequestSubmitErrorCode;
             };
@@ -71,7 +73,8 @@ export function useEstimateRequestSubmit(input: {
               const result: EstimateRequestSubmitResponse = {
                 requestNumber: body.requestNumber,
                 requestId: body.requestId ?? "",
-                estimateId: body.estimateId ?? "",
+                estimateId: body.estimateId ?? null,
+                queued: body.queued ?? false,
                 attachmentWarnings: body.attachmentWarnings,
               };
 

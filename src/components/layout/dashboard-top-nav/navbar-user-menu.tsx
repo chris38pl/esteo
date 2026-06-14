@@ -1,11 +1,23 @@
 "use client";
 
-import { ArrowRight, ChevronDown, LogOut, Settings, User } from "lucide-react";
+import type { ReactNode } from "react";
+import {
+  Check,
+  CheckCircle2,
+  ChevronDown,
+  ChevronRight,
+  CircleHelp,
+  LogOut,
+  PieChart,
+  Settings,
+  User,
+} from "lucide-react";
 import { SignOutButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { UserAvatar } from "@/components/avatars/user-avatar";
+import { WorkspaceAvatar } from "@/components/avatars/workspace-avatar";
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import { LocaleSwitcher } from "@/components/shared/locale-switcher";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -14,6 +26,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { BillingSidebarState } from "@/features/billing/billing-sidebar-state";
@@ -30,20 +45,73 @@ function resolvePlanKey(state: BillingSidebarState): PlanKey {
   return state.currentPlan === "PRO" ? "pro" : "free";
 }
 
-function StatRow({ label, value }: { label: string; value: string }) {
+function MenuSectionLabel({ children }: { children: ReactNode }) {
   return (
-    <div className="flex items-center justify-between gap-3 text-sm">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium tabular-nums text-foreground">{value}</span>
+    <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+      {children}
+    </p>
+  );
+}
+
+function StatRow({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: typeof CircleHelp;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <div className="flex min-w-0 items-center gap-2.5">
+        <Icon className="size-4 shrink-0 text-muted-foreground" strokeWidth={1.75} aria-hidden />
+        <span className="text-sm text-muted-foreground">{label}</span>
+      </div>
+      <span className="shrink-0 text-sm font-semibold tabular-nums text-foreground">{value}</span>
     </div>
+  );
+}
+
+function AccountMenuRow({
+  href,
+  icon: Icon,
+  label,
+  badge,
+}: {
+  href: string;
+  icon: typeof User;
+  label: string;
+  badge?: number;
+}) {
+  return (
+    <DropdownMenuItem asChild className="gap-2.5 px-4 py-2 text-sm">
+      <Link href={href}>
+        <Icon className="size-4 text-muted-foreground" strokeWidth={1.75} aria-hidden />
+        <span className="min-w-0 flex-1 truncate">{label}</span>
+        {badge ? (
+          <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+            {badge}
+          </span>
+        ) : null}
+        <ChevronRight className="size-4 text-muted-foreground/70" strokeWidth={2} aria-hidden />
+      </Link>
+    </DropdownMenuItem>
   );
 }
 
 export function NavbarUserMenu({ locale }: { locale: Locale }) {
   const t = useTranslations("navbar.userMenu");
   const tInvitations = useTranslations("workspaces.invitations");
-  const { billingSidebarState, pendingInvitationCount, currentUser, activeWorkspace, workspaces } =
-    useWorkspaceContext();
+  const {
+    billingSidebarState,
+    pendingInvitationCount,
+    currentUser,
+    activeWorkspace,
+    activeWorkspaceStats,
+    workspaces,
+    switchWorkspace,
+  } = useWorkspaceContext();
 
   const userName = currentUser.name?.trim() || currentUser.email;
   const userEmail = currentUser.email;
@@ -57,6 +125,10 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
   const accountHref = dashboardAccountHref(locale);
   const showBadge = pendingInvitationCount > 0;
   const badgeLabel = tInvitations("pendingBadge", { count: pendingInvitationCount });
+
+  const requestCount = activeWorkspaceStats?.requestCount ?? 0;
+  const estimateCount = activeWorkspaceStats?.estimateCount ?? 0;
+  const storagePercent = activeWorkspace?.storageUsedPercent ?? 0;
 
   return (
     <DropdownMenu modal={false}>
@@ -103,23 +175,108 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
         </button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-72 p-0">
-        <div className="flex items-start gap-3 p-4">
+      <DropdownMenuContent
+        align="end"
+        className="w-[min(20rem,calc(100vw-1rem))] overflow-hidden rounded-xl border-border/60 p-0 shadow-lg"
+      >
+        <div className="flex items-center gap-3 px-4 pb-3 pt-4">
           <UserAvatar
             imageUrl={currentUser.avatarUrl}
             avatarPreset={currentUser.avatarPreset}
-            size={40}
+            size={44}
             className="ring-0"
           />
-          <div className="min-w-0 flex-1 pt-0.5">
-            <p className="truncate text-sm font-semibold leading-tight text-foreground">
-              {userName}
-            </p>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold leading-tight text-foreground">{userName}</p>
             <p className="mt-0.5 truncate text-xs text-muted-foreground">{userEmail}</p>
           </div>
         </div>
 
-        <DropdownMenuSeparator className="mx-0" />
+        <DropdownMenuSeparator className="mx-0 bg-border/60" />
+
+        {activeWorkspace ? (
+          <>
+            <div className="px-4 py-3">
+              <MenuSectionLabel>{t("activeWorkspace")}</MenuSectionLabel>
+
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger
+                  className={cn(
+                    "mt-2 h-auto w-full rounded-lg px-1 py-1",
+                    "focus:bg-accent/40 data-[state=open]:bg-accent/40",
+                    "[&>svg:last-child]:hidden",
+                  )}
+                >
+                  <WorkspaceAvatar
+                    name={activeWorkspace.name}
+                    logoUrl={activeWorkspace.logoUrl}
+                    size={36}
+                    className="rounded-lg ring-0"
+                  />
+                  <span className="min-w-0 flex-1 truncate text-left text-sm font-semibold text-foreground">
+                    {activeWorkspace.name}
+                  </span>
+                  <ChevronRight className="size-4 shrink-0 text-muted-foreground" strokeWidth={2} />
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="w-56 rounded-lg">
+                  {workspaces.map((workspace) => (
+                    <DropdownMenuItem
+                      key={workspace.id}
+                      className="gap-2.5 text-sm"
+                      onSelect={() => switchWorkspace(workspace.slug)}
+                    >
+                      <WorkspaceAvatar
+                        name={workspace.name}
+                        logoUrl={workspace.logoUrl}
+                        size={24}
+                        className="rounded-md ring-0"
+                      />
+                      <span className="min-w-0 flex-1 truncate">{workspace.name}</span>
+                      {workspace.id === activeWorkspace.id ? (
+                        <Check className="size-4 shrink-0 text-primary" strokeWidth={2} />
+                      ) : null}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+            </div>
+
+            <DropdownMenuSeparator className="mx-0 bg-border/60" />
+
+            <div className="space-y-3 px-4 py-3">
+              <StatRow
+                icon={CircleHelp}
+                label={t("stats.requests")}
+                value={String(requestCount)}
+              />
+              <StatRow
+                icon={CheckCircle2}
+                label={t("stats.estimates")}
+                value={String(estimateCount)}
+              />
+              <StatRow
+                icon={PieChart}
+                label={t("stats.spaceUsage")}
+                value={`${storagePercent}%`}
+              />
+              <div
+                className="h-1.5 overflow-hidden rounded-full bg-muted/50"
+                role="progressbar"
+                aria-valuenow={storagePercent}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label={t("stats.spaceUsage")}
+              >
+                <div
+                  className="h-full rounded-full bg-primary transition-[width] duration-500 ease-out"
+                  style={{ width: `${Math.min(100, storagePercent)}%` }}
+                />
+              </div>
+            </div>
+
+            <DropdownMenuSeparator className="mx-0 bg-border/60" />
+          </>
+        ) : null}
 
         <div className="flex items-center justify-between gap-3 px-4 py-3">
           <div className="min-w-0">
@@ -141,68 +298,52 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
               className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
             >
               {t("updatePlan")}
-              <ArrowRight className="size-3.5" strokeWidth={2} />
+              <ChevronRight className="size-3.5" strokeWidth={2} aria-hidden />
             </Link>
           ) : null}
         </div>
 
-        <DropdownMenuSeparator className="mx-0" />
+        <DropdownMenuSeparator className="mx-0 bg-border/60" />
 
-        <div className="space-y-2.5 px-4 py-3">
-          <StatRow label={t("stats.requests")} value="12" />
-          <StatRow label={t("stats.estimates")} value="2" />
-          <StatRow label={t("stats.spaceUsage")} value="45%" />
+        <div className="px-4 py-3 md:hidden">
+          <MenuSectionLabel>{t("options")}</MenuSectionLabel>
+          <div className="mt-3 space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs text-muted-foreground">{t("language")}</span>
+              <LocaleSwitcher value={locale} compact />
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs text-muted-foreground">{t("theme")}</span>
+              <ThemeToggle compact />
+            </div>
+          </div>
         </div>
 
-        <DropdownMenuSeparator className="mx-0" />
+        <DropdownMenuSeparator className="mx-0 bg-border/60 md:hidden" />
 
-        <div className="py-1">
-          <DropdownMenuItem asChild className="gap-2.5 px-4 py-2 text-sm">
-            <Link href={accountHref}>
-              <User className="size-4 text-muted-foreground" strokeWidth={1.75} />
-              {t("myProfile")}
-              {showBadge ? (
-                <span className="ml-auto rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
-                  {pendingInvitationCount}
-                </span>
-              ) : null}
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild className="gap-2.5 px-4 py-2 text-sm">
-            <Link href={accountHref}>
-              <Settings className="size-4 text-muted-foreground" strokeWidth={1.75} />
-              {t("accountSettings")}
-            </Link>
-          </DropdownMenuItem>
+        <div className="px-4 pb-1 pt-3">
+          <MenuSectionLabel>{t("userAccount")}</MenuSectionLabel>
         </div>
 
-        <DropdownMenuSeparator className="mx-0 md:hidden" />
-
-        <div className="px-4 py-2 md:hidden">
-          <p className="mb-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-            {t("language")}
-          </p>
-          <LocaleSwitcher value={locale} compact />
-        </div>
-        <div className="flex items-center justify-between px-4 pb-3 md:hidden">
-          <span className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-            {t("theme")}
-          </span>
-          <ThemeToggle compact />
-        </div>
-
-        <DropdownMenuSeparator className="mx-0" />
-
-        <div className="py-1">
-          <DropdownMenuItem asChild className="gap-2.5 px-4 py-2 text-sm">
-            <SignOutButton>
-              <button type="button" className="flex w-full items-center gap-2.5">
-                <LogOut className="size-4 text-muted-foreground" strokeWidth={1.75} />
-                {t("logout")}
-              </button>
-            </SignOutButton>
-          </DropdownMenuItem>
-        </div>
+        <AccountMenuRow
+          href={accountHref}
+          icon={User}
+          label={t("myProfile")}
+          badge={showBadge ? pendingInvitationCount : undefined}
+        />
+        <AccountMenuRow href={accountHref} icon={Settings} label={t("accountSettings")} />
+        <DropdownMenuSeparator className="mx-4 bg-border/60" />
+        <DropdownMenuItem
+          asChild
+          className="gap-2.5 px-4 py-2 pb-3 text-sm text-destructive focus:text-destructive"
+        >
+          <SignOutButton>
+            <button type="button" className="flex w-full items-center gap-2.5">
+              <LogOut className="size-4" strokeWidth={1.75} aria-hidden />
+              <span className="flex-1 text-left">{t("logout")}</span>
+            </button>
+          </SignOutButton>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

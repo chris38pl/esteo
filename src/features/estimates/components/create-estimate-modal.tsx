@@ -1,6 +1,7 @@
 "use client";
 
-import { ClipboardList } from "lucide-react";
+import { AlertTriangle, ClipboardList } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -14,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import type { CreateEstimateGate } from "@/features/estimates/lib/create-estimate-gate";
 import {
   EstimateRequestFormFields,
   createEmptyIndustryFieldValues,
@@ -32,15 +34,19 @@ import { VoiceIntakeFooterBar } from "@/features/voice-intake/components/voice-i
 import type { VoiceAppliedValues } from "@/features/voice-intake/lib/map-extraction-to-form";
 import { trackVoiceCorrectionsOnSubmit } from "@/features/voice-intake/lib/track-voice-corrections";
 import type { VoiceIntakeMetadata } from "@/features/voice-intake/types";
+import { dashboardBillingHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
+import { cn } from "@/lib/utils";
 
 interface CreateEstimateModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   formData: PublicEstimateRequestPageData;
+  createEstimateGate: CreateEstimateGate;
   workspaceId: string;
   workspaceSlug: string;
   locale: Locale;
+  onEstimateOpening?: (estimateId: string) => void;
 }
 
 const FORM_ERROR_MESSAGES = {
@@ -78,9 +84,11 @@ export function CreateEstimateModal({
   open,
   onOpenChange,
   formData,
+  createEstimateGate,
   workspaceId,
   workspaceSlug,
   locale,
+  onEstimateOpening,
 }: CreateEstimateModalProps) {
   const router = useRouter();
   const t = useTranslations("estimates.create");
@@ -113,6 +121,11 @@ export function CreateEstimateModal({
   const { submit, isSubmitting, uploadProgress, errorCode } = useEstimateRequestSubmit({
     endpoint: `/api/estimate-requests/internal?locale=${locale}`,
     onSuccess: (result) => {
+      if (!result.estimateId) {
+        return;
+      }
+
+      onEstimateOpening?.(result.estimateId);
       onOpenChange(false);
       router.push(`/${locale}/dashboard/${workspaceSlug}/estimates/${result.estimateId}`);
     },
@@ -136,13 +149,25 @@ export function CreateEstimateModal({
   }, [open, formData.fields]);
 
   const canSubmit = project.description.trim().length >= 20;
+  const canCreateEstimate = createEstimateGate.allowed;
+  const isPlanLimitReached = createEstimateGate.reason === "PLAN_LIMIT";
+  const billingHref = dashboardBillingHref(locale, workspaceSlug);
+  const limitMessage =
+    isPlanLimitReached && createEstimateGate.maxEstimatesPerMonth !== null
+      ? t("limitReached", {
+          used: createEstimateGate.estimatesThisMonth,
+          limit: createEstimateGate.maxEstimatesPerMonth,
+        })
+      : !canCreateEstimate
+        ? t("createUnavailable")
+        : null;
   const error =
     validationError ??
     (errorCode ? tForm(FORM_ERROR_MESSAGES[errorCode] as "form.errors.invalid") : null);
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    if (!canSubmit) {
+    if (!canSubmit || !canCreateEstimate) {
       return;
     }
 
@@ -262,11 +287,35 @@ export function CreateEstimateModal({
             ) : null}
           </div>
 
-          <DialogFooter className="shrink-0 border-t bg-muted/20 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-6 sm:py-4">
+          <DialogFooter className="shrink-0 flex-col gap-3 border-t bg-muted/20 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-4">
+            {limitMessage ? (
+              <div className="flex w-full min-w-0 flex-col gap-2 sm:flex-1 sm:flex-row sm:items-center sm:gap-3">
+                <p className="flex min-w-0 items-start gap-2 text-xs leading-5 text-amber-700 dark:text-amber-300">
+                  <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
+                  <span>{limitMessage}</span>
+                </p>
+                {isPlanLimitReached ? (
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className={cn(
+                      "h-9 shrink-0 rounded-lg border-amber-500/30 bg-amber-500/10 px-3 text-xs font-medium",
+                      "text-amber-800 hover:bg-amber-500/15 hover:text-amber-900",
+                      "dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-200 dark:hover:bg-amber-400/15 dark:hover:text-amber-100",
+                    )}
+                  >
+                    <Link href={billingHref}>{t("upgradeCta")}</Link>
+                  </Button>
+                ) : null}
+              </div>
+            ) : (
+              <span className="hidden sm:block sm:flex-1" aria-hidden />
+            )}
             <Button
               type="submit"
-              disabled={isSubmitting || !canSubmit}
-              className="h-12 w-full rounded-xl px-8 py-3 sm:ml-auto sm:w-auto"
+              disabled={isSubmitting || !canSubmit || !canCreateEstimate}
+              className="h-12 w-full rounded-xl px-8 py-3 sm:w-auto sm:shrink-0"
             >
               {isSubmitting ? t("submitting") : t("submit")}
             </Button>

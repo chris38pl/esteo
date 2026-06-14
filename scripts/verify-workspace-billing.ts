@@ -2,12 +2,15 @@ import type { Stripe } from "stripe";
 
 import { deriveWorkspaceEffectiveStatus } from "../src/server/billing/effective-status";
 import type { WorkspaceStatusInput } from "../src/server/billing/effective-status";
-import { deriveFeatureState } from "../src/server/billing/entitlement-service";
+import { deriveFeatureState, deriveEstimateProcessingGate } from "../src/server/billing/entitlement-service";
 import {
   DEFAULT_PLAN_VERSION,
   defaultPlanVersion,
   resolvePlanLimits,
 } from "../src/server/billing/plan-catalog";
+import {
+  periodBoundsFromKey,
+} from "../src/server/billing/usage-service";
 import { isSeatOverLimit } from "../src/server/billing/seat-overage";
 import {
   mapStripeStatus,
@@ -17,6 +20,7 @@ import {
   resolvePlanFromStripeSubscription,
 } from "../src/features/billing/server/stripe-plan-utils";
 import { BillingPlanResolutionError } from "../src/features/billing/server/billing-errors";
+import { workspaceUserUsage } from "../src/features/billing/workspace-user-usage";
 import { FREE_WORKSPACE_COOLDOWN_DAYS } from "../src/server/permissions/entitlements";
 
 let failures = 0;
@@ -47,6 +51,21 @@ function status(overrides: Partial<WorkspaceStatusInput> = {}): WorkspaceStatusI
     ...overrides,
   };
 }
+
+// ---------------------------------------------------------------------------
+// Usage period helpers
+// ---------------------------------------------------------------------------
+console.log("Usage period helpers:");
+
+const juneBounds = periodBoundsFromKey("2026-06");
+assert(
+  juneBounds.start.toISOString() === "2026-06-01T00:00:00.000Z",
+  "period start is UTC month start",
+);
+assert(
+  juneBounds.end.toISOString() === "2026-07-01T00:00:00.000Z",
+  "period end is next UTC month start",
+);
 
 // ---------------------------------------------------------------------------
 // Effective-status precedence + lifecycle transitions
@@ -186,6 +205,30 @@ assert(defaultPlanVersion("PRO") === DEFAULT_PLAN_VERSION.PRO, "defaultPlanVersi
 assert(resolvePlanLimits("FREE").maxInvitedSeats === 0, "FREE has 0 invited seats");
 assert(resolvePlanLimits("PRO").maxInvitedSeats === 3, "PRO has 3 invited seats");
 assert(resolvePlanLimits("BUSINESS").maxInvitedSeats === null, "BUSINESS has unlimited seats");
+
+console.log("Billing users display:");
+
+assert(
+  workspaceUserUsage({ used: 0, reserved: 0, limit: 0 }).used === 1 &&
+    workspaceUserUsage({ used: 0, reserved: 0, limit: 0 }).limit === 1,
+  "FREE owner-only workspace shows 1/1 users",
+);
+assert(
+  workspaceUserUsage({ used: 0, reserved: 0, limit: 3 }).used === 1 &&
+    workspaceUserUsage({ used: 0, reserved: 0, limit: 3 }).limit === 4,
+  "PRO owner-only workspace shows 1/4 users",
+);
+assert(
+  workspaceUserUsage({ used: 2, reserved: 1, limit: 3 }).used === 4 &&
+    workspaceUserUsage({ used: 2, reserved: 1, limit: 3 }).limit === 4,
+  "PRO full workspace shows 4/4 users",
+);
+assert(
+  workspaceUserUsage({ used: 5, reserved: 0, limit: null }).used === 6 &&
+    workspaceUserUsage({ used: 5, reserved: 0, limit: null }).limit === null,
+  "BUSINESS counts owner plus members with unlimited limit",
+);
+
 assert(resolvePlanLimits("FREE").maxEstimatesPerMonth === 3, "FREE caps estimates at 3");
 assert(resolvePlanLimits("PRO").maxEstimatesPerMonth === null, "PRO has unlimited estimates");
 assert(
@@ -257,6 +300,57 @@ assert(
   "unlimited seats never over limit",
 );
 assert(FREE_WORKSPACE_COOLDOWN_DAYS === 30, "FREE workspace cooldown is 30 days");
+
+// ---------------------------------------------------------------------------
+// Public estimate processing gate
+// ---------------------------------------------------------------------------
+console.log("Estimate processing gate:");
+
+const activeFreeEnt = {
+  effectiveStatus: "ACTIVE" as const,
+  plan: "FREE" as const,
+  limits: free,
+  usage: { estimatesThisMonth: 2, aiCallsThisMonth: 0 },
+};
+
+assert(
+  deriveEstimateProcessingGate(activeFreeEnt).allowed === true,
+  "ACTIVE FREE under monthly limit can process estimates",
+);
+
+assert(
+  deriveEstimateProcessingGate({
+    ...activeFreeEnt,
+    usage: { estimatesThisMonth: 3, aiCallsThisMonth: 0 },
+  }).allowed === false,
+  "FREE at monthly cap is PLAN_LIMIT",
+);
+const atLimitGate = deriveEstimateProcessingGate({
+  ...activeFreeEnt,
+  usage: { estimatesThisMonth: 3, aiCallsThisMonth: 0 },
+});
+assert(
+  !atLimitGate.allowed && atLimitGate.reason === "PLAN_LIMIT",
+  "FREE at monthly cap reason is PLAN_LIMIT",
+);
+
+const graceGate = deriveEstimateProcessingGate({
+  ...activeFreeEnt,
+  effectiveStatus: "GRACE_PERIOD",
+});
+assert(
+  !graceGate.allowed && graceGate.reason === "READ_ONLY",
+  "GRACE_PERIOD blocks estimate processing",
+);
+
+const suspendedGate = deriveEstimateProcessingGate({
+  ...activeFreeEnt,
+  effectiveStatus: "SUSPENDED",
+});
+assert(
+  !suspendedGate.allowed && suspendedGate.reason === "FEATURE_DISABLED",
+  "SUSPENDED blocks estimate processing",
+);
 
 // ---------------------------------------------------------------------------
 console.log("");

@@ -15,6 +15,10 @@ import { cn } from "@/lib/utils";
 interface RequestsListTableProps {
   requests: WorkspaceRequestListItem[];
   workspaceSlug: string;
+  workspaceId: string;
+  canCreateEstimate: boolean;
+  estimateLimitReached: boolean;
+  billingHref: string | null;
   locale: Locale;
   footer?: ReactNode;
 }
@@ -25,6 +29,10 @@ const thClassName =
 export function RequestsListTable({
   requests,
   workspaceSlug,
+  workspaceId,
+  canCreateEstimate,
+  estimateLimitReached,
+  billingHref,
   locale,
   footer,
 }: RequestsListTableProps) {
@@ -38,6 +46,10 @@ export function RequestsListTable({
             key={request.id}
             request={request}
             workspaceSlug={workspaceSlug}
+            workspaceId={workspaceId}
+            canCreateEstimate={canCreateEstimate}
+            estimateLimitReached={estimateLimitReached}
+            billingHref={billingHref}
             locale={locale}
             layout="list"
           />
@@ -77,6 +89,9 @@ export function RequestsListTable({
               <th className={`${thClassName} hidden 2xl:table-cell`}>
                 {t("list.columns.floorArea")}
               </th>
+              <th className={cn(thClassName, "w-12 px-2")}>
+                <span className="sr-only">{t("list.actions.more")}</span>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -85,6 +100,10 @@ export function RequestsListTable({
                 key={request.id}
                 request={request}
                 workspaceSlug={workspaceSlug}
+                workspaceId={workspaceId}
+                canCreateEstimate={canCreateEstimate}
+                estimateLimitReached={estimateLimitReached}
+                billingHref={billingHref}
                 locale={locale}
                 layout="table"
               />
