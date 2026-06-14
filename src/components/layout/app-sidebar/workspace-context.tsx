@@ -58,6 +58,7 @@ type WorkspaceContextValue = {
   canInviteMembers: boolean;
   billingSidebarState: BillingSidebarState;
   isPlatformAdmin: boolean;
+  issueTrackerEnabled: boolean;
   currentUser: CurrentUserProfile;
   locale: Locale;
   pendingInvitationCount: number;
@@ -97,6 +98,7 @@ export function WorkspaceProvider({
   canInviteMembers = false,
   billingSidebarState,
   isPlatformAdmin,
+  issueTrackerEnabled,
   currentUser,
   memberPreviews,
   memberTotalCount,
@@ -114,6 +116,7 @@ export function WorkspaceProvider({
   canInviteMembers?: boolean;
   billingSidebarState: BillingSidebarState;
   isPlatformAdmin: boolean;
+  issueTrackerEnabled: boolean;
   currentUser: CurrentUserProfile;
   memberPreviews: WorkspaceMemberPreview[];
   memberTotalCount: number;
@@ -169,6 +172,7 @@ export function WorkspaceProvider({
       canInviteMembers,
       billingSidebarState,
       isPlatformAdmin,
+      issueTrackerEnabled,
       currentUser,
       locale,
       pendingInvitationCount,
@@ -203,6 +207,7 @@ export function WorkspaceProvider({
       canInviteMembers,
       billingSidebarState,
       isPlatformAdmin,
+      issueTrackerEnabled,
       currentUser,
       locale,
       pendingInvitationCount,

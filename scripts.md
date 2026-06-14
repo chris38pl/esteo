@@ -79,6 +79,69 @@ Więcej: `docs/dev/database-migrations.md`.
 
 ---
 
+## **Issue tracker — sync do Cursor**
+
+Lokalny eksport issue ze staging (lub dev) do `docs/issues/` — do analizy w Cursorze. Output **gitignored**, nie commituj.
+
+**Wymagane env w `.env` / `.env.local`:**
+
+| Zmienna | Domyślnie (`sync:issues`) | Z flagą `--local` |
+| --- | --- | --- |
+| `DATABASE_URL_STAGING` | tak | — |
+| `DIRECT_URL_STAGING` | tak | — |
+| `DATABASE_URL` | — | tak |
+| `DIRECT_URL` | — | opcjonalnie (fallback: `DATABASE_URL`) |
+| `UPLOADTHING_TOKEN` | tak (pobieranie screenshotów) | tak |
+
+**Neon branch → skrypt:**
+
+| Komenda | Branch Neon | Zmienne DB |
+| --- | --- | --- |
+| `npm run sync:issues` | **staging** (jak Vercel Preview) | `DATABASE_URL_STAGING`, `DIRECT_URL_STAGING` |
+| `npm run sync:issues -- --local` | **development** (localhost) | `DATABASE_URL`, `DIRECT_URL` |
+
+| | | | | |
+| --- | --- | --- | --- | --- |
+| `sync:issues` | Upsert folderów OPEN + IN_PROGRESS ze staging; usuwa RESOLVED/ARCHIVED; regeneruje `open-issues.md` | `npm run sync:issues` | `Syncing issues from Neon staging branch…` → `Sync complete. N issue folder(s) updated.` | Po testach na Preview — pełny sync otwartych issue do Cursora. |
+| | Pojedyncze issue | `npm run sync:issues -- --issue=123` | Upsert tylko `#123` (musi być OPEN lub IN_PROGRESS) | Szybki re-sync jednego buga po edycji w adminie. |
+| | Wiele issue | `npm run sync:issues -- --issue=123,124,130` | Jak wyżej, lista numerów | Kilka issue naraz bez pełnego sync. |
+| | Dev DB zamiast staging | `npm run sync:issues -- --local` | `Syncing issues from default DATABASE_URL…` | Gdy testujesz issue tracker lokalnie (`ENABLE_ISSUE_TRACKER=true`). |
+| | Dev DB + jedno issue | `npm run sync:issues -- --local --issue=5` | Jak wyżej | Kombinacja flag. |
+
+**Struktura folderów:**
+
+```
+docs/issues/
+  open-issues.md              ← indeks OPEN + IN_PROGRESS (tylko przy pełnym sync)
+  123-mobile-save-loader/
+    issue.md                    ← managed — nadpisywany
+    context.json                ← managed — fingerprint screenshotów (cache)
+    screenshot-1.png            ← managed — pobierany z UploadThing
+    notes.md                    ← ręczny — zachowany między syncami
+```
+
+Format katalogu: `{number}-{folderSlug}/` — `folderSlug` immutable (ustawiany przy create).
+
+**Co sync robi:**
+
+- **OPEN / IN_PROGRESS** → upsert folderu (`issue.md`, `context.json`, screenshoty)
+- **RESOLVED / ARCHIVED** → usuwa folder
+- Screenshoty: **cache-aware** — pomija download gdy `context.json` + plik lokalny aktualne
+- Ręczne pliki (np. `notes.md`, plan naprawczy) poza listą managed — **zachowane**
+
+**Typowy workflow (Preview → Cursor):**
+
+1. Test na Vercel Preview — zgłoś issue przez sidebar „Zgłoś błąd”
+2. (Opcjonalnie) Admin → Copy Cursor Prompt — analiza bez sync
+3. `npm run sync:issues -- --issue=123` — szybki sync jednego issue
+4. Otwórz `docs/issues/123-…/` w Cursorze — `issue.md` + screenshoty + własne `notes.md`
+
+Alternatywa: admin → **Copy Cursor Prompt** / **Copy Issue URL** — bez `sync:issues`.
+
+**Ograniczenia:** blokowane przy `VERCEL_ENV=production`. Issue tracker na Preview wymaga `ENABLE_ISSUE_TRACKER=true` w Vercel Preview env.
+
+---
+
 ## **Ograniczenia**
 
 - **Produkcja:** wszystkie komendy blokowane przy `VERCEL_ENV=production`

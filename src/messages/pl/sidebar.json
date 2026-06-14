@@ -16,6 +16,7 @@
   "meta": {
     "appName": "Esteo"
   },
+  "reportIssue": "Zgłoś błąd",
   "search": {
     "placeholder": "Szukaj…",
     "shortcut": "⌘K"
@@ -43,6 +44,7 @@
       "estimateRequests": "Zapytania",
       "pdfPreview": "Podgląd PDF",
       "voiceIntakePreview": "Podgląd voice",
+      "issues": "Issue tracker",
       "styleguide": "Styleguide"
     }
   },

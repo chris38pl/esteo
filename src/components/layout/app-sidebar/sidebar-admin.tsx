@@ -24,7 +24,7 @@ export function SidebarAdmin({
 }) {
   const pathname = usePathname();
   const t = useTranslations("sidebar");
-  const { isPlatformAdmin } = useWorkspaceContext();
+  const { isPlatformAdmin, issueTrackerEnabled } = useWorkspaceContext();
   const collapsedFromStore = useSidebarStore((s) => s.collapsed);
   const adminOpen = useSidebarStore((s) => s.sectionsOpen.admin);
   const toggleSection = useSidebarStore((s) => s.toggleSection);
@@ -59,7 +59,9 @@ export function SidebarAdmin({
       {adminOpen || collapsed ? (
         <TooltipProvider>
           <ul className={cn("space-y-1", collapsed && "pt-1")}>
-            {adminNavItems.map((item) => {
+            {adminNavItems
+              .filter((item) => item.key !== "issues" || issueTrackerEnabled)
+              .map((item) => {
               const href = item.href(locale);
               const active = pathname === href;
               const label = t(item.labelKey);

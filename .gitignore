@@ -41,6 +41,9 @@ logs/ut-upload-debug.jsonl
 .env*
 !.env.example
 
+# Issue tracker sync output (local Cursor context)
+/docs/issues/
+
 # vercel
 .vercel
 

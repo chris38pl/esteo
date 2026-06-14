@@ -23,6 +23,7 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 | [workspace-billing.md](features/workspace-billing.md) | Workspace billing page — plans, Stripe, usage, invoices |
 | [workspace-branding-and-company-profile.md](features/workspace-branding-and-company-profile.md) | Company logo (UploadThing) and company profile tab for PDF/client docs |
 | [admin-workspaces.md](features/admin-workspaces.md) | Platform admin workspace tools |
+| [issue-tracker.md](features/issue-tracker.md) | Internal issue tracker — staging bug capture, admin triage, Cursor sync |
 | [authentication.md](features/authentication.md) | Custom Clerk Elements sign-in, Client Trust, email second-factor |
 
 ## Architecture
@@ -58,6 +59,8 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 | Document | Description |
 | --- | --- |
 | [dev/billing-toolkit.md](dev/billing-toolkit.md) | CLI commands for local billing tests |
+| [features/issue-tracker.md](features/issue-tracker.md) | Issue tracker — full feature reference |
+| [../scripts.md](../scripts.md#issue-tracker--sync-do-cursor) | `sync:issues` CLI commands |
 
 ## Estimate feature map
 

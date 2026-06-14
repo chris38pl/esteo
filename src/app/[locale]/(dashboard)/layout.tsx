@@ -24,6 +24,7 @@ import {
   countOwnedWorkspaces,
 } from "@/server/permissions/entitlements";
 import { isPlatformAdmin } from "@/server/permissions/require-workspace";
+import { isIssueTrackerEnabled } from "@/lib/issue-tracker/guard";
 import { listPinnedEstimatesForSidebar } from "@/features/estimates/server/pinned-estimates";
 import { getWorkspaceStorageSummary } from "@/features/attachments/server/assert-workspace-storage";
 import { getWorkspaceLogoUrlsByIds } from "@/features/workspaces/server/logo-service";
@@ -49,6 +50,7 @@ export default async function DashboardLayout({
   const user = await requireAuth(resolvedLocale);
   const currentUser = toCurrentUserProfile(user);
   const workspaces = await getAccessibleWorkspaces(user.id);
+  const issueTrackerEnabled = isIssueTrackerEnabled();
 
   // New users have no workspaces yet and will be immediately redirected to
   // onboarding by the child layout. Skip the remaining sidebar data fetches
@@ -66,6 +68,7 @@ export default async function DashboardLayout({
         canInviteMembers={false}
         billingSidebarState={{ variant: "upsell", currentPlan: "FREE", targetPlan: "PRO" }}
         isPlatformAdmin={isPlatformAdmin(user)}
+        issueTrackerEnabled={issueTrackerEnabled}
         currentUser={currentUser}
         locale={resolvedLocale}
         pendingInvitationCount={0}
@@ -160,6 +163,7 @@ export default async function DashboardLayout({
       canInviteMembers={canInviteMembers}
       billingSidebarState={billingSidebarState}
       isPlatformAdmin={isPlatformAdmin(user)}
+      issueTrackerEnabled={issueTrackerEnabled}
       currentUser={currentUser}
       locale={resolvedLocale}
       pendingInvitationCount={pendingInvitationCount}

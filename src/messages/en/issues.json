@@ -1,0 +1,72 @@
+{
+  "form": {
+    "title": "Report issue",
+    "type": "Type",
+    "issueTitle": "Title",
+    "issueTitlePlaceholder": "Short summary",
+    "description": "Description",
+    "descriptionPlaceholder": "What happened?",
+    "recordDescription": "Record description",
+    "stopRecording": "Stop",
+    "screenshots": "Screenshots",
+    "addScreenshot": "Add",
+    "moreDetails": "More details",
+    "priority": "Priority",
+    "reproductionSteps": "Reproduction steps",
+    "expectedBehavior": "Expected behavior",
+    "actualBehavior": "Actual behavior",
+    "submit": "Save",
+    "submitting": "Saving…",
+    "cancel": "Cancel",
+    "success": "Issue #{number} saved",
+    "validationError": "Fill in required fields",
+    "uploadError": "Failed to upload screenshots"
+  },
+  "type": {
+    "BUG": "Bug",
+    "UX": "UX",
+    "FEATURE": "Feature",
+    "AI_EXTRACTION": "AI extraction",
+    "PERFORMANCE": "Performance"
+  },
+  "priority": {
+    "LOW": "Low",
+    "MEDIUM": "Medium",
+    "HIGH": "High",
+    "CRITICAL": "Critical"
+  },
+  "status": {
+    "OPEN": "Open",
+    "IN_PROGRESS": "In progress",
+    "RESOLVED": "Resolved",
+    "ARCHIVED": "Archived"
+  },
+  "admin": {
+    "title": "Issue tracker",
+    "subtitle": "Staging test reports.",
+    "empty": "No issues yet.",
+    "columns": {
+      "number": "#",
+      "title": "Title",
+      "type": "Type",
+      "priority": "Priority",
+      "status": "Status",
+      "createdAt": "Created"
+    },
+    "metadata": "Metadata",
+    "environment": "Environment",
+    "pageUrl": "URL",
+    "device": "Device",
+    "context": "Context",
+    "status": "Status",
+    "description": "Description",
+    "screenshots": "Screenshots",
+    "copyPrompt": "Copy Cursor Prompt",
+    "copyUrl": "Copy Issue URL",
+    "promptCopied": "Prompt copied",
+    "urlCopied": "URL copied",
+    "copyFailed": "Could not copy",
+    "statusUpdated": "Status updated",
+    "notFound": "Issue not found"
+  }
+}

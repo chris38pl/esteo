@@ -3,7 +3,7 @@ import "server-only";
 import { AttachmentThumbnailStatus, AttachmentType, AttachmentUploadSource } from "@prisma/client";
 import { randomUUID } from "crypto";
 
-import { isAllowedAttachmentMimeType } from "@/features/attachments/lib/allowed-mime-types";
+import { ALLOWED_IMAGE_MIME_TYPES, isAllowedAttachmentMimeType } from "@/features/attachments/lib/allowed-mime-types";
 import type { RequestAttachmentRecord } from "@/features/attachments/lib/request-attachment-metadata";
 import { resolveAttachmentType } from "@/features/attachments/lib/resolve-attachment-type";
 import { createAttachmentRecords } from "@/features/attachments/server/attachments-repository";
@@ -28,6 +28,8 @@ import {
 import { StorageQuotaError } from "@/features/attachments/server/storage-errors";
 import { syncEstimateAttachmentCount } from "@/features/attachments/server/sync-attachment-count";
 import { incrementWorkspaceStorageUsed } from "@/features/attachments/server/usage-service";
+import { prisma } from "@/db/client";
+import { PermissionError } from "@/server/permissions/errors";
 
 export type PreparedUploadFile = {
   id: string;
@@ -65,6 +67,14 @@ export function buildRequestStorageKey(
   fileName: string,
 ): string {
   return `${workspaceId}/requests/${requestId}/${fileId}/${suffix}-${sanitizeFileName(fileName)}`;
+}
+
+export function buildIssueStorageKey(
+  issueId: string,
+  attachmentId: string,
+  fileName: string,
+): string {
+  return `internal/issues/${issueId}/${attachmentId}/original-${sanitizeFileName(fileName)}`;
 }
 
 async function prepareFileBuffers(file: File): Promise<Omit<PreparedUploadFile, "storageKey">> {
@@ -446,4 +456,127 @@ export async function precheckRequestUploadQuota(
   assertWorkspaceHasStorageCapacity(workspace, totalStoredBytes);
 
   return totalStoredBytes;
+}
+
+const MAX_ISSUE_SCREENSHOTS = 10;
+
+async function prepareIssueImageFiles(files: File[]): Promise<PreparedUploadFile[]> {
+  if (files.length > MAX_ISSUE_SCREENSHOTS) {
+    throw new StorageQuotaError(
+      `Cannot upload more than ${MAX_ISSUE_SCREENSHOTS} screenshots.`,
+      "FILE_TOO_LARGE",
+    );
+  }
+
+  const prepared: PreparedUploadFile[] = [];
+
+  for (const file of files) {
+    assertSingleFileSize(file.size);
+
+    if (!(ALLOWED_IMAGE_MIME_TYPES as readonly string[]).includes(file.type)) {
+      throw new StorageQuotaError("Only JPEG, PNG, and WebP images are allowed.", "FILE_TOO_LARGE");
+    }
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const attachmentId = randomUUID();
+    const mimeType = file.type as (typeof ALLOWED_IMAGE_MIME_TYPES)[number];
+    const processed = await processImageOriginal(buffer, mimeType);
+
+    prepared.push({
+      id: attachmentId,
+      originalFileName: file.name,
+      mimeType: processed.mimeType,
+      attachmentType: AttachmentType.IMAGE,
+      storedBytes: processed.storedBytes,
+      storageKey: "",
+      thumbnailStorageKey: null,
+      imageWidth: processed.width,
+      imageHeight: processed.height,
+      originalBuffer: processed.originalBuffer,
+      uploadFileName: file.name,
+    });
+  }
+
+  return prepared;
+}
+
+function assignIssueStorageKeys(
+  prepared: PreparedUploadFile[],
+  issueId: string,
+): PreparedUploadFile[] {
+  return prepared.map((item) => ({
+    ...item,
+    storageKey: buildIssueStorageKey(issueId, item.id, item.originalFileName),
+    thumbnailStorageKey: null,
+  }));
+}
+
+export async function uploadPreparedIssueAttachments(input: {
+  issueId: string;
+  files: File[];
+  uploadedById: string;
+}) {
+  const issue = await prisma.issue.findUnique({
+    where: { id: input.issueId },
+    select: {
+      id: true,
+      reportedById: true,
+      _count: { select: { attachments: true } },
+    },
+  });
+
+  if (!issue) {
+    throw new Error("Issue not found.");
+  }
+
+  if (issue.reportedById !== input.uploadedById) {
+    throw new PermissionError("Forbidden.");
+  }
+
+  if (issue._count.attachments + input.files.length > MAX_ISSUE_SCREENSHOTS) {
+    throw new StorageQuotaError(
+      `Issue cannot have more than ${MAX_ISSUE_SCREENSHOTS} screenshots.`,
+      "FILE_TOO_LARGE",
+    );
+  }
+
+  const prepared = assignIssueStorageKeys(
+    await prepareIssueImageFiles(input.files),
+    input.issueId,
+  );
+
+  const uploadedKeys: string[] = [];
+  const baseSortOrder = issue._count.attachments;
+
+  try {
+    const created = [];
+
+    for (let index = 0; index < prepared.length; index += 1) {
+      const item = prepared[index];
+      const uploaded = await uploadBlobToStorage(item, index);
+      uploadedKeys.push(uploaded.storageKey);
+
+      const row = await prisma.issueAttachment.create({
+        data: {
+          id: item.id,
+          issueId: input.issueId,
+          storageKey: uploaded.storageKey,
+          originalFileName: item.originalFileName,
+          mimeType: item.mimeType,
+          fileSizeBytes: item.storedBytes,
+          sortOrder: baseSortOrder + index,
+        },
+      });
+
+      created.push(row);
+    }
+
+    return created;
+  } catch (error) {
+    if (uploadedKeys.length > 0) {
+      await deleteStorageKeys(uploadedKeys);
+    }
+
+    throw error;
+  }
 }

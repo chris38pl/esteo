@@ -1,0 +1,72 @@
+{
+  "form": {
+    "title": "Zgłoś błąd",
+    "type": "Typ",
+    "issueTitle": "Tytuł",
+    "issueTitlePlaceholder": "Krótki opis problemu",
+    "description": "Opis",
+    "descriptionPlaceholder": "Co się stało?",
+    "recordDescription": "Nagraj opis",
+    "stopRecording": "Zatrzymaj",
+    "screenshots": "Screenshoty",
+    "addScreenshot": "Dodaj",
+    "moreDetails": "Więcej szczegółów",
+    "priority": "Priorytet",
+    "reproductionSteps": "Kroki reprodukcji",
+    "expectedBehavior": "Oczekiwane zachowanie",
+    "actualBehavior": "Rzeczywiste zachowanie",
+    "submit": "Zapisz",
+    "submitting": "Zapisywanie…",
+    "cancel": "Anuluj",
+    "success": "Zgłoszenie #{number} zapisane",
+    "validationError": "Uzupełnij wymagane pola",
+    "uploadError": "Nie udało się przesłać screenshotów"
+  },
+  "type": {
+    "BUG": "Bug",
+    "UX": "UX",
+    "FEATURE": "Feature",
+    "AI_EXTRACTION": "AI extraction",
+    "PERFORMANCE": "Performance"
+  },
+  "priority": {
+    "LOW": "Low",
+    "MEDIUM": "Medium",
+    "HIGH": "High",
+    "CRITICAL": "Critical"
+  },
+  "status": {
+    "OPEN": "Open",
+    "IN_PROGRESS": "In progress",
+    "RESOLVED": "Resolved",
+    "ARCHIVED": "Archived"
+  },
+  "admin": {
+    "title": "Issue tracker",
+    "subtitle": "Zgłoszenia z testów staging.",
+    "empty": "Brak zgłoszeń.",
+    "columns": {
+      "number": "Nr",
+      "title": "Tytuł",
+      "type": "Typ",
+      "priority": "Priorytet",
+      "status": "Status",
+      "createdAt": "Data"
+    },
+    "metadata": "Metadane",
+    "environment": "Środowisko",
+    "pageUrl": "URL",
+    "device": "Urządzenie",
+    "context": "Context",
+    "status": "Status",
+    "description": "Opis",
+    "screenshots": "Screenshoty",
+    "copyPrompt": "Copy Cursor Prompt",
+    "copyUrl": "Copy Issue URL",
+    "promptCopied": "Prompt skopiowany",
+    "urlCopied": "URL skopiowany",
+    "copyFailed": "Nie udało się skopiować",
+    "statusUpdated": "Status zaktualizowany",
+    "notFound": "Nie znaleziono zgłoszenia"
+  }
+}

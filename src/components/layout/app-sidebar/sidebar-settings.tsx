@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { SidebarReportIssue } from "./sidebar-report-issue";
 import { SidebarUpgrade } from "./sidebar-upgrade";
 import { sidebarInsetClass } from "./sidebar-layout";
 import { useSidebarLayout } from "./sidebar-layout-context";
@@ -29,6 +30,7 @@ export function SidebarSettings({
           collapsed ? "flex flex-col items-center gap-2" : "flex flex-col gap-4",
         )}
       >
+        <SidebarReportIssue collapsed={collapsed} />
         <SidebarUpgrade collapsedOverride={collapsedOverride} />
       </div>
     </div>

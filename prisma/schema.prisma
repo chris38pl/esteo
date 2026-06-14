@@ -204,6 +204,93 @@ model User {
   estimateActivityLogs EstimateActivityLog[]
   estimateAttachments  EstimateAttachment[]
   estimatePdfs         EstimatePdf[]
+  reportedIssues       Issue[]
+}
+
+enum IssueType {
+  BUG
+  UX
+  FEATURE
+  AI_EXTRACTION
+  PERFORMANCE
+}
+
+enum IssuePriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum IssueStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  ARCHIVED
+}
+
+enum IssueEnvironment {
+  LOCALHOST
+  PREVIEW
+  PRODUCTION
+}
+
+enum IssueDeviceType {
+  MOBILE
+  TABLET
+  DESKTOP
+}
+
+model IssueNumberCounter {
+  id    String @id @default("default")
+  value Int    @default(0)
+}
+
+model Issue {
+  id                String            @id @default(cuid())
+  number            Int               @unique
+  folderSlug        String
+  type              IssueType
+  priority          IssuePriority     @default(MEDIUM)
+  status            IssueStatus       @default(OPEN)
+  title             String
+  description       String            @db.Text
+  reproductionSteps String?           @db.Text
+  expectedBehavior  String?           @db.Text
+  actualBehavior    String?           @db.Text
+  pageUrl           String
+  context           Json?
+  locale            String
+  userAgent         String            @db.Text
+  deviceType        IssueDeviceType
+  viewportWidth     Int
+  viewportHeight    Int
+  environment       IssueEnvironment
+  fixedIn           String?
+  reportedById      String
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  reportedBy  User              @relation(fields: [reportedById], references: [id], onDelete: Restrict)
+  attachments IssueAttachment[]
+
+  @@index([status, createdAt])
+  @@index([number])
+}
+
+model IssueAttachment {
+  id               String   @id @default(cuid())
+  issueId          String
+  storageKey       String
+  originalFileName String
+  mimeType         String
+  fileSizeBytes    BigInt
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+
+  issue Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+
+  @@index([issueId, sortOrder])
 }
 
 /// Canonical billing entity. Target model: 1:1 with Workspace (workspaceId @unique).

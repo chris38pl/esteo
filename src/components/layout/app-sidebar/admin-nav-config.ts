@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   BookOpen,
+  Bug,
   Building2,
   ClipboardList,
   FileText,
@@ -16,6 +17,7 @@ export type AdminNavItemKey =
   | "industryFields"
   | "pdfPreview"
   | "voiceIntakePreview"
+  | "issues"
   | "users"
   | "workspaces"
   | "styleguide";
@@ -69,6 +71,12 @@ export const adminNavItems: AdminNavItem[] = [
     icon: Mic,
     href: (locale) => `/${locale}/dashboard/admin/voice-intake-preview`,
     labelKey: "admin.nav.voiceIntakePreview",
+  },
+  {
+    key: "issues",
+    icon: Bug,
+    href: (locale) => `/${locale}/dashboard/admin/issues`,
+    labelKey: "admin.nav.issues",
   },
   {
     key: "styleguide",

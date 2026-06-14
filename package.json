@@ -28,7 +28,7 @@
     "prisma:seed:business": "tsx prisma/seed.ts --plan BUSINESS",
     "prisma:backfill-version-totals": "tsx scripts/backfill-estimate-version-totals.ts",
     "prisma:backfill-attachment-count": "tsx scripts/backfill-estimate-attachment-count.ts",
-    "prisma:backfill-attachment-thumbnails": "tsx scripts/backfill-attachment-thumbnails.ts",
+    "sync:issues": "node scripts/sync-issues.mjs",
     "retry-incomplete-ai-drafts": "tsx scripts/retry-incomplete-ai-drafts.ts",
     "test:request-attachments": "tsx scripts/test-request-attachment-metadata.ts",
     "test:async-thumbnail-helpers": "tsx scripts/test-async-thumbnail-helpers.ts",
