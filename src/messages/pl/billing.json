@@ -126,6 +126,29 @@
         "canceling": "Subskrypcja kończy się — kolejna faktura nie zostanie wystawiona.",
         "no_subscription": "Brak zaplanowanej faktury."
       }
+    },
+    "plans": {
+      "title": "Wybierz plan",
+      "subtitle": "Porównaj plany i wybierz najlepszy dla tego workspace.",
+      "backToBilling": "Wróć do płatności",
+      "currentPlan": "Aktualny plan",
+      "currentPlanBadge": "Twój plan",
+      "upgradeTo": "Przejdź na {plan}",
+      "downgradeTo": "Zmień na {plan}",
+      "upgradeSuccess": "Plan został zmieniony na {plan}.",
+      "downgradeScheduled": "Plan zmieni się na {plan} od {date}.",
+      "freeDowngradeHint": "Powrót do Free przez anulowanie subskrypcji na stronie Płatności.",
+      "manageOnBilling": "Zarządzaj subskrypcją",
+      "checkoutCancelled": "Płatność anulowana. Możesz wybrać plan ponownie.",
+      "unlimited": "Bez limitu",
+      "features": {
+        "estimates": "Kosztorysy / mies.",
+        "ai": "Wywołania AI / mies.",
+        "users": "Użytkownicy",
+        "storage": "Magazyn",
+        "invites": "Zaproszenia zespołu",
+        "undo": "Cofanie w edytorze"
+      }
     }
   }
 }

@@ -6,7 +6,7 @@ import { ArrowRight, BadgeCheck, Check, Crown, Sparkles, X } from "lucide-react"
 import { useTranslations } from "next-intl";
 
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
-import { dashboardBillingHref, ownedWorkspaceBillingHref } from "@/lib/dashboard-routes";
+import { dashboardUpgradeHref } from "@/lib/dashboard-routes";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -55,14 +55,17 @@ export function SidebarPlanCard({
 }) {
   const t = useTranslations("sidebar.planCards");
   const { activeWorkspace, workspaces } = useWorkspaceContext();
-  const billingHref =
+  const ownedWorkspace = workspaces.find((workspace) => workspace.isOwner);
+  const workspaceSlug =
     activeWorkspace?.isOwner && activeWorkspace.slug
-      ? dashboardBillingHref(locale as "pl" | "en", activeWorkspace.slug)
-      : ownedWorkspaceBillingHref(locale as "pl" | "en", workspaces);
+      ? activeWorkspace.slug
+      : ownedWorkspace?.slug ?? null;
 
-  if (!billingHref) {
+  if (!workspaceSlug) {
     return null;
   }
+
+  const localeTyped = locale as "pl" | "en";
 
   const featureKeys = FEATURE_KEYS[variant];
   const isBusiness = variant === "business";
@@ -163,7 +166,10 @@ export function SidebarPlanCard({
               size="sm"
               className="h-8 w-full rounded-lg border-white/15 bg-white/[0.08] text-[11px] font-medium text-white shadow-none hover:bg-white/12 hover:text-white"
             >
-              <Link href={billingHref} className="w-full justify-center">
+              <Link
+                href={dashboardUpgradeHref(localeTyped, workspaceSlug, { plan: "PRO" })}
+                className="w-full justify-center"
+              >
                 {t("free.ctaPrimary")}
                 <ArrowRight className="size-3.5" strokeWidth={2} />
               </Link>
@@ -174,7 +180,10 @@ export function SidebarPlanCard({
               size="sm"
               className="h-7 w-full rounded-lg border-white/10 bg-transparent text-[10px] font-medium text-slate-400 shadow-none hover:bg-white/[0.06] hover:text-slate-200"
             >
-              <Link href={billingHref} className="w-full justify-center">
+              <Link
+                href={dashboardUpgradeHref(localeTyped, workspaceSlug, { plan: "BUSINESS" })}
+                className="w-full justify-center"
+              >
                 {t("free.ctaSecondary")}
               </Link>
             </Button>
@@ -187,7 +196,10 @@ export function SidebarPlanCard({
             size="sm"
             className="mt-3.5 h-8 w-full rounded-lg border-0 bg-gradient-to-r from-violet-600 to-blue-600 text-[11px] font-medium text-white shadow-md shadow-violet-900/30 hover:from-violet-500 hover:to-blue-500"
           >
-            <Link href={billingHref} className="w-full justify-center">
+            <Link
+              href={dashboardUpgradeHref(localeTyped, workspaceSlug, { plan: "BUSINESS" })}
+              className="w-full justify-center"
+            >
               {t("pro.ctaPrimary")}
               <ArrowRight className="size-3.5" strokeWidth={2} />
             </Link>

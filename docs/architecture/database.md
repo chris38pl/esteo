@@ -147,13 +147,13 @@ Invited members with zero owned workspaces still see their personal plan (e.g. F
 
 ### Plan limits (MVP)
 
-| Plan | Owned workspaces | Invited seats (per workspace) | Accessible workspaces (owned + member) |
-| --- | --- | --- | --- |
-| FREE | 1 | 0 | 1 |
-| PRO | 1 | 3 | 3 |
-| BUSINESS | unlimited | unlimited | unlimited |
+| Plan | Owned workspaces | Invited seats (per workspace) | Accessible workspaces (owned + member) | Attachment storage |
+| --- | --- | --- | --- | --- |
+| FREE | 1 | 0 (owner only) | 1 | 250 MB |
+| PRO | 1 | 0 (owner only) | 3 | 1 GB |
+| BUSINESS | unlimited | unlimited | unlimited | 5 GB |
 
-Implementation: `src/server/permissions/entitlements.ts`
+Implementation: `src/server/billing/plan-catalog.ts` (`resolvePlanLimits`). Workspace `attachmentStorageLimitBytes` syncs on plan change via `workspace-plan-sync.ts`.
 
 ## Related entities
 

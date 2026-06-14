@@ -103,7 +103,7 @@ Industry-driven via `IndustryFieldDefinition` (e.g. property type, preferred sta
 - email must be valid
 - phone number required
 
-Workspace attachment storage uses a **250 MB default quota** per workspace (`Workspace.attachmentStorageLimitBytes`). When storage is exhausted and the user attached files, submit is rejected. Requests without attachments may still be submitted. See [`estimate-attachments.md`](estimate-attachments.md).
+Workspace attachment storage quota follows the workspace plan (`resolvePlanLimits` → `maxStorageBytes`): **FREE 250 MB**, **PRO 1 GB**, **BUSINESS 5 GB** (`Workspace.attachmentStorageLimitBytes`). When storage is exhausted and the user attached files, submit is rejected. Requests without attachments may still be submitted. See [`estimate-attachments.md`](estimate-attachments.md).
 
 ## AI behavior (pre-submit assistant)
 

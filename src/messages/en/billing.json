@@ -126,6 +126,29 @@
         "canceling": "Subscription is ending — no further invoice will be issued.",
         "no_subscription": "No upcoming invoice scheduled."
       }
+    },
+    "plans": {
+      "title": "Choose a plan",
+      "subtitle": "Compare plans and pick the best fit for this workspace.",
+      "backToBilling": "Back to billing",
+      "currentPlan": "Current plan",
+      "currentPlanBadge": "Your plan",
+      "upgradeTo": "Upgrade to {plan}",
+      "downgradeTo": "Switch to {plan}",
+      "upgradeSuccess": "Plan changed to {plan}.",
+      "downgradeScheduled": "Plan will change to {plan} on {date}.",
+      "freeDowngradeHint": "Return to Free by canceling your subscription on the Billing page.",
+      "manageOnBilling": "Manage subscription",
+      "checkoutCancelled": "Payment canceled. You can choose a plan again.",
+      "unlimited": "Unlimited",
+      "features": {
+        "estimates": "Estimates / month",
+        "ai": "AI calls / month",
+        "users": "Users",
+        "storage": "Storage",
+        "invites": "Team invites",
+        "undo": "Editor undo steps"
+      }
     }
   }
 }

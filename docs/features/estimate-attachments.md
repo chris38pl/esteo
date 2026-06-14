@@ -9,7 +9,7 @@ Storage belongs to the **workspace**, not the user or subscription plan.
 | Field | Location | Purpose |
 | --- | --- | --- |
 | `attachmentStorageUsedBytes` | `Workspace` | Aggregated stored bytes (processed files) |
-| `attachmentStorageLimitBytes` | `Workspace` | Quota cap (default **250 MB** = `262144000`) |
+| `attachmentStorageLimitBytes` | `Workspace` | Quota cap from plan catalog (`resolvePlanLimits` → `maxStorageBytes`); FREE default **250 MB** (`262144000`) |
 | `attachmentCount` | `Estimate` | Derived cache of `EstimateAttachment` rows — **SET only**, never `+=`/`-=` |
 
 Future add-ons increase `attachmentStorageLimitBytes` per workspace — no schema change required.

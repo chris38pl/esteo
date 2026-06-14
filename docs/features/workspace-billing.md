@@ -21,12 +21,16 @@ Billing is **per workspace** (`BillingAccount` + `Subscription`), not per user. 
 
 | Surface | Path | Access |
 | --- | --- | --- |
-| Billing page | `/[locale]/dashboard/[workspaceSlug]/billing` | **OWNER** only |
+| Billing overview | `/[locale]/dashboard/[workspaceSlug]/billing` | **OWNER** only |
+| Plan selection (3 columns) | `/[locale]/dashboard/[workspaceSlug]/billing/plans` | **OWNER** only |
+| Upgrade alias (redirect) | `/[locale]/dashboard/[workspaceSlug]/upgrade` → `/billing/plans` | **OWNER** only |
 | Post-checkout sync | `/[locale]/dashboard/[workspaceSlug]/billing/checkout-success?session_id=…` | Authenticated owner |
 | Post-portal sync | `/[locale]/dashboard/[workspaceSlug]/billing/portal-return` | Authenticated owner |
 | Legacy redirect | `/[locale]/dashboard/billing` → canonical workspace billing URL | Owner |
 
-Non-owners hitting `/billing` are redirected to the workspace dashboard.
+**Split:** `/billing` = subscription overview (usage, invoices, cancel). `/billing/plans` = compare FREE/PRO/BUSINESS and start Checkout or in-app plan change. Sidebar and hero CTAs link to `/billing/plans` (or `/upgrade?plan=…`).
+
+Non-owners hitting `/billing` or `/billing/plans` are redirected to the workspace dashboard.
 
 Layout: `max-w-[1400px]` content column (`billing/page.tsx`, `billing/layout.tsx`).
 
@@ -37,7 +41,7 @@ Layout: `max-w-[1400px]` content column (`billing/page.tsx`, `billing/layout.tsx
 ```txt
 WorkspaceBillingPanel
 ├── Status banners (PAST_DUE, GRACE_PERIOD, storage/seat over limit, action errors)
-├── BillingPlanHeroBanner          — plan hero + artwork + change plan / manage payment
+├── BillingPlanHeroBanner          — plan hero + artwork + link to /billing/plans + manage payment
 ├── BillingUsageStatsSection       — 4-column usage grid (AI, estimates, users, storage)
 ├── BillingSecondaryCardsSection   — add-ons (placeholder) + next invoice (Stripe)
 ├── Member usage table             — per-user AI/estimate meters (if any usage)
@@ -75,6 +79,16 @@ Mobile: artwork offset right so owl stays visible; buttons full-width (stacked &
 Usage is recorded atomically with estimate creation via `recordUsageInTx` (`usage-service.ts`).
 
 On billing/entitlement reads, `reconcileEstimateUsageAggregate` heals drift when estimate rows exist in the period but metering was missed (e.g. submissions before metering shipped).
+
+### Plan limits (catalog `*_2026`)
+
+| Plan | Users (billing display) | Invites | Storage |
+| --- | --- | --- | --- |
+| FREE | 1 (owner) | — | 250 MB |
+| PRO | 1 (owner) | — | 1 GB |
+| BUSINESS | owner + unlimited | unlimited | 5 GB |
+
+Source: `src/server/billing/plan-catalog.ts`. Only **BUSINESS** may invite additional members (`maxInvitedSeats > 0`). Storage cap is written to `Workspace.attachmentStorageLimitBytes` on plan sync.
 
 ### Secondary cards
 
@@ -181,7 +195,7 @@ Polish quick-reference table: [`docs/dev/billing-toolkit.md`](../dev/billing-too
 
 Namespaces: `billing.workspace.*` in `src/messages/{pl,en}/billing.json`
 
-Sections: `planHero`, `usage`, `addons`, `nextInvoice`, `dangerZone`, `statusNotice`, `memberUsage`, `actions`.
+Sections: `planHero`, `plans`, `usage`, `addons`, `nextInvoice`, `dangerZone`, `statusNotice`, `memberUsage`, `actions`.
 
 Hero prices (`planHero.price.*`) are **display placeholders** — authoritative amounts come from Stripe on the next-invoice card.
 
@@ -191,13 +205,18 @@ Hero prices (`planHero.price.*`) are **display placeholders** — authoritative 
 
 | Area | Path |
 | --- | --- |
-| Page | `src/app/.../billing/page.tsx` |
-| Panel | `src/features/billing/components/workspace-billing-panel.tsx` |
+| Billing overview page | `src/app/.../billing/page.tsx` |
+| Plans page | `src/app/.../billing/plans/page.tsx` |
+| Upgrade alias | `src/app/.../upgrade/page.tsx` |
+| Overview panel | `src/features/billing/components/workspace-billing-panel.tsx` |
+| Plans panel | `src/features/billing/components/workspace-plans-panel.tsx` |
 | Hero | `billing-plan-hero-banner.tsx`, `billing-plan-hero-styles.tsx`, `lib/billing-plan-hero-images.ts` |
+| Plan limits labels | `lib/format-plan-limit-labels.ts` |
 | Usage grid | `billing-usage-stats-section.tsx` |
 | Secondary cards | `billing-secondary-cards-section.tsx` |
 | Shared artwork | `src/components/hero-card/hero-card-artwork.tsx` |
-| Page data | `billing-page-data.ts`, `get-workspace-billing-page-data.ts` |
+| Page data | `billing-page-data.ts`, `get-workspace-billing-page-data.ts`, `billing-plans-page-data.ts`, `get-workspace-billing-plans-page-data.ts` |
+| Route helpers | `src/lib/dashboard-routes.ts` |
 | Upcoming invoice | `get-workspace-upcoming-invoice.ts` |
 | Stripe core | `billing-service.ts`, `plan-change.ts`, `subscription-sync.ts`, `billing-actions.ts` |
 | Routes | `checkout-success/route.ts`, `portal-return/route.ts` |
@@ -207,7 +226,9 @@ Hero prices (`planHero.price.*`) are **display placeholders** — authoritative 
 ## Manual test checklist
 
 - [ ] Owner opens `/billing`; member redirected
-- [ ] FREE → upgrade opens Stripe Checkout; return syncs plan
+- [ ] `/billing/plans` shows 3 columns with catalog limits; current plan highlighted
+- [ ] `/upgrade` redirects to `/billing/plans`; `?plan=PRO` highlights card
+- [ ] FREE → upgrade opens Stripe Checkout; return syncs plan; cancel returns to plans page
 - [ ] PRO → BUSINESS updates without Checkout
 - [ ] BUSINESS → PRO schedules downgrade at period end
 - [ ] Portal cancel → return URL syncs `cancelAtPeriodEnd`; hero badge “Anuluje się”

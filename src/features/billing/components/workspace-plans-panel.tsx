@@ -1,0 +1,309 @@
+"use client";
+
+import { useEffect, useRef, useState, useTransition } from "react";
+import type { SubscriptionPlan } from "@prisma/client";
+import { ArrowLeft, Check, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import type { WorkspaceBillingPlansPageData } from "@/features/billing/billing-plans-page-data";
+import {
+  formatPlanLimitLabels,
+  PLAN_ORDER,
+} from "@/features/billing/lib/format-plan-limit-labels";
+import { changeWorkspacePlanAction } from "@/features/billing/server/billing-actions";
+import { dashboardBillingHref } from "@/lib/dashboard-routes";
+import type { Locale } from "@/lib/locale";
+import { cn } from "@/lib/utils";
+
+type Props = {
+  workspaceId: string;
+  workspaceSlug: string;
+  locale: Locale;
+  data: WorkspaceBillingPlansPageData;
+};
+
+type PlanCardAction =
+  | { kind: "current" }
+  | { kind: "select"; plan: Exclude<SubscriptionPlan, "FREE"> }
+  | { kind: "downgrade"; plan: "PRO" }
+  | { kind: "free_hint" };
+
+const planAccent: Record<
+  SubscriptionPlan,
+  {
+    border: string;
+    badge: string;
+    title: string;
+    button: string;
+  }
+> = {
+  FREE: {
+    border: "border-border/60",
+    badge: "bg-slate-500/15 text-slate-600 dark:bg-slate-400/15 dark:text-slate-300",
+    title: "text-foreground",
+    button: "",
+  },
+  PRO: {
+    border: "border-blue-500/25 dark:border-blue-400/20",
+    badge: "bg-blue-500/15 text-blue-700 dark:bg-blue-400/15 dark:text-blue-300",
+    title:
+      "bg-gradient-to-b from-blue-300 to-blue-600 bg-clip-text text-transparent dark:from-blue-200 dark:to-blue-500",
+    button: "bg-blue-600 hover:bg-blue-600/90",
+  },
+  BUSINESS: {
+    border: "border-violet-500/25 dark:border-violet-400/20",
+    badge: "bg-violet-500/20 text-violet-700 dark:bg-violet-400/15 dark:text-violet-300",
+    title:
+      "bg-gradient-to-b from-violet-200 to-violet-500 bg-clip-text text-transparent dark:from-violet-200 dark:to-violet-400",
+    button: "bg-violet-600 hover:bg-violet-600/90",
+  },
+};
+
+function resolvePlanCardAction(
+  currentPlan: SubscriptionPlan,
+  cardPlan: SubscriptionPlan,
+): PlanCardAction {
+  if (currentPlan === cardPlan) {
+    return { kind: "current" };
+  }
+
+  if (cardPlan === "FREE") {
+    return { kind: "free_hint" };
+  }
+
+  if (cardPlan === "PRO" && currentPlan === "BUSINESS") {
+    return { kind: "downgrade", plan: "PRO" };
+  }
+
+  return { kind: "select", plan: cardPlan };
+}
+
+function formatLongDate(value: Date | string): string {
+  return new Intl.DateTimeFormat(undefined, { dateStyle: "long" }).format(new Date(value));
+}
+
+export function WorkspacePlansPanel({ workspaceId, workspaceSlug, locale, data }: Props) {
+  const t = useTranslations("billing.workspace.plans");
+  const tHero = useTranslations("billing.workspace.planHero");
+  const searchParams = useSearchParams();
+  const highlightPlan = searchParams.get("plan");
+  const checkoutCancelled = searchParams.get("checkout") === "cancelled";
+
+  const [pending, startTransition] = useTransition();
+  const [activePlan, setActivePlan] = useState<SubscriptionPlan | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const cardRefs = useRef<Partial<Record<SubscriptionPlan, HTMLElement | null>>>({});
+
+  const billingHref = dashboardBillingHref(locale, workspaceSlug);
+  const unlimitedLabel = t("unlimited");
+
+  useEffect(() => {
+    if (!highlightPlan || !PLAN_ORDER.includes(highlightPlan as SubscriptionPlan)) {
+      return;
+    }
+
+    const element = cardRefs.current[highlightPlan as SubscriptionPlan];
+    element?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }, [highlightPlan]);
+
+  function handleSelectPlan(plan: SubscriptionPlan) {
+    if (plan === "FREE") {
+      return;
+    }
+
+    setError(null);
+    setActivePlan(plan);
+
+    startTransition(async () => {
+      const result = await changeWorkspacePlanAction(workspaceId, plan);
+
+      if (!result.success) {
+        setError(result.error);
+        setActivePlan(null);
+        return;
+      }
+
+      if (result.data.kind === "checkout") {
+        window.location.href = result.data.url;
+        return;
+      }
+
+      if (result.data.kind === "downgrade_scheduled") {
+        toast.success(
+          t("downgradeScheduled", {
+            plan: tHero(`planName.${result.data.targetPlan}`),
+            date: formatLongDate(result.data.effectiveAt),
+          }),
+        );
+        window.location.reload();
+        return;
+      }
+
+      if (result.data.kind === "updated") {
+        toast.success(t("upgradeSuccess", { plan: tHero(`planName.${result.data.plan}`) }));
+        window.location.reload();
+        return;
+      }
+
+      setActivePlan(null);
+    });
+  }
+
+  return (
+    <div className="space-y-8">
+      <header className="space-y-4">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="-ml-2 h-8 gap-1.5 text-muted-foreground hover:text-foreground"
+          asChild
+        >
+          <Link href={billingHref}>
+            <ArrowLeft className="size-4" aria-hidden />
+            {t("backToBilling")}
+          </Link>
+        </Button>
+
+        <div className="space-y-1">
+          <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+          <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
+        </div>
+      </header>
+
+      {checkoutCancelled ? (
+        <div className="rounded-md border border-amber-300/80 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-100">
+          {t("checkoutCancelled")}
+        </div>
+      ) : null}
+
+      {error ? (
+        <div className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-900 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-100">
+          {error}
+        </div>
+      ) : null}
+
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-6">
+        {PLAN_ORDER.map((plan) => {
+          const limits = data.planLimits[plan];
+          const labels = formatPlanLimitLabels(limits, unlimitedLabel);
+          const action = resolvePlanCardAction(data.currentPlan, plan);
+          const accent = planAccent[plan];
+          const isHighlighted = highlightPlan === plan;
+          const isCurrent = data.currentPlan === plan;
+          const isLoading = pending && activePlan === plan;
+
+          const featureRows = [
+            { key: "estimates", value: labels.estimates },
+            { key: "ai", value: labels.ai },
+            { key: "users", value: labels.users },
+            { key: "storage", value: labels.storage },
+            { key: "invites", value: labels.invites },
+            { key: "undo", value: labels.undo },
+          ] as const;
+
+          return (
+            <article
+              key={plan}
+              ref={(node) => {
+                cardRefs.current[plan] = node;
+              }}
+              className={cn(
+                "flex min-w-0 flex-col rounded-xl border bg-card p-6 shadow-sm transition-shadow",
+                accent.border,
+                isCurrent && "ring-2 ring-primary/30",
+                isHighlighted && !isCurrent && "ring-2 ring-primary/20",
+              )}
+            >
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <span
+                    className={cn(
+                      "inline-flex rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.16em]",
+                      accent.badge,
+                    )}
+                  >
+                    {isCurrent ? t("currentPlanBadge") : tHero(`planName.${plan}`)}
+                  </span>
+                  <h2 className={cn("text-3xl font-bold tracking-tight", accent.title)}>
+                    {tHero(`planName.${plan}`)}
+                  </h2>
+                  <p className="text-sm text-muted-foreground">{tHero(`description.${plan}`)}</p>
+                </div>
+
+                <p className="flex items-baseline gap-1.5">
+                  <span className="text-3xl font-semibold tracking-tight">
+                    {tHero(`price.${plan}`)}
+                  </span>
+                  <span className="text-sm text-muted-foreground">{tHero("perMonth")}</span>
+                </p>
+
+                <ul className="space-y-2.5 border-t border-border/50 pt-4">
+                  {featureRows.map((row) => (
+                    <li key={row.key} className="flex items-start gap-2.5 text-sm">
+                      <Check
+                        className="mt-0.5 size-4 shrink-0 text-primary/80"
+                        aria-hidden
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="text-muted-foreground">
+                          {t(`features.${row.key}`)}:{" "}
+                        </span>
+                        <span className="font-medium text-foreground">{row.value}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="mt-6 pt-2">
+                {action.kind === "current" ? (
+                  <Button variant="outline" className="h-11 w-full" disabled>
+                    {t("currentPlan")}
+                  </Button>
+                ) : null}
+
+                {action.kind === "free_hint" ? (
+                  <div className="space-y-2">
+                    <p className="text-xs leading-relaxed text-muted-foreground">
+                      {t("freeDowngradeHint")}
+                    </p>
+                    <Button variant="outline" className="h-11 w-full" asChild>
+                      <Link href={billingHref}>{t("manageOnBilling")}</Link>
+                    </Button>
+                  </div>
+                ) : null}
+
+                {action.kind === "select" ? (
+                  <Button
+                    className={cn("h-11 w-full", accent.button)}
+                    disabled={pending}
+                    onClick={() => handleSelectPlan(action.plan)}
+                  >
+                    {isLoading ? <Loader2 className="size-4 animate-spin" /> : null}
+                    {t("upgradeTo", { plan: tHero(`planName.${action.plan}`) })}
+                  </Button>
+                ) : null}
+
+                {action.kind === "downgrade" ? (
+                  <Button
+                    variant="outline"
+                    className="h-11 w-full"
+                    disabled={pending}
+                    onClick={() => handleSelectPlan(action.plan)}
+                  >
+                    {isLoading ? <Loader2 className="size-4 animate-spin" /> : null}
+                    {t("downgradeTo", { plan: tHero(`planName.${action.plan}`) })}
+                  </Button>
+                ) : null}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  );
+}

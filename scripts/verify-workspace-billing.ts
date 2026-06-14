@@ -146,6 +146,7 @@ console.log("Feature degradation:");
 
 const free = resolvePlanLimits("FREE");
 const pro = resolvePlanLimits("PRO");
+const business = resolvePlanLimits("BUSINESS");
 
 assert(
   deriveFeatureState("ACTIVE", "PRO", pro, "ESTIMATES") === "ACTIVE",
@@ -176,8 +177,12 @@ assert(
   "GRACE blocks estimate creation",
 );
 assert(
-  deriveFeatureState("GRACE_PERIOD", "PRO", pro, "INVITES") === "READ_ONLY",
-  "GRACE blocks invites",
+  deriveFeatureState("GRACE_PERIOD", "PRO", pro, "INVITES") === "DISABLED",
+  "GRACE keeps invites disabled on PRO (no invite seats)",
+);
+assert(
+  deriveFeatureState("GRACE_PERIOD", "BUSINESS", business, "INVITES") === "READ_ONLY",
+  "GRACE blocks new invites on BUSINESS",
 );
 assert(
   deriveFeatureState("GRACE_PERIOD", "PRO", pro, "CLIENT_PORTAL") === "ACTIVE",
@@ -186,6 +191,10 @@ assert(
 assert(
   deriveFeatureState("ACTIVE", "FREE", free, "INVITES") === "DISABLED",
   "FREE has no invite seats",
+);
+assert(
+  deriveFeatureState("ACTIVE", "PRO", pro, "INVITES") === "DISABLED",
+  "PRO has no invite seats",
 );
 assert(
   deriveFeatureState("ACTIVE", "FREE", free, "CLIENT_PORTAL") === "DISABLED",
@@ -203,8 +212,11 @@ console.log("Plan catalog:");
 
 assert(defaultPlanVersion("PRO") === DEFAULT_PLAN_VERSION.PRO, "defaultPlanVersion(PRO) matches catalog");
 assert(resolvePlanLimits("FREE").maxInvitedSeats === 0, "FREE has 0 invited seats");
-assert(resolvePlanLimits("PRO").maxInvitedSeats === 3, "PRO has 3 invited seats");
+assert(resolvePlanLimits("PRO").maxInvitedSeats === 0, "PRO has 0 invited seats");
 assert(resolvePlanLimits("BUSINESS").maxInvitedSeats === null, "BUSINESS has unlimited seats");
+assert(resolvePlanLimits("FREE").maxStorageBytes === 250 * 1024 * 1024, "FREE has 250 MB storage");
+assert(resolvePlanLimits("PRO").maxStorageBytes === 1024 * 1024 * 1024, "PRO has 1 GB storage");
+assert(resolvePlanLimits("BUSINESS").maxStorageBytes === 5 * 1024 * 1024 * 1024, "BUSINESS has 5 GB storage");
 
 console.log("Billing users display:");
 
@@ -214,14 +226,9 @@ assert(
   "FREE owner-only workspace shows 1/1 users",
 );
 assert(
-  workspaceUserUsage({ used: 0, reserved: 0, limit: 3 }).used === 1 &&
-    workspaceUserUsage({ used: 0, reserved: 0, limit: 3 }).limit === 4,
-  "PRO owner-only workspace shows 1/4 users",
-);
-assert(
-  workspaceUserUsage({ used: 2, reserved: 1, limit: 3 }).used === 4 &&
-    workspaceUserUsage({ used: 2, reserved: 1, limit: 3 }).limit === 4,
-  "PRO full workspace shows 4/4 users",
+  workspaceUserUsage({ used: 0, reserved: 0, limit: 0 }).used === 1 &&
+    workspaceUserUsage({ used: 0, reserved: 0, limit: 0 }).limit === 1,
+  "PRO owner-only workspace shows 1/1 users",
 );
 assert(
   workspaceUserUsage({ used: 5, reserved: 0, limit: null }).used === 6 &&

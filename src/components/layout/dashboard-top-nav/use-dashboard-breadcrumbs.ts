@@ -130,6 +130,7 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
   const { detailLabel } = useDashboardBreadcrumbDetail();
 
   const workspaceSlug = activeWorkspace?.slug ?? null;
+  const wsBase = workspaceSlug ? `/${locale}/dashboard/${workspaceSlug}` : null;
   const dashboardHref = workspaceSlug
     ? `/${locale}/dashboard/${workspaceSlug}`
     : `/${locale}/dashboard`;
@@ -192,6 +193,15 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
       label: t("payments"),
     });
 
+    return crumbs;
+  }
+
+  if (wsBase && pathname === `${wsBase}/billing/plans`) {
+    crumbs.push({
+      label: t("billing"),
+      href: `${wsBase}/billing`,
+    });
+    crumbs.push({ label: t("billingPlans") });
     return crumbs;
   }
 

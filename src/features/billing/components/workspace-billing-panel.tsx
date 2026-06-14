@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import type { SubscriptionPlan } from "@prisma/client";
 import { AlertTriangle, Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -11,16 +10,19 @@ import { BillingSecondaryCardsSection } from "@/features/billing/components/bill
 import { BillingUsageStatsSection } from "@/features/billing/components/billing-usage-stats-section";
 import {
   cancelWorkspaceSubscriptionAction,
-  changeWorkspacePlanAction,
   openWorkspacePortalAction,
   reactivateWorkspaceSubscriptionAction,
 } from "@/features/billing/server/billing-actions";
 import type { WorkspaceBillingPageData } from "@/features/billing/billing-page-data";
+import { dashboardBillingPlansHref } from "@/lib/dashboard-routes";
+import type { Locale } from "@/lib/locale";
 import type { WorkspaceEffectiveStatus } from "@/server/permissions/domain";
 import { cn } from "@/lib/utils";
 
 type Props = {
   workspaceId: string;
+  workspaceSlug: string;
+  locale: Locale;
   data: WorkspaceBillingPageData;
 };
 
@@ -43,12 +45,14 @@ function formatPeriodEndDate(value: Date | string): string {
   return new Intl.DateTimeFormat(undefined, { dateStyle: "long" }).format(new Date(value));
 }
 
-export function WorkspaceBillingPanel({ workspaceId, data }: Props) {
+export function WorkspaceBillingPanel({ workspaceId, workspaceSlug, locale, data }: Props) {
   const t = useTranslations("billing.workspace");
   const { entitlements, cancelAtPeriodEnd, currentPeriodEnd, storageOverLimit, seatOverLimit } =
     data;
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+
+  const plansHref = dashboardBillingPlansHref(locale, workspaceSlug);
 
   const notice = isStatusNoticeStatus(entitlements.effectiveStatus)
     ? t(`statusNotice.${entitlements.effectiveStatus}`)
@@ -82,31 +86,6 @@ export function WorkspaceBillingPanel({ workspaceId, data }: Props) {
         window.location.reload();
       }
     });
-  }
-
-  function changeToPlan(plan: Exclude<SubscriptionPlan, "FREE">) {
-    setError(null);
-    startTransition(async () => {
-      const result = await changeWorkspacePlanAction(workspaceId, plan);
-      if (!result.success) {
-        setError(result.error);
-        return;
-      }
-
-      if (result.data.kind === "checkout") {
-        window.location.href = result.data.url;
-        return;
-      }
-
-      window.location.reload();
-    });
-  }
-
-  function handleChangePlan(targetPlan: SubscriptionPlan) {
-    if (targetPlan === "FREE") {
-      return;
-    }
-    changeToPlan(targetPlan);
   }
 
   return (
@@ -145,7 +124,7 @@ export function WorkspaceBillingPanel({ workspaceId, data }: Props) {
         cancelAtPeriodEnd={cancelAtPeriodEnd}
         currentPeriodEnd={currentPeriodEnd}
         pending={pending}
-        onChangePlan={handleChangePlan}
+        plansHref={plansHref}
         onManageBilling={() => run(() => openWorkspacePortalAction(workspaceId))}
       />
 

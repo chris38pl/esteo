@@ -46,7 +46,8 @@ export default async function WorkspaceRequestDetailPage({
 
   const breadcrumbLabel = request.requestNumber?.trim() || null;
   const processingGate = await getEstimateProcessingGate(resolved.workspace.id);
-  const estimateLimitReached = processingGate.reason === "PLAN_LIMIT";
+  const estimateLimitReached =
+    !processingGate.allowed && processingGate.reason === "PLAN_LIMIT";
   const isOwner = resolved.workspace.ownerId === user.id;
   const billingHref = isOwner
     ? dashboardBillingHref(resolvedLocale, workspaceSlug)

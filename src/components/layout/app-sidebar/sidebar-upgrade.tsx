@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import type { BillingSidebarState } from "@/features/billing/billing-sidebar-state";
-import { dashboardBillingHref, ownedWorkspaceBillingHref } from "@/lib/dashboard-routes";
+import { dashboardUpgradeHref } from "@/lib/dashboard-routes";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
@@ -34,12 +34,15 @@ function planVariantFromBillingState(state: BillingSidebarState): PlanCardVarian
 export function SidebarUpgrade({ collapsedOverride }: { collapsedOverride?: boolean } = {}) {
   const tPlan = useTranslations("sidebar.planCards");
   const { billingSidebarState, locale, activeWorkspace, workspaces } = useWorkspaceContext();
-  const billingHref =
+  const upgradeHref =
     activeWorkspace?.isOwner && activeWorkspace.slug
-      ? dashboardBillingHref(locale, activeWorkspace.slug)
-      : ownedWorkspaceBillingHref(locale, workspaces);
+      ? dashboardUpgradeHref(locale, activeWorkspace.slug)
+      : (() => {
+          const owned = workspaces.find((workspace) => workspace.isOwner);
+          return owned ? dashboardUpgradeHref(locale, owned.slug) : null;
+        })();
 
-  if (!billingHref) {
+  if (!upgradeHref) {
     return null;
   }
   const collapsedFromStore = useSidebarStore((s) => s.collapsed);
@@ -72,7 +75,7 @@ export function SidebarUpgrade({ collapsedOverride }: { collapsedOverride?: bool
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
-                    href={billingHref}
+                    href={upgradeHref}
                     aria-label={tooltip}
                     className={cn(
                       "group mx-auto flex size-9 items-center justify-center rounded-lg",

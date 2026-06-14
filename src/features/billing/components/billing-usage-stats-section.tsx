@@ -41,6 +41,7 @@ type UsageCardConfig = {
   value: string;
   caption: string;
   progressPercent: number;
+  limitReached: boolean;
   theme: UsageTheme;
   icon: LucideIcon;
 };
@@ -50,6 +51,10 @@ function formatUsageValue(used: number, limit: number | null, unlimitedLabel: st
     return `${used} / ${unlimitedLabel}`;
   }
   return `${used} / ${limit}`;
+}
+
+function isAtUsageLimit(used: number, limit: number | null): boolean {
+  return limit !== null && used >= limit;
 }
 
 function usageProgressPercent(used: number, limit: number | null): number {
@@ -67,6 +72,7 @@ export function BillingUsageStatsSection({ data }: { data: WorkspaceUsageStatsIn
   const { used: seatsUsed, limit: seatsLimit } = workspaceUserUsage(entitlements.seats);
   const seatsPercent = usageProgressPercent(seatsUsed, seatsLimit);
   const storagePercent = Math.round(storage.usedPercent);
+  const storageAtLimit = storage.usedPercent >= 100;
 
   const cards: UsageCardConfig[] = [
     {
@@ -79,6 +85,10 @@ export function BillingUsageStatsSection({ data }: { data: WorkspaceUsageStatsIn
       ),
       caption: t("usedThisMonth"),
       progressPercent: usageProgressPercent(
+        entitlements.usage.aiCallsThisMonth,
+        entitlements.limits.maxAiAssistantCallsPerMonth,
+      ),
+      limitReached: isAtUsageLimit(
         entitlements.usage.aiCallsThisMonth,
         entitlements.limits.maxAiAssistantCallsPerMonth,
       ),
@@ -98,6 +108,10 @@ export function BillingUsageStatsSection({ data }: { data: WorkspaceUsageStatsIn
         entitlements.usage.estimatesThisMonth,
         entitlements.limits.maxEstimatesPerMonth,
       ),
+      limitReached: isAtUsageLimit(
+        entitlements.usage.estimatesThisMonth,
+        entitlements.limits.maxEstimatesPerMonth,
+      ),
       theme: "purple",
       icon: FileText,
     },
@@ -108,6 +122,7 @@ export function BillingUsageStatsSection({ data }: { data: WorkspaceUsageStatsIn
       caption:
         seatsLimit === null ? t("usedThisMonth") : t("percentUsed", { percent: seatsPercent }),
       progressPercent: seatsPercent,
+      limitReached: isAtUsageLimit(seatsUsed, seatsLimit),
       theme: "green",
       icon: Users,
     },
@@ -117,6 +132,7 @@ export function BillingUsageStatsSection({ data }: { data: WorkspaceUsageStatsIn
       value: `${storage.usedFormatted} / ${storage.limitFormatted}`,
       caption: t("percentUsed", { percent: storagePercent }),
       progressPercent: Math.min(100, storagePercent),
+      limitReached: storageAtLimit,
       theme: "orange",
       icon: Database,
     },
@@ -132,6 +148,7 @@ export function BillingUsageStatsSection({ data }: { data: WorkspaceUsageStatsIn
             value={card.value}
             caption={card.caption}
             progressPercent={card.progressPercent}
+            limitReached={card.limitReached}
             theme={card.theme}
             icon={card.icon}
             className={cn(
@@ -155,6 +172,7 @@ function BillingUsageStatCard({
   value,
   caption,
   progressPercent,
+  limitReached,
   theme,
   icon: Icon,
   className,
@@ -176,7 +194,14 @@ function BillingUsageStatCard({
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {label}
           </p>
-          <p className="text-xl font-semibold tracking-tight">{value}</p>
+          <p
+            className={cn(
+              "text-xl font-semibold tracking-tight",
+              limitReached && "text-red-600/80 dark:text-red-400/80",
+            )}
+          >
+            {value}
+          </p>
         </div>
       </div>
 

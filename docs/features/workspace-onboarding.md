@@ -76,12 +76,12 @@ Decline sets invitation status to `DECLINED` (permanent for that invitation).
 | Plan | maxInvitedSeats (owner sends) | maxAccessibleWorkspaces (invitee joins) |
 | --- | --- | --- |
 | FREE | 0 | 1 |
-| PRO | 3 | 3 |
+| PRO | 0 | 3 |
 | BUSINESS | unlimited | unlimited |
 
-Implementation: `src/server/permissions/entitlements.ts`
+Implementation: `src/server/billing/plan-catalog.ts` (`resolvePlanLimits`)
 
-FREE workspace owners cannot send invites (UI gated in settings + server enforcement).
+FREE and PRO workspace owners cannot send invites (UI gated in settings + server enforcement). Team invites require **BUSINESS**.
 
 **Note:** Invite seat checks use the **workspace owner's** subscription (via `Workspace.billingAccountId`). Invitee limits and all plan **display** use the **logged-in user's** subscription.
 
@@ -144,7 +144,7 @@ After create: set active workspace cookie + `lastActiveWorkspaceId`, redirect to
   - Defaults are derived from immutable `Workspace.industry` (shipped in `src/features/workspaces/config/industry-estimate-sections.ts`)
   - Workspaces can override section list (rename, reorder — drag & drop on desktop, up/down on mobile, toggle active, add/remove) under settings → Rules
   - Overrides are stored in `WorkspaceSettings.branding.estimateSections` and injected into AI prompt context (`## Estimate structure` + `## Section-specific rules`)
-- Member invites: gated on owner plan (`maxInvitedSeats > 0`)
+- Member invites: gated on owner plan (`maxInvitedSeats > 0`) — **BUSINESS only** (FREE and PRO are owner-only)
 
 ## Account inbox
 

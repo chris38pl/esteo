@@ -11,7 +11,6 @@ import {
   Paperclip,
   RefreshCw,
   Trash2,
-  Upload,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState, useTransition, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
@@ -394,18 +393,6 @@ export function WorkspaceAttachmentsSection({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled
-            title={t("addFileHint")}
-            className="h-9 gap-2 border-border/60 bg-background/60"
-          >
-            <Upload className="size-4" />
-            {t("addFile")}
-          </Button>
-
           <div className="flex overflow-hidden rounded-lg border border-border/60 bg-background/60 p-0.5">
             <button
               type="button"

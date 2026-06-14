@@ -98,7 +98,7 @@ async function createCheckoutSession(params: {
     customer: params.stripeCustomerId,
     line_items: [{ price: priceIdForPlan(params.plan), quantity: 1 }],
     success_url: `${base}/dashboard/${params.slug}/billing/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${base}/dashboard/${params.slug}/billing?checkout=cancelled`,
+    cancel_url: `${base}/dashboard/${params.slug}/billing/plans?checkout=cancelled`,
     subscription_data: {
       metadata: { workspaceId: params.workspaceId, plan: params.plan },
     },

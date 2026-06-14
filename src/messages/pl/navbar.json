@@ -19,7 +19,8 @@
     "adminWorkspaces": "Przestrzenie",
     "adminIndustryFields": "Pola branżowe",
     "adminEstimateRequests": "Zapytania o wycenę",
-    "adminEstimateRequestDetail": "Szczegóły zapytania"
+    "adminEstimateRequestDetail": "Szczegóły zapytania",
+    "billingPlans": "Plany"
   },
   "notifications": {
     "label": "Powiadomienia",

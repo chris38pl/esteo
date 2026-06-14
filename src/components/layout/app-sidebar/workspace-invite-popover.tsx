@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label";
 import { INVITE_ROLES } from "@/features/workspaces/lib/invite-role";
 import { inviteWorkspaceMemberAction } from "@/features/workspaces/server/actions";
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
-import { dashboardBillingHref, ownedWorkspaceBillingHref } from "@/lib/dashboard-routes";
+import { dashboardUpgradeHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -46,10 +46,13 @@ export function WorkspaceInvitePopover({
   const t = useTranslations("workspaces.settings.users");
   const router = useRouter();
   const { activeWorkspace, workspaces } = useWorkspaceContext();
-  const billingHref =
+  const businessUpgradeHref =
     activeWorkspace?.isOwner && activeWorkspace.slug
-      ? dashboardBillingHref(locale, activeWorkspace.slug)
-      : ownedWorkspaceBillingHref(locale, workspaces);
+      ? dashboardUpgradeHref(locale, activeWorkspace.slug, { plan: "BUSINESS" })
+      : (() => {
+          const owned = workspaces.find((workspace) => workspace.isOwner);
+          return owned ? dashboardUpgradeHref(locale, owned.slug, { plan: "BUSINESS" }) : null;
+        })();
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<InviteRole>("MEMBER");
@@ -163,9 +166,9 @@ export function WorkspaceInvitePopover({
           <div className="space-y-3">
             <p className="text-sm font-medium leading-tight">{t("inviteTitle")}</p>
             <p className="text-xs text-muted-foreground">{t("inviteUpgradeDescription")}</p>
-            {billingHref ? (
+            {businessUpgradeHref ? (
               <Link
-                href={billingHref}
+                href={businessUpgradeHref}
                 className="inline-flex text-xs font-medium text-primary underline-offset-4 hover:underline"
                 onClick={() => setOpen(false)}
               >

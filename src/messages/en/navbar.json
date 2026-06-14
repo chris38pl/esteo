@@ -19,7 +19,8 @@
     "adminWorkspaces": "Workspaces",
     "adminIndustryFields": "Industry fields",
     "adminEstimateRequests": "Estimate Requests",
-    "adminEstimateRequestDetail": "Request detail"
+    "adminEstimateRequestDetail": "Request detail",
+    "billingPlans": "Plans"
   },
   "notifications": {
     "label": "Notifications",
