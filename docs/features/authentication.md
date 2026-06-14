@@ -8,7 +8,7 @@ Custom sign-in UI built with [Clerk Elements](https://clerk.com/docs/guides/cust
 
 | Item | Value |
 | --- | --- |
-| Packages | `@clerk/nextjs@6.39.5`, `@clerk/elements@0.24.13` (pinned — do not upgrade without re-verifying email second-factor prepare) |
+| Packages | `@clerk/nextjs@^6`, `@clerk/elements@0.24.13` (pinned — do not upgrade without re-verifying email second-factor prepare), `@clerk/localizations` |
 | Routing | Path-based: `SignIn.Root routing="path" path="/[locale]/sign-in"` |
 | Page | [`src/app/[locale]/(auth)/sign-in/[[...sign-in]]/page.tsx`](../../src/app/[locale]/(auth)/sign-in/[[...sign-in]]/page.tsx) |
 | Layout shell | [`auth-shell.tsx`](../../src/components/auth/auth-shell.tsx) — logo, title, footer (outside Clerk Elements) |
@@ -73,6 +73,50 @@ Flow:
 1. `signIn.create({ strategy: "reset_password_email_code", identifier })` — sends OTP email
 2. `signIn.attemptFirstFactor({ strategy: "reset_password_email_code", code, password })`
 3. `setActive({ session })` → redirect to `/{locale}/dashboard`
+
+## Clerk localization
+
+Clerk feedback messages (validation errors, OAuth failures, `UserButton` labels) follow the **URL locale**, not browser language.
+
+| App locale | Clerk package | Wired in |
+| --- | --- | --- |
+| `pl` | `plPL` (+ small `unstable__errors` overrides) | [`clerk-locale-provider.tsx`](../../src/components/clerk-locale-provider.tsx) |
+| `en` | `enUS` | same |
+
+Helpers:
+
+- [`clerk-localization.ts`](../../src/lib/clerk-localization.ts) — maps `pl` / `en` → Clerk `LocalizationResource`
+- [`clerk-api-error.ts`](../../src/lib/clerk-api-error.ts) — maps API `error.code` → `unstable__errors` for custom SDK flows and Elements wrappers
+
+### Clerk Elements `FieldError` limitation
+
+`@clerk/elements@0.24.13` renders **`error.longMessage` from the API** in `<Clerk.FieldError />` and `<Clerk.GlobalError />` — it does **not** read `ClerkProvider.localization`. Prebuilt Clerk components (`UserButton`, etc.) do use localization; Elements field errors do not.
+
+Use the app wrappers instead:
+
+- [`localized-clerk-errors.tsx`](../../src/components/auth/localized-clerk-errors.tsx) — `LocalizedClerkFieldError`, `LocalizedClerkGlobalError`
+- These call `getLocalizedClerkFieldError(error, locale)` via the Elements render-prop; children must return a **React element** (e.g. `<span>`), not a bare string — otherwise `FieldError` falls back to English `error.message`.
+- When FAPI returns English `longMessage`, `clerk-api-error.ts` maps known strings to Clerk error codes and resolves Polish text from `@clerk/localizations`.
+
+Do **not** replace wrappers with raw `<Clerk.FieldError />` without re-testing Polish error messages. Do **not** upgrade `@clerk/elements` without verifying this behavior still holds.
+
+### What uses which i18n layer
+
+| UI surface | Layer |
+| --- | --- |
+| Labels, buttons, hints (sign-in, sign-up, forgot-password) | **next-intl** (`auth.*` keys) |
+| Elements field/global errors (sign-in, sign-up) | **`LocalizedClerkFieldError` / `LocalizedClerkGlobalError`** |
+| OAuth errors, `UserButton` | **ClerkProvider.localization** |
+| Forgot-password API errors (`forgot-password-form.tsx`) | **`getLocalizedClerkErrorMessage`** (Clerk `unstable__errors` + next-intl fallback) |
+| App-owned errors (`passwordMismatch`, `mfaRequired`) | **next-intl** |
+
+`ClerkProvider` lives in [`[locale]/layout.tsx`](../../src/app/[locale]/layout.tsx) (not root `providers.tsx`) so localization tracks the `[locale]` segment. [`document-lang.tsx`](../../src/components/document-lang.tsx) syncs `<html lang>` after hydration.
+
+### Limitations
+
+- **Clerk Account Portal** (hosted) stays English — `@clerk/localizations` does not apply there.
+- **CAPTCHA** (`#clerk-captcha`) may remain English (third-party widget).
+- **`plPL`** is community-maintained; gaps are patched in `PL_ERROR_OVERRIDES` inside `clerk-localization.ts`.
 
 ### Loading state
 
@@ -148,6 +192,10 @@ Keep `SignIn.Action submit` on the verifications step. Elements handles `attempt
 | [`auth-loading-indicator.tsx`](../../src/components/auth/auth-loading-indicator.tsx) | Spinner + message for `SignIn.Root` fallback |
 | [`auth-shell.tsx`](../../src/components/auth/auth-shell.tsx) | Page chrome (not Clerk-managed) |
 | [`sign-up-form.tsx`](../../src/components/auth/sign-up-form.tsx) | Sign-up equivalent (separate flow) |
+| [`localized-clerk-errors.tsx`](../../src/components/auth/localized-clerk-errors.tsx) | Localized Elements `FieldError` / `GlobalError` wrappers |
+| [`clerk-locale-provider.tsx`](../../src/components/clerk-locale-provider.tsx) | `ClerkProvider` + theme + locale localization |
+| [`clerk-localization.ts`](../../src/lib/clerk-localization.ts) | `pl` / `en` → `plPL` / `enUS` |
+| [`clerk-api-error.ts`](../../src/lib/clerk-api-error.ts) | Localized API errors for custom SDK flows |
 
 ## i18n keys
 
@@ -210,8 +258,19 @@ When `NODE_ENV === "development"`, prepare logs to console:
 3. Enter code + new password + confirm → auto-login → redirect to dashboard.
 4. Sign out → sign in with new password on single-screen `/pl/sign-in`.
 5. Repeat on `/en/sign-in`.
-6. Wrong code / mismatched passwords → readable error message.
-7. Confirm Client Trust sign-in (checklist above) still works.
+6. Wrong code / mismatched passwords → readable error message **in active locale** (PL on `/pl/...`, EN on `/en/...`).
+7. Unknown email on step 1 → Polish error on `/pl/...` (not raw English `longMessage`).
+8. Confirm Client Trust sign-in (checklist above) still works.
+
+### Clerk localization (after auth changes)
+
+1. `/pl/sign-in` — wrong password → Polish field error via `LocalizedClerkFieldError` (not English `longMessage`).
+2. `/pl/sign-in` — invalid email format → Polish field error.
+3. `/pl/sign-in/continue` — wrong OTP → „Nieprawidłowy kod. Spróbuj ponownie.”
+4. `/en/sign-in` — same scenarios → English.
+5. `/pl/sign-in/forgot-password` — unknown email → Polish (via `getLocalizedClerkErrorMessage`).
+6. Switch locale mid-flow (PL → EN on sign-in URL) → error messages follow new locale after navigation.
+7. `UserButton` on `/pl` home → Polish menu labels.
 
 ## When changing auth
 
@@ -224,4 +283,7 @@ Before merging sign-in changes:
 - [ ] `SignIn.Action submit` unchanged for sign-in and OTP steps
 - [ ] `inFlightAttemptIds` lock acquired before `await`
 - [ ] `SignIn.Root` fallback present
-- [ ] If upgrading `@clerk/elements`, re-test `email_code` prepare on `/continue` in incognito
+- [ ] `ClerkLocaleProvider` still receives locale from `[locale]/layout.tsx`
+- [ ] Sign-in/sign-up still use `LocalizedClerkFieldError` / `LocalizedClerkGlobalError`, not raw `<Clerk.FieldError />`
+- [ ] Forgot-password API errors still use `getLocalizedClerkErrorMessage`, not raw `longMessage`
+- [ ] If upgrading `@clerk/elements`, re-test localized field errors and `email_code` prepare on `/continue` in incognito

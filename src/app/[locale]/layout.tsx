@@ -3,7 +3,9 @@ import type { ReactNode } from "react";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 
-import { isLocale } from "@/lib/locale";
+import { ClerkLocaleProvider } from "@/components/clerk-locale-provider";
+import { DocumentLang } from "@/components/document-lang";
+import { isLocale, type Locale } from "@/lib/locale";
 
 export default async function LocaleLayout({
   children,
@@ -12,21 +14,26 @@ export default async function LocaleLayout({
   children: ReactNode;
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
+  const { locale: localeParam } = await params;
 
-  if (!isLocale(locale)) {
+  if (!isLocale(localeParam)) {
     notFound();
   }
+
+  const locale: Locale = localeParam;
 
   setRequestLocale(locale);
   const messages = await getMessages({ locale });
 
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
-      <div data-locale={locale} className="flex min-h-full flex-col">
-        {children}
-      </div>
-    </NextIntlClientProvider>
+    <ClerkLocaleProvider locale={locale}>
+      <NextIntlClientProvider locale={locale} messages={messages}>
+        <DocumentLang locale={locale} />
+        <div data-locale={locale} className="flex min-h-full flex-col">
+          {children}
+        </div>
+      </NextIntlClientProvider>
+    </ClerkLocaleProvider>
   );
 }
 

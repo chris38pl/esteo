@@ -8,11 +8,14 @@ import { useTranslations } from "next-intl";
 
 import { AuthLoadingIndicator } from "@/components/auth/auth-loading-indicator";
 import {
+  LocalizedClerkFieldError,
+  LocalizedClerkGlobalError,
+} from "@/components/auth/localized-clerk-errors";
+import {
   SignInSecondFactorPrepare,
   SignInSecondFactorResend,
 } from "@/components/auth/sign-in-second-factor-prepare";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -27,7 +30,7 @@ export function SignInForm({ locale }: { locale: string }) {
       path={`/${locale}/sign-in`}
       fallback={<AuthLoadingIndicator message={t("signIn.loading")} />}
     >
-      <Clerk.GlobalError className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive" />
+      <LocalizedClerkGlobalError className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive" />
       <div id="clerk-captcha" />
 
       <SignIn.Step name="start">
@@ -42,7 +45,7 @@ export function SignInForm({ locale }: { locale: string }) {
                 className="h-10 rounded-lg"
               />
             </Clerk.Input>
-            <Clerk.FieldError className="text-xs text-destructive" />
+            <LocalizedClerkFieldError className="text-xs text-destructive" />
           </Clerk.Field>
 
           <Clerk.Field name="password" className="space-y-2">
@@ -52,22 +55,8 @@ export function SignInForm({ locale }: { locale: string }) {
             <Clerk.Input asChild type="password" required autoComplete="current-password">
               <Input className="h-10 rounded-lg" />
             </Clerk.Input>
-            <Clerk.FieldError className="text-xs text-destructive" />
+            <LocalizedClerkFieldError className="text-xs text-destructive" />
           </Clerk.Field>
-
-          <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Checkbox id="remember" />
-              {t("signIn.rememberMe")}
-            </label>
-
-            <Link
-              href={`/${locale}/sign-in/forgot-password`}
-              className="text-xs font-medium text-primary hover:underline"
-            >
-              {t("signIn.forgotPassword")}
-            </Link>
-          </div>
 
           <SignIn.Action submit asChild>
             <Button type="submit" className="h-11 w-full rounded-lg">
@@ -140,6 +129,15 @@ export function SignInForm({ locale }: { locale: string }) {
               {t("signIn.createAccount")}
             </Link>
           </p>
+
+          <p className="text-center text-xs text-muted-foreground">
+            <Link
+              href={`/${locale}/sign-in/forgot-password`}
+              className="font-medium text-primary hover:underline"
+            >
+              {t("signIn.forgotPassword")}
+            </Link>
+          </p>
         </div>
       </SignIn.Step>
 
@@ -161,7 +159,7 @@ export function SignInForm({ locale }: { locale: string }) {
               <Clerk.Input asChild required>
                 <Input inputMode="numeric" autoComplete="one-time-code" className="h-10 rounded-lg" />
               </Clerk.Input>
-              <Clerk.FieldError className="text-xs text-destructive" />
+              <LocalizedClerkFieldError className="text-xs text-destructive" />
             </Clerk.Field>
 
             <SignIn.Action submit asChild>

@@ -6,6 +6,7 @@ import * as SignUp from "@clerk/elements/sign-up";
 import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 
+import { LocalizedClerkFieldError } from "@/components/auth/localized-clerk-errors";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -45,7 +46,7 @@ export function SignUpContinue() {
               className="h-10 rounded-lg"
             />
           </Clerk.Input>
-          <Clerk.FieldError className="text-xs text-destructive" />
+          <LocalizedClerkFieldError className="text-xs text-destructive" />
         </Clerk.Field>
 
         <SignUp.Action submit asChild>

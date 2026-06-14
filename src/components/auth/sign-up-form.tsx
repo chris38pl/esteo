@@ -6,6 +6,10 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { SignUpContinue } from "@/components/auth/sign-up-continue";
+import {
+  LocalizedClerkFieldError,
+  LocalizedClerkGlobalError,
+} from "@/components/auth/localized-clerk-errors";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +24,7 @@ export function SignUpForm({ locale }: { locale: string }) {
       routing="path"
       path={`/${locale}/sign-up`}
     >
-      <Clerk.GlobalError className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive" />
+      <LocalizedClerkGlobalError className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive" />
       <div id="clerk-captcha" />
 
       <SignUp.Step name="start">
@@ -35,7 +39,7 @@ export function SignUpForm({ locale }: { locale: string }) {
                 className="h-10 rounded-lg"
               />
             </Clerk.Input>
-            <Clerk.FieldError className="text-xs text-destructive" />
+            <LocalizedClerkFieldError className="text-xs text-destructive" />
           </Clerk.Field>
 
           <Clerk.Field name="emailAddress" className="space-y-2">
@@ -48,7 +52,7 @@ export function SignUpForm({ locale }: { locale: string }) {
                 className="h-10 rounded-lg"
               />
             </Clerk.Input>
-            <Clerk.FieldError className="text-xs text-destructive" />
+            <LocalizedClerkFieldError className="text-xs text-destructive" />
           </Clerk.Field>
 
           <Clerk.Field name="password" className="space-y-2">
@@ -58,7 +62,7 @@ export function SignUpForm({ locale }: { locale: string }) {
             <Clerk.Input asChild type="password" required autoComplete="new-password">
               <Input className="h-10 rounded-lg" />
             </Clerk.Input>
-            <Clerk.FieldError className="text-xs text-destructive" />
+            <LocalizedClerkFieldError className="text-xs text-destructive" />
           </Clerk.Field>
 
           <SignUp.Action submit asChild>
@@ -153,7 +157,7 @@ export function SignUpForm({ locale }: { locale: string }) {
               <Clerk.Input asChild required>
                 <Input inputMode="numeric" autoComplete="one-time-code" />
               </Clerk.Input>
-              <Clerk.FieldError className="text-xs text-destructive" />
+              <LocalizedClerkFieldError className="text-xs text-destructive" />
             </Clerk.Field>
 
             <SignUp.Action submit asChild>

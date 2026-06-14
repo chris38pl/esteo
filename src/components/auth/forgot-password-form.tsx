@@ -1,6 +1,5 @@
 "use client";
 
-import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
 import { useSignIn } from "@clerk/nextjs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -10,20 +9,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { getLocalizedClerkErrorMessage } from "@/lib/clerk-api-error";
+import { isLocale, type Locale } from "@/lib/locale";
 
-function getClerkErrorMessage(error: unknown, fallback: string) {
-  if (isClerkAPIResponseError(error)) {
-    return error.errors[0]?.longMessage ?? error.errors[0]?.message ?? fallback;
-  }
-
-  if (error instanceof Error && error.message) {
-    return error.message;
-  }
-
-  return fallback;
-}
-
-export function ForgotPasswordForm({ locale }: { locale: string }) {
+export function ForgotPasswordForm({ locale: localeParam }: { locale: string }) {
+  const locale: Locale = isLocale(localeParam) ? localeParam : "pl";
   const t = useTranslations("auth");
   const c = useTranslations("common");
   const router = useRouter();
@@ -54,7 +44,9 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
       });
       setCodeSent(true);
     } catch (sendError) {
-      setError(getClerkErrorMessage(sendError, t("forgotPassword.error")));
+      setError(
+        getLocalizedClerkErrorMessage(sendError, locale, t("forgotPassword.error")),
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -95,7 +87,9 @@ export function ForgotPasswordForm({ locale }: { locale: string }) {
 
       setError(t("forgotPassword.error"));
     } catch (resetError) {
-      setError(getClerkErrorMessage(resetError, t("forgotPassword.error")));
+      setError(
+        getLocalizedClerkErrorMessage(resetError, locale, t("forgotPassword.error")),
+      );
     } finally {
       setIsSubmitting(false);
     }
