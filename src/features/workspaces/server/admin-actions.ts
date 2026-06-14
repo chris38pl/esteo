@@ -1,11 +1,13 @@
 "use server";
 
+import type { SubscriptionPlan } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 import {
   adminArchiveWorkspace,
   adminGetWorkspaceBillingReport,
   adminInviteToWorkspace,
+  adminSetWorkspacePlan,
   adminUpdateWorkspace,
   listAdminWorkspacesPaginated,
 } from "@/features/workspaces/server/admin-workspaces";
@@ -94,6 +96,23 @@ export async function adminGetWorkspaceBillingReportAction(
     const admin = await assertPlatformAdminAccess(locale);
     const report = await adminGetWorkspaceBillingReport(admin, workspaceSlug);
     return { success: true, data: report };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function adminSetWorkspacePlanAction(
+  workspaceId: string,
+  plan: SubscriptionPlan,
+  locale: Locale = "pl",
+) {
+  try {
+    const admin = await assertPlatformAdminAccess(locale);
+    const result = await adminSetWorkspacePlan(admin, workspaceId, plan);
+    revalidateAdminWorkspaces(locale);
+    revalidatePath(`/${locale}/dashboard/billing`);
+    revalidatePath(`/${locale}/dashboard`);
+    return { success: true as const, data: result };
   } catch (error) {
     return toActionError(error);
   }

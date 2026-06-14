@@ -1,6 +1,6 @@
 "use client";
 
-import { WorkspaceIndustry } from "@prisma/client";
+import { WorkspaceIndustry, type SubscriptionPlan } from "@prisma/client";
 import { FileStack, GitBranch, Loader2, MoreHorizontal, Search } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
@@ -25,6 +25,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -36,6 +38,7 @@ import {
   adminArchiveWorkspaceAction,
   adminGetWorkspaceBillingReportAction,
   adminInviteToWorkspaceAction,
+  adminSetWorkspacePlanAction,
   adminUpdateWorkspaceAction,
 } from "@/features/workspaces/server/admin-actions";
 import type { WorkspaceBillingReport } from "@/server/billing/dev-toolkit/report";
@@ -47,6 +50,8 @@ import type { WorkspaceEffectiveStatus } from "@/server/permissions/domain";
 
 type DialogMode = "view" | "rename" | "delete" | "invite" | null;
 type AdminWorkspaceListView = "general" | "billing";
+
+const PLANS: SubscriptionPlan[] = ["FREE", "PRO", "BUSINESS"];
 
 function formatLimit(used: number, limit: number | null): string {
   return limit === null ? `${used} / ∞` : `${used} / ${limit}`;
@@ -195,9 +200,13 @@ function ValueColumn({
 function WorkspaceActionsMenu({
   workspace,
   onOpenDialog,
+  onSetPlan,
+  isPending,
 }: {
   workspace: AdminWorkspaceRow;
   onOpenDialog: (mode: DialogMode, workspace: AdminWorkspaceRow) => void;
+  onSetPlan: (workspaceId: string, plan: SubscriptionPlan) => void;
+  isPending: boolean;
 }) {
   const t = useTranslations("admin.workspaces");
 
@@ -210,11 +219,12 @@ function WorkspaceActionsMenu({
           size="icon"
           className="size-8 shrink-0 rounded-lg text-muted-foreground"
           aria-label={t("actions.menu")}
+          disabled={isPending}
         >
           <MoreHorizontal className="size-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-44">
+      <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuItem onSelect={() => onOpenDialog("view", workspace)}>
           {t("actions.view")}
         </DropdownMenuItem>
@@ -224,6 +234,19 @@ function WorkspaceActionsMenu({
         <DropdownMenuItem onSelect={() => onOpenDialog("invite", workspace)}>
           {t("actions.invite")}
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel>{t("actions.setPlan")}</DropdownMenuLabel>
+        {PLANS.map((plan) => (
+          <DropdownMenuItem
+            key={plan}
+            disabled={isPending || workspace.plan === plan}
+            onSelect={() => onSetPlan(workspace.id, plan)}
+          >
+            {t(`plan.${plan}`)}
+            {workspace.plan === plan ? ` (${t("actions.currentPlan")})` : ""}
+          </DropdownMenuItem>
+        ))}
+        <DropdownMenuSeparator />
         <DropdownMenuItem
           variant="destructive"
           onSelect={() => onOpenDialog("delete", workspace)}
@@ -268,9 +291,13 @@ function EffectiveStatusBadge({
 function AdminWorkspaceListRow({
   workspace,
   onOpenDialog,
+  onSetPlan,
+  isPending,
 }: {
   workspace: AdminWorkspaceRow;
   onOpenDialog: (mode: DialogMode, workspace: AdminWorkspaceRow) => void;
+  onSetPlan: (workspaceId: string, plan: SubscriptionPlan) => void;
+  isPending: boolean;
 }) {
   const t = useTranslations("admin.workspaces");
   const tIndustries = useTranslations("workspaces.industries");
@@ -332,7 +359,12 @@ function AdminWorkspaceListRow({
         />
       </div>
 
-      <WorkspaceActionsMenu workspace={workspace} onOpenDialog={onOpenDialog} />
+      <WorkspaceActionsMenu
+        workspace={workspace}
+        onOpenDialog={onOpenDialog}
+        onSetPlan={onSetPlan}
+        isPending={isPending}
+      />
     </div>
   );
 }
@@ -340,9 +372,13 @@ function AdminWorkspaceListRow({
 function AdminWorkspaceBillingListRow({
   workspace,
   onOpenDialog,
+  onSetPlan,
+  isPending,
 }: {
   workspace: AdminWorkspaceRow;
   onOpenDialog: (mode: DialogMode, workspace: AdminWorkspaceRow) => void;
+  onSetPlan: (workspaceId: string, plan: SubscriptionPlan) => void;
+  isPending: boolean;
 }) {
   const t = useTranslations("admin.workspaces");
   const ownerLabel = workspace.owner.name ?? workspace.owner.email;
@@ -393,7 +429,12 @@ function AdminWorkspaceBillingListRow({
         />
       </div>
 
-      <WorkspaceActionsMenu workspace={workspace} onOpenDialog={onOpenDialog} />
+      <WorkspaceActionsMenu
+        workspace={workspace}
+        onOpenDialog={onOpenDialog}
+        onSetPlan={onSetPlan}
+        isPending={isPending}
+      />
     </div>
   );
 }
@@ -588,6 +629,24 @@ export function AdminWorkspacesPanel({
     });
   }
 
+  function handleSetPlan(workspaceId: string, plan: SubscriptionPlan) {
+    setError(null);
+    startTransition(async () => {
+      const result = await adminSetWorkspacePlanAction(workspaceId, plan, locale);
+
+      if (!result.success) {
+        setError(result.error);
+        return;
+      }
+
+      setData((current) => ({
+        ...current,
+        items: current.items.map((row) => (row.id === workspaceId ? { ...row, plan } : row)),
+      }));
+      router.refresh();
+    });
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -631,6 +690,12 @@ export function AdminWorkspacesPanel({
         </div>
       </div>
 
+      {error ? (
+        <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {error}
+        </p>
+      ) : null}
+
       <div className="overflow-hidden rounded-xl border border-border/60 bg-card">
         <div className="flex items-center justify-between gap-3 border-b border-border/60 px-4 py-3">
           <span className="text-sm font-medium text-muted-foreground">{t("bar.allWorkspaces")}</span>
@@ -651,12 +716,16 @@ export function AdminWorkspacesPanel({
                     key={workspace.id}
                     workspace={workspace}
                     onOpenDialog={openDialog}
+                    onSetPlan={handleSetPlan}
+                    isPending={isPending}
                   />
                 ) : (
                   <AdminWorkspaceListRow
                     key={workspace.id}
                     workspace={workspace}
                     onOpenDialog={openDialog}
+                    onSetPlan={handleSetPlan}
+                    isPending={isPending}
                   />
                 ),
               )}

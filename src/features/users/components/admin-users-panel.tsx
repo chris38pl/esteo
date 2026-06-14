@@ -1,9 +1,7 @@
 "use client";
 
-import type { SubscriptionPlan } from "@prisma/client";
-import { Building2, FileStack, GitBranch, MoreHorizontal, Search } from "lucide-react";
-import { useEffect, useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { Building2, FileStack, GitBranch, Search } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import type { LucideIcon } from "lucide-react";
 
@@ -11,24 +9,12 @@ import { UserAvatar } from "@/components/avatars/user-avatar";
 import { isAvatarPreset } from "@/lib/avatars/user-avatar-presets";
 import { PaginationControls } from "@/components/shared/pagination-controls";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { adminSetUserPlanAction } from "@/features/users/server/admin-actions";
 import type { AdminUserRow } from "@/features/users/server/admin-users";
 import type { Locale } from "@/lib/locale";
 import type { PaginatedResult } from "@/lib/pagination";
 import { usePaginationUrl } from "@/lib/pagination";
 import { cn } from "@/lib/utils";
-
-const PLANS: SubscriptionPlan[] = ["FREE", "PRO", "BUSINESS"];
 
 function formatDateTime(locale: string, value: Date | string | null): string {
   if (!value) {
@@ -96,15 +82,7 @@ function PlanBadge({ label }: { label: string }) {
   );
 }
 
-function AdminUserListRow({
-  user,
-  onSetPlan,
-  isPending,
-}: {
-  user: AdminUserRow;
-  onSetPlan: (userId: string, plan: SubscriptionPlan) => void;
-  isPending: boolean;
-}) {
+function AdminUserListRow({ user }: { user: AdminUserRow }) {
   const t = useTranslations("admin.users");
   const locale = useLocale();
   const displayName = user.name?.trim() || user.email;
@@ -153,35 +131,6 @@ function AdminUserListRow({
         <DateColumn label={t("stats.created")} value={user.createdAt} locale={locale} />
         <DateColumn label={t("stats.lastActive")} value={user.lastActiveAt} locale={locale} />
       </div>
-
-      <DropdownMenu modal={false}>
-        <DropdownMenuTrigger asChild>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="size-8 shrink-0 rounded-lg text-muted-foreground"
-            aria-label={t("actions.menu")}
-            disabled={isPending}
-          >
-            <MoreHorizontal className="size-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuLabel>{t("actions.setPlan")}</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          {PLANS.map((plan) => (
-            <DropdownMenuItem
-              key={plan}
-              disabled={isPending || user.plan === plan}
-              onSelect={() => onSetPlan(user.id, plan)}
-            >
-              {t(`plan.${plan}`)}
-              {user.plan === plan ? ` (${t("actions.currentPlan")})` : ""}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
     </div>
   );
 }
@@ -196,12 +145,9 @@ export function AdminUsersPanel({
   initialSearch: string;
 }) {
   const t = useTranslations("admin.users");
-  const router = useRouter();
   const paginationUrl = usePaginationUrl();
   const [search, setSearch] = useState(() => initialSearch);
-  const [data, setData] = useState(() => initialData);
-  const [error, setError] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [data] = useState(() => initialData);
 
   const setSearchInUrl = paginationUrl.setSearch;
   const syncedSearchRef = useRef(initialSearch);
@@ -223,24 +169,6 @@ export function AdminUsersPanel({
     return () => window.clearTimeout(timeout);
   }, [search, setSearchInUrl]);
 
-  function handleSetPlan(userId: string, plan: SubscriptionPlan) {
-    setError(null);
-    startTransition(async () => {
-      const result = await adminSetUserPlanAction(userId, plan, locale);
-
-      if (!result.success) {
-        setError(result.error);
-        return;
-      }
-
-      setData((current) => ({
-        ...current,
-        items: current.items.map((row) => (row.id === userId ? { ...row, plan } : row)),
-      }));
-      router.refresh();
-    });
-  }
-
   return (
     <div className="space-y-4">
       <div className="relative max-w-md">
@@ -257,12 +185,6 @@ export function AdminUsersPanel({
         />
       </div>
 
-      {error ? (
-        <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {error}
-        </p>
-      ) : null}
-
       <div className="overflow-hidden rounded-xl border border-border/60 bg-card">
         <div className="flex items-center justify-between gap-3 border-b border-border/60 px-4 py-3">
           <span className="text-sm font-medium text-muted-foreground">{t("bar.allUsers")}</span>
@@ -273,12 +195,7 @@ export function AdminUsersPanel({
         ) : (
           <div className="divide-y divide-border/60">
             {data.items.map((user) => (
-              <AdminUserListRow
-                key={user.id}
-                user={user}
-                onSetPlan={handleSetPlan}
-                isPending={isPending}
-              />
+              <AdminUserListRow key={user.id} user={user} />
             ))}
           </div>
         )}
@@ -293,7 +210,6 @@ export function AdminUsersPanel({
         hasNextPage={data.hasNextPage}
         onPageChange={paginationUrl.setPage}
         onPageSizeChange={paginationUrl.setPageSize}
-        isLoading={isPending}
       />
     </div>
   );

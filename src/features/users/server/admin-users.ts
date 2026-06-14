@@ -1,11 +1,7 @@
 import type { SubscriptionPlan, User } from "@prisma/client";
 
 import { prisma } from "@/db/client";
-import { ensureWorkspaceBillingAccount } from "@/features/billing/server/provision-billing-account";
-import { defaultPlanVersion } from "@/server/billing/plan-catalog";
-import { recomputeIsActiveFree } from "@/server/billing/workspace-billing-maintenance";
 import { fetchClerkMetadataForUsers } from "@/features/users/server/clerk-user-metadata";
-import { logAuditEvent } from "@/features/workspaces/server/repository";
 import { buildPaginatedResult, toPrismaSkipTake } from "@/lib/pagination";
 import type { PaginatedResult, PaginationParams } from "@/lib/pagination";
 import { isPlatformAdmin } from "@/server/permissions/require-workspace";
@@ -224,57 +220,4 @@ export async function listAdminUsersPaginated(
   const rows = await mapUsersToRows(users);
 
   return buildPaginatedResult(rows, totalCount, { ...params, page: normalizedPage });
-}
-
-/**
- * Admin override: applies a plan to every workspace the user owns (billing is per-workspace now).
- * Each owned workspace's subscription is upserted; the FREE-slot flag is recomputed afterward.
- */
-export async function adminSetUserPlan(admin: User, userId: string, plan: SubscriptionPlan) {
-  assertPlatformAdminUser(admin);
-
-  const targetUser = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { id: true },
-  });
-
-  if (!targetUser) {
-    throw new PermissionError("User not found.");
-  }
-
-  const ownedWorkspaces = await prisma.workspace.findMany({
-    where: { ownerId: userId, deletedAt: null },
-    select: { id: true },
-  });
-
-  for (const workspace of ownedWorkspaces) {
-    const billingAccount = await ensureWorkspaceBillingAccount(workspace.id);
-
-    await prisma.subscription.upsert({
-      where: { billingAccountId: billingAccount.id },
-      create: {
-        billingAccountId: billingAccount.id,
-        plan,
-        planVersion: defaultPlanVersion(plan),
-        status: "ACTIVE",
-      },
-      update: {
-        plan,
-        planVersion: defaultPlanVersion(plan),
-        status: "ACTIVE",
-      },
-    });
-
-    await recomputeIsActiveFree(workspace.id);
-  }
-
-  await logAuditEvent({
-    actorUserId: admin.id,
-    entityType: "User",
-    entityId: userId,
-    action: "admin_plan_updated",
-    diff: { userId, plan, workspaces: ownedWorkspaces.length },
-  });
-
-  return { plan, updatedWorkspaces: ownedWorkspaces.length };
 }

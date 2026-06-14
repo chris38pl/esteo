@@ -179,11 +179,11 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
         align="end"
         className="w-[min(20rem,calc(100vw-1rem))] overflow-hidden rounded-xl border-border/60 p-0 shadow-lg"
       >
-        <div className="flex items-center gap-3 px-4 pb-3 pt-4">
+        <div className="flex items-center gap-3 px-4 pb-2.5 pt-4">
           <UserAvatar
             imageUrl={currentUser.avatarUrl}
             avatarPreset={currentUser.avatarPreset}
-            size={44}
+            size={40}
             className="ring-0"
           />
           <div className="min-w-0 flex-1">
@@ -196,13 +196,13 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
 
         {activeWorkspace ? (
           <>
-            <div className="px-4 py-3">
+            <div className="px-4 pt-2 pb-1">
               <MenuSectionLabel>{t("activeWorkspace")}</MenuSectionLabel>
 
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger
                   className={cn(
-                    "mt-2 h-auto w-full rounded-lg px-1 py-1",
+                    "mt-1 h-auto w-full rounded-lg px-1 py-0.5",
                     "focus:bg-accent/40 data-[state=open]:bg-accent/40",
                     "[&>svg:last-child]:hidden",
                   )}
@@ -243,7 +243,34 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
 
             <DropdownMenuSeparator className="mx-0 bg-border/60" />
 
-            <div className="space-y-3 px-4 py-3">
+            <div className="flex items-center justify-between gap-3 px-4 py-1.5">
+              <div className="min-w-0">
+                <p className="text-xs text-muted-foreground">{t("yourPlan")}</p>
+                <span
+                  className={cn(
+                    "mt-1 inline-flex items-center rounded-md px-2 py-0.5",
+                    "bg-blue-500/10 text-[10px] font-semibold tracking-[0.08em] text-blue-600 uppercase",
+                    "ring-1 ring-blue-500/15 ring-inset",
+                    "dark:bg-blue-400/10 dark:text-blue-400 dark:ring-blue-400/20",
+                  )}
+                >
+                  {planLabel}
+                </span>
+              </div>
+              {billingHref ? (
+                <Link
+                  href={billingHref}
+                  className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {t("updatePlan")}
+                  <ChevronRight className="size-3.5" strokeWidth={2} aria-hidden />
+                </Link>
+              ) : null}
+            </div>
+
+            <DropdownMenuSeparator className="mx-0 bg-border/60" />
+
+            <div className="space-y-2 px-4 pb-0.5 pt-1.5">
               <StatRow
                 icon={CircleHelp}
                 label={t("stats.requests")}
@@ -260,7 +287,7 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
                 value={`${storagePercent}%`}
               />
               <div
-                className="h-1.5 overflow-hidden rounded-full bg-muted/50"
+                className="h-1 overflow-hidden rounded-full bg-muted/50"
                 role="progressbar"
                 aria-valuenow={storagePercent}
                 aria-valuemin={0}
@@ -278,43 +305,16 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
           </>
         ) : null}
 
-        <div className="flex items-center justify-between gap-3 px-4 py-3">
-          <div className="min-w-0">
-            <p className="text-xs text-muted-foreground">{t("yourPlan")}</p>
-            <span
-              className={cn(
-                "mt-1.5 inline-flex items-center rounded-md px-2 py-0.5",
-                "bg-blue-500/10 text-[10px] font-semibold tracking-[0.08em] text-blue-600 uppercase",
-                "ring-1 ring-blue-500/15 ring-inset",
-                "dark:bg-blue-400/10 dark:text-blue-400 dark:ring-blue-400/20",
-              )}
-            >
-              {planLabel}
-            </span>
-          </div>
-          {billingHref ? (
-            <Link
-              href={billingHref}
-              className="inline-flex shrink-0 items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {t("updatePlan")}
-              <ChevronRight className="size-3.5" strokeWidth={2} aria-hidden />
-            </Link>
-          ) : null}
-        </div>
-
-        <DropdownMenuSeparator className="mx-0 bg-border/60" />
-
-        <div className="px-4 py-3 md:hidden">
+        <div className="px-4 py-2 md:hidden">
           <MenuSectionLabel>{t("options")}</MenuSectionLabel>
-          <div className="mt-3 space-y-3">
+          <div className="mt-2 space-y-2">
             <div className="flex items-center justify-between gap-3">
               <span className="text-xs text-muted-foreground">{t("language")}</span>
-              <LocaleSwitcher value={locale} compact />
+              <LocaleSwitcher value={locale} compact compactSize="sm" />
             </div>
             <div className="flex items-center justify-between gap-3">
               <span className="text-xs text-muted-foreground">{t("theme")}</span>
-              <ThemeToggle compact />
+              <ThemeToggle compact compactSize="sm" />
             </div>
           </div>
         </div>

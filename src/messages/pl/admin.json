@@ -96,6 +96,8 @@
       "view": "Podgląd",
       "rename": "Zmień nazwę",
       "invite": "Zaproś",
+      "setPlan": "Ustaw plan",
+      "currentPlan": "aktualny",
       "delete": "Usuń",
       "cancel": "Anuluj",
       "close": "Zamknij",

@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button";
 
 export function ThemeToggle({
   compact = false,
+  compactSize = "default",
   className,
 }: {
   compact?: boolean;
+  compactSize?: "default" | "sm";
   className?: string;
 }) {
   const { theme, setTheme } = useTheme();
@@ -19,10 +21,12 @@ export function ThemeToggle({
   const buttonClass = className
     ? className
     : compact
-      ? "size-9 rounded-lg border-border/60 bg-card/40 p-0 shadow-none"
+      ? compactSize === "sm"
+        ? "size-7 rounded-md border-border/60 bg-card/40 p-0 shadow-none"
+        : "size-9 rounded-lg border-border/60 bg-card/40 p-0 shadow-none"
       : "size-11 rounded-full border-border/60 bg-card/60 backdrop-blur supports-[backdrop-filter]:bg-card/40";
 
-  const iconClass = compact ? "size-3.5" : "size-5";
+  const iconClass = compact ? (compactSize === "sm" ? "size-3" : "size-3.5") : "size-5";
 
   useEffect(() => setMounted(true), []);
 

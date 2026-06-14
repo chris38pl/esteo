@@ -10,6 +10,9 @@ import { cn } from "@/lib/utils";
 const compactShellClass =
   "inline-flex h-9 overflow-hidden rounded-lg border border-border/60 bg-card/40 shadow-none";
 
+const compactSmShellClass =
+  "inline-flex h-7 overflow-hidden rounded-md border border-border/60 bg-card/40 shadow-none";
+
 const defaultShellClass =
   "inline-flex h-11 overflow-hidden rounded-xl border border-border/60 bg-card/60 shadow-none backdrop-blur supports-[backdrop-filter]:bg-card/40";
 
@@ -18,11 +21,13 @@ export function LocaleSwitcher({
   labels = { pl: "PL", en: "EN" },
   ariaLabel = "Switch language",
   compact = false,
+  compactSize = "default",
 }: {
   value: Locale;
   labels?: Record<Locale, string>;
   ariaLabel?: string;
   compact?: boolean;
+  compactSize?: "default" | "sm";
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -33,7 +38,13 @@ export function LocaleSwitcher({
 
   return (
     <div
-      className={compact ? compactShellClass : defaultShellClass}
+      className={
+        compact
+          ? compactSize === "sm"
+            ? compactSmShellClass
+            : compactShellClass
+          : defaultShellClass
+      }
       role="group"
       aria-label={ariaLabel}
     >
@@ -49,7 +60,11 @@ export function LocaleSwitcher({
             aria-pressed={active}
             className={cn(
               "flex h-full flex-1 items-center justify-center font-semibold transition cursor-pointer",
-              compact ? "min-w-9 text-xs" : "min-w-11 text-sm",
+              compact
+                ? compactSize === "sm"
+                  ? "min-w-7 text-xs"
+                  : "min-w-9 text-xs"
+                : "min-w-11 text-sm",
               index > 0 && "border-l border-border/60",
               active
                 ? "bg-primary text-primary-foreground"

@@ -9,6 +9,7 @@ import type {
 import { randomUUID } from "crypto";
 
 import { prisma } from "@/db/client";
+import { ensureWorkspaceBillingAccount } from "@/features/billing/server/provision-billing-account";
 import { isAvatarPreset } from "@/lib/avatars/user-avatar-presets";
 import type { WorkspaceMemberPreview } from "@/features/workspaces/server/get-active-workspace-card-data";
 import {
@@ -22,7 +23,8 @@ import {
 import { isValidWorkspaceSlug, normalizeWorkspaceSlug } from "@/features/workspaces/lib/slug";
 import { isSlugAvailable, recordSlugAlias } from "@/features/workspaces/server/slug-availability";
 import { deriveWorkspaceEffectiveStatus } from "@/server/billing/effective-status";
-import { resolvePlanLimits } from "@/server/billing/plan-catalog";
+import { defaultPlanVersion, resolvePlanLimits } from "@/server/billing/plan-catalog";
+import { recomputeIsActiveFree } from "@/server/billing/workspace-billing-maintenance";
 import { currentPeriodKey, WORKSPACE_TOTAL_USER } from "@/server/billing/usage-service";
 import { buildPaginatedResult, toPrismaSkipTake } from "@/lib/pagination";
 import type { PaginatedResult, PaginationParams } from "@/lib/pagination";
@@ -488,4 +490,59 @@ export async function adminInviteToWorkspace(
   });
 
   return invitation;
+}
+
+/** Admin override: DB-only plan change for a single workspace. Does not interact with Stripe. */
+export async function adminSetWorkspacePlan(
+  admin: User,
+  workspaceId: string,
+  plan: SubscriptionPlan,
+) {
+  assertPlatformAdminUser(admin);
+
+  const workspace = await prisma.workspace.findFirst({
+    where: { id: workspaceId, deletedAt: null },
+    select: { id: true },
+  });
+
+  if (!workspace) {
+    throw new WorkspaceError("Workspace not found.");
+  }
+
+  const billingAccount = await ensureWorkspaceBillingAccount(workspace.id);
+  const planVersion = defaultPlanVersion(plan);
+  const limits = resolvePlanLimits(plan, planVersion);
+
+  await prisma.subscription.upsert({
+    where: { billingAccountId: billingAccount.id },
+    create: {
+      billingAccountId: billingAccount.id,
+      plan,
+      planVersion,
+      status: "ACTIVE",
+    },
+    update: {
+      plan,
+      planVersion,
+      status: "ACTIVE",
+    },
+  });
+
+  await prisma.workspace.update({
+    where: { id: workspace.id },
+    data: { attachmentStorageLimitBytes: BigInt(limits.maxStorageBytes) },
+  });
+
+  await recomputeIsActiveFree(workspace.id);
+
+  await logAuditEvent({
+    actorUserId: admin.id,
+    workspaceId: workspace.id,
+    entityType: "Workspace",
+    entityId: workspace.id,
+    action: "admin_plan_updated",
+    diff: { workspaceId: workspace.id, plan },
+  });
+
+  return { plan };
 }
