@@ -2,7 +2,29 @@ import type { Issue, IssueAttachment } from "@prisma/client";
 
 import { parseIssueContext } from "@/features/issues/lib/issue-context";
 
-export function buildCursorPrompt(issue: Issue & { attachments: IssueAttachment[] }): string {
+type CursorPromptIssue = Pick<
+  Issue,
+  | "number"
+  | "title"
+  | "type"
+  | "priority"
+  | "status"
+  | "environment"
+  | "description"
+  | "reproductionSteps"
+  | "expectedBehavior"
+  | "actualBehavior"
+  | "pageUrl"
+  | "context"
+  | "deviceType"
+  | "viewportWidth"
+  | "viewportHeight"
+  | "locale"
+> & {
+  attachments: Array<Pick<IssueAttachment, "id" | "originalFileName">>;
+};
+
+export function buildCursorPrompt(issue: CursorPromptIssue): string {
   const context = parseIssueContext(issue.context);
   const contextJson = context ? JSON.stringify(context) : "—";
 

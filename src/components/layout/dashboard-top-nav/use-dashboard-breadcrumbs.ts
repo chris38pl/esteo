@@ -84,6 +84,27 @@ function parsePaymentsRoute(
   return parseWorkspaceSectionRoute(pathname, locale, workspaceSlug, "payments");
 }
 
+function parseAdminIssuesRoute(
+  pathname: string,
+  locale: Locale,
+): { kind: "list" } | { kind: "detail"; number: string } | null {
+  const base = `/${locale}/dashboard/admin/issues`;
+
+  if (pathname === base) {
+    return { kind: "list" };
+  }
+
+  if (pathname.startsWith(`${base}/`)) {
+    const suffix = pathname.slice(base.length + 1);
+    const number = suffix.split("/")[0];
+    if (number) {
+      return { kind: "detail", number };
+    }
+  }
+
+  return null;
+}
+
 function resolvePageLabelKey(
   pathname: string,
   locale: Locale,
@@ -137,6 +158,7 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
   const estimatesRoute = parseEstimatesRoute(pathname, locale, workspaceSlug);
   const requestsRoute = parseRequestsRoute(pathname, locale, workspaceSlug);
   const paymentsRoute = parsePaymentsRoute(pathname, locale, workspaceSlug);
+  const adminIssuesRoute = parseAdminIssuesRoute(pathname, locale);
   const pageKey = resolvePageLabelKey(pathname, locale, section, workspaceSlug);
   const isAdminPath = pathname.startsWith(`/${locale}/dashboard/admin`);
 
@@ -152,6 +174,23 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
     crumbs.push({ label: t("admin") });
   } else if (!isUserLevelPage) {
     crumbs.push({ label: workspaceLabel });
+  }
+
+  if (isAdminPath && adminIssuesRoute) {
+    const issuesHref = `/${locale}/dashboard/admin/issues`;
+
+    crumbs.push({
+      label: t("adminIssues"),
+      href: adminIssuesRoute.kind === "detail" ? issuesHref : undefined,
+    });
+
+    if (adminIssuesRoute.kind === "detail") {
+      crumbs.push({
+        label: detailLabel?.trim() || `#${adminIssuesRoute.number}`,
+      });
+    }
+
+    return crumbs;
   }
 
   if (estimatesRoute && workspaceSlug) {

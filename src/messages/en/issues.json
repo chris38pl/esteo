@@ -1,6 +1,8 @@
 {
   "form": {
     "title": "Report issue",
+    "panelTitle": "Issue report form",
+    "panelDescription": "Describe a problem found during testing. Attach screenshots if they help with analysis.",
     "type": "Type",
     "issueTitle": "Title",
     "issueTitlePlaceholder": "Short summary",
@@ -8,19 +10,32 @@
     "descriptionPlaceholder": "What happened?",
     "recordDescription": "Record description",
     "stopRecording": "Stop",
-    "screenshots": "Screenshots",
-    "addScreenshot": "Add",
     "moreDetails": "More details",
     "priority": "Priority",
     "reproductionSteps": "Reproduction steps",
+    "reproductionStepsPlaceholder": "1. Open…\n2. Click…",
     "expectedBehavior": "Expected behavior",
+    "expectedBehaviorPlaceholder": "What should happen?",
     "actualBehavior": "Actual behavior",
+    "actualBehaviorPlaceholder": "What actually happened?",
     "submit": "Save",
     "submitting": "Saving…",
     "cancel": "Cancel",
     "success": "Issue #{number} saved",
     "validationError": "Fill in required fields",
     "uploadError": "Failed to upload screenshots"
+  },
+  "attachments": {
+    "label": "Screenshots (optional)",
+    "title": "Drag images here or click to add",
+    "hint": "PNG, JPEG, WebP. Up to 10 files, 20 MB each.",
+    "addFile": "Add image",
+    "fileCount": "{current}/{max}",
+    "remove": "Remove image",
+    "errors": {
+      "maxFiles": "You can add at most 10 images.",
+      "maxSize": "Total file size is too large."
+    }
   },
   "type": {
     "BUG": "Bug",
@@ -67,6 +82,68 @@
     "urlCopied": "URL copied",
     "copyFailed": "Could not copy",
     "statusUpdated": "Status updated",
-    "notFound": "Issue not found"
+    "notFound": "Issue not found",
+    "detail": {
+      "eyebrow": "Issue tracker",
+      "backToList": "Back to list",
+      "metaLine": "Created: {created} · Updated: {updated}",
+      "detailsSection": "Details",
+      "additionalSection": "Additional details",
+      "reportedBy": "Reported by",
+      "createdAt": "Created at",
+      "updatedAt": "Last updated",
+      "locale": "Locale",
+      "openScreenshot": "Open screenshot",
+      "download": "Download",
+      "fileActions": "File actions",
+      "showMore": "Show more",
+      "showLess": "Show less"
+    }
+  },
+  "list": {
+    "searchPlaceholder": "Search issues, titles, types…",
+    "noSearchResults": "No results match your search.",
+    "columns": {
+      "issue": "Issue",
+      "type": "Type",
+      "priority": "Priority",
+      "status": "Status",
+      "createdAt": "Created",
+      "attachments": "Attachments"
+    },
+    "toolbar": {
+      "filters": "Filters",
+      "dateRange": "Date range"
+    },
+    "filter": {
+      "title": "Filter issues",
+      "statusTitle": "Status",
+      "typeTitle": "Category",
+      "clear": "Clear",
+      "showResults": "Show results ({count})",
+      "typeCategory": {
+        "all": "All",
+        "defect": "Defect",
+        "feature": "Feature"
+      }
+    },
+    "dateRange": {
+      "title": "Date range",
+      "triggerAria": "Select date range",
+      "clear": "Clear",
+      "apply": "Apply",
+      "presets": {
+        "last7": "Last 7 days",
+        "last30": "Last 30 days",
+        "thisMonth": "This month"
+      }
+    },
+    "hero": {
+      "eyebrow": "New report",
+      "title": "Report a testing issue",
+      "descriptionLine1": "Quickly describe a bug or UX note",
+      "descriptionLine2": "found while testing on staging.",
+      "cta": "New issue"
+    }
   }
 }

@@ -20,6 +20,7 @@
     "adminIndustryFields": "Pola branżowe",
     "adminEstimateRequests": "Zapytania o wycenę",
     "adminEstimateRequestDetail": "Szczegóły zapytania",
+    "adminIssues": "Issue Tracker",
     "billingPlans": "Plany"
   },
   "notifications": {

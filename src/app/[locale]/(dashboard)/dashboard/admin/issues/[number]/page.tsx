@@ -1,13 +1,28 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 
-import { AdminIssueDetailPanel } from "@/features/issues/components/admin-issue-detail-panel";
+import { SyncDashboardBreadcrumbDetail } from "@/components/layout/dashboard-top-nav/sync-dashboard-breadcrumb-detail";
+import {
+  AdminIssueDetailPanel,
+  type AdminIssueDetailClient,
+} from "@/features/issues/components/admin-issue-detail-panel";
 import { getIssueByNumber } from "@/features/issues/server/repository";
-import { getServerTranslations, resolveRequestLocale } from "@/i18n/request-locale";
+import { resolveRequestLocale } from "@/i18n/request-locale";
 import { isIssueTrackerEnabled } from "@/lib/issue-tracker/guard";
 import type { Locale } from "@/lib/locale";
 import { assertPlatformAdminAccess } from "@/server/auth/require-platform-admin";
+
+function serializeIssueForClient(
+  issue: NonNullable<Awaited<ReturnType<typeof getIssueByNumber>>>,
+): AdminIssueDetailClient {
+  return {
+    ...issue,
+    attachments: issue.attachments.map((attachment) => ({
+      ...attachment,
+      fileSizeBytes: Number(attachment.fileSizeBytes),
+    })),
+  };
+}
 
 export default async function AdminIssueDetailPage({
   params,
@@ -36,18 +51,10 @@ export default async function AdminIssueDetailPage({
     notFound();
   }
 
-  const t = await getServerTranslations(resolvedLocale, "issues");
-
   return (
-    <div className="space-y-6">
-      <Link
-        href={`/${resolvedLocale}/dashboard/admin/issues`}
-        className="text-sm text-muted-foreground hover:text-foreground"
-      >
-        ← {t("admin.title")}
-      </Link>
-
-      <AdminIssueDetailPanel issue={issue} locale={resolvedLocale} />
-    </div>
+    <>
+      <SyncDashboardBreadcrumbDetail label={`#${issue.number}`} />
+      <AdminIssueDetailPanel issue={serializeIssueForClient(issue)} locale={resolvedLocale} />
+    </>
   );
 }

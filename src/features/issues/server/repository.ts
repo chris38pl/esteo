@@ -8,6 +8,14 @@ export type IssueWithAttachments = Issue & {
   attachments: IssueAttachment[];
 };
 
+export type AdminIssueDetail = Issue & {
+  attachments: IssueAttachment[];
+  reportedBy: {
+    name: string | null;
+    email: string;
+  };
+};
+
 const issueListSelect = {
   id: true,
   number: true,
@@ -38,24 +46,32 @@ export async function createIssueRecord(input: Prisma.IssueCreateInput): Promise
   return prisma.issue.create({ data: input });
 }
 
-export async function getIssueByNumber(number: number): Promise<IssueWithAttachments | null> {
+export async function getIssueByNumber(number: number): Promise<AdminIssueDetail | null> {
   return prisma.issue.findUnique({
     where: { number },
     include: {
       attachments: {
         orderBy: { sortOrder: "asc" },
       },
+      reportedBy: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
     },
   });
 }
 
-export async function listIssuesForAdmin(): Promise<
-  Pick<
-    Issue,
-    "number" | "title" | "type" | "priority" | "status" | "createdAt" | "folderSlug"
-  >[]
-> {
-  return prisma.issue.findMany({
+export type AdminIssueListItem = Pick<
+  Issue,
+  "number" | "title" | "type" | "priority" | "status" | "createdAt" | "folderSlug"
+> & {
+  attachmentCount: number;
+};
+
+export async function listIssuesForAdmin(): Promise<AdminIssueListItem[]> {
+  const rows = await prisma.issue.findMany({
     select: {
       number: true,
       title: true,
@@ -64,9 +80,21 @@ export async function listIssuesForAdmin(): Promise<
       status: true,
       createdAt: true,
       folderSlug: true,
+      _count: { select: { attachments: true } },
     },
-    orderBy: [{ status: "asc" }, { number: "desc" }],
+    orderBy: { createdAt: "desc" },
   });
+
+  return rows.map((row) => ({
+    number: row.number,
+    title: row.title,
+    type: row.type,
+    priority: row.priority,
+    status: row.status,
+    createdAt: row.createdAt,
+    folderSlug: row.folderSlug,
+    attachmentCount: row._count.attachments,
+  }));
 }
 
 export async function updateIssueStatus(

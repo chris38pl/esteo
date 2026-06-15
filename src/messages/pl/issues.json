@@ -1,6 +1,8 @@
 {
   "form": {
     "title": "Zgłoś błąd",
+    "panelTitle": "Formularz zgłoszenia błędu",
+    "panelDescription": "Opisz problem napotkany podczas testów. Dołącz screenshoty, jeśli pomogą w analizie.",
     "type": "Typ",
     "issueTitle": "Tytuł",
     "issueTitlePlaceholder": "Krótki opis problemu",
@@ -8,19 +10,32 @@
     "descriptionPlaceholder": "Co się stało?",
     "recordDescription": "Nagraj opis",
     "stopRecording": "Zatrzymaj",
-    "screenshots": "Screenshoty",
-    "addScreenshot": "Dodaj",
     "moreDetails": "Więcej szczegółów",
     "priority": "Priorytet",
     "reproductionSteps": "Kroki reprodukcji",
+    "reproductionStepsPlaceholder": "1. Otwórz…\n2. Kliknij…",
     "expectedBehavior": "Oczekiwane zachowanie",
+    "expectedBehaviorPlaceholder": "Co powinno się stać?",
     "actualBehavior": "Rzeczywiste zachowanie",
+    "actualBehaviorPlaceholder": "Co faktycznie się stało?",
     "submit": "Zapisz",
     "submitting": "Zapisywanie…",
     "cancel": "Anuluj",
     "success": "Zgłoszenie #{number} zapisane",
     "validationError": "Uzupełnij wymagane pola",
     "uploadError": "Nie udało się przesłać screenshotów"
+  },
+  "attachments": {
+    "label": "Screenshoty (opcjonalnie)",
+    "title": "Przeciągnij zdjęcia lub kliknij, aby dodać",
+    "hint": "PNG, JPEG, WebP. Maks. 10 plików, do 20 MB każdy.",
+    "addFile": "Dodaj zdjęcie",
+    "fileCount": "{current}/{max}",
+    "remove": "Usuń zdjęcie",
+    "errors": {
+      "maxFiles": "Możesz dodać maksymalnie 10 zdjęć.",
+      "maxSize": "Łączny rozmiar plików jest zbyt duży."
+    }
   },
   "type": {
     "BUG": "Bug",
@@ -67,6 +82,68 @@
     "urlCopied": "URL skopiowany",
     "copyFailed": "Nie udało się skopiować",
     "statusUpdated": "Status zaktualizowany",
-    "notFound": "Nie znaleziono zgłoszenia"
+    "notFound": "Nie znaleziono zgłoszenia",
+    "detail": {
+      "eyebrow": "Issue tracker",
+      "backToList": "Powrót do listy",
+      "metaLine": "Utworzono: {created} · Aktualizacja: {updated}",
+      "detailsSection": "Szczegóły",
+      "additionalSection": "Dodatkowe informacje",
+      "reportedBy": "Zgłosił",
+      "createdAt": "Data utworzenia",
+      "updatedAt": "Ostatnia aktualizacja",
+      "locale": "Język",
+      "openScreenshot": "Otwórz zrzut ekranu",
+      "download": "Pobierz",
+      "fileActions": "Akcje pliku",
+      "showMore": "Pokaż więcej",
+      "showLess": "Zwiń"
+    }
+  },
+  "list": {
+    "searchPlaceholder": "Szukaj zgłoszenia, tytułu, typu…",
+    "noSearchResults": "Brak wyników dla podanej frazy.",
+    "columns": {
+      "issue": "Zgłoszenie",
+      "type": "Typ",
+      "priority": "Priorytet",
+      "status": "Status",
+      "createdAt": "Utworzono",
+      "attachments": "Załączniki"
+    },
+    "toolbar": {
+      "filters": "Filtry",
+      "dateRange": "Zakres dat"
+    },
+    "filter": {
+      "title": "Filtrowanie zgłoszeń",
+      "statusTitle": "Status",
+      "typeTitle": "Kategoria",
+      "clear": "Wyczyść",
+      "showResults": "Pokaż wyniki ({count})",
+      "typeCategory": {
+        "all": "Wszystkie",
+        "defect": "Defekt",
+        "feature": "Feature"
+      }
+    },
+    "dateRange": {
+      "title": "Zakres dat",
+      "triggerAria": "Wybierz zakres dat",
+      "clear": "Wyczyść",
+      "apply": "Zastosuj",
+      "presets": {
+        "last7": "Ostatnie 7 dni",
+        "last30": "Ostatnie 30 dni",
+        "thisMonth": "Ten miesiąc"
+      }
+    },
+    "hero": {
+      "eyebrow": "Nowe zgłoszenie",
+      "title": "Zgłoś problem z testów",
+      "descriptionLine1": "Szybko opisz bug lub uwagę UX",
+      "descriptionLine2": "znalezioną podczas testów na staging.",
+      "cta": "Nowe zgłoszenie"
+    }
   }
 }

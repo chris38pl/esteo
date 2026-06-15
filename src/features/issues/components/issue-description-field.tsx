@@ -1,12 +1,11 @@
 "use client";
 
-import { Mic, MicOff } from "lucide-react";
+import { AlignLeft, Mic, MicOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { IssueFormTextarea } from "@/features/issues/components/issue-form-fields";
 import { useSpeechRecognition } from "@/features/issues/hooks/use-speech-recognition";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -30,31 +29,32 @@ export function IssueDescriptionField({
   }
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between gap-2">
-        <Label htmlFor="issue-description">{t("form.description")}</Label>
-        {isSupported ? (
+    <IssueFormTextarea
+      id="issue-description"
+      label={t("form.description")}
+      value={value}
+      onChange={onChange}
+      placeholder={t("form.descriptionPlaceholder")}
+      required
+      disabled={disabled}
+      rows={5}
+      icon={<AlignLeft className="size-4" />}
+      className={cn(isListening && "ring-2 ring-primary/40")}
+      headerAction={
+        isSupported ? (
           <Button
             type="button"
             variant={isListening ? "destructive" : "outline"}
             size="sm"
+            className="h-8 shrink-0"
             disabled={disabled}
             onClick={() => toggleListening(appendTranscript)}
           >
             {isListening ? <MicOff className="size-4" /> : <Mic className="size-4" />}
             {isListening ? t("form.stopRecording") : t("form.recordDescription")}
           </Button>
-        ) : null}
-      </div>
-      <Textarea
-        id="issue-description"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder={t("form.descriptionPlaceholder")}
-        rows={4}
-        disabled={disabled}
-        className={cn(isListening && "ring-2 ring-primary/40")}
-      />
-    </div>
+        ) : null
+      }
+    />
   );
 }

@@ -42,18 +42,49 @@ export function AttachmentDropzone({
   onChange,
   attachmentAvailability,
   disabled = false,
+  accept = "image/*,.pdf,.doc,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  maxFiles = MAX_REQUEST_ATTACHMENT_FILES,
+  maxTotalBytes = MAX_REQUEST_ATTACHMENT_TOTAL_BYTES,
+  fullWidth = false,
+  labels,
 }: {
   value: File[];
   onChange: (files: File[]) => void;
   attachmentAvailability?: PublicAttachmentAvailability;
   disabled?: boolean;
+  accept?: string;
+  maxFiles?: number;
+  maxTotalBytes?: number | null;
+  fullWidth?: boolean;
+  labels?: {
+    title?: string;
+    hint?: string;
+    addFile?: string;
+    fileCount?: string;
+    remove?: string;
+    maxFiles?: string;
+    maxSize?: string;
+  };
 }) {
   const t = useTranslations("estimateRequests.attachments");
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [error, setError] = useState<string | null>(null);
   const files = filesToLocalAttachments(value);
   const filesRef = useRef(files);
-  filesRef.current = files;
+
+  useEffect(() => {
+    filesRef.current = files;
+  }, [files]);
+
+  const copy = {
+    title: labels?.title ?? t("title"),
+    hint: labels?.hint ?? t("hint"),
+    addFile: labels?.addFile ?? t("addFile"),
+    fileCount: labels?.fileCount ?? t("fileCount"),
+    remove: labels?.remove ?? t("remove"),
+    maxFiles: labels?.maxFiles ?? t("errors.maxFiles"),
+    maxSize: labels?.maxSize ?? t("errors.maxSize"),
+  };
 
   const uploadsAvailable =
     attachmentAvailability === undefined || isAttachmentUploadAvailable(attachmentAvailability);
@@ -99,16 +130,16 @@ export function AttachmentDropzone({
     const existingIds = new Set(value.map(fileId));
     const uniqueIncoming = incoming.filter((file) => !existingIds.has(fileId(file)));
 
-    if (value.length + uniqueIncoming.length > MAX_REQUEST_ATTACHMENT_FILES) {
-      setError(t("errors.maxFiles"));
+    if (value.length + uniqueIncoming.length > maxFiles) {
+      setError(copy.maxFiles);
       return;
     }
 
     const nextFiles = [...value, ...uniqueIncoming];
     const totalBytes = nextFiles.reduce((sum, file) => sum + file.size, 0);
 
-    if (totalBytes > MAX_REQUEST_ATTACHMENT_TOTAL_BYTES) {
-      setError(t("errors.maxSize"));
+    if (maxTotalBytes !== null && totalBytes > maxTotalBytes) {
+      setError(copy.maxSize);
       return;
     }
 
@@ -129,14 +160,14 @@ export function AttachmentDropzone({
   }
 
   function openFilePicker() {
-    if (disabled || value.length >= MAX_REQUEST_ATTACHMENT_FILES) {
+    if (disabled || value.length >= maxFiles) {
       return;
     }
 
     inputRef.current?.click();
   }
 
-  const canAddMore = value.length < MAX_REQUEST_ATTACHMENT_FILES;
+  const canAddMore = value.length < maxFiles;
 
   return (
     <div className="space-y-2">
@@ -144,7 +175,7 @@ export function AttachmentDropzone({
         ref={inputRef}
         type="file"
         multiple
-        accept="image/*,.pdf,.doc,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        accept={accept}
         className="hidden"
         disabled={disabled}
         onChange={(event) => {
@@ -173,12 +204,15 @@ export function AttachmentDropzone({
           <span className="mb-3 grid size-9 place-items-center rounded-full border border-primary/25 bg-primary/10 text-primary">
             <UploadCloud className="size-4" />
           </span>
-          <span className="text-xs font-semibold text-foreground">{t("title")}</span>
-          <span className="mt-1 text-[10px] text-muted-foreground">{t("hint")}</span>
+          <span className="text-xs font-semibold text-foreground">{copy.title}</span>
+          <span className="mt-1 text-[10px] text-muted-foreground">{copy.hint}</span>
         </button>
       ) : (
         <div
-          className="w-full max-w-[calc(4*10.5rem+3*0.5rem)] overflow-x-auto pb-1 sidebar-scroll"
+          className={cn(
+            "w-full overflow-x-auto pb-1 sidebar-scroll",
+            !fullWidth && "max-w-[calc(4*10.5rem+3*0.5rem)]",
+          )}
           onDragOver={(event) => event.preventDefault()}
           onDrop={(event) => {
             event.preventDefault();
@@ -201,9 +235,11 @@ export function AttachmentDropzone({
               <span className="mb-3 grid size-10 place-items-center rounded-full border border-border bg-card text-muted-foreground">
                 <Plus className="size-5" />
               </span>
-              <span className="text-xs font-semibold text-foreground">{t("addFile")}</span>
+              <span className="text-xs font-semibold text-foreground">{copy.addFile}</span>
               <span className="mt-1 text-[10px] text-muted-foreground">
-                {t("fileCount", { current: files.length, max: MAX_REQUEST_ATTACHMENT_FILES })}
+                {copy.fileCount
+                  .replace("{current}", String(files.length))
+                  .replace("{max}", String(maxFiles))}
               </span>
             </button>
 
@@ -211,7 +247,7 @@ export function AttachmentDropzone({
               <AttachmentPreviewCard
                 key={attachment.id}
                 attachment={attachment}
-                removeLabel={t("remove")}
+                removeLabel={copy.remove}
                 disabled={disabled}
                 onRemove={() => removeFile(attachment.id)}
               />

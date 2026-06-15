@@ -1,19 +1,21 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import {
+  AlertCircle,
+  ChevronDown,
+  CircleCheck,
+  Flag,
+  ListOrdered,
+} from "lucide-react";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+  IssueFormSelect,
+  IssueFormTextarea,
+  issueFormLabelClassName,
+} from "@/features/issues/components/issue-form-fields";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 type IssuePriority = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
@@ -43,71 +45,70 @@ export function IssueAdvancedFields({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4 border-t border-border/60 pt-5">
       <Button
         type="button"
         variant="ghost"
         size="sm"
-        className="h-8 px-2 text-muted-foreground"
+        className={cn(
+          "h-9 w-full justify-between rounded-xl px-3 text-muted-foreground hover:bg-accent/50",
+          open && "bg-accent/30 text-foreground",
+        )}
         onClick={() => setOpen((value) => !value)}
       >
-        <ChevronDown className={cn("mr-1 size-4 transition-transform", open && "rotate-180")} />
-        {t("form.moreDetails")}
+        <span className={issueFormLabelClassName}>{t("form.moreDetails")}</span>
+        <ChevronDown className={cn("size-4 shrink-0 transition-transform", open && "rotate-180")} />
       </Button>
 
       {open ? (
-        <div className="space-y-4 rounded-xl border border-border/60 p-4">
-          <div className="space-y-2">
-            <Label>{t("form.priority")}</Label>
-            <Select
-              value={priority}
-              onValueChange={(value) => onPriorityChange(value as IssuePriority)}
-              disabled={disabled}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="LOW">{t("priority.LOW")}</SelectItem>
-                <SelectItem value="MEDIUM">{t("priority.MEDIUM")}</SelectItem>
-                <SelectItem value="HIGH">{t("priority.HIGH")}</SelectItem>
-                <SelectItem value="CRITICAL">{t("priority.CRITICAL")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="space-y-5">
+          <IssueFormSelect
+            id="issue-priority"
+            label={t("form.priority")}
+            value={priority}
+            onValueChange={onPriorityChange}
+            icon={<Flag className="size-4" />}
+            disabled={disabled}
+            options={[
+              { value: "LOW", label: t("priority.LOW") },
+              { value: "MEDIUM", label: t("priority.MEDIUM") },
+              { value: "HIGH", label: t("priority.HIGH") },
+              { value: "CRITICAL", label: t("priority.CRITICAL") },
+            ]}
+          />
 
-          <div className="space-y-2">
-            <Label htmlFor="issue-repro">{t("form.reproductionSteps")}</Label>
-            <Textarea
-              id="issue-repro"
-              value={reproductionSteps}
-              onChange={(event) => onReproductionStepsChange(event.target.value)}
-              rows={3}
-              disabled={disabled}
-            />
-          </div>
+          <IssueFormTextarea
+            id="issue-repro"
+            label={t("form.reproductionSteps")}
+            value={reproductionSteps}
+            onChange={onReproductionStepsChange}
+            placeholder={t("form.reproductionStepsPlaceholder")}
+            icon={<ListOrdered className="size-4" />}
+            disabled={disabled}
+            rows={3}
+          />
 
-          <div className="space-y-2">
-            <Label htmlFor="issue-expected">{t("form.expectedBehavior")}</Label>
-            <Textarea
-              id="issue-expected"
-              value={expectedBehavior}
-              onChange={(event) => onExpectedBehaviorChange(event.target.value)}
-              rows={2}
-              disabled={disabled}
-            />
-          </div>
+          <IssueFormTextarea
+            id="issue-expected"
+            label={t("form.expectedBehavior")}
+            value={expectedBehavior}
+            onChange={onExpectedBehaviorChange}
+            placeholder={t("form.expectedBehaviorPlaceholder")}
+            icon={<CircleCheck className="size-4" />}
+            disabled={disabled}
+            rows={2}
+          />
 
-          <div className="space-y-2">
-            <Label htmlFor="issue-actual">{t("form.actualBehavior")}</Label>
-            <Textarea
-              id="issue-actual"
-              value={actualBehavior}
-              onChange={(event) => onActualBehaviorChange(event.target.value)}
-              rows={2}
-              disabled={disabled}
-            />
-          </div>
+          <IssueFormTextarea
+            id="issue-actual"
+            label={t("form.actualBehavior")}
+            value={actualBehavior}
+            onChange={onActualBehaviorChange}
+            placeholder={t("form.actualBehaviorPlaceholder")}
+            icon={<AlertCircle className="size-4" />}
+            disabled={disabled}
+            rows={2}
+          />
         </div>
       ) : null}
     </div>

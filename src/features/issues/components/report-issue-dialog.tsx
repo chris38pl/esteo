@@ -1,13 +1,13 @@
 "use client";
 
+import { Bug, Tag, Type } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
-import {
-  IssueAdvancedFields,
-} from "@/features/issues/components/issue-advanced-fields";
+import { IssueAdvancedFields } from "@/features/issues/components/issue-advanced-fields";
 import { IssueDescriptionField } from "@/features/issues/components/issue-description-field";
+import { IssueFormSelect, IssueFormTextInput } from "@/features/issues/components/issue-form-fields";
 import { IssueScreenshotUploader } from "@/features/issues/components/issue-screenshot-uploader";
 import { collectIssueMetadata } from "@/features/issues/lib/collect-issue-metadata";
 import { createIssueSchema } from "@/features/issues/schemas/issue";
@@ -17,19 +17,11 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import type { Locale } from "@/lib/locale";
 
 type IssueType = "BUG" | "UX" | "FEATURE" | "AI_EXTRACTION" | "PERFORMANCE";
@@ -40,11 +32,13 @@ export function ReportIssueDialog({
   onOpenChange,
   locale,
   workspaceSlug,
+  onSuccess,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   locale: Locale;
   workspaceSlug: string | null;
+  onSuccess?: () => void;
 }) {
   const t = useTranslations("issues");
   const [pending, startTransition] = useTransition();
@@ -116,6 +110,7 @@ export function ReportIssueDialog({
       toast.success(t("form.success", { number: result.data.number }));
       resetForm();
       onOpenChange(false);
+      onSuccess?.();
     });
   }
 
@@ -129,64 +124,90 @@ export function ReportIssueDialog({
         onOpenChange(nextOpen);
       }}
     >
-      <DialogContent showCloseButton className="max-h-[90vh] overflow-y-auto rounded-2xl sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>{t("form.title")}</DialogTitle>
+      <DialogContent
+        showCloseButton
+        className="flex max-h-[min(90vh,880px)] w-[calc(100%-2rem)] max-w-[min(92vw,56rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-[min(92vw,56rem)] max-sm:fixed max-sm:inset-0 max-sm:h-[100dvh] max-sm:max-h-[100dvh] max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-none max-sm:border-0"
+      >
+        <DialogHeader className="shrink-0 border-b px-4 py-4 text-left sm:px-6 sm:py-5">
+          <div className="flex items-start gap-3 pr-8">
+            <div
+              className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"
+              aria-hidden
+            >
+              <Bug className="size-5" strokeWidth={2} />
+            </div>
+            <div className="min-w-0 space-y-2">
+              <DialogTitle className="text-xl font-bold tracking-normal text-foreground">
+                {t("form.panelTitle")}
+              </DialogTitle>
+              <DialogDescription className="text-xs leading-5 text-muted-foreground">
+                {t("form.panelDescription")}
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label>{t("form.type")}</Label>
-            <Select value={type} onValueChange={(value) => setType(value as IssueType)} disabled={isBusy}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="BUG">{t("type.BUG")}</SelectItem>
-                <SelectItem value="UX">{t("type.UX")}</SelectItem>
-                <SelectItem value="FEATURE">{t("type.FEATURE")}</SelectItem>
-                <SelectItem value="AI_EXTRACTION">{t("type.AI_EXTRACTION")}</SelectItem>
-                <SelectItem value="PERFORMANCE">{t("type.PERFORMANCE")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+          <div className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-y-contain px-4 py-5 [-webkit-overflow-scrolling:touch] sm:px-6">
+            <IssueFormSelect
+              id="issue-type"
+              label={t("form.type")}
+              value={type}
+              onValueChange={setType}
+              icon={<Tag className="size-4" />}
+              required
+              disabled={isBusy}
+              options={[
+                { value: "BUG", label: t("type.BUG") },
+                { value: "UX", label: t("type.UX") },
+                { value: "FEATURE", label: t("type.FEATURE") },
+                { value: "AI_EXTRACTION", label: t("type.AI_EXTRACTION") },
+                { value: "PERFORMANCE", label: t("type.PERFORMANCE") },
+              ]}
+            />
 
-          <div className="space-y-2">
-            <Label htmlFor="issue-title">{t("form.issueTitle")}</Label>
-            <Input
+            <IssueFormTextInput
               id="issue-title"
+              label={t("form.issueTitle")}
               value={title}
-              onChange={(event) => setTitle(event.target.value)}
+              onChange={setTitle}
               placeholder={t("form.issueTitlePlaceholder")}
+              icon={<Type className="size-4" />}
+              required
               disabled={isBusy}
             />
+
+            <IssueDescriptionField
+              locale={locale}
+              value={description}
+              onChange={setDescription}
+              disabled={isBusy}
+            />
+
+            <IssueScreenshotUploader files={screenshots} onChange={setScreenshots} disabled={isBusy} />
+
+            <IssueAdvancedFields
+              priority={priority}
+              reproductionSteps={reproductionSteps}
+              expectedBehavior={expectedBehavior}
+              actualBehavior={actualBehavior}
+              onPriorityChange={setPriority}
+              onReproductionStepsChange={setReproductionSteps}
+              onExpectedBehaviorChange={setExpectedBehavior}
+              onActualBehaviorChange={setActualBehavior}
+              disabled={isBusy}
+            />
+
+            {error ? <p className="text-sm text-destructive">{error}</p> : null}
           </div>
 
-          <IssueDescriptionField
-            locale={locale}
-            value={description}
-            onChange={setDescription}
-            disabled={isBusy}
-          />
-
-          <IssueScreenshotUploader files={screenshots} onChange={setScreenshots} disabled={isBusy} />
-
-          <IssueAdvancedFields
-            priority={priority}
-            reproductionSteps={reproductionSteps}
-            expectedBehavior={expectedBehavior}
-            actualBehavior={actualBehavior}
-            onPriorityChange={setPriority}
-            onReproductionStepsChange={setReproductionSteps}
-            onExpectedBehaviorChange={setExpectedBehavior}
-            onActualBehaviorChange={setActualBehavior}
-            disabled={isBusy}
-          />
-
-          {error ? <p className="text-sm text-destructive">{error}</p> : null}
-
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isBusy}>
+          <DialogFooter className="shrink-0 flex-col gap-3 border-t bg-muted/20 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:flex-row sm:justify-end sm:px-6 sm:py-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={isBusy}
+            >
               {t("form.cancel")}
             </Button>
             <Button type="submit" disabled={isBusy}>
