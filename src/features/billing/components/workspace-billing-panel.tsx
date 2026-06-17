@@ -47,8 +47,15 @@ function formatPeriodEndDate(value: Date | string): string {
 
 export function WorkspaceBillingPanel({ workspaceId, workspaceSlug, locale, data }: Props) {
   const t = useTranslations("billing.workspace");
-  const { entitlements, cancelAtPeriodEnd, currentPeriodEnd, storageOverLimit, seatOverLimit } =
-    data;
+  const {
+    entitlements,
+    cancelAtPeriodEnd,
+    currentPeriodEnd,
+    storageOverLimit,
+    seatOverLimit,
+    canManageBilling,
+    billingHandoffActive,
+  } = data;
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -118,6 +125,14 @@ export function WorkspaceBillingPanel({ workspaceId, workspaceSlug, locale, data
         </div>
       ) : null}
 
+      {billingHandoffActive && !canManageBilling && currentPeriodEnd ? (
+        <div className="rounded-md border border-blue-300 bg-blue-50 p-4 text-sm text-blue-900 dark:border-blue-500/40 dark:bg-blue-500/10 dark:text-blue-100">
+          <p>{t("banners.handoffActive", { date: formatPeriodEndDate(currentPeriodEnd) })}</p>
+          <p className="mt-2">{t("banners.handoffCannotManage")}</p>
+          <p className="mt-2">{t("banners.handoffAfterExpiration")}</p>
+        </div>
+      ) : null}
+
       <BillingPlanHeroBanner
         plan={entitlements.plan}
         effectiveStatus={entitlements.effectiveStatus}
@@ -125,14 +140,20 @@ export function WorkspaceBillingPanel({ workspaceId, workspaceSlug, locale, data
         currentPeriodEnd={currentPeriodEnd}
         pending={pending}
         plansHref={plansHref}
+        canManageBilling={canManageBilling}
         onManageBilling={() => run(() => openWorkspacePortalAction(workspaceId))}
       />
 
       <BillingUsageStatsSection data={data} />
 
-      <BillingSecondaryCardsSection data={data} workspaceId={workspaceId} />
+      <BillingSecondaryCardsSection
+        data={data}
+        workspaceId={workspaceId}
+        workspaceSlug={workspaceSlug}
+        canManageBilling={canManageBilling}
+      />
 
-      {entitlements.plan !== "FREE" ? (
+      {entitlements.plan !== "FREE" && canManageBilling ? (
         <BillingDangerZone
           cancelAtPeriodEnd={cancelAtPeriodEnd}
           scheduledCancelNotice={scheduledCancelNotice}

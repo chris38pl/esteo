@@ -61,6 +61,7 @@
   "account": {
     "workspaces": "Workspaces",
     "createWorkspace": "Create workspace",
+    "yourPlan": "Your plan",
     "workspaceUsage": "Workspace usage",
     "workspaceSettings": "Workspace settings",
     "workspaceMembers": "Workspace members",

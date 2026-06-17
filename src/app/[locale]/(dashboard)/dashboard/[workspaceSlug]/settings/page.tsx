@@ -36,7 +36,18 @@ export default async function WorkspaceSettingsPage({
     redirect(`/${resolvedLocale}/dashboard/${resolved.canonicalSlug}`);
   }
 
-  const { workspace, members, invitations, rules, canInviteMembers } = data;
+  const {
+    workspace,
+    members,
+    invitations,
+    rules,
+    canInviteMembers,
+    transferEligibility,
+    pendingTransfer,
+    deleteEligibility,
+  } = data;
+
+  const isOwner = workspace.ownerId === user.id;
 
   const brandingResult = workspaceBrandingSchema.safeParse(
     workspace.settings?.branding ?? {},
@@ -59,6 +70,7 @@ export default async function WorkspaceSettingsPage({
         initialBranding={initialBranding}
         members={members.map((member) => ({
           id: member.id,
+          userId: member.userId,
           role: member.role,
           user: {
             name: member.user.name,
@@ -73,6 +85,30 @@ export default async function WorkspaceSettingsPage({
         rules={rules}
         canInviteMembers={canInviteMembers}
         locale={resolvedLocale}
+        workspaceSlug={workspace.slug}
+        isOwner={isOwner}
+        ownerUserId={workspace.ownerId}
+        transferEligibility={{
+          eligible: transferEligibility.eligible,
+          blockReason: transferEligibility.blockReason,
+          plan: transferEligibility.plan,
+          cancelAtPeriodEnd: transferEligibility.cancelAtPeriodEnd,
+          currentPeriodEnd: transferEligibility.currentPeriodEnd?.toISOString() ?? null,
+          effectiveStatus: transferEligibility.effectiveStatus,
+        }}
+        pendingTransfer={
+          pendingTransfer
+            ? {
+                id: pendingTransfer.id,
+                toEmail: pendingTransfer.toEmail,
+                expiresAt: pendingTransfer.expiresAt.toISOString(),
+                keepSenderAsMember: pendingTransfer.keepSenderAsMember,
+                planSnapshot: pendingTransfer.planSnapshot,
+                periodEndSnapshot: pendingTransfer.periodEndSnapshot.toISOString(),
+              }
+            : null
+        }
+        deleteEligibility={deleteEligibility}
       />
     </Suspense>
   );

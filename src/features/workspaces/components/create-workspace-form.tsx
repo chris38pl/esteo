@@ -27,6 +27,10 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  FREE_WORKSPACE_COOLDOWN_DAYS,
+  FREE_WORKSPACE_MONTHLY_DELETE_LIMIT,
+} from "@/features/workspaces/lib/free-workspace-policy";
 
 type CreateWorkspaceFormMode = "onboarding" | "new";
 
@@ -40,6 +44,24 @@ const PLAN_OPTIONS: SubscriptionPlan[] = [
   SubscriptionPlan.PRO,
   SubscriptionPlan.BUSINESS,
 ];
+
+function resolveCreateWorkspaceError(
+  result: { error: string; code?: string },
+  tForm: ReturnType<typeof useTranslations<"workspaces.createForm">>,
+): string {
+  if (result.code === "FREE_SLOT_COOLDOWN") {
+    return tForm("errors.freeSlotCooldown", {
+      days: FREE_WORKSPACE_COOLDOWN_DAYS,
+      limit: FREE_WORKSPACE_MONTHLY_DELETE_LIMIT,
+    });
+  }
+
+  if (result.code === "FREE_SLOT_ACTIVE" || result.code === "FREE_SLOT_TAKEN") {
+    return tForm("freeTaken");
+  }
+
+  return result.error;
+}
 
 export function CreateWorkspaceForm({
   locale,
@@ -119,7 +141,7 @@ export function CreateWorkspaceForm({
       );
 
       if (!result.success) {
-        setError(result.error);
+        setError(resolveCreateWorkspaceError(result, tForm));
         return;
       }
 

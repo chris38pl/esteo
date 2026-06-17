@@ -60,7 +60,8 @@
       "wrench": "Hydraulika"
     },
     "errors": {
-      "industryRequired": "Wybierz branżę."
+      "industryRequired": "Wybierz branżę.",
+      "freeSlotCooldown": "Utworzyłeś i usunąłeś już {limit} darmowych przestrzeni w ostatnich {days} dniach. Poczekaj, aż limit się zresetuje, zanim utworzysz kolejną."
     },
     "planLabel": "Plan",
     "plans": {
@@ -95,21 +96,21 @@
     "hubSubtitle": "{email} zaprasza Cię do dołączenia do przestrzeni roboczej w Esteo.",
     "profileTitle": "Moje konto",
     "profileDescription": "Zarządzaj zaproszeniami i ustawieniami konta.",
-    "inboxSectionTitle": "Zaproszenia",
-    "inboxSectionDescription": "Oczekujące zaproszenia do przestrzeni wysłane na Twój adres e-mail.",
+    "inboxSectionTitle": "Zaproszenia i transfery",
+    "inboxSectionDescription": "Oczekujące zaproszenia do przestrzeni oraz transfery własności wysłane na Twój adres e-mail.",
     "otherInvitesTitle": "Pozostałe zaproszenia",
-    "emptyInbox": "Nie masz oczekujących zaproszeń.",
+    "emptyInbox": "Nie masz oczekujących zaproszeń ani transferów własności.",
     "invitedBy": "Zaprosił(a): {name}",
     "expiresAt": "Wygasa {date}",
     "expiresInDays": "{count, plural, one {Wygasa za # dzień} few {Wygasa za # dni} many {Wygasa za # dni} other {Wygasa za # dni}}",
-    "seeAllInvitations": "Zobacz wszystkie zaproszenia",
+    "seeAllInvitations": "Zobacz wszystko",
     "accept": "Akceptuj",
     "accepting": "Akceptowanie…",
     "decline": "Odrzuć",
     "dismissPrompt": "Nie pytaj ponownie",
     "upgradePlan": "Ulepsz plan",
     "contactOwner": "Skontaktuj się z właścicielem przestrzeni, aby dodać więcej miejsc.",
-    "pendingBadge": "{count, plural, one {# oczekujące zaproszenie} few {# oczekujące zaproszenia} many {# oczekujących zaproszeń} other {# oczekujących zaproszeń}}",
+    "pendingBadge": "{count, plural, one {# oczekujące powiadomienie} few {# oczekujące powiadomienia} many {# oczekujących powiadomień} other {# oczekujących powiadomień}}",
     "roles": {
       "MEMBER": "Członek",
       "VIEWER": "Podgląd"
@@ -208,13 +209,20 @@
       "inviteSubmit": "Wyślij zaproszenie",
       "inviting": "Wysyłanie…",
       "revoke": "Anuluj",
+      "remove": "Usuń",
+      "removing": "Usuwanie…",
+      "removeConfirmTitle": "Usunąć {name} z przestrzeni?",
+      "removeConfirmDescription": "Użytkownik utraci dostęp do tej przestrzeni. Jego konto w Esteo pozostanie aktywne.",
+      "removeConfirmAction": "Usuń z przestrzeni",
+      "removeConfirmCancel": "Anuluj",
       "emptyMembers": "Brak członków do wyświetlenia.",
       "inviteUpgradeDescription": "Zaproszenia członków wymagają płatnego planu. Ulepsz plan, aby zapraszać współpracowników do tej przestrzeni.",
       "inviteUpgradeCta": "Ulepsz plan",
       "columns": {
         "member": "Użytkownik",
         "role": "Rola",
-        "email": "E-mail"
+        "email": "E-mail",
+        "actions": "Akcje"
       },
       "roles": {
         "OWNER": "Właściciel",
@@ -305,16 +313,80 @@
         "ruleCounter": "{count} / {max}"
       }
     },
+    "transfer": {
+      "sectionTitle": "Przekaż własność",
+      "sectionDescription": "Przenieś własność przestrzeni na innego użytkownika. Płatności za subskrypcję nie są przenoszone.",
+      "startButton": "Rozpocznij transfer",
+      "openBilling": "Przejdź do płatności",
+      "eligibleHint": "Przestrzeń pozostanie aktywna do {date}.",
+      "pendingTitle": "Oczekujący transfer",
+      "pendingDescription": "Wysłano zaproszenie do transferu na adres {email}. Odbiorca musi zaakceptować, zanim transfer zostanie zakończony.",
+      "pendingExpires": "Wygasa {date}",
+      "cancelPending": "Anuluj transfer",
+      "cancelling": "Anulowanie…",
+      "blocked": {
+        "CANCEL_SUBSCRIPTION_REQUIRED": "Aby przekazać przestrzeń, najpierw anuluj bieżącą subskrypcję. Przestrzeń pozostanie aktywna do końca opłaconego okresu.",
+        "NO_PAID_PERIOD": "Ta przestrzeń nie ma aktywnego opłaconego okresu rozliczeniowego.",
+        "WORKSPACE_NOT_ACTIVE": "Ta przestrzeń nie jest aktywna.",
+        "FREE_PLAN": "Tylko przestrzenie Pro lub Business mogą być przekazane.",
+        "PENDING_TRANSFER_EXISTS": "Transfer własności jest już w toku."
+      },
+      "wizard": {
+        "title": "Przekaż {name}",
+        "description": "Odbiorca stanie się właścicielem przestrzeni po zaakceptowaniu zaproszenia.",
+        "billingNotice": "Ten transfer nie przenosi płatności za subskrypcję. Po zakończeniu opłaconego okresu nowy właściciel będzie musiał wykupić własną subskrypcję, jeśli chce korzystać z funkcji płatnych.",
+        "activeUntil": "Przestrzeń pozostanie aktywna do {date}.",
+        "emailLabel": "E-mail odbiorcy",
+        "emailPlaceholder": "odbiorca@firma.pl",
+        "keepMemberLabel": "Zachowaj mnie jako członka po transferze",
+        "keepMemberHint": "Po przekazaniu własności nadal będziesz mieć dostęp jako członek.",
+        "loseAccessWarning": "Po transferze utracisz dostęp do tej przestrzeni.",
+        "continue": "Dalej",
+        "cancel": "Anuluj",
+        "back": "Wstecz",
+        "confirmTitle": "Potwierdź transfer",
+        "confirmDescription": "Sprawdź dane przed wysłaniem zaproszenia. Będziesz musiał potwierdzić tożsamość.",
+        "confirmRecipient": "Odbiorca:",
+        "confirmPlan": "Plan:",
+        "confirmPeriodEnd": "Aktywna do:",
+        "confirmBillingNotice": "Płatności za subskrypcję nie są przenoszone. Obecna subskrypcja działa do końca opłaconego okresu.",
+        "submit": "Wyślij zaproszenie",
+        "submitting": "Wysyłanie…",
+        "errors": {
+          "generic": "Coś poszło nie tak. Spróbuj ponownie.",
+          "emailRequired": "Podaj adres e-mail odbiorcy."
+        }
+      }
+    },
     "delete": {
       "sectionTitle": "Usuń przestrzeń",
       "sectionDescription": "Trwale usuń tę przestrzeń z konta. Wszyscy członkowie utracą dostęp.",
       "deleteButton": "Usuń przestrzeń",
+      "openBilling": "Przejdź do płatności",
+      "cancelTransfer": "Anuluj transfer",
       "confirmTitle": "Usunąć {name}?",
       "confirmDescription": "Tej operacji nie można cofnąć w aplikacji. Oczekujące zaproszenia zostaną anulowane, a członkowie natychmiast stracą dostęp.",
       "confirmAction": "Usuń przestrzeń",
       "confirmCancel": "Anuluj",
-      "deleting": "Usuwanie…"
+      "deleting": "Usuwanie…",
+      "blocked": {
+        "CANCEL_SUBSCRIPTION_REQUIRED": "Aby usunąć tę przestrzeń, najpierw anuluj bieżącą subskrypcję. Przestrzeń pozostanie aktywna do końca opłaconego okresu.",
+        "PENDING_TRANSFER_EXISTS": "Ta przestrzeń ma oczekujący transfer własności. Anuluj transfer przed usunięciem przestrzeni."
+      }
     }
+  },
+  "transfer": {
+    "inboxTitle": "Transfery własności",
+    "inboxDescription": "Zaakceptuj transfer, aby zostać właścicielem przestrzeni, lub odrzuć, jeśli to pomyłka.",
+    "fromSender": "Od: {name}",
+    "activeUntil": "Przestrzeń pozostanie aktywna do {date}",
+    "expiresAt": "Zaproszenie wygasa {date}",
+    "billingNotice": "Ten transfer nie obejmuje płatności za subskrypcję. Po zakończeniu opłaconego okresu musisz wykupić własną subskrypcję, aby zachować funkcje płatne.",
+    "accept": "Akceptuj transfer",
+    "accepting": "Akceptowanie…",
+    "decline": "Odrzuć",
+    "declining": "Odrzucanie…",
+    "errorGeneric": "Coś poszło nie tak. Spróbuj ponownie."
   },
   "errors": {
     "generic": "Coś poszło nie tak. Spróbuj ponownie."

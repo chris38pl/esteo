@@ -50,7 +50,7 @@ export function ActiveWorkspaceCard({
   const progressFillColor =
     resolvedTheme === "dark" ? "var(--primary)" : appearance.accent;
   const billingHref =
-    workspace.isOwner && workspace.slug
+    workspace.slug && (workspace.isOwner || workspace.isBillingPayer)
       ? dashboardBillingHref(locale, workspace.slug)
       : null;
   const workspaceUsageHref = workspace.slug

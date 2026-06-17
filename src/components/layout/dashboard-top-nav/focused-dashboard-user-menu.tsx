@@ -1,9 +1,10 @@
 "use client";
 
 import { useContext } from "react";
-import { ChevronDown, LogOut } from "lucide-react";
+import { ChevronDown, ChevronRight, LogOut, User } from "lucide-react";
 import { SignOutButton } from "@clerk/nextjs";
-import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 
 import { UserAvatar } from "@/components/avatars/user-avatar";
 import {
@@ -17,6 +18,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { dashboardAccountHref } from "@/lib/dashboard-routes";
+import { isLocale, type Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
 export function FocusedDashboardUserMenu({
@@ -27,12 +30,19 @@ export function FocusedDashboardUserMenu({
   currentUser?: CurrentUserProfile;
 }) {
   const t = useTranslations("navbar.userMenu");
+  const localeFromHook = useLocale();
   const workspaceContext = useContext(WorkspaceContext);
   const currentUser = currentUserProp ?? workspaceContext?.currentUser;
 
   if (!currentUser) {
     return null;
   }
+
+  const locale: Locale =
+    workspaceContext?.locale ?? (isLocale(localeFromHook) ? localeFromHook : "pl");
+  const accountHref = dashboardAccountHref(locale);
+  const pendingInvitationCount = workspaceContext?.pendingInvitationCount ?? 0;
+  const showBadge = pendingInvitationCount > 0;
 
   const compact = variant === "compact";
 
@@ -100,6 +110,18 @@ export function FocusedDashboardUserMenu({
         <DropdownMenuSeparator className="mx-0" />
 
         <div className="py-1">
+          <DropdownMenuItem asChild className="gap-2.5 px-4 py-2 text-sm">
+            <Link href={accountHref}>
+              <User className="size-4 text-muted-foreground" strokeWidth={1.75} aria-hidden />
+              <span className="min-w-0 flex-1 truncate">{t("myProfile")}</span>
+              {showBadge ? (
+                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                  {pendingInvitationCount}
+                </span>
+              ) : null}
+              <ChevronRight className="size-4 text-muted-foreground/70" strokeWidth={2} aria-hidden />
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuItem asChild className="gap-2.5 px-4 py-2 text-sm">
             <SignOutButton>
               <button type="button" className="flex w-full items-center gap-2.5">

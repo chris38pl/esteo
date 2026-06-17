@@ -2,6 +2,10 @@ import type { Prisma, SubscriptionPlan, SubscriptionStatus } from "@prisma/clien
 
 import { prisma } from "@/db/client";
 import {
+  FREE_WORKSPACE_COOLDOWN_DAYS,
+  FREE_WORKSPACE_MONTHLY_DELETE_LIMIT,
+} from "@/features/workspaces/lib/free-workspace-policy";
+import {
   assertCanCreateEstimateInWorkspace,
   assertCanUseAiAssistantInWorkspace,
   assertWorkspaceHasSeat,
@@ -39,7 +43,7 @@ export const PLAN_ENTITLEMENTS: Record<SubscriptionPlan, PlanEntitlements> = {
     maxUndoSteps: 3,
   },
   BUSINESS: {
-    maxInvitedSeats: null,
+    maxInvitedSeats: 4,
     maxEstimatesPerMonth: null,
     maxAiAssistantCallsPerMonth: null,
     maxUndoSteps: 3,
@@ -61,9 +65,16 @@ export async function countOwnedWorkspaces(userId: string): Promise<number> {
   });
 }
 
-/** Days after deleting a free workspace before the owner may create another (anti-farming). */
-export const FREE_WORKSPACE_COOLDOWN_DAYS = 30;
+/** Rolling window + delete limit for free-workspace anti-farming policy. */
+export {
+  FREE_WORKSPACE_COOLDOWN_DAYS,
+  FREE_WORKSPACE_MONTHLY_DELETE_LIMIT,
+} from "@/features/workspaces/lib/free-workspace-policy";
 
+/**
+ * Counts FREE workspaces the owner soft-deleted within the rolling anti-farming window.
+ * Creation is blocked once this reaches {@link FREE_WORKSPACE_MONTHLY_DELETE_LIMIT}.
+ */
 export async function countRecentDeletedFreeWorkspaces(
   ownerUserId: string,
   tx: Prisma.TransactionClient = prisma,
@@ -138,15 +149,15 @@ export async function assertCanCreateFreeWorkspace(
   if (existing > 0) {
     throw new EntitlementError(
       "You already have an active free workspace. Upgrade or remove it to create another.",
-      "FREE_SLOT_TAKEN",
+      "FREE_SLOT_ACTIVE",
     );
   }
 
   const recentlyDeleted = await countRecentDeletedFreeWorkspaces(ownerUserId, tx);
-  if (recentlyDeleted > 0) {
+  if (recentlyDeleted >= FREE_WORKSPACE_MONTHLY_DELETE_LIMIT) {
     throw new EntitlementError(
-      `Your free workspace slot is on cooldown for ${FREE_WORKSPACE_COOLDOWN_DAYS} days after deletion.`,
-      "FREE_SLOT_TAKEN",
+      `You have reached the limit of ${FREE_WORKSPACE_MONTHLY_DELETE_LIMIT} free workspaces deleted in the last ${FREE_WORKSPACE_COOLDOWN_DAYS} days.`,
+      "FREE_SLOT_COOLDOWN",
     );
   }
 }

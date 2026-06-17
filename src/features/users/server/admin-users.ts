@@ -183,12 +183,13 @@ export async function listAdminUsersPaginated(
   const where =
     search && search.length > 0
       ? {
+          deletedAt: null,
           OR: [
             { email: { contains: search, mode: "insensitive" as const } },
             { name: { contains: search, mode: "insensitive" as const } },
           ],
         }
-      : {};
+      : { deletedAt: null };
 
   const take = params.pageSize;
 

@@ -1,4 +1,4 @@
-import type { User, WorkspaceInvitation, WorkspaceRule } from "@prisma/client";
+import type { User } from "@prisma/client";
 
 import {
   findWorkspaceById,
@@ -8,14 +8,23 @@ import {
   getWorkspaceMembersForUi,
   listWorkspaceRules,
 } from "@/features/workspaces/server/service";
+import { getPendingWorkspaceTransfer } from "@/features/workspaces/server/ownership-transfer";
+import {
+  getTransferEligibilitySnapshot,
+  loadLiveSubscriptionForTransfer,
+} from "@/features/workspaces/server/transfer-eligibility";
+import { evaluateWorkspaceDeleteEligibility } from "@/features/workspaces/lib/workspace-delete-eligibility";
 import { canInviteWorkspaceMembers } from "@/server/permissions/entitlements";
 
 export type WorkspaceSettingsPageData = {
   workspace: NonNullable<Awaited<ReturnType<typeof findWorkspaceById>>>;
   members: Awaited<ReturnType<typeof getWorkspaceMembersForUi>>;
-  invitations: WorkspaceInvitation[];
-  rules: WorkspaceRule[];
+  invitations: Awaited<ReturnType<typeof listPendingWorkspaceInvitations>>;
+  rules: Awaited<ReturnType<typeof listWorkspaceRules>>;
   canInviteMembers: boolean;
+  transferEligibility: Awaited<ReturnType<typeof getTransferEligibilitySnapshot>>;
+  pendingTransfer: Awaited<ReturnType<typeof getPendingWorkspaceTransfer>>;
+  deleteEligibility: ReturnType<typeof evaluateWorkspaceDeleteEligibility>;
 };
 
 export async function getWorkspaceSettingsPageData(
@@ -28,12 +37,37 @@ export async function getWorkspaceSettingsPageData(
     return null;
   }
 
-  const [members, invitations, rules, canInviteMembers] = await Promise.all([
+  const [
+    members,
+    invitations,
+    rules,
+    canInviteMembers,
+    transferEligibility,
+    pendingTransfer,
+    subscription,
+  ] = await Promise.all([
     getWorkspaceMembersForUi(user, workspaceId),
     listPendingWorkspaceInvitations(workspaceId),
     listWorkspaceRules(user, workspaceId),
     canInviteWorkspaceMembers(workspaceId),
+    getTransferEligibilitySnapshot(workspaceId),
+    getPendingWorkspaceTransfer(workspaceId),
+    loadLiveSubscriptionForTransfer(workspaceId),
   ]);
 
-  return { workspace, members, invitations, rules, canInviteMembers };
+  const deleteEligibility = evaluateWorkspaceDeleteEligibility({
+    subscription,
+    hasPendingTransfer: Boolean(pendingTransfer),
+  });
+
+  return {
+    workspace,
+    members,
+    invitations,
+    rules,
+    canInviteMembers,
+    transferEligibility,
+    pendingTransfer,
+    deleteEligibility,
+  };
 }

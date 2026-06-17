@@ -18,6 +18,12 @@ import { WorkspaceSettingsForm } from "@/features/workspaces/components/workspac
 import { WorkspaceSettingsRulesTab } from "@/features/workspaces/components/workspace-settings-rules-tab";
 import { WorkspaceSettingsUsersTab } from "@/features/workspaces/components/workspace-settings-users-tab";
 import { WorkspaceThemePicker } from "@/features/workspaces/components/workspace-theme-picker";
+import { WorkspaceSettingsTransferSection } from "@/features/workspaces/components/workspace-settings-transfer-section";
+import type {
+  PendingOutboundTransferView,
+  TransferEligibilityView,
+} from "@/features/workspaces/components/transfer-types";
+import type { WorkspaceDeleteEligibility } from "@/features/workspaces/lib/workspace-delete-eligibility";
 import type { AvatarPreset } from "@/components/avatars/user-avatar";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
@@ -26,6 +32,7 @@ type SettingsTab = "general" | "company" | "users" | "rules";
 
 type MemberRow = {
   id: string;
+  userId: string;
   role: "OWNER" | "MEMBER" | "VIEWER";
   user: {
     name: string | null;
@@ -61,6 +68,12 @@ export function WorkspaceSettingsPanel({
   initialBranding,
   canInviteMembers,
   locale,
+  workspaceSlug,
+  isOwner,
+  ownerUserId,
+  transferEligibility,
+  pendingTransfer,
+  deleteEligibility,
 }: {
   workspaceId: string;
   workspaceIndustry: WorkspaceIndustry;
@@ -78,6 +91,12 @@ export function WorkspaceSettingsPanel({
   initialBranding: WorkspaceBranding | null;
   canInviteMembers: boolean;
   locale: Locale;
+  workspaceSlug: string;
+  isOwner: boolean;
+  ownerUserId: string;
+  transferEligibility: TransferEligibilityView;
+  pendingTransfer: PendingOutboundTransferView | null;
+  deleteEligibility: WorkspaceDeleteEligibility;
 }) {
   const t = useTranslations("workspaces.settings");
   const router = useRouter();
@@ -164,10 +183,22 @@ export function WorkspaceSettingsPanel({
               onPendingChange={setThemePickerDisabled}
               locale={locale}
             />
+            {isOwner ? (
+              <WorkspaceSettingsTransferSection
+                workspaceId={workspaceId}
+                workspaceName={initialName}
+                workspaceSlug={workspaceSlug}
+                eligibility={transferEligibility}
+                pendingTransfer={pendingTransfer}
+                locale={locale}
+              />
+            ) : null}
             <WorkspaceSettingsDeleteSection
               workspaceId={workspaceId}
               workspaceName={initialName}
               locale={locale}
+              workspaceSlug={workspaceSlug}
+              deleteEligibility={deleteEligibility}
             />
           </>
         ) : null}
@@ -190,6 +221,8 @@ export function WorkspaceSettingsPanel({
             members={members}
             invitations={invitations}
             canInviteMembers={canInviteMembers}
+            isOwner={isOwner}
+            ownerUserId={ownerUserId}
             locale={locale}
           />
         ) : null}

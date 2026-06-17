@@ -1,19 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { BarChart3, Check, LogOut, Plus, Settings, Users } from "lucide-react";
+import { BarChart3, Check, LogOut, Plus, Settings, Sparkles, Users } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { WorkspaceAvatar } from "@/components/avatars/workspace-avatar";
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { resolveBillingPlanCode } from "@/features/billing/billing-sidebar-state";
 import { LeaveWorkspaceDialog } from "@/features/workspaces/components/leave-workspace-dialog";
+import { dashboardBillingHref } from "@/lib/dashboard-routes";
+import { cn } from "@/lib/utils";
 
 export function WorkspaceSwitcherMenuContent({
   side = "bottom",
@@ -24,14 +28,27 @@ export function WorkspaceSwitcherMenuContent({
 }) {
   const t = useTranslations("sidebar");
   const tWorkspaces = useTranslations("workspaces");
+  const tBilling = useTranslations("billing.workspace.planHero");
   const {
     workspaces,
     activeWorkspace,
+    billingSidebarState,
     canCreateAdditionalWorkspace,
     locale,
     switchWorkspace,
   } = useWorkspaceContext();
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+
+  const planLabel = tBilling(`planName.${resolveBillingPlanCode(billingSidebarState)}`);
+  const billingHref =
+    activeWorkspace?.isOwner && activeWorkspace.slug
+      ? dashboardBillingHref(locale, activeWorkspace.slug)
+      : null;
+  const planBadgeClassName = cn(
+    "ml-auto shrink-0 rounded-md px-1.5 py-px",
+    "text-[10px] font-semibold uppercase tracking-wide",
+    "bg-muted/80 text-foreground/80 ring-1 ring-border/50",
+  );
 
   return (
     <>
@@ -93,6 +110,30 @@ export function WorkspaceSwitcherMenuContent({
 
       <DropdownMenuSeparator className="bg-[color:var(--sidebar-divider)]" />
 
+      {activeWorkspace ? (
+        billingHref ? (
+          <DropdownMenuItem asChild className="gap-2 text-xs">
+            <Link href={billingHref}>
+              <Sparkles className="size-3.5 text-muted-foreground" />
+              <span className="min-w-0">{t("account.yourPlan")}</span>
+              <Badge variant="outline" className={planBadgeClassName}>
+                {planLabel}
+              </Badge>
+            </Link>
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem
+            className="gap-2 text-xs"
+            onSelect={(event) => event.preventDefault()}
+          >
+            <Sparkles className="size-3.5 text-muted-foreground" />
+            <span className="min-w-0">{t("account.yourPlan")}</span>
+            <Badge variant="outline" className={planBadgeClassName}>
+              {planLabel}
+            </Badge>
+          </DropdownMenuItem>
+        )
+      ) : null}
       {activeWorkspace ? (
         <DropdownMenuItem asChild className="gap-2 text-xs">
           <Link href={`/${locale}/dashboard/${activeWorkspace.slug}/workspace-usage`}>

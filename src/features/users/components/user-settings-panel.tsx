@@ -9,7 +9,9 @@ import { SettingsUpgradeBanner } from "@/features/users/components/settings-upgr
 import { UserSettingsBillingTab } from "@/features/users/components/user-settings-billing-tab";
 import { UserSettingsNotificationsTab } from "@/features/users/components/user-settings-notifications-tab";
 import type { OwnedWorkspaceBlockingDeletion } from "@/features/users/server/account-deletion-guard";
+import type { UserBillingInvoiceItem } from "@/features/users/server/get-user-billing-invoices";
 import type { ReceivedInvitationView } from "@/features/workspaces/components/invitation-types";
+import type { ReceivedOwnershipTransferView } from "@/features/workspaces/components/transfer-types";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -28,12 +30,16 @@ export function UserSettingsPanel({
   locale,
   avatarPreset,
   invitations,
+  transfers,
   ownedWorkspacesBlockingDeletion,
+  invoices,
 }: {
   locale: Locale;
   avatarPreset: AvatarPreset | null;
   invitations: ReceivedInvitationView[];
+  transfers: ReceivedOwnershipTransferView[];
   ownedWorkspacesBlockingDeletion: OwnedWorkspaceBlockingDeletion[];
+  invoices: UserBillingInvoiceItem[];
 }) {
   const tSidebar = useTranslations("sidebar.settings");
   const tInvitations = useTranslations("workspaces.invitations");
@@ -99,10 +105,13 @@ export function UserSettingsPanel({
           locale={locale}
           avatarPreset={avatarPreset}
           invitations={invitations}
+          transfers={transfers}
           ownedWorkspacesBlockingDeletion={ownedWorkspacesBlockingDeletion}
         />
       ) : null}
-      {activeTab === "billing" ? <UserSettingsBillingTab /> : null}
+      {activeTab === "billing" ? (
+        <UserSettingsBillingTab invoices={invoices} locale={locale} />
+      ) : null}
       {activeTab === "notifications" ? <UserSettingsNotificationsTab /> : null}
     </main>
   );

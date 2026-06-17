@@ -1,4 +1,5 @@
 import { prisma } from "@/db/client";
+import { resolveEffectivePayerUserId } from "@/features/billing/lib/billing-permissions-logic";
 import { PermissionError, WorkspaceError } from "@/server/permissions/errors";
 import { requireRole } from "@/server/permissions/require-workspace";
 import type { User } from "@prisma/client";
@@ -26,8 +27,11 @@ export async function getBillingTransferState(workspaceId: string): Promise<{
     throw new WorkspaceError("Workspace billing not found.");
   }
 
-  const payerUserId = workspace.billingAccount.payerUserId;
-  const differs = payerUserId !== null && payerUserId !== workspace.ownerId;
+  const payerUserId = resolveEffectivePayerUserId(
+    workspace.billingAccount.payerUserId,
+    workspace.ownerId,
+  );
+  const differs = payerUserId !== workspace.ownerId;
 
   return {
     ownerId: workspace.ownerId,

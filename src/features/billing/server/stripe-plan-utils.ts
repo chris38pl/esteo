@@ -2,6 +2,7 @@ import type { SubscriptionPlan } from "@prisma/client";
 import type Stripe from "stripe";
 
 import { BillingPlanResolutionError } from "@/features/billing/server/billing-errors";
+import { addonKeyFromPriceId } from "@/server/billing/addon-catalog";
 import { WorkspaceError } from "@/server/permissions/errors";
 
 const STRIPE_PRICE_TO_PLAN: Record<string, SubscriptionPlan> = {};
@@ -53,6 +54,24 @@ export function planFromPriceId(priceId: string | null): SubscriptionPlan | null
   return STRIPE_PRICE_TO_PLAN[priceId] ?? null;
 }
 
+export function findBasePlanSubscriptionItem(
+  subscription: Stripe.Subscription,
+): Stripe.SubscriptionItem | undefined {
+  for (const item of subscription.items.data) {
+    const priceId = extractStripePriceId(item);
+    if (priceId && !addonKeyFromPriceId(priceId) && planFromPriceId(priceId)) {
+      return item;
+    }
+  }
+
+  const first = subscription.items.data[0];
+  if (first && !addonKeyFromPriceId(extractStripePriceId(first))) {
+    return first;
+  }
+
+  return undefined;
+}
+
 export function resolvePlanFromStripeSubscription(
   subscription: Stripe.Subscription,
   options?: { planHint?: string | null },
@@ -71,7 +90,7 @@ export function resolvePlanFromStripeSubscription(
     return metadataPlan;
   }
 
-  const priceId = extractStripePriceId(subscription.items.data[0]);
+  const priceId = extractStripePriceId(findBasePlanSubscriptionItem(subscription));
   const mappedPlan = priceId ? STRIPE_PRICE_TO_PLAN[priceId] : null;
   if (mappedPlan) {
     return mappedPlan;

@@ -11,3 +11,9 @@ export type BillingSidebarState =
       plan: "BUSINESS";
       status: SubscriptionStatus;
     };
+
+export function resolveBillingPlanCode(
+  state: BillingSidebarState,
+): "FREE" | "PRO" | "BUSINESS" {
+  return state.variant === "status" ? state.plan : state.currentPlan;
+}

@@ -1,5 +1,7 @@
 import { toReceivedInvitationView } from "@/features/workspaces/components/invitation-types";
+import { toReceivedOwnershipTransferView } from "@/features/workspaces/components/transfer-types";
 import { listReceivedInvitations } from "@/features/workspaces/server/invitation-inbox";
+import { listReceivedOwnershipTransfers } from "@/features/workspaces/server/transfer-inbox";
 import { getOwnedWorkspacesBlockingDeletion } from "@/features/users/server/account-deletion-guard";
 import { isAvatarPreset } from "@/lib/avatars/user-avatar-presets";
 import type { AvatarPreset } from "@/components/avatars/user-avatar";
@@ -18,8 +20,9 @@ export async function getUserSettingsPageData(user: {
   avatarPreset: string | null;
   avatarSource: AvatarSource;
 }) {
-  const [invitations, ownedWorkspacesBlockingDeletion] = await Promise.all([
+  const [invitations, transfers, ownedWorkspacesBlockingDeletion] = await Promise.all([
     listReceivedInvitations(user.email),
+    listReceivedOwnershipTransfers(user.email),
     getOwnedWorkspacesBlockingDeletion(user.id),
   ]);
 
@@ -30,6 +33,7 @@ export async function getUserSettingsPageData(user: {
       avatarSource: user.avatarSource,
     } satisfies UserSettingsPageData,
     invitations: invitations.map(toReceivedInvitationView),
+    transfers: transfers.map(toReceivedOwnershipTransferView),
     ownedWorkspacesBlockingDeletion,
   };
 }

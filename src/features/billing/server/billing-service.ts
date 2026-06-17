@@ -261,6 +261,7 @@ export async function createCheckout(params: {
 
 
 export { changeWorkspaceSubscriptionPlan, type WorkspacePlanChangeResult };
+export { changeWorkspaceAddonQuantity } from "@/features/billing/server/addon-change";
 
 
 

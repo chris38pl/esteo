@@ -38,6 +38,7 @@
     "voice-intake:benchmark": "tsx scripts/voice-intake-benchmark/run-benchmark.mjs",
     "test:voice-intake-helpers": "tsx scripts/test-voice-intake-helpers.ts",
     "test:workspace-billing": "tsx scripts/verify-workspace-billing.ts",
+    "test:workspace-transfer": "tsx scripts/verify-workspace-transfer.ts",
     "dev:list-workspaces": "tsx scripts/dev-billing/list-workspaces.ts",
     "dev:workspace-state": "tsx scripts/dev-billing/print-workspace-state.ts",
     "dev:set-workspace-plan": "tsx scripts/dev-billing/set-workspace-plan.ts",

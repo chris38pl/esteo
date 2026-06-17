@@ -10,6 +10,7 @@ import { IssueDescriptionField } from "@/features/issues/components/issue-descri
 import { IssueFormSelect, IssueFormTextInput } from "@/features/issues/components/issue-form-fields";
 import { IssueScreenshotUploader } from "@/features/issues/components/issue-screenshot-uploader";
 import { collectIssueMetadata } from "@/features/issues/lib/collect-issue-metadata";
+import { slugifyIssueTitle } from "@/features/issues/lib/slugify-issue-title";
 import { createIssueSchema } from "@/features/issues/schemas/issue";
 import { useIssueScreenshotUpload } from "@/features/issues/hooks/use-issue-screenshot-upload";
 import { createIssueAction } from "@/features/issues/server/actions";
@@ -27,6 +28,14 @@ import type { Locale } from "@/lib/locale";
 type IssueType = "BUG" | "UX" | "FEATURE" | "AI_EXTRACTION" | "PERFORMANCE";
 type IssuePriority = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 
+export type CreatedIssueSummary = {
+  number: number;
+  title: string;
+  type: IssueType;
+  priority: IssuePriority;
+  folderSlug: string;
+};
+
 export function ReportIssueDialog({
   open,
   onOpenChange,
@@ -38,7 +47,7 @@ export function ReportIssueDialog({
   onOpenChange: (open: boolean) => void;
   locale: Locale;
   workspaceSlug: string | null;
-  onSuccess?: () => void;
+  onSuccess?: (issue: CreatedIssueSummary) => void;
 }) {
   const t = useTranslations("issues");
   const [pending, startTransition] = useTransition();
@@ -91,26 +100,49 @@ export function ReportIssueDialog({
     }
 
     startTransition(async () => {
-      const result = await createIssueAction(parsed.data, locale);
+      try {
+        const result = await createIssueAction(parsed.data, locale);
 
-      if (!result.success) {
-        setError(result.error);
-        return;
-      }
-
-      if (screenshots.length > 0) {
-        const uploadResult = await uploadScreenshots(result.data.issueId, screenshots);
-
-        if (!uploadResult.success) {
-          setError(uploadResult.error ?? t("form.uploadError"));
+        if (!result.success) {
+          setError(result.error);
           return;
         }
-      }
 
-      toast.success(t("form.success", { number: result.data.number }));
-      resetForm();
-      onOpenChange(false);
-      onSuccess?.();
+        const createdIssue: CreatedIssueSummary = {
+          number: result.data.number,
+          title: parsed.data.title,
+          type: parsed.data.type,
+          priority: parsed.data.priority,
+          folderSlug: slugifyIssueTitle(parsed.data.title),
+        };
+
+        if (screenshots.length > 0) {
+          const uploadResult = await uploadScreenshots(result.data.issueId, screenshots);
+
+          if (!uploadResult.success) {
+            toast.warning(t("form.partialSuccess", { number: createdIssue.number }));
+            resetForm();
+            onOpenChange(false);
+            try {
+              onSuccess?.(createdIssue);
+            } catch {
+              // Ignore refresh errors from parent callback.
+            }
+            return;
+          }
+        }
+
+        toast.success(t("form.success", { number: createdIssue.number }));
+        resetForm();
+        onOpenChange(false);
+        try {
+          onSuccess?.(createdIssue);
+        } catch {
+          // Ignore refresh errors from parent callback.
+        }
+      } catch {
+        setError(t("form.unexpectedError"));
+      }
     });
   }
 

@@ -1,4 +1,5 @@
 import { currentUser } from "@clerk/nextjs/server";
+import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
 import type { AvatarSource, User } from "@prisma/client";
 import { cache } from "react";
 
@@ -57,7 +58,18 @@ function resolveAvatarFields(
 }
 
 export const syncUserFromClerk = cache(async (): Promise<User | null> => {
-  const clerkUser = await currentUser();
+  let clerkUser: Awaited<ReturnType<typeof currentUser>>;
+  try {
+    clerkUser = await currentUser();
+  } catch (error) {
+    if (
+      isClerkAPIResponseError(error) &&
+      (error.status === 404 || error.errors?.[0]?.code === "resource_not_found")
+    ) {
+      return null;
+    }
+    throw error;
+  }
 
   if (!clerkUser) {
     return null;
@@ -74,8 +86,12 @@ export const syncUserFromClerk = cache(async (): Promise<User | null> => {
   try {
     const existing = await prisma.user.findUnique({
       where: { clerkId: clerkUser.id },
-      select: { avatarPreset: true, avatarSource: true },
+      select: { avatarPreset: true, avatarSource: true, deletedAt: true },
     });
+
+    if (existing?.deletedAt) {
+      return null;
+    }
 
     const avatarFields = resolveAvatarFields(clerkUser, existing);
 
@@ -93,6 +109,11 @@ export const syncUserFromClerk = cache(async (): Promise<User | null> => {
         ...avatarFields,
       },
     });
+
+    const { linkPendingTransfersToUser } = await import(
+      "@/features/workspaces/server/ownership-transfer"
+    );
+    await linkPendingTransfersToUser(user.id, email);
 
     // Billing is provisioned per workspace at creation time, not per user at login.
     return user;

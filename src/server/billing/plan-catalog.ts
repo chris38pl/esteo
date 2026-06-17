@@ -46,7 +46,7 @@ export const PLAN_CATALOG: Record<string, PlanLimits> = {
     maxStorageBytes: 1 * GB,
   },
   BUSINESS_2026: {
-    maxInvitedSeats: null,
+    maxInvitedSeats: 4,
     maxEstimatesPerMonth: null,
     maxAiAssistantCallsPerMonth: null,
     maxUndoSteps: 3,

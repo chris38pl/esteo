@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -10,7 +10,10 @@ import { IssuesListFilterSheet } from "@/features/issues/components/issues-list-
 import { IssuesListHeroCard } from "@/features/issues/components/issues-list-hero-card";
 import { IssuesListTable } from "@/features/issues/components/issues-list-table";
 import { IssuesListToolbar } from "@/features/issues/components/issues-list-toolbar";
-import { ReportIssueDialog } from "@/features/issues/components/report-issue-dialog";
+import {
+  ReportIssueDialog,
+  type CreatedIssueSummary,
+} from "@/features/issues/components/report-issue-dialog";
 import {
   EMPTY_ISSUES_LIST_DATE_RANGE,
   EMPTY_ISSUES_LIST_FILTER,
@@ -44,6 +47,38 @@ export function AdminIssuesListPanel({
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+  const [issuesList, setIssuesList] = useState(issues);
+
+  useEffect(() => {
+    setIssuesList(issues);
+  }, [issues]);
+
+  function handleIssueCreated(created: CreatedIssueSummary) {
+    setIssuesList((current) => {
+      if (current.some((issue) => issue.number === created.number)) {
+        return current;
+      }
+
+      const optimisticIssue: AdminIssueListItem = {
+        number: created.number,
+        title: created.title,
+        type: created.type,
+        priority: created.priority,
+        status: "OPEN",
+        createdAt: new Date(),
+        folderSlug: created.folderSlug,
+        attachmentCount: 0,
+      };
+
+      return [optimisticIssue, ...current];
+    });
+
+    try {
+      router.refresh();
+    } catch {
+      // Keep optimistic row if refresh fails.
+    }
+  }
 
   const filterActive = hasActiveIssuesListFilters(listFilter);
   const dateRangeActive = hasActiveIssuesDateRange(dateRange);
@@ -51,21 +86,21 @@ export function AdminIssuesListPanel({
     searchQuery.trim().length > 0 || filterActive || dateRangeActive;
 
   const filteredIssues = useMemo(() => {
-    return issues.filter((issue) =>
+    return issuesList.filter((issue) =>
       issueIsVisible(issue, {
         searchQuery,
         filter: listFilter,
         dateRange,
       }),
     );
-  }, [issues, searchQuery, listFilter, dateRange]);
+  }, [issuesList, searchQuery, listFilter, dateRange]);
 
   const totalCount = filteredIssues.length;
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const safePage = Math.min(page, totalPages);
   const pageIssues = filteredIssues.slice((safePage - 1) * pageSize, safePage * pageSize);
 
-  const hasIssues = issues.length > 0;
+  const hasIssues = issuesList.length > 0;
   const hasFilteredResults = filteredIssues.length > 0;
 
   return (
@@ -132,7 +167,7 @@ export function AdminIssuesListPanel({
       <IssuesListFilterSheet
         open={filterSheetOpen}
         onOpenChange={setFilterSheetOpen}
-        issues={issues}
+        issues={issuesList}
         searchQuery={searchQuery}
         appliedDateRange={dateRange}
         appliedFilter={listFilter}
@@ -147,7 +182,7 @@ export function AdminIssuesListPanel({
         onOpenChange={setReportDialogOpen}
         locale={locale}
         workspaceSlug={activeWorkspace?.slug ?? null}
-        onSuccess={() => router.refresh()}
+        onSuccess={handleIssueCreated}
       />
     </div>
   );

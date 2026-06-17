@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { INVITE_ROLES } from "@/features/workspaces/lib/invite-role";
+import { RemoveWorkspaceMemberDialog } from "@/features/workspaces/components/remove-workspace-member-dialog";
 import {
   inviteWorkspaceMemberAction,
   revokeWorkspaceInvitationAction,
@@ -32,6 +33,7 @@ import { cn } from "@/lib/utils";
 
 type MemberRow = {
   id: string;
+  userId: string;
   role: WorkspaceRole;
   user: {
     name: string | null;
@@ -39,6 +41,11 @@ type MemberRow = {
     avatarUrl: string | null;
     avatarPreset: AvatarPreset | null;
   };
+};
+
+type MemberToRemove = {
+  userId: string;
+  name: string;
 };
 
 const selectClassName = cn(
@@ -51,12 +58,16 @@ export function WorkspaceSettingsUsersTab({
   members,
   invitations,
   canInviteMembers,
+  isOwner,
+  ownerUserId,
   locale,
 }: {
   workspaceId: string;
   members: MemberRow[];
   invitations: WorkspaceInvitation[];
   canInviteMembers: boolean;
+  isOwner: boolean;
+  ownerUserId: string;
   locale: Locale;
 }) {
   const t = useTranslations("workspaces.settings.users");
@@ -69,6 +80,7 @@ export function WorkspaceSettingsUsersTab({
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<InviteRole>("MEMBER");
   const [error, setError] = useState<string | null>(null);
+  const [memberToRemove, setMemberToRemove] = useState<MemberToRemove | null>(null);
   const [isPending, startTransition] = useTransition();
 
   function handleInvite(event: React.FormEvent<HTMLFormElement>) {
@@ -123,42 +135,66 @@ export function WorkspaceSettingsUsersTab({
               <TableRow>
                 <TableHead>{t("columns.member")}</TableHead>
                 <TableHead>{t("columns.role")}</TableHead>
+                {isOwner ? <TableHead className="w-[100px]">{t("columns.actions")}</TableHead> : null}
               </TableRow>
             </TableHeader>
             <TableBody>
               {members.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={2} className="text-muted-foreground">
+                  <TableCell colSpan={isOwner ? 3 : 2} className="text-muted-foreground">
                     {t("emptyMembers")}
                   </TableCell>
                 </TableRow>
               ) : (
-                members.map((member) => (
-                  <TableRow key={member.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <UserAvatar
-                          imageUrl={member.user.avatarUrl}
-                          avatarPreset={member.user.avatarPreset}
-                          size={32}
-                        />
-                        <div className="min-w-0">
-                          <p className="truncate font-medium">
-                            {member.user.name ?? member.user.email}
-                          </p>
-                          {member.user.name ? (
-                            <p className="truncate text-xs text-muted-foreground">
-                              {member.user.email}
-                            </p>
-                          ) : null}
+                members.map((member) => {
+                  const canRemove = isOwner && member.userId !== ownerUserId;
+                  const displayName = member.user.name ?? member.user.email;
+
+                  return (
+                    <TableRow key={member.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <UserAvatar
+                            imageUrl={member.user.avatarUrl}
+                            avatarPreset={member.user.avatarPreset}
+                            size={32}
+                          />
+                          <div className="min-w-0">
+                            <p className="truncate font-medium">{displayName}</p>
+                            {member.user.name ? (
+                              <p className="truncate text-xs text-muted-foreground">
+                                {member.user.email}
+                              </p>
+                            ) : null}
+                          </div>
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">{t(`roles.${member.role}`)}</Badge>
-                    </TableCell>
-                  </TableRow>
-                ))
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{t(`roles.${member.role}`)}</Badge>
+                      </TableCell>
+                      {isOwner ? (
+                        <TableCell>
+                          {canRemove ? (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              disabled={isPending}
+                              onClick={() =>
+                                setMemberToRemove({
+                                  userId: member.userId,
+                                  name: displayName,
+                                })
+                              }
+                            >
+                              {t("remove")}
+                            </Button>
+                          ) : null}
+                        </TableCell>
+                      ) : null}
+                    </TableRow>
+                  );
+                })
               )}
             </TableBody>
           </Table>
@@ -185,15 +221,17 @@ export function WorkspaceSettingsUsersTab({
                       <Badge variant="outline">{t(`roles.${invitation.role}`)}</Badge>
                     </TableCell>
                     <TableCell>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        disabled={isPending}
-                        onClick={() => handleRevoke(invitation.id)}
-                      >
-                        {t("revoke")}
-                      </Button>
+                      {isOwner ? (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          disabled={isPending}
+                          onClick={() => handleRevoke(invitation.id)}
+                        >
+                          {t("revoke")}
+                        </Button>
+                      ) : null}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -266,6 +304,21 @@ export function WorkspaceSettingsUsersTab({
           </div>
         )}
       </div>
+
+      {memberToRemove ? (
+        <RemoveWorkspaceMemberDialog
+          open
+          onOpenChange={(open) => {
+            if (!open) {
+              setMemberToRemove(null);
+            }
+          }}
+          workspaceId={workspaceId}
+          memberName={memberToRemove.name}
+          targetUserId={memberToRemove.userId}
+          locale={locale}
+        />
+      ) : null}
     </div>
   );
 }

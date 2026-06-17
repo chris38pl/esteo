@@ -31,6 +31,7 @@ import {
   leaveWorkspace,
   listReceivedInvitationsForUser,
   listWorkspaceRules,
+  removeWorkspaceMember,
   revokeWorkspaceInvitation,
   updateWorkspaceCompanyProfile,
   updateWorkspaceDetails,
@@ -40,7 +41,16 @@ import {
 } from "@/features/workspaces/server/service";
 import type { Locale } from "@/lib/locale";
 import { requireAuth } from "@/server/auth/require-auth";
-import { hasPendingInvitations } from "@/features/workspaces/server/invitation-inbox";
+import { hasPendingInboxItems } from "@/features/workspaces/server/inbox-state";
+import { countAccessibleWorkspaces } from "@/features/workspaces/server/accessible-workspaces";
+import { requireTransferReverification } from "@/features/workspaces/server/assert-transfer-reverification";
+import {
+  acceptWorkspaceOwnershipTransfer,
+  cancelWorkspaceOwnershipTransfer,
+  declineWorkspaceOwnershipTransfer,
+  initiateWorkspaceOwnershipTransfer,
+} from "@/features/workspaces/server/ownership-transfer";
+import { listReceivedOwnershipTransfers } from "@/features/workspaces/server/transfer-inbox";
 import {
   EntitlementError,
   PermissionError,
@@ -155,7 +165,7 @@ export async function archiveWorkspaceAction(
     let redirectTo: string | null = null;
 
     if (remainingAccessibleCount === 0) {
-      const pending = await hasPendingInvitations(user.email);
+      const pending = await hasPendingInboxItems(user.email);
       redirectTo = pending
         ? `/${locale}/dashboard/invitations`
         : `/${locale}/dashboard/onboarding`;
@@ -504,7 +514,7 @@ export async function leaveWorkspaceAction(
     let redirectTo: string | null = null;
 
     if (remainingAccessibleCount === 0) {
-      const pending = await hasPendingInvitations(user.email);
+      const pending = await hasPendingInboxItems(user.email);
       redirectTo = pending
         ? `/${locale}/dashboard/invitations`
         : `/${locale}/dashboard/onboarding`;
@@ -517,5 +527,105 @@ export async function leaveWorkspaceAction(
       return { success: false, error: "Something went wrong." };
     }
     return { success: false, error: result.error, code: result.code };
+  }
+}
+
+export async function removeWorkspaceMemberAction(
+  workspaceId: string,
+  targetUserId: string,
+  locale: Locale = "pl",
+) {
+  try {
+    const user = await requireAuth(locale);
+    await removeWorkspaceMember(user, workspaceId, targetUserId);
+    revalidatePath(`/${locale}/dashboard`, "layout");
+    return { success: true as const };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function initiateWorkspaceOwnershipTransferAction(
+  workspaceId: string,
+  input: { toEmail: string; keepSenderAsMember: boolean },
+  locale: Locale = "pl",
+) {
+  try {
+    const user = await requireAuth(locale);
+    const reverification = await requireTransferReverification();
+    if (reverification) {
+      return reverification;
+    }
+    const transfer = await initiateWorkspaceOwnershipTransfer(user, workspaceId, input);
+    revalidatePath(`/${locale}/dashboard`, "layout");
+    return { success: true as const, data: transfer };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function cancelWorkspaceOwnershipTransferAction(
+  workspaceId: string,
+  locale: Locale = "pl",
+) {
+  try {
+    const user = await requireAuth(locale);
+    const transfer = await cancelWorkspaceOwnershipTransfer(user, workspaceId);
+    revalidatePath(`/${locale}/dashboard`, "layout");
+    return { success: true as const, data: transfer };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function acceptWorkspaceOwnershipTransferAction(
+  token: string,
+  locale: Locale = "pl",
+) {
+  try {
+    const user = await requireAuth(locale);
+    const { workspaceSlug } = await acceptWorkspaceOwnershipTransfer(user, token);
+    revalidatePath(`/${locale}/dashboard`, "layout");
+    return {
+      success: true as const,
+      redirectTo: `/${locale}/dashboard/${workspaceSlug}`,
+    };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function declineWorkspaceOwnershipTransferAction(
+  token: string,
+  locale: Locale = "pl",
+) {
+  try {
+    const user = await requireAuth(locale);
+    await declineWorkspaceOwnershipTransfer(user, token);
+    revalidatePath(`/${locale}/dashboard`, "layout");
+
+    const [accessibleCount, hasInbox] = await Promise.all([
+      countAccessibleWorkspaces(user.id),
+      hasPendingInboxItems(user.email),
+    ]);
+
+    const redirectTo =
+      accessibleCount === 0 && !hasInbox
+        ? `/${locale}/dashboard/onboarding`
+        : null;
+
+    return { success: true as const, redirectTo };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function listReceivedOwnershipTransfersAction(locale: Locale = "pl") {
+  try {
+    const user = await requireAuth(locale);
+    const transfers = await listReceivedOwnershipTransfers(user.email);
+    return { success: true as const, data: transfers };
+  } catch (error) {
+    return toActionError(error);
   }
 }

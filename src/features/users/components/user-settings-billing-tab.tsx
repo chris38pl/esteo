@@ -2,19 +2,34 @@
 
 import { useTranslations } from "next-intl";
 
-export function UserSettingsBillingTab() {
-  const t = useTranslations("billing");
+import { UserBillingInvoicesTable } from "@/features/users/components/user-billing-invoices-table";
+import type { UserBillingInvoiceItem } from "@/features/users/server/get-user-billing-invoices";
+import type { Locale } from "@/lib/locale";
+
+export function UserSettingsBillingTab({
+  invoices,
+  locale,
+}: {
+  invoices: UserBillingInvoiceItem[];
+  locale: Locale;
+}) {
+  const t = useTranslations("billing.accountInvoices");
 
   return (
-    <section className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm">
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <h2 className="text-xl font-semibold tracking-tight">{t("title")}</h2>
-          <span className="rounded bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-            {t("soon")}
-          </span>
-        </div>
+    <section className="space-y-4">
+      <div className="space-y-1">
+        <h2 className="text-xl font-semibold tracking-tight">{t("title")}</h2>
         <p className="text-sm text-muted-foreground">{t("description")}</p>
+      </div>
+
+      <div className="surface-card overflow-hidden p-0">
+        {invoices.length === 0 ? (
+          <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+            <p className="text-sm text-muted-foreground">{t("empty")}</p>
+          </div>
+        ) : (
+          <UserBillingInvoicesTable invoices={invoices} locale={locale} />
+        )}
       </div>
     </section>
   );

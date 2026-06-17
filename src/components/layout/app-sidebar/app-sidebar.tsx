@@ -12,6 +12,7 @@ import { SidebarNav } from "./sidebar-nav";
 import { SidebarAdmin } from "./sidebar-admin";
 import { SidebarPinned } from "./sidebar-pinned";
 import { SidebarTeam } from "./sidebar-team";
+import { SidebarReportIssue } from "./sidebar-report-issue";
 import { SidebarSettings } from "./sidebar-settings";
 
 const EXPANDED = 232;
@@ -57,6 +58,7 @@ export function AppSidebar({
         <SidebarAdmin locale={locale} />
         <SidebarPinned locale={locale} />
         <SidebarTeam />
+        <SidebarReportIssue />
       </div>
 
       <SidebarSettings />

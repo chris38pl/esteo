@@ -14,6 +14,7 @@ export {
   listReceivedInvitationsAction,
   listWorkspaceMembersAction,
   listWorkspaceRulesAction,
+  removeWorkspaceMemberAction,
   revokeWorkspaceInvitationAction,
   updateWorkspaceAction,
   updateWorkspaceCompanyProfileAction,

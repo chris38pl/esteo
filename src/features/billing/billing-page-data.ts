@@ -35,4 +35,6 @@ export type WorkspaceBillingPageData = {
   storageOverLimit: boolean;
   seatOverLimit: boolean;
   nextInvoice: WorkspaceBillingNextInvoice;
+  canManageBilling: boolean;
+  billingHandoffActive: boolean;
 };

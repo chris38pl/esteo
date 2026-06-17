@@ -29,6 +29,21 @@ enum SubscriptionStatus {
   EXPIRED
 }
 
+enum AddonKey {
+  STORAGE
+  SEATS
+  CLIENT_PORTAL
+  API_ACCESS
+  WHITE_LABEL
+  AI_PACK
+}
+
+enum AddonStatus {
+  ACTIVE
+  SCHEDULED_REMOVAL
+  CANCELED
+}
+
 /// Membership state machine (separate from WorkspaceRole). Pending users live in WorkspaceInvitation.
 enum WorkspaceMemberState {
   ACTIVE
@@ -81,6 +96,13 @@ enum InvitationStatus {
   DECLINED
   /// Seat unavailable after a downgrade; re-activatable on upgrade.
   ON_HOLD
+}
+
+enum WorkspaceOwnershipTransferStatus {
+  PENDING_RECIPIENT
+  COMPLETED
+  CANCELLED
+  EXPIRED
 }
 
 enum WorkspaceLocale {
@@ -186,6 +208,7 @@ model User {
   avatarSource          AvatarSource @default(PRESET)
   platformRole          PlatformRole @default(NONE)
   lastActiveWorkspaceId String?
+  deletedAt             DateTime?
   createdAt             DateTime     @default(now())
   updatedAt             DateTime     @updatedAt
 
@@ -197,6 +220,8 @@ model User {
   ownedWorkspaces      Workspace[]           @relation("WorkspaceOwner")
   workspaceMemberships WorkspaceMember[]
   sentInvitations      WorkspaceInvitation[] @relation("InvitationSender")
+  sentOwnershipTransfers WorkspaceOwnershipTransfer[] @relation("TransferSender")
+  receivedOwnershipTransfers WorkspaceOwnershipTransfer[] @relation("TransferRecipient")
   memberInvites        WorkspaceMember[]     @relation("MemberInvitedBy")
   auditLogs            AuditLog[]
   pinnedEstimates      PinnedEstimate[]
@@ -205,6 +230,8 @@ model User {
   estimateAttachments  EstimateAttachment[]
   estimatePdfs         EstimatePdf[]
   reportedIssues       Issue[]
+
+  @@index([deletedAt])
 }
 
 enum IssueType {
@@ -353,6 +380,26 @@ model Subscription {
   billingAccount BillingAccount @relation(fields: [billingAccountId], references: [id], onDelete: Cascade)
 }
 
+/// Paid add-on capacity synced from Stripe subscription item quantities.
+model WorkspaceAddon {
+  id                       String      @id @default(cuid())
+  workspaceId              String
+  addonKey                 AddonKey
+  /// Number of packs on the Stripe subscription item. Entitlement = quantity × unit size from addon-catalog.
+  quantity                 Int         @default(0)
+  status                   AddonStatus @default(ACTIVE)
+  stripeSubscriptionItemId String?     @unique
+  stripePriceId            String?
+  effectiveUntil           DateTime?
+  createdAt                DateTime    @default(now())
+  updatedAt                DateTime    @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, addonKey])
+  @@index([workspaceId, status])
+}
+
 model Workspace {
   id                          String                      @id @default(cuid())
   billingAccountId            String
@@ -384,6 +431,7 @@ model Workspace {
   usageAggregates      UsagePeriodAggregate[]
   members              WorkspaceMember[]
   invitations          WorkspaceInvitation[]
+  ownershipTransfers   WorkspaceOwnershipTransfer[]
   settings             WorkspaceSettings?
   rules                WorkspaceRule[]
   estimateRequests     EstimateRequest[]
@@ -399,6 +447,7 @@ model Workspace {
   slugAliases          WorkspaceSlugAlias[]
   pinnedEstimates      PinnedEstimate[]
   estimateAttachments  EstimateAttachment[]
+  workspaceAddons      WorkspaceAddon[]
 
   @@index([billingAccountId])
   @@index([ownerId])
@@ -489,6 +538,32 @@ model WorkspaceInvitation {
   invitedBy User      @relation("InvitationSender", fields: [invitedById], references: [id], onDelete: Cascade)
 
   @@index([workspaceId, email, status])
+}
+
+model WorkspaceOwnershipTransfer {
+  id                 String                           @id @default(cuid())
+  workspaceId        String
+  fromUserId         String
+  toEmail            String
+  toUserId           String?
+  token              String                           @unique
+  status             WorkspaceOwnershipTransferStatus @default(PENDING_RECIPIENT)
+  planSnapshot       SubscriptionPlan
+  periodEndSnapshot  DateTime
+  keepSenderAsMember Boolean                          @default(true)
+  expiresAt          DateTime
+  acceptedAt         DateTime?
+  cancelledAt        DateTime?
+  createdAt          DateTime                         @default(now())
+  updatedAt          DateTime                         @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  fromUser  User      @relation("TransferSender", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser    User?     @relation("TransferRecipient", fields: [toUserId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, status])
+  @@index([toEmail, status])
+  @@index([toUserId, status])
 }
 
 model BillingAccountUsagePeriod {

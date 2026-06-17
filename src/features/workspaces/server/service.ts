@@ -61,7 +61,7 @@ import {
   assertCanCreateFreeWorkspace,
   assertCanInviteMember,
 } from "@/server/permissions/entitlements";
-import { PermissionError, WorkspaceError } from "@/server/permissions/errors";
+import { EntitlementError, PermissionError, WorkspaceError } from "@/server/permissions/errors";
 import { filterWorkspaceMembersForUi, getWorkspaceMembership, requireRole } from "@/server/permissions/require-workspace";
 import {
   persistActiveWorkspace,
@@ -180,7 +180,10 @@ export async function createWorkspace(
     await prisma.billingAccount.delete({ where: { id: billingAccount.id } }).catch(() => {});
 
     if (plan === "FREE" && isUniqueConstraintError(error)) {
-      throw new WorkspaceError("You already have an active free workspace.");
+      throw new EntitlementError(
+        "You already have an active free workspace. Upgrade or remove it to create another.",
+        "FREE_SLOT_ACTIVE",
+      );
     }
     throw error;
   }
@@ -315,6 +318,39 @@ export async function updateWorkspaceDetails(
 export async function archiveWorkspace(user: User, workspaceId: string) {
   await requireRole(user, workspaceId, "OWNER");
 
+  const { loadLiveSubscriptionForTransfer } = await import(
+    "@/features/workspaces/server/transfer-eligibility"
+  );
+  const { getPendingWorkspaceTransfer } = await import(
+    "@/features/workspaces/server/ownership-transfer"
+  );
+  const { evaluateWorkspaceDeleteEligibility } = await import(
+    "@/features/workspaces/lib/workspace-delete-eligibility"
+  );
+
+  const [subscription, pendingTransfer] = await Promise.all([
+    loadLiveSubscriptionForTransfer(workspaceId),
+    getPendingWorkspaceTransfer(workspaceId),
+  ]);
+
+  const deleteEligibility = evaluateWorkspaceDeleteEligibility({
+    subscription,
+    hasPendingTransfer: Boolean(pendingTransfer),
+  });
+
+  if (!deleteEligibility.allowed) {
+    if (deleteEligibility.blockReason === "PENDING_TRANSFER_EXISTS") {
+      throw new WorkspaceError(
+        "Cancel the pending ownership transfer before deleting this workspace.",
+      );
+    }
+    if (deleteEligibility.blockReason === "CANCEL_SUBSCRIPTION_REQUIRED") {
+      throw new WorkspaceError(
+        "Cancel the current subscription before deleting this workspace.",
+      );
+    }
+  }
+
   await revokeAllPendingWorkspaceInvitations(workspaceId);
 
   await cleanupWorkspaceLogoStorage(workspaceId);
@@ -396,6 +432,60 @@ export async function leaveWorkspace(user: User, workspaceId: string) {
   }
 
   return { remainingAccessibleCount };
+}
+
+export async function removeWorkspaceMember(
+  actor: User,
+  workspaceId: string,
+  targetUserId: string,
+) {
+  await requireRole(actor, workspaceId, "OWNER");
+
+  const workspace = await findWorkspaceById(workspaceId);
+
+  if (!workspace) {
+    throw new PermissionError("Workspace not found.");
+  }
+
+  if (workspace.ownerId === targetUserId) {
+    throw new PermissionError("The workspace owner cannot be removed.");
+  }
+
+  if (actor.id === targetUserId) {
+    throw new PermissionError("You cannot remove yourself from the workspace.");
+  }
+
+  const deletedMembership = await softDeleteWorkspaceMemberMembership(
+    targetUserId,
+    workspaceId,
+  );
+
+  if (!deletedMembership) {
+    throw new PermissionError("This user is not a member of the workspace.");
+  }
+
+  await logAuditEvent({
+    actorUserId: actor.id,
+    workspaceId,
+    entityType: "WorkspaceMember",
+    entityId: deletedMembership.id,
+    action: "removed",
+    diff: { removedUserId: targetUserId },
+  });
+
+  await reconcileStaleActiveWorkspace(targetUserId);
+
+  const remainingAccessibleCount = await countAccessibleWorkspaces(targetUserId);
+
+  if (remainingAccessibleCount > 0) {
+    const nextActiveId = await resolveActiveWorkspace(targetUserId);
+
+    if (nextActiveId) {
+      await persistActiveWorkspace(targetUserId, nextActiveId);
+    }
+  }
+
+  return deletedMembership;
 }
 
 export async function updateWorkspaceSettings(

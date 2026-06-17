@@ -3,6 +3,10 @@ import type { SubscriptionPlan } from "@prisma/client";
 
 import { prisma } from "@/db/client";
 import { getWorkspaceEffectiveStatus } from "@/server/billing/effective-status";
+import {
+  mergePlanLimitsWithAddons,
+  resolveAddonDeltas,
+} from "@/server/billing/addon-catalog";
 import { resolvePlanLimits, type PlanLimits } from "@/server/billing/plan-catalog";
 import {
   currentPeriodKey,
@@ -21,7 +25,12 @@ export type WorkspaceEntitlements = {
   plan: SubscriptionPlan;
   planVersion: string | null;
   effectiveStatus: WorkspaceEffectiveStatus;
+  baseLimits: PlanLimits;
   limits: PlanLimits;
+  addons: {
+    storage: { quantity: number };
+    seats: { quantity: number; available: boolean };
+  };
   usage: {
     estimatesThisMonth: number;
     aiCallsThisMonth: number;
@@ -131,12 +140,8 @@ export async function getFeatureState(
   workspaceId: string,
   feature: Feature,
 ): Promise<FeatureState> {
-  const [{ plan, planVersion }, effectiveStatus] = await Promise.all([
-    loadWorkspacePlan(workspaceId),
-    getWorkspaceEffectiveStatus(workspaceId),
-  ]);
-  const limits = resolvePlanLimits(plan, planVersion);
-  return deriveFeatureState(effectiveStatus ?? "ACTIVE", plan, limits, feature);
+  const ent = await getWorkspaceEntitlements(workspaceId);
+  return deriveFeatureState(ent.effectiveStatus, ent.plan, ent.limits, feature);
 }
 
 /** Coarse entitlement snapshot — hydrates UI/context once per request. */
@@ -145,23 +150,39 @@ export const getWorkspaceEntitlements = cache(
     const periodKey = currentPeriodKey();
     await reconcileEstimateUsageAggregate(workspaceId, periodKey);
 
-    const [{ plan, planVersion }, effectiveStatus, estimatesThisMonth, aiCallsThisMonth, seats] =
+    const [{ plan, planVersion }, effectiveStatus, estimatesThisMonth, aiCallsThisMonth, seats, addonRows] =
       await Promise.all([
         loadWorkspacePlan(workspaceId),
         getWorkspaceEffectiveStatus(workspaceId),
         getWorkspaceMeterUsage(workspaceId, "ESTIMATE_CREATED", periodKey),
         getWorkspaceMeterUsage(workspaceId, "AI_ASSISTANT_CALL", periodKey),
         getSeatUsage(workspaceId),
+        prisma.workspaceAddon.findMany({
+          where: { workspaceId, status: "ACTIVE", quantity: { gt: 0 } },
+          select: { addonKey: true, quantity: true },
+        }),
       ]);
 
-    const limits = resolvePlanLimits(plan, planVersion);
+    const baseLimits = resolvePlanLimits(plan, planVersion);
+    const addonDeltas = resolveAddonDeltas(plan, addonRows);
+    const limits = mergePlanLimitsWithAddons(baseLimits, addonDeltas);
+    const storageQty = addonRows.find((row) => row.addonKey === "STORAGE")?.quantity ?? 0;
+    const seatQty =
+      plan === "BUSINESS"
+        ? (addonRows.find((row) => row.addonKey === "SEATS")?.quantity ?? 0)
+        : 0;
 
     return {
       workspaceId,
       plan,
       planVersion,
       effectiveStatus: effectiveStatus ?? "ACTIVE",
+      baseLimits,
       limits,
+      addons: {
+        storage: { quantity: storageQty },
+        seats: { quantity: seatQty, available: plan === "BUSINESS" },
+      },
       usage: { estimatesThisMonth, aiCallsThisMonth },
       seats: { used: seats.used, reserved: seats.reserved, limit: limits.maxInvitedSeats },
     };
@@ -270,8 +291,8 @@ export async function assertWorkspaceHasSeat(workspaceId: string): Promise<void>
 }
 
 export async function getMaxUndoStepsForWorkspace(workspaceId: string): Promise<number> {
-  const { plan, planVersion } = await loadWorkspacePlan(workspaceId);
-  return resolvePlanLimits(plan, planVersion).maxUndoSteps;
+  const ent = await getWorkspaceEntitlements(workspaceId);
+  return ent.limits.maxUndoSteps;
 }
 
 /** Blocks attachment uploads when storage feature is not ACTIVE or capacity is exhausted. */

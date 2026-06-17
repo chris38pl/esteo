@@ -22,6 +22,7 @@ type Props = {
   currentPeriodEnd: Date | string | null;
   pending: boolean;
   plansHref: string;
+  canManageBilling: boolean;
   onManageBilling: () => void;
 };
 
@@ -74,6 +75,7 @@ export function BillingPlanHeroBanner({
   currentPeriodEnd,
   pending,
   plansHref,
+  canManageBilling,
   onManageBilling,
 }: Props) {
   const t = useTranslations("billing.workspace.planHero");
@@ -161,21 +163,23 @@ export function BillingPlanHeroBanner({
             </div>
 
             <div className="billing-plan-hero-actions hero-card-content flex w-full flex-col gap-3 sm:flex-row">
-              <Button
-                className={cn(
-                  "h-11 justify-center gap-2",
-                  isPaidPlan ? "w-full sm:flex-1" : "w-full sm:w-auto sm:flex-none",
-                )}
-                disabled={pending}
-                asChild
-              >
-                <Link href={plansHref}>
-                  {t("changePlan")}
-                  <ArrowRight className="size-4" aria-hidden />
-                </Link>
-              </Button>
+              {canManageBilling ? (
+                <Button
+                  className={cn(
+                    "h-11 justify-center gap-2",
+                    isPaidPlan ? "w-full sm:flex-1" : "w-full sm:w-auto sm:flex-none",
+                  )}
+                  disabled={pending}
+                  asChild
+                >
+                  <Link href={plansHref}>
+                    {t("changePlan")}
+                    <ArrowRight className="size-4" aria-hidden />
+                  </Link>
+                </Button>
+              ) : null}
 
-              {isPaidPlan ? (
+              {isPaidPlan && canManageBilling ? (
                 <Button
                   variant="outline"
                   className="h-11 w-full border-border/70 bg-background/50 px-5 text-sm font-medium backdrop-blur-sm sm:flex-1"

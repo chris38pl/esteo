@@ -60,7 +60,8 @@
       "wrench": "Plumbing"
     },
     "errors": {
-      "industryRequired": "Please select an industry."
+      "industryRequired": "Please select an industry.",
+      "freeSlotCooldown": "You have already created and deleted {limit} free workspaces in the last {days} days. Wait for the limit to reset before creating another."
     },
     "planLabel": "Plan",
     "plans": {
@@ -95,21 +96,21 @@
     "hubSubtitle": "{email} invited you to join a workspace in Esteo.",
     "profileTitle": "My account",
     "profileDescription": "Manage your personal invitations and account settings.",
-    "inboxSectionTitle": "Invitations",
-    "inboxSectionDescription": "Pending workspace invitations sent to your email address.",
+    "inboxSectionTitle": "Invitations and transfers",
+    "inboxSectionDescription": "Pending workspace invitations and ownership transfers sent to your email address.",
     "otherInvitesTitle": "Other invitations",
-    "emptyInbox": "You have no pending invitations.",
+    "emptyInbox": "You have no pending invitations or ownership transfers.",
     "invitedBy": "Invited by {name}",
     "expiresAt": "Expires {date}",
     "expiresInDays": "{count, plural, one {Expires in # day} other {Expires in # days}}",
-    "seeAllInvitations": "See all invitations",
+    "seeAllInvitations": "See all",
     "accept": "Accept",
     "accepting": "Accepting…",
     "decline": "Decline",
     "dismissPrompt": "Don't ask again",
     "upgradePlan": "Upgrade your plan",
     "contactOwner": "Contact the workspace owner to add more seats.",
-    "pendingBadge": "{count, plural, one {# pending invitation} other {# pending invitations}}",
+    "pendingBadge": "{count, plural, one {# pending notification} other {# pending notifications}}",
     "roles": {
       "MEMBER": "Member",
       "VIEWER": "Viewer"
@@ -208,13 +209,20 @@
       "inviteSubmit": "Send invitation",
       "inviting": "Sending…",
       "revoke": "Revoke",
+      "remove": "Remove",
+      "removing": "Removing…",
+      "removeConfirmTitle": "Remove {name} from workspace?",
+      "removeConfirmDescription": "This user will lose access to this workspace. Their Esteo account will remain active.",
+      "removeConfirmAction": "Remove from workspace",
+      "removeConfirmCancel": "Cancel",
       "emptyMembers": "No members to display.",
       "inviteUpgradeDescription": "Member invitations require a paid plan. Upgrade to invite collaborators to this workspace.",
       "inviteUpgradeCta": "Upgrade plan",
       "columns": {
         "member": "User",
         "role": "Role",
-        "email": "Email"
+        "email": "Email",
+        "actions": "Actions"
       },
       "roles": {
         "OWNER": "Owner",
@@ -305,16 +313,80 @@
         "ruleCounter": "{count} / {max}"
       }
     },
+    "transfer": {
+      "sectionTitle": "Transfer ownership",
+      "sectionDescription": "Transfer workspace ownership to another user. Subscription payments are not transferred.",
+      "startButton": "Start transfer",
+      "openBilling": "Open Billing",
+      "eligibleHint": "The workspace will remain active until {date}.",
+      "pendingTitle": "Pending transfer",
+      "pendingDescription": "A transfer invitation was sent to {email}. The recipient must accept before ownership changes.",
+      "pendingExpires": "Expires {date}",
+      "cancelPending": "Cancel transfer",
+      "cancelling": "Cancelling…",
+      "blocked": {
+        "CANCEL_SUBSCRIPTION_REQUIRED": "Before transferring ownership, you must cancel the current subscription. The workspace will remain active until the end of the already paid billing period.",
+        "NO_PAID_PERIOD": "This workspace has no remaining paid billing period.",
+        "WORKSPACE_NOT_ACTIVE": "This workspace is not active.",
+        "FREE_PLAN": "Only Pro or Business workspaces can be transferred.",
+        "PENDING_TRANSFER_EXISTS": "A workspace ownership transfer is already pending."
+      },
+      "wizard": {
+        "title": "Transfer {name}",
+        "description": "The recipient will become the workspace owner after accepting the invitation.",
+        "billingNotice": "This transfer does not move subscription payments. After the paid period ends, the new owner must purchase their own subscription to keep paid features.",
+        "activeUntil": "The workspace will remain active until {date}.",
+        "emailLabel": "Recipient email",
+        "emailPlaceholder": "recipient@company.com",
+        "keepMemberLabel": "Keep me as a member after transfer",
+        "keepMemberHint": "You will still have access as a member after transferring ownership.",
+        "loseAccessWarning": "You will lose access to this workspace after the transfer.",
+        "continue": "Continue",
+        "cancel": "Cancel",
+        "back": "Back",
+        "confirmTitle": "Confirm transfer",
+        "confirmDescription": "Review the details before sending the invitation. You will need to verify your identity.",
+        "confirmRecipient": "Recipient:",
+        "confirmPlan": "Plan:",
+        "confirmPeriodEnd": "Active until:",
+        "confirmBillingNotice": "Subscription payments are not transferred. The current subscription runs until the end of the paid period.",
+        "submit": "Send invitation",
+        "submitting": "Sending…",
+        "errors": {
+          "generic": "Something went wrong. Please try again.",
+          "emailRequired": "Enter the recipient email address."
+        }
+      }
+    },
     "delete": {
       "sectionTitle": "Delete workspace",
       "sectionDescription": "Permanently remove this workspace from your account. All members will lose access.",
       "deleteButton": "Delete workspace",
+      "openBilling": "Open Billing",
+      "cancelTransfer": "Cancel transfer",
       "confirmTitle": "Delete {name}?",
       "confirmDescription": "This action cannot be undone from the app. Pending invitations will be revoked and members will lose access immediately.",
       "confirmAction": "Delete workspace",
       "confirmCancel": "Cancel",
-      "deleting": "Deleting…"
+      "deleting": "Deleting…",
+      "blocked": {
+        "CANCEL_SUBSCRIPTION_REQUIRED": "Before deleting this workspace, you must cancel the current subscription. The workspace will remain active until the end of the already paid billing period.",
+        "PENDING_TRANSFER_EXISTS": "This workspace has a pending ownership transfer. Cancel the transfer before deleting the workspace."
+      }
     }
+  },
+  "transfer": {
+    "inboxTitle": "Ownership transfers",
+    "inboxDescription": "Accept a transfer to become the workspace owner, or decline if it is not for you.",
+    "fromSender": "From: {name}",
+    "activeUntil": "Workspace stays active until {date}",
+    "expiresAt": "Invitation expires {date}",
+    "billingNotice": "This transfer does not include subscription payments. After the paid period ends, you must purchase your own subscription to keep paid features.",
+    "accept": "Accept transfer",
+    "accepting": "Accepting…",
+    "decline": "Decline",
+    "declining": "Declining…",
+    "errorGeneric": "Something went wrong. Please try again."
   },
   "errors": {
     "generic": "Something went wrong. Please try again."

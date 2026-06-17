@@ -3,57 +3,45 @@
 import type { ReactNode } from "react";
 import { useTransition } from "react";
 import { ChevronRight, Coins, FileText, Puzzle, Users } from "lucide-react";
+import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 
 import type { WorkspaceBillingPageData } from "@/features/billing/billing-page-data";
 import { openWorkspacePortalAction } from "@/features/billing/server/billing-actions";
+import {
+  ADDON_UNIT_PRICES_PLN,
+  SEAT_UNIT_COUNT,
+  STORAGE_UNIT_BYTES,
+} from "@/server/billing/addon-catalog";
+import { formatBytes } from "@/features/attachments/lib/format-bytes";
 import { formatCurrency, formatDate } from "@/i18n/formatters";
+import { dashboardBillingAddonsHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
-
-type AddonPlaceholder = {
-  id: string;
-  titleKey: "extraUsers" | "extraStorage";
-  packageKey: "extraUsersPackage" | "extraStoragePackage";
-  priceKey: "extraUsersPrice" | "extraStoragePrice";
-  icon: typeof Users;
-  iconBox: string;
-  iconColor: string;
-};
-
-const placeholderAddons: AddonPlaceholder[] = [
-  {
-    id: "users",
-    titleKey: "extraUsers",
-    packageKey: "extraUsersPackage",
-    priceKey: "extraUsersPrice",
-    icon: Users,
-    iconBox: "border-violet-500/25 bg-violet-500/10",
-    iconColor: "text-violet-400",
-  },
-  {
-    id: "storage",
-    titleKey: "extraStorage",
-    packageKey: "extraStoragePackage",
-    priceKey: "extraStoragePrice",
-    icon: Coins,
-    iconBox: "border-orange-500/25 bg-orange-500/10",
-    iconColor: "text-orange-400",
-  },
-];
 
 export function BillingSecondaryCardsSection({
   data,
   workspaceId,
+  workspaceSlug,
+  canManageBilling,
 }: {
   data: WorkspaceBillingPageData;
   workspaceId: string;
+  workspaceSlug: string;
+  canManageBilling: boolean;
 }) {
-  const canViewInvoiceHistory = data.entitlements.plan !== "FREE";
+  const canViewInvoiceHistory = data.entitlements.plan !== "FREE" && canManageBilling;
+  const locale = useLocale() as Locale;
+  const addonsHref = dashboardBillingAddonsHref(locale, workspaceSlug);
+  const canManageAddons = data.entitlements.plan !== "FREE" && canManageBilling;
 
   return (
     <section className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-2">
-      <BillingActiveAddonsCard />
+      <BillingActiveAddonsCard
+        data={data}
+        addonsHref={addonsHref}
+        canManageAddons={canManageAddons}
+      />
       <BillingNextInvoiceCard
         nextInvoice={data.nextInvoice}
         workspaceId={workspaceId}
@@ -106,22 +94,35 @@ function BillingCardShell({
 
 function BillingCardFooterLink({
   label,
+  href,
   disabled,
   onClick,
 }: {
   label: string;
+  href?: string;
   disabled?: boolean;
   onClick?: () => void;
 }) {
+  const className = cn(
+    "inline-flex w-full items-center justify-between text-sm font-medium",
+    disabled ? "text-primary/70" : "text-primary hover:text-primary/90",
+  );
+
+  if (href && !disabled) {
+    return (
+      <Link href={href} className={className}>
+        <span>{label}</span>
+        <ChevronRight className="size-4 shrink-0" aria-hidden />
+      </Link>
+    );
+  }
+
   return (
     <button
       type="button"
       disabled={disabled}
       onClick={onClick}
-      className={cn(
-        "inline-flex w-full items-center justify-between text-sm font-medium",
-        disabled ? "text-primary/70" : "text-primary hover:text-primary/90",
-      )}
+      className={className}
       aria-disabled={disabled}
     >
       <span>{label}</span>
@@ -130,8 +131,20 @@ function BillingCardFooterLink({
   );
 }
 
-function BillingActiveAddonsCard() {
+function BillingActiveAddonsCard({
+  data,
+  addonsHref,
+  canManageAddons,
+}: {
+  data: WorkspaceBillingPageData;
+  addonsHref: string;
+  canManageAddons: boolean;
+}) {
   const t = useTranslations("billing.workspace.addons");
+  const { entitlements } = data;
+  const storageQty = entitlements.addons.storage.quantity;
+  const seatQty = entitlements.addons.seats.quantity;
+  const hasActiveAddons = storageQty > 0 || seatQty > 0;
 
   return (
     <BillingCardShell
@@ -139,43 +152,93 @@ function BillingActiveAddonsCard() {
       iconBoxClassName="border-violet-500/25 bg-violet-500/10"
       iconClassName="text-violet-400"
       title={t("title")}
-      footer={<BillingCardFooterLink label={t("manageAddons")} disabled />}
+      footer={
+        <BillingCardFooterLink
+          label={t("manageAddons")}
+          href={addonsHref}
+          disabled={!canManageAddons}
+        />
+      }
     >
-      <ul className="space-y-4">
-        {placeholderAddons.map((addon) => (
-          <BillingAddonPlaceholderRow key={addon.id} addon={addon} />
-        ))}
-      </ul>
+      {hasActiveAddons ? (
+        <ul className="space-y-4">
+          {storageQty > 0 ? (
+            <BillingAddonRow
+              icon={Coins}
+              iconBox="border-orange-500/25 bg-orange-500/10"
+              iconColor="text-orange-400"
+              title={t("extraStorage")}
+              packageLabel={t("extraStorageActive", {
+                count: storageQty,
+                amount: formatBytes(storageQty * STORAGE_UNIT_BYTES),
+              })}
+              priceLabel={t("extraStoragePrice", {
+                amount: storageQty * ADDON_UNIT_PRICES_PLN.STORAGE,
+              })}
+            />
+          ) : null}
+          {seatQty > 0 ? (
+            <BillingAddonRow
+              icon={Users}
+              iconBox="border-violet-500/25 bg-violet-500/10"
+              iconColor="text-violet-400"
+              title={t("extraUsers")}
+              packageLabel={t("extraUsersActive", {
+                count: seatQty,
+                amount: seatQty * SEAT_UNIT_COUNT,
+              })}
+              priceLabel={t("extraUsersPrice", {
+                amount: seatQty * ADDON_UNIT_PRICES_PLN.SEATS,
+              })}
+            />
+          ) : null}
+        </ul>
+      ) : (
+        <p className="text-sm text-muted-foreground">{t("empty")}</p>
+      )}
     </BillingCardShell>
   );
 }
 
-function BillingAddonPlaceholderRow({ addon }: { addon: AddonPlaceholder }) {
+function BillingAddonRow({
+  icon: Icon,
+  iconBox,
+  iconColor,
+  title,
+  packageLabel,
+  priceLabel,
+}: {
+  icon: typeof Users;
+  iconBox: string;
+  iconColor: string;
+  title: string;
+  packageLabel: string;
+  priceLabel: string;
+}) {
   const t = useTranslations("billing.workspace.addons");
-  const Icon = addon.icon;
 
   return (
     <li className="flex items-start gap-3">
       <div
         className={cn(
           "flex size-10 shrink-0 items-center justify-center rounded-lg border",
-          addon.iconBox,
+          iconBox,
         )}
       >
-        <Icon className={cn("size-5", addon.iconColor)} aria-hidden />
+        <Icon className={cn("size-5", iconColor)} aria-hidden />
       </div>
 
       <div className="min-w-0 flex-1 space-y-1">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="min-w-0 space-y-0.5">
-            <p className="font-medium leading-snug">{t(addon.titleKey)}</p>
-            <p className="text-sm text-muted-foreground">{t(addon.packageKey)}</p>
+            <p className="font-medium leading-snug">{title}</p>
+            <p className="text-sm text-muted-foreground">{packageLabel}</p>
           </div>
           <span className="shrink-0 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-400">
             {t("activeBadge")}
           </span>
         </div>
-        <p className="text-sm font-medium">{t(addon.priceKey)}</p>
+        <p className="text-sm font-medium">{priceLabel}</p>
       </div>
     </li>
   );

@@ -25,3 +25,16 @@ export {
   constructStripeEvent,
   processStripeWebhookEvent,
 } from "@/features/billing/server/webhooks";
+export {
+  getBillingPayerWorkspaceIdsForUser,
+  getWorkspaceBillingPayerId,
+  isWorkspaceBillingPayer,
+  listWorkspacesWhereUserIsBillingPayer,
+  requireBillingPayer,
+  requireCanViewWorkspaceBilling,
+  resolveWorkspaceBillingPermissions,
+  resolveWorkspaceForBilling,
+  type BillingPayerWorkspace,
+  type ResolvedWorkspaceForBilling,
+  type WorkspaceBillingPermissions,
+} from "@/features/billing/server/billing-permissions";

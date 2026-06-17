@@ -3,6 +3,17 @@
   "description": "Zarządzanie płatnościami wkrótce. Tutaj będziesz mógł przeglądać faktury, aktualizować metody płatności i zarządzać subskrypcją.",
   "soon": "Wkrótce",
   "backToDashboard": "Wróć do panelu",
+  "accountInvoices": {
+    "title": "Faktury",
+    "description": "Historia opłaconych faktur za subskrypcję Esteo.",
+    "empty": "Brak faktur do wyświetlenia.",
+    "download": "Pobierz fakturę",
+    "columns": {
+      "invoice": "Faktura",
+      "date": "Data",
+      "download": "Pobierz"
+    }
+  },
   "workspace": {
     "title": "Płatności",
     "currentPlan": "Aktualny plan: {plan} · {status}",
@@ -86,7 +97,7 @@
       "price": {
         "FREE": "0 zł",
         "PRO": "99 zł",
-        "BUSINESS": "199 zł"
+        "BUSINESS": "249 zł"
       },
       "perMonth": "/ miesiąc",
       "changePlan": "Zmień plan",
@@ -108,14 +119,40 @@
     },
     "addons": {
       "title": "Aktywne dodatki",
+      "empty": "Brak aktywnych dodatków.",
       "extraUsers": "Dodatkowi użytkownicy",
-      "extraUsersPackage": "Pakiet +5 użytkowników",
-      "extraUsersPrice": "49 zł / miesiąc",
+      "extraUsersActive": "{count, plural, one {# pakiet (+{amount} os.)} few {# pakiety (+{amount} os.)} many {# pakietów (+{amount} os.)} other {# pakietów (+{amount} os.)}}",
+      "extraUsersPrice": "{amount} zł / miesiąc",
       "extraStorage": "Dodatkowa przestrzeń",
-      "extraStoragePackage": "Pakiet +20 GB",
-      "extraStoragePrice": "100 zł / miesiąc",
+      "extraStorageActive": "{count, plural, one {# pakiet ({amount})} few {# pakiety ({amount})} many {# pakietów ({amount})} other {# pakietów ({amount})}}",
+      "extraStoragePrice": "{amount} zł / miesiąc",
       "activeBadge": "Aktywne",
       "manageAddons": "Zarządzaj dodatkami"
+    },
+    "addonPage": {
+      "title": "Dodatki do planu",
+      "subtitle": "Rozszerz miejsce na pliki lub zespół — bez zmiany planu.",
+      "backToBilling": "Wróć do płatności",
+      "freeGate": "Dodatki są dostępne w planach Pro i Business.",
+      "viewPlans": "Zobacz plany",
+      "save": "Zapisz zmiany",
+      "saveSuccess": "Dodatki zostały zaktualizowane.",
+      "increase": "Zwiększ",
+      "decrease": "Zmniejsz",
+      "storage": {
+        "title": "Miejsce na pliki",
+        "summary": "Aktualnie: {base} (plan) + {extra} (dodatki) = {total}",
+        "packLabel": "{count, plural, one {# pakiet ({amount})} few {# pakiety ({amount})} many {# pakietów ({amount})} other {# pakietów ({amount})}}",
+        "price": "{total} zł / mies. ({unit} zł × pakiet)"
+      },
+      "seats": {
+        "title": "Większy zespół",
+        "summary": "Aktualnie: {base} użytk. (plan) + {extra} (dodatki) = {total}",
+        "packLabel": "{count, plural, one {# pakiet (+{amount} os.)} few {# pakiety (+{amount} os.)} many {# pakietów (+{amount} os.)} other {# pakietów (+{amount} os.)}}",
+        "price": "{total} zł / mies. ({unit} zł × pakiet)",
+        "proUpsell": "Plan Pro jest przeznaczony dla jednej osoby. Przejdź na Business, aby zapraszać zespół i dokupować miejsca.",
+        "viewBusiness": "Zobacz plan Business"
+      }
     },
     "nextInvoice": {
       "title": "Następna faktura",

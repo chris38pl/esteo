@@ -17,6 +17,10 @@ export function dashboardBillingPlansHref(locale: Locale, workspaceSlug: string)
   return `/${locale}/dashboard/${workspaceSlug}/billing/plans`;
 }
 
+export function dashboardBillingAddonsHref(locale: Locale, workspaceSlug: string) {
+  return `/${locale}/dashboard/${workspaceSlug}/billing/addons`;
+}
+
 export function dashboardWorkspaceUsageHref(locale: Locale, workspaceSlug: string) {
   return `/${locale}/dashboard/${workspaceSlug}/workspace-usage`;
 }

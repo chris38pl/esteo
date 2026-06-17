@@ -3,6 +3,17 @@
   "description": "Billing management is coming soon. You will be able to view invoices, update payment methods, and manage your subscription here.",
   "soon": "Soon",
   "backToDashboard": "Back to dashboard",
+  "accountInvoices": {
+    "title": "Invoices",
+    "description": "History of paid Esteo subscription invoices.",
+    "empty": "No invoices to display.",
+    "download": "Download invoice",
+    "columns": {
+      "invoice": "Invoice",
+      "date": "Date",
+      "download": "Download"
+    }
+  },
   "workspace": {
     "title": "Billing",
     "currentPlan": "Current plan: {plan} · {status}",
@@ -86,7 +97,7 @@
       "price": {
         "FREE": "PLN 0",
         "PRO": "PLN 99",
-        "BUSINESS": "PLN 199"
+        "BUSINESS": "PLN 249"
       },
       "perMonth": "/ month",
       "changePlan": "Change plan",
@@ -108,14 +119,40 @@
     },
     "addons": {
       "title": "Active add-ons",
+      "empty": "No active add-ons.",
       "extraUsers": "Additional users",
-      "extraUsersPackage": "+5 users pack",
-      "extraUsersPrice": "PLN 49 / month",
+      "extraUsersActive": "{count, plural, one {# pack (+{amount} users)} other {# packs (+{amount} users)}}",
+      "extraUsersPrice": "PLN {amount} / month",
       "extraStorage": "Additional storage",
-      "extraStoragePackage": "+20 GB pack",
-      "extraStoragePrice": "PLN 100 / month",
+      "extraStorageActive": "{count, plural, one {# pack ({amount})} other {# packs ({amount})}}",
+      "extraStoragePrice": "PLN {amount} / month",
       "activeBadge": "Active",
       "manageAddons": "Manage add-ons"
+    },
+    "addonPage": {
+      "title": "Plan add-ons",
+      "subtitle": "Expand file storage or team size without changing your plan.",
+      "backToBilling": "Back to billing",
+      "freeGate": "Add-ons are available on Pro and Business plans.",
+      "viewPlans": "View plans",
+      "save": "Save changes",
+      "saveSuccess": "Add-ons updated.",
+      "increase": "Increase",
+      "decrease": "Decrease",
+      "storage": {
+        "title": "File storage",
+        "summary": "Currently: {base} (plan) + {extra} (add-ons) = {total}",
+        "packLabel": "{count, plural, one {# pack ({amount})} other {# packs ({amount})}}",
+        "price": "PLN {total} / mo (PLN {unit} × pack)"
+      },
+      "seats": {
+        "title": "Larger team",
+        "summary": "Currently: {base} users (plan) + {extra} (add-ons) = {total}",
+        "packLabel": "{count, plural, one {# pack (+{amount} users)} other {# packs (+{amount} users)}}",
+        "price": "PLN {total} / mo (PLN {unit} × pack)",
+        "proUpsell": "Pro is built for one person. Upgrade to Business to invite your team and buy extra seats.",
+        "viewBusiness": "View Business plan"
+      }
     },
     "nextInvoice": {
       "title": "Next invoice",

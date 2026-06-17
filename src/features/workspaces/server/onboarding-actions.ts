@@ -26,12 +26,15 @@ type CreateWorkspaceResult = {
 
 type ActionResult<T> =
   | { success: true; data: T }
-  | { success: false; error: string };
+  | { success: false; error: string; code?: string };
 
 function toActionError(error: unknown): ActionResult<never> {
+  if (error instanceof EntitlementError) {
+    return { success: false, error: error.message, code: error.code };
+  }
+
   if (
     error instanceof PermissionError ||
-    error instanceof EntitlementError ||
     error instanceof WorkspaceError
   ) {
     return { success: false, error: error.message };

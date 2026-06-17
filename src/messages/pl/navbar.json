@@ -21,7 +21,8 @@
     "adminEstimateRequests": "Zapytania o wycenę",
     "adminEstimateRequestDetail": "Szczegóły zapytania",
     "adminIssues": "Issue Tracker",
-    "billingPlans": "Plany"
+    "billingPlans": "Plany",
+    "billingAddons": "Dodatki"
   },
   "notifications": {
     "label": "Powiadomienia",
@@ -55,6 +56,17 @@
     "deletionGuard": {
       "title": "Usuwanie konta",
       "description": "Nie możesz usunąć konta, dopóki jesteś właścicielem tych przestrzeni. Przenieś własność lub usuń każdą z nich (i anuluj subskrypcje)."
+    },
+    "accountDeletion": {
+      "sectionTitle": "Usuwanie konta",
+      "sectionDescription": "Trwale usuniesz swoje konto i utracisz dostęp do wszystkich przestrzeni, do których należysz. Tej operacji nie można cofnąć.",
+      "deleteButton": "Usuń konto",
+      "confirmTitle": "Usunąć konto?",
+      "confirmDescription": "Twoje konto zostanie trwale usunięte. Utracisz dostęp do wszystkich przestrzeni i danych powiązanych z kontem. Tej operacji nie można cofnąć.",
+      "confirmTypeDelete": "Wpisz {word}, aby potwierdzić",
+      "confirmAction": "Usuń konto",
+      "confirmCancel": "Anuluj",
+      "deleting": "Usuwanie…"
     }
   }
 }

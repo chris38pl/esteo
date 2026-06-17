@@ -21,7 +21,8 @@
     "adminEstimateRequests": "Estimate Requests",
     "adminEstimateRequestDetail": "Request detail",
     "adminIssues": "Issue Tracker",
-    "billingPlans": "Plans"
+    "billingPlans": "Plans",
+    "billingAddons": "Add-ons"
   },
   "notifications": {
     "label": "Notifications",
@@ -55,6 +56,17 @@
     "deletionGuard": {
       "title": "Account deletion",
       "description": "You cannot delete your account while you own these workspaces. Transfer ownership or delete each one (and cancel subscriptions) first."
+    },
+    "accountDeletion": {
+      "sectionTitle": "Delete account",
+      "sectionDescription": "Permanently delete your account and lose access to every workspace you belong to. This action cannot be undone.",
+      "deleteButton": "Delete account",
+      "confirmTitle": "Delete your account?",
+      "confirmDescription": "Your account will be permanently deleted. You will lose access to all workspaces and data tied to this account. This cannot be undone.",
+      "confirmTypeDelete": "Type {word} to confirm",
+      "confirmAction": "Delete account",
+      "confirmCancel": "Cancel",
+      "deleting": "Deleting…"
     }
   }
 }

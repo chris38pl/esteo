@@ -32,6 +32,10 @@ function isInvitationsRoute(pathname: string): boolean {
   return pathname.endsWith("/dashboard/invitations");
 }
 
+function isAccountRoute(pathname: string): boolean {
+  return pathname.endsWith("/dashboard/account");
+}
+
 /** Matches Tailwind `md:` — sidebar is visible from this width up. */
 function useMdUp() {
   return useSyncExternalStore(
@@ -58,9 +62,10 @@ export function DashboardShell({
   const offset = sidebarWidth(collapsed);
   const mdUp = useMdUp();
   const contentInset = mdUp ? offset : 0;
-  const { modalInvitation, locale: contextLocale } = useWorkspaceContext();
+  const { modalInvitation, locale: contextLocale, workspaces } = useWorkspaceContext();
+  const isPreWorkspaceAccount = workspaces.length === 0 && isAccountRoute(pathname);
 
-  if (isFocusedDashboardRoute(pathname)) {
+  if (isFocusedDashboardRoute(pathname) || isPreWorkspaceAccount) {
     return (
       <div
         className={cn(

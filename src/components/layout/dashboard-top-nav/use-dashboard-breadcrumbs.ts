@@ -244,6 +244,15 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
     return crumbs;
   }
 
+  if (wsBase && pathname === `${wsBase}/billing/addons`) {
+    crumbs.push({
+      label: t("billing"),
+      href: `${wsBase}/billing`,
+    });
+    crumbs.push({ label: t("billingAddons") });
+    return crumbs;
+  }
+
   if (pageKey) {
     crumbs.push({ label: t(pageKey) });
   }

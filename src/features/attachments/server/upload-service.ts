@@ -460,6 +460,30 @@ export async function precheckRequestUploadQuota(
 
 const MAX_ISSUE_SCREENSHOTS = 10;
 
+function resolveIssueImageMimeType(
+  file: File,
+): (typeof ALLOWED_IMAGE_MIME_TYPES)[number] | null {
+  if ((ALLOWED_IMAGE_MIME_TYPES as readonly string[]).includes(file.type)) {
+    return file.type as (typeof ALLOWED_IMAGE_MIME_TYPES)[number];
+  }
+
+  const extension = file.name.split(".").pop()?.toLowerCase();
+
+  if (extension === "jpg" || extension === "jpeg") {
+    return "image/jpeg";
+  }
+
+  if (extension === "png") {
+    return "image/png";
+  }
+
+  if (extension === "webp") {
+    return "image/webp";
+  }
+
+  return null;
+}
+
 async function prepareIssueImageFiles(files: File[]): Promise<PreparedUploadFile[]> {
   if (files.length > MAX_ISSUE_SCREENSHOTS) {
     throw new StorageQuotaError(
@@ -473,13 +497,14 @@ async function prepareIssueImageFiles(files: File[]): Promise<PreparedUploadFile
   for (const file of files) {
     assertSingleFileSize(file.size);
 
-    if (!(ALLOWED_IMAGE_MIME_TYPES as readonly string[]).includes(file.type)) {
+    const mimeType = resolveIssueImageMimeType(file);
+
+    if (!mimeType) {
       throw new StorageQuotaError("Only JPEG, PNG, and WebP images are allowed.", "FILE_TOO_LARGE");
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const attachmentId = randomUUID();
-    const mimeType = file.type as (typeof ALLOWED_IMAGE_MIME_TYPES)[number];
     const processed = await processImageOriginal(buffer, mimeType);
 
     prepared.push({

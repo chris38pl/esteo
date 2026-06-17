@@ -22,6 +22,8 @@
     "submitting": "Saving…",
     "cancel": "Cancel",
     "success": "Issue #{number} saved",
+    "partialSuccess": "Issue #{number} saved, but screenshots could not be uploaded",
+    "unexpectedError": "Something went wrong. Please try again.",
     "validationError": "Fill in required fields",
     "uploadError": "Failed to upload screenshots"
   },

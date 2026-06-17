@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import type { User } from "@prisma/client";
 
-import { hasPendingInvitations } from "@/features/workspaces/server/invitation-inbox";
+import { hasPendingInboxItems } from "@/features/workspaces/server/inbox-state";
 import { countAccessibleWorkspaces } from "@/features/workspaces/server/accessible-workspaces";
 import type { Locale } from "@/lib/locale";
 import { requireAuth } from "@/server/auth/require-auth";
@@ -14,7 +14,7 @@ import { requireRole } from "@/server/permissions/require-workspace";
 
 export type DashboardAccessState = {
   accessibleCount: number;
-  hasPendingInvites: boolean;
+  hasPendingInbox: boolean;
 };
 
 /** Result returned by check* guards: user + optional redirect URL (never throws). */
@@ -22,10 +22,10 @@ export type AccessCheckResult = { user: User; redirectTo: string | null };
 
 export async function getDashboardAccessState(user: User): Promise<DashboardAccessState> {
   const accessibleCount = await countAccessibleWorkspaces(user.id);
-  const pendingInvites =
-    accessibleCount === 0 ? await hasPendingInvitations(user.email) : false;
+  const hasPendingInbox =
+    accessibleCount === 0 ? await hasPendingInboxItems(user.email) : false;
 
-  return { accessibleCount, hasPendingInvites: pendingInvites };
+  return { accessibleCount, hasPendingInbox };
 }
 
 function dashboardPath(locale: Locale): string {
@@ -54,10 +54,10 @@ function workspaceSettingsPath(locale: Locale, workspaceSlug: string): string {
  * that render <ClientRedirect> instead of calling redirect().
  */
 async function resolveNoAccessUrl(locale: Locale, user: User): Promise<string | null> {
-  const { accessibleCount, hasPendingInvites } = await getDashboardAccessState(user);
+  const { accessibleCount, hasPendingInbox } = await getDashboardAccessState(user);
 
   if (accessibleCount === 0) {
-    return hasPendingInvites ? incomingInvitationsPath(locale) : onboardingPath(locale);
+    return hasPendingInbox ? incomingInvitationsPath(locale) : onboardingPath(locale);
   }
 
   return null;
@@ -81,21 +81,28 @@ export async function checkDashboardHomeAccess(locale: Locale): Promise<AccessCh
 /** Guard for /dashboard/onboarding — founders only, not invitees with pending invites. */
 export async function checkOnboardingAccess(locale: Locale): Promise<AccessCheckResult> {
   const user = await requireAuth(locale);
-  const { accessibleCount, hasPendingInvites } = await getDashboardAccessState(user);
+  const { accessibleCount, hasPendingInbox } = await getDashboardAccessState(user);
 
   if (accessibleCount > 0) return { user, redirectTo: dashboardPath(locale) };
-  if (hasPendingInvites) return { user, redirectTo: incomingInvitationsPath(locale) };
+  if (hasPendingInbox) return { user, redirectTo: incomingInvitationsPath(locale) };
 
   return { user, redirectTo: null };
 }
 
-/** Guard for /dashboard/invitations — users with pending invites and no workspace. */
+/** Guard for /dashboard/invitations — users with pending inbox items (invites or transfers). */
 export async function checkIncomingInvitationsAccess(locale: Locale): Promise<AccessCheckResult> {
   const user = await requireAuth(locale);
-  const { accessibleCount, hasPendingInvites } = await getDashboardAccessState(user);
+  const [accessibleCount, hasInbox] = await Promise.all([
+    countAccessibleWorkspaces(user.id),
+    hasPendingInboxItems(user.email),
+  ]);
 
-  if (accessibleCount > 0) return { user, redirectTo: dashboardPath(locale) };
-  if (!hasPendingInvites) return { user, redirectTo: onboardingPath(locale) };
+  if (!hasInbox) {
+    return {
+      user,
+      redirectTo: accessibleCount > 0 ? dashboardPath(locale) : onboardingPath(locale),
+    };
+  }
 
   return { user, redirectTo: null };
 }

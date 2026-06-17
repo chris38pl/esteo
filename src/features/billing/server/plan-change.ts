@@ -8,7 +8,12 @@ import { BillingError } from "@/features/billing/server/billing-errors";
 import { getStripeClient } from "@/features/billing/server/stripe-client";
 import { enforceSingleActiveSubscription } from "@/features/billing/server/subscription-invariants";
 import {
+  buildSchedulePhaseItems,
+  classifySubscriptionItems,
+} from "@/features/billing/server/stripe-subscription-items";
+import {
   extractStripePriceId,
+  findBasePlanSubscriptionItem,
   getSubscriptionScheduleId,
   planFromPriceId,
   priceIdForPlan,
@@ -132,10 +137,16 @@ function getScheduledTargetPlan(schedule: Stripe.SubscriptionSchedule): Subscrip
   }
 
   const lastPhase = phases[phases.length - 1];
-  const price = lastPhase?.items[0]?.price;
-  const priceId =
-    typeof price === "string" ? price : (price && "id" in price ? price.id : null);
-  return planFromPriceId(priceId ?? null);
+  for (const phaseItem of lastPhase?.items ?? []) {
+    const price = phaseItem.price;
+    const priceId =
+      typeof price === "string" ? price : (price && "id" in price ? price.id : null);
+    const mapped = planFromPriceId(priceId ?? null);
+    if (mapped) {
+      return mapped;
+    }
+  }
+  return null;
 }
 
 async function scheduleDowngradeAtPeriodEnd(params: {
@@ -149,17 +160,20 @@ async function scheduleDowngradeAtPeriodEnd(params: {
     expand: ["schedule"],
   });
 
-  const item = subscription.items.data[0];
-  if (!item) {
-    throw new BillingError("Stripe subscription has no line items.");
+  const classified = classifySubscriptionItems(subscription);
+  const baseItem = classified.baseItem ?? findBasePlanSubscriptionItem(subscription);
+  if (!baseItem) {
+    throw new BillingError("Stripe subscription has no base plan line item.");
   }
 
-  const currentPriceId = extractStripePriceId(item);
-  const currentPeriodEnd = item.current_period_end;
+  const currentPriceId = extractStripePriceId(baseItem);
+  const currentPeriodEnd = baseItem.current_period_end;
   if (!currentPriceId || !currentPeriodEnd) {
     throw new BillingError("Stripe subscription is missing billing period data.");
   }
 
+  const storageQuantity = classified.storageItem?.quantity ?? 0;
+  const seatQuantity = classified.seatItem?.quantity ?? 0;
   const targetPriceId = priceIdForPlan(params.targetPlan);
   let scheduleId = getSubscriptionScheduleId(subscription);
 
@@ -174,8 +188,13 @@ async function scheduleDowngradeAtPeriodEnd(params: {
     end_behavior: "release",
     phases: [
       {
-        items: [{ price: currentPriceId, quantity: 1 }],
-        start_date: item.current_period_start,
+        items: buildSchedulePhaseItems({
+          basePriceId: currentPriceId,
+          storageQuantity,
+          seatQuantity,
+          includeSeatAddons: true,
+        }),
+        start_date: baseItem.current_period_start,
         end_date: currentPeriodEnd,
         metadata: {
           workspaceId: params.workspaceId,
@@ -183,7 +202,12 @@ async function scheduleDowngradeAtPeriodEnd(params: {
         },
       },
       {
-        items: [{ price: targetPriceId, quantity: 1 }],
+        items: buildSchedulePhaseItems({
+          basePriceId: targetPriceId,
+          storageQuantity,
+          seatQuantity: 0,
+          includeSeatAddons: false,
+        }),
         start_date: currentPeriodEnd,
         metadata: {
           workspaceId: params.workspaceId,
@@ -217,13 +241,32 @@ async function upgradeSubscriptionImmediately(params: {
 
   await releaseSubscriptionScheduleIfPresent(stripe, subscription);
 
-  const item = subscription.items.data[0];
-  if (!item) {
-    throw new BillingError("Stripe subscription has no line items.");
+  const classified = classifySubscriptionItems(subscription);
+  const baseItem = classified.baseItem ?? findBasePlanSubscriptionItem(subscription);
+  if (!baseItem) {
+    throw new BillingError("Stripe subscription has no base plan line item.");
+  }
+
+  const items: Stripe.SubscriptionUpdateParams.Item[] = [
+    { id: baseItem.id, price: priceIdForPlan(params.targetPlan) },
+  ];
+
+  const storageQuantity = classified.storageItem?.quantity ?? 0;
+  if (storageQuantity > 0 && classified.storageItem) {
+    items.push({ id: classified.storageItem.id, quantity: storageQuantity });
+  }
+
+  if (params.targetPlan === "BUSINESS") {
+    const seatQuantity = classified.seatItem?.quantity ?? 0;
+    if (seatQuantity > 0 && classified.seatItem) {
+      items.push({ id: classified.seatItem.id, quantity: seatQuantity });
+    }
+  } else if (classified.seatItem) {
+    items.push({ id: classified.seatItem.id, deleted: true });
   }
 
   const updated = await stripe.subscriptions.update(params.stripeSubscriptionId, {
-    items: [{ id: item.id, price: priceIdForPlan(params.targetPlan) }],
+    items,
     proration_behavior: "create_prorations",
     metadata: {
       workspaceId: params.workspaceId,

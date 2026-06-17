@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { getAccessibleWorkspaces } from "@/features/workspaces/server/accessible-workspaces";
-import { hasPendingInvitations } from "@/features/workspaces/server/invitation-inbox";
+import { hasPendingInboxItems } from "@/features/workspaces/server/inbox-state";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 import { requireAuth } from "@/server/auth/require-auth";
@@ -31,7 +31,7 @@ export default async function DashboardRootPage({
   const accessible = await getAccessibleWorkspaces(user.id);
 
   if (accessible.length === 0) {
-    const hasPending = await hasPendingInvitations(user.email);
+    const hasPending = await hasPendingInboxItems(user.email);
     return (
       <ClientRedirect
         href={`/${resolvedLocale}/dashboard/${hasPending ? "invitations" : "onboarding"}`}

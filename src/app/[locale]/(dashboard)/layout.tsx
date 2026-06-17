@@ -8,13 +8,17 @@ import { DashboardShell } from "@/components/layout/app-sidebar/dashboard-shell"
 import { WorkspaceProvider } from "@/components/layout/app-sidebar/workspace-context";
 import { toReceivedInvitationView } from "@/features/workspaces/components/invitation-types";
 import { getBillingSidebarState } from "@/features/billing/server/get-billing-sidebar-state";
+import {
+  getBillingPayerWorkspaceIdsForUser,
+  resolveWorkspaceForBilling,
+} from "@/features/billing/server/billing-permissions";
 import { getAccessibleWorkspaces } from "@/features/workspaces/server/accessible-workspaces";
 import { getActiveWorkspaceMembersData } from "@/features/workspaces/server/get-active-workspace-card-data";
 import { getActiveWorkspaceMenuStats } from "@/features/workspaces/server/get-active-workspace-menu-stats";
 import {
-  countPendingInvitations,
   getNextModalInvitation,
 } from "@/features/workspaces/server/invitation-inbox";
+import { countPendingInboxItems } from "@/features/workspaces/server/inbox-state";
 import { RESERVED_DASHBOARD_SLUGS } from "@/features/workspaces/server/slug-availability";
 import { toCurrentUserProfile } from "@/lib/avatars/user-avatar-presets";
 import { requireAuth } from "@/server/auth/require-auth";
@@ -49,7 +53,10 @@ export default async function DashboardLayout({
 
   const user = await requireAuth(resolvedLocale);
   const currentUser = toCurrentUserProfile(user);
-  const workspaces = await getAccessibleWorkspaces(user.id);
+  const [workspaces, billingPayerWorkspaceIds] = await Promise.all([
+    getAccessibleWorkspaces(user.id),
+    getBillingPayerWorkspaceIdsForUser(user.id),
+  ]);
   const issueTrackerEnabled = isIssueTrackerEnabled();
 
   // New users have no workspaces yet and will be immediately redirected to
@@ -97,7 +104,12 @@ export default async function DashboardLayout({
   let activeWorkspaceId: string | null = null;
   if (slugFromUrl) {
     const resolved = await resolveWorkspaceBySlug(slugFromUrl, user.id);
-    activeWorkspaceId = resolved?.workspace.id ?? null;
+    if (resolved) {
+      activeWorkspaceId = resolved.workspace.id;
+    } else {
+      const billingResolved = await resolveWorkspaceForBilling(slugFromUrl, user.id);
+      activeWorkspaceId = billingResolved?.workspace.id ?? null;
+    }
   } else {
     activeWorkspaceId = await resolveActiveWorkspace(user.id);
   }
@@ -106,7 +118,7 @@ export default async function DashboardLayout({
     canUserCreateWorkspace(user.id),
     countOwnedWorkspaces(user.id),
     getBillingSidebarState(activeWorkspaceId),
-    countPendingInvitations(user.email),
+    countPendingInboxItems(user.email),
     getNextModalInvitation(user.email),
   ]);
   const canCreateAdditionalWorkspace = canCreateWorkspace && ownedWorkspaceCount > 0;
@@ -127,6 +139,7 @@ export default async function DashboardLayout({
       slug: workspace.slug,
       appearanceTheme: workspace.appearanceTheme,
       isOwner: workspace.ownerId === user.id,
+      isBillingPayer: billingPayerWorkspaceIds.has(workspace.id),
       logoUrl: logoUrlsByWorkspaceId.get(workspace.id) ?? null,
       storageUsedFormatted: storage.usedFormatted,
       storageLimitFormatted: storage.limitFormatted,

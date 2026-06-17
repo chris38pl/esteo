@@ -4,11 +4,10 @@ import { setRequestLocale } from "next-intl/server";
 
 import { WorkspacePlansPanel } from "@/features/billing/components/workspace-plans-panel";
 import { getWorkspaceBillingPlansPageData } from "@/features/billing/server/get-workspace-billing-plans-page-data";
+import { resolveWorkspaceForBilling } from "@/features/billing/server/billing-permissions";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 import { requireAuth } from "@/server/auth/require-auth";
-import { requireRole } from "@/server/permissions/require-workspace";
-import { resolveWorkspaceBySlug } from "@/server/workspaces/active-workspace";
 
 export default async function WorkspaceBillingPlansPage({
   params,
@@ -21,16 +20,10 @@ export default async function WorkspaceBillingPlansPage({
   setRequestLocale(resolvedLocale);
 
   const user = await requireAuth(resolvedLocale);
-  const resolved = await resolveWorkspaceBySlug(workspaceSlug, user.id);
+  const resolved = await resolveWorkspaceForBilling(workspaceSlug, user.id);
 
   if (!resolved) {
     redirect(`/${resolvedLocale}/dashboard`);
-  }
-
-  try {
-    await requireRole(user, resolved.workspace.id, "OWNER");
-  } catch {
-    redirect(`/${resolvedLocale}/dashboard/${resolved.canonicalSlug}`);
   }
 
   const data = await getWorkspaceBillingPlansPageData(resolved.workspace.id);
@@ -43,6 +36,7 @@ export default async function WorkspaceBillingPlansPage({
           workspaceSlug={resolved.canonicalSlug}
           locale={resolvedLocale}
           data={data}
+          canManageBilling={resolved.permissions.canManageBilling}
         />
       </Suspense>
     </div>

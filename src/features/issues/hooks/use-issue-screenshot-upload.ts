@@ -2,6 +2,21 @@
 
 import { useCallback, useState } from "react";
 
+async function readUploadErrorMessage(response: Response): Promise<string> {
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (contentType.includes("application/json")) {
+    try {
+      const body = (await response.json()) as { error?: string };
+      return body.error ?? `Upload failed (${response.status}).`;
+    } catch {
+      return `Upload failed (${response.status}).`;
+    }
+  }
+
+  return `Upload failed (${response.status}).`;
+}
+
 export function useIssueScreenshotUpload() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,10 +42,8 @@ export function useIssueScreenshotUpload() {
         body: formData,
       });
 
-      const body = (await response.json()) as { error?: string };
-
       if (!response.ok) {
-        throw new Error(body.error ?? "Upload failed.");
+        throw new Error(await readUploadErrorMessage(response));
       }
 
       return { success: true as const };

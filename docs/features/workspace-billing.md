@@ -1,6 +1,6 @@
 # Workspace billing (Płatności)
 
-> **Status:** Implemented (P0). Owner-only billing page per workspace, Stripe Checkout / Customer Portal, plan changes, usage overview, upcoming invoice preview. Add-ons UI is a **placeholder** (not wired to Stripe yet).
+> **Status:** Implemented (P0). Owner-only billing page per workspace, Stripe Checkout / Customer Portal, plan changes, usage overview, upcoming invoice preview, and **quantity-based add-ons** (storage + seats).
 
 ## Goal
 
@@ -23,6 +23,7 @@ Billing is **per workspace** (`BillingAccount` + `Subscription`), not per user. 
 | --- | --- | --- |
 | Billing overview | `/[locale]/dashboard/[workspaceSlug]/billing` | **OWNER** only |
 | Plan selection (3 columns) | `/[locale]/dashboard/[workspaceSlug]/billing/plans` | **OWNER** only |
+| Add-ons management | `/[locale]/dashboard/[workspaceSlug]/billing/addons` | **OWNER** only |
 | Upgrade alias (redirect) | `/[locale]/dashboard/[workspaceSlug]/upgrade` → `/billing/plans` | **OWNER** only |
 | Post-checkout sync | `/[locale]/dashboard/[workspaceSlug]/billing/checkout-success?session_id=…` | Authenticated owner |
 | Post-portal sync | `/[locale]/dashboard/[workspaceSlug]/billing/portal-return` | Authenticated owner |
@@ -43,7 +44,7 @@ WorkspaceBillingPanel
 ├── Status banners (PAST_DUE, GRACE_PERIOD, storage/seat over limit, action errors)
 ├── BillingPlanHeroBanner          — plan hero + artwork + link to /billing/plans + manage payment
 ├── BillingUsageStatsSection       — 4-column usage grid (AI, estimates, users, storage)
-├── BillingSecondaryCardsSection   — add-ons (placeholder) + next invoice (Stripe)
+├── BillingSecondaryCardsSection   — add-ons summary + next invoice (Stripe)
 ├── Member usage table             — per-user AI/estimate meters (if any usage)
 └── BillingDangerZone              — cancel at period end / resume (paid plans only)
 ```
@@ -86,15 +87,35 @@ On billing/entitlement reads, `reconcileEstimateUsageAggregate` heals drift when
 | --- | --- | --- | --- |
 | FREE | 1 (owner) | — | 250 MB |
 | PRO | 1 (owner) | — | 1 GB |
-| BUSINESS | owner + unlimited | unlimited | 5 GB |
+| BUSINESS | 5 (owner + 4 invites) | 4 | 5 GB |
 
-Source: `src/server/billing/plan-catalog.ts`. Only **BUSINESS** may invite additional members (`maxInvitedSeats > 0`). Storage cap is written to `Workspace.attachmentStorageLimitBytes` on plan sync.
+Source: `src/server/billing/plan-catalog.ts`. Only **BUSINESS** may invite additional members (`maxInvitedSeats > 0`). Storage and seat caps are written to `Workspace` on plan/add-on sync via `syncWorkspaceEffectiveLimits`.
 
 ### Secondary cards
 
-**Aktywne dodatki (placeholder)**
+**Aktywne dodatki**
 
-Static mock rows (extra users + extra storage) matching design spec. **Zarządzaj dodatkami** is disabled until add-on products exist in Stripe.
+Summary of active storage and seat packs from entitlements. **Zarządzaj dodatkami** links to `/billing/addons`.
+
+### Add-ons page (`/billing/addons`)
+
+Quantity steppers for paid plans:
+
+| Add-on | Unit | Price (PLN/mo per pack) | PRO | BUSINESS |
+| --- | --- | --- | --- | --- |
+| Storage | +10 GB | 39 | Yes | Yes |
+| Seats | +5 users | 99 | No (upsell to Business) | Yes |
+
+**Rules:**
+
+- FREE cannot purchase add-ons (gated on page).
+- Seat add-ons are **BUSINESS-only** at catalog, Stripe sync, entitlement merge, and server action layers.
+- Reducing seat quantity is blocked when active members exceed the new cap.
+- Plan downgrade BUSINESS → PRO schedules removal of seat add-on items at period end; storage add-ons are preserved.
+
+Server: `changeWorkspaceAddonQuantity()` (`addon-change.ts`) updates Stripe subscription items with proration. Webhook/checkout sync calls `syncWorkspaceAddonsFromStripe()`.
+
+**Env:** `STRIPE_PRICE_ADDON_STORAGE`, `STRIPE_PRICE_ADDON_SEATS` (see `.env.example`).
 
 **Następna faktura (live)**
 
@@ -138,6 +159,7 @@ WorkspaceBillingPageData = {
 
 | Action | Stripe / DB effect |
 | --- | --- |
+| `changeWorkspaceAddonQuantityAction(workspaceId, addonKey, quantity)` | → `changeWorkspaceAddonQuantity()` — Stripe subscription item qty |
 | `changeWorkspacePlanAction(workspaceId, plan)` | → `changeWorkspaceSubscriptionPlan()` — Checkout or in-app update |
 | `openWorkspacePortalAction(workspaceId)` | Stripe Billing Portal session; `return_url` → portal-return |
 | `cancelWorkspaceSubscriptionAction(workspaceId)` | `cancel_at_period_end` + sync |
@@ -162,6 +184,7 @@ Full diagrams, plan-change matrix, portal sync, and duplicate-sub cleanup: [`doc
 
 - `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
 - `STRIPE_PRICE_PRO`, `STRIPE_PRICE_BUSINESS` (and optional webhook price mapping)
+- `STRIPE_PRICE_ADDON_STORAGE`, `STRIPE_PRICE_ADDON_SEATS`
 
 ---
 
@@ -195,7 +218,7 @@ Polish quick-reference table: [`docs/dev/billing-toolkit.md`](../dev/billing-too
 
 Namespaces: `billing.workspace.*` in `src/messages/{pl,en}/billing.json`
 
-Sections: `planHero`, `plans`, `usage`, `addons`, `nextInvoice`, `dangerZone`, `statusNotice`, `memberUsage`, `actions`.
+Sections: `planHero`, `plans`, `usage`, `addons`, `addonPage`, `nextInvoice`, `dangerZone`, `statusNotice`, `memberUsage`, `actions`.
 
 Hero prices (`planHero.price.*`) are **display placeholders** — authoritative amounts come from Stripe on the next-invoice card.
 
@@ -207,18 +230,20 @@ Hero prices (`planHero.price.*`) are **display placeholders** — authoritative 
 | --- | --- |
 | Billing overview page | `src/app/.../billing/page.tsx` |
 | Plans page | `src/app/.../billing/plans/page.tsx` |
+| Add-ons page | `src/app/.../billing/addons/page.tsx` |
 | Upgrade alias | `src/app/.../upgrade/page.tsx` |
 | Overview panel | `src/features/billing/components/workspace-billing-panel.tsx` |
 | Plans panel | `src/features/billing/components/workspace-plans-panel.tsx` |
+| Add-ons panel | `src/features/billing/components/workspace-addons-panel.tsx` |
 | Hero | `billing-plan-hero-banner.tsx`, `billing-plan-hero-styles.tsx`, `lib/billing-plan-hero-images.ts` |
 | Plan limits labels | `lib/format-plan-limit-labels.ts` |
 | Usage grid | `billing-usage-stats-section.tsx` |
 | Secondary cards | `billing-secondary-cards-section.tsx` |
 | Shared artwork | `src/components/hero-card/hero-card-artwork.tsx` |
-| Page data | `billing-page-data.ts`, `get-workspace-billing-page-data.ts`, `billing-plans-page-data.ts`, `get-workspace-billing-plans-page-data.ts` |
+| Page data | `billing-page-data.ts`, `get-workspace-billing-page-data.ts`, `billing-plans-page-data.ts`, `get-workspace-billing-plans-page-data.ts`, `billing-addons-page-data.ts`, `get-workspace-billing-addons-page-data.ts` |
 | Route helpers | `src/lib/dashboard-routes.ts` |
 | Upcoming invoice | `get-workspace-upcoming-invoice.ts` |
-| Stripe core | `billing-service.ts`, `plan-change.ts`, `subscription-sync.ts`, `billing-actions.ts` |
+| Stripe core | `billing-service.ts`, `plan-change.ts`, `addon-change.ts`, `subscription-sync.ts`, `workspace-addon-sync.ts`, `billing-actions.ts` |
 | Routes | `checkout-success/route.ts`, `portal-return/route.ts` |
 
 ---
@@ -235,6 +260,8 @@ Hero prices (`planHero.price.*`) are **display placeholders** — authoritative 
 - [ ] Resume subscription clears cancel flag
 - [ ] Usage cards reflect entitlements + storage
 - [ ] Next invoice shows Stripe amount/date (active paid sub)
+- [ ] `/billing/addons`: PRO can add storage only; BUSINESS can add storage + seats; FREE gated
+- [ ] Seat quantity decrease blocked when over member cap
 - [ ] Canceling sub shows empty next-invoice state with correct copy
 - [ ] Hero owl visible on desktop (mirror) and mobile (right offset)
 - [ ] `npm run test:workspace-billing` passes
@@ -243,7 +270,6 @@ Hero prices (`planHero.price.*`) are **display placeholders** — authoritative 
 
 ## Not in scope (yet)
 
-- Stripe add-on products (placeholder UI only)
-- Per-seat or storage metered billing in Stripe
+- Per-seat or storage metered billing in Stripe (add-ons use fixed recurring prices per pack qty)
 - Invoice PDF list in-app (use Customer Portal)
 - Billing for non-owner roles

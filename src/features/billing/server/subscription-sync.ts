@@ -21,18 +21,16 @@ import {
 } from "@/features/billing/server/stripe-plan-utils";
 
 import { defaultPlanVersion } from "@/server/billing/plan-catalog";
-
 import { recomputeIsActiveFree } from "@/server/billing/workspace-billing-maintenance";
-
 import {
-
-  reconcileSeatsAfterPlanChange,
-
   suspendMembersOnWorkspaceExpired,
-
 } from "@/server/billing/seat-overage";
-
-import { syncWorkspaceStorageLimitFromPlan } from "@/server/billing/workspace-plan-sync";
+import { syncWorkspaceEffectiveLimits } from "@/server/billing/workspace-plan-sync";
+import {
+  cancelAllWorkspaceAddons,
+  syncWorkspaceAddonsFromStripe,
+} from "@/features/billing/server/workspace-addon-sync";
+import { findBasePlanSubscriptionItem } from "@/features/billing/server/stripe-plan-utils";
 
 
 
@@ -164,31 +162,28 @@ export async function syncSubscriptionFromStripe(
 
   const status = mapStripeStatus(stripeSubscription.status);
 
-  const priceId = extractStripePriceId(stripeSubscription.items.data[0]);
-
-  const periodEndTimestamp = stripeSubscription.items.data[0]?.current_period_end ?? null;
+  const baseItem = findBasePlanSubscriptionItem(stripeSubscription);
+  const priceId = extractStripePriceId(baseItem);
+  const periodEndTimestamp = baseItem?.current_period_end ?? null;
 
   const currentPeriodEnd = periodEndTimestamp ? new Date(periodEndTimestamp * 1000) : null;
 
   const cancelAtPeriodEnd = isStripeSubscriptionScheduledToCancel(stripeSubscription);
 
+  const previousSubscription = await prisma.subscription.findUnique({
+    where: { billingAccountId: billingAccount.id },
+    select: { cancelAtPeriodEnd: true },
+  });
 
+  const previousCancelAtPeriodEnd = previousSubscription?.cancelAtPeriodEnd ?? false;
 
   if (billingAccount.workspaceId && (status === "ACTIVE" || status === "TRIAL")) {
-
     await enforceSingleActiveSubscription({
-
       workspaceId: billingAccount.workspaceId,
-
       keepSubscriptionId: stripeSubscription.id,
-
       stripeCustomerId,
-
     });
-
   }
-
-
 
   const subscription = await prisma.subscription.upsert({
 
@@ -257,13 +252,22 @@ export async function syncSubscriptionFromStripe(
 
 
   if (billingAccount.workspaceId) {
-
     await recomputeIsActiveFree(billingAccount.workspaceId);
+    await syncWorkspaceAddonsFromStripe({
+      workspaceId: billingAccount.workspaceId,
+      plan,
+      stripeSubscription,
+    });
 
-    await syncWorkspaceStorageLimitFromPlan(billingAccount.workspaceId);
-
-    await reconcileSeatsAfterPlanChange(billingAccount.workspaceId);
-
+    if (previousCancelAtPeriodEnd && !cancelAtPeriodEnd) {
+      const { cancelPendingTransferIfSubscriptionReactivated } = await import(
+        "@/features/workspaces/server/ownership-transfer"
+      );
+      await cancelPendingTransferIfSubscriptionReactivated(
+        billingAccount.workspaceId,
+        cancelAtPeriodEnd,
+      );
+    }
   }
 
 
@@ -321,11 +325,9 @@ export async function expireWorkspaceSubscription(stripeSubscriptionId: string) 
 
 
   if (subscription.billingAccount?.workspaceId) {
-
     await recomputeIsActiveFree(subscription.billingAccount.workspaceId);
-
+    await cancelAllWorkspaceAddons(subscription.billingAccount.workspaceId);
     await suspendMembersOnWorkspaceExpired(subscription.billingAccount.workspaceId);
-
   }
 
 

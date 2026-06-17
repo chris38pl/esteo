@@ -190,22 +190,53 @@ Manual:
 - [ ] PRO → BUSINESS via billing panel (no Checkout redirect)
 - [ ] BUSINESS → PRO schedules downgrade at period end
 - [ ] BUSINESS with pending PRO downgrade → click BUSINESS → schedule canceled
+- [ ] Add storage pack on PRO; add storage + seats on BUSINESS
+- [ ] BUSINESS → PRO downgrade drops seat items at period end, keeps storage
+
+## Multi-item subscriptions (base plan + add-ons)
+
+A paid subscription may contain multiple Stripe subscription items:
+
+| Item type | Price env | Resolved by |
+| --- | --- | --- |
+| Base plan | `STRIPE_PRICE_PRO`, `STRIPE_PRICE_BUSINESS` | `findBasePlanSubscriptionItem()` |
+| Storage add-on | `STRIPE_PRICE_ADDON_STORAGE` | `classifySubscriptionItems()` |
+| Seat add-on | `STRIPE_PRICE_ADDON_SEATS` | `classifySubscriptionItems()` |
+
+**Plan resolution** uses the base plan item only (`stripe-plan-utils.ts`), not `items[0]`.
+
+**Sync path:** `syncSubscriptionFromStripe` → `syncWorkspaceAddonsFromStripe` → `syncWorkspaceEffectiveLimits` (base catalog limits + `WorkspaceAddon` rows → `Workspace` storage/seat caps).
+
+**Add-on mutations:** `changeWorkspaceAddonQuantity()` (`addon-change.ts`) — creates/updates/deletes subscription items with proration. Guards: FREE blocked; seats BUSINESS-only; seat decrease blocked when over cap.
+
+**Plan changes:**
+
+- Upgrades (`PRO → BUSINESS`): `subscriptions.update` preserves existing add-on items.
+- Downgrades (`BUSINESS → PRO`): subscription schedule phase 2 keeps storage items, **omits** seat items.
+
+**DB model:** `WorkspaceAddon` (`addonKey`, `quantity`, `stripeSubscriptionItemId`, `status`). Cleared on subscription expire via `cancelAllWorkspaceAddons`.
 
 ## Related files
 
 | File | Role |
 |------|------|
 | `plan-change.ts` | Single plan-change entrypoint |
+| `addon-change.ts` | Add-on quantity changes on Stripe subscription |
+| `addon-catalog.ts` | Unit sizes, prices, purchase guards, limit merge |
+| `workspace-addon-sync.ts` | Stripe items ↔ `WorkspaceAddon` rows |
+| `stripe-subscription-items.ts` | Classify base vs add-on items; schedule phase builder |
 | `billing-service.ts` | Customer resolution, portal, re-exports |
 | `subscription-sync.ts` | Webhook + checkout-success sync |
 | `billing-actions.ts` | Server actions |
 | `get-workspace-billing-page-data.ts` | RSC page data (usage, storage, next invoice) |
+| `get-workspace-billing-addons-page-data.ts` | Add-ons page entitlements |
 | `get-workspace-upcoming-invoice.ts` | Stripe `invoices.createPreview` for next invoice card |
 | `checkout-success/route.ts` | Post-checkout sync via `session_id` |
 | `portal-return/route.ts` | Post-portal sync via DB `stripeSubscriptionId` |
 | `workspace-billing-panel.tsx` | Billing page UI shell |
+| `workspace-addons-panel.tsx` | Add-ons stepper UI |
 | `billing-plan-hero-banner.tsx` | Plan hero + artwork + primary actions |
 | `billing-usage-stats-section.tsx` | Four usage stat cards |
-| `billing-secondary-cards-section.tsx` | Add-ons placeholder + next invoice card |
+| `billing-secondary-cards-section.tsx` | Add-ons summary + next invoice card |
 
 Product / UX overview: [`docs/features/workspace-billing.md`](../features/workspace-billing.md).

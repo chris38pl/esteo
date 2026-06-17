@@ -24,6 +24,7 @@ type Props = {
   workspaceSlug: string;
   locale: Locale;
   data: WorkspaceBillingPlansPageData;
+  canManageBilling: boolean;
 };
 
 type PlanCardAction =
@@ -86,7 +87,13 @@ function formatLongDate(value: Date | string): string {
   return new Intl.DateTimeFormat(undefined, { dateStyle: "long" }).format(new Date(value));
 }
 
-export function WorkspacePlansPanel({ workspaceId, workspaceSlug, locale, data }: Props) {
+export function WorkspacePlansPanel({
+  workspaceId,
+  workspaceSlug,
+  locale,
+  data,
+  canManageBilling,
+}: Props) {
   const t = useTranslations("billing.workspace.plans");
   const tHero = useTranslations("billing.workspace.planHero");
   const searchParams = useSearchParams();
@@ -266,7 +273,7 @@ export function WorkspacePlansPanel({ workspaceId, workspaceSlug, locale, data }
                   </Button>
                 ) : null}
 
-                {action.kind === "free_hint" ? (
+                {action.kind === "free_hint" && canManageBilling ? (
                   <div className="space-y-2">
                     <p className="text-xs leading-relaxed text-muted-foreground">
                       {t("freeDowngradeHint")}
@@ -277,7 +284,7 @@ export function WorkspacePlansPanel({ workspaceId, workspaceSlug, locale, data }
                   </div>
                 ) : null}
 
-                {action.kind === "select" ? (
+                {action.kind === "select" && canManageBilling ? (
                   <Button
                     className={cn("h-11 w-full", accent.button)}
                     disabled={pending}
@@ -288,7 +295,7 @@ export function WorkspacePlansPanel({ workspaceId, workspaceSlug, locale, data }
                   </Button>
                 ) : null}
 
-                {action.kind === "downgrade" ? (
+                {action.kind === "downgrade" && canManageBilling ? (
                   <Button
                     variant="outline"
                     className="h-11 w-full"

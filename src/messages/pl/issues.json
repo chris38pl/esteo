@@ -22,6 +22,8 @@
     "submitting": "Zapisywanie…",
     "cancel": "Anuluj",
     "success": "Zgłoszenie #{number} zapisane",
+    "partialSuccess": "Zgłoszenie #{number} zapisane, ale nie udało się przesłać screenshotów",
+    "unexpectedError": "Coś poszło nie tak. Spróbuj ponownie.",
     "validationError": "Uzupełnij wymagane pola",
     "uploadError": "Nie udało się przesłać screenshotów"
   },

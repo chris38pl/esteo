@@ -9,6 +9,14 @@ import {
   resolvePlanLimits,
 } from "../src/server/billing/plan-catalog";
 import {
+  canPurchaseSeatAddon,
+  canPurchaseStorageAddon,
+  mergePlanLimitsWithAddons,
+  resolveAddonDeltas,
+  SEAT_UNIT_COUNT,
+  STORAGE_UNIT_BYTES,
+} from "../src/server/billing/addon-catalog";
+import {
   periodBoundsFromKey,
 } from "../src/server/billing/usage-service";
 import { isSeatOverLimit } from "../src/server/billing/seat-overage";
@@ -21,7 +29,10 @@ import {
 } from "../src/features/billing/server/stripe-plan-utils";
 import { BillingPlanResolutionError } from "../src/features/billing/server/billing-errors";
 import { workspaceUserUsage } from "../src/features/billing/workspace-user-usage";
-import { FREE_WORKSPACE_COOLDOWN_DAYS } from "../src/server/permissions/entitlements";
+import {
+  FREE_WORKSPACE_COOLDOWN_DAYS,
+  FREE_WORKSPACE_MONTHLY_DELETE_LIMIT,
+} from "../src/server/permissions/entitlements";
 
 let failures = 0;
 let checks = 0;
@@ -213,7 +224,7 @@ console.log("Plan catalog:");
 assert(defaultPlanVersion("PRO") === DEFAULT_PLAN_VERSION.PRO, "defaultPlanVersion(PRO) matches catalog");
 assert(resolvePlanLimits("FREE").maxInvitedSeats === 0, "FREE has 0 invited seats");
 assert(resolvePlanLimits("PRO").maxInvitedSeats === 0, "PRO has 0 invited seats");
-assert(resolvePlanLimits("BUSINESS").maxInvitedSeats === null, "BUSINESS has unlimited seats");
+assert(resolvePlanLimits("BUSINESS").maxInvitedSeats === 4, "BUSINESS has 4 invited seats (5 users)");
 assert(resolvePlanLimits("FREE").maxStorageBytes === 250 * 1024 * 1024, "FREE has 250 MB storage");
 assert(resolvePlanLimits("PRO").maxStorageBytes === 1024 * 1024 * 1024, "PRO has 1 GB storage");
 assert(resolvePlanLimits("BUSINESS").maxStorageBytes === 5 * 1024 * 1024 * 1024, "BUSINESS has 5 GB storage");
@@ -231,9 +242,9 @@ assert(
   "PRO owner-only workspace shows 1/1 users",
 );
 assert(
-  workspaceUserUsage({ used: 5, reserved: 0, limit: null }).used === 6 &&
-    workspaceUserUsage({ used: 5, reserved: 0, limit: null }).limit === null,
-  "BUSINESS counts owner plus members with unlimited limit",
+  workspaceUserUsage({ used: 3, reserved: 1, limit: 4 }).used === 5 &&
+    workspaceUserUsage({ used: 3, reserved: 1, limit: 4 }).limit === 5,
+  "BUSINESS counts owner plus members with 5-user cap",
 );
 
 assert(resolvePlanLimits("FREE").maxEstimatesPerMonth === 3, "FREE caps estimates at 3");
@@ -242,6 +253,36 @@ assert(
   resolvePlanLimits("PRO", "NONEXISTENT_VERSION").maxAiAssistantCallsPerMonth === 100,
   "unknown pinned version falls back to current default",
 );
+
+// ---------------------------------------------------------------------------
+// Add-on catalog
+// ---------------------------------------------------------------------------
+console.log("Add-on catalog:");
+
+const businessBase = resolvePlanLimits("BUSINESS");
+const addonDeltas = resolveAddonDeltas("BUSINESS", [
+  { addonKey: "STORAGE", quantity: 2 },
+  { addonKey: "SEATS", quantity: 1 },
+]);
+assert(
+  addonDeltas.extraStorageBytes === 2 * STORAGE_UNIT_BYTES,
+  "storage addon qty multiplies 10 GB unit",
+);
+assert(
+  addonDeltas.extraInvitedSeats === SEAT_UNIT_COUNT,
+  "seat addon qty multiplies 5-user unit on BUSINESS",
+);
+assert(
+  resolveAddonDeltas("PRO", [{ addonKey: "SEATS", quantity: 3 }]).extraInvitedSeats === 0,
+  "seat addon delta is zero on PRO",
+);
+assert(
+  mergePlanLimitsWithAddons(businessBase, addonDeltas).maxInvitedSeats === 4 + SEAT_UNIT_COUNT,
+  "merged seat limit adds addon seats to base",
+);
+assert(canPurchaseStorageAddon("PRO") && canPurchaseStorageAddon("BUSINESS"), "storage addons on paid plans");
+assert(!canPurchaseStorageAddon("FREE"), "FREE cannot buy storage addons");
+assert(canPurchaseSeatAddon("BUSINESS") && !canPurchaseSeatAddon("PRO"), "seat addons BUSINESS-only");
 
 // ---------------------------------------------------------------------------
 // Webhook status + plan routing
@@ -303,10 +344,14 @@ assert(
   "no seat overage when within limit",
 );
 assert(
-  isSeatOverLimit({ seatLimit: null, used: 99, reserved: 99 }) === false,
-  "unlimited seats never over limit",
+  isSeatOverLimit({ seatLimit: 9, used: 4, reserved: 1 }) === false,
+  "within expanded BUSINESS seat cap",
 );
-assert(FREE_WORKSPACE_COOLDOWN_DAYS === 30, "FREE workspace cooldown is 30 days");
+assert(FREE_WORKSPACE_COOLDOWN_DAYS === 30, "FREE workspace cooldown window is 30 days");
+assert(
+  FREE_WORKSPACE_MONTHLY_DELETE_LIMIT === 10,
+  "FREE workspace monthly delete limit is 10",
+);
 
 // ---------------------------------------------------------------------------
 // Public estimate processing gate
