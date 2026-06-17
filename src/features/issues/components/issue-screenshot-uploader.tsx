@@ -36,7 +36,7 @@ export function IssueScreenshotUploader({
           title: t("attachments.title"),
           hint: t("attachments.hint"),
           addFile: t("attachments.addFile"),
-          fileCount: t("attachments.fileCount"),
+          fileCount: (current, max) => t("attachments.fileCount", { current, max }),
           remove: t("attachments.remove"),
           maxFiles: t("attachments.errors.maxFiles"),
           maxSize: t("attachments.errors.maxSize"),

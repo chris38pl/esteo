@@ -15,6 +15,20 @@ import { Button } from "@/components/ui/button";
 
 const CARD_WIDTH_CLASS = "w-[10.5rem]";
 
+type FileCountLabel = string | ((current: number, max: number) => string);
+
+function formatFileCountLabel(
+  label: FileCountLabel,
+  current: number,
+  max: number,
+): string {
+  if (typeof label === "function") {
+    return label(current, max);
+  }
+
+  return label.replace("{current}", String(current)).replace("{max}", String(max));
+}
+
 type LocalAttachment = {
   id: string;
   file: File;
@@ -60,7 +74,7 @@ export function AttachmentDropzone({
     title?: string;
     hint?: string;
     addFile?: string;
-    fileCount?: string;
+    fileCount?: FileCountLabel;
     remove?: string;
     maxFiles?: string;
     maxSize?: string;
@@ -80,7 +94,7 @@ export function AttachmentDropzone({
     title: labels?.title ?? t("title"),
     hint: labels?.hint ?? t("hint"),
     addFile: labels?.addFile ?? t("addFile"),
-    fileCount: labels?.fileCount ?? t("fileCount"),
+    fileCount: labels?.fileCount ?? ((current, max) => t("fileCount", { current, max })),
     remove: labels?.remove ?? t("remove"),
     maxFiles: labels?.maxFiles ?? t("errors.maxFiles"),
     maxSize: labels?.maxSize ?? t("errors.maxSize"),
@@ -237,9 +251,7 @@ export function AttachmentDropzone({
               </span>
               <span className="text-xs font-semibold text-foreground">{copy.addFile}</span>
               <span className="mt-1 text-[10px] text-muted-foreground">
-                {copy.fileCount
-                  .replace("{current}", String(files.length))
-                  .replace("{max}", String(maxFiles))}
+                {formatFileCountLabel(copy.fileCount, files.length, maxFiles)}
               </span>
             </button>
 
