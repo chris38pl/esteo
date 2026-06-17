@@ -7,19 +7,14 @@ import { prisma } from "@/db/client";
 import {
   evaluateWorkspaceBillingPermissions,
   resolveEffectivePayerUserId,
+  type BillingPayerWorkspace,
   type WorkspaceBillingPermissions,
 } from "@/features/billing/lib/billing-permissions-logic";
 import { getWorkspaceMembership } from "@/server/permissions/require-workspace";
 import { PermissionError } from "@/server/permissions/errors";
 import { resolveWorkspaceBySlug } from "@/server/workspaces/active-workspace";
 
-export type { WorkspaceBillingPermissions } from "@/features/billing/lib/billing-permissions-logic";
-
-export type BillingPayerWorkspace = {
-  id: string;
-  name: string;
-  slug: string;
-};
+export type { WorkspaceBillingPermissions, BillingPayerWorkspace } from "@/features/billing/lib/billing-permissions-logic";
 
 type WorkspaceBillingContext = {
   workspaceId: string;

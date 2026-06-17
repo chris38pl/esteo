@@ -35,4 +35,8 @@ export function evaluateWorkspaceBillingPermissions(input: {
     canViewBilling: isBillingPayer || isOwnerMember,
     canManageBilling: isBillingPayer,
     billingHandoffActive,
-    payerUs
+    payerUserId: input.payerUserId,
+    ownerId: input.workspaceOwnerId,
+    isBillingPayer,
+  };
+}
