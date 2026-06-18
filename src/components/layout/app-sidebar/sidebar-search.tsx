@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useGlobalSearch } from "@/features/search/components/global-search-provider";
 import { sidebarInsetClass } from "./sidebar-layout";
 import { useSidebarLayout } from "./sidebar-layout-context";
 import { useSidebarStore } from "./sidebar-store";
@@ -15,9 +16,14 @@ export function SidebarSearch({
   collapsedOverride?: boolean;
 } = {}) {
   const t = useTranslations("sidebar");
+  const { setOpen } = useGlobalSearch();
   const collapsedFromStore = useSidebarStore((s) => s.collapsed);
   const collapsed = collapsedOverride ?? collapsedFromStore;
   const { inDrawer } = useSidebarLayout();
+
+  function openSearch() {
+    setOpen(true);
+  }
 
   if (collapsed) {
     return (
@@ -28,6 +34,7 @@ export function SidebarSearch({
               <button
                 type="button"
                 aria-label={t("search.placeholder")}
+                onClick={openSearch}
                 className={cn(
                   "sidebar-nav-link mx-auto flex size-8 items-center justify-center rounded-lg transition-colors",
                   "text-muted-foreground",
@@ -54,9 +61,12 @@ export function SidebarSearch({
         />
         <input
           type="search"
+          readOnly
           placeholder={t("search.placeholder")}
+          onFocus={openSearch}
+          onClick={openSearch}
           className={cn(
-            "sidebar-search-input box-border block h-8 w-full max-w-full min-w-0 rounded-lg py-1.5 pr-2.5 pl-8 text-xs",
+            "sidebar-search-input box-border block h-8 w-full max-w-full min-w-0 cursor-pointer rounded-lg py-1.5 pr-2.5 pl-8 text-xs",
             "text-[var(--sidebar-heading)] placeholder:text-[var(--sidebar-section)]",
             "transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/20",
           )}

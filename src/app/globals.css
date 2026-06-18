@@ -165,7 +165,7 @@ body {
    MINIMAL PREMIUM FIELDS
 ========================= */
 
-.dark input,
+.dark input:not([data-slot="command-input"]),
 .dark textarea,
 .dark select {
   background: rgba(14, 22, 38, 0.92);
@@ -185,13 +185,13 @@ body {
 }
 
 /* placeholder */
-.dark input::placeholder,
+.dark input:not([data-slot="command-input"])::placeholder,
 .dark textarea::placeholder {
   color: rgba(148, 163, 184, 0.72);
 }
 
 /* hover */
-.dark input:hover,
+.dark input:not([data-slot="command-input"]):hover,
 .dark textarea:hover,
 .dark select:hover {
   border-color: rgba(255, 255, 255, 0.09);
@@ -199,10 +199,10 @@ body {
 }
 
 /* focus */
-.dark input:focus,
+.dark input:not([data-slot="command-input"]):focus,
 .dark textarea:focus,
 .dark select:focus,
-.dark input:focus-visible,
+.dark input:not([data-slot="command-input"]):focus-visible,
 .dark textarea:focus-visible,
 .dark select:focus-visible {
   outline: none;

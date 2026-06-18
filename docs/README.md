@@ -25,6 +25,7 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 | [admin-workspaces.md](features/admin-workspaces.md) | Platform admin workspace tools |
 | [issue-tracker.md](features/issue-tracker.md) | Internal issue tracker — staging bug capture, admin triage, Cursor sync |
 | [authentication.md](features/authentication.md) | Custom Clerk Elements sign-in, Client Trust, email second-factor |
+| [global-search.md](features/global-search.md) | Workspace command palette (Ctrl+K), SearchDocument index, recents |
 
 ## Architecture
 

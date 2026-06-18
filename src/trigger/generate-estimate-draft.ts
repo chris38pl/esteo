@@ -356,6 +356,11 @@ export const generateEstimateDraftTask = task({
         action: ESTIMATE_ACTIVITY_ACTIONS.ai_generated,
         metadata: { versionNumber: version?.versionNumber ?? 1 },
       });
+
+      const { scheduleUpsertSearchDocumentForEstimate, scheduleUpsertSearchDocumentForInquiry } =
+        await import("@/features/search/server/index-service");
+      scheduleUpsertSearchDocumentForEstimate(estimateId);
+      scheduleUpsertSearchDocumentForInquiry(estimateRequestId);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       logger.error("Failed to generate estimate draft", {

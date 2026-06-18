@@ -47,9 +47,11 @@ const namespaces = [
   "estimates",
   "voiceIntake",
   "payments",
+  "search",
   "navbar",
   "requests",
   "sidebar",
+  "workspaceUsage",
   "styleguide",
   "workspaces",
 ] as const;

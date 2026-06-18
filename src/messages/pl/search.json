@@ -1,0 +1,42 @@
+{
+  "placeholder": "Szukaj w Esteo…",
+  "noResults": "Nie znaleziono wyników",
+  "empty": {
+    "hint": "Wyszukaj wszystko w swoim workspace: wyceny, zapytania, załączniki i więcej."
+  },
+  "groups": {
+    "estimates": "Wyceny",
+    "inquiries": "Zapytania",
+    "attachments": "Załączniki"
+  },
+  "entityTypes": {
+    "estimate": "Wycena",
+    "inquiry": "Zapytanie",
+    "attachment": "Załącznik"
+  },
+  "recentSearches": "Ostatnie wyszukiwania",
+  "recentDocuments": "Ostatnio otwierane",
+  "clear": "Wyczyść",
+  "showAll": "Pokaż wszystkie",
+  "footer": {
+    "navigation": "Nawigacja",
+    "open": "Otwórz"
+  },
+  "navbar": {
+    "label": "Szukaj",
+    "shortcut": "Ctrl+K"
+  },
+  "recent": {
+    "openedAgo": "{time}"
+  },
+  "fields": {
+    "title": "Tytuł",
+    "customerName": "Nazwa klienta",
+    "customerEmail": "Email klienta",
+    "phone": "Telefon",
+    "address": "Adres inwestycji",
+    "requestNumber": "Numer zapytania",
+    "projectDescription": "Opis projektu",
+    "fileName": "Nazwa pliku"
+  }
+}

@@ -14,5 +14,6 @@ Short postmortems for non-obvious bugs and the patterns that fixed them. Use the
 | 2026-06-10 | [Estimate PDF Chromium on Trigger worker](./2026-06-10-estimate-pdf-chromium-trigger-worker.md) | `generate-estimate-pdf` fails with `libnss3.so`; Sparticuz on wrong runtime |
 | 2026-06-11 | [Estimate PDF missing CSS on Trigger worker](./2026-06-11-estimate-pdf-missing-css-trigger-worker.md) | PDF on Vercel Preview generates without layout styles; `readFileSync` silent fail |
 | 2026-06-13 | [Login „Issue” dev overlay (Router hooks)](./2026-06-13-login-issue-dev-overlay-hooks.md) | Brief Next.js „Issue” badge + `Rendered more hooks...` after login in `npm run dev` only; production/Preview clean |
+| 2026-06-18 | [Global search input double chrome](./2026-06-18-global-search-input-double-chrome.md) | Palette search shows inner rectangle; global `.dark input` + wrapper background |
 
 When adding a new note, name files `YYYY-MM-DD-short-slug.md` and add a row to this table.

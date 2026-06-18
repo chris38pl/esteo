@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
@@ -194,6 +194,7 @@ export function EstimateEditor({
 }: EstimateEditorProps) {
   const t = useTranslations("estimates");
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [sections, setSections] = useState<SectionData[]>(() =>
     versionTreeToSections(versionTree),
   );
@@ -238,6 +239,14 @@ export function EstimateEditor({
     }
   }, []);
   const [activeTab, setActiveTab] = useState<EstimateEditorTabId>("items");
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab === "attachments") {
+      setActiveTab("attachments");
+    }
+  }, [searchParams]);
+
   const isItemsTab = activeTab === "items";
   const isWideTabShell = activeTab === "items" || activeTab === "summary";
   const showSideAiPanel =

@@ -13,6 +13,8 @@ import { DashboardTopNavbar } from "@/components/layout/dashboard-top-nav/dashbo
 import { FocusedDashboardUserMenu } from "@/components/layout/dashboard-top-nav/focused-dashboard-user-menu";
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import { WorkspaceInboxPrompt } from "@/features/workspaces/components/workspace-inbox-prompt";
+import { GlobalSearchDialog } from "@/features/search/components/global-search-dialog";
+import { GlobalSearchProvider } from "@/features/search/components/global-search-provider";
 
 const FOCUSED_ROUTE_SUFFIXES = [
   "/dashboard/onboarding",
@@ -90,24 +92,27 @@ export function DashboardShell({
 
   return (
     <DashboardBreadcrumbDetailProvider>
-      <div className="min-h-dvh bg-background">
-        <AppSidebar locale={locale} />
-        <WorkspaceInboxPrompt inboxItem={modalInboxItem} locale={contextLocale} />
+      <GlobalSearchProvider>
+        <div className="min-h-dvh bg-background">
+          <AppSidebar locale={locale} />
+          <WorkspaceInboxPrompt inboxItem={modalInboxItem} locale={contextLocale} />
 
-        <motion.div
-          initial={false}
-          animate={{ paddingLeft: contentInset }}
-          transition={
-            prefersReducedMotion
-              ? { duration: 0 }
-              : { duration: 0.38, ease: [0.22, 1, 0.36, 1] }
-          }
-          className="flex min-h-dvh min-w-0 flex-col max-md:!pl-0 md:pl-[232px]"
-        >
-          <DashboardTopNavbar locale={locale} />
-          <main className="min-w-0 flex-1 px-4 py-6 md:px-8">{children}</main>
-        </motion.div>
-      </div>
+          <motion.div
+            initial={false}
+            animate={{ paddingLeft: contentInset }}
+            transition={
+              prefersReducedMotion
+                ? { duration: 0 }
+                : { duration: 0.38, ease: [0.22, 1, 0.36, 1] }
+            }
+            className="flex min-h-dvh min-w-0 flex-col max-md:!pl-0 md:pl-[232px]"
+          >
+            <DashboardTopNavbar locale={locale} />
+            <main className="min-w-0 flex-1 px-4 py-6 md:px-8">{children}</main>
+          </motion.div>
+          <GlobalSearchDialog />
+        </div>
+      </GlobalSearchProvider>
     </DashboardBreadcrumbDetailProvider>
   );
 }

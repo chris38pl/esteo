@@ -31,6 +31,10 @@ import {
   getMaxUndoSteps,
   incrementAiAssistantUsage,
 } from "@/server/permissions/entitlements";
+import {
+  scheduleUpsertSearchDocumentForEstimate,
+  scheduleUpsertSearchDocumentForInquiry,
+} from "@/features/search/server/index-service";
 import { recordUsageInTx } from "@/server/billing/usage-service";
 import { tasks } from "@trigger.dev/sdk";
 import type { generateEstimateDraftTask } from "@/trigger/generate-estimate-draft";
@@ -179,6 +183,9 @@ export async function createInternalEstimate(
     action: ESTIMATE_ACTIVITY_ACTIONS.estimate_created,
     metadata: { source: "manual" },
   });
+
+  scheduleUpsertSearchDocumentForEstimate(estimateId);
+  scheduleUpsertSearchDocumentForInquiry(requestId);
 
   return { estimateId };
 }
@@ -513,6 +520,8 @@ export async function updateEstimateTitle(
     category: "ESTIMATE",
     action: ESTIMATE_ACTIVITY_ACTIONS.estimate_renamed,
   });
+
+  scheduleUpsertSearchDocumentForEstimate(input.estimateId);
 
   return result;
 }

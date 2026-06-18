@@ -16,6 +16,10 @@ import type { Locale } from "@/lib/locale";
 import { recordUsageInTx } from "@/server/billing/usage-service";
 import { assertCanCreateEstimate } from "@/server/permissions/entitlements";
 import type { generateEstimateDraftTask } from "@/trigger/generate-estimate-draft";
+import {
+  scheduleUpsertSearchDocumentForEstimate,
+  scheduleUpsertSearchDocumentForInquiry,
+} from "@/features/search/server/index-service";
 
 export class ConvertRequestToEstimateError extends Error {
   constructor(
@@ -166,6 +170,9 @@ export async function convertRequestToEstimate(input: {
     action: ESTIMATE_ACTIVITY_ACTIONS.estimate_created,
     metadata: { source: "request_conversion" },
   });
+
+  scheduleUpsertSearchDocumentForEstimate(estimateId);
+  scheduleUpsertSearchDocumentForInquiry(request.id);
 
   return { estimateId, versionId };
 }

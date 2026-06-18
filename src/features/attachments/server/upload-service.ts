@@ -8,6 +8,9 @@ import type { RequestAttachmentRecord } from "@/features/attachments/lib/request
 import { resolveAttachmentType } from "@/features/attachments/lib/resolve-attachment-type";
 import { createAttachmentRecords } from "@/features/attachments/server/attachments-repository";
 import {
+  scheduleUpsertSearchDocumentForAttachment,
+} from "@/features/search/server/index-service";
+import {
   assertBatchFileCount,
   assertSingleFileSize,
   assertWorkspaceHasStorageCapacity,
@@ -421,6 +424,10 @@ export async function uploadPreparedAttachments(input: {
       workspaceId: input.workspaceId,
       attachmentIds: imageAttachmentIds,
     });
+
+    for (const row of created) {
+      scheduleUpsertSearchDocumentForAttachment(row.id);
+    }
 
     return created;
   } catch (error) {

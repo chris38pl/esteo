@@ -28,6 +28,7 @@ import { SidebarReportIssue } from "@/components/layout/app-sidebar/sidebar-repo
 import { SidebarSettings } from "@/components/layout/app-sidebar/sidebar-settings";
 import { DashboardBreadcrumbs } from "./dashboard-breadcrumbs";
 import { NavbarNotificationsButton } from "./navbar-notifications-button";
+import { NavbarSearchButton } from "@/features/search/components/navbar-search-button";
 import { NavbarUserMenu } from "./navbar-user-menu";
 
 export function DashboardTopNavbar({ locale }: { locale: Locale }) {
@@ -95,6 +96,7 @@ export function DashboardTopNavbar({ locale }: { locale: Locale }) {
       </div>
 
       <div className="flex shrink-0 items-center gap-1.5">
+        <NavbarSearchButton />
         <NavbarNotificationsButton />
         <div className="hidden items-center gap-1.5 md:flex">
           <LocaleSwitcher value={locale} compact />

@@ -19,6 +19,10 @@ enum SubscriptionPlan {
   BUSINESS
 }
 
+enum SubscriptionChangeType {
+  PLAN_DOWNGRADE
+}
+
 enum SubscriptionStatus {
   ACTIVE
   TRIAL
@@ -230,8 +234,21 @@ model User {
   estimateAttachments  EstimateAttachment[]
   estimatePdfs         EstimatePdf[]
   reportedIssues       Issue[]
+  recentDocuments      UserRecentDocument[]
 
   @@index([deletedAt])
+}
+
+enum SearchEntityType {
+  ESTIMATE
+  INQUIRY
+  ATTACHMENT
+}
+
+enum SearchIconType {
+  ESTIMATE
+  REQUEST
+  FILE
 }
 
 enum IssueType {
@@ -380,6 +397,23 @@ model Subscription {
   updatedAt            DateTime           @updatedAt
 
   billingAccount BillingAccount @relation(fields: [billingAccountId], references: [id], onDelete: Cascade)
+  changes          SubscriptionChange[]
+}
+
+model SubscriptionChange {
+  id                String                 @id @default(cuid())
+  subscriptionId    String
+  type              SubscriptionChangeType
+  targetPlan        SubscriptionPlan?
+  targetPlanVersion String?
+  effectiveAt       DateTime
+  createdAt         DateTime               @default(now())
+  canceledAt        DateTime?
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId, canceledAt])
+  @@index([subscriptionId, effectiveAt])
 }
 
 /// Paid add-on capacity synced from Stripe subscription item quantities.
@@ -450,6 +484,8 @@ model Workspace {
   pinnedEstimates      PinnedEstimate[]
   estimateAttachments  EstimateAttachment[]
   workspaceAddons      WorkspaceAddon[]
+  searchDocuments      SearchDocument[]
+  recentDocuments      UserRecentDocument[]
 
   @@index([billingAccountId])
   @@index([ownerId])
@@ -966,4 +1002,44 @@ model DocumentFieldValue {
   @@unique([documentType, documentId, fieldKey])
   @@index([workspaceId, documentType, documentId])
   @@index([documentType, fieldKey, valueNumber])
+}
+
+model SearchDocument {
+  id                    String           @id @default(cuid())
+  workspaceId           String
+  workspaceSlugSnapshot String?
+  entityType            SearchEntityType
+  entityId              String
+  iconType              SearchIconType
+  title                 String
+  subtitle              String?
+  searchText            String           @db.Text
+  url                   String
+  metadata              Json?
+  deletedAt             DateTime?
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, entityType, entityId])
+  @@index([workspaceId, deletedAt])
+}
+
+model UserRecentDocument {
+  id               String           @id @default(cuid())
+  userId           String
+  workspaceId      String
+  entityType       SearchEntityType
+  entityId         String
+  titleSnapshot    String
+  subtitleSnapshot String?
+  iconTypeSnapshot SearchIconType
+  lastOpenedAt     DateTime         @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId, entityType, entityId])
+  @@index([userId, workspaceId, lastOpenedAt(sort: Desc)])
 }

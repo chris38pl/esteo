@@ -1,0 +1,42 @@
+{
+  "placeholder": "Search in Esteo…",
+  "noResults": "No results found",
+  "empty": {
+    "hint": "Search everything in your workspace: estimates, inquiries, attachments and more."
+  },
+  "groups": {
+    "estimates": "Estimates",
+    "inquiries": "Inquiries",
+    "attachments": "Attachments"
+  },
+  "entityTypes": {
+    "estimate": "Estimate",
+    "inquiry": "Inquiry",
+    "attachment": "Attachment"
+  },
+  "recentSearches": "Recent searches",
+  "recentDocuments": "Recently opened",
+  "clear": "Clear",
+  "showAll": "Show all",
+  "footer": {
+    "navigation": "Navigate",
+    "open": "Open"
+  },
+  "navbar": {
+    "label": "Search",
+    "shortcut": "Ctrl+K"
+  },
+  "recent": {
+    "openedAgo": "{time}"
+  },
+  "fields": {
+    "title": "Title",
+    "customerName": "Customer name",
+    "customerEmail": "Customer email",
+    "phone": "Phone",
+    "address": "Investment address",
+    "requestNumber": "Request number",
+    "projectDescription": "Project description",
+    "fileName": "File name"
+  }
+}

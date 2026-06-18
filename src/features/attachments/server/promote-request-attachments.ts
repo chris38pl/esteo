@@ -14,6 +14,10 @@ import {
 } from "@/features/attachments/lib/request-attachment-metadata";
 import { enqueueAttachmentThumbnailGeneration } from "@/features/attachments/server/enqueue-attachment-thumbnails";
 import { syncEstimateAttachmentCount } from "@/features/attachments/server/sync-attachment-count";
+import {
+  scheduleUpsertSearchDocumentForAttachment,
+  scheduleUpsertSearchDocumentsForRequestAttachments,
+} from "@/features/search/server/index-service";
 
 export async function promoteRequestAttachmentsToEstimate(input: {
   estimateRequestId: string;
@@ -123,6 +127,11 @@ export async function promoteRequestAttachmentsToEstimate(input: {
     workspaceId: input.workspaceId,
     attachmentIds: promotedImageAttachmentIds,
   });
+
+  for (const record of pending) {
+    scheduleUpsertSearchDocumentForAttachment(record.id);
+  }
+  scheduleUpsertSearchDocumentsForRequestAttachments(input.estimateRequestId);
 
   return { promotedCount, promotedImageAttachmentIds };
 }

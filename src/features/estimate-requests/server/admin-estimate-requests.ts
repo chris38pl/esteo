@@ -2,6 +2,11 @@ import type { EstimateRequestStatus, WorkspaceIndustry } from "@prisma/client";
 import type { User } from "@prisma/client";
 
 import { prisma } from "@/db/client";
+import {
+  scheduleSoftDeleteSearchDocument,
+  scheduleUpsertSearchDocumentForEstimate,
+  scheduleUpsertSearchDocumentForInquiry,
+} from "@/features/search/server/index-service";
 import { buildPaginatedResult, toPrismaSkipTake } from "@/lib/pagination";
 import type { PaginatedResult, PaginationParams } from "@/lib/pagination";
 import { isPlatformAdmin } from "@/server/permissions/require-workspace";
@@ -243,6 +248,7 @@ export async function adminArchiveEstimateRequest(
     select: {
       id: true,
       estimateId: true,
+      workspaceId: true,
       workspace: { select: { slug: true } },
     },
   });
@@ -267,6 +273,11 @@ export async function adminArchiveEstimateRequest(
     }
   });
 
+  scheduleSoftDeleteSearchDocument(request.workspaceId, "INQUIRY", request.id);
+  if (request.estimateId) {
+    scheduleSoftDeleteSearchDocument(request.workspaceId, "ESTIMATE", request.estimateId);
+  }
+
   return {
     id: request.id,
     estimateId: request.estimateId,
@@ -285,6 +296,7 @@ export async function adminRestoreEstimateRequest(
     select: {
       id: true,
       estimateId: true,
+      workspaceId: true,
       workspace: { select: { slug: true } },
     },
   });
@@ -306,6 +318,11 @@ export async function adminRestoreEstimateRequest(
       });
     }
   });
+
+  scheduleUpsertSearchDocumentForInquiry(request.id);
+  if (request.estimateId) {
+    scheduleUpsertSearchDocumentForEstimate(request.estimateId);
+  }
 
   return {
     id: request.id,

@@ -9,6 +9,7 @@ import {
 import { getStorageProvider } from "@/features/attachments/server/storage";
 import { syncEstimateAttachmentCount } from "@/features/attachments/server/sync-attachment-count";
 import { decrementWorkspaceStorageUsed } from "@/features/attachments/server/usage-service";
+import { scheduleSoftDeleteSearchDocument } from "@/features/search/server/index-service";
 
 function thumbnailKeysForCleanup(attachment: {
   storageKey: string;
@@ -94,4 +95,6 @@ export async function deleteEstimateAttachment(input: {
 
     await syncEstimateAttachmentCount(attachment.estimateId, tx);
   });
+
+  scheduleSoftDeleteSearchDocument(input.workspaceId, "ATTACHMENT", input.attachmentId);
 }

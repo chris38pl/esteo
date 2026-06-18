@@ -10,6 +10,11 @@ import { tasks } from "@trigger.dev/sdk";
 
 import { prisma } from "@/db/client";
 import {
+  scheduleUpsertSearchDocumentForEstimate,
+  scheduleUpsertSearchDocumentForInquiry,
+  scheduleUpsertSearchDocumentsForRequestAttachments,
+} from "@/features/search/server/index-service";
+import {
   assertRequestAttachmentFileCount,
   assertRequestAttachmentTotalSize,
 } from "@/features/attachments/lib/assert-request-attachment-limits";
@@ -393,6 +398,12 @@ export async function submitEstimateRequestWithAttachments(input: {
               : "manual",
         },
       });
+    }
+
+    scheduleUpsertSearchDocumentForInquiry(requestId);
+    scheduleUpsertSearchDocumentsForRequestAttachments(requestId);
+    if (estimateId) {
+      scheduleUpsertSearchDocumentForEstimate(estimateId);
     }
 
     return {
