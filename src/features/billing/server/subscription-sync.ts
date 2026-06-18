@@ -256,6 +256,16 @@ export async function syncSubscriptionFromStripe(
 
 
 
+  const { cancelActiveSubscriptionChanges, getActiveSubscriptionChange } = await import(
+    "@/features/billing/server/subscription-change"
+  );
+  const activeChange = await getActiveSubscriptionChange(subscription.id);
+  if (activeChange && plan === activeChange.targetPlan) {
+    await cancelActiveSubscriptionChanges(subscription.id);
+  }
+
+
+
   if (billingAccount.workspaceId && (status === "ACTIVE" || status === "TRIAL")) {
 
     await prisma.workspace.update({

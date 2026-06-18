@@ -1,9 +1,11 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { ChevronRight, Coins, FileText, Puzzle, Users } from "lucide-react";
+import { ChevronRight, Coins, Puzzle, Users } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
+import { useTransition } from "react";
+import { toast } from "sonner";
 
 import type { WorkspaceBillingPageData } from "@/features/billing/billing-page-data";
 import {
@@ -12,11 +14,10 @@ import {
   STORAGE_UNIT_BYTES,
 } from "@/server/billing/addon-catalog";
 import { formatBytes } from "@/features/attachments/lib/format-bytes";
-import { formatCurrency, formatDate } from "@/i18n/formatters";
 import { BillingHandoffSubscriptionCard } from "@/features/billing/components/billing-handoff-subscription-card";
-import { BillingInvoiceAdjustmentRow } from "@/features/billing/components/billing-invoice-adjustment-row";
-import { formatBillingMonthlyPrice } from "@/features/billing/lib/format-billing-amount";
-import { dashboardAccountBillingTabHref, dashboardBillingAddonsHref } from "@/lib/dashboard-routes";
+import { SubscriptionImpactSummary } from "@/features/billing/components/subscription-impact-summary";
+import { changeWorkspacePlanAction } from "@/features/billing/server/billing-actions";
+import { dashboardBillingManageHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -26,16 +27,18 @@ export function BillingSecondaryCardsSection({
   workspaceSlug,
   canManageAddons,
   canManageBilling,
+  canChangePlanOrAddons,
 }: {
   data: WorkspaceBillingPageData;
   workspaceId: string;
   workspaceSlug: string;
   canManageAddons: boolean;
   canManageBilling: boolean;
+  canChangePlanOrAddons: boolean;
 }) {
   const canViewInvoiceHistory = data.entitlements.plan !== "FREE" && canManageBilling;
   const locale = useLocale() as Locale;
-  const addonsHref = dashboardBillingAddonsHref(locale, workspaceSlug);
+  const manageHref = dashboardBillingManageHref(locale, workspaceSlug);
   const showHandoffSubscriptionCard =
     data.billingOwnershipState === "HANDOFF_ACTIVE" && !canManageBilling;
 
@@ -43,19 +46,70 @@ export function BillingSecondaryCardsSection({
     <section className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-2">
       <BillingActiveAddonsCard
         data={data}
-        addonsHref={addonsHref}
+        addonsHref={manageHref}
         canManageAddons={canManageAddons}
       />
       {showHandoffSubscriptionCard ? (
         <BillingHandoffSubscriptionCard currentPeriodEnd={data.currentPeriodEnd} />
       ) : (
-        <BillingNextInvoiceCard
-          nextInvoice={data.nextInvoice}
-          pricing={data.pricing}
+        <BillingSubscriptionImpactCard
+          data={data}
+          workspaceId={workspaceId}
+          locale={locale}
           canViewInvoiceHistory={canViewInvoiceHistory}
+          canCancelScheduledChange={canChangePlanOrAddons}
         />
       )}
     </section>
+  );
+}
+
+function BillingSubscriptionImpactCard({
+  data,
+  workspaceId,
+  locale,
+  canViewInvoiceHistory,
+  canCancelScheduledChange,
+}: {
+  data: WorkspaceBillingPageData;
+  workspaceId: string;
+  locale: Locale;
+  canViewInvoiceHistory: boolean;
+  canCancelScheduledChange: boolean;
+}) {
+  const tPlans = useTranslations("billing.workspace.plans");
+  const tHero = useTranslations("billing.workspace.planHero");
+  const [cancelPending, startCancelTransition] = useTransition();
+
+  function handleCancelScheduledChange() {
+    startCancelTransition(async () => {
+      const result = await changeWorkspacePlanAction(workspaceId, data.entitlements.plan);
+      if (!result.success) {
+        return;
+      }
+      if (result.data.kind === "downgrade_canceled") {
+        toast.success(
+          tPlans("downgradeCanceled", { plan: tHero(`planName.${result.data.plan}`) }),
+        );
+        window.location.reload();
+      }
+    });
+  }
+
+  return (
+    <SubscriptionImpactSummary
+      variant="overview"
+      locale={locale}
+      currentPlan={data.entitlements.plan}
+      currentAddons={data.addonQuantities}
+      pricing={data.pricing}
+      nextInvoice={data.nextInvoice}
+      activeSubscriptionChange={data.activeSubscriptionChange}
+      canViewInvoiceHistory={canViewInvoiceHistory}
+      canCancelScheduledChange={canCancelScheduledChange && Boolean(data.activeSubscriptionChange)}
+      cancelScheduledPending={cancelPending}
+      onCancelScheduledChange={handleCancelScheduledChange}
+    />
   );
 }
 
@@ -249,108 +303,5 @@ function BillingAddonRow({
         <p className="text-sm font-medium">{priceLabel}</p>
       </div>
     </li>
-  );
-}
-
-function BillingNextInvoiceCard({
-  nextInvoice,
-  pricing,
-  canViewInvoiceHistory,
-}: {
-  nextInvoice: WorkspaceBillingPageData["nextInvoice"];
-  pricing: WorkspaceBillingPageData["pricing"];
-  canViewInvoiceHistory: boolean;
-}) {
-  const t = useTranslations("billing.workspace.nextInvoice");
-  const locale = useLocale() as Locale;
-  const invoiceHistoryHref = dashboardAccountBillingTabHref(locale);
-
-  const hasInvoice = nextInvoice.kind === "invoice";
-  const catalogRecurringCents = pricing.recurringCents;
-  const currency = hasInvoice ? nextInvoice.currency : pricing.currency;
-  const invoiceDeltaCents = hasInvoice
-    ? nextInvoice.invoiceDeltaCents ??
-      nextInvoice.amountCents - catalogRecurringCents
-    : 0;
-  const hasDelta = Math.abs(invoiceDeltaCents) > 1;
-  const monthlyAmount = formatBillingMonthlyPrice(catalogRecurringCents, locale, currency);
-  const adjustmentTooltip = t("adjustmentTooltip", { monthlyAmount });
-
-  return (
-    <BillingCardShell
-      icon={FileText}
-      iconBoxClassName="border-blue-500/25 bg-blue-500/10"
-      iconClassName="text-blue-400"
-      title={t("title")}
-      footer={
-        <BillingCardFooterLink
-          label={t("viewInvoiceHistory")}
-          href={invoiceHistoryHref}
-          disabled={!canViewInvoiceHistory}
-        />
-      }
-    >
-      {hasInvoice ? (
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <p className="text-4xl font-semibold tracking-tight">
-              {formatCurrency(nextInvoice.amountCents / 100, locale, nextInvoice.currency)}
-            </p>
-            <p className="text-lg text-foreground/90">
-              {formatDate(nextInvoice.date, locale, { dateStyle: "long" })}
-            </p>
-          </div>
-
-          {hasDelta ? (
-            <div className="space-y-3 border-t border-border/50 pt-4">
-              <p className="text-sm font-medium text-foreground">{t("breakdown.composedOf")}</p>
-
-              <dl className="space-y-2 text-sm">
-                <div className="flex items-center justify-between gap-4">
-                  <dt className="text-muted-foreground">{t("breakdown.subscription")}</dt>
-                  <dd className="font-medium">{monthlyAmount}</dd>
-                </div>
-
-                {invoiceDeltaCents > 0 ? (
-                  <BillingInvoiceAdjustmentRow
-                    label={t("breakdown.periodCharge")}
-                    amount={formatBillingMonthlyPrice(invoiceDeltaCents, locale, currency)}
-                    tooltip={adjustmentTooltip}
-                  />
-                ) : null}
-
-                {invoiceDeltaCents < 0 ? (
-                  <BillingInvoiceAdjustmentRow
-                    label={t("breakdown.periodCredit")}
-                    amount={formatBillingMonthlyPrice(
-                      Math.abs(invoiceDeltaCents),
-                      locale,
-                      currency,
-                    )}
-                    tooltip={adjustmentTooltip}
-                  />
-                ) : null}
-              </dl>
-
-              <p className="text-sm text-muted-foreground">
-                <span>{t("upcomingInvoices")} </span>
-                <span className="font-medium text-foreground">
-                  {t("recurringMonthlyValue", { amount: monthlyAmount })}
-                </span>
-              </p>
-            </div>
-          ) : null}
-        </div>
-      ) : (
-        <div className="space-y-2">
-          <p className="text-2xl font-semibold tracking-tight text-muted-foreground">—</p>
-          <p className="text-sm text-muted-foreground">{t(`empty.${nextInvoice.reason}`)}</p>
-        </div>
-      )}
-
-      {!hasInvoice || !hasDelta ? (
-        <p className="text-sm leading-relaxed text-muted-foreground">{t("description")}</p>
-      ) : null}
-    </BillingCardShell>
   );
 }

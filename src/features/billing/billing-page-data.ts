@@ -1,7 +1,16 @@
 import type { SubscriptionPlan } from "@prisma/client";
 
 import type { ProrationKind } from "@/features/billing/lib/parse-invoice-preview-lines";
+import type { AddonQuantities } from "@/features/billing/lib/subscription-impact";
 import type { WorkspaceEntitlements } from "@/server/billing/entitlement-service";
+
+export type ActiveSubscriptionChange = {
+  id: string;
+  type: "PLAN_DOWNGRADE";
+  targetPlan: SubscriptionPlan;
+  targetPlanVersion: string;
+  effectiveAt: Date;
+};
 
 export type WorkspaceBillingMemberUsage = {
   userId: string;
@@ -59,6 +68,8 @@ export type WorkspaceBillingPageData = {
   storageOverLimit: boolean;
   seatOverLimit: boolean;
   nextInvoice: WorkspaceBillingNextInvoice;
+  activeSubscriptionChange: ActiveSubscriptionChange | null;
+  addonQuantities: AddonQuantities;
   canManageBilling: boolean;
   canChangePlanOrAddons: boolean;
   canPurchaseSubscription: boolean;

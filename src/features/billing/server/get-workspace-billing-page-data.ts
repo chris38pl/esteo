@@ -9,6 +9,8 @@ import { loadWorkspaceAddonQuantities } from "@/features/billing/server/workspac
 import {
   buildWorkspaceBillingPricing,
 } from "@/features/billing/server/get-workspace-upcoming-invoice";
+import { getActiveSubscriptionChange } from "@/features/billing/server/subscription-change";
+import { addonRowsToQuantities } from "@/features/billing/lib/subscription-impact";
 import type {
   WorkspaceBillingMemberUsage,
   WorkspaceBillingPageData,
@@ -60,13 +62,21 @@ export async function getWorkspaceBillingPageData(
     ]);
 
   const subscription = workspaceRow?.billingAccount?.subscription ?? null;
+  const addonQuantities = addonRowsToQuantities(addonRows);
 
-  const { pricing, nextInvoice } = await buildWorkspaceBillingPricing({
-    workspaceId,
-    workspaceSlug: workspaceRow?.slug ?? workspaceId,
-    subscription,
-    addonRows,
-  });
+  const [pricingBundle, activeSubscriptionChange] = await Promise.all([
+    buildWorkspaceBillingPricing({
+      workspaceId,
+      workspaceSlug: workspaceRow?.slug ?? workspaceId,
+      subscription,
+      addonRows,
+    }),
+    subscription
+      ? getActiveSubscriptionChange(subscription.id)
+      : Promise.resolve(null),
+  ]);
+
+  const { pricing, nextInvoice } = pricingBundle;
 
   return {
     entitlements,
@@ -78,5 +88,7 @@ export async function getWorkspaceBillingPageData(
     storageOverLimit,
     seatOverLimit: seatState.isOverLimit,
     nextInvoice,
+    activeSubscriptionChange,
+    addonQuantities,
   };
 }

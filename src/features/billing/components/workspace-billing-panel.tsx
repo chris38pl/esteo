@@ -17,7 +17,7 @@ import {
 } from "@/features/billing/server/billing-actions";
 import type { WorkspaceBillingPageData } from "@/features/billing/billing-page-data";
 import { formatBillingMonthlyPrice } from "@/features/billing/lib/format-billing-amount";
-import { dashboardBillingPlansHref } from "@/lib/dashboard-routes";
+import { dashboardBillingManageHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
 import type { WorkspaceEffectiveStatus } from "@/server/permissions/domain";
 import { cn } from "@/lib/utils";
@@ -66,7 +66,7 @@ export function WorkspaceBillingPanel({ workspaceId, workspaceSlug, locale, data
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const plansHref = dashboardBillingPlansHref(locale, workspaceSlug);
+  const manageHref = dashboardBillingManageHref(locale, workspaceSlug);
 
   const notice = isStatusNoticeStatus(entitlements.effectiveStatus)
     ? t(`statusNotice.${entitlements.effectiveStatus}`)
@@ -155,7 +155,7 @@ export function WorkspaceBillingPanel({ workspaceId, workspaceSlug, locale, data
         monthlyPriceLabel={monthlyPriceLabel}
         monthlyPriceSubtitle={monthlyPriceSubtitle}
         pending={pending}
-        plansHref={plansHref}
+        plansHref={manageHref}
         canManageBilling={canManageBilling || canPurchaseSubscription}
         onManageBilling={() => run(() => openWorkspacePortalAction(workspaceId, locale))}
       />
@@ -168,6 +168,7 @@ export function WorkspaceBillingPanel({ workspaceId, workspaceSlug, locale, data
         workspaceSlug={workspaceSlug}
         canManageAddons={canChangePlanOrAddons}
         canManageBilling={canManageBilling}
+        canChangePlanOrAddons={canChangePlanOrAddons}
       />
 
       {entitlements.plan !== "FREE" && canManageBilling ? (

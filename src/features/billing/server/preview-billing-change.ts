@@ -31,8 +31,12 @@ import {
 import {
   computeAddonMonthlyCents,
   computePlanCentsFromSubscription,
-  resolveCurrentPlanPrice,
 } from "@/server/billing/plan-pricing";
+import {
+  addonRowsToQuantities,
+  computeRecurringCents,
+  projectAddonQuantitiesAfterPlanChange,
+} from "@/features/billing/lib/subscription-impact";
 import { prisma } from "@/db/client";
 import { WorkspaceError } from "@/server/permissions/errors";
 import { loadWorkspaceAddonQuantities } from "@/features/billing/server/workspace-addon-sync";
@@ -160,14 +164,12 @@ function catalogRecurringAfterChange(
   addonRows: { addonKey: string; quantity: number }[],
 ): number {
   if (input.kind === "plan") {
-    const planCents = resolveCurrentPlanPrice(input.targetPlan);
-    const addonCents = computeAddonMonthlyCents(
-      addonRows.map((row) => ({
-        addonKey: row.addonKey as "STORAGE" | "SEATS",
-        quantity: row.quantity,
-      })),
+    const currentAddons = addonRowsToQuantities(addonRows);
+    const projectedAddons = projectAddonQuantitiesAfterPlanChange(
+      input.targetPlan,
+      currentAddons,
     );
-    return planCents + addonCents;
+    return computeRecurringCents(input.targetPlan, projectedAddons);
   }
 
   const planCents = computePlanCentsFromSubscription(subscription);
@@ -217,12 +219,7 @@ export async function previewWorkspaceBillingChange(params: {
     const targetIndex = planOrder.indexOf(params.change.targetPlan);
 
     if (targetIndex <= currentIndex) {
-      const recurringCents = catalogRecurringAfterChange(subscription, params.change, addonRows);
-      return toPreviewResponse(
-        { recurringCents, prorationCents: 0, amountCents: recurringCents },
-        "pln",
-        recurringCents,
-      );
+      throw new WorkspaceError("Plan downgrades are computed locally — no Stripe preview.");
     }
   }
 

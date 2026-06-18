@@ -14,6 +14,7 @@ import type { WorkspaceBillingNextInvoice } from "@/features/billing/billing-pag
 import {
   computeAddonMonthlyCents,
   computePlanCentsFromSubscription,
+  resolveSubscriptionPlanVersion,
 } from "@/server/billing/plan-pricing";
 import type { WorkspaceAddonQuantityRow } from "@/server/billing/addon-catalog";
 
@@ -58,9 +59,10 @@ export function computeWorkspaceBillingPricingFromDb(
 
   const planCents = computePlanCentsFromSubscription(subscription);
   const addonCents = computeAddonMonthlyCents(addonRows);
+  const planVersion = resolveSubscriptionPlanVersion(subscription.plan, subscription.planVersion);
   return {
     plan: subscription.plan,
-    planVersion: subscription.planVersion,
+    planVersion,
     planCents,
     addonCents,
     recurringCents: planCents + addonCents,

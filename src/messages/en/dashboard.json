@@ -57,5 +57,27 @@
   },
   "actions": {
     "backHome": "Back to home"
+  },
+  "overview": {
+    "greeting": "Good morning, {name}! 👋",
+    "subtitle": "Here are the most important updates about your business.",
+    "timeHorizon": {
+      "all": "All time",
+      "this_week": "This week",
+      "this_month": "This month",
+      "this_year": "This year"
+    },
+    "cards": {
+      "estimates": "Estimates",
+      "sent": "Sent",
+      "income": "Income",
+      "overduePayments": "Overdue payments"
+    },
+    "trends": {
+      "estimatesUp": "+3 since yesterday",
+      "sentUp": "+8 this week",
+      "incomeFlat": "No change",
+      "overdueWarning": "{count, plural, one {# overdue invoice} other {# overdue invoices}}"
+    }
   }
 }

@@ -11,6 +11,7 @@ import type { WorkspaceBillingAddonsPageData } from "@/features/billing/billing-
 import type { BillingChangePreview } from "@/features/billing/billing-page-data";
 import { BillingChangePreviewDialog } from "@/features/billing/components/billing-change-preview-dialog";
 import { BillingCreditConfirmDialog } from "@/features/billing/components/billing-credit-confirm-dialog";
+import { SubscriptionImpactSummary } from "@/features/billing/components/subscription-impact-summary";
 import { isBillingPreviewExpired } from "@/features/billing/lib/billing-preview-utils";
 import {
   changeWorkspaceAddonQuantityAction,
@@ -243,6 +244,15 @@ export function WorkspaceAddonsPanel({
 
       {canManageBilling ? (
         <div className="space-y-3">
+          {isDirty ? (
+            <SubscriptionImpactSummary
+              variant="addons"
+              locale={locale}
+              plan={plan}
+              beforeAddons={data.addonQuantities}
+              afterAddons={{ storage: storageQty, seats: seatQty }}
+            />
+          ) : null}
           {isDirty ? (
             <p className="text-sm text-muted-foreground">{t("prorationNotice")}</p>
           ) : null}

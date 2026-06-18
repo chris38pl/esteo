@@ -19,6 +19,10 @@ import {
   priceIdForPlan,
 } from "@/features/billing/server/stripe-plan-utils";
 import { syncSubscriptionFromStripe } from "@/features/billing/server/subscription-sync";
+import {
+  cancelActiveSubscriptionChanges,
+  createPlanDowngradeChange,
+} from "@/features/billing/server/subscription-change";
 import { WorkspaceError } from "@/server/permissions/errors";
 
 export type WorkspacePlanChangeResult =
@@ -34,6 +38,7 @@ export type WorkspacePlanChangeResult =
   | { kind: "downgrade_canceled"; plan: SubscriptionPlan };
 
 type WorkspaceSubscriptionRow = {
+  subscriptionId: string;
   plan: SubscriptionPlan;
   status: SubscriptionStatus;
   stripeSubscriptionId: string | null;
@@ -68,6 +73,7 @@ async function loadWorkspaceSubscription(
         select: {
           subscription: {
             select: {
+              id: true,
               plan: true,
               status: true,
               stripeSubscriptionId: true,
@@ -85,6 +91,7 @@ async function loadWorkspaceSubscription(
   return {
     slug: workspace.slug,
     ownerId: workspace.ownerId,
+    subscriptionId: workspace.billingAccount.subscription.id,
     plan: workspace.billingAccount.subscription.plan,
     status: workspace.billingAccount.subscription.status,
     stripeSubscriptionId: workspace.billingAccount.subscription.stripeSubscriptionId,
@@ -106,7 +113,7 @@ async function createCheckoutSession(params: {
     customer: params.stripeCustomerId,
     line_items: [{ price: priceIdForPlan(params.plan), quantity: 1 }],
     success_url: `${base}/dashboard/${params.slug}/billing/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${base}/dashboard/${params.slug}/billing/plans?checkout=cancelled`,
+    cancel_url: `${base}/dashboard/${params.slug}/billing/manage?checkout=cancelled`,
     subscription_data: {
       metadata: {
         workspaceId: params.workspaceId,
@@ -241,6 +248,7 @@ async function scheduleDowngradeAtPeriodEnd(params: {
 
 async function upgradeSubscriptionImmediately(params: {
   workspaceId: string;
+  workspaceSubscriptionId: string;
   stripeSubscriptionId: string;
   stripeCustomerId: string;
   targetPlan: SubscriptionPlan;
@@ -251,6 +259,8 @@ async function upgradeSubscriptionImmediately(params: {
   });
 
   await releaseSubscriptionScheduleIfPresent(stripe, subscription);
+
+  await cancelActiveSubscriptionChanges(params.workspaceSubscriptionId);
 
   const classified = classifySubscriptionItems(subscription);
   const baseItem = classified.baseItem ?? findBasePlanSubscriptionItem(subscription);
@@ -368,6 +378,7 @@ export async function changeWorkspaceSubscriptionPlan(params: {
             pendingPlan: "",
           },
         });
+        await cancelActiveSubscriptionChanges(subscription.subscriptionId);
         await syncSubscriptionFromStripe(
           await stripe.subscriptions.retrieve(subscription.stripeSubscriptionId!),
           stripeCustomerId,
@@ -389,6 +400,7 @@ export async function changeWorkspaceSubscriptionPlan(params: {
   if (targetPlan === "BUSINESS" && subscription.plan === "PRO") {
     const plan = await upgradeSubscriptionImmediately({
       workspaceId: params.workspaceId,
+      workspaceSubscriptionId: subscription.subscriptionId,
       stripeSubscriptionId: subscription.stripeSubscriptionId!,
       stripeCustomerId,
       targetPlan,
@@ -402,6 +414,12 @@ export async function changeWorkspaceSubscriptionPlan(params: {
       stripeSubscriptionId: subscription.stripeSubscriptionId!,
       currentPlan: subscription.plan,
       targetPlan,
+    });
+
+    await createPlanDowngradeChange({
+      subscriptionId: subscription.subscriptionId,
+      targetPlan,
+      effectiveAt,
     });
 
     return {

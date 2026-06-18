@@ -58,14 +58,14 @@ const planAccent: Record<
     badge: "bg-blue-500/15 text-blue-700 dark:bg-blue-400/15 dark:text-blue-300",
     badgeText: "",
     title:
-      "bg-gradient-to-b from-blue-300 to-blue-600 bg-clip-text text-transparent dark:from-blue-200 dark:to-blue-500",
+      "text-blue-700 dark:bg-gradient-to-b dark:from-blue-200 dark:to-blue-500 dark:bg-clip-text dark:text-transparent",
     border: "border-blue-500/20 dark:border-blue-400/20",
   },
   BUSINESS: {
     badge: "bg-violet-500/20 text-violet-700 dark:bg-violet-400/15 dark:text-violet-300",
     badgeText: "",
     title:
-      "bg-gradient-to-b from-violet-200 to-violet-500 bg-clip-text text-transparent dark:from-violet-200 dark:to-violet-400",
+      "text-violet-700 dark:bg-gradient-to-b dark:from-violet-200 dark:to-violet-400 dark:bg-clip-text dark:text-transparent",
     border: "border-violet-500/25 dark:border-violet-400/20",
   },
 };

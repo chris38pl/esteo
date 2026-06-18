@@ -17,19 +17,25 @@ export function dashboardBillingHref(locale: Locale, workspaceSlug: string) {
   return `/${locale}/dashboard/${workspaceSlug}/billing`;
 }
 
-export function dashboardBillingPlansHref(locale: Locale, workspaceSlug: string) {
-  return `/${locale}/dashboard/${workspaceSlug}/billing/plans`;
+export function dashboardBillingManageHref(locale: Locale, workspaceSlug: string) {
+  return `/${locale}/dashboard/${workspaceSlug}/billing/manage`;
 }
 
+/** @deprecated Use dashboardBillingManageHref */
+export function dashboardBillingPlansHref(locale: Locale, workspaceSlug: string) {
+  return dashboardBillingManageHref(locale, workspaceSlug);
+}
+
+/** @deprecated Use dashboardBillingManageHref */
 export function dashboardBillingAddonsHref(locale: Locale, workspaceSlug: string) {
-  return `/${locale}/dashboard/${workspaceSlug}/billing/addons`;
+  return dashboardBillingManageHref(locale, workspaceSlug);
 }
 
 export function dashboardWorkspaceUsageHref(locale: Locale, workspaceSlug: string) {
   return `/${locale}/dashboard/${workspaceSlug}/workspace-usage`;
 }
 
-/** Alias route — redirects to `/billing/plans`. Use for upgrade CTAs. */
+/** Alias route — redirects to `/billing/manage`. Use for upgrade CTAs. */
 export function dashboardUpgradeHref(
   locale: Locale,
   workspaceSlug: string,

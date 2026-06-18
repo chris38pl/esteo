@@ -22,7 +22,8 @@
     "adminEstimateRequestDetail": "Szczegóły zapytania",
     "adminIssues": "Issue Tracker",
     "billingPlans": "Plany",
-    "billingAddons": "Dodatki"
+    "billingAddons": "Dodatki",
+    "billingManage": "Subskrypcja"
   },
   "notifications": {
     "label": "Powiadomienia",

@@ -12,6 +12,10 @@ import { Button } from "@/components/ui/button";
 import { BillingHandoffBanner } from "@/features/billing/components/billing-handoff-banner";
 import { BillingChangePreviewDialog } from "@/features/billing/components/billing-change-preview-dialog";
 import { BillingCreditConfirmDialog } from "@/features/billing/components/billing-credit-confirm-dialog";
+import {
+  PlanCardAddonSubline,
+  SubscriptionImpactSummary,
+} from "@/features/billing/components/subscription-impact-summary";
 import type { WorkspaceBillingPlansPageData } from "@/features/billing/billing-plans-page-data";
 import type { BillingChangePreview } from "@/features/billing/billing-page-data";
 import type { BillingOwnershipState } from "@/features/billing/lib/billing-permissions-logic";
@@ -66,14 +70,14 @@ const planAccent: Record<
     border: "border-blue-500/25 dark:border-blue-400/20",
     badge: "bg-blue-500/15 text-blue-700 dark:bg-blue-400/15 dark:text-blue-300",
     title:
-      "bg-gradient-to-b from-blue-300 to-blue-600 bg-clip-text text-transparent dark:from-blue-200 dark:to-blue-500",
+      "text-blue-700 dark:bg-gradient-to-b dark:from-blue-200 dark:to-blue-500 dark:bg-clip-text dark:text-transparent",
     button: "bg-blue-600 hover:bg-blue-600/90",
   },
   BUSINESS: {
     border: "border-violet-500/25 dark:border-violet-400/20",
     badge: "bg-violet-500/20 text-violet-700 dark:bg-violet-400/15 dark:text-violet-300",
     title:
-      "bg-gradient-to-b from-violet-200 to-violet-500 bg-clip-text text-transparent dark:from-violet-200 dark:to-violet-400",
+      "text-violet-700 dark:bg-gradient-to-b dark:from-violet-200 dark:to-violet-400 dark:bg-clip-text dark:text-transparent",
     button: "bg-violet-600 hover:bg-violet-600/90",
   },
 };
@@ -120,6 +124,9 @@ export function WorkspacePlansPanel({
 
   const [pending, startTransition] = useTransition();
   const [activePlan, setActivePlan] = useState<SubscriptionPlan | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<Exclude<SubscriptionPlan, "FREE"> | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<BillingChangePreview | null>(null);
   const [previewPlan, setPreviewPlan] = useState<Exclude<SubscriptionPlan, "FREE"> | null>(null);
@@ -174,11 +181,30 @@ export function WorkspacePlansPanel({
     setActivePlan(null);
   }
 
-  function handleSelectPlan(plan: SubscriptionPlan) {
-    if (plan === "FREE") {
+  function handlePlanCardClick(plan: Exclude<SubscriptionPlan, "FREE">) {
+    setError(null);
+
+    if (data.currentPlan === "FREE") {
+      setActivePlan(plan);
+      startTransition(async () => {
+        await applyPlanChange(plan);
+      });
       return;
     }
 
+    if (plan === data.currentPlan) {
+      setSelectedPlan(null);
+      return;
+    }
+
+    setSelectedPlan(plan);
+  }
+
+  function handleConfirmPlanChange(planOverride?: Exclude<SubscriptionPlan, "FREE">) {
+    const plan = planOverride ?? selectedPlan;
+    if (!plan) {
+      return;
+    }
     setError(null);
     setActivePlan(plan);
 
@@ -187,11 +213,6 @@ export function WorkspacePlansPanel({
       PLAN_ORDER.indexOf(plan) > PLAN_ORDER.indexOf(data.currentPlan);
 
     startTransition(async () => {
-      if (data.currentPlan === "FREE") {
-        await applyPlanChange(plan);
-        return;
-      }
-
       if (isPaidUpgrade) {
         const previewResult = await previewWorkspaceBillingChangeAction(workspaceId, {
           kind: "plan",
@@ -225,6 +246,14 @@ export function WorkspacePlansPanel({
     });
   }
 
+  function handleSelectPlan(plan: SubscriptionPlan) {
+    if (plan === "FREE") {
+      return;
+    }
+
+    handlePlanCardClick(plan);
+  }
+
   function handleConfirmPreview() {
     if (!previewPlan || !preview || isBillingPreviewExpired(preview)) {
       return;
@@ -244,7 +273,7 @@ export function WorkspacePlansPanel({
 
     setPreviewDialogOpen(false);
     setCreditDialogOpen(false);
-    handleSelectPlan(previewPlan);
+    handleConfirmPlanChange(previewPlan);
   }
 
   const previewExpired = isBillingPreviewExpired(preview);
@@ -304,6 +333,7 @@ export function WorkspacePlansPanel({
           const isHighlighted = highlightPlan === plan;
           const isCurrent = data.currentPlan === plan;
           const isLoading = pending && activePlan === plan;
+          const isSelected = selectedPlan === plan && plan !== "FREE";
 
           const featureRows = [
             { key: "estimates", value: labels.estimates },
@@ -325,6 +355,7 @@ export function WorkspacePlansPanel({
                 accent.border,
                 isCurrent && "ring-2 ring-primary/30",
                 isHighlighted && !isCurrent && "ring-2 ring-primary/20",
+                isSelected && !isCurrent && "ring-2 ring-primary/40",
               )}
             >
               <div className="flex flex-1 flex-col space-y-4">
@@ -349,6 +380,11 @@ export function WorkspacePlansPanel({
                   </span>
                   <span className="text-sm text-muted-foreground">{tHero("perMonth")}</span>
                 </p>
+                <PlanCardAddonSubline
+                  plan={plan}
+                  currentAddons={data.addonQuantities}
+                  locale={locale}
+                />
 
                 <ul className="space-y-2.5 border-t border-border/50 pt-4">
                   {featureRows.map((row) => (
@@ -413,6 +449,37 @@ export function WorkspacePlansPanel({
           );
         })}
       </div>
+
+      {selectedPlan && selectedPlan !== data.currentPlan && data.currentPlan !== "FREE" ? (
+        <SubscriptionImpactSummary
+          variant="plan"
+          locale={locale}
+          currentPlan={data.currentPlan}
+          selectedPlan={selectedPlan}
+          currentAddons={data.addonQuantities}
+          currentPeriodEnd={currentPeriodEnd}
+          activeSubscriptionChange={data.activeSubscriptionChange}
+        >
+          <div className="flex flex-wrap justify-end gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={pending}
+              onClick={() => setSelectedPlan(null)}
+            >
+              {t("cancelSelection")}
+            </Button>
+            <Button type="button" disabled={pending || !canChangePlan} onClick={handleConfirmPlanChange}>
+              {pending && activePlan === selectedPlan ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : null}
+              {PLAN_ORDER.indexOf(selectedPlan) > PLAN_ORDER.indexOf(data.currentPlan)
+                ? t("confirmUpgrade", { plan: tHero(`planName.${selectedPlan}`) })
+                : t("confirmDowngrade", { plan: tHero(`planName.${selectedPlan}`) })}
+            </Button>
+          </div>
+        </SubscriptionImpactSummary>
+      ) : null}
 
       <BillingChangePreviewDialog
         open={previewDialogOpen}

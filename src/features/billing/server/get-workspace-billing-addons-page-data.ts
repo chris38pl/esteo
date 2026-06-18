@@ -2,12 +2,14 @@ import "server-only";
 
 import { prisma } from "@/db/client";
 import { getWorkspaceEntitlements } from "@/server/billing/entitlement-service";
+import { loadWorkspaceAddonQuantities } from "@/features/billing/server/workspace-addon-sync";
+import { addonRowsToQuantities } from "@/features/billing/lib/subscription-impact";
 import type { WorkspaceBillingAddonsPageData } from "@/features/billing/billing-addons-page-data";
 
 export async function getWorkspaceBillingAddonsPageData(
   workspaceId: string,
 ): Promise<WorkspaceBillingAddonsPageData> {
-  const [entitlements, subscriptionRow] = await Promise.all([
+  const [entitlements, subscriptionRow, addonRows] = await Promise.all([
     getWorkspaceEntitlements(workspaceId),
     prisma.workspace.findUnique({
       where: { id: workspaceId },
@@ -24,6 +26,7 @@ export async function getWorkspaceBillingAddonsPageData(
         },
       },
     }),
+    loadWorkspaceAddonQuantities(workspaceId),
   ]);
 
   const subscription = subscriptionRow?.billingAccount?.subscription ?? null;
@@ -32,5 +35,6 @@ export async function getWorkspaceBillingAddonsPageData(
     entitlements,
     cancelAtPeriodEnd: subscription?.cancelAtPeriodEnd ?? false,
     currentPeriodEnd: subscription?.currentPeriodEnd ?? null,
+    addonQuantities: addonRowsToQuantities(addonRows),
   };
 }

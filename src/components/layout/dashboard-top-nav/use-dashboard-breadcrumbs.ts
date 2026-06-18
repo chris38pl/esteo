@@ -235,12 +235,21 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
     return crumbs;
   }
 
+  if (wsBase && pathname === `${wsBase}/billing/manage`) {
+    crumbs.push({
+      label: t("billing"),
+      href: `${wsBase}/billing`,
+    });
+    crumbs.push({ label: t("billingManage") });
+    return crumbs;
+  }
+
   if (wsBase && pathname === `${wsBase}/billing/plans`) {
     crumbs.push({
       label: t("billing"),
       href: `${wsBase}/billing`,
     });
-    crumbs.push({ label: t("billingPlans") });
+    crumbs.push({ label: t("billingManage") });
     return crumbs;
   }
 
@@ -249,7 +258,7 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
       label: t("billing"),
       href: `${wsBase}/billing`,
     });
-    crumbs.push({ label: t("billingAddons") });
+    crumbs.push({ label: t("billingManage") });
     return crumbs;
   }
 

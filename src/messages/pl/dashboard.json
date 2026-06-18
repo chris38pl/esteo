@@ -57,5 +57,27 @@
   },
   "actions": {
     "backHome": "Wróć na stronę główną"
+  },
+  "overview": {
+    "greeting": "Dzień dobry, {name}! 👋",
+    "subtitle": "Oto najważniejsze informacje o Twojej firmie.",
+    "timeHorizon": {
+      "all": "Wszystko",
+      "this_week": "Ten tydzień",
+      "this_month": "Ten miesiąc",
+      "this_year": "Ten rok"
+    },
+    "cards": {
+      "estimates": "Wyceny",
+      "sent": "Wysłane",
+      "income": "Wpływy",
+      "overduePayments": "Zaległe płatności"
+    },
+    "trends": {
+      "estimatesUp": "+3 od wczoraj",
+      "sentUp": "+8 w tym tygodniu",
+      "incomeFlat": "Bez zmian",
+      "overdueWarning": "{count, plural, one {# faktura po terminie} few {# faktury po terminie} many {# faktur po terminie} other {# faktury po terminie}}"
+    }
   }
 }

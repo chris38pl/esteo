@@ -105,7 +105,7 @@
       },
       "perMonth": "/ month",
       "priceWithAddons": "Plan + add-ons",
-      "changePlan": "Change plan",
+      "changePlan": "Configure subscription",
       "managePayment": "Manage payment",
       "changePlanDialog": {
         "title": "Change plan",
@@ -152,7 +152,7 @@
       "extraStorageActive": "{count, plural, one {# pack ({amount})} other {# packs ({amount})}}",
       "extraStoragePrice": "PLN {amount} / month",
       "activeBadge": "Active",
-      "manageAddons": "Manage add-ons"
+      "manageAddons": "Configure subscription"
     },
     "addonPage": {
       "title": "Plan add-ons",
@@ -238,6 +238,10 @@
       "downgradeTo": "Switch to {plan}",
       "upgradeSuccess": "Plan changed to {plan}.",
       "downgradeScheduled": "Plan will change to {plan} on {date}.",
+      "downgradeCanceled": "Scheduled plan change canceled. You will stay on {plan}.",
+      "cancelSelection": "Cancel",
+      "confirmUpgrade": "Confirm upgrade to {plan}",
+      "confirmDowngrade": "Confirm switch to {plan}",
       "freeDowngradeHint": "Return to Free by canceling your subscription on the Billing page.",
       "manageOnBilling": "Manage subscription",
       "checkoutCancelled": "Payment canceled. You can choose a plan again.",
@@ -250,6 +254,95 @@
         "invites": "Team invites",
         "undo": "Editor undo steps"
       }
+    },
+    "impactSummary": {
+      "overviewTitle": "Subscription & billing",
+      "currentSubscription": "Current subscription",
+      "nextInvoice": "Next invoice",
+      "totalMonthly": "Total",
+      "totalMonthlyValue": "{amount} / month",
+      "currently": "Currently",
+      "afterChange": "After change",
+      "recurringDelta": "Change: {amount} / month",
+      "planChangeTitle": "Plan change summary",
+      "addonsChangeTitle": "Add-on change summary",
+      "scheduledChangeTitle": "Scheduled change",
+      "scheduledChangeDescription": "{from} → {to} · {date}",
+      "cancelScheduledChange": "Cancel scheduled change",
+      "scheduledTiming": "The change takes effect on {date}.",
+      "withCurrentAddons": "With current add-ons: {amount} / month",
+      "unlimited": "Unlimited",
+      "limitsTitle": "What changes",
+      "gainsTitle": "You will gain",
+      "lossesTitle": "You will lose",
+      "addonsTitle": "Add-ons",
+      "limits": {
+        "users": "Users",
+        "storage": "Storage",
+        "ai": "AI calls",
+        "invites": "Team invites"
+      },
+      "addonKeys": {
+        "storage": "Storage packs",
+        "seats": "Seat packs"
+      },
+      "addonImpact": {
+        "kept": "{key} ×{after} — kept",
+        "removed": "{key} ×{before} — removed",
+        "changed": "{key} ×{before} → ×{after}"
+      },
+      "lineItem": {
+        "plan": "Plan",
+        "storagePack": "Storage Pack ×{count} ({amount})",
+        "seatPack": "Seat Pack ×{count} (+{amount} users)"
+      }
+    },
+    "manage": {
+      "title": "Subscription configuration",
+      "subtitle": "Choose your plan and add-ons in one place.",
+      "backToBilling": "Back to billing",
+      "planSection": "Choose a plan",
+      "addonsSection": "Add-ons",
+      "summarySection": "Change summary",
+      "stepLabel": "Step {step}",
+      "newSubscription": "New subscription",
+      "impactColumnTitle": "Impact of changes",
+      "monthlyChange": "Monthly change",
+      "unchangedItems": "Unchanged",
+      "continueHint": "Your next invoice and any one-time charges will appear in the next step — before you confirm the change.",
+      "continue": "Continue",
+      "saveSuccess": "Subscription updated.",
+      "effectiveFrom": "Change effective from {date}",
+      "youWillLose": "You will lose",
+      "youWillGain": "You will gain",
+      "youWillKeep": "You will keep",
+      "afterPlanChange": "After plan change",
+      "addonImpactTitle": "Impact of changes",
+      "subscriptionLabel": "Subscription",
+      "keep": {
+        "files": "All your files",
+        "storagePacks": "Storage packs",
+        "history": "Workspace history"
+      },
+      "storage": {
+        "title": "Extra storage",
+        "summary": "{base} included + {extra} extra = {total} total",
+        "totalShort": "{amount} total",
+        "packCount": "{count, plural, one {# pack} other {# packs}}",
+        "monthlyPrice": "{amount} zł / month",
+        "price": "{total} zł / month ({unit} zł per pack)"
+      },
+      "seats": {
+        "title": "Extra users",
+        "summary": "{base} included + {extra} extra = {total} total",
+        "totalShort": "{count} users total",
+        "packCount": "{count, plural, one {# pack} other {# packs}}",
+        "monthlyPrice": "{amount} zł / month",
+        "price": "{total} zł / month ({unit} zł per pack)",
+        "proOnly": "Seat packs are available on the Business plan only."
+      },
+      "decrease": "Decrease",
+      "increase": "Increase"
     }
   }
 }

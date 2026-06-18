@@ -59,12 +59,36 @@ type SubscriptionPlanVersionInput = {
   planVersion: string | null;
 };
 
+/**
+ * Resolves the pinned catalog version for pricing. Null or unknown versions fall back to the
+ * plan's current default — same rule as resolvePlanLimits and the schema comment on planVersion.
+ */
+export function resolveSubscriptionPlanVersion(
+  plan: SubscriptionPlan,
+  planVersion?: string | null,
+): string {
+  if (planVersion && PLAN_PRICES_PLN[planVersion] != null) {
+    return planVersion;
+  }
+  return DEFAULT_PLAN_VERSION[plan];
+}
+
 export function assertSubscriptionPlanVersion(subscription: SubscriptionPlanVersionInput): void {
   if (subscription.plan === "FREE") {
     return;
   }
   if (!subscription.planVersion) {
-    throw new Error(`Missing planVersion for subscription ${subscription.id}`);
+    console.warn(
+      JSON.stringify({
+        event: "subscription_plan_version_missing",
+        subscriptionId: subscription.id,
+        plan: subscription.plan,
+        resolvedVersion: resolveSubscriptionPlanVersion(
+          subscription.plan,
+          subscription.planVersion,
+        ),
+      }),
+    );
   }
 }
 
@@ -72,6 +96,6 @@ export function computePlanCentsFromSubscription(subscription: SubscriptionPlanV
   if (subscription.plan === "FREE") {
     return 0;
   }
-  assertSubscriptionPlanVersion(subscription);
-  return resolvePlanPrice(subscription.planVersion!);
+  const version = resolveSubscriptionPlanVersion(subscription.plan, subscription.planVersion);
+  return resolvePlanPrice(version);
 }

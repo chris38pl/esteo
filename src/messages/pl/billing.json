@@ -105,7 +105,7 @@
       },
       "perMonth": "/ miesiąc",
       "priceWithAddons": "Plan + dodatki",
-      "changePlan": "Zmień plan",
+      "changePlan": "Konfiguruj subskrypcję",
       "managePayment": "Zarządzaj płatnością",
       "changePlanDialog": {
         "title": "Zmień plan",
@@ -152,7 +152,7 @@
       "extraStorageActive": "{count, plural, one {# pakiet ({amount})} few {# pakiety ({amount})} many {# pakietów ({amount})} other {# pakietów ({amount})}}",
       "extraStoragePrice": "{amount} zł / miesiąc",
       "activeBadge": "Aktywne",
-      "manageAddons": "Zarządzaj dodatkami"
+      "manageAddons": "Konfiguruj subskrypcję"
     },
     "addonPage": {
       "title": "Dodatki do planu",
@@ -238,6 +238,10 @@
       "downgradeTo": "Zmień na {plan}",
       "upgradeSuccess": "Plan został zmieniony na {plan}.",
       "downgradeScheduled": "Plan zmieni się na {plan} od {date}.",
+      "downgradeCanceled": "Anulowano zaplanowaną zmianę planu. Zostajesz na {plan}.",
+      "cancelSelection": "Anuluj",
+      "confirmUpgrade": "Potwierdź przejście na {plan}",
+      "confirmDowngrade": "Potwierdź zmianę na {plan}",
       "freeDowngradeHint": "Powrót do Free przez anulowanie subskrypcji na stronie Płatności.",
       "manageOnBilling": "Zarządzaj subskrypcją",
       "checkoutCancelled": "Płatność anulowana. Możesz wybrać plan ponownie.",
@@ -250,6 +254,95 @@
         "invites": "Zaproszenia zespołu",
         "undo": "Cofanie w edytorze"
       }
+    },
+    "impactSummary": {
+      "overviewTitle": "Abonament i rozliczenia",
+      "currentSubscription": "Obecny abonament",
+      "nextInvoice": "Najbliższa faktura",
+      "totalMonthly": "Razem",
+      "totalMonthlyValue": "{amount} / mies.",
+      "currently": "Obecnie",
+      "afterChange": "Po zmianie",
+      "recurringDelta": "Zmiana: {amount} / mies.",
+      "planChangeTitle": "Podsumowanie zmiany planu",
+      "addonsChangeTitle": "Podsumowanie zmiany dodatków",
+      "scheduledChangeTitle": "Zaplanowana zmiana",
+      "scheduledChangeDescription": "{from} → {to} · {date}",
+      "cancelScheduledChange": "Anuluj zmianę",
+      "scheduledTiming": "Zmiana wejdzie w życie {date}.",
+      "withCurrentAddons": "Przy obecnych dodatkach: {amount} / mies.",
+      "unlimited": "Bez limitu",
+      "limitsTitle": "Co się zmieni",
+      "gainsTitle": "Zyskasz",
+      "lossesTitle": "Utracisz",
+      "addonsTitle": "Dodatki",
+      "limits": {
+        "users": "Użytkownicy",
+        "storage": "Magazyn",
+        "ai": "Wywołania AI",
+        "invites": "Zaproszenia zespołu"
+      },
+      "addonKeys": {
+        "storage": "Pakiety magazynu",
+        "seats": "Pakiety miejsc"
+      },
+      "addonImpact": {
+        "kept": "{key} ×{after} — bez zmian",
+        "removed": "{key} ×{before} — usunięte",
+        "changed": "{key} ×{before} → ×{after}"
+      },
+      "lineItem": {
+        "plan": "Plan",
+        "storagePack": "Pakiet magazynu ×{count} ({amount})",
+        "seatPack": "Pakiet miejsc ×{count} (+{amount} użytkowników)"
+      }
+    },
+    "manage": {
+      "title": "Konfiguracja subskrypcji",
+      "subtitle": "Wybierz plan i dodatki w jednym miejscu.",
+      "backToBilling": "Wróć do płatności",
+      "planSection": "Wybierz plan",
+      "addonsSection": "Dodatki",
+      "summarySection": "Podsumowanie zmiany",
+      "stepLabel": "Krok {step}",
+      "newSubscription": "Nowy abonament",
+      "impactColumnTitle": "Wpływ zmian",
+      "monthlyChange": "Zmiana miesięczna",
+      "unchangedItems": "Zostanie bez zmian",
+      "continueHint": "Najbliższa faktura oraz jednorazowe opłaty zobaczysz w następnym kroku — przed potwierdzeniem zmiany.",
+      "continue": "Kontynuuj",
+      "saveSuccess": "Subskrypcja została zaktualizowana.",
+      "effectiveFrom": "Zmiana od {date}",
+      "youWillLose": "Utracisz",
+      "youWillGain": "Zyskasz",
+      "youWillKeep": "Zachowasz",
+      "afterPlanChange": "Po zmianie planu",
+      "addonImpactTitle": "Wpływ zmian",
+      "subscriptionLabel": "Abonament",
+      "keep": {
+        "files": "Wszystkie pliki",
+        "storagePacks": "Pakiety magazynu",
+        "history": "Historia workspace"
+      },
+      "storage": {
+        "title": "Dodatkowa przestrzeń",
+        "summary": "{base} w planie + {extra} dodatkowo = {total} łącznie",
+        "totalShort": "{amount} łącznie",
+        "packCount": "{count, plural, one {# pakiet} few {# pakiety} many {# pakietów} other {# pakietów}}",
+        "monthlyPrice": "{amount} zł / mies.",
+        "price": "{total} zł / mies. ({unit} zł za pakiet)"
+      },
+      "seats": {
+        "title": "Dodatkowi użytkownicy",
+        "summary": "{base} w planie + {extra} dodatkowo = {total} łącznie",
+        "totalShort": "{count} użytkowników łącznie",
+        "packCount": "{count, plural, one {# pakiet} few {# pakiety} many {# pakietów} other {# pakietów}}",
+        "monthlyPrice": "{amount} zł / mies.",
+        "price": "{total} zł / mies. ({unit} zł za pakiet)",
+        "proOnly": "Pakiety miejsc są dostępne tylko w planie Business."
+      },
+      "decrease": "Zmniejsz",
+      "increase": "Zwiększ"
     }
   }
 }
