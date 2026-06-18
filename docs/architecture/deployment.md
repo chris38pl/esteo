@@ -28,7 +28,7 @@ DNS for **`esteo.app`** is managed in **OVH** (zone: Strefa DNS). Vercel hosts t
 | --- | --- | --- | --- | --- |
 | `esteo.app` | A | `213.186.33.1` | — | OVH default / landing (not the app) |
 | **`preview.esteo.app`** | **CNAME** | **`br8eaxzzss8333u.vercel-dns.com`** | **Staging** | Custom URL for Vercel Preview (`staging` branch) |
-| `mail.esteo.app` | TXT / CNAME | (Resend) | Staging + Production email | `EMAIL_FROM` — see `.env.example` |
+| `mail.esteo.app` | TXT / CNAME | (Resend) | Staging + Production email | Verified sending domain; `EMAIL_FROM=estimates@mail.esteo.app` |
 | `app.esteo.pl` | — | (planned) | Production | Public launch domain |
 
 ### Staging domain setup (`preview.esteo.app`)
@@ -117,9 +117,24 @@ Setting `DATABASE_URL` on Vercel does **not** automatically give it to Trigger w
 | **UploadThing** | Attachment storage | `.env` + Trigger worker | Vercel + Trigger Staging dashboard | Vercel + Trigger main dashboard |
 | **Trigger.dev** | Background jobs | main project **Development** | **Esteo-Staging** project **Production** | main **Esteo** project **Production** |
 | **Stripe** | Billing, webhooks | test mode (optional) | test mode | live mode (at launch) |
+| **Resend** | Estimate send email (+ PDF) | sandbox in `.env` (see below) | `estimates@mail.esteo.app` on Vercel **and** Trigger Staging | `estimates@mail.esteo.app` on Vercel **and** Trigger main |
 | **Cloudflare Turnstile** | Public form captcha (optional) | optional in `.env` | optional on Vercel Preview | optional on Vercel Production |
 
 `DATABASE_URL` and `DIRECT_URL` must target the **same Neon branch** for a given environment. See [database.md](database.md).
+
+### Email (`EMAIL_FROM`) — quick reference
+
+Official outbound address for estimate sends: **`estimates@mail.esteo.app`** (domain `mail.esteo.app` verified in Resend).
+
+| Environment | `EMAIL_FROM` | Where to set |
+| --- | --- | --- |
+| **localhost** | Not used by default — code sends from `onboarding@resend.dev` (Resend sandbox). Set `EMAIL_DEV_REDIRECT_TO` to your inbox. Optional: `EMAIL_USE_PRODUCTION_FROM=true` to use `estimates@mail.esteo.app` locally. | `.env` |
+| **staging** (Vercel Preview + Trigger **Esteo-Staging**) | `estimates@mail.esteo.app` | Vercel Preview env vars **and** Trigger.dev → Esteo-Staging → Environment Variables |
+| **production** (Vercel Production + Trigger **Esteo**) | `estimates@mail.esteo.app` | Vercel Production env vars **and** Trigger.dev → Esteo → Environment Variables |
+
+Also set `RESEND_API_KEY` and `EMAIL_FROM_NAME` (`Esteo`) in both Vercel and Trigger for each environment. The send job runs on the **Trigger worker**, not on Vercel — missing keys there cause send failures even when the UI enqueue succeeds.
+
+Full behaviour (sandbox, redirect, reply-to): [`estimate-send-workflow.md`](../features/estimate-send-workflow.md#email-from-address).
 
 ---
 

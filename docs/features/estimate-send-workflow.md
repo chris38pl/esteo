@@ -86,19 +86,57 @@ Send meta (count, last sent, recipient) lives in the read-only banner, not under
 
 ## Environment variables
 
-See `.env.example`:
+See `.env.example`. Implementation: `src/server/email/resend-client.ts`.
 
 | Variable | Purpose |
 | --- | --- |
-| `RESEND_API_KEY` | Resend API (also on **Trigger.dev** project for the worker) |
-| `EMAIL_FROM` | From address (`quotes@mail.esteo.app` prod; sandbox uses `onboarding@resend.dev` in dev) |
-| `EMAIL_FROM_NAME` | Display name |
-| `EMAIL_DEV_REDIRECT_TO` | **Development only** — redirect all outbound mail to this inbox |
-| `EMAIL_USE_PRODUCTION_FROM` | Set `true` to use `EMAIL_FROM` on localhost |
+| `RESEND_API_KEY` | Resend API key — required on **Vercel** and **Trigger.dev** (worker sends mail) |
+| `EMAIL_FROM` | From address on staging/production (default fallback in code: `estimates@mail.esteo.app`) |
+| `EMAIL_FROM_NAME` | Display name in the From header (e.g. `Esteo`) |
+| `EMAIL_DEV_REDIRECT_TO` | **Development only** — all outbound mail goes to this inbox; subject prefixed `[DEV → …]` |
+| `EMAIL_USE_PRODUCTION_FROM` | Set `true` on localhost to use `EMAIL_FROM` instead of sandbox |
+| `EMAIL_FROM_DEV` | Optional override for sandbox sender on localhost (default `onboarding@resend.dev`) |
 
-**Resend sandbox:** testing emails can only be delivered to the Resend account owner email. Set `EMAIL_DEV_REDIRECT_TO` to that address during local dev.
+### Email From address
 
-**Staging:** Trigger worker runs on **Esteo-Staging** — copy `RESEND_API_KEY` and `EMAIL_FROM` into Trigger env vars, not only Vercel.
+Official product address: **`estimates@mail.esteo.app`** on the verified domain **`mail.esteo.app`** (Resend). DNS is managed in OVH; verification in [Resend → Domains](https://resend.com/domains).
+
+#### Staging and production
+
+```env
+EMAIL_FROM="estimates@mail.esteo.app"
+EMAIL_FROM_NAME="Esteo"
+RESEND_API_KEY="re_..."
+```
+
+Set these on:
+
+1. **Vercel** — Environment Variables for Preview (staging) and Production (main).
+2. **Trigger.dev** — **Esteo-Staging** (staging) or **Esteo** (production) → Environment Variables.
+
+The `send-estimate-to-customer` task runs on Trigger; without `RESEND_API_KEY` / `EMAIL_FROM` there, sends fail after enqueue.
+
+#### Localhost (development)
+
+By default **`EMAIL_FROM` is ignored** unless `EMAIL_USE_PRODUCTION_FROM=true`. The app uses Resend’s sandbox sender:
+
+- **From:** `onboarding@resend.dev` (or `EMAIL_FROM_DEV`)
+- **To:** redirected to `EMAIL_DEV_REDIRECT_TO` when set (recommended)
+
+Sandbox without a verified domain can only deliver to the **email that owns the Resend account**. Use redirect so you never hit client inboxes during dev.
+
+To test the real From address locally (delivers to real recipients):
+
+```env
+EMAIL_FROM="estimates@mail.esteo.app"
+EMAIL_FROM_NAME="Esteo (Dev)"
+EMAIL_USE_PRODUCTION_FROM=true
+# Do not set EMAIL_DEV_REDIRECT_TO if you want mail to reach the client address
+```
+
+#### Reply-To
+
+Reply-To is the workspace company email when configured, otherwise the sending user’s email — not `EMAIL_FROM`. See `resolveReplyToEmail` in `resend-client.ts`.
 
 ---
 

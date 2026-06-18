@@ -21,7 +21,7 @@ export function getResend(): Resend {
   return resendClient;
 }
 
-const PRODUCTION_DEFAULT_FROM = "quotes@mail.esteo.app";
+const PRODUCTION_DEFAULT_FROM = "estimates@mail.esteo.app";
 const RESEND_SANDBOX_FROM = "onboarding@resend.dev";
 
 export function getEmailFromAddress(): string {
@@ -63,7 +63,7 @@ export function resolveReplyToEmail(input: {
     return userEmail;
   }
 
-  return process.env.EMAIL_FROM?.trim() || "quotes@mail.esteo.app";
+  return process.env.EMAIL_FROM?.trim() || "estimates@mail.esteo.app";
 }
 
 export function buildDevEmailSubject(intendedRecipient: string, subject: string): string {
