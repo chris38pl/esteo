@@ -180,13 +180,9 @@ export function WorkspaceSubscriptionManagePanel({
     if (!isDirty || selectedPlan === "FREE") {
       return null;
     }
-    const targetPlan = selectedPlan === "FREE" ? data.currentPlan : selectedPlan;
-    if (targetPlan === "FREE") {
-      return null;
-    }
     return computePlanImpactSummary({
       currentPlan: data.currentPlan,
-      targetPlan,
+      targetPlan: selectedPlan,
       currentAddons: data.addonQuantities,
       targetAddons,
       effectiveAt: currentPeriodEnd,

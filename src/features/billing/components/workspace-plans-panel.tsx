@@ -333,7 +333,7 @@ export function WorkspacePlansPanel({
           const isHighlighted = highlightPlan === plan;
           const isCurrent = data.currentPlan === plan;
           const isLoading = pending && activePlan === plan;
-          const isSelected = selectedPlan === plan && plan !== "FREE";
+          const isSelected = selectedPlan === plan;
 
           const featureRows = [
             { key: "estimates", value: labels.estimates },
@@ -469,7 +469,11 @@ export function WorkspacePlansPanel({
             >
               {t("cancelSelection")}
             </Button>
-            <Button type="button" disabled={pending || !canChangePlan} onClick={handleConfirmPlanChange}>
+            <Button
+              type="button"
+              disabled={pending || !canChangePlan}
+              onClick={() => handleConfirmPlanChange()}
+            >
               {pending && activePlan === selectedPlan ? (
                 <Loader2 className="size-4 animate-spin" />
               ) : null}
