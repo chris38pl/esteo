@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Rocket } from "lucide-react";
+import { Rocket } from "lucide-react";
 import Link from "next/link";
 import {
   SubscriptionPlan,
@@ -21,7 +21,10 @@ import {
   WorkspaceIconPicker,
   type WorkspaceIconKey,
 } from "@/features/workspaces/components/workspace-icon-picker";
-import { WORKSPACE_INDUSTRIES } from "@/features/workspaces/lib/industries";
+import {
+  isWorkspaceIndustryAvailableAtSignup,
+} from "@/features/workspaces/lib/industries";
+import { WorkspaceIndustrySelect } from "@/features/workspaces/components/workspace-industry-select";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -33,11 +36,6 @@ import {
 } from "@/features/workspaces/lib/free-workspace-policy";
 
 type CreateWorkspaceFormMode = "onboarding" | "new";
-
-const selectClassName = cn(
-  "h-11 w-full appearance-none rounded-xl border border-input bg-transparent px-3 py-2 pr-10 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm dark:bg-input/30",
-  "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
-);
 
 const PLAN_OPTIONS: SubscriptionPlan[] = [
   SubscriptionPlan.FREE,
@@ -107,6 +105,11 @@ export function CreateWorkspaceForm({
 
     if (!industry) {
       setError(tForm("errors.industryRequired"));
+      return;
+    }
+
+    if (!isWorkspaceIndustryAvailableAtSignup(industry)) {
+      setError(tForm("errors.industryNotAvailable"));
       return;
     }
 
@@ -181,33 +184,11 @@ export function CreateWorkspaceForm({
         disabled={isPending}
       />
 
-      <div className="space-y-2">
-        <Label htmlFor="workspace-industry">{tForm("industryLabel")}</Label>
-        <div className="relative">
-          <select
-            id="workspace-industry"
-            value={industry}
-            onChange={(event) =>
-              setIndustry(event.target.value as WorkspaceIndustry | "")
-            }
-            required
-            className={cn(selectClassName, !industry && "text-muted-foreground")}
-          >
-            <option value="" disabled>
-              {tForm("industryPlaceholder")}
-            </option>
-            {WORKSPACE_INDUSTRIES.map((value) => (
-              <option key={value} value={value}>
-                {t(`industries.${value}`)}
-              </option>
-            ))}
-          </select>
-          <ChevronDown
-            className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-muted-foreground"
-            aria-hidden
-          />
-        </div>
-      </div>
+      <WorkspaceIndustrySelect
+        value={industry}
+        onChange={setIndustry}
+        disabled={isPending}
+      />
 
       {showOtherText ? (
         <div className="space-y-2">

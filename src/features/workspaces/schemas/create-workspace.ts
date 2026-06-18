@@ -1,6 +1,7 @@
 import { SubscriptionPlan, WorkspaceAppearanceTheme, WorkspaceIndustry } from "@prisma/client";
 import { z } from "zod";
 
+import { isWorkspaceIndustryAvailableAtSignup } from "@/features/workspaces/lib/industries";
 import { companyDescriptionSchema } from "@/features/workspaces/schemas/company-description";
 
 export const createWorkspaceSchema = z
@@ -26,6 +27,10 @@ export const createWorkspaceSchema = z
       message: "Please describe your industry (at least 2 characters).",
       path: ["industryOtherText"],
     },
-  );
+  )
+  .refine((data) => isWorkspaceIndustryAvailableAtSignup(data.industry), {
+    message: "This industry is not available yet.",
+    path: ["industry"],
+  });
 
 export type CreateWorkspaceInput = z.infer<typeof createWorkspaceSchema>;
