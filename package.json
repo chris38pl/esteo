@@ -60,6 +60,7 @@
     "eval:services:compare": "tsx evals/runners/services-eval.ts --full --compare",
     "eval:services:seed": "tsx evals/scripts/seed-services-scenarios.ts",
     "eval:services:smoke": "tsx evals/scripts/scorer-smoke-test.ts",
+    "eval:types": "tsc -p evals/tsconfig.json --noEmit",
     "validate:ai-schemas": "tsx scripts/validate-ai-schemas.mjs",
     "prisma:reset": "prisma migrate reset --skip-seed",
     "postinstall": "prisma generate"

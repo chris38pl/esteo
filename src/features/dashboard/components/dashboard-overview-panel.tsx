@@ -63,7 +63,8 @@ function TrendFooter({
     variant,
     currency,
     locale,
-    t: (key, values) => t(`trends.${key}`, values),
+    t: (key, values) =>
+      t(`trends.${key}` as Parameters<typeof t>[0], values),
   });
 
   const Icon =

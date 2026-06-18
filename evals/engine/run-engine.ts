@@ -34,7 +34,7 @@ import { measureLength } from "@evals/engine/scorers/length-benchmark";
 import { scoreRules } from "@evals/engine/scorers/rule-scorer";
 import { scoreSchema } from "@evals/engine/scorers/schema-scorer";
 import { STABILITY_RUNS, STABILITY_VARIANCE_THRESHOLD } from "@evals/engine/config/stability";
-import type { EvalMode, ScenarioResult } from "@evals/engine/types";
+import type { EvalMode, ScenarioResult, StabilityResult } from "@evals/engine/types";
 
 export type RunEngineOptions = {
   repoRoot: string;
@@ -234,14 +234,7 @@ async function runScenarioWithStability(
   result: ScenarioResult;
   prompt: string;
   artifacts: Parameters<typeof writeScenarioArtifacts>[2];
-  stability: {
-    runs: number;
-    scores: number[];
-    contextAlignments: number[];
-    scoreVariance: number;
-    contextVariance: number;
-    passed: boolean;
-  };
+  stability: StabilityResult;
 }> {
   const runs: ScenarioResult[] = [];
   let lastPrompt = "";
@@ -346,7 +339,7 @@ export async function runEvalEngine(options: RunEngineOptions): Promise<number> 
     console.log(`\n→ ${scenario.id}`);
 
     if (options.stability) {
-      const { result, prompt, artifacts } = await runScenarioWithStability(
+      const { result, prompt, artifacts, stability } = await runScenarioWithStability(
         scenario,
         evalMode,
       );
@@ -356,7 +349,7 @@ export async function runEvalEngine(options: RunEngineOptions): Promise<number> 
       }
       writeScenarioArtifacts(resultsDir, scenario, artifacts);
       console.log(
-        `  stability variance: ${artifacts.stability?.scoreVariance} ${artifacts.stability?.passed ? "STABLE" : "UNSTABLE"}`,
+        `  stability variance: ${stability.scoreVariance} ${stability.passed ? "STABLE" : "UNSTABLE"}`,
       );
     } else {
       const { result, prompt, artifacts } = await runScenarioOnce(scenario, evalMode);

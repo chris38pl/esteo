@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 import type { EvalContextSnapshot } from "@evals/engine/build-eval-context";
 import type { EvalScenario } from "@evals/engine/schemas/scenario";
-import type { ScenarioResult } from "@evals/engine/types";
+import type { ScenarioResult, StabilityResult } from "@evals/engine/types";
 
 export function writeScenarioArtifacts(
   resultsDir: string,
@@ -24,7 +24,7 @@ export function writeScenarioArtifacts(
     cost: unknown;
     judgeResult: unknown;
     finalScore: unknown;
-    stability?: unknown;
+    stability?: StabilityResult;
   },
 ): void {
   const dir = join(resultsDir, scenario.id);

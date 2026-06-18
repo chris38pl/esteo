@@ -69,6 +69,15 @@ export type JudgeResult = {
   hallucinations: string[];
 };
 
+export type StabilityResult = {
+  runs: number;
+  scores: number[];
+  contextAlignments: number[];
+  scoreVariance: number;
+  contextVariance: number;
+  passed: boolean;
+};
+
 export type ScenarioResult = {
   id: string;
   name: string;
@@ -109,6 +118,9 @@ export type RunSummary = {
   edgeAverageScore: number;
   edgeAverageContextAlignment: number | null;
   edgeAverageCoverage: number;
+  genericAverageScore: number;
+  genericAverageContextAlignment: number | null;
+  genericAverageCoverage: number;
   goldenAverageScore: number | null;
   goldenAverageContextAlignment: number | null;
   passed: number;
