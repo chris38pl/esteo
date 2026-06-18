@@ -21,6 +21,7 @@ import type {
   AddonImpactRow,
   AddonQuantities,
   LimitImpactRow,
+  RecurringLineItem,
 } from "@/features/billing/lib/subscription-impact";
 import {
   buildRecurringLineItems,
