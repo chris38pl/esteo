@@ -19,6 +19,7 @@ import {
 import { EstimateVersionSelector } from "./estimate-version-selector";
 import { EstimateHeaderStatusBadge } from "./estimate-header-status-badge";
 import { EstimateHeaderWorkflowActions } from "./estimate-header-workflow-actions";
+import type { EstimateSendDialogMode } from "./estimate-send-dialog";
 import { EstimateRulesIndicator } from "./estimate-rules-indicator";
 import { EstimateHeaderPinMenuItem } from "./estimate-header-pin-menu-item";
 import { EstimateHeaderRenameMenuItem } from "./estimate-header-rename-menu-item";
@@ -68,7 +69,7 @@ interface EstimateHeaderProps {
   autosaveStatus: AutoSaveStatus;
   workflow: EstimateVersionWorkflowClient;
   isSending: boolean;
-  onSendStarted: (payload: { sendId: string; runId: string }) => void;
+  onOpenSendDialog: (mode: EstimateSendDialogMode) => void;
   rulesApplied?: boolean;
   isPinned?: boolean;
   canManualRetryAiDraft?: boolean;
@@ -89,7 +90,7 @@ interface EstimateHeaderMoreMenuProps {
   versions: Version[];
   workflow: EstimateVersionWorkflowClient;
   isSending: boolean;
-  onSendStarted: (payload: { sendId: string; runId: string }) => void;
+  onOpenSendDialog: (mode: EstimateSendDialogMode) => void;
   isPinned: boolean;
   canManualRetryAiDraft?: boolean;
   onBeforePdfExport?: () => Promise<EstimatePdfBeforeExportResult>;
@@ -110,7 +111,7 @@ function EstimateHeaderMoreMenu({
   versions,
   workflow,
   isSending,
-  onSendStarted,
+  onOpenSendDialog,
   isPinned,
   canManualRetryAiDraft = false,
   onBeforePdfExport,
@@ -129,7 +130,7 @@ function EstimateHeaderMoreMenu({
     versionStatus: activeStatus,
     workflow,
     isSending,
-    onSendStarted,
+    onOpenSendDialog,
     variant: "menu" as const,
   };
 
@@ -203,7 +204,7 @@ export function EstimateHeader({
   autosaveStatus,
   workflow,
   isSending,
-  onSendStarted,
+  onOpenSendDialog,
   rulesApplied = true,
   isPinned = false,
   canManualRetryAiDraft = false,
@@ -235,7 +236,7 @@ export function EstimateHeader({
     versionStatus: activeStatus,
     workflow,
     isSending,
-    onSendStarted,
+    onOpenSendDialog,
     variant: "inline" as const,
   };
 
@@ -251,7 +252,7 @@ export function EstimateHeader({
     versions,
     workflow,
     isSending,
-    onSendStarted,
+    onOpenSendDialog,
     isPinned,
     canManualRetryAiDraft,
     onBeforePdfExport,

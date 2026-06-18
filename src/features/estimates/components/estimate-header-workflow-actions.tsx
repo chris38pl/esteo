@@ -15,7 +15,9 @@ import {
   estimateOutlineButtonClassName,
   estimatePrimaryButtonClassName,
 } from "./estimate-action-button-styles";
-import { EstimateSendDialog } from "./estimate-send-dialog";
+import {
+  type EstimateSendDialogMode,
+} from "./estimate-send-dialog";
 import {
   EstimateWorkflowDialog,
   type EstimateWorkflowDialogAction,
@@ -37,7 +39,7 @@ interface EstimateHeaderWorkflowActionsProps {
   versionStatus: EstimateVersionStatus;
   workflow: EstimateVersionWorkflowClient;
   isSending: boolean;
-  onSendStarted: (payload: { sendId: string; runId: string }) => void;
+  onOpenSendDialog: (mode: EstimateSendDialogMode) => void;
   variant?: "inline" | "menu";
 }
 
@@ -50,12 +52,10 @@ export function EstimateHeaderWorkflowActions({
   versionStatus,
   workflow,
   isSending,
-  onSendStarted,
+  onOpenSendDialog,
   variant = "inline",
 }: EstimateHeaderWorkflowActionsProps) {
   const t = useTranslations("estimates");
-  const [sendDialogOpen, setSendDialogOpen] = useState(false);
-  const [sendDialogMode, setSendDialogMode] = useState<"send" | "resend">("send");
   const [workflowDialogAction, setWorkflowDialogAction] =
     useState<EstimateWorkflowDialogAction | null>(null);
 
@@ -66,9 +66,8 @@ export function EstimateHeaderWorkflowActions({
   const canReject = versionStatus === "SENT" && !isArchived && !isSending;
   const canReopen = canReopenEstimateVersion(versionStatus) && !isArchived && !isSending;
 
-  function openSendDialog(mode: "send" | "resend") {
-    setSendDialogMode(mode);
-    setSendDialogOpen(true);
+  function openSendDialog(mode: EstimateSendDialogMode) {
+    onOpenSendDialog(mode);
   }
 
   function openWorkflowDialog(action: EstimateWorkflowDialogAction) {
@@ -83,18 +82,6 @@ export function EstimateHeaderWorkflowActions({
 
   const dialogs = (
     <>
-      <EstimateSendDialog
-        open={sendDialogOpen}
-        onOpenChange={setSendDialogOpen}
-        mode={sendDialogMode}
-        estimateId={estimateId}
-        versionId={versionId}
-        workspaceId={workspaceId}
-        workspaceSlug={workspaceSlug}
-        locale={locale}
-        defaultEmail={workflow.defaultCustomerEmail}
-        onSendStarted={onSendStarted}
-      />
       {workflowDialogAction ? (
         <EstimateWorkflowDialog
           open

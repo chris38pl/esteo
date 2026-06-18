@@ -31,6 +31,11 @@ import { EstimateHeader } from "./estimate-header";
 import { EstimatePdfPreviewDialog } from "./estimate-pdf-preview-dialog";
 import { EstimatePdfDocumentsSection } from "./estimate-pdf-documents-section";
 import { EstimateMobileStickyBar } from "./estimate-mobile-sticky-bar";
+import {
+  EstimateSendDialog,
+  openEstimateSendDialogDeferred,
+  type EstimateSendDialogMode,
+} from "./estimate-send-dialog";
 import { EstimateContextCards } from "./estimate-context-cards";
 import { EstimateItemsView } from "./estimate-items-view";
 import { EstimateRightRail } from "./estimate-right-rail";
@@ -223,6 +228,8 @@ export function EstimateEditor({
   const aiStickyRef = useRef<HTMLDivElement>(null);
   const [tableSearchQuery, setTableSearchQuery] = useState("");
   const [mobilePositionSheetOpen, setMobilePositionSheetOpen] = useState(false);
+  const [sendDialogOpen, setSendDialogOpen] = useState(false);
+  const [sendDialogMode, setSendDialogMode] = useState<EstimateSendDialogMode>("send");
   const [isAddingSection, setIsAddingSection] = useState(false);
   const [addingItemSectionIds, setAddingItemSectionIds] = useState<string[]>([]);
   const addingItemSectionIdsRef = useRef(new Set<string>());
@@ -309,6 +316,11 @@ export function EstimateEditor({
     },
     [startPolling],
   );
+
+  const openSendDialog = useCallback((mode: EstimateSendDialogMode) => {
+    setSendDialogMode(mode);
+    setSendDialogOpen(true);
+  }, []);
 
   const allVersions = estimate.versions.map((v) => ({
     id: v.id,
@@ -915,7 +927,7 @@ export function EstimateEditor({
         autosaveStatus={autosaveStatus}
         workflow={versionWorkflow}
         isSending={isSending}
-        onSendStarted={handleSendStarted}
+        onOpenSendDialog={openSendDialog}
         rulesApplied={rulesApplied}
         isPinned={isPinned}
         canManualRetryAiDraft={canManualRetryAiDraft}
@@ -1162,14 +1174,25 @@ export function EstimateEditor({
         <EstimateMobileStickyBar
           items={allItems}
           currency={estimate.currency}
+          locale={locale}
+          versionStatus={versionStatus}
+          isSending={isSending}
+          sendSheetOpen={sendDialogOpen}
+          onSendClick={() => openEstimateSendDialogDeferred(openSendDialog, "send")}
+        />
+      ) : null}
+
+      {!isGenerating ? (
+        <EstimateSendDialog
+          open={sendDialogOpen}
+          onOpenChange={setSendDialogOpen}
+          mode={sendDialogMode}
           estimateId={estimate.id}
           versionId={activeVersionId ?? ""}
           workspaceId={estimate.workspaceId}
           workspaceSlug={workspaceSlug}
           locale={locale}
-          versionStatus={versionStatus}
           defaultEmail={versionWorkflow.defaultCustomerEmail}
-          isSending={isSending}
           onSendStarted={handleSendStarted}
         />
       ) : null}
