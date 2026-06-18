@@ -4,7 +4,8 @@ import { prisma } from "@/db/client";
 import { isPersistedEntityId } from "@/features/estimates/lib/persisted-entity-id";
 import { serverPerfEnd, serverPerfStart } from "@/features/estimates/lib/server-perf";
 import { syncVersionTotals, syncVersionTotalsFromPayload } from "@/features/estimates/lib/sync-version-totals";
-import { isEstimateVersionEditable } from "@/features/estimates/lib/version-mutability";
+import { isEstimateVersionContentEditable } from "@/features/estimates/lib/version-mutability";
+import { ACTIVE_SEND_TRANSPORT_STATUSES } from "@/features/estimates/lib/estimate-send-constants";
 import { PermissionError } from "@/server/permissions/errors";
 
 // ---------------------------------------------------------------------------
@@ -21,6 +22,7 @@ type EstimateListQueryRow = Prisma.EstimateGetPayload<{
         id: true;
         versionNumber: true;
         status: true;
+        archivedAt: true;
         updatedAt: true;
         createdByUserId: true;
       };
@@ -130,6 +132,7 @@ export async function getEstimateForEditor(estimateId: string, workspaceId: stri
           id: true,
           versionNumber: true,
           status: true,
+          archivedAt: true,
           marginPercent: true,
           totalNet: true,
           totalGross: true,
@@ -143,6 +146,7 @@ export async function getEstimateForEditor(estimateId: string, workspaceId: stri
           id: true,
           versionNumber: true,
           status: true,
+          archivedAt: true,
           marginPercent: true,
           totalNet: true,
           totalGross: true,
@@ -210,6 +214,7 @@ export async function listEstimates(workspaceId: string): Promise<EstimateListIt
           id: true,
           versionNumber: true,
           status: true,
+          archivedAt: true,
           updatedAt: true,
           createdByUserId: true,
         },
@@ -366,12 +371,35 @@ export async function assertVersionEditable(
   versionId: string,
   workspaceId: string,
 ): Promise<void> {
-  const status = await getVersionStatus(versionId, workspaceId);
-  if (!status) {
+  const version = await prisma.estimateVersion.findFirst({
+    where: { id: versionId, workspaceId },
+    select: { status: true, archivedAt: true },
+  });
+
+  if (!version) {
     throw new PermissionError("Estimate version not found.");
   }
-  if (!isEstimateVersionEditable(status)) {
-    throw new PermissionError("Archived versions cannot be modified.");
+
+  if (!isEstimateVersionContentEditable(version)) {
+    if (version.archivedAt) {
+      throw new PermissionError("Archived versions cannot be modified.");
+    }
+
+    throw new PermissionError(
+      "This version was sent to the customer and cannot be edited. Create a new version.",
+    );
+  }
+
+  const activeSend = await prisma.estimateVersionSend.findFirst({
+    where: {
+      versionId,
+      transportStatus: { in: ACTIVE_SEND_TRANSPORT_STATUSES },
+    },
+    select: { id: true },
+  });
+
+  if (activeSend) {
+    throw new PermissionError("A send is in progress. Please wait.");
   }
 }
 
@@ -414,20 +442,20 @@ export async function archiveEstimateVersion(input: {
       workspaceId: input.workspaceId,
       estimateId: input.estimateId,
     },
-    select: { status: true },
+    select: { archivedAt: true },
   });
 
   if (!version) {
     throw new PermissionError("Estimate version not found.");
   }
 
-  if (version.status === "ARCHIVED") {
+  if (version.archivedAt) {
     return;
   }
 
   await prisma.estimateVersion.update({
     where: { id: input.versionId },
-    data: { status: "ARCHIVED" },
+    data: { archivedAt: new Date() },
   });
 }
 
@@ -442,20 +470,20 @@ export async function unarchiveEstimateVersion(input: {
       workspaceId: input.workspaceId,
       estimateId: input.estimateId,
     },
-    select: { status: true },
+    select: { archivedAt: true },
   });
 
   if (!version) {
     throw new PermissionError("Estimate version not found.");
   }
 
-  if (version.status !== "ARCHIVED") {
+  if (!version.archivedAt) {
     return;
   }
 
   await prisma.estimateVersion.update({
     where: { id: input.versionId },
-    data: { status: "DRAFT" },
+    data: { archivedAt: null },
   });
 }
 
@@ -839,7 +867,7 @@ export async function autoSave(input: {
   serverPerfStart("autoSaveAction.autoSaveVersion.autoSave.conflictCheck");
   const current = await prisma.estimateVersion.findFirst({
     where: { id: input.versionId, workspaceId: input.workspaceId },
-    select: { status: true, updatedAt: true },
+    select: { status: true, archivedAt: true, updatedAt: true },
   });
 
   if (!current) {
@@ -847,9 +875,9 @@ export async function autoSave(input: {
     return { conflict: true };
   }
 
-  if (!isEstimateVersionEditable(current.status)) {
+  if (!isEstimateVersionContentEditable(current)) {
     serverPerfEnd("autoSaveAction.autoSaveVersion.autoSave.conflictCheck");
-    throw new PermissionError("Archived versions cannot be modified.");
+    throw new PermissionError("This version cannot be modified.");
   }
 
   if (current.updatedAt.toISOString() !== input.expectedUpdatedAt.toISOString()) {
@@ -968,7 +996,7 @@ export async function patchLineItem(input: {
   serverPerfStart("patchLineItemAction.patchLineItem.conflictCheck");
   const current = await prisma.estimateVersion.findFirst({
     where: { id: input.versionId, workspaceId: input.workspaceId },
-    select: { status: true, updatedAt: true },
+    select: { status: true, archivedAt: true, updatedAt: true },
   });
 
   if (!current) {
@@ -976,9 +1004,9 @@ export async function patchLineItem(input: {
     return { conflict: true };
   }
 
-  if (!isEstimateVersionEditable(current.status)) {
+  if (!isEstimateVersionContentEditable(current)) {
     serverPerfEnd("patchLineItemAction.patchLineItem.conflictCheck");
-    throw new PermissionError("Archived versions cannot be modified.");
+    throw new PermissionError("This version cannot be modified.");
   }
 
   if (current.updatedAt.toISOString() !== input.expectedUpdatedAt.toISOString()) {

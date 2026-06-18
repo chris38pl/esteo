@@ -1,7 +1,5 @@
 import type { EstimateRequestStatus, EstimateVersionStatus } from "@prisma/client";
 
-import { isEstimateVersionEditable } from "@/features/estimates/lib/version-mutability";
-
 export function isIncompleteAiDraft(input: {
   hasEstimateRequest: boolean;
   sectionCount: number;
@@ -15,7 +13,7 @@ export function isIncompleteAiDraft(input: {
     return false;
   }
 
-  if (!input.versionStatus || !isEstimateVersionEditable(input.versionStatus)) {
+  if (!input.versionStatus || input.versionStatus !== "DRAFT") {
     return false;
   }
 

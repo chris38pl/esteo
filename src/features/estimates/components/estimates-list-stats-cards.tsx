@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarCheck, Clock, Send, Vault } from "lucide-react";
+import { CalendarCheck, Clock, Send, Trophy } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
@@ -57,15 +57,28 @@ export function EstimatesListStatsCards({ estimates, locale }: EstimatesListStat
       const gross = estimate.latestVersion ? Number(estimate.latestVersion.totalGross) : 0;
       return sum + gross;
     }, 0);
-    const sentCount = estimates.filter(
-      (estimate) => estimate.latestVersion?.status === "SENT",
+    const sentCount = estimates.filter((estimate) => {
+      const status = estimate.latestVersion?.status;
+      return status === "SENT" || status === "ACCEPTED" || status === "REJECTED";
+    }).length;
+    const acceptedCount = estimates.filter(
+      (estimate) => estimate.latestVersion?.status === "ACCEPTED",
     ).length;
+    const winRate =
+      sentCount > 0 ? `${Math.round((acceptedCount / sentCount) * 100)}%` : "—";
+    const wonValue = estimates.reduce((sum, estimate) => {
+      if (estimate.latestVersion?.status !== "ACCEPTED") {
+        return sum;
+      }
+      return sum + Number(estimate.latestVersion.totalGross);
+    }, 0);
 
     return {
       totalCount: String(totalCount),
       totalValue: formatCurrency(totalValue, locale, "PLN"),
       sentCount: String(sentCount),
-      conversion: "—",
+      winRate,
+      wonValue: formatCurrency(wonValue, locale, "PLN"),
     };
   }, [estimates, locale]);
 
@@ -78,9 +91,9 @@ export function EstimatesListStatsCards({ estimates, locale }: EstimatesListStat
         iconClassName="bg-violet-500/10 text-violet-600 ring-violet-500/15 dark:text-violet-400"
       />
       <StatCard
-        icon={Vault}
-        label={t("list.stats.totalValue")}
-        value={stats.totalValue}
+        icon={Trophy}
+        label={t("list.stats.wonValue")}
+        value={stats.wonValue}
         iconClassName="bg-blue-500/10 text-blue-600 ring-blue-500/15 dark:text-blue-400"
       />
       <StatCard
@@ -91,8 +104,8 @@ export function EstimatesListStatsCards({ estimates, locale }: EstimatesListStat
       />
       <StatCard
         icon={Clock}
-        label={t("list.stats.conversion")}
-        value={stats.conversion}
+        label={t("list.stats.winRate")}
+        value={stats.winRate}
         iconClassName="bg-violet-500/10 text-violet-600 ring-violet-500/15 dark:text-violet-400"
       />
     </div>

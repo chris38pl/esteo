@@ -116,7 +116,19 @@ function activityDescription(
     case "estimate_exported":
       return t("editor.history.actions.estimate_exported");
     case "sent_to_customer":
-      return t("editor.history.actions.sent_to_customer");
+      return t("editor.history.actions.sent_to_customer", {
+        email: meta.email ?? "",
+      });
+    case "estimate_resent":
+      return t("editor.history.actions.estimate_resent", {
+        email: meta.email ?? "",
+      });
+    case "estimate_accepted":
+      return t("editor.history.actions.estimate_accepted");
+    case "estimate_rejected":
+      return t("editor.history.actions.estimate_rejected");
+    case "estimate_reopened":
+      return t("editor.history.actions.estimate_reopened");
     case "payment_installment_added":
       return t("editor.history.actions.payment_installment_added", {
         name: meta.installmentName ?? "",

@@ -51,6 +51,8 @@ import { serializeEstimatePdfs } from "@/features/estimates/lib/serialize-estima
 import { getMaxUndoSteps } from "@/server/permissions/entitlements";
 import { findWorkspaceSettings } from "@/features/workspaces/server/repository";
 import { serializeWorkspaceCompanyProfileClient } from "@/features/workspaces/lib/company-profile-for-export";
+import { loadEstimateVersionWorkflow } from "@/features/estimates/server/load-estimate-version-workflow";
+import type { EstimateVersionWorkflowClient } from "@/features/estimates/lib/serialize-estimate-version-workflow";
 
 export default async function EstimateEditorPage({
   params,
@@ -187,6 +189,25 @@ export default async function EstimateEditorPage({
     settings: workspaceSettings,
   });
 
+  const versionWorkflow: EstimateVersionWorkflowClient =
+    (activeVersionId
+      ? await loadEstimateVersionWorkflow(
+          activeVersionId,
+          resolved.workspace.id,
+          estimate.estimateRequest?.customerData,
+        )
+      : null) ?? {
+      status: rawVersionTree?.status ?? "DRAFT",
+      archivedAt: rawVersionTree?.archivedAt?.toISOString() ?? null,
+      lastSentAt: null,
+      lastSentToEmail: null,
+      acceptedAt: null,
+      rejectedAt: null,
+      successfulSendCount: 0,
+      activeSend: null,
+      defaultCustomerEmail: null,
+    };
+
   return (
     <>
       <SyncDashboardBreadcrumbDetail label={breadcrumbLabel} />
@@ -216,6 +237,7 @@ export default async function EstimateEditorPage({
         }
         maxUndoSteps={maxUndoSteps}
         workspaceCompanyProfile={workspaceCompanyProfile}
+        versionWorkflow={versionWorkflow}
       />
     </>
   );

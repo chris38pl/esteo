@@ -10,15 +10,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { buildLocalePath } from "@/lib/locale-navigation";
-import type { Locale } from "@/lib/locale";
-import { locales } from "@/lib/locale";
+import { switchAppLocale } from "@/lib/locale-navigation";
+import { localeOptions, locales, type Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
-
-const LOCALE_OPTIONS: { value: Locale; flag: string; label: string }[] = [
-  { value: "pl", flag: "🇵🇱", label: "Polski" },
-  { value: "en", flag: "🇬🇧", label: "English" },
-];
 
 export function ProfileLanguageSelect({ locale }: { locale: Locale }) {
   const t = useTranslations("navbar.userMenu");
@@ -27,14 +21,13 @@ export function ProfileLanguageSelect({ locale }: { locale: Locale }) {
   const searchParams = useSearchParams();
   const query = searchParams?.toString();
 
-  const active = LOCALE_OPTIONS.find((option) => option.value === locale) ?? LOCALE_OPTIONS[0];
+  const active = localeOptions.find((option) => option.value === locale) ?? localeOptions[0];
 
-  function switchLocale(nextLocale: Locale) {
-    if (nextLocale === locale) {
-      return;
+  function handleSwitch(nextLocale: Locale) {
+    const nextPath = switchAppLocale(pathname, locale, nextLocale, query);
+    if (nextPath) {
+      router.push(nextPath);
     }
-
-    router.push(buildLocalePath(pathname, nextLocale, query));
   }
 
   return (
@@ -67,13 +60,13 @@ export function ProfileLanguageSelect({ locale }: { locale: Locale }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-[var(--radix-dropdown-menu-trigger-width)]">
           {locales.map((value) => {
-            const option = LOCALE_OPTIONS.find((entry) => entry.value === value)!;
+            const option = localeOptions.find((entry) => entry.value === value)!;
 
             return (
               <DropdownMenuItem
                 key={value}
                 className="gap-2.5"
-                onSelect={() => switchLocale(value)}
+                onSelect={() => handleSwitch(value)}
               >
                 <span aria-hidden>{option.flag}</span>
                 <span>

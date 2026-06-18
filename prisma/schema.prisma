@@ -152,7 +152,18 @@ enum IndustryFieldValueType {
 enum EstimateVersionStatus {
   DRAFT
   SENT
-  ARCHIVED
+  ACCEPTED
+  REJECTED
+}
+
+enum EstimateSendTransportStatus {
+  QUEUED
+  GENERATING_PDF
+  SENDING
+  PROVIDER_ACCEPTED
+  DELIVERED
+  BOUNCED
+  FAILED
 }
 
 enum EstimateActivityCategory {
@@ -233,6 +244,10 @@ model User {
   estimateActivityLogs EstimateActivityLog[]
   estimateAttachments  EstimateAttachment[]
   estimatePdfs         EstimatePdf[]
+  estimateVersionSends EstimateVersionSend[]
+  estimateVersionsLastSent EstimateVersion[] @relation("EstimateVersionLastSentBy")
+  estimateVersionsAccepted EstimateVersion[] @relation("EstimateVersionAcceptedBy")
+  estimateVersionsRejected EstimateVersion[] @relation("EstimateVersionRejectedBy")
   reportedIssues       Issue[]
   recentDocuments      UserRecentDocument[]
 
@@ -483,6 +498,7 @@ model Workspace {
   slugAliases          WorkspaceSlugAlias[]
   pinnedEstimates      PinnedEstimate[]
   estimateAttachments  EstimateAttachment[]
+  estimateVersionSends EstimateVersionSend[]
   workspaceAddons      WorkspaceAddon[]
   searchDocuments      SearchDocument[]
   recentDocuments      UserRecentDocument[]
@@ -749,6 +765,7 @@ model EstimatePdf {
   estimate  Estimate        @relation(fields: [estimateId], references: [id], onDelete: Cascade)
   version   EstimateVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
   createdBy User?           @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  sends     EstimateVersionSend[]
 
   @@unique([versionId])
   @@index([estimateId])
@@ -838,28 +855,71 @@ model PinnedEstimate {
 }
 
 model EstimateVersion {
-  id              String                @id @default(cuid())
-  estimateId      String
-  workspaceId     String
-  versionNumber   Int
-  status          EstimateVersionStatus @default(DRAFT)
-  marginPercent   Decimal               @default(0)
-  totalNet        Decimal               @default(0)
-  totalGross      Decimal               @default(0)
-  createdByUserId String?
-  createdAt       DateTime              @default(now())
-  updatedAt       DateTime              @updatedAt
+  id                String                @id @default(cuid())
+  estimateId        String
+  workspaceId       String
+  versionNumber     Int
+  status            EstimateVersionStatus @default(DRAFT)
+  statusChangedAt   DateTime              @default(now())
+  archivedAt        DateTime?
+  lastSentAt        DateTime?
+  lastSentToEmail   String?
+  lastSentByUserId  String?
+  acceptedAt        DateTime?
+  acceptedByUserId  String?
+  rejectedAt        DateTime?
+  rejectedByUserId  String?
+  marginPercent     Decimal               @default(0)
+  totalNet          Decimal               @default(0)
+  totalGross        Decimal               @default(0)
+  createdByUserId   String?
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
 
-  estimate   Estimate            @relation("EstimateVersions", fields: [estimateId], references: [id], onDelete: Cascade)
-  latestOf   Estimate[]          @relation("EstimateLatestVersion")
-  workspace  Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  estimate   Estimate              @relation("EstimateVersions", fields: [estimateId], references: [id], onDelete: Cascade)
+  latestOf   Estimate[]            @relation("EstimateLatestVersion")
+  workspace  Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  lastSentBy User?                 @relation("EstimateVersionLastSentBy", fields: [lastSentByUserId], references: [id], onDelete: SetNull)
+  acceptedBy User?                 @relation("EstimateVersionAcceptedBy", fields: [acceptedByUserId], references: [id], onDelete: SetNull)
+  rejectedBy User?                 @relation("EstimateVersionRejectedBy", fields: [rejectedByUserId], references: [id], onDelete: SetNull)
   sections   EstimateSection[]
   revisions  EstimateRevision[]
   aiMessages EstimateAiMessage[]
   pdf        EstimatePdf?
+  sends      EstimateVersionSend[]
 
   @@unique([estimateId, versionNumber])
   @@index([estimateId])
+  @@index([workspaceId])
+  @@index([workspaceId, archivedAt])
+}
+
+model EstimateVersionSend {
+  id               String                      @id @default(cuid())
+  versionId        String
+  workspaceId      String
+  sentToEmail      String
+  deliveredToEmail String?
+  replyToEmail     String
+  sentByUserId     String
+  sentAt           DateTime?
+  transportStatus  EstimateSendTransportStatus @default(QUEUED)
+  errorMessage     String?
+  emailSubject     String
+  emailHtml        String?                     @db.Text
+  attachPdf        Boolean                     @default(true)
+  estimatePdfId    String?
+  resendMessageId  String?
+  triggerRunId     String?
+  isResend         Boolean                     @default(false)
+  createdAt        DateTime                    @default(now())
+
+  version  EstimateVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  workspace Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  sentBy   User             @relation(fields: [sentByUserId], references: [id], onDelete: Restrict)
+  pdf      EstimatePdf?     @relation(fields: [estimatePdfId], references: [id], onDelete: SetNull)
+
+  @@index([versionId, sentAt(sort: Desc)])
   @@index([workspaceId])
 }
 

@@ -15,10 +15,10 @@ import {
   estimateHeaderActionsDividerClassName,
   estimateOutlineButtonClassName,
   estimateOutlineIconButtonClassName,
-  estimatePrimaryButtonClassName,
 } from "./estimate-action-button-styles";
 import { EstimateVersionSelector } from "./estimate-version-selector";
 import { EstimateHeaderStatusBadge } from "./estimate-header-status-badge";
+import { EstimateHeaderWorkflowActions } from "./estimate-header-workflow-actions";
 import { EstimateRulesIndicator } from "./estimate-rules-indicator";
 import { EstimateHeaderPinMenuItem } from "./estimate-header-pin-menu-item";
 import { EstimateHeaderRenameMenuItem } from "./estimate-header-rename-menu-item";
@@ -27,6 +27,7 @@ import { EstimateHeaderRetryAiMenuItem } from "./estimate-header-retry-ai-menu-i
 import { EstimateHeaderPdfExportMenuItem } from "./estimate-header-pdf-export-menu-item";
 import type { EstimatePdfBeforeExportResult } from "@/features/estimates/hooks/use-estimate-pdf-output";
 import type { AutoSaveStatus } from "@/features/estimates/hooks/use-estimate-autosave";
+import type { EstimateVersionWorkflowClient } from "@/features/estimates/lib/serialize-estimate-version-workflow";
 import type { Locale } from "@/lib/locale";
 import {
   estimateHeaderClass,
@@ -35,7 +36,6 @@ import {
   estimateHeaderInlineActionMenuItemClass,
   estimateHeaderMobileMetaClass,
   estimateHeaderPrimaryClass,
-  estimateHeaderSendActionClass,
   estimateHeaderTitleClass,
 } from "@/features/estimates/lib/estimate-header-layout";
 import { cn } from "@/lib/utils";
@@ -54,6 +54,7 @@ interface Version {
   id: string;
   versionNumber: number;
   status: EstimateVersionStatus;
+  archivedAt?: string | null;
 }
 
 interface EstimateHeaderProps {
@@ -65,6 +66,9 @@ interface EstimateHeaderProps {
   versions: Version[];
   activeVersionId: string;
   autosaveStatus: AutoSaveStatus;
+  workflow: EstimateVersionWorkflowClient;
+  isSending: boolean;
+  onSendStarted: (payload: { sendId: string; runId: string }) => void;
   rulesApplied?: boolean;
   isPinned?: boolean;
   canManualRetryAiDraft?: boolean;
@@ -81,7 +85,11 @@ interface EstimateHeaderMoreMenuProps {
   locale: Locale;
   activeVersionId: string;
   activeStatus: EstimateVersionStatus;
+  isArchived: boolean;
   versions: Version[];
+  workflow: EstimateVersionWorkflowClient;
+  isSending: boolean;
+  onSendStarted: (payload: { sendId: string; runId: string }) => void;
   isPinned: boolean;
   canManualRetryAiDraft?: boolean;
   onBeforePdfExport?: () => Promise<EstimatePdfBeforeExportResult>;
@@ -98,7 +106,11 @@ function EstimateHeaderMoreMenu({
   locale,
   activeVersionId,
   activeStatus,
+  isArchived,
   versions,
+  workflow,
+  isSending,
+  onSendStarted,
   isPinned,
   canManualRetryAiDraft = false,
   onBeforePdfExport,
@@ -108,10 +120,24 @@ function EstimateHeaderMoreMenu({
 }: EstimateHeaderMoreMenuProps) {
   const t = useTranslations("estimates");
 
+  const workflowActionProps = {
+    estimateId,
+    versionId: activeVersionId,
+    workspaceId,
+    workspaceSlug,
+    locale,
+    versionStatus: activeStatus,
+    workflow,
+    isSending,
+    onSendStarted,
+    variant: "menu" as const,
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        <EstimateHeaderWorkflowActions {...workflowActionProps} />
         <EstimateHeaderRenameMenuItem
           title={title}
           estimateId={estimateId}
@@ -129,7 +155,7 @@ function EstimateHeaderMoreMenu({
         <EstimateHeaderVersionMenuItems
           estimateId={estimateId}
           activeVersionId={activeVersionId}
-          activeVersionStatus={activeStatus}
+          isArchived={isArchived}
           versionCount={versions.length}
           workspaceId={workspaceId}
           workspaceSlug={workspaceSlug}
@@ -175,6 +201,9 @@ export function EstimateHeader({
   versions,
   activeVersionId,
   autosaveStatus,
+  workflow,
+  isSending,
+  onSendStarted,
   rulesApplied = true,
   isPinned = false,
   canManualRetryAiDraft = false,
@@ -185,15 +214,30 @@ export function EstimateHeader({
   const t = useTranslations("estimates");
   const activeVersion = versions.find((version) => version.id === activeVersionId) ?? versions[0];
   const activeVersionNumber = activeVersion?.versionNumber ?? 1;
-  const activeStatus = activeVersion?.status ?? "DRAFT";
+  const activeStatus = workflow.status;
+  const isArchived = workflow.archivedAt != null;
   const headerTitle = title ?? t("editor.titleEyebrow");
 
   const statusBadge = (
     <EstimateHeaderStatusBadge
       versionStatus={activeStatus}
+      isArchived={isArchived}
       autosaveStatus={autosaveStatus}
     />
   );
+
+  const workflowActionProps = {
+    estimateId,
+    versionId: activeVersionId,
+    workspaceId,
+    workspaceSlug,
+    locale,
+    versionStatus: activeStatus,
+    workflow,
+    isSending,
+    onSendStarted,
+    variant: "inline" as const,
+  };
 
   const moreMenuProps = {
     title,
@@ -203,7 +247,11 @@ export function EstimateHeader({
     locale,
     activeVersionId,
     activeStatus,
+    isArchived,
     versions,
+    workflow,
+    isSending,
+    onSendStarted,
     isPinned,
     canManualRetryAiDraft,
     onBeforePdfExport,
@@ -214,12 +262,14 @@ export function EstimateHeader({
   return (
     <header className={estimateHeaderClass}>
       <div className={estimateHeaderPrimaryClass}>
-        <h1 className={estimateHeaderTitleClass}>
-          {t("editor.titleWithVersion", {
-            title: headerTitle,
-            version: activeVersionNumber,
-          })}
-        </h1>
+        <div className="min-w-0">
+          <h1 className={estimateHeaderTitleClass}>
+            {t("editor.titleWithVersion", {
+              title: headerTitle,
+              version: activeVersionNumber,
+            })}
+          </h1>
+        </div>
         <div className="estimate-header__status-desktop">{statusBadge}</div>
       </div>
 
@@ -267,13 +317,7 @@ export function EstimateHeader({
             <Eye className="size-4" />
             {t("header.actions.preview")}
           </Button>
-          <Button
-            type="button"
-            size="sm"
-            className={cn(estimatePrimaryButtonClassName, estimateHeaderSendActionClass)}
-          >
-            {t("header.actions.send")}
-          </Button>
+          <EstimateHeaderWorkflowActions {...workflowActionProps} />
           <EstimateHeaderMoreMenu
             {...moreMenuProps}
             trigger={

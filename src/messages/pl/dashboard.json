@@ -78,6 +78,58 @@
       "sentUp": "+8 w tym tygodniu",
       "incomeFlat": "Bez zmian",
       "overdueWarning": "{count, plural, one {# faktura po terminie} few {# faktury po terminie} many {# faktur po terminie} other {# faktury po terminie}}"
+    },
+    "charts": {
+      "trend": "{percent}% vs poprzedni tydzień",
+      "period": {
+        "7_days": "7 dni",
+        "30_days": "30 dni"
+      },
+      "days": {
+        "mon": "Pon",
+        "tue": "Wt",
+        "wed": "Śr",
+        "thu": "Czw",
+        "fri": "Pt",
+        "sat": "Sob",
+        "sun": "Ndz"
+      },
+      "requests": {
+        "title": "Ilość zapytań",
+        "totalLabel": "łącznie zapytań",
+        "footer": "Zobacz wszystkie zapytania"
+      },
+      "income": {
+        "title": "Wpływy",
+        "totalLabel": "łącznie wpływów",
+        "footer": "Zobacz płatności"
+      }
+    },
+    "activity": {
+      "title": "Ostatnia aktywność",
+      "footer": "Zobacz pełną historię aktywności",
+      "you": "Ty",
+      "actions": {
+        "documentAdded": "dodał(a) dokument",
+        "documentAddedYou": "dodałeś dokument",
+        "inWorkspace": "w przestrzeni {workspace}",
+        "requestCompleted": "zakończył zapytanie",
+        "estimateSent": "wysłał wycenę"
+      }
+    },
+    "documents": {
+      "title": "Ostatnie dokumenty",
+      "seeAll": "Zobacz wszystkie",
+      "footer": "Przejdź do dokumentów",
+      "menu": "Opcje dokumentu",
+      "menuDownload": "Pobierz",
+      "menuOpen": "Otwórz"
+    },
+    "overdueList": {
+      "title": "Zaległe płatności",
+      "footer": "Zobacz wszystkie płatności",
+      "empty": "Brak zaległych płatności.",
+      "due": "Termin: {date} ({ago})"
     }
   }
 }

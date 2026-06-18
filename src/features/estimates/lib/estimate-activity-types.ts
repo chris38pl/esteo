@@ -12,6 +12,10 @@ export const ESTIMATE_ACTIVITY_ACTIONS = {
   imported_from_price_list: "imported_from_price_list",
   estimate_exported: "estimate_exported",
   sent_to_customer: "sent_to_customer",
+  estimate_resent: "estimate_resent",
+  estimate_accepted: "estimate_accepted",
+  estimate_rejected: "estimate_rejected",
+  estimate_reopened: "estimate_reopened",
   payment_installment_added: "payment_installment_added",
   payment_installment_updated: "payment_installment_updated",
   payment_installment_deleted: "payment_installment_deleted",
@@ -47,4 +51,10 @@ export type ActivityMetadata = {
   versionId?: string;
   estimatePdfId?: string;
   cached?: boolean;
+  email?: string;
+  pdfFileName?: string;
+  reason?: string;
+  note?: string;
+  resend?: boolean;
+  sendId?: string;
 };

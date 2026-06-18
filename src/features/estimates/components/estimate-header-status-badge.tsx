@@ -19,11 +19,14 @@ interface EstimateHeaderStatusBadgeProps {
 
 export function EstimateHeaderStatusBadge({
   versionStatus,
+  isArchived = false,
   autosaveStatus,
-}: EstimateHeaderStatusBadgeProps) {
+}: EstimateHeaderStatusBadgeProps & { isArchived?: boolean }) {
   const t = useTranslations("estimates");
 
-  const versionLabel = t(`header.status.${versionStatus}`);
+  const versionLabel = isArchived
+    ? t("status.ARCHIVED")
+    : t(`header.status.${versionStatus}`);
 
   if (autosaveStatus === "idle") {
     return (

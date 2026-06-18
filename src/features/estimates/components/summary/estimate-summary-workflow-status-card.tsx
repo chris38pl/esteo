@@ -73,11 +73,6 @@ function stepLabels(
         title: t("editor.summary.workflow.sent"),
         description: t("editor.summary.workflow.sentDesc"),
       };
-    case "negotiations":
-      return {
-        title: t("editor.summary.workflow.negotiations"),
-        description: t("editor.summary.workflow.negotiationsDesc"),
-      };
     case "acceptance":
       return {
         title: t("editor.summary.workflow.acceptance"),
@@ -112,6 +107,7 @@ export function EstimateSummaryWorkflowStatusCard({
         versionUpdatedAt: versionTree?.updatedAt ?? estimate.updatedAt,
         versionNumber: versionTree?.versionNumber ?? 1,
         versionStatus: versionTree?.status ?? "DRAFT",
+        acceptedAt: versionTree?.status === "ACCEPTED" ? versionTree.updatedAt : null,
         lineItemCount,
         activityLogs,
       }),

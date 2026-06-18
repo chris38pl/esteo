@@ -78,6 +78,58 @@
       "sentUp": "+8 this week",
       "incomeFlat": "No change",
       "overdueWarning": "{count, plural, one {# overdue invoice} other {# overdue invoices}}"
+    },
+    "charts": {
+      "trend": "{percent}% vs previous week",
+      "period": {
+        "7_days": "7 days",
+        "30_days": "30 days"
+      },
+      "days": {
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat",
+        "sun": "Sun"
+      },
+      "requests": {
+        "title": "Inquiry volume",
+        "totalLabel": "total inquiries",
+        "footer": "View all inquiries"
+      },
+      "income": {
+        "title": "Income",
+        "totalLabel": "total income",
+        "footer": "View payments"
+      }
+    },
+    "activity": {
+      "title": "Recent activity",
+      "footer": "View full activity history",
+      "you": "You",
+      "actions": {
+        "documentAdded": "added a document",
+        "documentAddedYou": "added a document",
+        "inWorkspace": "in workspace {workspace}",
+        "requestCompleted": "completed inquiry",
+        "estimateSent": "sent estimate"
+      }
+    },
+    "documents": {
+      "title": "Recent documents",
+      "seeAll": "View all",
+      "footer": "Go to documents",
+      "menu": "Document options",
+      "menuDownload": "Download",
+      "menuOpen": "Open"
+    },
+    "overdueList": {
+      "title": "Overdue payments",
+      "footer": "View all payments",
+      "empty": "No overdue payments.",
+      "due": "Due: {date} ({ago})"
     }
   }
 }

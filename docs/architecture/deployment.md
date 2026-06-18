@@ -11,10 +11,42 @@ Related: [estimate-requests](../features/estimate-requests.md), [estimate-ai](es
 | Model | Git branch | Vercel environment | Typical URL | Purpose |
 | --- | --- | --- | --- | --- |
 | **localhost** | any (local) | — | `http://localhost:3000` | Developer machine |
-| **staging** | `staging` | **Preview** | `esteo-git-staging-*.vercel.app` | Pre-production, user testing |
+| **staging** | `staging` | **Preview** | **`https://preview.esteo.app`** (also `*.vercel.app`) | Pre-production, user testing |
 | **main** | `main` | **Production** | `app.esteo.pl` (planned) | Public launch |
 
 Vercel maps branches automatically: pushes to `staging` create **Preview** deployments; pushes to `main` create **Production** deployments.
+
+**Staging chain:** GitHub branch `staging` → Vercel **Preview** deployment → Trigger.dev project **Esteo-Staging** (Production bucket). Custom domain `preview.esteo.app` points at the same Preview deployment as the default `esteo-git-staging-*.vercel.app` URL.
+
+---
+
+## Domains and DNS
+
+DNS for **`esteo.app`** is managed in **OVH** (zone: Strefa DNS). Vercel hosts the Next.js app; OVH holds the records.
+
+| Host / subdomain | Type | Target | Environment | Notes |
+| --- | --- | --- | --- | --- |
+| `esteo.app` | A | `213.186.33.1` | — | OVH default / landing (not the app) |
+| **`preview.esteo.app`** | **CNAME** | **`br8eaxzzss8333u.vercel-dns.com`** | **Staging** | Custom URL for Vercel Preview (`staging` branch) |
+| `mail.esteo.app` | TXT / CNAME | (Resend) | Staging + Production email | `EMAIL_FROM` — see `.env.example` |
+| `app.esteo.pl` | — | (planned) | Production | Public launch domain |
+
+### Staging domain setup (`preview.esteo.app`)
+
+Configured **2026-06-18**:
+
+1. **OVH** — add CNAME `preview` → `br8eaxzzss8333u.vercel-dns.com` (propagation up to ~24 h).
+2. **Vercel** — add `preview.esteo.app` to the Esteo project; assign to **Preview** (branch `staging`), not Production.
+3. **GitHub** — push to `staging` triggers Preview deploy (unchanged).
+4. **Trigger.dev** — **Esteo-Staging** project, Production env, GitHub branch `staging` (unchanged).
+
+After DNS propagates, testers use `https://preview.esteo.app` instead of the auto-generated `*.vercel.app` hostname. Both URLs serve the same Preview deployment.
+
+**Checklist when the custom domain is new:**
+
+- Vercel → Domains: `preview.esteo.app` shows **Valid**.
+- Clerk Dashboard (test app): add `https://preview.esteo.app` to allowed origins / redirect URLs if sign-in fails on the custom host.
+- Stripe test webhooks (if used on staging): endpoint URL must use the hostname you actually test on.
 
 ```mermaid
 flowchart LR
@@ -307,7 +339,7 @@ If step 5 fails → HTTP 500, user message „Nie udało się wysłać zgłoszen
 2. Confirm `TRIGGER_SECRET_KEY` and `TRIGGER_PROJECT_ID` both have Preview enabled
 3. Confirm Trigger **Esteo-Staging → Production** dashboard has worker env vars
 4. Redeploy latest Preview deployment
-5. Test: submit estimate request (with and without attachments)
+5. Test on **`https://preview.esteo.app`** (or latest `*.vercel.app` Preview URL): submit estimate request (with and without attachments)
 6. Verify run in **Esteo-Staging → Production → Runs**
 
 ### Production launch (future)

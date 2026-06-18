@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Archive, ArchiveRestore, Trash2 } from "lucide-react";
 import { useTransition } from "react";
-import type { EstimateVersionStatus } from "@prisma/client";
 
 import { DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import {
@@ -19,7 +18,7 @@ import { cn } from "@/lib/utils";
 export function EstimateHeaderVersionMenuItems({
   estimateId,
   activeVersionId,
-  activeVersionStatus,
+  isArchived,
   versionCount,
   workspaceId,
   workspaceSlug,
@@ -27,7 +26,7 @@ export function EstimateHeaderVersionMenuItems({
 }: {
   estimateId: string;
   activeVersionId: string;
-  activeVersionStatus: EstimateVersionStatus;
+  isArchived: boolean;
   versionCount: number;
   workspaceId: string;
   workspaceSlug: string;
@@ -37,7 +36,6 @@ export function EstimateHeaderVersionMenuItems({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
-  const isArchived = activeVersionStatus === "ARCHIVED";
   const canDelete = versionCount > 1;
 
   return (

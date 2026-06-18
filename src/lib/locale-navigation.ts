@@ -1,6 +1,6 @@
 import { publicEstimateRequestSegmentByLocale } from "@/features/estimate-requests/routes";
 import type { Locale } from "@/lib/locale";
-import { locales } from "@/lib/locale";
+import { locales, setLocalePreferenceCookie } from "@/lib/locale";
 
 export function withLocale(pathname: string, locale: Locale): string {
   const segments = pathname.split("/");
@@ -41,4 +41,18 @@ export function buildLocalePath(
   const nextBase = pathname ? withLocaleSpecificSegments(pathname, nextLocale) : `/${nextLocale}`;
   const query = searchParams?.trim();
   return query ? `${nextBase}?${query}` : nextBase;
+}
+
+export function switchAppLocale(
+  pathname: string,
+  currentLocale: Locale,
+  nextLocale: Locale,
+  searchParams?: string | null,
+): string | null {
+  if (nextLocale === currentLocale) {
+    return null;
+  }
+
+  setLocalePreferenceCookie(nextLocale);
+  return buildLocalePath(pathname, nextLocale, searchParams);
 }

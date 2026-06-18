@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-import { buildLocalePath } from "@/lib/locale-navigation";
+import { buildLocalePath, switchAppLocale } from "@/lib/locale-navigation";
 import type { Locale } from "@/lib/locale";
 import { locales } from "@/lib/locale";
 import { cn } from "@/lib/utils";
@@ -49,7 +49,6 @@ export function LocaleSwitcher({
       aria-label={ariaLabel}
     >
       {locales.map((l, index) => {
-        const next = buildLocalePath(pathname ?? "", l, query);
         const active = l === value;
 
         return (
@@ -70,7 +69,12 @@ export function LocaleSwitcher({
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
             )}
-            onClick={() => router.push(next)}
+            onClick={() => {
+              const nextPath = switchAppLocale(pathname ?? "", value, l, query);
+              if (nextPath) {
+                router.push(nextPath);
+              }
+            }}
           >
             {labels[l]}
           </button>

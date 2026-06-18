@@ -8,7 +8,7 @@ Core workflow:
 2. AI generates draft estimate (background job)
 3. User reviews and edits estimate ([`docs/features/estimates.md`](docs/features/estimates.md))
 4. User exports PDF ([`docs/features/estimate-pdf-export.md`](docs/features/estimate-pdf-export.md))
-5. User sends estimate to customer (post-MVP)
+5. User sends estimate to customer ([`docs/features/estimate-send-workflow.md`](docs/features/estimate-send-workflow.md))
 
 Documentation index: [`docs/README.md`](docs/README.md).
 
@@ -168,6 +168,8 @@ Monitoring
 ## URL strategy
 - /pl
 - /en
+
+Visiting `/` redirects to `/pl` by default. Browser `Accept-Language` is ignored unless the user previously chose a locale (cookie `NEXT_LOCALE`, set when switching language in the UI).
 
 ## Router structure
 app

@@ -12,8 +12,10 @@ import {
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
+import { DashboardInsightsSection } from "@/features/dashboard/components/dashboard-insights-section";
 import { DashboardStatCard } from "@/features/dashboard/components/dashboard-stat-card";
 import { DashboardTimeHorizonSelect } from "@/features/dashboard/components/dashboard-time-horizon-select";
+import { getDashboardPlaceholderInsights } from "@/features/dashboard/lib/dashboard-placeholder-data";
 import {
   DEFAULT_DASHBOARD_TIME_HORIZON,
   type DashboardTimeHorizon,
@@ -120,6 +122,7 @@ export function DashboardOverviewPanel({
   }, [locale, timeHorizon]);
 
   const paymentsHref = `/${locale}/dashboard/${workspaceSlug}/payments`;
+  const insightsData = getDashboardPlaceholderInsights();
 
   return (
     <div className="mx-auto w-full max-w-7xl space-y-6">
@@ -196,6 +199,12 @@ export function DashboardOverviewPanel({
           }
         />
       </div>
+
+      <DashboardInsightsSection
+        data={insightsData}
+        workspaceSlug={workspaceSlug}
+        locale={locale}
+      />
     </div>
   );
 }

@@ -45,6 +45,7 @@ export type EstimateForEditorClient = {
     id: string;
     versionNumber: number;
     status: EstimateVersionStatus;
+    archivedAt: string | null;
     marginPercent: number;
     totalNet: number;
     totalGross: number;
@@ -64,6 +65,7 @@ export type VersionTreeClient = {
   workspaceId: string;
   versionNumber: number;
   status: EstimateVersionStatus;
+  archivedAt: string | null;
   marginPercent: number;
   createdByUserId: string | null;
   createdAt: string;
@@ -144,6 +146,7 @@ export function serializeEstimateForEditor(
       id: version.id,
       versionNumber: version.versionNumber,
       status: version.status,
+      archivedAt: version.archivedAt?.toISOString() ?? null,
       marginPercent: toNumber(version.marginPercent),
       totalNet: toNumber(version.totalNet),
       totalGross: toNumber(version.totalGross),
@@ -165,6 +168,7 @@ export function serializeVersionWithTree(raw: RawVersionTree): VersionTreeClient
     workspaceId: raw.workspaceId,
     versionNumber: raw.versionNumber,
     status: raw.status,
+    archivedAt: raw.archivedAt?.toISOString() ?? null,
     marginPercent: toNumber(raw.marginPercent),
     createdByUserId: raw.createdByUserId,
     createdAt: raw.createdAt.toISOString(),

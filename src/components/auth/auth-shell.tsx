@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { AuthLocaleToggle } from "@/components/auth/auth-locale-toggle";
+import type { Locale } from "@/lib/locale";
 
 const authThemeToggleOnImageClass =
   "size-9 rounded-lg border-white/35 bg-white/45 p-0 opacity-65 shadow-none backdrop-blur-sm hover:opacity-90 dark:border-white/20 dark:bg-black/25";
@@ -19,11 +21,18 @@ const authThemeToggleOnImageClass =
 const authThemeToggleOnMobileClass =
   "size-9 rounded-lg border-border/60 bg-card/50 p-0 opacity-65 shadow-none backdrop-blur-sm hover:opacity-90";
 
+const authLocaleToggleOnImageClass =
+  "border-white/35 bg-white/45 dark:border-white/20 dark:bg-black/25";
+
+const authLocaleToggleOnMobileClass = "border-border/60 bg-card/50";
+
 export function AuthShell({
+  locale,
   title,
   subtitle,
   children,
 }: {
+  locale: Locale;
   title: string;
   subtitle: string;
   children: ReactNode;
@@ -35,6 +44,9 @@ export function AuthShell({
     <div className="min-h-screen bg-muted/25 p-3 sm:p-4 sm:p-6 dark:bg-background">
       <div className="mx-auto flex min-h-[calc(100vh-2rem)] w-full max-w-[1040px] items-start justify-center lg:min-h-[calc(100vh-3rem)] lg:items-center lg:py-0">
         <div className="relative w-full overflow-hidden rounded-3xl border border-border/60 bg-card shadow-sm lg:max-w-[860px]">
+          <div className="absolute left-4 top-4 z-10 lg:hidden">
+            <AuthLocaleToggle locale={locale} className={authLocaleToggleOnMobileClass} />
+          </div>
           <div className="absolute right-4 top-4 z-10 lg:hidden">
             <ThemeToggle compact className={authThemeToggleOnMobileClass} />
           </div>
@@ -62,6 +74,10 @@ export function AuthShell({
 
               <div className="absolute left-4 top-4 z-10">
                 <ThemeToggle compact className={authThemeToggleOnImageClass} />
+              </div>
+
+              <div className="absolute bottom-4 left-4 z-10">
+                <AuthLocaleToggle locale={locale} className={authLocaleToggleOnImageClass} />
               </div>
             </div>
 

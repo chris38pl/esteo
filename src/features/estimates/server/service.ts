@@ -247,7 +247,7 @@ export async function archiveEstimateVersion(input: {
       workspaceId: input.workspaceId,
       estimateId: input.estimateId,
     },
-    select: { versionNumber: true, status: true },
+    select: { versionNumber: true, status: true, archivedAt: true },
   });
 
   if (!version) {
@@ -255,7 +255,7 @@ export async function archiveEstimateVersion(input: {
     return;
   }
 
-  const wasArchived = version.status === "ARCHIVED";
+  const wasArchived = version.archivedAt != null;
   await archiveEstimateVersionInRepository(input);
 
   if (wasArchived) {
@@ -285,7 +285,7 @@ export async function unarchiveEstimateVersion(input: {
       workspaceId: input.workspaceId,
       estimateId: input.estimateId,
     },
-    select: { versionNumber: true, status: true },
+    select: { versionNumber: true, status: true, archivedAt: true },
   });
 
   if (!version) {
@@ -293,7 +293,7 @@ export async function unarchiveEstimateVersion(input: {
     return;
   }
 
-  const wasArchived = version.status === "ARCHIVED";
+  const wasArchived = version.archivedAt != null;
   await unarchiveEstimateVersionInRepository(input);
 
   if (!wasArchived) {

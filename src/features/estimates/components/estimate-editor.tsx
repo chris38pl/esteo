@@ -83,13 +83,16 @@ import type {
   AiMessageClient,
 } from "@/features/estimates/lib/serialize-ai-messages";
 import type { ProposeEditResult } from "@/features/estimates/lib/estimate-agent-types";
-import { isEstimateVersionEditable } from "@/features/estimates/lib/version-mutability";
+import { isEstimateVersionContentEditable, hasActiveSendJob, isEstimateVersionArchived } from "@/features/estimates/lib/version-mutability";
+import { useEstimateSendPolling } from "@/features/estimates/hooks/use-estimate-send-polling";
+import type { EstimateVersionWorkflowClient } from "@/features/estimates/lib/serialize-estimate-version-workflow";
 import { sectionsToAutoSaveData } from "@/features/estimates/lib/sections-to-autosave";
 import type { AutoSaveData } from "@/features/estimates/server/repository";
 import {
   shouldApplyVersionTreeFromServer,
   versionTreeStructureKey,
 } from "@/features/estimates/lib/version-tree-sync";
+import { EstimateReadOnlyVersionBanner } from "./estimate-read-only-version-banner";
 import { cn } from "@/lib/utils";
 import { devTime, devTimeEnd, devPerfLog } from "@/features/estimates/lib/dev-perf";
 import "@/features/estimates/styles/estimate-editor-layout.css";
@@ -118,6 +121,7 @@ interface EstimateEditorProps {
   currentUserAvatarPreset?: AvatarPreset | null;
   /** Undo depth available for AI edits, resolved from the workspace plan. */
   maxUndoSteps?: number;
+  versionWorkflow: EstimateVersionWorkflowClient;
 }
 
 function lineItemFromServer(
@@ -191,6 +195,7 @@ export function EstimateEditor({
   currentUserAvatarUrl = null,
   currentUserAvatarPreset = null,
   maxUndoSteps = 1,
+  versionWorkflow,
 }: EstimateEditorProps) {
   const t = useTranslations("estimates");
   const router = useRouter();
@@ -262,11 +267,50 @@ export function EstimateEditor({
 
   const activeVersion = versionTree;
   const versionStatus = activeVersion?.status ?? "DRAFT";
-  const isVersionReadOnly = !isEstimateVersionEditable(versionStatus);
+  const isArchived = isEstimateVersionArchived(versionWorkflow.archivedAt);
+  const { isSending, startPolling, resumePollingIfNeeded, shouldResumePolling } =
+    useEstimateSendPolling({
+      estimateId: estimate.id,
+      workspaceId: estimate.workspaceId,
+      workspaceSlug,
+      locale,
+      versionStatus,
+      activeSendTransportStatus: versionWorkflow.activeSend?.transportStatus,
+    });
+
+  const serverActiveSend = hasActiveSendJob(versionWorkflow.activeSend?.transportStatus);
+  const showSendInProgress =
+    serverActiveSend || (isSending && versionStatus === "DRAFT");
+
+  useEffect(() => {
+    const activeSend = versionWorkflow.activeSend;
+    if (!activeSend?.runId) {
+      return;
+    }
+    if (!shouldResumePolling(activeSend.id)) {
+      return;
+    }
+    resumePollingIfNeeded(activeSend.id, activeSend.runId);
+  }, [resumePollingIfNeeded, shouldResumePolling, versionWorkflow.activeSend]);
+
+  const isContentEditable = isEstimateVersionContentEditable({
+    status: versionStatus,
+    archivedAt: versionWorkflow.archivedAt,
+  });
+  const isVersionReadOnly = !isContentEditable || showSendInProgress;
+
+  const handleSendStarted = useCallback(
+    (payload: { sendId: string; runId: string }) => {
+      startPolling(payload.sendId, payload.runId);
+    },
+    [startPolling],
+  );
+
   const allVersions = estimate.versions.map((v) => ({
     id: v.id,
     versionNumber: v.versionNumber,
     status: v.status,
+    archivedAt: v.archivedAt,
   }));
 
   const commitSections = useCallback((updater: (prev: SectionData[]) => SectionData[]) => {
@@ -827,9 +871,17 @@ export function EstimateEditor({
       )}
     >
       <EstimateEditorLayoutStyles />
-      {isVersionReadOnly ? (
+      {isArchived ? (
         <div className="rounded-xl border border-border/70 bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
           {t("editor.archivedBanner")}
+        </div>
+      ) : null}
+      {!isArchived && !isContentEditable ? (
+        <EstimateReadOnlyVersionBanner workflow={versionWorkflow} />
+      ) : null}
+      {showSendInProgress ? (
+        <div className="rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-foreground">
+          {t("editor.sendInProgressBanner")}
         </div>
       ) : null}
       {autosaveStatus === "conflict" && (
@@ -857,6 +909,9 @@ export function EstimateEditor({
         versions={allVersions}
         activeVersionId={activeVersionId ?? ""}
         autosaveStatus={autosaveStatus}
+        workflow={versionWorkflow}
+        isSending={isSending}
+        onSendStarted={handleSendStarted}
         rulesApplied={rulesApplied}
         isPinned={isPinned}
         canManualRetryAiDraft={canManualRetryAiDraft}
@@ -1100,7 +1155,19 @@ export function EstimateEditor({
       )}
 
       {!isGenerating ? (
-        <EstimateMobileStickyBar items={allItems} currency={estimate.currency} />
+        <EstimateMobileStickyBar
+          items={allItems}
+          currency={estimate.currency}
+          estimateId={estimate.id}
+          versionId={activeVersionId ?? ""}
+          workspaceId={estimate.workspaceId}
+          workspaceSlug={workspaceSlug}
+          locale={locale}
+          versionStatus={versionStatus}
+          defaultEmail={versionWorkflow.defaultCustomerEmail}
+          isSending={isSending}
+          onSendStarted={handleSendStarted}
+        />
       ) : null}
 
       {!isGenerating && activeVersionId && !isAiSideLayout && isItemsTab ? (

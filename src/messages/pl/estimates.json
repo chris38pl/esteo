@@ -13,7 +13,8 @@
       "total": "Wszystkie wyceny",
       "totalValue": "Wartość wycen",
       "sent": "Wysłane",
-      "conversion": "Konwersja"
+      "winRate": "Win Rate",
+      "wonValue": "Wartość wygranych"
     },
     "hero": {
       "create": {
@@ -147,6 +148,8 @@
   "status": {
     "DRAFT": "Szkic",
     "SENT": "Wysłana",
+    "ACCEPTED": "Zaakceptowana",
+    "REJECTED": "Odrzucona",
     "ARCHIVED": "Zarchiwizowana"
   },
   "requestStatus": {
@@ -430,7 +433,11 @@
         "ai_modified": "Zastosowano sugestie AI",
         "imported_from_price_list": "Import z cennika",
         "estimate_exported": "Wyeksportowano kosztorys",
-        "sent_to_customer": "Wysłano do klienta",
+        "sent_to_customer": "Wysłano do klienta ({email})",
+        "estimate_resent": "Wysłano ponownie do klienta ({email})",
+        "estimate_accepted": "Oznaczono jako zaakceptowaną",
+        "estimate_rejected": "Oznaczono jako odrzuconą",
+        "estimate_reopened": "Przywrócono do wysłanej",
         "payment_installment_added": "Dodano transzę „{name}” ({amount})",
         "payment_installment_updated": "Zmieniono transzę „{name}”",
         "payment_installment_deleted": "Usunięto transzę „{name}”",
@@ -482,10 +489,8 @@
         "estimateDesc": "Przygotowano kosztorys",
         "sent": "Wysłana",
         "sentDesc": "Wysłano do klienta",
-        "negotiations": "Negocjacje",
-        "negotiationsDesc": "Oczekujemy na odpowiedź",
-        "acceptance": "Akceptacja",
-        "acceptanceDesc": "Oczekujemy na akceptację"
+        "acceptance": "Zaakceptowana",
+        "acceptanceDesc": "Klient zaakceptował wycenę"
       },
       "scope": {
         "title": "Zakres prac",
@@ -548,6 +553,8 @@
     "itemNamePlaceholder": "Nazwa pozycji",
     "unitPlaceholder": "j.m.",
     "archivedBanner": "Ta wersja jest zarchiwizowana i nie można jej edytować.",
+    "readOnlyBanner": "Ta wersja została wysłana lub rozstrzygnięta — edycja jest zablokowana. Utwórz nową wersję, aby wprowadzić zmiany.",
+    "sendInProgressBanner": "Trwa wysyłka wyceny… Edycja pozycji jest tymczasowo zablokowana.",
     "conflictBanner": "Inny użytkownik zapisał tę wycenę. Odśwież, aby kontynuować edycję.",
     "reload": "Odśwież",
     "columns": {
@@ -616,7 +623,13 @@
     "status": {
       "DRAFT": "Projekt roboczy",
       "SENT": "Wysłana",
-      "ARCHIVED": "Zarchiwizowana"
+      "ACCEPTED": "Zaakceptowana",
+      "REJECTED": "Odrzucona"
+    },
+    "sendMeta": {
+      "count": "Wysłano: {count, plural, one {# raz} few {# razy} many {# razy} other {# razy}}",
+      "lastSent": "Ostatnia wysyłka: {date}",
+      "to": "Do: {email}"
     },
     "actions": {
       "preview": "Podgląd",
@@ -629,6 +642,10 @@
       "deleteVersion": "Usuń wersję",
       "morePlaceholder": "Dodatkowe akcje",
       "send": "Wyślij",
+      "resend": "Wyślij ponownie",
+      "accept": "Zaakceptowana",
+      "reject": "Odrzucona",
+      "reopen": "Przywróć do wysłanej",
       "sendEstimate": "Wyślij wycenę",
       "sendToClient": "Wyślij do klienta",
       "savePdf": "Zapisz jako PDF",
@@ -645,6 +662,47 @@
       "cancel": "Anuluj",
       "saving": "Zapisywanie…"
     }
+  },
+  "send": {
+    "title": "Wyślij do klienta",
+    "description": "Wycena zostanie wysłana e-mailem. Status zmieni się na „Wysłana” po przyjęciu wiadomości przez serwer pocztowy.",
+    "resendTitle": "Wyślij ponownie",
+    "resendDescription": "Wyślij aktualną wersję wyceny ponownie na ten sam adres e-mail.",
+    "toLabel": "Do",
+    "toPlaceholder": "klient@firma.pl",
+    "attachPdf": "Dołącz PDF",
+    "reasonLabel": "Powód (opcjonalnie)",
+    "reasonPlaceholder": "Np. poprawiono kwoty po rozmowie telefonicznej",
+    "cancel": "Anuluj",
+    "submit": "Wyślij",
+    "resendSubmit": "Wyślij ponownie",
+    "submitting": "Wysyłanie…",
+    "success": "Wycena została wysłana.",
+    "error": "Nie udało się wysłać wyceny.",
+    "timeout": "Wysyłka trwa zbyt długo. Sprawdź status za chwilę.",
+    "dismissError": "Zamknij",
+    "progress": {
+      "queued": "Przygotowywanie wysyłki…",
+      "generatingPdf": "Generowanie PDF…",
+      "sending": "Wysyłanie e-maila…",
+      "hint": "Przygotowujemy dokument i e-mail. To może potrwać kilka sekund."
+    }
+  },
+  "workflow": {
+    "acceptTitle": "Oznacz jako zaakceptowaną",
+    "acceptDescription": "Klient zaakceptował tę wycenę.",
+    "rejectTitle": "Oznacz jako odrzuconą",
+    "rejectDescription": "Klient odrzucił tę wycenę.",
+    "reopenTitle": "Przywróć do wysłanej",
+    "reopenDescription": "Cofnij decyzję klienta i wróć do negocjacji na statusie „Wysłana”.",
+    "acceptNoteLabel": "Notatka (opcjonalnie)",
+    "rejectNoteLabel": "Powód (opcjonalnie)",
+    "reopenNoteLabel": "Notatka (opcjonalnie)",
+    "acceptSubmit": "Zaakceptowana",
+    "rejectSubmit": "Odrzucona",
+    "reopenSubmit": "Przywróć",
+    "cancel": "Anuluj",
+    "submitting": "Zapisywanie…"
   },
   "autosave": {
     "saving": "Zapisywanie…",

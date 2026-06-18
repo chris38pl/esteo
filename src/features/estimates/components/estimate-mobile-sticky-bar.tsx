@@ -3,17 +3,29 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Send } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import type { EstimateVersionStatus } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
 import { calculateEstimate, type LineItemCalcInput } from "@/features/estimates/lib/calculate-estimate";
 import { estimateMobileStickyBarClass } from "@/features/estimates/lib/estimate-layout-config";
 import { estimatePrimaryButtonClassName } from "./estimate-action-button-styles";
+import { EstimateSendDialog } from "./estimate-send-dialog";
+import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
 interface EstimateMobileStickyBarProps {
   items: LineItemCalcInput[];
   currency: string;
+  estimateId: string;
+  versionId: string;
+  workspaceId: string;
+  workspaceSlug: string;
+  locale: Locale;
+  versionStatus: EstimateVersionStatus;
+  defaultEmail?: string | null;
+  isSending: boolean;
+  onSendStarted: (payload: { sendId: string; runId: string }) => void;
 }
 
 function formatCurrency(value: number, currency: string, locale: string): string {
@@ -25,11 +37,24 @@ function formatCurrency(value: number, currency: string, locale: string): string
   }).format(value);
 }
 
-export function EstimateMobileStickyBar({ items, currency }: EstimateMobileStickyBarProps) {
+export function EstimateMobileStickyBar({
+  items,
+  currency,
+  estimateId,
+  versionId,
+  workspaceId,
+  workspaceSlug,
+  locale,
+  versionStatus,
+  defaultEmail,
+  isSending,
+  onSendStarted,
+}: EstimateMobileStickyBarProps) {
   const t = useTranslations("estimates");
-  const locale = useLocale();
   const [mounted, setMounted] = useState(false);
+  const [sendDialogOpen, setSendDialogOpen] = useState(false);
   const calc = calculateEstimate(items, 0);
+  const canSend = versionStatus === "DRAFT" && !isSending;
 
   useEffect(() => {
     setMounted(true);
@@ -51,10 +76,30 @@ export function EstimateMobileStickyBar({ items, currency }: EstimateMobileStick
           {formatCurrency(calc.totalGross, currency, locale)}
         </p>
       </div>
-      <Button type="button" size="sm" className={cn(estimatePrimaryButtonClassName, "shrink-0")}>
-        {t("header.actions.sendEstimate")}
-        <Send className="size-4" />
-      </Button>
+      {canSend ? (
+        <Button
+          type="button"
+          size="sm"
+          className={cn(estimatePrimaryButtonClassName, "shrink-0")}
+          disabled={isSending}
+          onClick={() => setSendDialogOpen(true)}
+        >
+          {t("header.actions.sendEstimate")}
+          <Send className="size-4" />
+        </Button>
+      ) : null}
+      <EstimateSendDialog
+        open={sendDialogOpen}
+        onOpenChange={setSendDialogOpen}
+        mode="send"
+        estimateId={estimateId}
+        versionId={versionId}
+        workspaceId={workspaceId}
+        workspaceSlug={workspaceSlug}
+        locale={locale}
+        defaultEmail={defaultEmail}
+        onSendStarted={onSendStarted}
+      />
     </div>
   );
 

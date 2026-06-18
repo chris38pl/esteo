@@ -17,9 +17,12 @@ import {
 } from "@/features/estimates/lib/open-estimate-pdf-document";
 import type { Locale } from "@/lib/locale";
 
+import {
+  ESTIMATE_ASYNC_TOAST_POSITION,
+} from "@/features/estimates/lib/estimate-async-toast";
+
 const POLL_INTERVAL_MS = 2000;
 const MAX_POLL_DURATION_MS = 60_000;
-const PDF_EXPORT_TOAST_POSITION = "bottom-center" as const;
 
 export type EstimatePdfOutputMode = "export" | "preview";
 
@@ -80,7 +83,7 @@ export function useEstimatePdfOutput(input: {
     dismissExportProgress();
     loadingToastIdRef.current = toast.loading(t("editor.pdfExport.generating"), {
       description: t("editor.pdfExport.generatingHint"),
-      position: PDF_EXPORT_TOAST_POSITION,
+      position: ESTIMATE_ASYNC_TOAST_POSITION,
       duration: Infinity,
     });
   }, [dismissExportProgress, isExportMode, t]);
@@ -107,7 +110,7 @@ export function useEstimatePdfOutput(input: {
       setError(message);
 
       if (isExportMode) {
-        toast.error(message, { position: PDF_EXPORT_TOAST_POSITION });
+        toast.error(message, { position: ESTIMATE_ASYNC_TOAST_POSITION });
       }
     },
     [clearViewerWindow, dismissExportProgress, isExportMode],
@@ -127,7 +130,7 @@ export function useEstimatePdfOutput(input: {
       if (!shown) {
         openEstimatePdfFallback(payload.url, payload.fileName);
         toast.info(t("editor.pdfExport.popupBlocked"), {
-          position: PDF_EXPORT_TOAST_POSITION,
+          position: ESTIMATE_ASYNC_TOAST_POSITION,
         });
       }
 

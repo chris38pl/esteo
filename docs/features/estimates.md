@@ -144,7 +144,7 @@ Implementation reference: `src/server/permissions/entitlements.ts` (extend for p
 ### Post-MVP (documented, not first ship)
 
 - Tabs: History, Payments, Notes
-- Send to client, share link
+- Share link (send to client shipped — see [`estimate-send-workflow.md`](estimate-send-workflow.md))
 - Price list import, templates, statements dropdown
 - Full key indicators (cost per m², duration, point count)
 - Duplicate estimate, extended header actions

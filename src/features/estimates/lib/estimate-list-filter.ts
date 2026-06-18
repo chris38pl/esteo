@@ -82,7 +82,13 @@ export const ESTIMATE_LIST_FILTER_FIELDS: EstimateListFilterField[] = [
   "versionCount",
 ];
 
-export const ESTIMATE_LIST_STATUS_VALUES = ["DRAFT", "SENT", "ARCHIVED"] as const;
+export const ESTIMATE_LIST_STATUS_VALUES = [
+  "DRAFT",
+  "SENT",
+  "ACCEPTED",
+  "REJECTED",
+  "ARCHIVED",
+] as const;
 
 export function isTextListFilterField(field: EstimateListFilterField): boolean {
   return TEXT_FIELDS.has(field);
@@ -125,6 +131,9 @@ function getFieldValues(
     case "title":
       return { text: estimate.title ?? "" };
     case "status":
+      if (latest?.archivedAt) {
+        return { text: "ARCHIVED" };
+      }
       return { text: latest?.status ?? "" };
     case "requestNumber":
       return { text: request?.requestNumber ?? "" };

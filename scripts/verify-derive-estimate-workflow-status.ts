@@ -55,9 +55,23 @@ const sentVersion = deriveEstimateWorkflowStatus({
 
 assert(sentVersion.steps[2].state === "completed", "sent should be completed");
 assert(
-  sentVersion.steps[3].state === "current" && sentVersion.steps[3].id === "negotiations",
-  "negotiations should be current when sent",
+  sentVersion.steps[3].state === "current" && sentVersion.steps[3].id === "acceptance",
+  "acceptance should be current when sent",
 );
+
+const acceptedVersion = deriveEstimateWorkflowStatus({
+  hasEstimateRequest: true,
+  estimateRequestCreatedAt: "2026-06-04T10:00:00.000Z",
+  versionCreatedAt: "2026-06-05T10:00:00.000Z",
+  versionUpdatedAt: "2026-06-10T10:00:00.000Z",
+  versionNumber: 1,
+  versionStatus: "ACCEPTED",
+  acceptedAt: "2026-06-10T10:00:00.000Z",
+  lineItemCount: 5,
+  activityLogs: [],
+});
+
+assert(acceptedVersion.steps[3].state === "completed", "acceptance should be completed");
 
 const sentViaActivity = deriveEstimateWorkflowStatus({
   hasEstimateRequest: true,

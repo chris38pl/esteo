@@ -3,13 +3,7 @@ import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import createIntlMiddleware from "next-intl/middleware";
 import { NextResponse } from "next/server";
 
-import { defaultLocale, locales } from "@/lib/locale";
-
-const intlMiddleware = createIntlMiddleware({
-  locales: [...locales],
-  defaultLocale,
-  localePrefix: "always",
-});
+import { defaultLocale, LOCALE_COOKIE_NAME, locales } from "@/lib/locale";
 
 const isPublicRoute = createRouteMatcher([
   "/",
@@ -44,6 +38,13 @@ export default clerkMiddleware(async (auth, request) => {
       return redirectToSignIn({ returnBackUrl: request.url });
     }
   }
+
+  const intlMiddleware = createIntlMiddleware({
+    locales: [...locales],
+    defaultLocale,
+    localePrefix: "always",
+    localeDetection: request.cookies.has(LOCALE_COOKIE_NAME),
+  });
 
   const intlResponse = intlMiddleware(request);
 

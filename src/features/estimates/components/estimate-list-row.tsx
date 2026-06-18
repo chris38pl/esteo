@@ -52,6 +52,7 @@ export function EstimateListRow({
   const ctx = estimate.listContext;
   const grossTotal = latest ? Number(latest.totalGross) : 0;
   const versionStatus = latest?.status;
+  const isArchived = latest?.archivedAt != null;
   const updatedAt = latest?.updatedAt ?? estimate.createdAt;
 
   const formatDate = (value: Date) =>
@@ -140,7 +141,10 @@ export function EstimateListRow({
   );
 
   const statusCell = versionStatus ? (
-    <EstimateListStatusBadge status={versionStatus} label={t(`status.${versionStatus}`)} />
+    <EstimateListStatusBadge
+      status={isArchived ? "ARCHIVED" : versionStatus}
+      label={t(`status.${isArchived ? "ARCHIVED" : versionStatus}`)}
+    />
   ) : (
     <span className="text-xs text-muted-foreground">—</span>
   );

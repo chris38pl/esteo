@@ -13,7 +13,8 @@
       "total": "All estimates",
       "totalValue": "Total value",
       "sent": "Sent",
-      "conversion": "Conversion"
+      "winRate": "Win rate",
+      "wonValue": "Won value"
     },
     "hero": {
       "create": {
@@ -147,6 +148,8 @@
   "status": {
     "DRAFT": "Draft",
     "SENT": "Sent",
+    "ACCEPTED": "Accepted",
+    "REJECTED": "Rejected",
     "ARCHIVED": "Archived"
   },
   "requestStatus": {
@@ -430,7 +433,11 @@
         "ai_modified": "AI suggestions applied",
         "imported_from_price_list": "Imported from price list",
         "estimate_exported": "Estimate exported",
-        "sent_to_customer": "Sent to customer",
+        "sent_to_customer": "Sent to customer ({email})",
+        "estimate_resent": "Resent to customer ({email})",
+        "estimate_accepted": "Marked as accepted",
+        "estimate_rejected": "Marked as rejected",
+        "estimate_reopened": "Reopened to sent",
         "payment_installment_added": "Added installment \"{name}\" ({amount})",
         "payment_installment_updated": "Updated installment \"{name}\"",
         "payment_installment_deleted": "Deleted installment \"{name}\"",
@@ -482,10 +489,8 @@
         "estimateDesc": "Cost estimate prepared",
         "sent": "Sent",
         "sentDesc": "Sent to client",
-        "negotiations": "Negotiations",
-        "negotiationsDesc": "Waiting for response",
-        "acceptance": "Acceptance",
-        "acceptanceDesc": "Waiting for acceptance"
+        "acceptance": "Accepted",
+        "acceptanceDesc": "Customer accepted the estimate"
       },
       "scope": {
         "title": "Scope of work",
@@ -548,6 +553,8 @@
     "itemNamePlaceholder": "Item name",
     "unitPlaceholder": "unit",
     "archivedBanner": "This version is archived and cannot be edited.",
+    "readOnlyBanner": "This version has been sent or decided — editing is locked. Create a new version to make changes.",
+    "sendInProgressBanner": "Sending estimate… Line-item editing is temporarily locked.",
     "conflictBanner": "Another user saved this estimate. Reload to continue editing.",
     "reload": "Reload",
     "columns": {
@@ -616,7 +623,13 @@
     "status": {
       "DRAFT": "Draft project",
       "SENT": "Sent",
-      "ARCHIVED": "Archived"
+      "ACCEPTED": "Accepted",
+      "REJECTED": "Rejected"
+    },
+    "sendMeta": {
+      "count": "Sent: {count, plural, one {# time} other {# times}}",
+      "lastSent": "Last sent: {date}",
+      "to": "To: {email}"
     },
     "actions": {
       "preview": "Preview",
@@ -629,6 +642,10 @@
       "deleteVersion": "Remove version",
       "morePlaceholder": "Additional actions",
       "send": "Send",
+      "resend": "Resend",
+      "accept": "Accepted",
+      "reject": "Rejected",
+      "reopen": "Reopen to sent",
       "sendEstimate": "Send estimate",
       "sendToClient": "Send to client",
       "savePdf": "Save as PDF",
@@ -645,6 +662,47 @@
       "cancel": "Cancel",
       "saving": "Saving…"
     }
+  },
+  "send": {
+    "title": "Send to client",
+    "description": "The estimate will be emailed. Status changes to Sent once the mail server accepts the message.",
+    "resendTitle": "Resend",
+    "resendDescription": "Send the current estimate version again to the same email address.",
+    "toLabel": "To",
+    "toPlaceholder": "client@company.com",
+    "attachPdf": "Attach PDF",
+    "reasonLabel": "Reason (optional)",
+    "reasonPlaceholder": "E.g. updated amounts after a phone call",
+    "cancel": "Cancel",
+    "submit": "Send",
+    "resendSubmit": "Resend",
+    "submitting": "Sending…",
+    "success": "Estimate sent successfully.",
+    "error": "Failed to send estimate.",
+    "timeout": "Send is taking too long. Check status in a moment.",
+    "dismissError": "Dismiss",
+    "progress": {
+      "queued": "Preparing send…",
+      "generatingPdf": "Generating PDF…",
+      "sending": "Sending email…",
+      "hint": "Preparing the document and email. This may take a few seconds."
+    }
+  },
+  "workflow": {
+    "acceptTitle": "Mark as accepted",
+    "acceptDescription": "The customer accepted this estimate.",
+    "rejectTitle": "Mark as rejected",
+    "rejectDescription": "The customer rejected this estimate.",
+    "reopenTitle": "Reopen to sent",
+    "reopenDescription": "Undo the customer decision and return to negotiations on Sent status.",
+    "acceptNoteLabel": "Note (optional)",
+    "rejectNoteLabel": "Reason (optional)",
+    "reopenNoteLabel": "Note (optional)",
+    "acceptSubmit": "Accepted",
+    "rejectSubmit": "Rejected",
+    "reopenSubmit": "Reopen",
+    "cancel": "Cancel",
+    "submitting": "Saving…"
   },
   "autosave": {
     "saving": "Saving…",

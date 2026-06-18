@@ -14,6 +14,7 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 | [estimate-autosave.md](features/estimate-autosave.md) | Estimate editor autosave — section/item persistence, sync guard, conflict queue |
 | [estimate-sections.md](features/estimate-sections.md) | Section templates and workspace overrides |
 | [estimate-pdf-export.md](features/estimate-pdf-export.md) | PDF export, preview, and Dokumenty tab |
+| [estimate-send-workflow.md](features/estimate-send-workflow.md) | Send to client (email + PDF), transport polling, SENT/ACCEPTED/REJECTED workflow |
 | [estimate-activity-history.md](features/estimate-activity-history.md) | Estimate editor History tab — user-facing activity log |
 | [estimate-summary.md](features/estimate-summary.md) | Estimate editor Summary tab — versions, workflow, scope, payments snapshot, brief, recommendations |
 | [estimate-notes.md](features/estimate-notes.md) | Internal threaded notes on estimates |
@@ -32,7 +33,7 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 | Document | Description |
 | --- | --- |
 | [backend.md](architecture/backend.md) | Feature folders, server pattern, jobs |
-| [deployment.md](architecture/deployment.md) | Localhost, Vercel Preview/Production, Trigger.dev env mapping |
+| [deployment.md](architecture/deployment.md) | Localhost, Vercel Preview/Production, domains (`preview.esteo.app`), Trigger.dev env mapping |
 | [database.md](architecture/database.md) | Schema, billing, planned estimate models |
 | [billing-stripe.md](architecture/billing-stripe.md) | Stripe subscriptions, plan changes, portal sync, webhooks |
 | [ai.md](architecture/ai.md) | Global AI stack and prompt layers |
@@ -79,6 +80,8 @@ estimate-requests.md  →  estimate-ai.md (job)  →  estimates.md
                  estimate-autosave.md
                               ↓
                     estimate-pdf-export.md
+                              ↓
+                    estimate-send-workflow.md
 ```
 
 Supporting: `estimate-sections.md`, `industry-fields.md`, `database.md`.
