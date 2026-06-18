@@ -159,7 +159,7 @@ Env ładowany przez `scripts/load-env.mjs` (jak `voice-intake:benchmark`).
 | | | | | |
 | --- | --- | --- | --- | --- |
 | `eval:services:quick` | **Fast** eval — 6 scenariuszy z quick manifest, bez judge | `npm run eval:services:quick` | Raport `Services Evaluation Report [FAST]`, exit `0` gdy PASS | **Każdy PR** (~30 s). Deterministyczne scorery: schema, rules, leakage, length. |
-| `eval:services` | **Full** eval — wszystkie 27 scenariuszy + LLM judge | `npm run eval:services` | Raport `[FULL]`, koszt w USD, Business / Edge Average | Przed release zmian w `estimate-draft.ts` lub profilach AI. |
+| `eval:services` | **Full** eval — wszystkie 35 scenariuszy + LLM judge | `npm run eval:services` | Raport `[FULL]`, koszt w USD, Business / Generic / Edge Average | Przed release zmian w `estimate-draft.ts` lub profilach AI. |
 | `eval:services:baseline` | Full eval + zapis baseline | `npm run eval:services:baseline` | `Baseline saved: evals/baselines/services/<timestamp>.json` | Po akceptowanym Full run; opcjonalny commit `evals/baselines/`. |
 | `eval:services:compare` | Full eval + diff vs baseline | `npm run eval:services:compare` | Prompt diff, delty score, WARNING / CRITICAL / golden regression | Po zmianie promptu — przed merge. Exit `1` przy regresji. |
 | `eval:services:smoke` | Test scorerów bez API | `npm run eval:services:smoke` | `Scorer smoke test passed.` | CI / lokalnie bez klucza OpenAI. |
@@ -180,7 +180,7 @@ Env ładowany przez `scripts/load-env.mjs` (jak `voice-intake:benchmark`).
 | | Fast (`:quick`) | Full (`eval:services`) |
 | --- | --- | --- |
 | Judge | Nie | Tak (`referenceEstimate`) |
-| Scenariusze | 6 (manifest) | 27 |
+| Scenariusze | 6 (manifest) | 35 |
 | Score | `fastScore` = rules | `0.30 × rules + 0.70 × judge` |
 | Koszt API | Niski | ~$1–2 / pełny run |
 

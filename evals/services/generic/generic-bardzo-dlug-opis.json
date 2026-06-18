@@ -1,0 +1,55 @@
+{
+  "id": "generic-bardzo-dlug-opis",
+  "name": "Generic: Bardzo długi opis",
+  "locale": "pl",
+  "category": "generic",
+  "quick": false,
+  "workspace": {
+    "industry": "OTHER",
+    "industryOtherText": "Usługi",
+    "companyDescription": ""
+  },
+  "request": {
+    "project": {
+      "description": "Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Opis projektu usługowego. Na końcu: potrzebujemy osobno wycenić warsztat wprowadzający (1 dzień) oraz miesięczny abonament konsultingowy. Materiały szkoleniowe po stronie klienta."
+    }
+  },
+  "expectations": {
+    "mustHave": [
+      {
+        "term": "warsztat",
+        "scope": "any_item"
+      },
+      {
+        "term": "abonament",
+        "scope": "any_item"
+      }
+    ],
+    "mustNotHave": [
+      {
+        "term": "płytki",
+        "scope": "any_item"
+      }
+    ],
+    "coverageTerms": [
+      "warsztat",
+      "abonament",
+      "konsult"
+    ],
+    "requiredSections": [
+      "Usługi"
+    ],
+    "forbiddenSections": [
+      "Łazienka"
+    ],
+    "leakageDomain": "construction",
+    "maxLeakageTerms": 1,
+    "minLineItems": 4,
+    "maxLineItems": 35,
+    "judge": {
+      "minScore": 5,
+      "minContextAlignment": 5,
+      "minReferenceSimilarity": 5
+    }
+  }
+}

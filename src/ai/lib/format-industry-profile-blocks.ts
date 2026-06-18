@@ -74,6 +74,68 @@ export function formatEstimateCompletenessBlock(locale: "pl" | "en"): string {
   ].join("\n");
 }
 
+export function formatServiceEstimateCompletenessBlock(locale: "pl" | "en"): string {
+  if (locale === "en") {
+    return [
+      "## Estimate Completeness",
+      "The estimate should be reasonably complete for the described project.",
+      "Include all work reasonably required for the project scope and standard practice for this service type.",
+      "Infer standard work an experienced estimator would include; the customer does not need to list every task.",
+      "Prefer several justified line items over one broad summary row.",
+      "Do not invent work outside the industry or project scope.",
+      "Do not create artificial line items only to increase row count.",
+    ].join("\n");
+  }
+
+  return [
+    "## Estimate Completeness",
+    "Kosztorys powinien być rozsądnie kompletny względem opisanego projektu.",
+    "Uwzględnij wszystkie prace uzasadnione zakresem i standardem branżowym dla tego typu usług.",
+    "Wnioskuj typowe prace, które kosztorysant uwzględniłby z doświadczenia — klient nie musi wymieniać każdego zadania.",
+    "Preferuj kilka uzasadnionych pozycji nad jednym ogólnym opisem.",
+    "Nie wymyślaj prac spoza branży lub zakresu projektu.",
+    "Nie twórz sztucznych pozycji wyłącznie po to, aby zwiększyć liczbę wierszy.",
+  ].join("\n");
+}
+
+export function formatServiceOutputRulesBlock(locale: "pl" | "en"): string {
+  if (locale === "en") {
+    return [
+      "## Output Rules",
+      "- Return only structured JSON (sections with title and items).",
+      "- Output is a priced estimate, not a project summary.",
+      "- Each line item is one billable service/task with quantity, unit, and unitPrice — not a paragraph restating the brief.",
+      "- Return all applicable sections from Estimate Structure; put priced work in Services.",
+      "- Follow Workspace Rules for item breakdown (e.g. separate consultation vs day-of coordination).",
+      "- quantity must be at least 1; use unitPrice 0 only for explicit scope-summary rows in Scope.",
+      "- section.title: use titles from Estimate Structure when possible.",
+      "- Respond in English.",
+      "- Set vatRate as a decimal fraction (e.g. 0.23 for 23% VAT).",
+      "- Set unit to null when the line item has no unit of measure.",
+      "- Set suggestedMarginPercent to null when not suggesting a global margin.",
+      "- Use sequential sortOrder values starting at 0 within each section.",
+      "- Do not include explanatory prose outside the schema.",
+    ].join("\n");
+  }
+
+  return [
+    "## Output Rules",
+    "- Zwróć wyłącznie structured JSON (sekcje z title i items).",
+    "- Wynik to wyceniony kosztorys, nie streszczenie projektu.",
+    "- Każda pozycja to jedna wyceniana usługa/zadanie z quantity, unit i unitPrice — nie akapit powtarzający brief.",
+    "- Zwróć wszystkie sekcje z Estimate Structure, które mają zastosowanie; wyceniane usługi umieszczaj w Usługi.",
+    "- Stosuj Workspace Rules przy rozbiciu pozycji (np. osobno konsultacja i koordynacja dnia ślubu).",
+    "- quantity ≥ 1; unitPrice 0 tylko dla jawnego podsumowania zakresu w Zakres.",
+    "- section.title: używaj tytułów z Estimate Structure, gdy to możliwe.",
+    "- Odpowiedź po polsku (nazwy pozycji i sekcji).",
+    "- vatRate jako ułamek dziesiętny (np. 0.23 dla 23% VAT).",
+    "- unit: null gdy brak jednostki.",
+    "- suggestedMarginPercent: null gdy nie sugerujesz marży globalnej.",
+    "- sortOrder od 0 w każdej sekcji.",
+    "- Bez prozy poza polami schematu.",
+  ].join("\n");
+}
+
 export function formatOutputRulesBlock(locale: "pl" | "en"): string {
   if (locale === "en") {
     return [

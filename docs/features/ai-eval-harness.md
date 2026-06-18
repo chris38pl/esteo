@@ -52,16 +52,16 @@ Analogia w repo: [`voice-intake:benchmark`](../../package.json) ocenia ekstrakcj
 
 ---
 
-## Scenariusze (27)
+## Scenariusze (35)
 
 Fixtures w `evals/services/` — samowystarczalne JSON, zero DB.
 
 | Kategoria | Katalog | Liczba | Średnia w raporcie |
 | --- | --- | --- | --- |
 | `business` | `evals/services/*.json` | 20 | **Business Average** |
-| `edge` | `evals/services/edge/` | 4 | **Edge Average** (osobno) |
+| `generic` | `evals/services/generic/` | 9 | **Generic Average** (osobno) |
+| `edge` | `evals/services/edge/` | 4 | Edge Average |
 | `stress` | `evals/services/stress/` | 2 | Edge Average |
-| `generic` | `evals/services/generic/` | 1 | Edge Average |
 
 **Golden scenarios** (`critical: true`): wedding-planner, marketing-agency, accounting-office, it-consulting — regresja na golden blokuje CI nawet gdy średnia jest OK.
 
@@ -86,6 +86,7 @@ Wedding Planner ★    Overall: 9.1  Context: 9.4  ...
 ...
 
 Business Average:   Overall 8.8  |  Context 8.5  |  Coverage 82%
+Generic Average:    Overall 6.2  |  Context 5.8  |  Coverage 71%
 Edge Average:       Overall 4.2  |  Context 3.8
 Cost: $1.45
 ```

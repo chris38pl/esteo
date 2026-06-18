@@ -1,0 +1,59 @@
+{
+  "id": "generic-organizacja-eventu",
+  "name": "Generic: Organizacja eventu",
+  "locale": "pl",
+  "category": "generic",
+  "quick": false,
+  "workspace": {
+    "industry": "OTHER",
+    "industryOtherText": "Usługi",
+    "companyDescription": ""
+  },
+  "request": {
+    "project": {
+      "description": "Organizacja konferencji branżowej dla 150 uczestników w Krakowie — koordynacja merytoryczna i logistyka. Catering po stronie klienta."
+    }
+  },
+  "expectations": {
+    "mustHave": [
+      {
+        "term": "konferenc",
+        "scope": "any_item"
+      },
+      {
+        "term": "koordynac",
+        "scope": "any_item"
+      }
+    ],
+    "mustNotHave": [
+      {
+        "term": "płytki",
+        "scope": "any_item"
+      },
+      {
+        "term": "catering",
+        "scope": "any_item"
+      }
+    ],
+    "coverageTerms": [
+      "konferenc",
+      "koordynac",
+      "logistyk"
+    ],
+    "requiredSections": [
+      "Usługi"
+    ],
+    "forbiddenSections": [
+      "Łazienka"
+    ],
+    "leakageDomain": "construction",
+    "maxLeakageTerms": 1,
+    "minLineItems": 3,
+    "maxLineItems": 25,
+    "judge": {
+      "minScore": 5,
+      "minContextAlignment": 4,
+      "minReferenceSimilarity": 5
+    }
+  }
+}

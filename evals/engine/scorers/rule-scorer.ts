@@ -1,14 +1,38 @@
 import type { EstimateDraftOutput } from "@/ai/schemas/estimate-draft-output";
-import { fuzzySectionMatch, textContainsTerm } from "@evals/engine/lib/text-utils";
+import { fuzzySectionMatch, normalizeEvalText, polishTermMatch } from "@evals/engine/lib/text-utils";
 import type { Expectations } from "@evals/engine/schemas/scenario";
 import type { RuleScoreResult } from "@evals/engine/types";
+
+const PRICED_SECTION_TITLES = new Set([
+  "uslugi",
+  "services",
+  "opcje dodatkowe",
+  "add-ons",
+  "addons",
+]);
 
 function collectItemNames(output: EstimateDraftOutput): string[] {
   return output.sections.flatMap((s) => s.items.map((i) => i.name));
 }
 
-function collectSectionTitles(output: EstimateDraftOutput): string[] {
-  return output.sections.map((s) => s.title);
+function collectMustNotSearchItemNames(output: EstimateDraftOutput): string[] {
+  const names: string[] = [];
+  for (const section of output.sections) {
+    const title = normalizeEvalText(section.title.trim());
+    if (!PRICED_SECTION_TITLES.has(title)) {
+      continue;
+    }
+    for (const item of section.items) {
+      names.push(item.name);
+    }
+  }
+  return names;
+}
+
+function collectMustNotSearchSectionTitles(output: EstimateDraftOutput): string[] {
+  return output.sections
+    .filter((s) => PRICED_SECTION_TITLES.has(normalizeEvalText(s.title.trim())))
+    .map((s) => s.title);
 }
 
 export function scoreRules(
@@ -17,7 +41,9 @@ export function scoreRules(
 ): RuleScoreResult {
   const checks: RuleScoreResult["checks"] = [];
   const itemNames = collectItemNames(output);
-  const sectionTitles = collectSectionTitles(output);
+  const sectionTitles = output.sections.map((s) => s.title);
+  const mustNotItemNames = collectMustNotSearchItemNames(output);
+  const mustNotSectionTitles = collectMustNotSearchSectionTitles(output);
   const allItemText = itemNames.join(" ");
   const allSectionText = sectionTitles.join(" ");
 
@@ -26,13 +52,13 @@ export function scoreRules(
     const scope = entry.scope ?? "any_item";
     let found = false;
     if (scope === "any_item") {
-      found = itemNames.some((n) => textContainsTerm(n, entry.term));
+      found = itemNames.some((n) => polishTermMatch(n, entry.term));
     } else if (scope === "any_section") {
       found =
-        textContainsTerm(allItemText, entry.term) ||
-        textContainsTerm(allSectionText, entry.term);
+        polishTermMatch(allItemText, entry.term) ||
+        polishTermMatch(allSectionText, entry.term);
     } else if (scope === "section_title") {
-      found = sectionTitles.some((t) => textContainsTerm(t, entry.term));
+      found = sectionTitles.some((t) => polishTermMatch(t, entry.term));
     }
     mustHaveScore += found ? 1 : 0;
     checks.push({
@@ -46,8 +72,8 @@ export function scoreRules(
 
   let mustNotPass = true;
   for (const entry of expectations.mustNotHave) {
-    const inItems = itemNames.some((n) => textContainsTerm(n, entry.term));
-    const inSections = sectionTitles.some((t) => textContainsTerm(t, entry.term));
+    const inItems = mustNotItemNames.some((n) => polishTermMatch(n, entry.term));
+    const inSections = mustNotSectionTitles.some((t) => polishTermMatch(t, entry.term));
     const ok = !inItems && !inSections;
     mustNotPass &&= ok;
     checks.push({

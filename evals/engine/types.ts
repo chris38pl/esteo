@@ -109,6 +109,11 @@ export type RunSummary = {
   runId: string;
   evalMode: EvalMode;
   promptVersion: string;
+  /** Representative hash (wedding-planner) for quick diff */
+  promptHash: string;
+  promptHashSource: string;
+  /** Per-scenario prompt hashes — detects partial hotfixes */
+  promptHashes: Record<string, string>;
   gitSha: string | null;
   startedAt: string;
   durationMs: number;

@@ -1,0 +1,44 @@
+{
+  "id": "generic-niejednoznaczny-opis",
+  "name": "Generic: Niejednoznaczny opis",
+  "locale": "pl",
+  "category": "generic",
+  "quick": false,
+  "workspace": {
+    "industry": "OTHER",
+    "industryOtherText": "Usługi",
+    "companyDescription": ""
+  },
+  "request": {
+    "project": {
+      "description": "Potrzebuję wyceny dla mojej firmy. Co dokładnie — zobaczymy na spotkaniu wstępnym, zależy od budżetu i terminu."
+    }
+  },
+  "expectations": {
+    "mustHave": [],
+    "mustNotHave": [
+      {
+        "term": "płytki",
+        "scope": "any_item"
+      }
+    ],
+    "coverageTerms": [
+      "usług"
+    ],
+    "requiredSections": [
+      "Usługi"
+    ],
+    "forbiddenSections": [
+      "Łazienka"
+    ],
+    "leakageDomain": "construction",
+    "maxLeakageTerms": 1,
+    "minLineItems": 2,
+    "maxLineItems": 25,
+    "judge": {
+      "minScore": 4,
+      "minContextAlignment": 4,
+      "minReferenceSimilarity": 4
+    }
+  }
+}

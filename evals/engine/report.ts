@@ -26,7 +26,10 @@ export function printEvalReport(summary: RunSummary): void {
   console.log("");
 
   const business = Object.values(summary.scenarios).filter((s) => s.category === "business");
-  const edge = Object.values(summary.scenarios).filter((s) => s.category !== "business");
+  const generic = Object.values(summary.scenarios).filter((s) => s.category === "generic");
+  const edge = Object.values(summary.scenarios).filter(
+    (s) => s.category === "edge" || s.category === "stress",
+  );
 
   if (business.length > 0) {
     console.log("── Business ──");
@@ -36,8 +39,16 @@ export function printEvalReport(summary: RunSummary): void {
     console.log("");
   }
 
+  if (generic.length > 0) {
+    console.log("── Generic (fallback) ──");
+    for (const s of generic) {
+      printScenarioLine(s, summary.evalMode);
+    }
+    console.log("");
+  }
+
   if (edge.length > 0) {
-    console.log("── Edge / Stress / Generic ──");
+    console.log("── Edge / Stress ──");
     for (const s of edge) {
       printScenarioLine(s, summary.evalMode);
     }
@@ -52,6 +63,9 @@ export function printEvalReport(summary: RunSummary): void {
     console.log(
       `Edge Average:       Overall ${summary.edgeAverageScore}  |  Context ${summary.edgeAverageContextAlignment ?? "—"}  |  Coverage ${summary.edgeAverageCoverage}%`,
     );
+    console.log(
+      `Generic Average:    Overall ${summary.genericAverageScore}  |  Context ${summary.genericAverageContextAlignment ?? "—"}  |  Coverage ${summary.genericAverageCoverage}%`,
+    );
     if (summary.goldenAverageScore !== null) {
       console.log(
         `Golden Average:     Overall ${summary.goldenAverageScore}  |  Context ${summary.goldenAverageContextAlignment ?? "—"}`,
@@ -59,6 +73,7 @@ export function printEvalReport(summary: RunSummary): void {
     }
   } else {
     console.log(`Business Average (fast): ${summary.businessAverageScore}`);
+    console.log(`Generic Average (fast): ${summary.genericAverageScore}`);
     console.log(`Edge Average (fast): ${summary.edgeAverageScore}`);
   }
 
@@ -215,15 +230,22 @@ export function buildRunSummary(
 ): RunSummary {
   const all = Object.values(scenarios);
   const business = all.filter((s) => s.category === "business");
-  const edge = all.filter((s) => s.category !== "business");
+  const generic = all.filter((s) => s.category === "generic");
+  const edge = all.filter((s) => s.category === "edge" || s.category === "stress");
   const golden = all.filter((s) => s.critical);
 
   const businessScores = business.map((s) =>
     meta.evalMode === "fast" ? s.fastScore : s.overallScore,
   );
+  const genericScores = generic.map((s) =>
+    meta.evalMode === "fast" ? s.fastScore : s.overallScore,
+  );
   const edgeScores = edge.map((s) => (meta.evalMode === "fast" ? s.fastScore : s.overallScore));
 
   const businessCtx = business
+    .map((s) => s.contextAlignmentScore)
+    .filter((v): v is number => v !== null);
+  const genericCtx = generic
     .map((s) => s.contextAlignmentScore)
     .filter((v): v is number => v !== null);
   const edgeCtx = edge
@@ -243,10 +265,21 @@ export function buildRunSummary(
   const maxScenario =
     all.find((s) => s.promptMeta.promptWords === maxWords)?.id ?? null;
 
+  const promptHashes: Record<string, string> = {};
+  for (const s of all) {
+    promptHashes[s.id] = s.promptMeta.promptHash;
+  }
+  const hashSource = all.find((s) => s.id === "wedding-planner") ?? all[0];
+  const promptHash = hashSource?.promptMeta.promptHash ?? "";
+  const promptHashSource = hashSource?.id ?? "";
+
   return {
     runId: meta.runId,
     evalMode: meta.evalMode,
     promptVersion: meta.promptVersion,
+    promptHash,
+    promptHashSource,
+    promptHashes,
     gitSha: meta.gitSha,
     startedAt: meta.startedAt,
     durationMs: meta.durationMs,
@@ -258,6 +291,10 @@ export function buildRunSummary(
     edgeAverageContextAlignment:
       meta.evalMode === "full" && edgeCtx.length > 0 ? avg(edgeCtx) : null,
     edgeAverageCoverage: avg(edge.map((s) => s.coveragePercent)),
+    genericAverageScore: avg(genericScores),
+    genericAverageContextAlignment:
+      meta.evalMode === "full" && genericCtx.length > 0 ? avg(genericCtx) : null,
+    genericAverageCoverage: avg(generic.map((s) => s.coveragePercent)),
     goldenAverageScore:
       golden.length > 0
         ? avg(golden.map((s) => (meta.evalMode === "fast" ? s.fastScore : s.overallScore)))

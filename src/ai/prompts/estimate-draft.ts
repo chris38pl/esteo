@@ -7,6 +7,8 @@ import {
   formatScopeChecklistBlock,
   formatScopeExpansionRulesBlock,
   formatQuantityDerivationRulesBlock,
+  formatServiceEstimateCompletenessBlock,
+  formatServiceOutputRulesBlock,
 } from "@/ai/lib/format-industry-profile-blocks";
 import { SERVICE_ESTIMATION_PRINCIPLES } from "@/features/estimate-requests/config/industry-experience-config";
 import type { EstimateGenerationContext } from "@/features/workspaces/lib/load-estimate-generation-context";
@@ -23,7 +25,7 @@ import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 
 /** Bump semver when prompt blocks, role, or output rules change (eval harness tracks this). */
-export const ESTIMATE_PROMPT_VERSION = "1.0.0";
+export const ESTIMATE_PROMPT_VERSION = "1.1.0";
 
 export interface EstimateDraftPromptInput {
   projectBrief: string;
@@ -52,8 +54,8 @@ export function buildEstimateDraftPrompt(input: EstimateDraftPromptInput): strin
       formatBusinessTypeBlock(input.context.industryOtherText),
       `## Project Brief\n${input.projectBrief.trim()}`,
       formatEstimationPrinciplesBlock(servicePrinciples),
-      formatEstimateCompletenessBlock(lang),
-      formatOutputRulesBlock(lang),
+      formatServiceEstimateCompletenessBlock(lang),
+      formatServiceOutputRulesBlock(lang),
     ];
 
     return blocks.filter(Boolean).join("\n\n");

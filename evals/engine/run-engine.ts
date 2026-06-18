@@ -17,6 +17,9 @@ import {
 } from "@evals/engine/baseline/baseline";
 import { formatPromptDiff } from "@evals/engine/baseline/prompt-diff";
 import { computeOverallScore, determinePassed } from "@evals/engine/composite-score";
+import { writeComparisonReport } from "@evals/engine/comparison-report";
+import { writeCoverageRootCauseReport } from "@evals/engine/coverage-analysis";
+import { writeEvaluatorFalsePositivesReport } from "@evals/engine/evaluator-audit";
 import { estimateCostUsd } from "@evals/engine/cost/cost-tracker";
 import { hashPrompt, measurePromptComplexity } from "@evals/engine/cost/prompt-complexity";
 import { generateEstimateForEval } from "@evals/engine/generate-for-eval";
@@ -378,8 +381,29 @@ export async function runEvalEngine(options: RunEngineOptions): Promise<number> 
 
   writeFileSync(join(resultsDir, "summary.json"), JSON.stringify(summary, null, 2), "utf8");
 
+  if (evalMode === "full" && scenarios.length > 1) {
+    writeComparisonReport(options.repoRoot, resultsDir, summary);
+    const coverageReport = writeCoverageRootCauseReport(
+      options.repoRoot,
+      resultsDir,
+      summary,
+      scenarios,
+    );
+    writeEvaluatorFalsePositivesReport(
+      options.repoRoot,
+      resultsDir,
+      summary,
+      scenarios,
+    );
+    console.log(`Coverage analysis: evals/results/${runId}/coverage-root-cause.md (${coverageReport.analyzed} scenarios)`);
+    console.log(`Evaluator audit: evals/results/${runId}/evaluator-false-positives.md`);
+  }
+
   printEvalReport(summary);
   console.log(`\nResults: evals/results/${runId}/`);
+  if (evalMode === "full" && scenarios.length > 1) {
+    console.log(`Comparison: evals/results/${runId}/comparison-report.md`);
+  }
 
   if (options.baseline) {
     saveBaseline(options.repoRoot, summary, promptSnapshots);

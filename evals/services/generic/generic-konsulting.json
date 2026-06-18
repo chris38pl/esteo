@@ -1,0 +1,55 @@
+{
+  "id": "generic-konsulting",
+  "name": "Generic: Konsulting",
+  "locale": "pl",
+  "category": "generic",
+  "quick": false,
+  "workspace": {
+    "industry": "OTHER",
+    "industryOtherText": "Usługi",
+    "companyDescription": ""
+  },
+  "request": {
+    "project": {
+      "description": "Audyt procesów sprzedaży i 2-dniowe warsztaty strategiczne dla zarządu (8 osób), Kraków."
+    }
+  },
+  "expectations": {
+    "mustHave": [
+      {
+        "term": "warsztat",
+        "scope": "any_item"
+      },
+      {
+        "term": "audyt",
+        "scope": "any_item"
+      }
+    ],
+    "mustNotHave": [
+      {
+        "term": "płytki",
+        "scope": "any_item"
+      }
+    ],
+    "coverageTerms": [
+      "konsult",
+      "warsztat",
+      "audyt"
+    ],
+    "requiredSections": [
+      "Usługi"
+    ],
+    "forbiddenSections": [
+      "Łazienka"
+    ],
+    "leakageDomain": "construction",
+    "maxLeakageTerms": 1,
+    "minLineItems": 3,
+    "maxLineItems": 25,
+    "judge": {
+      "minScore": 5,
+      "minContextAlignment": 4,
+      "minReferenceSimilarity": 5
+    }
+  }
+}

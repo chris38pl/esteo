@@ -1,0 +1,59 @@
+{
+  "id": "generic-remont-mieszkania",
+  "name": "Generic: Remont mieszkania",
+  "locale": "pl",
+  "category": "generic",
+  "quick": false,
+  "workspace": {
+    "industry": "OTHER",
+    "industryOtherText": "Usługi",
+    "companyDescription": ""
+  },
+  "request": {
+    "project": {
+      "description": "Remont mieszkania 68 m² w Warszawie: malowanie ścian i sufitów, wymiana podłóg w salonie i sypialni, odświeżenie łazienki bez rozbiórki."
+    }
+  },
+  "expectations": {
+    "mustHave": [
+      {
+        "term": "malowanie",
+        "scope": "any_item"
+      }
+    ],
+    "mustNotHave": [
+      {
+        "term": "płytki",
+        "scope": "any_item"
+      },
+      {
+        "term": "murowanie",
+        "scope": "any_item"
+      },
+      {
+        "term": "beton",
+        "scope": "any_item"
+      }
+    ],
+    "coverageTerms": [
+      "malowanie",
+      "podłog",
+      "łazienk"
+    ],
+    "requiredSections": [
+      "Usługi"
+    ],
+    "forbiddenSections": [
+      "Łazienka"
+    ],
+    "leakageDomain": "construction",
+    "maxLeakageTerms": 0,
+    "minLineItems": 3,
+    "maxLineItems": 25,
+    "judge": {
+      "minScore": 5,
+      "minContextAlignment": 4,
+      "minReferenceSimilarity": 5
+    }
+  }
+}

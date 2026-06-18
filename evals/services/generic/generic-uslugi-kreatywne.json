@@ -1,0 +1,51 @@
+{
+  "id": "generic-uslugi-kreatywne",
+  "name": "Generic: Usługi kreatywne",
+  "locale": "pl",
+  "category": "generic",
+  "quick": false,
+  "workspace": {
+    "industry": "OTHER",
+    "industryOtherText": "Usługi",
+    "companyDescription": ""
+  },
+  "request": {
+    "project": {
+      "description": "Projekt logo, wizytówki i szablony prezentacji dla startupu fintech. 2 rundy poprawek."
+    }
+  },
+  "expectations": {
+    "mustHave": [
+      {
+        "term": "logo",
+        "scope": "any_item"
+      }
+    ],
+    "mustNotHave": [
+      {
+        "term": "płytki",
+        "scope": "any_item"
+      }
+    ],
+    "coverageTerms": [
+      "logo",
+      "identyfikac",
+      "wizytówk"
+    ],
+    "requiredSections": [
+      "Usługi"
+    ],
+    "forbiddenSections": [
+      "Łazienka"
+    ],
+    "leakageDomain": "construction",
+    "maxLeakageTerms": 1,
+    "minLineItems": 3,
+    "maxLineItems": 25,
+    "judge": {
+      "minScore": 5,
+      "minContextAlignment": 4,
+      "minReferenceSimilarity": 5
+    }
+  }
+}

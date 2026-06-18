@@ -1,0 +1,44 @@
+{
+  "id": "generic-bardzo-krotki-opis",
+  "name": "Generic: Bardzo krótki opis",
+  "locale": "pl",
+  "category": "generic",
+  "quick": false,
+  "workspace": {
+    "industry": "OTHER",
+    "industryOtherText": "Usługi",
+    "companyDescription": ""
+  },
+  "request": {
+    "project": {
+      "description": "Wycena usług."
+    }
+  },
+  "expectations": {
+    "mustHave": [],
+    "mustNotHave": [
+      {
+        "term": "płytki",
+        "scope": "any_item"
+      }
+    ],
+    "coverageTerms": [
+      "usług"
+    ],
+    "requiredSections": [
+      "Usługi"
+    ],
+    "forbiddenSections": [
+      "Łazienka"
+    ],
+    "leakageDomain": "construction",
+    "maxLeakageTerms": 1,
+    "minLineItems": 2,
+    "maxLineItems": 25,
+    "judge": {
+      "minScore": 4,
+      "minContextAlignment": 4,
+      "minReferenceSimilarity": 4
+    }
+  }
+}

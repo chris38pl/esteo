@@ -58,12 +58,14 @@ export const SERVICE_ESTIMATION_PRINCIPLES: Record<Locale, string[]> = {
     "Każda pozycja z uzasadnioną jednostką i ilością.",
     "Ceny netto PLN; vatRate według reguł workspace.",
     "Rozdziel usługi główne od opcji dodatkowych zgodnie ze strukturą sekcji.",
+    "Rozbij zakres na pozycje kosztorysowe; nie zamieniaj briefu w jedno pole opisowe.",
     "Nie zakładaj usług ani kosztów, które nie wynikają z briefu, Company Context, Workspace Rules lub standardowej praktyki branżowej.",
   ],
   en: [
     "Every line has a justified unit and quantity.",
     "Net PLN prices; vatRate per workspace rules.",
     "Split core services from add-ons according to the section structure.",
+    "Break scope into priced line items; do not collapse the brief into a single descriptive row.",
     "Do not assume services or costs that are not supported by the brief, Company Context, Workspace Rules, or standard trade practice.",
   ],
 };

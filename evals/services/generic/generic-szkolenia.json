@@ -1,0 +1,54 @@
+{
+  "id": "generic-szkolenia",
+  "name": "Generic: Szkolenia",
+  "locale": "pl",
+  "category": "generic",
+  "quick": false,
+  "workspace": {
+    "industry": "OTHER",
+    "industryOtherText": "Usługi",
+    "companyDescription": ""
+  },
+  "request": {
+    "project": {
+      "description": "Szkolenie BHP i pierwszej pomocy dla 35 pracowników zakładu produkcyjnego, jedna sesja 6 godzin."
+    }
+  },
+  "expectations": {
+    "mustHave": [
+      {
+        "term": "szkolen",
+        "scope": "any_item"
+      },
+      {
+        "term": "BHP",
+        "scope": "any_item"
+      }
+    ],
+    "mustNotHave": [
+      {
+        "term": "płytki",
+        "scope": "any_item"
+      }
+    ],
+    "coverageTerms": [
+      "szkolen",
+      "BHP"
+    ],
+    "requiredSections": [
+      "Usługi"
+    ],
+    "forbiddenSections": [
+      "Łazienka"
+    ],
+    "leakageDomain": "construction",
+    "maxLeakageTerms": 1,
+    "minLineItems": 3,
+    "maxLineItems": 25,
+    "judge": {
+      "minScore": 5,
+      "minContextAlignment": 4,
+      "minReferenceSimilarity": 5
+    }
+  }
+}

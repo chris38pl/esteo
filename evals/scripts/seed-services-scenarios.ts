@@ -10,8 +10,8 @@ const DEFAULT_SECTIONS = [
     key: "scope",
     titlePl: "Zakres",
     titleEn: "Scope",
-    rulePl: "Krótko opisz zakres i wyłączenia wynikające z zapytania lub opisu usługi.",
-    ruleEn: "Briefly state scope and exclusions based on the request or service description.",
+    rulePl: "Opcjonalnie 1–2 krótkie pozycje podsumowujące zakres i wyłączenia (unitPrice może być 0). Wszystkie wyceniane usługi umieszczaj jako osobne pozycje w sekcji Usługi (jednostka, ilość, cena).",
+    ruleEn: "Optionally 1–2 short line items summarizing scope and exclusions (unitPrice may be 0). Put all priced services as separate line items in the Services section (unit, quantity, price).",
     active: true,
   },
   {
@@ -34,8 +34,8 @@ const DEFAULT_SECTIONS = [
     key: "notes",
     titlePl: "Uwagi",
     titleEn: "Notes",
-    rulePl: "Warunki, wyłączenia i koszty poza głównym zakresem.",
-    ruleEn: "Terms, exclusions, and additional costs.",
+    rulePl: "Warunki, wyłączenia i koszty poza głównym zakresem. Przy wyłączeniach nie powtarzaj nazwy wykluczonej usługi w tytule pozycji.",
+    ruleEn: "Terms, exclusions, and additional costs. Do not repeat excluded service names in line item titles.",
     active: true,
   },
 ];
@@ -119,6 +119,120 @@ function businessScenario(
     },
   };
 }
+
+/** Fallback workspace: vague industryOtherText, no company profile — tests Services prompt without niche context. */
+function genericScenario(
+  id: string,
+  name: string,
+  opts: {
+    industryOtherText?: string;
+    companyDescription?: string;
+    description: string;
+    mustHave?: string[];
+    mustNotHave?: string[];
+    coverageTerms?: string[];
+    quick?: boolean;
+    minLineItems?: number;
+    maxLineItems?: number;
+    maxLeakageTerms?: number;
+    judge?: { minScore: number; minContextAlignment: number; minReferenceSimilarity: number };
+  },
+): ScenarioDef {
+  const baseMustNot = ["płytki", ...(opts.mustNotHave ?? [])];
+  return {
+    file: `generic/${id}.json`,
+    data: {
+      id,
+      name,
+      locale: "pl",
+      category: "generic",
+      quick: opts.quick ?? false,
+      workspace: {
+        industry: "OTHER",
+        industryOtherText: opts.industryOtherText ?? "Usługi",
+        companyDescription: opts.companyDescription ?? "",
+      },
+      request: {
+        project: { description: opts.description },
+      },
+      expectations: {
+        mustHave: (opts.mustHave ?? []).map((term) => ({ term, scope: "any_item" })),
+        mustNotHave: baseMustNot.map((term) => ({ term, scope: "any_item" })),
+        coverageTerms: opts.coverageTerms ?? [],
+        requiredSections: ["Usługi"],
+        forbiddenSections: ["Łazienka"],
+        leakageDomain: "construction",
+        maxLeakageTerms: opts.maxLeakageTerms ?? 1,
+        minLineItems: opts.minLineItems ?? 3,
+        maxLineItems: opts.maxLineItems ?? 25,
+        judge: opts.judge ?? { minScore: 5, minContextAlignment: 4, minReferenceSimilarity: 5 },
+      },
+    },
+  };
+}
+
+const genericScenarios: ScenarioDef[] = [
+  genericScenario("generic-uslugi", "Generic: Usługi", {
+    quick: true,
+    description:
+      "Potrzebuję wyceny usług dla mojej firmy, zakres do ustalenia na spotkaniu.",
+    coverageTerms: ["usług"],
+  }),
+  genericScenario("generic-remont-mieszkania", "Generic: Remont mieszkania", {
+    description:
+      "Remont mieszkania 68 m² w Warszawie: malowanie ścian i sufitów, wymiana podłóg w salonie i sypialni, odświeżenie łazienki bez rozbiórki.",
+    mustHave: ["malowanie"],
+    mustNotHave: ["murowanie", "beton"],
+    coverageTerms: ["malowanie", "podłog", "łazienk"],
+    maxLeakageTerms: 0,
+  }),
+  genericScenario("generic-konsulting", "Generic: Konsulting", {
+    description:
+      "Audyt procesów sprzedaży i 2-dniowe warsztaty strategiczne dla zarządu (8 osób), Kraków.",
+    mustHave: ["warsztat", "audyt"],
+    coverageTerms: ["konsult", "warsztat", "audyt"],
+  }),
+  genericScenario("generic-uslugi-kreatywne", "Generic: Usługi kreatywne", {
+    description:
+      "Projekt logo, wizytówki i szablony prezentacji dla startupu fintech. 2 rundy poprawek.",
+    mustHave: ["logo"],
+    coverageTerms: ["logo", "identyfikac", "wizytówk"],
+  }),
+  genericScenario("generic-organizacja-eventu", "Generic: Organizacja eventu", {
+    description:
+      "Organizacja konferencji branżowej dla 150 uczestników w Krakowie — koordynacja merytoryczna i logistyka. Catering po stronie klienta.",
+    mustHave: ["konferenc", "koordynac"],
+    mustNotHave: ["catering"],
+    coverageTerms: ["konferenc", "koordynac", "logistyk"],
+  }),
+  genericScenario("generic-szkolenia", "Generic: Szkolenia", {
+    description:
+      "Szkolenie BHP i pierwszej pomocy dla 35 pracowników zakładu produkcyjnego, jedna sesja 6 godzin.",
+    mustHave: ["szkolen", "BHP"],
+    coverageTerms: ["szkolen", "BHP"],
+  }),
+  genericScenario("generic-niejednoznaczny-opis", "Generic: Niejednoznaczny opis", {
+    description:
+      "Potrzebuję wyceny dla mojej firmy. Co dokładnie — zobaczymy na spotkaniu wstępnym, zależy od budżetu i terminu.",
+    coverageTerms: ["usług"],
+    minLineItems: 2,
+    judge: { minScore: 4, minContextAlignment: 4, minReferenceSimilarity: 4 },
+  }),
+  genericScenario("generic-bardzo-krotki-opis", "Generic: Bardzo krótki opis", {
+    description: "Wycena usług.",
+    coverageTerms: ["usług"],
+    minLineItems: 2,
+    judge: { minScore: 4, minContextAlignment: 4, minReferenceSimilarity: 4 },
+  }),
+  genericScenario("generic-bardzo-dlug-opis", "Generic: Bardzo długi opis", {
+    description: `${"Opis projektu usługowego. ".repeat(100)}Na końcu: potrzebujemy osobno wycenić warsztat wprowadzający (1 dzień) oraz miesięczny abonament konsultingowy. Materiały szkoleniowe po stronie klienta.`,
+    mustHave: ["warsztat", "abonament"],
+    coverageTerms: ["warsztat", "abonament", "konsult"],
+    minLineItems: 4,
+    maxLineItems: 35,
+    judge: { minScore: 5, minContextAlignment: 5, minReferenceSimilarity: 5 },
+  }),
+];
 
 const scenarios: ScenarioDef[] = [
   businessScenario("wedding-planner", "Wedding Planner", {
@@ -318,7 +432,7 @@ const scenarios: ScenarioDef[] = [
     description: "Warsztaty strategiczne dla zarządu firmy produkcyjnej 50 osób, analiza procesów sprzedaży.",
     mustHave: ["warsztat", "analiz", "raport"],
     mustNotHave: ["programowanie", "remont"],
-    coverageTerms: ["warsztat", "analiza", "strategia", "raport"],
+    coverageTerms: ["warsztat", "analiza", "raport"],
   }),
   businessScenario("cleaning-company", "Cleaning Company", {
     industryOtherText: "Firma sprzątająca",
@@ -339,7 +453,7 @@ const scenarios: ScenarioDef[] = [
     description: "Catering dla konferencji 150 osób, przerwa kawowa i lunch, menu wegetariańskie w 30%.",
     mustHave: ["catering", "menu", "obsługa"],
     mustNotHave: ["wynajem sali", "koordynac"],
-    coverageTerms: ["catering", "menu", "kelner", "konferencja"],
+    coverageTerms: ["catering", "menu", "konferencja"],
   }),
   businessScenario("personal-trainer", "Personal Trainer", {
     industryOtherText: "Trener personalny",
@@ -363,7 +477,7 @@ const scenarios: ScenarioDef[] = [
     description: "Projekt budowlany domu jednorodzinnego 140 m², nadzór autorski, Poznań.",
     mustHave: ["projekt", "budowlany", "nadzór"],
     mustNotHave: ["wykonawstw", "tynk", "płytki"],
-    coverageTerms: ["projekt", "budowlany", "nadzór", "pozwolenie"],
+    coverageTerms: ["projekt", "budowlany", "nadzór"],
   }),
   businessScenario("real-estate-agent", "Real Estate Agent", {
     industryOtherText: "Agent nieruchomości",
@@ -588,42 +702,9 @@ const edgeAndStress: ScenarioDef[] = [
       },
     },
   },
-  {
-    file: "generic/generic-uslugi.json",
-    data: {
-      id: "generic-uslugi",
-      name: "Generic: Usługi",
-      locale: "pl",
-      category: "generic",
-      quick: true,
-      workspace: {
-        industry: "OTHER",
-        industryOtherText: "Usługi",
-        companyDescription: "",
-      },
-      request: {
-        project: {
-          description:
-            "Potrzebuję wyceny usług dla mojej firmy, zakres do ustalenia na spotkaniu.",
-        },
-      },
-      expectations: {
-        mustHave: [],
-        mustNotHave: [{ term: "płytki", scope: "any_item" }],
-        coverageTerms: ["usług"],
-        requiredSections: ["Usługi"],
-        forbiddenSections: ["Łazienka"],
-        leakageDomain: "construction",
-        maxLeakageTerms: 1,
-        minLineItems: 3,
-        maxLineItems: 25,
-        judge: { minScore: 5, minContextAlignment: 4, minReferenceSimilarity: 5 },
-      },
-    },
-  },
 ];
 
-for (const scenario of [...scenarios, ...edgeAndStress]) {
+for (const scenario of [...scenarios, ...edgeAndStress, ...genericScenarios]) {
   const filePath = join(servicesDir, scenario.file);
   mkdirSync(dirname(filePath), { recursive: true });
   writeFileSync(filePath, JSON.stringify(scenario.data, null, 2), "utf8");

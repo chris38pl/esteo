@@ -80,7 +80,11 @@ Tekst: `normalizeEvalText` (lowercase + NFD). Sekcje: fuzzy match tytułów.
 
 ### Layer 1b: Coverage (`evals/engine/scorers/coverage-scorer.ts`)
 
-`coverageTerms` z briefu — **wyłącznie informacyjny**. Nigdy nie wpływa na PASS. Substring matching; ewentualna semantyka tylko przez Judge w przyszłości.
+`coverageTerms` z briefu — **wyłącznie informacyjny**. Nigdy nie wpływa na PASS.
+
+Korpus: **cały kosztorys** — tytuły sekcji + nazwy wszystkich pozycji (Usługi, Zakres, wyłączenia w Uwagi itd.) przez `buildEstimateCoverageCorpus`. Nie tylko pozycje wyceniane.
+
+Dopasowanie: `polishTermMatch` (odmiana PL, bez stemmera NLP).
 
 ### Layer 1c: Domain leakage (`evals/engine/scorers/domain-leakage-scorer.ts`)
 
@@ -134,7 +138,7 @@ Capy: mustNotHave / forbiddenSections → max 5; leakage fail → max 4; schema 
 
 ```ts
 // src/ai/prompts/estimate-draft.ts
-export const ESTIMATE_PROMPT_VERSION = "1.0.0";
+export const ESTIMATE_PROMPT_VERSION = "1.1.0";
 ```
 
 Bump **semver** przy każdej zmianie treści promptu:
@@ -145,7 +149,64 @@ Bump **semver** przy każdej zmianie treści promptu:
 
 Zapisywane w: `prompt-meta.json`, `summary.json`, baseline, compare report.
 
-`promptHash` (SHA-256 `prompt.txt`) wykrywa zmiany wewnątrz tej samej wersji (np. dynamiczny kontekst).
+Run-level `summary.json` fields:
+
+- `promptVersion` — semver z `estimate-draft.ts`
+- `promptHash` — SHA-256 promptu scenariusza referencyjnego (`promptHashSource`, domyślnie `wedding-planner`)
+- `promptHashes` — mapa `scenarioId → hash` (wykrywa hotfixy wpływające tylko na część kontekstu)
+
+`promptHash` wykrywa zmiany wewnątrz tej samej wersji (np. dynamiczny kontekst). W `comparison-report.md` sekcja **Prompt Version Changes** ostrzega: `⚠ HOTFIX WITHOUT VERSION BUMP` gdy wersja bez zmian, hash się zmienił.
+
+---
+
+## Polish term matcher (`polishTermMatch`)
+
+`evals/engine/lib/text-utils.ts` — dopasowanie odmian PL w rule/coverage scorerach (bez stemmera NLP):
+
+1. Dokładne dopasowanie słowa
+2. Prefiks + dozwolona końcówka fleksyjna (`post` → `posty`, `postów`, `postami`; `kelner` → `kelnerska`)
+3. Częściowy rdzeń (`podwykonawc` → `podwykonawcami`)
+4. Wspólny rdzeń / liczba pojedyncza–mnoga (`spotkanie`/`spotkania`, `zdjęcia`/`zdjęciowa`)
+
+Blokada fałszywych trafień angielskich (`market` ≠ `marketing` — sufiks `ing`).
+
+---
+
+## Auto comparison report
+
+Po każdym **full run** (wszystkie scenariusze, tryb Full) obok `summary.json` zapisywany jest:
+
+`evals/results/<runId>/comparison-report.md`
+
+Porównanie **before** (w kolejności): poprzedni run w `evals/results/` → baseline pointer → „No previous run”.
+
+Sekcje: Scenario Improvements, Regressions, Coverage Changes, Cost Changes, Prompt Version Changes.
+
+---
+
+## Coverage deep-dive
+
+Po full run (automatycznie) lub ręcznie:
+
+```bash
+npm run eval:services:coverage-dive
+npm run eval:services:coverage-dive -- --run=2026-06-18-224652
+```
+
+Output: `evals/results/<runId>/coverage-root-cause.md` — per scenariusz z coverage &lt; 75%: evidence, checkbox root cause, recommended action, rationale (heurystyka + weryfikacja ręczna).
+
+---
+
+## Evaluator false-positive audit
+
+Po full run (automatycznie) lub ręcznie:
+
+```bash
+npm run eval:services:eval-audit
+npm run eval:services:eval-audit -- --run=2026-06-18-233607
+```
+
+Output: `evals/results/<runId>/evaluator-false-positives.md` — strict/extended FAIL buckets, matcher gaps, fixture unrealistic, mustNot false positives, prompt gaps. Używa `buildEstimateCoverageCorpus` + `explainTermMismatch`.
 
 ---
 
@@ -285,6 +346,22 @@ Services prompt block order (production): Company Context → Workspace Rules �
 
 ★ = golden (`critical: true`) + `referenceEstimate`
 
+### Generic (9) — fallback `industryOtherText`
+
+Scenariusze z minimalnym kontekstem firmy (`industryOtherText: "Usługi"`, pusty `companyDescription`). Osobna **Generic Average** w raporcie.
+
+| ID | Focus |
+| --- | --- |
+| `generic-uslugi` ★ quick | Ogólna wycena, zakres do ustalenia |
+| `generic-remont-mieszkania` | Brief remontowy przy generycznym typie firmy — leakage |
+| `generic-konsulting` | Warsztaty, audyt |
+| `generic-uslugi-kreatywne` | Logo, identyfikacja |
+| `generic-organizacja-eventu` | Konferencja, koordynacja |
+| `generic-szkolenia` | BHP, szkolenie |
+| `generic-niejednoznaczny-opis` | Niejednoznaczny brief |
+| `generic-bardzo-krotki-opis` | Jedno zdanie |
+| `generic-bardzo-dlug-opis` | ~4000 znaków, mustHave z końca |
+
 ### Edge (4)
 
 | ID | Focus |
@@ -301,12 +378,6 @@ Services prompt block order (production): Company Context → Workspace Rules �
 | `stress-overconfigured` | 1200 znaków opis, 10 reguł, 15 sekcji |
 | `stress-toxic-workspace` | Sprzeczne reguły cateringu |
 
-### Generic (1)
-
-| ID | Focus |
-| --- | --- |
-| `generic-uslugi` | `industryOtherText: "Usługi"`, pusty opis |
-
 ---
 
 ## Code map
@@ -319,9 +390,15 @@ Services prompt block order (production): Company Context → Workspace Rules �
 | `evals/engine/artifacts.ts` | Per-scenario file writes |
 | `evals/engine/baseline/baseline.ts` | Save/load baseline |
 | `evals/engine/baseline/prompt-diff.ts` | Block-level prompt diff |
+| `evals/engine/comparison-report.ts` | Auto `comparison-report.md` po full run |
+| `evals/engine/coverage-analysis.ts` | `coverage-root-cause.md` |
+| `evals/engine/evaluator-audit.ts` | `evaluator-false-positives.md` |
+| `evals/engine/lib/text-utils.ts` | `polishTermMatch` (PL inflection MVP) |
 | `evals/engine/generate-for-eval.ts` | AI call + raw response capture |
 | `evals/scripts/seed-services-scenarios.ts` | Regenerate fixtures |
 | `evals/scripts/scorer-smoke-test.ts` | No-API scorer test |
+| `evals/scripts/coverage-deep-dive.ts` | Coverage root-cause (latest or `--run=`) |
+| `evals/scripts/evaluator-false-positives.ts` | Evaluator audit (latest or `--run=`) |
 | `src/ai/prompts/estimate-draft.ts` | `ESTIMATE_PROMPT_VERSION`, prompt builder |
 
 TypeScript path alias: `@evals/*` → `./evals/*` in `tsconfig.json`.

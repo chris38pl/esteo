@@ -196,8 +196,8 @@ export const INDUSTRY_ESTIMATE_SECTION_TEMPLATES: Record<
       key: "scope",
       title: { pl: "Zakres", en: "Scope" },
       defaultRule: {
-        pl: "Krótko opisz zakres i wyłączenia wynikające z zapytania lub opisu usługi.",
-        en: "Briefly state scope and exclusions based on the request or service description.",
+        pl: "Opcjonalnie 1–2 krótkie pozycje podsumowujące zakres i wyłączenia (unitPrice może być 0). Wszystkie wyceniane usługi umieszczaj jako osobne pozycje w sekcji Usługi (jednostka, ilość, cena).",
+        en: "Optionally 1–2 short line items summarizing scope and exclusions (unitPrice may be 0). Put all priced services as separate line items in the Services section (unit, quantity, price).",
       },
     },
     {
@@ -220,8 +220,8 @@ export const INDUSTRY_ESTIMATE_SECTION_TEMPLATES: Record<
       key: "notes",
       title: { pl: "Uwagi", en: "Notes" },
       defaultRule: {
-        pl: "Warunki, wyłączenia, rezerwa lub koszty dodatkowe poza głównym zakresem.",
-        en: "Terms, exclusions, contingency, or additional costs outside the main scope.",
+        pl: "Warunki, wyłączenia, rezerwa lub koszty dodatkowe poza głównym zakresem. Przy wyłączeniach nie powtarzaj nazwy wykluczonej usługi w tytule pozycji (np. „Wyłączone z wyceny” zamiast „Catering wyłączony”).",
+        en: "Terms, exclusions, contingency, or additional costs outside the main scope. When noting exclusions, do not repeat the excluded service name in the line item title (e.g. \"Excluded from estimate\" instead of \"Catering excluded\").",
       },
     },
   ],

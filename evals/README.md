@@ -26,6 +26,12 @@ npm run eval:services:baseline
 
 # Regression check vs baseline
 npm run eval:services:compare
+
+# Coverage root-cause on latest run (no API)
+npm run eval:services:coverage-dive
+
+# Evaluator false-positive audit (no API)
+npm run eval:services:eval-audit
 ```
 
 Requires `OPENAI_API_KEY` (except `smoke`). Env via `scripts/load-env.mjs`.
@@ -37,9 +43,11 @@ Requires `OPENAI_API_KEY` (except `smoke`). Env via `scripts/load-env.mjs`.
 | Command | Judge | Scenarios | When |
 |---------|-------|-----------|------|
 | `npm run eval:services:quick` | No | 6 (quick manifest) | Every PR (~30s) |
-| `npm run eval:services` | Yes | All 27 | Before prompt release |
+| `npm run eval:services` | Yes | All 35 | Before prompt release |
 | `npm run eval:services:baseline` | Yes | All + save baseline | After approved full run |
 | `npm run eval:services:compare` | Yes | All + diff vs baseline | Regression check |
+| `npm run eval:services:coverage-dive` | No | Latest run artifacts | Coverage root-cause report |
+| `npm run eval:services:eval-audit` | No | Latest run artifacts | Evaluator false-positive audit |
 | `npm run eval:services -- --stability` | Yes | Stability manifest × 5 runs | Weekly / manual |
 
 ---
@@ -49,7 +57,7 @@ Requires `OPENAI_API_KEY` (except `smoke`). Env via `scripts/load-env.mjs`.
 ```txt
 evals/
   engine/           # Shared scorer engine (services + future construction)
-  services/         # JSON fixtures (27 scenarios)
+  services/         # JSON fixtures (35 scenarios)
   construction/     # Future fixtures
   manifests/        # quick, golden, stability
   runners/          # services-eval.ts
@@ -64,7 +72,7 @@ evals/
 
 1. **Schema** — hard fail, skips judge
 2. **Rules** — mustHave, mustNotHave, sections, line items → `fastScore`
-3. **Coverage** — informational only (`coverageTerms`)
+3. **Coverage** — informational only (`coverageTerms`); full estimate corpus + `polishTermMatch`
 4. **Leakage** — construction terms in services estimates
 5. **Length** — section/item/token counts
 6. **Judge** (Full only) — overall, context alignment, reference similarity
@@ -79,6 +87,7 @@ Each run writes to `evals/results/<timestamp>/`:
 
 - `context.json`, `prompt.txt`, `prompt-meta.json`, `raw-response.txt`
 - `generated-estimate.json`, scorer JSON files, `summary.json`
+- **Full run only:** `comparison-report.md`, `coverage-root-cause.md`, `evaluator-false-positives.md`
 
 ---
 
