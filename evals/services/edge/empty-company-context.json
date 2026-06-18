@@ -1,0 +1,51 @@
+{
+  "id": "edge-empty-company-context",
+  "name": "Empty Company Context",
+  "locale": "pl",
+  "category": "edge",
+  "workspace": {
+    "industry": "OTHER",
+    "industryOtherText": "Organizacja wesel",
+    "companyDescription": "",
+    "rules": []
+  },
+  "request": {
+    "project": {
+      "description": "Wesele 80 osób w Warszawie, potrzebuję koordynacji dnia ślubu i harmonogramu. Bez cateringu."
+    }
+  },
+  "expectations": {
+    "mustHave": [
+      {
+        "term": "koordynac",
+        "scope": "any_item"
+      }
+    ],
+    "mustNotHave": [
+      {
+        "term": "catering",
+        "scope": "any_item"
+      }
+    ],
+    "coverageTerms": [
+      "koordynacja",
+      "harmonogram"
+    ],
+    "requiredSections": [
+      "Zakres",
+      "Usługi"
+    ],
+    "forbiddenSections": [
+      "Łazienka"
+    ],
+    "leakageDomain": "construction",
+    "maxLeakageTerms": 0,
+    "minLineItems": 3,
+    "maxLineItems": 30,
+    "judge": {
+      "minScore": 6,
+      "minContextAlignment": 5,
+      "minReferenceSimilarity": 5
+    }
+  }
+}

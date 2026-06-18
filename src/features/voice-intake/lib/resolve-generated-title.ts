@@ -1,5 +1,6 @@
 import type { VoiceIntakeExtraction } from "@/ai/schemas/voice-intake-extraction";
 import { buildTitleFromExtraction } from "@/features/voice-intake/lib/build-title-from-extraction";
+import type { WorkspaceIndustry } from "@prisma/client";
 import type { Locale } from "@/lib/locale";
 
 export function resolveGeneratedTitle(
@@ -7,12 +8,14 @@ export function resolveGeneratedTitle(
   extraction: VoiceIntakeExtraction,
   locale: Locale,
   displayTitle?: string | null,
+  industry: WorkspaceIndustry = "CONSTRUCTION",
 ): string {
   if (currentTitle.trim().length > 0) {
     return currentTitle.trim();
   }
 
-  const programmatic = displayTitle?.trim() || buildTitleFromExtraction(extraction, locale);
+  const programmatic =
+    displayTitle?.trim() || buildTitleFromExtraction(extraction, locale, industry);
   if (programmatic.length > 0 && programmatic.length <= 60) {
     return programmatic;
   }

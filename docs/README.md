@@ -27,18 +27,20 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 | [issue-tracker.md](features/issue-tracker.md) | Internal issue tracker — staging bug capture, admin triage, Cursor sync |
 | [authentication.md](features/authentication.md) | Custom Clerk Elements sign-in, Client Trust, email second-factor |
 | [global-search.md](features/global-search.md) | Workspace command palette (Ctrl+K), SearchDocument index, recents |
+| [ai-eval-harness.md](features/ai-eval-harness.md) | AI quality evals for Services estimate drafts — Fast/Full, baseline, compare |
 
 ## Architecture
 
 | Document | Description |
 | --- | --- |
 | [backend.md](architecture/backend.md) | Feature folders, server pattern, jobs |
-| [deployment.md](architecture/deployment.md) | Localhost, Vercel Preview/Production, domains (`preview.esteo.app`), Trigger.dev env mapping |
+| [deployment.md](architecture/deployment.md) | Domain architecture (`esteo.app`, `preview.esteo.app`), Vercel env mapping, Trigger.dev |
 | [database.md](architecture/database.md) | Schema, billing, planned estimate models |
 | [billing-stripe.md](architecture/billing-stripe.md) | Stripe subscriptions, plan changes, portal sync, webhooks |
 | [ai.md](architecture/ai.md) | Global AI stack and prompt layers |
 | [estimate-ai.md](architecture/estimate-ai.md) | Estimate draft job and agentic edit |
 | [voice-intake.md](architecture/voice-intake.md) | Voice intake — API, state machine, AI pipeline |
+| [ai-eval-harness.md](architecture/ai-eval-harness.md) | Eval engine, scorers, fixtures, baseline/compare |
 
 ## Standards
 
@@ -63,6 +65,7 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 | [dev/billing-toolkit.md](dev/billing-toolkit.md) | CLI commands for local billing tests |
 | [features/issue-tracker.md](features/issue-tracker.md) | Issue tracker — full feature reference |
 | [../scripts.md](../scripts.md#issue-tracker--sync-do-cursor) | `sync:issues` CLI commands |
+| [../scripts.md](../scripts.md#ai-eval-harness--services-jakość-wycen-ai) | `eval:services*` — AI quality evals for Services drafts |
 
 ## Estimate feature map
 

@@ -227,7 +227,11 @@ export const generateEstimateDraftTask = task({
         industry: context.industry,
         sectionCount: context.estimateSections.length,
       });
-      const projectBrief = await buildProjectBrief({ request, locale });
+      const projectBrief = await buildProjectBrief({
+        request,
+        industry: context.industry,
+        locale,
+      });
 
       logger.info("Calling OpenAI for estimate draft", {
         estimateRequestId,

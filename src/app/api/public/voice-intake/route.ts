@@ -10,6 +10,7 @@ import {
   parseDurationMs,
   parseFieldDefinitions,
   parseFollowUpContext,
+  parseVoiceIntakeWorkspaceContext,
 } from "@/features/voice-intake/server/parse-voice-intake-form";
 import { assertPublicVoiceIntakeRateLimit } from "@/features/voice-intake/server/security";
 import {
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
 
     const workspace = await prisma.workspace.findFirst({
       where: { slug: workspaceSlug, deletedAt: null },
-      select: { id: true },
+      select: { id: true, industry: true, industryOtherText: true },
     });
 
     if (!workspace) {
@@ -69,12 +70,20 @@ export async function POST(request: Request) {
 
     const buffer = Buffer.from(await audio.arrayBuffer());
 
+    const workspaceContext = parseVoiceIntakeWorkspaceContext({
+      industry: formData.get("industry") ?? workspace.industry,
+      industryOtherText:
+        formData.get("industryOtherText") ?? workspace.industryOtherText,
+    });
+
     const result = await analyzeVoiceIntake({
       audioBuffer: buffer,
       filename: audio.name || "recording.webm",
       durationMs,
       locale,
       fieldDefinitions,
+      industry: workspaceContext.industry,
+      industryOtherText: workspaceContext.industryOtherText,
       followUpContext,
     });
 

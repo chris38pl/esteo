@@ -16,11 +16,20 @@ import { resolveGeneratedTitle } from "@/features/voice-intake/lib/resolve-gener
 
 import type { IndustryFieldValue } from "@/features/estimate-requests/components/estimate-request-form-fields";
 
+import { isServiceWorkspace } from "@/features/workspaces/lib/industries";
+
 import type { Locale } from "@/lib/locale";
 
+import type { WorkspaceIndustry } from "@prisma/client";
 
 
-export type VoiceTrackableField = "city" | "area" | "preferredStartDate" | "propertyType";
+
+export type VoiceTrackableField =
+  | "city"
+  | "area"
+  | "preferredStartDate"
+  | "propertyType"
+  | "serviceLocation";
 
 
 
@@ -138,6 +147,8 @@ export function mapExtractionToForm(input: {
 
   locale: Locale;
 
+  industry: WorkspaceIndustry;
+
   currentTitle?: string;
 
   existingIndustryFields: Record<string, IndustryFieldValue>;
@@ -145,6 +156,8 @@ export function mapExtractionToForm(input: {
 }): MappedVoiceFormState {
 
   const { extraction } = input;
+
+  const isServices = isServiceWorkspace(input.industry);
 
 
 
@@ -181,41 +194,39 @@ export function mapExtractionToForm(input: {
 
 
   const address: EstimateRequestAddressForm = {
-
     streetAddress: "",
-
     city: "",
-
     postalCode: "",
-
     voivodeship: "",
-
+    ...(isServices ? { serviceLocation: "" } : {}),
   };
 
-
-
-  if (shouldApplyField(extraction.address.confidence, extraction.address.value)) {
-
-    address.streetAddress = extraction.address.value!;
-
-  }
-
-  if (shouldApplyField(extraction.city.confidence, extraction.city.value)) {
-
-    address.city = extraction.city.value!;
-
-  }
-
-  if (shouldApplyField(extraction.postalCode.confidence, extraction.postalCode.value)) {
-
-    address.postalCode = extraction.postalCode.value!;
-
-  }
-
-  if (shouldApplyField(extraction.voivodeship.confidence, extraction.voivodeship.value)) {
-
-    address.voivodeship = extraction.voivodeship.value!;
-
+  if (isServices) {
+    const cityValue =
+      shouldApplyField(extraction.city.confidence, extraction.city.value)
+        ? extraction.city.value!
+        : "";
+    const streetValue =
+      shouldApplyField(extraction.address.confidence, extraction.address.value)
+        ? extraction.address.value!
+        : "";
+    const serviceLocation = [streetValue, cityValue].filter(Boolean).join(", ").trim();
+    if (serviceLocation) {
+      address.serviceLocation = serviceLocation;
+    }
+  } else {
+    if (shouldApplyField(extraction.address.confidence, extraction.address.value)) {
+      address.streetAddress = extraction.address.value!;
+    }
+    if (shouldApplyField(extraction.city.confidence, extraction.city.value)) {
+      address.city = extraction.city.value!;
+    }
+    if (shouldApplyField(extraction.postalCode.confidence, extraction.postalCode.value)) {
+      address.postalCode = extraction.postalCode.value!;
+    }
+    if (shouldApplyField(extraction.voivodeship.confidence, extraction.voivodeship.value)) {
+      address.voivodeship = extraction.voivodeship.value!;
+    }
   }
 
 
@@ -254,20 +265,14 @@ export function mapExtractionToForm(input: {
 
   const industryFields = { ...input.existingIndustryFields };
 
+  if (!isServices) {
+    if (shouldApplyField(extraction.propertyType.confidence, extraction.propertyType.value)) {
+      industryFields.property_type = extraction.propertyType.value!;
+    }
 
-
-  if (shouldApplyField(extraction.propertyType.confidence, extraction.propertyType.value)) {
-
-    industryFields.property_type = extraction.propertyType.value!;
-
-  }
-
-
-
-  if (shouldApplyField(extraction.area.confidence, extraction.area.value)) {
-
-    industryFields.area_size = extraction.area.value!;
-
+    if (shouldApplyField(extraction.area.confidence, extraction.area.value)) {
+      industryFields.area_size = extraction.area.value!;
+    }
   }
 
 
@@ -282,40 +287,34 @@ export function mapExtractionToForm(input: {
 
     input.displayTitle,
 
+    input.industry,
+
   );
 
 
 
   const voiceAppliedValues: VoiceAppliedValues = {};
 
-
-
-  if (shouldApplyField(extraction.city.confidence, extraction.city.value)) {
-
-    voiceAppliedValues.city = extraction.city.value;
-
-  }
-
-  if (shouldApplyField(extraction.area.confidence, extraction.area.value)) {
-
-    voiceAppliedValues.area = extraction.area.value;
-
+  if (isServices) {
+    if (address.serviceLocation) {
+      voiceAppliedValues.serviceLocation = address.serviceLocation;
+    }
+  } else {
+    if (shouldApplyField(extraction.city.confidence, extraction.city.value)) {
+      voiceAppliedValues.city = extraction.city.value;
+    }
+    if (shouldApplyField(extraction.area.confidence, extraction.area.value)) {
+      voiceAppliedValues.area = extraction.area.value;
+    }
+    if (shouldApplyField(extraction.propertyType.confidence, extraction.propertyType.value)) {
+      voiceAppliedValues.propertyType = extraction.propertyType.value;
+    }
   }
 
   if (
-
     shouldApplyField(extraction.preferredStartDate.confidence, extraction.preferredStartDate.value)
-
   ) {
-
     voiceAppliedValues.preferredStartDate = extraction.preferredStartDate.value;
-
-  }
-
-  if (shouldApplyField(extraction.propertyType.confidence, extraction.propertyType.value)) {
-
-    voiceAppliedValues.propertyType = extraction.propertyType.value;
-
   }
 
 

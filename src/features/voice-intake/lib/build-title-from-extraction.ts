@@ -1,5 +1,7 @@
 import type { VoiceIntakeExtraction } from "@/ai/schemas/voice-intake-extraction";
 import { getIndustryOptionLabel } from "@/features/estimate-requests/config/industry-option-labels";
+import { isServiceWorkspace } from "@/features/workspaces/lib/industries";
+import type { WorkspaceIndustry } from "@prisma/client";
 import type { Locale } from "@/lib/locale";
 
 const WORK_TYPE_PREFIX: Record<Locale, string> = {
@@ -14,7 +16,23 @@ function fieldReady<T>(confidence: number, value: T | null | undefined): value i
 export function buildTitleFromExtraction(
   extraction: VoiceIntakeExtraction,
   locale: Locale,
+  industry: WorkspaceIndustry = "CONSTRUCTION",
 ): string {
+  if (isServiceWorkspace(industry)) {
+    const generated = extraction.generatedTitle.value?.trim();
+    if (fieldReady(extraction.generatedTitle.confidence, generated)) {
+      return generated.length <= 60 ? generated : generated.slice(0, 60).trimEnd();
+    }
+
+    const scopeItem = extraction.scopeOfWork.items[0]?.label?.trim();
+    if (scopeItem) {
+      const title = scopeItem.length <= 60 ? scopeItem : scopeItem.slice(0, 60).trimEnd();
+      return title;
+    }
+
+    return "";
+  }
+
   const parts: string[] = [];
 
   if (fieldReady(extraction.propertyType.confidence, extraction.propertyType.value)) {

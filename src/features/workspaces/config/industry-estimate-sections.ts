@@ -194,34 +194,34 @@ export const INDUSTRY_ESTIMATE_SECTION_TEMPLATES: Record<
   [WorkspaceIndustry.OTHER]: [
     {
       key: "scope",
-      title: { pl: "Zakres prac", en: "Scope of work" },
+      title: { pl: "Zakres", en: "Scope" },
       defaultRule: {
-        pl: "Krótko opisz zakres i wyłączenia wynikające z zapytania lub opisu projektu.",
-        en: "Briefly state scope and exclusions based on the request or project description.",
+        pl: "Krótko opisz zakres i wyłączenia wynikające z zapytania lub opisu usługi.",
+        en: "Briefly state scope and exclusions based on the request or service description.",
       },
     },
     {
-      key: "labor",
-      title: { pl: "Robocizna", en: "Labor" },
+      key: "services",
+      title: { pl: "Usługi", en: "Services" },
       defaultRule: {
-        pl: "Pozycje robocizny z jednostkami (h, m², szt.) i realistycznym nakładem czasu.",
-        en: "Labor lines with units (h, m², pcs) and realistic time allowances.",
+        pl: "Główne usługi z jednostkami (h, szt., pakiet) i realistycznym nakładem.",
+        en: "Core services with units (h, pcs, package) and realistic allowances.",
       },
     },
     {
-      key: "materials",
-      title: { pl: "Materiały", en: "Materials" },
+      key: "add_ons",
+      title: { pl: "Opcje dodatkowe", en: "Add-ons" },
       defaultRule: {
-        pl: "Materiały osobno od robocizny; podaj ilości i jednostki zgodnie ze scope.",
-        en: "Materials separate from labor; quantities and units aligned with scope.",
+        pl: "Opcjonalne rozszerzenia, upgrade'y i pakiety poza zakresem podstawowym.",
+        en: "Optional extensions, upgrades, and packages beyond the base scope.",
       },
     },
     {
-      key: "other",
-      title: { pl: "Inne i rezerwa", en: "Other and contingency" },
+      key: "notes",
+      title: { pl: "Uwagi", en: "Notes" },
       defaultRule: {
-        pl: "Dodaj pozycję rezerwową lub transport/utylizację, jeśli wynika z zakresu.",
-        en: "Add contingency or haulage/disposal when implied by scope.",
+        pl: "Warunki, wyłączenia, rezerwa lub koszty dodatkowe poza głównym zakresem.",
+        en: "Terms, exclusions, contingency, or additional costs outside the main scope.",
       },
     },
   ],

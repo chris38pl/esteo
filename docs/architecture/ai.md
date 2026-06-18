@@ -58,3 +58,13 @@ Speech-to-form for estimate requests — Whisper transcription + structured extr
 - Retries and streaming where appropriate
 - Caching where safe
 - Langfuse tracing (see root ARCHITECTURE.md)
+
+## AI quality evaluation (Services drafts)
+
+Regression harness for estimate draft prompts — not unit/UI tests:
+
+- **[`ai-eval-harness.md`](ai-eval-harness.md)** — engine, scorers, fixtures, baseline
+- **[`docs/features/ai-eval-harness.md`](../features/ai-eval-harness.md)** — when to run, workflows, reports
+- **[`evals/README.md`](../../evals/README.md)** — npm scripts quick reference
+
+Analogous to `voice-intake:benchmark` for extraction quality.

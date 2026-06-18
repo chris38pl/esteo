@@ -144,5 +144,53 @@
   "portal": {
     "ariaLabel": "Voice assistant — describe your project",
     "close": "Close"
+  },
+  "byIndustry": {
+    "construction": {
+      "speakFreely": "You can mention property type, location, scope of work, start timeline, address details, or area.",
+      "missingFriendly": {
+        "propertyType": "Property type",
+        "city": "Location",
+        "area": "Area",
+        "timeline": "Start date",
+        "scope": "Scope of work",
+        "contact": "Contact details",
+        "description": "Project description",
+        "serviceLocation": "Service location"
+      },
+      "followUpFriendly": {
+        "propertyType": "what type of property it is",
+        "city": "where the project is located",
+        "area": "what the area is",
+        "timeline": "when you want to start",
+        "scope": "what work should be done",
+        "contact": "how to contact you",
+        "description": "what the project is about",
+        "serviceLocation": "where the project will take place"
+      }
+    },
+    "services": {
+      "speakFreely": "You can describe the service, scope, location, preferred timeline, and contact details.",
+      "missingFriendly": {
+        "propertyType": "Property type",
+        "city": "Location",
+        "area": "Area",
+        "timeline": "Completion date",
+        "scope": "Service scope",
+        "contact": "Contact details",
+        "description": "Service description",
+        "serviceLocation": "Service location"
+      },
+      "followUpFriendly": {
+        "propertyType": "what type of property it is",
+        "city": "where the service will be delivered",
+        "area": "what the area is",
+        "timeline": "when you need the service",
+        "scope": "what the service scope is",
+        "contact": "how to contact you",
+        "description": "what the service is about",
+        "serviceLocation": "where the service will be delivered"
+      }
+    }
   }
 }

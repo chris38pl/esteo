@@ -6,6 +6,7 @@ import { VoiceInitialRecordingStage } from "@/features/voice-intake/components/v
 import type { VoiceRecordingPreviewState } from "@/features/voice-intake/lib/voice-recording-preview";
 import type { MissingFieldInfo, VoiceIntakeErrorCode } from "@/features/voice-intake/types";
 import type { Locale } from "@/lib/locale";
+import type { WorkspaceIndustry } from "@prisma/client";
 
 export function VoiceRecordingStage({
   mode,
@@ -13,6 +14,7 @@ export function VoiceRecordingStage({
   onComplete,
   onError,
   preview,
+  industry,
 }: {
   mode: "initial" | "follow_up";
   extraction?: VoiceIntakeExtraction | null;
@@ -23,11 +25,13 @@ export function VoiceRecordingStage({
   onCancel?: () => void;
   onError: (code: VoiceIntakeErrorCode) => void;
   preview?: VoiceRecordingPreviewState;
+  industry: WorkspaceIndustry;
 }) {
   if (mode === "follow_up") {
     return (
       <VoiceFollowUpRecordingStage
         missingFields={missingFields ?? []}
+        industry={industry}
         onComplete={onComplete}
         onError={onError}
         preview={preview}
@@ -36,6 +40,11 @@ export function VoiceRecordingStage({
   }
 
   return (
-    <VoiceInitialRecordingStage onComplete={onComplete} onError={onError} preview={preview} />
+    <VoiceInitialRecordingStage
+      onComplete={onComplete}
+      onError={onError}
+      preview={preview}
+      industry={industry}
+    />
   );
 }

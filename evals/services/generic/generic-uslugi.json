@@ -1,0 +1,44 @@
+{
+  "id": "generic-uslugi",
+  "name": "Generic: Usługi",
+  "locale": "pl",
+  "category": "generic",
+  "quick": true,
+  "workspace": {
+    "industry": "OTHER",
+    "industryOtherText": "Usługi",
+    "companyDescription": ""
+  },
+  "request": {
+    "project": {
+      "description": "Potrzebuję wyceny usług dla mojej firmy, zakres do ustalenia na spotkaniu."
+    }
+  },
+  "expectations": {
+    "mustHave": [],
+    "mustNotHave": [
+      {
+        "term": "płytki",
+        "scope": "any_item"
+      }
+    ],
+    "coverageTerms": [
+      "usług"
+    ],
+    "requiredSections": [
+      "Usługi"
+    ],
+    "forbiddenSections": [
+      "Łazienka"
+    ],
+    "leakageDomain": "construction",
+    "maxLeakageTerms": 1,
+    "minLineItems": 3,
+    "maxLineItems": 25,
+    "judge": {
+      "minScore": 5,
+      "minContextAlignment": 4,
+      "minReferenceSimilarity": 5
+    }
+  }
+}

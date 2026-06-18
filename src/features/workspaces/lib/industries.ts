@@ -31,11 +31,16 @@ export const FIELD_CATALOG_INDUSTRIES = [
 
 export type WorkspaceIndustryKey = (typeof WORKSPACE_INDUSTRIES)[number];
 
+/** Product segment: services businesses (wedding, photography, marketing, etc.). Enum may become SERVICES later. */
+export function isServiceWorkspace(industry: WorkspaceIndustry): boolean {
+  return industry === WorkspaceIndustry.OTHER;
+}
+
 export function formatWorkspaceIndustry(
   industry: WorkspaceIndustry,
   industryOtherText: string | null | undefined,
 ): string {
-  if (industry === WorkspaceIndustry.OTHER && industryOtherText) {
+  if (isServiceWorkspace(industry) && industryOtherText) {
     return industryOtherText;
   }
 

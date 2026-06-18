@@ -10,7 +10,9 @@ import type { PublicAttachmentAvailability } from "@/features/attachments/lib/at
 import { IndustryFieldInput } from "@/features/estimate-requests/components/industry-field-input";
 import { VOIVODESHIP_KEYS, getVoivodeshipLabel } from "@/features/estimate-requests/config/voivodeships";
 import { START_DATE_KEYS, getStartDateLabel } from "@/features/estimate-requests/config/start-dates";
+import { getIndustryExperienceConfig } from "@/features/estimate-requests/config/industry-experience-config";
 import type { IndustryFieldForDocument } from "@/features/industry-fields/server/get-fields-for-workspace";
+import type { WorkspaceIndustry } from "@prisma/client";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -29,6 +31,7 @@ export type EstimateRequestAddressForm = {
   city: string;
   postalCode: string;
   voivodeship: string;
+  serviceLocation?: string;
 };
 
 export type EstimateRequestProjectForm = {
@@ -50,6 +53,7 @@ export function createEmptyIndustryFieldValues(
 
 export function EstimateRequestFormFields({
   locale,
+  industry,
   fields,
   title,
   onTitleChange,
@@ -69,6 +73,7 @@ export function EstimateRequestFormFields({
   disabled = false,
 }: {
   locale: Locale;
+  industry: WorkspaceIndustry;
   fields: IndustryFieldForDocument[];
   title?: string;
   onTitleChange?: (value: string) => void;
@@ -89,14 +94,18 @@ export function EstimateRequestFormFields({
 }) {
   const t = useTranslations("estimateRequests");
   const tCreate = useTranslations("estimates.create");
+  const experience = getIndustryExperienceConfig(industry);
+  const labelKeys = experience.form.labelKeys;
+  type FormMessageKey = Parameters<typeof t>[0];
+  const formLabel = (key: string) => t(key as FormMessageKey);
 
   const primaryFields = useMemo(
-    () => fields.filter((field) => field.key === "property_type"),
-    [fields],
+    () => (experience.form.showIndustryCatalogFields ? fields.filter((field) => field.key === "property_type") : []),
+    [experience.form.showIndustryCatalogFields, fields],
   );
   const secondaryFields = useMemo(
-    () => fields.filter((field) => field.key !== "property_type"),
-    [fields],
+    () => (experience.form.showIndustryCatalogFields ? fields.filter((field) => field.key !== "property_type") : []),
+    [experience.form.showIndustryCatalogFields, fields],
   );
 
   return (
@@ -163,11 +172,27 @@ export function EstimateRequestFormFields({
         ))}
       </div>
 
+      {experience.form.showServiceLocation ? (
+        <div data-voice-field="address.serviceLocation">
+          <EstimateRequestTextInput
+            id="estimate-service-location"
+            label={formLabel(labelKeys.serviceLocation)}
+            placeholder={formLabel(labelKeys.serviceLocationPlaceholder)}
+            value={address.serviceLocation ?? ""}
+            onChange={(value) => onAddressChange({ ...address, serviceLocation: value })}
+            icon={<MapPin className="size-4" />}
+            required
+            disabled={disabled}
+          />
+        </div>
+      ) : null}
+
+      {experience.form.showConstructionAddress ? (
       <div className="space-y-4">
         <div data-voice-field="address.streetAddress">
           <EstimateRequestTextInput
             id="estimate-address"
-            label={t("form.fields.streetAddress")}
+            label={formLabel(labelKeys.streetAddress)}
             placeholder={t("form.placeholders.streetAddress")}
             value={address.streetAddress}
             onChange={(value) => onAddressChange({ ...address, streetAddress: value })}
@@ -180,7 +205,7 @@ export function EstimateRequestFormFields({
           <div data-voice-field="address.city">
             <EstimateRequestTextInput
               id="estimate-city"
-              ariaLabel={t("form.fields.city")}
+              ariaLabel={formLabel(labelKeys.city)}
               placeholder={t("form.placeholders.city")}
               value={address.city}
               onChange={(value) => onAddressChange({ ...address, city: value })}
@@ -191,7 +216,7 @@ export function EstimateRequestFormFields({
           <div data-voice-field="address.postalCode">
             <EstimateRequestTextInput
               id="estimate-postal-code"
-              ariaLabel={t("form.fields.postalCode")}
+              ariaLabel={formLabel(labelKeys.postalCode)}
               placeholder={t("form.placeholders.postalCode")}
               value={address.postalCode}
               onChange={(value) => onAddressChange({ ...address, postalCode: value })}
@@ -214,7 +239,7 @@ export function EstimateRequestFormFields({
                 !address.voivodeship && "text-muted-foreground",
                 address.voivodeship && "text-foreground",
               )}
-              aria-label={t("form.fields.voivodeship")}
+              aria-label={formLabel(labelKeys.voivodeship)}
             >
               <option value="">{t("form.placeholders.voivodeship")}</option>
               {VOIVODESHIP_KEYS.map((voivodeship) => (
@@ -226,6 +251,7 @@ export function EstimateRequestFormFields({
           </div>
         </div>
       </div>
+      ) : null}
 
       {primaryFields.length > 0 ? (
         <div className="space-y-4">
@@ -244,9 +270,10 @@ export function EstimateRequestFormFields({
         </div>
       ) : null}
 
+      {experience.form.showPreferredDate ? (
       <div className="space-y-3" data-voice-field="project.preferredStartDate">
         <Label className={estimateRequestLabelClassName}>
-          {t("form.fields.preferredStartDate")}
+          {formLabel(labelKeys.preferredDate)}
           <span className="text-primary">*</span>
         </Label>
         <div className="grid w-full min-w-0 grid-cols-3 gap-2 sm:flex sm:flex-wrap">
@@ -273,10 +300,11 @@ export function EstimateRequestFormFields({
           })}
         </div>
       </div>
+      ) : null}
 
       <div className="space-y-2" data-voice-field="project.description">
         <Label htmlFor="estimate-description" className={estimateRequestLabelClassName}>
-          {t("form.fields.description")}
+          {formLabel(labelKeys.description)}
           <span className="text-primary">*</span>
         </Label>
         <textarea
@@ -289,7 +317,7 @@ export function EstimateRequestFormFields({
           minLength={20}
           maxLength={4000}
           disabled={disabled}
-          placeholder={t("form.placeholders.description")}
+          placeholder={formLabel(labelKeys.descriptionPlaceholder)}
           className={cn(
             "min-h-28 w-full resize-y rounded-xl border border-input bg-background/80 px-3 py-3 text-sm text-foreground shadow-xs outline-none dark:bg-input/30",
             "placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",

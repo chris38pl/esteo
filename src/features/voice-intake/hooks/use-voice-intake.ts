@@ -41,6 +41,8 @@ import type {
 
 import type { Locale } from "@/lib/locale";
 
+import type { WorkspaceIndustry } from "@prisma/client";
+
 
 
 export function useVoiceIntake(input: {
@@ -56,6 +58,10 @@ export function useVoiceIntake(input: {
   workspaceSlug?: string;
 
   workspaceId?: string;
+
+  workspaceIndustry: WorkspaceIndustry;
+
+  industryOtherText?: string | null;
 
 }) {
 
@@ -109,9 +115,12 @@ export function useVoiceIntake(input: {
 
   const missingFields = useMemo(
 
-    () => (extraction ? detectMissingFields(extraction, input.locale) : []),
+    () =>
+      extraction
+        ? detectMissingFields(extraction, input.locale, input.workspaceIndustry)
+        : [],
 
-    [extraction, input.locale],
+    [extraction, input.locale, input.workspaceIndustry],
 
   );
 
@@ -265,6 +274,18 @@ export function useVoiceIntake(input: {
 
 
 
+      formData.append("industry", input.workspaceIndustry);
+
+
+
+      if (input.industryOtherText?.trim()) {
+
+        formData.append("industryOtherText", input.industryOtherText.trim());
+
+      }
+
+
+
       if (input.captchaToken) {
 
         formData.append("captchaToken", input.captchaToken);
@@ -333,7 +354,11 @@ export function useVoiceIntake(input: {
 
         if (isFollowUp) {
 
-          const currentMissing = detectMissingFields(body.extraction, input.locale);
+          const currentMissing = detectMissingFields(
+            body.extraction,
+            input.locale,
+            input.workspaceIndustry,
+          );
 
           const diff = diffMissingFields({
 
@@ -408,6 +433,10 @@ export function useVoiceIntake(input: {
       input.workspaceId,
 
       input.workspaceSlug,
+
+      input.workspaceIndustry,
+
+      input.industryOtherText,
 
       missingFields,
 

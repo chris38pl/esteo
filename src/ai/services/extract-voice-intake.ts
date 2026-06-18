@@ -12,6 +12,7 @@ import {
   type VoiceIntakeExtraction,
 } from "@/ai/schemas/voice-intake-extraction";
 import { stabilizeVoiceIntakeMerge } from "@/ai/services/stabilize-voice-intake-merge";
+import type { WorkspaceIndustry } from "@prisma/client";
 import type { Locale } from "@/lib/locale";
 
 export async function extractVoiceIntake(input: {
@@ -20,6 +21,8 @@ export async function extractVoiceIntake(input: {
   outputTextLocale: Locale;
   referenceDate?: Date;
   fieldDefinitions: VoiceIntakeFieldDefinitionSummary[];
+  industry: WorkspaceIndustry;
+  industryOtherText?: string | null;
   useFallbackModel?: boolean;
 }): Promise<VoiceIntakeExtraction> {
   const prompt = buildVoiceIntakeExtractionPrompt({
@@ -28,6 +31,8 @@ export async function extractVoiceIntake(input: {
     outputTextLocale: input.outputTextLocale,
     referenceDate: input.referenceDate,
     fieldDefinitions: input.fieldDefinitions,
+    industry: input.industry,
+    industryOtherText: input.industryOtherText,
   });
 
   const { object } = await generateObject({

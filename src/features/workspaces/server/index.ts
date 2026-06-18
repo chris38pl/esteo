@@ -18,6 +18,7 @@ export {
   revokeWorkspaceInvitationAction,
   updateWorkspaceAction,
   updateWorkspaceCompanyProfileAction,
+  updateWorkspaceBusinessTypeAction,
   updateWorkspaceProfileAction,
   updateWorkspaceRuleAction,
   updateWorkspaceEstimateSectionsAction,

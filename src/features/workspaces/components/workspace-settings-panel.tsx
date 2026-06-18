@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { WorkspaceSettingsCompanyTab } from "@/features/workspaces/components/workspace-settings-company-tab";
+import { WorkspaceAiSetupSection } from "@/features/workspaces/components/workspace-ai-setup-section";
 import { WorkspaceSettingsDeleteSection } from "@/features/workspaces/components/workspace-settings-delete-section";
 import { WorkspaceSettingsForm } from "@/features/workspaces/components/workspace-settings-form";
 import { WorkspaceSettingsRulesTab } from "@/features/workspaces/components/workspace-settings-rules-tab";
@@ -54,6 +55,7 @@ function parseTab(value: string | null): SettingsTab {
 export function WorkspaceSettingsPanel({
   workspaceId,
   workspaceIndustry,
+  initialIndustryOtherText,
   initialName,
   initialAppearanceTheme,
   initialCompanyDescription,
@@ -77,6 +79,7 @@ export function WorkspaceSettingsPanel({
 }: {
   workspaceId: string;
   workspaceIndustry: WorkspaceIndustry;
+  initialIndustryOtherText: string;
   initialName: string;
   initialAppearanceTheme: WorkspaceAppearanceTheme;
   initialCompanyDescription: string;
@@ -174,6 +177,15 @@ export function WorkspaceSettingsPanel({
 
         {activeTab === "general" ? (
           <>
+            <WorkspaceAiSetupSection
+              workspaceId={workspaceId}
+              workspaceIndustry={workspaceIndustry}
+              initialIndustryOtherText={initialIndustryOtherText}
+              companyDescription={initialCompanyDescription}
+              initialBranding={initialBranding}
+              rules={rules}
+              locale={locale}
+            />
             <WorkspaceSettingsForm
               workspaceId={workspaceId}
               initialName={initialName}

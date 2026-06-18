@@ -8,9 +8,31 @@ export function buildVoiceIntakeSharedRules(input: {
   referenceDate: Date;
   transcriptLocale: Locale;
   outputTextLocale: Locale;
+  includeConstructionFields?: boolean;
 }): string {
   const today = formatReferenceDate(input.referenceDate);
   const outputLabel = input.outputTextLocale === "pl" ? "Polish" : "English";
+  const includeConstruction = input.includeConstructionFields !== false;
+
+  const constructionUncertainty = includeConstruction
+    ? "- Do NOT guess cities, areas, property types, or timelines from vague input."
+    : "- Do NOT guess cities, service locations, or timelines from vague input.";
+
+  const propertyTypeBlock = includeConstruction
+    ? `
+propertyType mapping:
+- apartment: mieszkanie, apartament, kawalerka, penthouse, apartment, flat, condo
+- house: dom, dom jednorodzinny, bliźniak, szeregowiec, dom letniskowy, house, detached house, semi-detached, townhouse
+- office: biuro, open space, office
+- commercial: lokal użytkowy, lokal handlowy, hala, retail unit, shop, commercial property
+- If property type cannot be determined → null, confidence 0.`
+    : "";
+
+  const areaScopeBlock = includeConstruction
+    ? `- area = total property size in m², not a single room, unless only one room is described as the whole project.
+- For vague requests without property/location/size signals, keep city, area, propertyType, and preferredStartDate null.`
+    : `- For service requests, populate city with service location/venue when mentioned (including "Online").
+- Leave propertyType and area null unless explicitly mentioned.`;
 
   return `Today's date: ${today}
 
@@ -22,7 +44,7 @@ Locale rules:
 
 Uncertainty (critical):
 - If information is missing or ambiguous, set value to null and confidence to 0.
-- Do NOT guess cities, areas, property types, or timelines from vague input.
+${constructionUncertainty}
 - Prefer null over hallucination.
 
 preferredStartDate mapping (relative to today's date):
@@ -41,20 +63,14 @@ English → enum:
 If timeline is ambiguous → preferredStartDate: null, confidence: 0.
 
 city rules:
-- city = a specific city name (e.g. Poznań, Kraków). Districts map to parent city (Wilda → Poznań).
+- city = a specific city name or service location label (e.g. Poznań, Kraków, Online, Sala Magnolia Poznań).
+- Districts map to parent city (Wilda → Poznań).
 - Regions are NOT cities — set city to null, confidence 0: Mazury, Podhale, Pomorze, Kaszuby, Tatry, Beskidy.
 - Near-city phrases ("pod Poznaniem", "pod Warszawą", "okolice Krakowa"): set city to the referenced city with confidence 0.3-0.5.
-
-propertyType mapping:
-- apartment: mieszkanie, apartament, kawalerka, penthouse, apartment, flat, condo
-- house: dom, dom jednorodzinny, bliźniak, szeregowiec, dom letniskowy, house, detached house, semi-detached, townhouse
-- office: biuro, open space, office
-- commercial: lokal użytkowy, lokal handlowy, hala, retail unit, shop, commercial property
-- If property type cannot be determined → null, confidence 0.
+${propertyTypeBlock}
 
 scopeOfWork.items: short natural labels in the transcript language (do not normalize to canonical codes).
-- area = total property size in m², not a single room, unless only one room is described as the whole project.
-- For vague requests without property/location/size signals, keep city, area, propertyType, and preferredStartDate null.`;
+${areaScopeBlock}`;
 }
 
 export function buildVoiceIntakeFollowUpPatchRules(): string {

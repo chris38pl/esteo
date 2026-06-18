@@ -10,10 +10,12 @@ import {
   parseDurationMs,
   parseFieldDefinitions,
   parseFollowUpContext,
+  parseVoiceIntakeWorkspaceContext,
 } from "@/features/voice-intake/server/parse-voice-intake-form";
 import { assertInternalVoiceIntakeRateLimit } from "@/features/voice-intake/server/security";
 import { syncUserFromClerk } from "@/server/auth/sync-user";
 import { isLocale, type Locale } from "@/lib/locale";
+import { prisma } from "@/db/client";
 import {
   assertCanUseAiAssistant,
   incrementAiAssistantUsage,
@@ -48,6 +50,21 @@ export async function POST(request: Request) {
 
     await requireRole(user, workspaceId, "MEMBER");
 
+    const workspace = await prisma.workspace.findFirst({
+      where: { id: workspaceId, deletedAt: null },
+      select: { industry: true, industryOtherText: true },
+    });
+
+    if (!workspace) {
+      return errorJson("invalid", 400);
+    }
+
+    const workspaceContext = parseVoiceIntakeWorkspaceContext({
+      industry: formData.get("industry") ?? workspace.industry,
+      industryOtherText:
+        formData.get("industryOtherText") ?? workspace.industryOtherText,
+    });
+
     assertInternalVoiceIntakeRateLimit({ userId: user.id });
     await assertCanUseAiAssistant(workspaceId);
 
@@ -63,6 +80,8 @@ export async function POST(request: Request) {
       durationMs,
       locale,
       fieldDefinitions,
+      industry: workspaceContext.industry,
+      industryOtherText: workspaceContext.industryOtherText,
       followUpContext,
     });
 

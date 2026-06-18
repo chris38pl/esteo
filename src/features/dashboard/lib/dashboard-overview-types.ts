@@ -1,15 +1,6 @@
 import type { AvatarPreset } from "@/components/avatars/user-avatar";
 import type { Currency } from "@/i18n/formatters";
 
-export const DASHBOARD_CHART_PERIODS = ["7_days", "30_days"] as const;
-
-export type DashboardChartPeriod = (typeof DASHBOARD_CHART_PERIODS)[number];
-
-export type DashboardChartBar = {
-  label: string;
-  value: number;
-};
-
 export type DashboardActivityFeedItem = {
   id: string;
   actorName: string;
@@ -50,16 +41,6 @@ export type DashboardOverduePaymentItem = {
 };
 
 export type DashboardInsightsData = {
-  requestsChart: {
-    total: number;
-    trendPercent: number;
-    bars: DashboardChartBar[];
-  };
-  incomeChart: {
-    total: number;
-    trendPercent: number;
-    bars: DashboardChartBar[];
-  };
   recentActivity: DashboardActivityFeedItem[];
   recentDocuments: DashboardRecentDocumentItem[];
   overduePayments: DashboardOverduePaymentItem[];

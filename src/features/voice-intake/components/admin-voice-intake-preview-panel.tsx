@@ -24,6 +24,7 @@ import type { VoiceIntakeErrorCode } from "@/features/voice-intake/types";
 import type { VoiceRecordingPreviewState } from "@/features/voice-intake/lib/voice-recording-preview";
 import { getMessagesForLocale } from "@/i18n/messages";
 import type { Locale } from "@/lib/locale";
+import { WorkspaceIndustry } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DecimalInput } from "@/components/ui/decimal-input";
@@ -59,6 +60,7 @@ function VoiceIntakePreviewStage({
       return (
         <VoiceRecordingStage
           mode="initial"
+          industry={WorkspaceIndustry.CONSTRUCTION}
           onComplete={noop}
           onError={noop}
           preview={recordingPreview}
@@ -69,6 +71,7 @@ function VoiceIntakePreviewStage({
         <VoiceRecordingStage
           mode="follow_up"
           locale={fixture.locale}
+          industry={WorkspaceIndustry.CONSTRUCTION}
           missingFields={fixture.missingFields}
           onComplete={noop}
           onError={noop}
@@ -81,6 +84,7 @@ function VoiceIntakePreviewStage({
           extraction={fixture.extraction}
           cleanedTranscript={fixture.cleanedTranscript}
           locale={fixture.locale}
+          industry={WorkspaceIndustry.CONSTRUCTION}
           missingFields={fixture.missingFields}
           followUpResolvedItems={followUpResolvedItems}
           followUpNoNewInfo={fixture.followUpNoNewInfo}

@@ -13,8 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DashboardPanelCard } from "@/features/dashboard/components/dashboard-panel-card";
+import { DashboardRelativeTime } from "@/features/dashboard/components/dashboard-relative-time";
 import { formatBytes } from "@/features/attachments/lib/format-bytes";
-import { formatRelativeAgo } from "@/features/dashboard/lib/format-relative-ago";
 import type {
   DashboardDocumentFileType,
   DashboardRecentDocumentItem,
@@ -101,12 +101,11 @@ export function DashboardRecentDocumentsCard({
                 </p>
               </div>
 
-              <time
-                dateTime={item.occurredAt}
-                className="hidden shrink-0 text-xs text-muted-foreground sm:block"
-              >
-                {formatRelativeAgo(locale, item.occurredAt)}
-              </time>
+              <DashboardRelativeTime
+                value={item.occurredAt}
+                locale={locale}
+                className="hidden sm:block"
+              />
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

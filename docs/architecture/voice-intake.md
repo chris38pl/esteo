@@ -84,6 +84,8 @@ stateDiagram-v2
 | `workspaceSlug` | Target workspace |
 | `durationMs` | Client-reported duration |
 | `fieldDefinitions` | JSON — workspace industry fields for prompt |
+| `industry` | Optional override; defaults from workspace record |
+| `industryOtherText` | Optional Business Type for Services workspaces |
 | `captchaToken` | Turnstile / captcha |
 | `followUpContext` | JSON — previous extraction + missing keys (follow-up only) |
 
@@ -118,6 +120,17 @@ return VoiceIntakeApiResponse
 ```
 
 Follow-up path passes `FollowUpContext`: previous transcript, extraction, missing field keys/labels. Merge stabilization in `stabilize-voice-intake-merge.ts`.
+
+## Industry segments
+
+Missing fields, extraction prompts, and form mapping are driven by `getIndustryExperienceConfig(industry)` (`src/features/estimate-requests/config/industry-experience-config.ts`). Use `isServiceWorkspace()` — not raw `industry === OTHER`.
+
+| Segment | Enum today | Voice collects | Skips |
+| --- | --- | --- | --- |
+| Construction | `CONSTRUCTION` (+ future trade enums) | property type, city, area, scope, timeline, contact | — |
+| Services | `OTHER` | service description, service location, scope, timeline, contact | property type, area |
+
+Services prompts include a **Business Type** block (`industryOtherText`) instead of a construction `## Role`. i18n: `voiceIntake.byIndustry.{construction|services}`.
 
 ## Extraction schema
 

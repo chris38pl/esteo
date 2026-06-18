@@ -6,18 +6,24 @@ import {
   formatOutputRulesBlock,
   formatScopeChecklistBlock,
   formatScopeExpansionRulesBlock,
-  formatQuantityDerivationRulesBlock
+  formatQuantityDerivationRulesBlock,
 } from "@/ai/lib/format-industry-profile-blocks";
+import { SERVICE_ESTIMATION_PRINCIPLES } from "@/features/estimate-requests/config/industry-experience-config";
 import type { EstimateGenerationContext } from "@/features/workspaces/lib/load-estimate-generation-context";
 import {
   buildWorkspacePromptFromRules,
+  formatBusinessTypeBlock,
   formatCompanyContextBlock,
   formatEstimateStructureBlock,
   formatGeneralAiInstructionsBlock,
   formatSectionRulesBlock,
 } from "@/features/workspaces/lib/prompt-context";
+import { isServiceWorkspace } from "@/features/workspaces/lib/industries";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
+
+/** Bump semver when prompt blocks, role, or output rules change (eval harness tracks this). */
+export const ESTIMATE_PROMPT_VERSION = "1.0.0";
 
 export interface EstimateDraftPromptInput {
   projectBrief: string;
@@ -30,15 +36,33 @@ export function buildEstimateDraftPrompt(input: EstimateDraftPromptInput): strin
     : "pl";
   const lang = locale === "en" ? "en" : "pl";
 
-  const profile = resolveIndustryAiProfileForPrompt(
-    input.context.industry,
-    locale,
-  );
-
   const estimateSections = input.context.estimateSections.map((s) => ({
     title: s.title,
     rule: s.rule,
   }));
+
+  if (isServiceWorkspace(input.context.industry)) {
+    const servicePrinciples = SERVICE_ESTIMATION_PRINCIPLES[locale];
+    const blocks = [
+      formatCompanyContextBlock(input.context.companyDescription),
+      formatGeneralAiInstructionsBlock(input.context.aiInstructions),
+      buildWorkspacePromptFromRules(input.context.rules),
+      formatEstimateStructureBlock(estimateSections),
+      formatSectionRulesBlock(estimateSections),
+      formatBusinessTypeBlock(input.context.industryOtherText),
+      `## Project Brief\n${input.projectBrief.trim()}`,
+      formatEstimationPrinciplesBlock(servicePrinciples),
+      formatEstimateCompletenessBlock(lang),
+      formatOutputRulesBlock(lang),
+    ];
+
+    return blocks.filter(Boolean).join("\n\n");
+  }
+
+  const profile = resolveIndustryAiProfileForPrompt(
+    input.context.industry,
+    locale,
+  );
 
   const blocks = [
     formatIndustryRoleBlock(profile.role),

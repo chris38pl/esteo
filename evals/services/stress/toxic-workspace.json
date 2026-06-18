@@ -1,0 +1,58 @@
+{
+  "id": "stress-toxic-workspace",
+  "name": "Toxic Workspace",
+  "locale": "pl",
+  "category": "stress",
+  "quick": true,
+  "workspace": {
+    "industry": "OTHER",
+    "industryOtherText": "Organizacja wesel",
+    "companyDescription": "Koordynacja wesel bez cateringu.",
+    "rules": [
+      {
+        "title": "Catering tak",
+        "content": "Uwzględnij catering w każdej wycenie weselnej."
+      },
+      {
+        "title": "Catering nie",
+        "content": "Nigdy nie uwzględniaj cateringu w wycenie."
+      }
+    ]
+  },
+  "request": {
+    "project": {
+      "description": "Wesele 90 osób, koordynacja i harmonogram. Catering po stronie rodziny."
+    }
+  },
+  "expectations": {
+    "mustHave": [
+      {
+        "term": "koordynac",
+        "scope": "any_item"
+      }
+    ],
+    "mustNotHave": [
+      {
+        "term": "catering",
+        "scope": "any_item"
+      }
+    ],
+    "coverageTerms": [
+      "koordynacja",
+      "harmonogram"
+    ],
+    "requiredSections": [
+      "Usługi"
+    ],
+    "forbiddenSections": [],
+    "leakageDomain": "construction",
+    "maxLeakageTerms": 0,
+    "minLineItems": 3,
+    "maxLineItems": 25,
+    "judge": {
+      "minScore": 6,
+      "minContextAlignment": 6,
+      "minReferenceSimilarity": 5
+    }
+  }
+}

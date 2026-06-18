@@ -1,0 +1,36 @@
+{
+  "id": "edge-extremely-short-brief",
+  "name": "Extremely Short Brief",
+  "locale": "pl",
+  "category": "edge",
+  "workspace": {
+    "industry": "OTHER",
+    "industryOtherText": "Organizacja wesel",
+    "companyDescription": "Planowanie wesel."
+  },
+  "request": {
+    "project": {
+      "description": "Potrzebuję organizacji wesela."
+    }
+  },
+  "expectations": {
+    "mustHave": [],
+    "mustNotHave": [],
+    "coverageTerms": [
+      "wesel"
+    ],
+    "requiredSections": [
+      "Usługi"
+    ],
+    "forbiddenSections": [],
+    "leakageDomain": "construction",
+    "maxLeakageTerms": 1,
+    "minLineItems": 3,
+    "maxLineItems": 20,
+    "judge": {
+      "minScore": 5,
+      "minContextAlignment": 5,
+      "minReferenceSimilarity": 5
+    }
+  }
+}

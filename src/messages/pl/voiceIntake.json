@@ -144,5 +144,53 @@
   "portal": {
     "ariaLabel": "Asystent głosowy — opowiedz o projekcie",
     "close": "Zamknij"
+  },
+  "byIndustry": {
+    "construction": {
+      "speakFreely": "Możesz wspomnieć o typie nieruchomości, lokalizacji, zakresie prac, terminie rozpoczęcia, danych adresowych czy powierzchni.",
+      "missingFriendly": {
+        "propertyType": "Typ nieruchomości",
+        "city": "Lokalizacja",
+        "area": "Powierzchnia",
+        "timeline": "Termin rozpoczęcia",
+        "scope": "Zakres prac",
+        "contact": "Dane kontaktowe",
+        "description": "Opis inwestycji",
+        "serviceLocation": "Miejsce realizacji"
+      },
+      "followUpFriendly": {
+        "propertyType": "jaki to typ nieruchomości",
+        "city": "gdzie znajduje się projekt",
+        "area": "jaka jest powierzchnia",
+        "timeline": "kiedy chcesz zacząć prace",
+        "scope": "jakie prace mają być wykonane",
+        "contact": "jak się z Tobą skontaktować",
+        "description": "czego dotyczy inwestycja",
+        "serviceLocation": "gdzie ma być realizowany projekt"
+      }
+    },
+    "services": {
+      "speakFreely": "Możesz opisać usługę, zakres, miejsce realizacji, preferowany termin oraz dane kontaktowe.",
+      "missingFriendly": {
+        "propertyType": "Typ nieruchomości",
+        "city": "Lokalizacja",
+        "area": "Powierzchnia",
+        "timeline": "Termin realizacji",
+        "scope": "Zakres usługi",
+        "contact": "Dane kontaktowe",
+        "description": "Opis usługi",
+        "serviceLocation": "Miejsce realizacji"
+      },
+      "followUpFriendly": {
+        "propertyType": "jaki to typ nieruchomości",
+        "city": "gdzie ma być realizowana usługa",
+        "area": "jaka jest powierzchnia",
+        "timeline": "kiedy ma nastąpić realizacja",
+        "scope": "jaki jest zakres usługi",
+        "contact": "jak się z Tobą skontaktować",
+        "description": "czego dotyczy usługa",
+        "serviceLocation": "gdzie ma być realizowana usługa"
+      }
+    }
   }
 }

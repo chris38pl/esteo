@@ -20,10 +20,12 @@ type VoiceIntakeState = ReturnType<typeof useVoiceIntake>;
 export function VoiceExperiencePortal({
   voice,
   locale,
+  industry,
   onApply,
 }: {
   voice: VoiceIntakeState;
   locale: Locale;
+  industry: import("@prisma/client").WorkspaceIndustry;
   onApply: () => void;
 }) {
   const t = useTranslations("voiceIntake");
@@ -115,6 +117,7 @@ export function VoiceExperiencePortal({
             extraction={null}
             cleanedTranscript=""
             locale={locale}
+            industry={industry}
             missingFields={voice.missingFields}
             onComplete={(blob, durationMs) => void voice.submitAudio(blob, durationMs, false)}
             onCancel={handleClose}
@@ -132,6 +135,7 @@ export function VoiceExperiencePortal({
             key="follow-up"
             mode="follow_up"
             locale={locale}
+            industry={industry}
             missingFields={voice.missingFields}
             onComplete={(blob, durationMs) => void voice.submitAudio(blob, durationMs, true)}
             onCancel={handleClose}
@@ -160,6 +164,7 @@ export function VoiceExperiencePortal({
             extraction={voice.extraction}
             cleanedTranscript={voice.cleanedTranscript}
             locale={locale}
+            industry={industry}
             missingFields={voice.missingFields}
             followUpResolvedItems={voice.followUpResolvedItems}
             followUpNoNewInfo={voice.followUpNoNewInfo}

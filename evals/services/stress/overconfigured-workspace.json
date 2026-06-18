@@ -1,0 +1,198 @@
+{
+  "id": "stress-overconfigured",
+  "name": "Overconfigured Workspace",
+  "locale": "pl",
+  "category": "stress",
+  "workspace": {
+    "industry": "OTHER",
+    "industryOtherText": "Agencja marketingowa full-service",
+    "companyDescription": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "aiInstructions": "Reguła ogólna nr 1. Reguła ogólna nr 1. Reguła ogólna nr 1. Reguła ogólna nr 1. Reguła ogólna nr 1. Reguła ogólna nr 1. Reguła ogólna nr 1. Reguła ogólna nr 1. Reguła ogólna nr 1. Reguła ogólna nr 1. Reguła ogólna nr 1. Reguła ogólna nr 1. Reguła ogólna nr 1. Reguła ogólna nr 1. Reguła ogólna nr 1. Reguła ogólna nr 1. Reguła ogólna nr 1. Reguła ogólna nr 1. Reguła ogólna nr 1. Reguła ogólna nr 1. ",
+    "estimateSections": [
+      {
+        "key": "section_1",
+        "titlePl": "Sekcja 1",
+        "titleEn": "Section 1",
+        "rulePl": "Reguła sekcji 1 — szczegóły wyliczeń.",
+        "active": true
+      },
+      {
+        "key": "section_2",
+        "titlePl": "Sekcja 2",
+        "titleEn": "Section 2",
+        "rulePl": "Reguła sekcji 2 — szczegóły wyliczeń.",
+        "active": true
+      },
+      {
+        "key": "section_3",
+        "titlePl": "Sekcja 3",
+        "titleEn": "Section 3",
+        "rulePl": "Reguła sekcji 3 — szczegóły wyliczeń.",
+        "active": true
+      },
+      {
+        "key": "section_4",
+        "titlePl": "Sekcja 4",
+        "titleEn": "Section 4",
+        "rulePl": "Reguła sekcji 4 — szczegóły wyliczeń.",
+        "active": true
+      },
+      {
+        "key": "section_5",
+        "titlePl": "Sekcja 5",
+        "titleEn": "Section 5",
+        "rulePl": "Reguła sekcji 5 — szczegóły wyliczeń.",
+        "active": true
+      },
+      {
+        "key": "section_6",
+        "titlePl": "Sekcja 6",
+        "titleEn": "Section 6",
+        "rulePl": "Reguła sekcji 6 — szczegóły wyliczeń.",
+        "active": true
+      },
+      {
+        "key": "section_7",
+        "titlePl": "Sekcja 7",
+        "titleEn": "Section 7",
+        "rulePl": "Reguła sekcji 7 — szczegóły wyliczeń.",
+        "active": true
+      },
+      {
+        "key": "section_8",
+        "titlePl": "Sekcja 8",
+        "titleEn": "Section 8",
+        "rulePl": "Reguła sekcji 8 — szczegóły wyliczeń.",
+        "active": true
+      },
+      {
+        "key": "section_9",
+        "titlePl": "Sekcja 9",
+        "titleEn": "Section 9",
+        "rulePl": "Reguła sekcji 9 — szczegóły wyliczeń.",
+        "active": true
+      },
+      {
+        "key": "section_10",
+        "titlePl": "Sekcja 10",
+        "titleEn": "Section 10",
+        "rulePl": "Reguła sekcji 10 — szczegóły wyliczeń.",
+        "active": true
+      },
+      {
+        "key": "section_11",
+        "titlePl": "Sekcja 11",
+        "titleEn": "Section 11",
+        "rulePl": "Reguła sekcji 11 — szczegóły wyliczeń.",
+        "active": true
+      },
+      {
+        "key": "section_12",
+        "titlePl": "Sekcja 12",
+        "titleEn": "Section 12",
+        "rulePl": "Reguła sekcji 12 — szczegóły wyliczeń.",
+        "active": true
+      },
+      {
+        "key": "section_13",
+        "titlePl": "Sekcja 13",
+        "titleEn": "Section 13",
+        "rulePl": "Reguła sekcji 13 — szczegóły wyliczeń.",
+        "active": true
+      },
+      {
+        "key": "section_14",
+        "titlePl": "Sekcja 14",
+        "titleEn": "Section 14",
+        "rulePl": "Reguła sekcji 14 — szczegóły wyliczeń.",
+        "active": true
+      },
+      {
+        "key": "section_15",
+        "titlePl": "Sekcja 15",
+        "titleEn": "Section 15",
+        "rulePl": "Reguła sekcji 15 — szczegóły wyliczeń.",
+        "active": true
+      }
+    ],
+    "rules": [
+      {
+        "title": "Reguła ESTIMATE 1",
+        "content": "Treść reguły wyceny numer 1 dla workspace."
+      },
+      {
+        "title": "Reguła ESTIMATE 2",
+        "content": "Treść reguły wyceny numer 2 dla workspace."
+      },
+      {
+        "title": "Reguła ESTIMATE 3",
+        "content": "Treść reguły wyceny numer 3 dla workspace."
+      },
+      {
+        "title": "Reguła ESTIMATE 4",
+        "content": "Treść reguły wyceny numer 4 dla workspace."
+      },
+      {
+        "title": "Reguła ESTIMATE 5",
+        "content": "Treść reguły wyceny numer 5 dla workspace."
+      },
+      {
+        "title": "Reguła ESTIMATE 6",
+        "content": "Treść reguły wyceny numer 6 dla workspace."
+      },
+      {
+        "title": "Reguła ESTIMATE 7",
+        "content": "Treść reguły wyceny numer 7 dla workspace."
+      },
+      {
+        "title": "Reguła ESTIMATE 8",
+        "content": "Treść reguły wyceny numer 8 dla workspace."
+      },
+      {
+        "title": "Reguła ESTIMATE 9",
+        "content": "Treść reguły wyceny numer 9 dla workspace."
+      },
+      {
+        "title": "Reguła ESTIMATE 10",
+        "content": "Treść reguły wyceny numer 10 dla workspace."
+      }
+    ]
+  },
+  "request": {
+    "project": {
+      "description": "Kampania Q4 dla marki FMCG, budżet mediowy 500k PLN, potrzebuję strategii, kreacji i raportowania."
+    }
+  },
+  "expectations": {
+    "mustHave": [
+      {
+        "term": "strateg",
+        "scope": "any_item"
+      }
+    ],
+    "mustNotHave": [
+      {
+        "term": "remont",
+        "scope": "any_item"
+      }
+    ],
+    "coverageTerms": [
+      "strategia",
+      "kampania",
+      "kreacja"
+    ],
+    "requiredSections": [],
+    "forbiddenSections": [
+      "Łazienka"
+    ],
+    "leakageDomain": "construction",
+    "maxLeakageTerms": 0,
+    "minLineItems": 4,
+    "maxLineItems": 50,
+    "judge": {
+      "minScore": 6,
+      "minContextAlignment": 6,
+      "minReferenceSimilarity": 5
+    }
+  }
+}

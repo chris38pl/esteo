@@ -20,11 +20,13 @@ import { voiceRecordingStageShellClassName } from "@/features/voice-intake/lib/v
 
 export function VoiceFollowUpRecordingStage({
   missingFields,
+  industry: _industry,
   onComplete,
   onError,
   preview,
 }: {
   missingFields: MissingFieldInfo[];
+  industry?: import("@prisma/client").WorkspaceIndustry;
   onComplete: (blob: Blob, durationMs: number) => void;
   onError: (code: VoiceIntakeErrorCode) => void;
   preview?: VoiceRecordingPreviewState;

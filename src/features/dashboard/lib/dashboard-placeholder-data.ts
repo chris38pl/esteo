@@ -1,44 +1,20 @@
 import type { DashboardInsightsData } from "@/features/dashboard/lib/dashboard-overview-types";
 
-const DAY_MS = 86_400_000;
-const HOUR_MS = 3_600_000;
-
-function hoursAgo(hours: number): string {
-  return new Date(Date.now() - hours * HOUR_MS).toISOString();
-}
-
-function daysAgo(days: number): string {
-  return new Date(Date.now() - days * DAY_MS).toISOString();
-}
+/** Fixed timestamps so SSR and client hydration stay in sync. */
+const PLACEHOLDER_TIMESTAMPS = {
+  hours2: "2026-06-18T10:00:00.000Z",
+  hours5: "2026-06-18T07:00:00.000Z",
+  hours7: "2026-06-18T05:00:00.000Z",
+  days1: "2026-06-17T12:00:00.000Z",
+  days2: "2026-06-16T12:00:00.000Z",
+  days3: "2026-06-15T12:00:00.000Z",
+  days4: "2026-06-14T12:00:00.000Z",
+  days5Overdue: "2026-06-13T12:00:00.000Z",
+  days12Overdue: "2026-06-06T12:00:00.000Z",
+} as const;
 
 export function getDashboardPlaceholderInsights(): DashboardInsightsData {
   return {
-    requestsChart: {
-      total: 12,
-      trendPercent: 20,
-      bars: [
-        { label: "mon", value: 10 },
-        { label: "tue", value: 8 },
-        { label: "wed", value: 16 },
-        { label: "thu", value: 12 },
-        { label: "fri", value: 14 },
-        { label: "sat", value: 5 },
-        { label: "sun", value: 7 },
-      ],
-    },
-    incomeChart: {
-      total: 24_600,
-      trendPercent: 12,
-      bars: [
-        { label: "mon", value: 3_200 },
-        { label: "tue", value: 4_100 },
-        { label: "wed", value: 2_800 },
-        { label: "thu", value: 5_200 },
-        { label: "fri", value: 4_800 },
-        { label: "sat", value: 1_900 },
-        { label: "sun", value: 2_600 },
-      ],
-    },
     recentActivity: [
       {
         id: "act-1",
@@ -47,7 +23,7 @@ export function getDashboardPlaceholderInsights(): DashboardInsightsData {
         kind: "document_added",
         documentName: "Analiza techniczna.docx",
         workspaceName: "Projekty budowlane",
-        occurredAt: hoursAgo(5),
+        occurredAt: PLACEHOLDER_TIMESTAMPS.hours5,
         actor: {
           name: "Anna Kowalska",
           email: "anna@example.com",
@@ -61,7 +37,7 @@ export function getDashboardPlaceholderInsights(): DashboardInsightsData {
         isCurrentUser: false,
         kind: "request_completed",
         requestTitle: "Porównanie kosztów materiałów",
-        occurredAt: hoursAgo(7),
+        occurredAt: PLACEHOLDER_TIMESTAMPS.hours7,
         actor: {
           name: "Piotr Nowak",
           email: "piotr@example.com",
@@ -76,7 +52,7 @@ export function getDashboardPlaceholderInsights(): DashboardInsightsData {
         kind: "document_added",
         documentName: "Oferta inwestycyjna.pdf",
         workspaceName: "Przestrzeń główna",
-        occurredAt: daysAgo(2),
+        occurredAt: PLACEHOLDER_TIMESTAMPS.days2,
         actor: {
           name: "Ty",
           email: "you@example.com",
@@ -90,7 +66,7 @@ export function getDashboardPlaceholderInsights(): DashboardInsightsData {
         isCurrentUser: false,
         kind: "estimate_sent",
         estimateTitle: "Remont łazienki — wersja 2",
-        occurredAt: daysAgo(3),
+        occurredAt: PLACEHOLDER_TIMESTAMPS.days3,
         actor: {
           name: "Marta Wiśniewska",
           email: "marta@example.com",
@@ -105,7 +81,7 @@ export function getDashboardPlaceholderInsights(): DashboardInsightsData {
         kind: "document_added",
         documentName: "Kosztorys_Q2_2024.xlsx",
         workspaceName: "Finanse",
-        occurredAt: daysAgo(4),
+        occurredAt: PLACEHOLDER_TIMESTAMPS.days4,
         actor: {
           name: "Jan Kowalczyk",
           email: "jan@example.com",
@@ -121,7 +97,7 @@ export function getDashboardPlaceholderInsights(): DashboardInsightsData {
         fileType: "PDF",
         workspaceName: "Przestrzeń główna",
         fileSizeBytes: 2_516_582,
-        occurredAt: hoursAgo(2),
+        occurredAt: PLACEHOLDER_TIMESTAMPS.hours2,
       },
       {
         id: "doc-2",
@@ -129,7 +105,7 @@ export function getDashboardPlaceholderInsights(): DashboardInsightsData {
         fileType: "DOCX",
         workspaceName: "Projekty budowlane",
         fileSizeBytes: 1_782_336,
-        occurredAt: hoursAgo(5),
+        occurredAt: PLACEHOLDER_TIMESTAMPS.hours5,
       },
       {
         id: "doc-3",
@@ -137,7 +113,7 @@ export function getDashboardPlaceholderInsights(): DashboardInsightsData {
         fileType: "XLSX",
         workspaceName: "Finanse",
         fileSizeBytes: 3_251_840,
-        occurredAt: daysAgo(1),
+        occurredAt: PLACEHOLDER_TIMESTAMPS.days1,
       },
       {
         id: "doc-4",
@@ -145,7 +121,7 @@ export function getDashboardPlaceholderInsights(): DashboardInsightsData {
         fileType: "PPTX",
         workspaceName: "Mieszkanie",
         fileSizeBytes: 6_502_400,
-        occurredAt: daysAgo(3),
+        occurredAt: PLACEHOLDER_TIMESTAMPS.days3,
       },
     ],
     overduePayments: [
@@ -153,7 +129,7 @@ export function getDashboardPlaceholderInsights(): DashboardInsightsData {
         id: "pay-1",
         estimateId: "est-1",
         estimateTitle: "Remont łazienki — etap I",
-        dueDate: daysAgo(12),
+        dueDate: PLACEHOLDER_TIMESTAMPS.days12Overdue,
         amount: 12_480,
         currency: "PLN",
         customerName: "Anna Kowalska",
@@ -162,7 +138,7 @@ export function getDashboardPlaceholderInsights(): DashboardInsightsData {
         id: "pay-2",
         estimateId: "est-2",
         estimateTitle: "Instalacja fotowoltaiki",
-        dueDate: daysAgo(5),
+        dueDate: PLACEHOLDER_TIMESTAMPS.days5Overdue,
         amount: 9_637.8,
         currency: "PLN",
         customerName: "Piotr Nowak",
@@ -171,7 +147,7 @@ export function getDashboardPlaceholderInsights(): DashboardInsightsData {
         id: "pay-3",
         estimateId: "est-3",
         estimateTitle: "Malowanie biura — faktura końcowa",
-        dueDate: daysAgo(2),
+        dueDate: PLACEHOLDER_TIMESTAMPS.days2,
         amount: 6_000,
         currency: "PLN",
         customerName: "Studio Architektura Sp. z o.o.",

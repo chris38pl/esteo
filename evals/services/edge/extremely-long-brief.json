@@ -1,0 +1,52 @@
+{
+  "id": "edge-extremely-long-brief",
+  "name": "Extremely Long Brief",
+  "locale": "pl",
+  "category": "edge",
+  "workspace": {
+    "industry": "OTHER",
+    "industryOtherText": "Organizacja wesel",
+    "companyDescription": "Kompleksowa organizacja wesel — koordynacja, harmonogram, dostawcy."
+  },
+  "request": {
+    "project": {
+      "description": "Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Szczegółowy brief weselny. Na końcu: wymagamy osobnej pozycji dla koordynacji kościoła i sali oraz harmonogramu minutowego. Wyłączamy catering z wyceny."
+    }
+  },
+  "expectations": {
+    "mustHave": [
+      {
+        "term": "koordynac",
+        "scope": "any_item"
+      },
+      {
+        "term": "harmonogram",
+        "scope": "any_item"
+      }
+    ],
+    "mustNotHave": [
+      {
+        "term": "catering",
+        "scope": "any_item"
+      }
+    ],
+    "coverageTerms": [
+      "koordynacja",
+      "harmonogram",
+      "kościół"
+    ],
+    "requiredSections": [
+      "Usługi"
+    ],
+    "forbiddenSections": [],
+    "leakageDomain": "construction",
+    "maxLeakageTerms": 0,
+    "minLineItems": 4,
+    "maxLineItems": 40,
+    "judge": {
+      "minScore": 6,
+      "minContextAlignment": 6,
+      "minReferenceSimilarity": 5
+    }
+  }
+}

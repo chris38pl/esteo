@@ -1,0 +1,179 @@
+{
+  "id": "wedding-planner",
+  "name": "Wedding Planner",
+  "locale": "pl",
+  "category": "business",
+  "quick": true,
+  "critical": true,
+  "workspace": {
+    "industry": "OTHER",
+    "industryOtherText": "Organizacja wesel i koordynacja wydarzeń",
+    "companyDescription": "Studio planowania wesel premium. Koordynujemy harmonogram, dostawców i dzień ślubu. Nie świadczymy cateringu, transportu ani fotografii.",
+    "aiInstructions": "Wydziel konsultację wstępną i koordynację dnia ślubu jako osobne pozycje. Ceny w pakietach godzinowych.",
+    "estimateSections": [
+      {
+        "key": "scope",
+        "titlePl": "Zakres",
+        "titleEn": "Scope",
+        "rulePl": "Krótko opisz zakres i wyłączenia wynikające z zapytania lub opisu usługi.",
+        "ruleEn": "Briefly state scope and exclusions based on the request or service description.",
+        "active": true
+      },
+      {
+        "key": "services",
+        "titlePl": "Usługi",
+        "titleEn": "Services",
+        "rulePl": "Główne usługi z jednostkami (h, szt., pakiet) i realistycznym nakładem.",
+        "ruleEn": "Core services with units (h, pcs, package) and realistic allowances.",
+        "active": true
+      },
+      {
+        "key": "add_ons",
+        "titlePl": "Opcje dodatkowe",
+        "titleEn": "Add-ons",
+        "rulePl": "Opcjonalne rozszerzenia poza zakresem podstawowym.",
+        "ruleEn": "Optional extensions beyond the base scope.",
+        "active": true
+      },
+      {
+        "key": "notes",
+        "titlePl": "Uwagi",
+        "titleEn": "Notes",
+        "rulePl": "Warunki, wyłączenia i koszty poza głównym zakresem.",
+        "ruleEn": "Terms, exclusions, and additional costs.",
+        "active": true
+      }
+    ],
+    "rules": [
+      {
+        "title": "Wyłączenia",
+        "content": "Nigdy nie wyceniaj cateringu, transportu gości ani oprawy muzycznej — to poza zakresem firmy."
+      }
+    ],
+    "systemRules": {
+      "rounding": true,
+      "units": true
+    }
+  },
+  "request": {
+    "customer": {
+      "fullName": "Anna Kowalska",
+      "email": "anna@example.com",
+      "phone": "+48 500 100 200"
+    },
+    "project": {
+      "description": "Wesele 120 osób, Kraków, czerwiec 2027. Potrzebuję pełnej koordynacji dnia ślubu, harmonogramu, spotkań z podwykonawcami i dekoracji sali. Catering i DJ już mamy.",
+      "preferredStartDate": "3_6_months"
+    },
+    "address": {
+      "serviceLocation": "Kraków, woj. małopolskie"
+    }
+  },
+  "voiceIntake": null,
+  "referenceEstimate": {
+    "sections": [
+      {
+        "title": "Zakres",
+        "sortOrder": 0,
+        "items": [
+          {
+            "name": "Konsultacja wstępna i planowanie",
+            "unit": "h",
+            "quantity": 4,
+            "unitPrice": 200,
+            "vatRate": 0.23,
+            "sortOrder": 0
+          },
+          {
+            "name": "Przygotowanie harmonogramu wesela",
+            "unit": "pakiet",
+            "quantity": 1,
+            "unitPrice": 800,
+            "vatRate": 0.23,
+            "sortOrder": 1
+          }
+        ]
+      },
+      {
+        "title": "Usługi",
+        "sortOrder": 1,
+        "items": [
+          {
+            "name": "Koordynacja dnia ślubu",
+            "unit": "h",
+            "quantity": 12,
+            "unitPrice": 250,
+            "vatRate": 0.23,
+            "sortOrder": 0
+          },
+          {
+            "name": "Spotkania z dostawcami",
+            "unit": "h",
+            "quantity": 6,
+            "unitPrice": 200,
+            "vatRate": 0.23,
+            "sortOrder": 1
+          }
+        ]
+      }
+    ],
+    "suggestedMarginPercent": null
+  },
+  "expectations": {
+    "mustHave": [
+      {
+        "term": "koordynacja",
+        "scope": "any_item"
+      },
+      {
+        "term": "harmonogram",
+        "scope": "any_item"
+      },
+      {
+        "term": "spotkanie",
+        "scope": "any_item"
+      },
+      {
+        "term": "dekoracje",
+        "scope": "any_item"
+      }
+    ],
+    "mustNotHave": [
+      {
+        "term": "catering",
+        "scope": "any_item"
+      },
+      {
+        "term": "transport",
+        "scope": "any_item"
+      }
+    ],
+    "coverageTerms": [
+      "koordynacja",
+      "dekoracje",
+      "harmonogram",
+      "podwykonawc"
+    ],
+    "requiredSections": [
+      "Zakres",
+      "Usługi"
+    ],
+    "forbiddenSections": [
+      "Łazienka",
+      "Prace rozbiórkowe"
+    ],
+    "leakageDomain": "construction",
+    "maxLeakageTerms": 0,
+    "minLineItems": 4,
+    "maxLineItems": 35,
+    "judge": {
+      "focus": [
+        "Zgodność z opisem firmy i briefem klienta",
+        "Brak usług spoza zakresu firmy"
+      ],
+      "minScore": 7,
+      "minContextAlignment": 7,
+      "minReferenceSimilarity": 7
+    }
+  }
+}

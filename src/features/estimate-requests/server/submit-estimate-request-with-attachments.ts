@@ -34,6 +34,7 @@ import {
 import { decrementWorkspaceStorageUsed } from "@/features/attachments/server/usage-service";
 import { buildEstimateTitleFromPublicRequest } from "@/features/estimates/lib/build-estimate-title-from-public-request";
 import { coerceIndustryFieldValues } from "@/features/estimate-requests/lib/coerce-industry-field-values";
+import { normalizeEstimateRequestAddress } from "@/features/estimate-requests/lib/normalize-request-address";
 import type { InternalEstimateCreateInput } from "@/features/estimate-requests/schemas/request";
 import {
   ESTIMATE_ACTIVITY_ACTIONS,
@@ -220,6 +221,11 @@ export async function submitEstimateRequestWithAttachments(input: {
       ? input.voiceIntakeMetadata.overallConfidence
       : 0;
 
+  const normalizedAddress = normalizeEstimateRequestAddress(
+    workspace.industry,
+    input.body.address,
+  );
+
   const estimateTitle =
     input.explicitTitle?.trim() ||
     (voiceGeneratedTitle && voiceTitleConfidence >= 0.75
@@ -228,7 +234,7 @@ export async function submitEstimateRequestWithAttachments(input: {
     buildEstimateTitleFromPublicRequest({
       industry: workspace.industry,
       fullName: input.body.customer.fullName,
-      address: input.body.address,
+      address: normalizedAddress,
       industryFieldValues: dynamicValues,
       locale: input.locale,
     });
@@ -351,7 +357,7 @@ export async function submitEstimateRequestWithAttachments(input: {
           requestNumber: generatedRequestNumber,
           estimateId: runFullPipeline ? estimateId : null,
           customerData: requestCustomerData,
-          address: input.body.address,
+          address: normalizedAddress,
           projectDescription: input.body.project.description,
           attachments: attachmentRecords as unknown as Prisma.InputJsonValue,
           aiMetadata: baseAiMetadata as Prisma.InputJsonValue,

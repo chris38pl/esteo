@@ -74,26 +74,20 @@
       "overduePayments": "Overdue payments"
     },
     "trends": {
-      "estimatesUp": "+3 since yesterday",
-      "sentUp": "+8 this week",
-      "incomeFlat": "No change",
+      "up": "+{delta} vs previous period",
+      "down": "−{delta} vs previous period",
+      "flat": "No change",
+      "upAmount": "+{amount} vs previous period",
+      "downAmount": "−{amount} vs previous period",
+      "velocityUp": "+{delta} in the last 7 days",
+      "velocityDown": "−{delta} in the last 7 days",
+      "velocityFlat": "No change in the last 7 days",
+      "velocityUpAmount": "+{amount} in the last 7 days",
+      "velocityDownAmount": "−{amount} in the last 7 days",
       "overdueWarning": "{count, plural, one {# overdue invoice} other {# overdue invoices}}"
     },
     "charts": {
-      "trend": "{percent}% vs previous week",
-      "period": {
-        "7_days": "7 days",
-        "30_days": "30 days"
-      },
-      "days": {
-        "mon": "Mon",
-        "tue": "Tue",
-        "wed": "Wed",
-        "thu": "Thu",
-        "fri": "Fri",
-        "sat": "Sat",
-        "sun": "Sun"
-      },
+      "trend": "{percent}% vs previous period",
       "requests": {
         "title": "Inquiry volume",
         "totalLabel": "total inquiries",

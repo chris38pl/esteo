@@ -27,7 +27,7 @@ import {
   useEstimateRequestSubmit,
   type EstimateRequestSubmitErrorCode,
 } from "@/features/estimate-requests/hooks/use-estimate-request-submit";
-import { internalEstimateCreateSchema } from "@/features/estimate-requests/schemas/request";
+import { createInternalEstimateCreateSchema } from "@/features/estimate-requests/schemas/request";
 import type { PublicEstimateRequestPageData } from "@/features/estimate-requests/server/public-service";
 import { VoiceIntakeController } from "@/features/voice-intake/components/voice-intake-controller";
 import { VoiceIntakeFooterBar } from "@/features/voice-intake/components/voice-intake-footer-bar";
@@ -185,7 +185,7 @@ export function CreateEstimateModal({
       voiceIntake: voiceIntakeMetadataRef.current ?? undefined,
     };
 
-    const parsed = internalEstimateCreateSchema.safeParse(payload);
+    const parsed = createInternalEstimateCreateSchema(formData.workspace.industry).safeParse(payload);
 
     if (!parsed.success) {
       setValidationError(tForm("form.errors.invalid"));
@@ -231,6 +231,7 @@ export function CreateEstimateModal({
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 py-5 [-webkit-overflow-scrolling:touch] sm:px-6">
             <EstimateRequestFormFields
               locale={locale}
+              industry={formData.workspace.industry}
               fields={formData.fields}
               showTitle
               title={title}
@@ -254,6 +255,8 @@ export function CreateEstimateModal({
             <div className="mt-8">
               <VoiceIntakeController
                 locale={locale}
+                industry={formData.workspace.industry}
+                industryOtherText={formData.workspace.industryOtherText}
                 fields={formData.fields}
                 endpoint={`/api/estimate-requests/voice-intake?locale=${locale}`}
                 workspaceId={workspaceId}

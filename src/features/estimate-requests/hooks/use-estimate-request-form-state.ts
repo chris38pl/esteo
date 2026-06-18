@@ -14,7 +14,7 @@ import {
   useEstimateRequestSubmit,
   type EstimateRequestSubmitErrorCode,
 } from "@/features/estimate-requests/hooks/use-estimate-request-submit";
-import { publicEstimateRequestSchema } from "@/features/estimate-requests/schemas/request";
+import { createPublicEstimateRequestSchema } from "@/features/estimate-requests/schemas/request";
 import type { PublicEstimateRequestPageData } from "@/features/estimate-requests/server/public-service";
 import type { VoiceAppliedValues } from "@/features/voice-intake/lib/map-extraction-to-form";
 import { trackVoiceCorrectionsOnSubmit } from "@/features/voice-intake/lib/track-voice-corrections";
@@ -95,7 +95,7 @@ export function useEstimateRequestFormState({
       voiceIntake: voiceIntakeMetadataRef.current ?? undefined,
     };
 
-    const parsed = publicEstimateRequestSchema.safeParse(payload);
+    const parsed = createPublicEstimateRequestSchema(pageData.workspace.industry).safeParse(payload);
     if (!parsed.success) {
       setValidationError(t("form.errors.invalid"));
       return;

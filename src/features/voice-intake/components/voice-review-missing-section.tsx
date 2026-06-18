@@ -3,9 +3,19 @@
 import { AlertTriangle } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { useVoiceIndustryTranslations } from "@/features/voice-intake/hooks/use-voice-industry-translations";
 import type { MissingFieldInfo } from "@/features/voice-intake/types";
+import type { WorkspaceIndustry } from "@prisma/client";
 
-type FriendlyKey = "propertyType" | "city" | "area" | "timeline" | "scope" | "contact";
+type FriendlyKey =
+  | "propertyType"
+  | "city"
+  | "area"
+  | "timeline"
+  | "scope"
+  | "contact"
+  | "description"
+  | "serviceLocation";
 
 const FRIENDLY_KEY_MAP: Record<string, FriendlyKey> = {
   propertyType: "propertyType",
@@ -14,11 +24,19 @@ const FRIENDLY_KEY_MAP: Record<string, FriendlyKey> = {
   preferredStartDate: "timeline",
   scopeOfWork: "scope",
   contact: "contact",
+  description: "description",
+  serviceLocation: "serviceLocation",
 };
 
-export function VoiceReviewMissingSection({ items }: { items: MissingFieldInfo[] }) {
+export function VoiceReviewMissingSection({
+  items,
+  industry,
+}: {
+  items: MissingFieldInfo[];
+  industry: WorkspaceIndustry;
+}) {
   const t = useTranslations("voiceIntake.review");
-  const tMissing = useTranslations("voiceIntake.review.missingFriendly");
+  const tIndustry = useVoiceIndustryTranslations(industry);
 
   const displayItems = items.filter((item) => item.priority === "key" || item.priority === "contact");
 
@@ -35,7 +53,7 @@ export function VoiceReviewMissingSection({ items }: { items: MissingFieldInfo[]
       <ul className="space-y-1.5 pl-6">
         {displayItems.map((item) => {
           const key = FRIENDLY_KEY_MAP[item.fieldKey];
-          const prompt = key ? tMissing(key) : item.label;
+          const prompt = key ? tIndustry(`missingFriendly.${key}`) : item.label;
           return (
             <li key={item.fieldKey} className="text-sm text-foreground/90">
               {prompt}

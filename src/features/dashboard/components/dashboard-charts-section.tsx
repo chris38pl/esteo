@@ -3,32 +3,48 @@
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 
-import { UserAvatar } from "@/components/avatars/user-avatar";
-import { DashboardMetricChartCard } from "@/features/dashboard/components/dashboard-metric-chart-card";
-import type { DashboardInsightsData } from "@/features/dashboard/lib/dashboard-overview-types";
+import {
+  DashboardMetricChartCard,
+  formatDashboardChartBarLabels,
+} from "@/features/dashboard/components/dashboard-metric-chart-card";
+import type { DashboardKpiStats } from "@/features/dashboard/lib/dashboard-kpi-types";
+import type { DashboardTimeHorizon } from "@/features/dashboard/lib/dashboard-time-horizon";
 import type { Locale } from "@/lib/locale";
 
 interface DashboardChartsSectionProps {
-  data: Pick<DashboardInsightsData, "requestsChart" | "incomeChart">;
+  kpiStats: DashboardKpiStats;
+  timeHorizon: DashboardTimeHorizon;
   workspaceSlug: string;
   locale: Locale;
 }
 
 export function DashboardChartsSection({
-  data,
+  kpiStats,
+  timeHorizon,
   workspaceSlug,
   locale,
 }: DashboardChartsSectionProps) {
   const t = useTranslations("dashboard.overview.charts");
-  const tDays = useTranslations("dashboard.overview.charts.days");
+  const horizonStats = kpiStats.byHorizon[timeHorizon];
 
-  const dayLabels = useMemo(
+  const requestsBarLabels = useMemo(
     () =>
-      data.requestsChart.bars.map((bar) => ({
-        label: tDays(bar.label as "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun"),
-        value: bar.value,
-      })),
-    [data.requestsChart.bars, tDays],
+      formatDashboardChartBarLabels(
+        horizonStats.requestsChart.bars,
+        horizonStats.requestsChart.granularity,
+        locale,
+      ),
+    [horizonStats.requestsChart.bars, horizonStats.requestsChart.granularity, locale],
+  );
+
+  const incomeBarLabels = useMemo(
+    () =>
+      formatDashboardChartBarLabels(
+        horizonStats.incomeChart.bars,
+        horizonStats.incomeChart.granularity,
+        locale,
+      ),
+    [horizonStats.incomeChart.bars, horizonStats.incomeChart.granularity, locale],
   );
 
   const requestsHref = `/${locale}/dashboard/${workspaceSlug}/requests`;
@@ -38,11 +54,11 @@ export function DashboardChartsSection({
     <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
       <DashboardMetricChartCard
         title={t("requests.title")}
-        total={data.requestsChart.total}
+        total={horizonStats.requestsChart.total}
         totalLabel={t("requests.totalLabel")}
-        trendPercent={data.requestsChart.trendPercent}
-        bars={data.requestsChart.bars}
-        dayLabels={dayLabels}
+        trendPercent={horizonStats.requestsChart.trendPercent}
+        barLabels={requestsBarLabels}
+        barValues={horizonStats.requestsChart.bars.map((bar) => bar.value)}
         footerHref={requestsHref}
         footerLabel={t("requests.footer")}
         locale={locale}
@@ -52,15 +68,16 @@ export function DashboardChartsSection({
 
       <DashboardMetricChartCard
         title={t("income.title")}
-        total={data.incomeChart.total}
+        total={horizonStats.incomeChart.total}
         totalLabel={t("income.totalLabel")}
-        trendPercent={data.incomeChart.trendPercent}
-        bars={data.incomeChart.bars}
-        dayLabels={dayLabels}
+        trendPercent={horizonStats.incomeChart.trendPercent}
+        barLabels={incomeBarLabels}
+        barValues={horizonStats.incomeChart.bars.map((bar) => bar.value)}
         footerHref={paymentsHref}
         footerLabel={t("income.footer")}
         locale={locale}
         variant="currency"
+        currency={horizonStats.incomeChart.currency}
         barClassName="bg-violet-500"
       />
     </div>

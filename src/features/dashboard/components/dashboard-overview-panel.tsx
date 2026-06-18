@@ -2,6 +2,7 @@
 
 import {
   AlertTriangle,
+  ArrowDownRight,
   ArrowUpRight,
   Banknote,
   FileText,
@@ -17,109 +18,112 @@ import { DashboardStatCard } from "@/features/dashboard/components/dashboard-sta
 import { DashboardTimeHorizonSelect } from "@/features/dashboard/components/dashboard-time-horizon-select";
 import { getDashboardPlaceholderInsights } from "@/features/dashboard/lib/dashboard-placeholder-data";
 import {
+  buildDashboardTrendLabel,
+  dashboardTrendClassName,
+  normalizeSparkline,
+} from "@/features/dashboard/lib/build-dashboard-trend-label";
+import type { DashboardKpiStats } from "@/features/dashboard/lib/dashboard-kpi-types";
+import {
   DEFAULT_DASHBOARD_TIME_HORIZON,
   type DashboardTimeHorizon,
 } from "@/features/dashboard/lib/dashboard-time-horizon";
-import { formatCurrency } from "@/i18n/formatters";
+import { formatCurrency, type Currency } from "@/i18n/formatters";
 import type { Locale } from "@/lib/locale";
+import { cn } from "@/lib/utils";
+
+function toCurrency(code: string): Currency {
+  return code === "EUR" ? "EUR" : "PLN";
+}
 
 interface DashboardOverviewPanelProps {
   greetingName: string;
   workspaceSlug: string;
   locale: Locale;
+  kpiStats: DashboardKpiStats;
 }
 
-type PlaceholderCardData = {
-  estimates: { value: number; trendKey: "estimatesUp"; points: readonly number[] };
-  sent: { value: number; trendKey: "sentUp"; points: readonly number[] };
-  income: { value: number; trendKey: "incomeFlat"; points: readonly number[] };
-  overdue: {
-    value: number;
-    trendKey: "overdueWarning";
-    trendCount: number;
-    points: readonly number[];
-  };
-};
+function TrendFooter({
+  delta,
+  horizon,
+  variant,
+  currency,
+  locale,
+  t,
+}: {
+  delta: number;
+  horizon: DashboardTimeHorizon;
+  variant: "count" | "currency";
+  currency?: string;
+  locale: Locale;
+  t: ReturnType<typeof useTranslations<"dashboard.overview">>;
+}) {
+  const label = buildDashboardTrendLabel({
+    delta,
+    horizon,
+    variant,
+    currency,
+    locale,
+    t: (key, values) => t(`trends.${key}`, values),
+  });
 
-const PLACEHOLDER_BY_HORIZON: Record<DashboardTimeHorizon, PlaceholderCardData> = {
-  all: {
-    estimates: { value: 12, trendKey: "estimatesUp", points: [4, 6, 5, 8, 7, 10, 12] },
-    sent: { value: 86, trendKey: "sentUp", points: [52, 58, 61, 70, 74, 80, 86] },
-    income: { value: 48_320, trendKey: "incomeFlat", points: [42, 44, 43, 45, 46, 47, 48] },
-    overdue: {
-      value: 28_117.8,
-      trendKey: "overdueWarning",
-      trendCount: 3,
-      points: [32, 30, 31, 29, 28, 29, 28],
-    },
-  },
-  this_week: {
-    estimates: { value: 3, trendKey: "estimatesUp", points: [1, 1, 2, 2, 3] },
-    sent: { value: 8, trendKey: "sentUp", points: [3, 4, 5, 6, 8] },
-    income: { value: 6_240, trendKey: "incomeFlat", points: [4, 5, 5, 6, 6] },
-    overdue: {
-      value: 9_420,
-      trendKey: "overdueWarning",
-      trendCount: 1,
-      points: [11, 10, 10, 9, 9],
-    },
-  },
-  this_month: {
-    estimates: { value: 7, trendKey: "estimatesUp", points: [2, 3, 4, 5, 6, 7] },
-    sent: { value: 24, trendKey: "sentUp", points: [10, 12, 15, 18, 21, 24] },
-    income: { value: 18_960, trendKey: "incomeFlat", points: [12, 14, 15, 16, 17, 19] },
-    overdue: {
-      value: 14_280,
-      trendKey: "overdueWarning",
-      trendCount: 2,
-      points: [16, 15, 15, 14, 14, 14],
-    },
-  },
-  this_year: {
-    estimates: { value: 12, trendKey: "estimatesUp", points: [2, 4, 5, 7, 9, 10, 12] },
-    sent: { value: 86, trendKey: "sentUp", points: [18, 28, 42, 55, 68, 78, 86] },
-    income: { value: 48_320, trendKey: "incomeFlat", points: [8, 14, 22, 30, 36, 42, 48] },
-    overdue: {
-      value: 28_117.8,
-      trendKey: "overdueWarning",
-      trendCount: 3,
-      points: [34, 32, 31, 30, 29, 28, 28],
-    },
-  },
-};
+  const Icon =
+    delta > 0 ? ArrowUpRight : delta < 0 ? ArrowDownRight : Minus;
+
+  return (
+    <span className={cn("inline-flex items-center gap-1", dashboardTrendClassName(delta))}>
+      <Icon className="size-3.5" />
+      {label}
+    </span>
+  );
+}
 
 export function DashboardOverviewPanel({
   greetingName,
   workspaceSlug,
   locale,
+  kpiStats,
 }: DashboardOverviewPanelProps) {
   const t = useTranslations("dashboard.overview");
   const [timeHorizon, setTimeHorizon] = useState<DashboardTimeHorizon>(
     DEFAULT_DASHBOARD_TIME_HORIZON,
   );
 
-  const cards = useMemo(() => {
-    const data = PLACEHOLDER_BY_HORIZON[timeHorizon];
+  const horizonStats = kpiStats.byHorizon[timeHorizon];
 
-    return {
+  const cards = useMemo(
+    () => ({
       estimates: {
-        ...data.estimates,
-        value: String(data.estimates.value),
+        value: String(horizonStats.estimates.value),
+        trendDelta: horizonStats.estimates.trendDelta,
+        sparkline: normalizeSparkline(horizonStats.estimates.sparkline),
       },
       sent: {
-        ...data.sent,
-        value: String(data.sent.value),
+        value: String(horizonStats.sent.value),
+        trendDelta: horizonStats.sent.trendDelta,
+        sparkline: normalizeSparkline(horizonStats.sent.sparkline),
       },
       income: {
-        ...data.income,
-        value: formatCurrency(data.income.value, locale, "PLN"),
+        value: formatCurrency(
+          horizonStats.income.value,
+          locale,
+          toCurrency(horizonStats.income.currency),
+        ),
+        trendDelta: horizonStats.income.trendDelta,
+        currency: horizonStats.income.currency,
+        sparkline: normalizeSparkline(horizonStats.income.sparkline),
       },
       overdue: {
-        ...data.overdue,
-        value: formatCurrency(data.overdue.value, locale, "PLN"),
+        value: formatCurrency(
+          kpiStats.overdue.amount,
+          locale,
+          toCurrency(kpiStats.overdue.currency),
+        ),
+        trendCount: kpiStats.overdue.count,
+        sparkline: normalizeSparkline(kpiStats.overdue.sparkline),
       },
-    };
-  }, [locale, timeHorizon]);
+    }),
+    [horizonStats, kpiStats.overdue, locale],
+  );
 
   const paymentsHref = `/${locale}/dashboard/${workspaceSlug}/payments`;
   const insightsData = getDashboardPlaceholderInsights();
@@ -142,14 +146,17 @@ export function DashboardOverviewPanel({
           icon={FileText}
           title={t("cards.estimates")}
           value={cards.estimates.value}
-          sparklinePoints={cards.estimates.points}
+          sparklinePoints={cards.estimates.sparkline}
           iconClassName="bg-blue-500/15 text-blue-600 dark:text-blue-400"
           sparklineClassName="text-blue-500 dark:text-blue-400"
           footer={
-            <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-              <ArrowUpRight className="size-3.5" />
-              {t(`trends.${cards.estimates.trendKey}`)}
-            </span>
+            <TrendFooter
+              delta={cards.estimates.trendDelta}
+              horizon={timeHorizon}
+              variant="count"
+              locale={locale}
+              t={t}
+            />
           }
         />
 
@@ -157,14 +164,17 @@ export function DashboardOverviewPanel({
           icon={Send}
           title={t("cards.sent")}
           value={cards.sent.value}
-          sparklinePoints={cards.sent.points}
+          sparklinePoints={cards.sent.sparkline}
           iconClassName="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
           sparklineClassName="text-emerald-500 dark:text-emerald-400"
           footer={
-            <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-              <ArrowUpRight className="size-3.5" />
-              {t(`trends.${cards.sent.trendKey}`)}
-            </span>
+            <TrendFooter
+              delta={cards.sent.trendDelta}
+              horizon={timeHorizon}
+              variant="count"
+              locale={locale}
+              t={t}
+            />
           }
         />
 
@@ -172,14 +182,18 @@ export function DashboardOverviewPanel({
           icon={Banknote}
           title={t("cards.income")}
           value={cards.income.value}
-          sparklinePoints={cards.income.points}
+          sparklinePoints={cards.income.sparkline}
           iconClassName="bg-violet-500/15 text-violet-600 dark:text-violet-400"
           sparklineClassName="text-violet-500 dark:text-violet-400"
           footer={
-            <span className="inline-flex items-center gap-1 text-muted-foreground">
-              <Minus className="size-3.5" />
-              {t(`trends.${cards.income.trendKey}`)}
-            </span>
+            <TrendFooter
+              delta={cards.income.trendDelta}
+              horizon={timeHorizon}
+              variant="currency"
+              currency={horizonStats.income.currency}
+              locale={locale}
+              t={t}
+            />
           }
         />
 
@@ -187,7 +201,7 @@ export function DashboardOverviewPanel({
           icon={Wallet}
           title={t("cards.overduePayments")}
           value={cards.overdue.value}
-          sparklinePoints={cards.overdue.points}
+          sparklinePoints={cards.overdue.sparkline}
           iconClassName="bg-amber-500/15 text-amber-600 dark:text-amber-400"
           sparklineClassName="text-amber-500 dark:text-amber-400"
           href={paymentsHref}
@@ -202,6 +216,8 @@ export function DashboardOverviewPanel({
 
       <DashboardInsightsSection
         data={insightsData}
+        kpiStats={kpiStats}
+        timeHorizon={timeHorizon}
         workspaceSlug={workspaceSlug}
         locale={locale}
       />

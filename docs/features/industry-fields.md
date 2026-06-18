@@ -12,6 +12,10 @@ Industry-specific attributes for business documents (estimate requests, estimate
 
 Workspace `industry` (enum, immutable) determines which definition set applies.
 
+**Product segments:** use `isServiceWorkspace(industry)` in `src/features/workspaces/lib/industries.ts` — today `WorkspaceIndustry.OTHER` maps to the **Services** segment (wedding planning, photography, marketing, etc.). A future enum rename to `SERVICES` is a one-line change in that helper. Do not branch on `industry === OTHER` in feature code.
+
+Services workspaces use a free-text **Business Type** (`industryOtherText`, min 3 chars) instead of catalog fields like `property_type` / `area_size` on the public form.
+
 ## Typed value columns
 
 Each `DocumentFieldValue` row stores **one** typed column based on the definition's `valueType`:
@@ -29,7 +33,7 @@ This enables SQL filters such as `area_size > 120` without string casts.
 
 Route: `/dashboard/admin/industry-fields` (platform admin only).
 
-- Filter by industry (Construction, Electrical, Carpentry, Plumbing) and document type tab (`ESTIMATE_REQUEST` active; `ESTIMATE` tab reserved).
+- Filter by industry (Construction, Electrical, Carpentry, Plumbing) and document type tab (`ESTIMATE_REQUEST` active; `ESTIMATE` tab reserved). Services (`OTHER`) uses Business Type + company context instead of the construction field catalog on the public form.
 - Create/edit definitions and PL/EN translations.
 - Catalog only in MVP — user-submitted values are not browsed here.
 
@@ -66,12 +70,16 @@ Run `npm run prisma:seed` after reset for full dev workspace.
 
 `getWorkspacePromptContext()` assembles workspace-specific AI instructions:
 
-1. `WorkspaceSettings.companyDescription` — `## Company context` block (stored max 600 chars, prompt cap 500)
-2. `WorkspaceSettings.aiInstructions` — `## Workspace rules` block (max 200 chars)
-3. Estimate section templates — `## Estimate structure` + `## Section-specific rules` (defaults in `src/features/workspaces/config/industry-estimate-sections.ts`, overrides in `WorkspaceSettings.branding.estimateSections`)
-4. Active `WorkspaceRule` rows (ESTIMATE type) — appended in sort order
+1. `WorkspaceSettings.companyDescription` — `## Company Context` block (stored max 1500 chars, prompt cap 1200)
+2. `WorkspaceSettings.aiInstructions` + active `WorkspaceRule` rows (ESTIMATE type) — `## Workspace Rules`
+3. Estimate section templates — `## Estimate Structure` + section rules (defaults in `src/features/workspaces/config/industry-estimate-sections.ts`; Services uses Zakres / Usługi / Opcje dodatkowe / Uwagi)
+4. Services only: `industryOtherText` (Business Type) — `## Business Type` block in estimate prompts (no dynamic `## Role`)
 
-Module: `src/features/workspaces/lib/prompt-context.ts`
+Segment logic: `isServiceWorkspace()` in `src/features/workspaces/lib/industries.ts`. Future enum rename `OTHER` → `SERVICES` is a one-line change.
+
+Module: `src/features/workspaces/lib/prompt-context.ts`, `src/features/estimate-requests/config/industry-experience-config.ts`
+
+**Future:** `industryOtherText` + `slugifyBusinessType()` + sections + rules form the foundation for a marketplace of industry templates (apply template = copy config into workspace; no enum migration required).
 
 ## Related docs
 

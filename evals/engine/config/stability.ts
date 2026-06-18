@@ -1,0 +1,2 @@
+export const STABILITY_RUNS = 5;
+export const STABILITY_VARIANCE_THRESHOLD = 1.5;

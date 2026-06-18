@@ -1,0 +1,124 @@
+{
+  "id": "cleaning-company",
+  "name": "Cleaning Company",
+  "locale": "pl",
+  "category": "business",
+  "quick": false,
+  "critical": false,
+  "workspace": {
+    "industry": "OTHER",
+    "industryOtherText": "Firma sprzątająca",
+    "companyDescription": "Sprzątanie biur i lokali komercyjnych. Chemia po stronie wykonawcy.",
+    "aiInstructions": "",
+    "estimateSections": [
+      {
+        "key": "scope",
+        "titlePl": "Zakres",
+        "titleEn": "Scope",
+        "rulePl": "Krótko opisz zakres i wyłączenia wynikające z zapytania lub opisu usługi.",
+        "ruleEn": "Briefly state scope and exclusions based on the request or service description.",
+        "active": true
+      },
+      {
+        "key": "services",
+        "titlePl": "Usługi",
+        "titleEn": "Services",
+        "rulePl": "Główne usługi z jednostkami (h, szt., pakiet) i realistycznym nakładem.",
+        "ruleEn": "Core services with units (h, pcs, package) and realistic allowances.",
+        "active": true
+      },
+      {
+        "key": "add_ons",
+        "titlePl": "Opcje dodatkowe",
+        "titleEn": "Add-ons",
+        "rulePl": "Opcjonalne rozszerzenia poza zakresem podstawowym.",
+        "ruleEn": "Optional extensions beyond the base scope.",
+        "active": true
+      },
+      {
+        "key": "notes",
+        "titlePl": "Uwagi",
+        "titleEn": "Notes",
+        "rulePl": "Warunki, wyłączenia i koszty poza głównym zakresem.",
+        "ruleEn": "Terms, exclusions, and additional costs.",
+        "active": true
+      }
+    ],
+    "rules": [],
+    "systemRules": {
+      "rounding": true,
+      "units": true
+    }
+  },
+  "request": {
+    "customer": {
+      "fullName": "Anna Kowalska",
+      "email": "anna@example.com",
+      "phone": "+48 500 100 200"
+    },
+    "project": {
+      "description": "Sprzątanie biura 350 m², 3 razy w tygodniu, mycie okien raz w miesiącu, Kraków.",
+      "preferredStartDate": "3_6_months"
+    },
+    "address": {
+      "serviceLocation": "Kraków, woj. małopolskie"
+    }
+  },
+  "voiceIntake": {
+    "transcript": "Potrzebuję wyceny sprzątania biura około 350 metrów w Krakowie, trzy razy w tygodniu, plus mycie okien raz w miesiącu.",
+    "locale": "pl"
+  },
+  "expectations": {
+    "mustHave": [
+      {
+        "term": "sprzątan",
+        "scope": "any_item"
+      },
+      {
+        "term": "m²",
+        "scope": "any_item"
+      },
+      {
+        "term": "okien",
+        "scope": "any_item"
+      }
+    ],
+    "mustNotHave": [
+      {
+        "term": "remont",
+        "scope": "any_item"
+      },
+      {
+        "term": "malowanie",
+        "scope": "any_item"
+      }
+    ],
+    "coverageTerms": [
+      "sprzątanie",
+      "biuro",
+      "okna",
+      "mycie"
+    ],
+    "requiredSections": [
+      "Zakres",
+      "Usługi"
+    ],
+    "forbiddenSections": [
+      "Łazienka",
+      "Prace rozbiórkowe"
+    ],
+    "leakageDomain": "construction",
+    "maxLeakageTerms": 0,
+    "minLineItems": 4,
+    "maxLineItems": 35,
+    "judge": {
+      "focus": [
+        "Zgodność z opisem firmy i briefem klienta",
+        "Brak usług spoza zakresu firmy"
+      ],
+      "minScore": 7,
+      "minContextAlignment": 7,
+      "minReferenceSimilarity": 7
+    }
+  }
+}

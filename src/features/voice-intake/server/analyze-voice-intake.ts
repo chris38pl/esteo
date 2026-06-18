@@ -11,6 +11,7 @@ import { cleanVoiceTranscript } from "@/ai/lib/clean-voice-transcript";
 import { computeOverallConfidence } from "@/features/voice-intake/lib/build-confidence-summary";
 import { buildTitleFromExtraction } from "@/features/voice-intake/lib/build-title-from-extraction";
 import { validateVoiceAudio } from "@/features/voice-intake/server/validate-audio";
+import type { WorkspaceIndustry } from "@prisma/client";
 import type { Locale } from "@/lib/locale";
 
 export type FollowUpContext = {
@@ -28,6 +29,8 @@ export async function analyzeVoiceIntake(input: {
   locale: Locale;
   outputTextLocale?: Locale;
   fieldDefinitions: VoiceIntakeFieldDefinitionSummary[];
+  industry: WorkspaceIndustry;
+  industryOtherText?: string | null;
   followUpContext?: FollowUpContext;
 }) {
   const transcriptLocale = input.locale;
@@ -86,6 +89,8 @@ export async function analyzeVoiceIntake(input: {
       transcriptLocale,
       outputTextLocale,
       fieldDefinitions: input.fieldDefinitions,
+      industry: input.industry,
+      industryOtherText: input.industryOtherText,
       useFallbackModel: useFallback,
     });
   }
@@ -112,7 +117,11 @@ export async function analyzeVoiceIntake(input: {
   }
 
   const cleanedTranscript = cleanVoiceTranscript(combinedTranscript);
-  const displayTitle = buildTitleFromExtraction(extraction, outputTextLocale);
+  const displayTitle = buildTitleFromExtraction(
+    extraction,
+    outputTextLocale,
+    input.industry,
+  );
   const overallConfidence = computeOverallConfidence(extraction);
 
   return {

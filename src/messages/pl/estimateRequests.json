@@ -52,6 +52,19 @@
       "voivodeship": "Województwo",
       "description": "Opisz krótko swój projekt, planowane prace, oczekiwania, metraż, materiały, termin realizacji itp."
     },
+    "byIndustry": {
+      "services": {
+        "fields": {
+          "description": "Opis usługi",
+          "preferredDate": "Preferowany termin realizacji",
+          "serviceLocation": "Miejsce realizacji usługi"
+        },
+        "placeholders": {
+          "description": "Opisz usługę, zakres, oczekiwania, termin i inne istotne szczegóły.",
+          "serviceLocation": "np. Sala Magnolia, Poznań lub Online"
+        }
+      }
+    },
     "submit": "Wyślij",
     "checkAi": "Sprawdź z AI",
     "uploading": "Przesyłanie… {percent}%",

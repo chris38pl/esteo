@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 
 import { UserAvatar } from "@/components/avatars/user-avatar";
 import { DashboardPanelCard } from "@/features/dashboard/components/dashboard-panel-card";
-import { formatRelativeAgo } from "@/features/dashboard/lib/format-relative-ago";
+import { DashboardRelativeTime } from "@/features/dashboard/components/dashboard-relative-time";
 import type { DashboardActivityFeedItem } from "@/features/dashboard/lib/dashboard-overview-types";
 import type { Locale } from "@/lib/locale";
 
@@ -95,12 +95,7 @@ export function DashboardRecentActivityCard({
             <div className="min-w-0 flex-1">
               <ActivityDescription item={item} />
             </div>
-            <time
-              dateTime={item.occurredAt}
-              className="shrink-0 text-xs text-muted-foreground"
-            >
-              {formatRelativeAgo(locale, item.occurredAt)}
-            </time>
+            <DashboardRelativeTime value={item.occurredAt} locale={locale} />
           </li>
         ))}
       </ul>

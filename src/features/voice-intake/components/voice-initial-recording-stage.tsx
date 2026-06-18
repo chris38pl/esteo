@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { VoiceRecordingStopButton } from "@/features/voice-intake/components/voice-recording-stop-button";
 import { VoiceRecordingVisualizer } from "@/features/voice-intake/components/voice-recording-visualizer";
 import { useMediaRecorder } from "@/features/voice-intake/hooks/use-media-recorder";
+import { useVoiceIndustryTranslations } from "@/features/voice-intake/hooks/use-voice-industry-translations";
 import {
   VOICE_INTAKE_MAX_INITIAL_MS,
   VOICE_INTAKE_MIN_RECORDING_MS,
@@ -17,17 +18,21 @@ import {
 } from "@/features/voice-intake/lib/voice-recording-preview";
 import type { VoiceIntakeErrorCode } from "@/features/voice-intake/types";
 import { voiceRecordingStageShellClassName } from "@/features/voice-intake/lib/voice-recording-stage-shell";
+import type { WorkspaceIndustry } from "@prisma/client";
 
 export function VoiceInitialRecordingStage({
   onComplete,
   onError,
   preview,
+  industry,
 }: {
   onComplete: (blob: Blob, durationMs: number) => void;
   onError: (code: VoiceIntakeErrorCode) => void;
   preview?: VoiceRecordingPreviewState;
+  industry: WorkspaceIndustry;
 }) {
   const t = useTranslations("voiceIntake.recording");
+  const tIndustry = useVoiceIndustryTranslations(industry);
   const isPreview = preview !== undefined;
 
   const recorder = useMediaRecorder({
@@ -105,7 +110,7 @@ export function VoiceInitialRecordingStage({
       </div>
 
       <p className="mt-6 text-center text-xs leading-relaxed text-foreground sm:text-sm">
-        {t("speakFreely")}
+        {tIndustry("speakFreely")}
       </p>
 
       <div className="mt-5 flex items-center justify-center gap-2 text-xs text-muted-foreground sm:text-sm">

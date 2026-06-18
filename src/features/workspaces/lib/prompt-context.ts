@@ -11,6 +11,17 @@ export function capCompanyDescriptionForPrompt(
   return trimmed.slice(0, maxLength);
 }
 
+export function formatBusinessTypeBlock(
+  industryOtherText: string | null | undefined,
+): string {
+  const trimmed = industryOtherText?.trim();
+  if (!trimmed) {
+    return "";
+  }
+
+  return `## Business Type\n${trimmed}`;
+}
+
 export function formatCompanyContextBlock(
   description: string | null | undefined,
 ): string {

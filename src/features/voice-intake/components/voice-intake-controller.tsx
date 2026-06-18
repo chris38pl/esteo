@@ -54,6 +54,8 @@ import type { IndustryFieldForDocument } from "@/features/industry-fields/server
 
 import type { Locale } from "@/lib/locale";
 
+import type { WorkspaceIndustry } from "@prisma/client";
+
 
 
 export type VoiceFormSetters = {
@@ -88,6 +90,10 @@ export function VoiceIntakeController({
 
   locale,
 
+  industry,
+
+  industryOtherText,
+
   fields,
 
   endpoint,
@@ -111,6 +117,10 @@ export function VoiceIntakeController({
 }: {
 
   locale: Locale;
+
+  industry: WorkspaceIndustry;
+
+  industryOtherText?: string | null;
 
   fields: IndustryFieldForDocument[];
 
@@ -147,6 +157,10 @@ export function VoiceIntakeController({
     workspaceSlug,
 
     workspaceId,
+
+    workspaceIndustry: industry,
+
+    industryOtherText,
 
   });
 
@@ -187,6 +201,8 @@ export function VoiceIntakeController({
       displayTitle: voice.displayTitle,
 
       locale,
+
+      industry,
 
       currentTitle: setters.getTitle?.() ?? "",
 
@@ -270,7 +286,7 @@ export function VoiceIntakeController({
 
       {children}
 
-      <VoiceExperiencePortal voice={voice} locale={locale} onApply={() => void handleApply()} />
+      <VoiceExperiencePortal voice={voice} locale={locale} industry={industry} onApply={() => void handleApply()} />
 
     </>
 

@@ -1,0 +1,54 @@
+{
+  "id": "edge-contradicting-rules",
+  "name": "Contradicting Rules",
+  "locale": "pl",
+  "category": "edge",
+  "quick": true,
+  "workspace": {
+    "industry": "OTHER",
+    "industryOtherText": "Organizacja wesel",
+    "companyDescription": "Koordynacja wesel. Nie oferujemy cateringu.",
+    "aiInstructions": "Uwzględnij catering w wycenie jeśli klient o to prosi.",
+    "rules": [
+      {
+        "title": "Wyłączenia",
+        "content": "Nigdy nie uwzględniaj cateringu w wycenie."
+      }
+    ]
+  },
+  "request": {
+    "project": {
+      "description": "Wesele 100 osób, potrzebuję koordynacji i cateringu dla gości."
+    }
+  },
+  "expectations": {
+    "mustHave": [
+      {
+        "term": "koordynac",
+        "scope": "any_item"
+      }
+    ],
+    "mustNotHave": [
+      {
+        "term": "catering",
+        "scope": "any_item"
+      }
+    ],
+    "coverageTerms": [
+      "koordynacja"
+    ],
+    "requiredSections": [
+      "Usługi"
+    ],
+    "forbiddenSections": [],
+    "leakageDomain": "construction",
+    "maxLeakageTerms": 0,
+    "minLineItems": 3,
+    "maxLineItems": 25,
+    "judge": {
+      "minScore": 6,
+      "minContextAlignment": 6,
+      "minReferenceSimilarity": 5
+    }
+  }
+}

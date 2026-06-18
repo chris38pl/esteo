@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { WorkspaceIndustry } from "@prisma/client";
 
 import { cleanVoiceTranscript } from "../src/ai/lib/clean-voice-transcript";
 import type { VoiceIntakeExtraction } from "../src/ai/schemas/voice-intake-extraction";
@@ -91,7 +92,7 @@ function testRecognizedElementsCap() {
 }
 
 function testDetectMissingFields() {
-  const missing = detectMissingFields(baseExtraction(), "pl");
+  const missing = detectMissingFields(baseExtraction(), "pl", WorkspaceIndustry.CONSTRUCTION);
   assert.ok(missing.some((item) => item.fieldKey === "preferredStartDate"));
   assert.ok(missing.some((item) => item.fieldKey === "contact"));
 }
@@ -104,6 +105,7 @@ function testMapExtractionToForm() {
     extraction,
     descriptionText: cleanedTranscript,
     locale: "pl",
+    industry: WorkspaceIndustry.CONSTRUCTION,
     currentTitle: "",
     existingIndustryFields: { property_type: "", area_size: "" },
   });

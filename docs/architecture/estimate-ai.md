@@ -263,6 +263,23 @@ Cross-link: [`backend.md`](backend.md), [`docs/features/estimate-requests.md`](.
 
 ---
 
+## Quality evaluation (eval harness)
+
+Prompt and context changes for **draft generation** should be validated with the Services eval suite before release.
+
+| Concern | Mechanism |
+| --- | --- |
+| Prompt regressions | `npm run eval:services:compare` vs `evals/baselines/` |
+| Version tracking | `ESTIMATE_PROMPT_VERSION` in [`estimate-draft.ts`](../../src/ai/prompts/estimate-draft.ts) |
+| Services business type | `industryOtherText` → `## Business Type` block in prompt |
+| PR gate | `npm run eval:services:quick` (Fast, no judge) |
+
+Full docs: [`docs/features/ai-eval-harness.md`](../features/ai-eval-harness.md), [`docs/architecture/ai-eval-harness.md`](ai-eval-harness.md).
+
+The harness calls the same `buildEstimateDraftPrompt` and structured output path as production; fixtures live under `evals/services/` with no database.
+
+---
+
 ## Troubleshooting
 
 If draft generation leaves an empty editor (no sections, or skeleton finishes but table stays blank until refresh), see the postmortem: [`docs/incidents/2026-06-05-ai-estimate-draft-blank-editor.md`](../incidents/2026-06-05-ai-estimate-draft-blank-editor.md). Check `EstimateRequest.status` / `aiMetadata.error` in DB, industry profile completeness on the admin Industry fields page, and Trigger.dev worker in local dev.

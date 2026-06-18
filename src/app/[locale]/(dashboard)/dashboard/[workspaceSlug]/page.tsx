@@ -2,6 +2,7 @@ import { setRequestLocale } from "next-intl/server";
 
 import { DashboardOverviewPanel } from "@/features/dashboard/components/dashboard-overview-panel";
 import { resolveDashboardGreetingName } from "@/features/dashboard/lib/resolve-dashboard-greeting-name";
+import { getDashboardKpiStats } from "@/features/dashboard/server/get-dashboard-kpi-stats";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 import { requireAuth } from "@/server/auth/require-auth";
@@ -26,12 +27,14 @@ export default async function WorkspaceDashboardPage({
   }
 
   const greetingName = resolveDashboardGreetingName(user.name, user.email);
+  const kpiStats = await getDashboardKpiStats(resolved.workspace.id);
 
   return (
     <DashboardOverviewPanel
       greetingName={greetingName}
       workspaceSlug={workspaceSlug}
       locale={resolvedLocale}
+      kpiStats={kpiStats}
     />
   );
 }

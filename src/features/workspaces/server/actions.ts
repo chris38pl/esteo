@@ -14,6 +14,7 @@ import {
 import { findWorkspaceSettings } from "@/features/workspaces/server/repository";
 import { removeWorkspaceLogo } from "@/features/workspaces/server/logo-service";
 import { updateWorkspaceCompanyProfileSchema } from "@/features/workspaces/schemas/company-profile";
+import { updateWorkspaceBusinessTypeSchema } from "@/features/workspaces/schemas/business-type";
 import { updateWorkspaceProfileSchema } from "@/features/workspaces/schemas/update-workspace-profile";
 import {
   acceptWorkspaceInvitation,
@@ -37,6 +38,7 @@ import {
   updateWorkspaceCompanyProfile,
   updateWorkspaceDetails,
   updateWorkspaceProfile,
+  updateWorkspaceBusinessType,
   updateWorkspaceRule,
   updateWorkspaceSettings,
 } from "@/features/workspaces/server/service";
@@ -310,6 +312,22 @@ export async function updateWorkspaceProfileAction(
     const user = await requireAuth(locale);
     const parsed = updateWorkspaceProfileSchema.parse(input);
     const workspace = await updateWorkspaceProfile(user, workspaceId, parsed);
+    revalidatePath(`/${locale}/dashboard`, "layout");
+    return { success: true as const, data: workspace };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function updateWorkspaceBusinessTypeAction(
+  workspaceId: string,
+  input: { industryOtherText: string },
+  locale: Locale = "pl",
+) {
+  try {
+    const user = await requireAuth(locale);
+    const parsed = updateWorkspaceBusinessTypeSchema.parse(input);
+    const workspace = await updateWorkspaceBusinessType(user, workspaceId, parsed);
     revalidatePath(`/${locale}/dashboard`, "layout");
     return { success: true as const, data: workspace };
   } catch (error) {

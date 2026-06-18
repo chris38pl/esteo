@@ -54,6 +54,12 @@
     "dev:audit-duplicate-subscriptions": "tsx scripts/dev-billing/audit-duplicate-subscriptions.ts",
     "dev:cleanup-duplicate-subscriptions": "tsx scripts/dev-billing/cleanup-duplicate-subscriptions.ts",
     "dev:sync-workspace-billing": "tsx scripts/dev-billing/sync-workspace-billing.ts",
+    "eval:services": "tsx evals/runners/services-eval.ts --full",
+    "eval:services:quick": "tsx evals/runners/services-eval.ts --mode=quick",
+    "eval:services:baseline": "tsx evals/runners/services-eval.ts --full --baseline",
+    "eval:services:compare": "tsx evals/runners/services-eval.ts --full --compare",
+    "eval:services:seed": "tsx evals/scripts/seed-services-scenarios.ts",
+    "eval:services:smoke": "tsx evals/scripts/scorer-smoke-test.ts",
     "validate:ai-schemas": "tsx scripts/validate-ai-schemas.mjs",
     "prisma:reset": "prisma migrate reset --skip-seed",
     "postinstall": "prisma generate"

@@ -52,6 +52,19 @@
       "voivodeship": "Voivodeship",
       "description": "Briefly describe your project, planned work, expectations, area, materials, timeline, etc."
     },
+    "byIndustry": {
+      "services": {
+        "fields": {
+          "description": "Service description",
+          "preferredDate": "Preferred completion date",
+          "serviceLocation": "Service location"
+        },
+        "placeholders": {
+          "description": "Describe the service, scope, expectations, timeline, and other relevant details.",
+          "serviceLocation": "e.g. Magnolia Hall, Poznań or Online"
+        }
+      }
+    },
     "submit": "Send",
     "checkAi": "Check with AI",
     "uploading": "Uploading… {percent}%",

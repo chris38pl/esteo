@@ -1,0 +1,296 @@
+import type { BaselineSnapshot } from "@evals/engine/baseline/baseline";
+import {
+  CRITICAL_REGRESSION_THRESHOLD,
+  DEFAULT_REGRESSION_THRESHOLD,
+  GOLDEN_REGRESSION_THRESHOLD,
+  COST_REGRESSION_RATIO,
+  LINE_ITEM_CRITICAL_RATIO,
+  LINE_ITEM_REGRESSION_RATIO,
+  PROMPT_BLOAT_WORD_RATIO,
+} from "@evals/engine/config/regression-thresholds";
+import type { RunSummary, ScenarioResult } from "@evals/engine/types";
+
+function avg(nums: number[]): number {
+  if (nums.length === 0) return 0;
+  return Math.round((nums.reduce((a, b) => a + b, 0) / nums.length) * 10) / 10;
+}
+
+export function printEvalReport(summary: RunSummary): void {
+  const modeLabel = summary.evalMode === "fast" ? "FAST" : "FULL";
+  console.log(`\nServices Evaluation Report [${modeLabel}]`);
+  console.log(`Prompt: v${summary.promptVersion} | Run: ${summary.runId}`);
+  if (summary.gitSha) {
+    console.log(`Git: ${summary.gitSha}`);
+  }
+  console.log(`Duration: ${Math.round(summary.durationMs / 1000)}s`);
+  console.log("");
+
+  const business = Object.values(summary.scenarios).filter((s) => s.category === "business");
+  const edge = Object.values(summary.scenarios).filter((s) => s.category !== "business");
+
+  if (business.length > 0) {
+    console.log("── Business ──");
+    for (const s of business) {
+      printScenarioLine(s, summary.evalMode);
+    }
+    console.log("");
+  }
+
+  if (edge.length > 0) {
+    console.log("── Edge / Stress / Generic ──");
+    for (const s of edge) {
+      printScenarioLine(s, summary.evalMode);
+    }
+    console.log("");
+  }
+
+  console.log("────────────────────────────────────");
+  if (summary.evalMode === "full") {
+    console.log(
+      `Business Average:   Overall ${summary.businessAverageScore}  |  Context ${summary.businessAverageContextAlignment ?? "—"}  |  Coverage ${summary.businessAverageCoverage}%`,
+    );
+    console.log(
+      `Edge Average:       Overall ${summary.edgeAverageScore}  |  Context ${summary.edgeAverageContextAlignment ?? "—"}  |  Coverage ${summary.edgeAverageCoverage}%`,
+    );
+    if (summary.goldenAverageScore !== null) {
+      console.log(
+        `Golden Average:     Overall ${summary.goldenAverageScore}  |  Context ${summary.goldenAverageContextAlignment ?? "—"}`,
+      );
+    }
+  } else {
+    console.log(`Business Average (fast): ${summary.businessAverageScore}`);
+    console.log(`Edge Average (fast): ${summary.edgeAverageScore}`);
+  }
+
+  console.log(
+    `Length: avg ${summary.lengthBenchmark.avgLineItems} items | ${summary.lengthBenchmark.avgOutputTokens} output tokens`,
+  );
+  console.log(
+    `Prompt complexity: avg ${summary.promptComplexity.avgWords} words | ${summary.promptComplexity.avgSections} sections`,
+  );
+  console.log(
+    `Cost: $${summary.cost.estimatedCostUsd.toFixed(2)} (${summary.cost.promptTokens} prompt + ${summary.cost.completionTokens} completion tokens)`,
+  );
+  console.log(`Passed: ${summary.passed}/${summary.passed + summary.failed}`);
+}
+
+function printScenarioLine(s: ScenarioResult, mode: RunSummary["evalMode"]): void {
+  const star = s.critical ? " ★" : "";
+  const status = s.passed ? "[PASS]" : "[FAIL]";
+  const coverage =
+    s.coverageTotal > 0 ? `coverage: ${s.coverageMatched}/${s.coverageTotal}` : "";
+  const leakage = `leakage: ${s.leakageScore}/10`;
+
+  if (mode === "fast") {
+    console.log(
+      `${s.name}${star}`.padEnd(28) +
+        `Fast: ${s.fastScore.toFixed(1)}  ${coverage}  ${leakage}  items: ${s.length.lineItemCount}  ${status}`,
+    );
+  } else {
+    const ctx = s.contextAlignmentScore?.toFixed(1) ?? "—";
+    const ref = s.referenceSimilarityScore?.toFixed(1) ?? "—";
+    console.log(
+      `${s.name}${star}`.padEnd(28) +
+        `Overall: ${s.overallScore.toFixed(1)}  Context: ${ctx}  RefSim: ${ref}  ${coverage}  ${status}`,
+    );
+  }
+}
+
+export function printCompareReport(
+  current: RunSummary,
+  baseline: BaselineSnapshot,
+  promptDiffText?: string,
+): { exitCode: number } {
+  console.log("\nServices Regression Report [FULL]");
+  console.log(`Baseline:  Prompt v${baseline.promptVersion}  (${baseline.createdAt})`);
+  console.log(`Current:   Prompt v${current.promptVersion}  (${current.startedAt})`);
+
+  if (promptDiffText) {
+    console.log("\n── Prompt Changes ──");
+    console.log(promptDiffText);
+  }
+
+  if (baseline.promptVersion !== current.promptVersion) {
+    console.log("\nPrompt version changed — review quality deltas below.");
+  }
+
+  const bWords = baseline.summary.promptComplexity.avgWords;
+  const cWords = current.promptComplexity.avgWords;
+  if (bWords > 0) {
+    const wordDelta = ((cWords - bWords) / bWords) * 100;
+    console.log("\n── Prompt Complexity ──");
+    console.log(
+      `v${baseline.promptVersion}  Words: ${bWords.toLocaleString()}  |  Sections: ${baseline.summary.promptComplexity.avgSections}`,
+    );
+    console.log(
+      `v${current.promptVersion}  Words: ${cWords.toLocaleString()}  |  Sections: ${current.promptComplexity.avgSections}`,
+    );
+    if (wordDelta > (PROMPT_BLOAT_WORD_RATIO - 1) * 100) {
+      console.log(`        ⚠ Words +${wordDelta.toFixed(0)}%`);
+    }
+  }
+
+  console.log("\n── Score Deltas ──");
+  let hasCritical = false;
+  let hasGoldenCritical = false;
+
+  for (const [id, cur] of Object.entries(current.scenarios)) {
+    const base = baseline.summary.scenarios[id];
+    if (!base) {
+      console.log(`${cur.name}`.padEnd(28) + "NEW");
+      continue;
+    }
+
+    const delta = cur.overallScore - base.overallScore;
+    const threshold = cur.critical ? GOLDEN_REGRESSION_THRESHOLD : DEFAULT_REGRESSION_THRESHOLD;
+    let label = "OK";
+    if (delta <= CRITICAL_REGRESSION_THRESHOLD) {
+      label = "CRITICAL";
+      hasCritical = true;
+    } else if (delta <= threshold) {
+      label = cur.critical ? "CRITICAL REGRESSION" : "WARNING";
+      if (cur.critical) {
+        hasGoldenCritical = true;
+      } else if (delta < DEFAULT_REGRESSION_THRESHOLD) {
+        // warning only for non-critical
+      }
+    }
+    if (cur.critical && delta <= GOLDEN_REGRESSION_THRESHOLD) {
+      label = "CRITICAL REGRESSION";
+      hasGoldenCritical = true;
+    }
+
+    const star = cur.critical ? " ★" : "";
+    console.log(
+      `${cur.name}${star}`.padEnd(28) +
+        `${delta >= 0 ? "+" : ""}${delta.toFixed(1)}  (${base.overallScore.toFixed(1)} → ${cur.overallScore.toFixed(1)})  ${label}`,
+    );
+  }
+
+  const scoreDelta = current.businessAverageScore - baseline.summary.businessAverageScore;
+  console.log(`\nBusiness Average`.padEnd(28) + `${scoreDelta >= 0 ? "+" : ""}${scoreDelta.toFixed(1)}`);
+
+  const bItems = baseline.summary.lengthBenchmark.avgLineItems;
+  const cItems = current.lengthBenchmark.avgLineItems;
+  if (bItems > 0) {
+    const ratio = cItems / bItems;
+    let bloat = "";
+    if (ratio >= LINE_ITEM_CRITICAL_RATIO) {
+      bloat = "CRITICAL BLOAT";
+    } else if (ratio >= LINE_ITEM_REGRESSION_RATIO) {
+      bloat = "WARNING";
+    }
+    console.log(
+      `\nLength: avg line items  ${bItems} → ${cItems}  (${ratio >= 1 ? "+" : ""}${((ratio - 1) * 100).toFixed(0)}%)  ${bloat}`,
+    );
+  }
+
+  const bCost = baseline.summary.cost.estimatedCostUsd;
+  const cCost = current.cost.estimatedCostUsd;
+  if (bCost > 0) {
+    const costRatio = cCost / bCost;
+    console.log("\n── Cost ──");
+    console.log(
+      `Run total:  $${bCost.toFixed(2)} → $${cCost.toFixed(2)}  (${costRatio >= 1 ? "+" : ""}${((costRatio - 1) * 100).toFixed(0)}%)`,
+    );
+    if (costRatio >= COST_REGRESSION_RATIO && scoreDelta < 0.5) {
+      console.log("Quality vs Cost: marginal quality change may not justify cost increase");
+    }
+  }
+
+  const exitCode = hasCritical || hasGoldenCritical || current.failed > 0 ? 1 : 0;
+  return { exitCode };
+}
+
+export function buildRunSummary(
+  scenarios: Record<string, ScenarioResult>,
+  meta: {
+    runId: string;
+    evalMode: RunSummary["evalMode"];
+    promptVersion: string;
+    gitSha: string | null;
+    startedAt: string;
+    durationMs: number;
+  },
+): RunSummary {
+  const all = Object.values(scenarios);
+  const business = all.filter((s) => s.category === "business");
+  const edge = all.filter((s) => s.category !== "business");
+  const golden = all.filter((s) => s.critical);
+
+  const businessScores = business.map((s) =>
+    meta.evalMode === "fast" ? s.fastScore : s.overallScore,
+  );
+  const edgeScores = edge.map((s) => (meta.evalMode === "fast" ? s.fastScore : s.overallScore));
+
+  const businessCtx = business
+    .map((s) => s.contextAlignmentScore)
+    .filter((v): v is number => v !== null);
+  const edgeCtx = edge
+    .map((s) => s.contextAlignmentScore)
+    .filter((v): v is number => v !== null);
+
+  const totalCost = all.reduce((sum, s) => sum + s.cost.estimatedCostUsd, 0);
+  const promptTokens = all.reduce((sum, s) => sum + s.cost.promptTokens, 0);
+  const completionTokens = all.reduce((sum, s) => sum + s.cost.completionTokens, 0);
+  const judgeTokens = all.reduce(
+    (sum, s) => sum + (s.cost.judgePromptTokens ?? 0) + (s.cost.judgeCompletionTokens ?? 0),
+    0,
+  );
+
+  const complexities = all.map((s) => s.promptMeta);
+  const maxWords = Math.max(...complexities.map((c) => c.promptWords), 0);
+  const maxScenario =
+    all.find((s) => s.promptMeta.promptWords === maxWords)?.id ?? null;
+
+  return {
+    runId: meta.runId,
+    evalMode: meta.evalMode,
+    promptVersion: meta.promptVersion,
+    gitSha: meta.gitSha,
+    startedAt: meta.startedAt,
+    durationMs: meta.durationMs,
+    businessAverageScore: avg(businessScores),
+    businessAverageContextAlignment:
+      meta.evalMode === "full" && businessCtx.length > 0 ? avg(businessCtx) : null,
+    businessAverageCoverage: avg(business.map((s) => s.coveragePercent)),
+    edgeAverageScore: avg(edgeScores),
+    edgeAverageContextAlignment:
+      meta.evalMode === "full" && edgeCtx.length > 0 ? avg(edgeCtx) : null,
+    edgeAverageCoverage: avg(edge.map((s) => s.coveragePercent)),
+    goldenAverageScore:
+      golden.length > 0
+        ? avg(golden.map((s) => (meta.evalMode === "fast" ? s.fastScore : s.overallScore)))
+        : null,
+    goldenAverageContextAlignment:
+      golden.length > 0
+        ? avg(
+            golden
+              .map((s) => s.contextAlignmentScore)
+              .filter((v): v is number => v !== null),
+          ) || null
+        : null,
+    passed: all.filter((s) => s.passed).length,
+    failed: all.filter((s) => !s.passed).length,
+    cost: {
+      promptTokens,
+      completionTokens,
+      judgeTokens,
+      totalTokens: promptTokens + completionTokens + judgeTokens,
+      estimatedCostUsd: Math.round(totalCost * 100) / 100,
+    },
+    promptComplexity: {
+      avgWords: Math.round(avg(complexities.map((c) => c.promptWords))),
+      avgCharacters: Math.round(avg(complexities.map((c) => c.promptCharacters))),
+      avgSections: Math.round(avg(complexities.map((c) => c.promptSections)) * 10) / 10,
+      maxWords,
+      maxWordsScenario: maxScenario,
+    },
+    lengthBenchmark: {
+      avgLineItems: Math.round(avg(all.map((s) => s.length.lineItemCount)) * 10) / 10,
+      avgSectionCount: Math.round(avg(all.map((s) => s.length.sectionCount)) * 10) / 10,
+      avgOutputTokens: Math.round(avg(all.map((s) => s.length.outputTokens))),
+    },
+    scenarios,
+  };
+}

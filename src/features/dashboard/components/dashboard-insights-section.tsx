@@ -5,23 +5,30 @@ import { DashboardOverduePaymentsListCard } from "@/features/dashboard/component
 import { DashboardRecentActivityCard } from "@/features/dashboard/components/dashboard-recent-activity-card";
 import { DashboardRecentDocumentsCard } from "@/features/dashboard/components/dashboard-recent-documents-card";
 import type { DashboardInsightsData } from "@/features/dashboard/lib/dashboard-overview-types";
+import type { DashboardKpiStats } from "@/features/dashboard/lib/dashboard-kpi-types";
+import type { DashboardTimeHorizon } from "@/features/dashboard/lib/dashboard-time-horizon";
 import type { Locale } from "@/lib/locale";
 
 interface DashboardInsightsSectionProps {
   data: DashboardInsightsData;
+  kpiStats: DashboardKpiStats;
+  timeHorizon: DashboardTimeHorizon;
   workspaceSlug: string;
   locale: Locale;
 }
 
 export function DashboardInsightsSection({
   data,
+  kpiStats,
+  timeHorizon,
   workspaceSlug,
   locale,
 }: DashboardInsightsSectionProps) {
   return (
     <div className="space-y-4">
       <DashboardChartsSection
-        data={data}
+        kpiStats={kpiStats}
+        timeHorizon={timeHorizon}
         workspaceSlug={workspaceSlug}
         locale={locale}
       />

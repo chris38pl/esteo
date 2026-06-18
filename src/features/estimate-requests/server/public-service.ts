@@ -18,6 +18,7 @@ export type PublicEstimateRequestWorkspace = {
   name: string;
   slug: string;
   industry: WorkspaceIndustry;
+  industryOtherText: string | null;
 };
 
 export type PublicEstimateRequestPageData = {
@@ -54,6 +55,7 @@ export async function getPublicEstimateRequestPageData(input: {
       name: true,
       slug: true,
       industry: true,
+      industryOtherText: true,
     },
   });
 
@@ -93,6 +95,7 @@ export async function getEstimateRequestFormDataForWorkspace(input: {
       name: true,
       slug: true,
       industry: true,
+      industryOtherText: true,
     },
   });
 

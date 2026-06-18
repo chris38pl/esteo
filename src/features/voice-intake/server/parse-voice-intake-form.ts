@@ -1,3 +1,4 @@
+import { WorkspaceIndustry } from "@prisma/client";
 import { z } from "zod";
 
 import type { VoiceIntakeFieldDefinitionSummary } from "@/ai/prompts/voice-intake-extraction";
@@ -62,4 +63,28 @@ export function parseDurationMs(raw: FormDataEntryValue | null, fallback = 0): n
 
   const value = Number.parseInt(raw, 10);
   return Number.isFinite(value) ? value : fallback;
+}
+
+const workspaceIndustrySchema = z.nativeEnum(WorkspaceIndustry);
+
+export type VoiceIntakeWorkspaceContext = {
+  industry: WorkspaceIndustry;
+  industryOtherText: string | null;
+};
+
+export function parseVoiceIntakeWorkspaceContext(input: {
+  industry: FormDataEntryValue | null;
+  industryOtherText: FormDataEntryValue | null;
+}): VoiceIntakeWorkspaceContext {
+  const industryParsed = workspaceIndustrySchema.safeParse(input.industry);
+  const industry = industryParsed.success
+    ? industryParsed.data
+    : WorkspaceIndustry.CONSTRUCTION;
+
+  const industryOtherText =
+    typeof input.industryOtherText === "string" && input.industryOtherText.trim().length > 0
+      ? input.industryOtherText.trim()
+      : null;
+
+  return { industry, industryOtherText };
 }

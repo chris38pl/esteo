@@ -1,19 +1,14 @@
 "use client";
 
-import { ArrowUpRight } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { DashboardBarChart } from "@/features/dashboard/components/dashboard-bar-chart";
-import { DashboardChartPeriodSelect } from "@/features/dashboard/components/dashboard-chart-period-select";
 import { DashboardPanelCard } from "@/features/dashboard/components/dashboard-panel-card";
-import type {
-  DashboardChartBar,
-  DashboardChartPeriod,
-} from "@/features/dashboard/lib/dashboard-overview-types";
-import { formatCurrency } from "@/i18n/formatters";
+import type { DashboardChartGranularity } from "@/features/dashboard/lib/dashboard-kpi-types";
+import { formatCurrency, type Currency } from "@/i18n/formatters";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -22,13 +17,18 @@ interface DashboardMetricChartCardProps {
   total: number;
   totalLabel: string;
   trendPercent: number;
-  bars: DashboardChartBar[];
-  dayLabels: DashboardChartBar[];
+  barLabels: string[];
+  barValues: number[];
   footerHref: string;
   footerLabel: string;
   locale: Locale;
   variant: "count" | "currency";
+  currency?: string;
   barClassName?: string;
+}
+
+function toCurrency(code: string | undefined): Currency {
+  return code === "EUR" ? "EUR" : "PLN";
 }
 
 export function DashboardMetricChartCard({
@@ -36,28 +36,26 @@ export function DashboardMetricChartCard({
   total,
   totalLabel,
   trendPercent,
-  bars,
-  dayLabels,
+  barLabels,
+  barValues,
   footerHref,
   footerLabel,
   locale,
   variant,
+  currency = "PLN",
   barClassName,
 }: DashboardMetricChartCardProps) {
   const t = useTranslations("dashboard.overview.charts");
-  const [period, setPeriod] = useState<DashboardChartPeriod>("7_days");
 
-  const chartBars = useMemo(
-    () =>
-      bars.map((bar, index) => ({
-        label: dayLabels[index]?.label ?? bar.label,
-        value: bar.value,
-      })),
-    [bars, dayLabels],
-  );
+  const chartBars = barLabels.map((label, index) => ({
+    label,
+    value: barValues[index] ?? 0,
+  }));
 
   const formattedTotal =
-    variant === "currency" ? formatCurrency(total, locale, "PLN") : String(total);
+    variant === "currency"
+      ? formatCurrency(total, locale, toCurrency(currency))
+      : String(total);
 
   const formatAxisValue = (value: number) => {
     if (variant === "currency") {
@@ -69,10 +67,11 @@ export function DashboardMetricChartCard({
     return String(value);
   };
 
+  const TrendIcon = trendPercent >= 0 ? ArrowUpRight : ArrowDownRight;
+
   return (
     <DashboardPanelCard
       title={title}
-      headerAction={<DashboardChartPeriodSelect value={period} onValueChange={setPeriod} />}
       footer={
         <Button variant="outline" className="w-full" asChild>
           <Link href={footerHref}>{footerLabel}</Link>
@@ -95,7 +94,7 @@ export function DashboardMetricChartCard({
                 : "text-red-600 dark:text-red-400",
             )}
           >
-            <ArrowUpRight className="size-3.5" />
+            <TrendIcon className="size-3.5" />
             {t("trend", { percent: Math.abs(trendPercent) })}
           </p>
         </div>
@@ -108,4 +107,25 @@ export function DashboardMetricChartCard({
       </div>
     </DashboardPanelCard>
   );
+}
+
+export function formatDashboardChartBarLabels(
+  bars: Array<{ key: string }>,
+  granularity: DashboardChartGranularity,
+  locale: Locale,
+): string[] {
+  const dateLocale = locale === "pl" ? "pl-PL" : "en-US";
+
+  if (granularity === "daily") {
+    return bars.map((bar) => {
+      const date = new Date(`${bar.key}T12:00:00`);
+      return new Intl.DateTimeFormat(dateLocale, { weekday: "short" }).format(date);
+    });
+  }
+
+  return bars.map((bar) => {
+    const [year, month] = bar.key.split("-").map(Number);
+    const date = new Date(year, month - 1, 1);
+    return new Intl.DateTimeFormat(dateLocale, { month: "short" }).format(date);
+  });
 }

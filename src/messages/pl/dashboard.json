@@ -74,26 +74,20 @@
       "overduePayments": "Zaległe płatności"
     },
     "trends": {
-      "estimatesUp": "+3 od wczoraj",
-      "sentUp": "+8 w tym tygodniu",
-      "incomeFlat": "Bez zmian",
+      "up": "+{delta} vs poprzedni okres",
+      "down": "−{delta} vs poprzedni okres",
+      "flat": "Bez zmian",
+      "upAmount": "+{amount} vs poprzedni okres",
+      "downAmount": "−{amount} vs poprzedni okres",
+      "velocityUp": "+{delta} w ostatnich 7 dniach",
+      "velocityDown": "−{delta} w ostatnich 7 dniach",
+      "velocityFlat": "Bez zmian w ostatnich 7 dniach",
+      "velocityUpAmount": "+{amount} w ostatnich 7 dniach",
+      "velocityDownAmount": "−{amount} w ostatnich 7 dniach",
       "overdueWarning": "{count, plural, one {# faktura po terminie} few {# faktury po terminie} many {# faktur po terminie} other {# faktury po terminie}}"
     },
     "charts": {
-      "trend": "{percent}% vs poprzedni tydzień",
-      "period": {
-        "7_days": "7 dni",
-        "30_days": "30 dni"
-      },
-      "days": {
-        "mon": "Pon",
-        "tue": "Wt",
-        "wed": "Śr",
-        "thu": "Czw",
-        "fri": "Pt",
-        "sat": "Sob",
-        "sun": "Ndz"
-      },
+      "trend": "{percent}% vs poprzedni okres",
       "requests": {
         "title": "Ilość zapytań",
         "totalLabel": "łącznie zapytań",

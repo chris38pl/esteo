@@ -27,6 +27,7 @@ export type EstimatePromptSection = {
 
 export type EstimateGenerationContext = {
   industry: WorkspaceIndustry;
+  industryOtherText: string | null;
   locale: Locale;
   companyDescription: string | null;
   aiInstructions: string | null;
@@ -90,6 +91,7 @@ export async function loadEstimateGenerationContext(
 
   return {
     industry: workspace.industry,
+    industryOtherText: workspace.industryOtherText ?? null,
     locale,
     companyDescription: settings?.companyDescription ?? null,
     aiInstructions: settings?.aiInstructions ?? null,

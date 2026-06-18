@@ -1,4 +1,5 @@
 import type { VoiceIntakeExtraction } from "@/ai/schemas/voice-intake-extraction";
+import { WorkspaceIndustry } from "@prisma/client";
 
 import { buildConfidenceSummary } from "@/features/voice-intake/lib/build-confidence-summary";
 import { detectMissingFields } from "@/features/voice-intake/lib/detect-missing-fields";
@@ -185,8 +186,16 @@ export function buildVoiceIntakePreviewFixture(
           ? "Termin to jeden do trzech miesięcy, telefon sześćset sto dwieście."
           : "Timeline is one to three months, phone six zero zero one zero zero two zero zero.";
       {
-        const beforeMissing = detectMissingFields(baseVoiceIntakeExtraction({ locale }), locale);
-        const afterMissing = detectMissingFields(extraction, locale);
+        const beforeMissing = detectMissingFields(
+          baseVoiceIntakeExtraction({ locale }),
+          locale,
+          WorkspaceIndustry.CONSTRUCTION,
+        );
+        const afterMissing = detectMissingFields(
+          extraction,
+          locale,
+          WorkspaceIndustry.CONSTRUCTION,
+        );
         const resolvedKeys = new Set(
           beforeMissing
             .filter((m) => !afterMissing.some((a) => a.fieldKey === m.fieldKey))
@@ -212,7 +221,11 @@ export function buildVoiceIntakePreviewFixture(
       extraction = baseVoiceIntakeExtraction({ locale });
       followUpTranscript = locale === "pl" ? "Hmm, nie wiem." : "Hmm, I don't know.";
       followUpNoNewInfo = true;
-      followUpStillMissing = detectMissingFields(extraction, locale).filter(
+      followUpStillMissing = detectMissingFields(
+        extraction,
+        locale,
+        WorkspaceIndustry.CONSTRUCTION,
+      ).filter(
         (m) => m.priority === "key" || m.priority === "contact",
       );
       break;
@@ -222,7 +235,11 @@ export function buildVoiceIntakePreviewFixture(
       break;
   }
 
-  const missingFields = detectMissingFields(extraction, locale);
+  const missingFields = detectMissingFields(
+    extraction,
+    locale,
+    WorkspaceIndustry.CONSTRUCTION,
+  );
 
   return {
     scenarioId,

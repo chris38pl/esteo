@@ -13,6 +13,7 @@ import { defaultPlanVersion } from "@/server/billing/plan-catalog";
 import { isUniqueConstraintError } from "@/lib/database/is-unique-constraint-error";
 import { countAccessibleWorkspaces } from "@/features/workspaces/server/accessible-workspaces";
 import { isValidWorkspaceSlug, normalizeWorkspaceSlug } from "@/features/workspaces/lib/slug";
+import { isServiceWorkspace } from "@/features/workspaces/lib/industries";
 import { isSlugAvailable, recordSlugAlias } from "@/features/workspaces/server/slug-availability";
 import {
   findReceivedInvitationById,
@@ -625,6 +626,40 @@ export async function updateWorkspaceProfile(
       appearanceTheme: input.appearanceTheme,
       companyDescription,
     },
+  });
+
+  return workspace;
+}
+
+export async function updateWorkspaceBusinessType(
+  user: User,
+  workspaceId: string,
+  input: { industryOtherText: string },
+) {
+  await requireRole(user, workspaceId, "OWNER");
+
+  const existing = await findWorkspaceById(workspaceId);
+  if (!existing) {
+    throw new WorkspaceError("Workspace not found.");
+  }
+
+  if (!isServiceWorkspace(existing.industry)) {
+    throw new WorkspaceError("Business type applies only to service workspaces.");
+  }
+
+  const industryOtherText = input.industryOtherText.trim();
+
+  const workspace = await updateWorkspaceRecord(workspaceId, {
+    industryOtherText,
+  });
+
+  await logAuditEvent({
+    actorUserId: user.id,
+    workspaceId,
+    entityType: "Workspace",
+    entityId: workspaceId,
+    action: "business_type_updated",
+    diff: { industryOtherText },
   });
 
   return workspace;

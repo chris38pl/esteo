@@ -82,6 +82,8 @@ export function PublicEstimateRequestClient({
         <div className="mt-8 w-full max-w-md lg:mt-72">
           <VoiceIntakeController
             locale={locale}
+            industry={pageData.workspace.industry}
+            industryOtherText={pageData.workspace.industryOtherText}
             fields={pageData.fields}
             endpoint={`/api/public/voice-intake?locale=${locale}`}
             workspaceSlug={pageData.workspace.slug}

@@ -47,6 +47,8 @@ export function VoiceSummaryStage({
 
   preview,
 
+  industry,
+
 }: {
 
   extraction: VoiceIntakeExtraction;
@@ -54,6 +56,8 @@ export function VoiceSummaryStage({
   cleanedTranscript: string;
 
   locale: Locale;
+
+  industry: import("@prisma/client").WorkspaceIndustry;
 
   missingFields: MissingFieldInfo[];
 
@@ -131,7 +135,7 @@ export function VoiceSummaryStage({
 
         {hasMissingFields ? (
           <div className="mt-1 w-full">
-            <VoiceFollowUpMissingList items={missingFields} />
+            <VoiceFollowUpMissingList items={missingFields} industry={industry} />
           </div>
         ) : (
           <div className="mt-1 w-full space-y-2.5 pt-2 text-center">

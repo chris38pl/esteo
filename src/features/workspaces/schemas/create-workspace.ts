@@ -12,7 +12,12 @@ export const createWorkspaceSchema = z
       .min(2, "Name must be at least 2 characters.")
       .max(120, "Name must be at most 120 characters."),
     industry: z.nativeEnum(WorkspaceIndustry),
-    industryOtherText: z.string().trim().max(120, "Industry text must be at most 120 characters.").optional(),
+    industryOtherText: z
+      .string()
+      .trim()
+      .min(3, "Business type must be at least 3 characters.")
+      .max(120, "Business type must be at most 120 characters.")
+      .optional(),
     appearanceTheme: z
       .nativeEnum(WorkspaceAppearanceTheme)
       .default(WorkspaceAppearanceTheme.OCEAN_BREEZE),
@@ -22,9 +27,9 @@ export const createWorkspaceSchema = z
   .refine(
     (data) =>
       data.industry !== WorkspaceIndustry.OTHER ||
-      (data.industryOtherText !== undefined && data.industryOtherText.length >= 2),
+      (data.industryOtherText !== undefined && data.industryOtherText.length >= 3),
     {
-      message: "Please describe your industry (at least 2 characters).",
+      message: "Please describe your business type (at least 3 characters).",
       path: ["industryOtherText"],
     },
   )

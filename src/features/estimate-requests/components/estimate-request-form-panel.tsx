@@ -138,6 +138,7 @@ export function EstimateRequestFormPanel({
       <div className="mt-6 space-y-6">
         <EstimateRequestFormFields
           locale={locale}
+          industry={pageData.workspace.industry}
           fields={pageData.fields}
           customer={customer}
           onCustomerChange={setCustomer}

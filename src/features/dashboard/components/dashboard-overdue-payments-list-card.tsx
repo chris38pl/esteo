@@ -6,9 +6,9 @@ import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { DashboardPanelCard } from "@/features/dashboard/components/dashboard-panel-card";
-import { formatRelativeAgo } from "@/features/dashboard/lib/format-relative-ago";
+import { DashboardOverdueDueLabel } from "@/features/dashboard/components/dashboard-overdue-due-label";
 import type { DashboardOverduePaymentItem } from "@/features/dashboard/lib/dashboard-overview-types";
-import { formatCurrency, formatDate } from "@/i18n/formatters";
+import { formatCurrency } from "@/i18n/formatters";
 import type { Locale } from "@/lib/locale";
 
 interface DashboardOverduePaymentsListCardProps {
@@ -60,16 +60,7 @@ export function DashboardOverduePaymentsListCard({
                         {item.customerName}
                       </p>
                     ) : null}
-                    <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
-                      {t("due", {
-                        date: formatDate(item.dueDate, locale, {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                        }),
-                        ago: formatRelativeAgo(locale, item.dueDate),
-                      })}
-                    </p>
+                    <DashboardOverdueDueLabel dueDate={item.dueDate} locale={locale} />
                   </div>
 
                   <div className="flex shrink-0 items-center gap-2">

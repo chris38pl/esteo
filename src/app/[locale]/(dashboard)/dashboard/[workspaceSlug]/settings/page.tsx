@@ -59,6 +59,7 @@ export default async function WorkspaceSettingsPage({
       <WorkspaceSettingsPanel
         workspaceId={workspace.id}
         workspaceIndustry={workspace.industry}
+        initialIndustryOtherText={workspace.industryOtherText ?? ""}
         initialName={workspace.name}
         initialAppearanceTheme={workspace.appearanceTheme}
         initialCompanyDescription={workspace.settings?.companyDescription ?? ""}

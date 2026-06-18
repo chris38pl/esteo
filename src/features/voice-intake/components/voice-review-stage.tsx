@@ -8,6 +8,7 @@ import { VoiceInvestmentDescription } from "@/features/voice-intake/components/v
 import { VoiceRecognizedSection } from "@/features/voice-intake/components/voice-recognized-section";
 import { VoiceReviewMissingSection } from "@/features/voice-intake/components/voice-review-missing-section";
 import type { ConfidenceSummary } from "@/features/voice-intake/lib/build-confidence-summary";
+import { WorkspaceIndustry } from "@prisma/client";
 import type { MissingFieldInfo } from "@/features/voice-intake/types";
 import type { Locale } from "@/lib/locale";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ export function VoiceReviewStage({
   onApply,
   onFollowUp,
   onReRecord,
+  industry = WorkspaceIndustry.CONSTRUCTION,
 }: {
   extraction: VoiceIntakeExtraction;
   missingFields: MissingFieldInfo[];
@@ -36,6 +38,7 @@ export function VoiceReviewStage({
   displayDescription: string;
   descriptionContentKey: string;
   locale: Locale;
+  industry?: WorkspaceIndustry;
   onSaveDescription: (value: string) => void;
   onApply: () => void;
   onFollowUp: () => void;
@@ -53,7 +56,7 @@ export function VoiceReviewStage({
               cleanedTranscript={cleanedTranscript}
               locale={locale}
             />
-            <VoiceReviewMissingSection items={missingFields} />
+            <VoiceReviewMissingSection items={missingFields} industry={industry} />
           </div>
 
           <VoiceInvestmentDescription

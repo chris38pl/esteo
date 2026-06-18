@@ -1,8 +1,9 @@
-import { BusinessDocumentType, type EstimateRequest } from "@prisma/client";
+import { BusinessDocumentType, type EstimateRequest, type WorkspaceIndustry } from "@prisma/client";
 
 import { getIndustryFieldsForDocument } from "@/features/industry-fields/server/get-fields-for-workspace";
 import { listDocumentFieldValues } from "@/features/industry-fields/server/repository";
 import { readTypedFieldValue } from "@/features/industry-fields/server/map-field-value";
+import { getIndustryExperienceSegment } from "@/features/estimate-requests/config/industry-experience-config";
 import type { Locale } from "@/lib/locale";
 
 type CustomerData = {
@@ -17,34 +18,67 @@ type AddressData = {
   city?: string;
   postalCode?: string;
   voivodeship?: string;
+  serviceLocation?: string;
 };
 
-const LABELS = {
+const BRIEF_LABELS = {
   pl: {
-    projectDescription: "Opis projektu",
-    customer: "Klient",
-    fullName: "Imię i nazwisko",
-    email: "E-mail",
-    phone: "Telefon",
-    preferredStart: "Preferowany termin startu",
-    address: "Adres",
-    street: "Ulica",
-    city: "Miasto",
-    postalCode: "Kod pocztowy",
-    voivodeship: "Województwo",
+    construction: {
+      projectDescription: "Opis projektu",
+      customer: "Klient",
+      fullName: "Imię i nazwisko",
+      email: "E-mail",
+      phone: "Telefon",
+      preferredStart: "Preferowany termin startu",
+      address: "Adres",
+      street: "Ulica",
+      city: "Miasto",
+      postalCode: "Kod pocztowy",
+      voivodeship: "Województwo",
+    },
+    services: {
+      projectDescription: "Opis usługi",
+      customer: "Klient",
+      fullName: "Imię i nazwisko",
+      email: "E-mail",
+      phone: "Telefon",
+      preferredStart: "Preferowany termin realizacji",
+      serviceLocation: "Miejsce realizacji",
+      address: "Adres",
+      street: "Ulica",
+      city: "Miasto",
+      postalCode: "Kod pocztowy",
+      voivodeship: "Województwo",
+    },
   },
   en: {
-    projectDescription: "Project description",
-    customer: "Customer",
-    fullName: "Full name",
-    email: "Email",
-    phone: "Phone",
-    preferredStart: "Preferred start date",
-    address: "Address",
-    street: "Street",
-    city: "City",
-    postalCode: "Postal code",
-    voivodeship: "Region",
+    construction: {
+      projectDescription: "Project description",
+      customer: "Customer",
+      fullName: "Full name",
+      email: "Email",
+      phone: "Phone",
+      preferredStart: "Preferred start date",
+      address: "Address",
+      street: "Street",
+      city: "City",
+      postalCode: "Postal code",
+      voivodeship: "Region",
+    },
+    services: {
+      projectDescription: "Service description",
+      customer: "Customer",
+      fullName: "Full name",
+      email: "Email",
+      phone: "Phone",
+      preferredStart: "Preferred completion date",
+      serviceLocation: "Service location",
+      address: "Address",
+      street: "Street",
+      city: "City",
+      postalCode: "Postal code",
+      voivodeship: "Region",
+    },
   },
 } as const;
 
@@ -60,9 +94,11 @@ function formatValue(value: string | number | boolean | Date | null): string {
 
 export async function buildProjectBrief(input: {
   request: Pick<EstimateRequest, "id" | "workspaceId" | "projectDescription" | "customerData" | "address">;
+  industry: WorkspaceIndustry;
   locale: Locale;
 }): Promise<string> {
-  const labels = LABELS[input.locale];
+  const segment = getIndustryExperienceSegment(input.industry);
+  const labels = BRIEF_LABELS[input.locale][segment];
   const lines: string[] = [];
 
   lines.push(`${labels.projectDescription}:`);
@@ -87,7 +123,14 @@ export async function buildProjectBrief(input: {
   }
 
   const address = input.request.address as AddressData | null;
-  if (address?.streetAddress || address?.city) {
+
+  if (segment === "services") {
+    const serviceLabels = labels as (typeof BRIEF_LABELS)["pl"]["services"];
+    if (address?.serviceLocation?.trim()) {
+      lines.push("");
+      lines.push(`${serviceLabels.serviceLocation}: ${address.serviceLocation.trim()}`);
+    }
+  } else if (address?.streetAddress || address?.city) {
     lines.push("");
     lines.push(`${labels.address}:`);
     if (address.streetAddress) {

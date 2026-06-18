@@ -1,4 +1,7 @@
+import { WorkspaceIndustry } from "@prisma/client";
 import { z } from "zod";
+
+import { isServiceWorkspace } from "@/features/workspaces/lib/industries";
 
 const CONTROL_CHARACTERS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/;
 
@@ -25,18 +28,27 @@ function optionalTextField(max: number) {
     .or(z.literal(""));
 }
 
-export const publicEstimateRequestSchema = z.object({
-  workspaceSlug: z.string().trim().min(2).max(80).regex(/^[a-z0-9-]+$/),
+const constructionAddressSchema = z.object({
+  streetAddress: textField(3, 200),
+  city: textField(2, 120),
+  postalCode: textField(2, 20),
+  voivodeship: textField(2, 80),
+  serviceLocation: z.string().optional(),
+});
+
+const serviceAddressSchema = z.object({
+  serviceLocation: textField(2, 300),
+  streetAddress: z.string().optional().or(z.literal("")),
+  city: z.string().optional().or(z.literal("")),
+  postalCode: z.string().optional().or(z.literal("")),
+  voivodeship: z.string().optional().or(z.literal("")),
+});
+
+const sharedRequestFields = {
   customer: z.object({
     fullName: textField(2, 120),
     email: z.string().trim().toLowerCase().email().max(160),
     phone: textField(6, 40),
-  }),
-  address: z.object({
-    streetAddress: textField(3, 200),
-    city: textField(2, 120),
-    postalCode: textField(2, 20),
-    voivodeship: textField(2, 80),
   }),
   project: z.object({
     preferredStartDate: textField(2, 40),
@@ -58,7 +70,21 @@ export const publicEstimateRequestSchema = z.object({
     })
     .optional(),
   voiceIntake: z.record(z.string(), z.unknown()).optional(),
-});
+};
+
+export function createPublicEstimateRequestSchema(industry: WorkspaceIndustry) {
+  return z.object({
+    workspaceSlug: z.string().trim().min(2).max(80).regex(/^[a-z0-9-]+$/),
+    ...sharedRequestFields,
+    address: isServiceWorkspace(industry)
+      ? serviceAddressSchema
+      : constructionAddressSchema,
+  });
+}
+
+export const publicEstimateRequestSchema = createPublicEstimateRequestSchema(
+  WorkspaceIndustry.CONSTRUCTION,
+);
 
 export type PublicEstimateRequestInput = z.infer<typeof publicEstimateRequestSchema>;
 
@@ -70,11 +96,17 @@ const optionalTitleField = z
   .optional()
   .or(z.literal(""));
 
+export function createInternalEstimateCreateSchema(industry: WorkspaceIndustry) {
+  return createPublicEstimateRequestSchema(industry)
+    .omit({ workspaceSlug: true, security: true })
+    .extend({
+      title: optionalTitleField,
+    });
+}
+
 /** Dashboard “New estimate” — same body as public form plus optional title. */
-export const internalEstimateCreateSchema = publicEstimateRequestSchema
-  .omit({ workspaceSlug: true, security: true })
-  .extend({
-    title: optionalTitleField,
-  });
+export const internalEstimateCreateSchema = createInternalEstimateCreateSchema(
+  WorkspaceIndustry.CONSTRUCTION,
+);
 
 export type InternalEstimateCreateInput = z.infer<typeof internalEstimateCreateSchema>;

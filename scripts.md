@@ -142,6 +142,63 @@ Alternatywa: admin → **Copy Cursor Prompt** / **Copy Issue URL** — bez `sync
 
 ---
 
+## **AI eval harness — Services (jakość wycen AI)**
+
+Regresje promptów i kontekstu dla segmentu **Usługi** (`WorkspaceIndustry.OTHER`). Nie zastępuje `validate:ai-schemas` ani testów jednostkowych — ocenia merytoryczną jakość wygenerowanych wycen.
+
+**Wymagane env w `.env` / `.env.local`:**
+
+| Zmienna | Domyślnie | Uwagi |
+| --- | --- | --- |
+| `OPENAI_API_KEY` | — | Wymagany dla generacji i judge (oprócz `smoke`) |
+| `EVAL_GENERATION_MODEL` | `gpt-4o` | Model draftu w eval |
+| `EVAL_JUDGE_MODEL` | `gpt-4o-mini` | Model LLM-as-Judge (tylko Full) |
+
+Env ładowany przez `scripts/load-env.mjs` (jak `voice-intake:benchmark`).
+
+| | | | | |
+| --- | --- | --- | --- | --- |
+| `eval:services:quick` | **Fast** eval — 6 scenariuszy z quick manifest, bez judge | `npm run eval:services:quick` | Raport `Services Evaluation Report [FAST]`, exit `0` gdy PASS | **Każdy PR** (~30 s). Deterministyczne scorery: schema, rules, leakage, length. |
+| `eval:services` | **Full** eval — wszystkie 27 scenariuszy + LLM judge | `npm run eval:services` | Raport `[FULL]`, koszt w USD, Business / Edge Average | Przed release zmian w `estimate-draft.ts` lub profilach AI. |
+| `eval:services:baseline` | Full eval + zapis baseline | `npm run eval:services:baseline` | `Baseline saved: evals/baselines/services/<timestamp>.json` | Po akceptowanym Full run; opcjonalny commit `evals/baselines/`. |
+| `eval:services:compare` | Full eval + diff vs baseline | `npm run eval:services:compare` | Prompt diff, delty score, WARNING / CRITICAL / golden regression | Po zmianie promptu — przed merge. Exit `1` przy regresji. |
+| `eval:services:smoke` | Test scorerów bez API | `npm run eval:services:smoke` | `Scorer smoke test passed.` | CI / lokalnie bez klucza OpenAI. |
+| `eval:services:seed` | Regeneracja fixture JSON | `npm run eval:services:seed` | Pliki w `evals/services/` nadpisane z seed script | Po zmianie katalogu scenariuszy w `evals/scripts/seed-services-scenarios.ts`. |
+
+**Flagi (po `--`, głównie `eval:services`):**
+
+| Flaga | Efekt |
+| --- | --- |
+| `--id=wedding-planner` | Jeden scenariusz |
+| `--category=business` | Filtr: `business` \| `edge` \| `stress` \| `generic` |
+| `--locale=pl` | Filtr locale (`pl` \| `en` \| `all`) |
+| `--stability` | 5 runów × scenariusze ze stability manifest (tylko Full) |
+| `--compare=evals/baselines/services/2026-06-18-120000.json` | Porównanie z konkretnym snapshotem |
+
+**Fast vs Full:**
+
+| | Fast (`:quick`) | Full (`eval:services`) |
+| --- | --- | --- |
+| Judge | Nie | Tak (`referenceEstimate`) |
+| Scenariusze | 6 (manifest) | 27 |
+| Score | `fastScore` = rules | `0.30 × rules + 0.70 × judge` |
+| Koszt API | Niski | ~$1–2 / pełny run |
+
+**Artefakty:** `evals/results/<timestamp>/` — `prompt.txt`, `generated-estimate.json`, `summary.json`, scorer JSON (gitignored).
+
+**Wersja promptu:** bump `ESTIMATE_PROMPT_VERSION` w `src/ai/prompts/estimate-draft.ts` przy każdej zmianie treści promptu.
+
+**Typowy workflow (zmiana promptu):**
+
+1. `npm run eval:services:quick` — szybka bramka lokalnie / w PR
+2. `npm run eval:services` — Full eval, review `evals/results/…/summary.json`
+3. `npm run eval:services:baseline` — zapis baseline po akceptacji
+4. (Kolejny PR) `npm run eval:services:compare` — regresja przed merge
+
+Więcej: [`docs/features/ai-eval-harness.md`](docs/features/ai-eval-harness.md), [`docs/architecture/ai-eval-harness.md`](docs/architecture/ai-eval-harness.md), [`evals/README.md`](evals/README.md).
+
+---
+
 ## **Ograniczenia**
 
 - **Produkcja:** wszystkie komendy blokowane przy `VERCEL_ENV=production`

@@ -180,6 +180,27 @@
       "usersDescription": "Manage workspace members and collaboration invites.",
       "rulesDescription": "Define AI rules used when generating estimates and responses."
     },
+    "aiSetup": {
+      "title": "AI setup",
+      "description": "Add context so AI understands your business and generates more accurate quotes.",
+      "scoreLabel": "AI readiness",
+      "industryLabel": "Industry",
+      "businessTypeLabel": "Business type",
+      "businessTypePlaceholder": "e.g. Wedding planning",
+      "businessTypeHint": "Short industry label — used in AI prompts and analytics.",
+      "save": "Save business type",
+      "saving": "Saving…",
+      "saved": "Business type saved.",
+      "criteria": {
+        "businessType": "Business type",
+        "companyDescription": "Company description",
+        "domainRulesOrRichDescription": "Estimate rule or detailed company description (>300 chars)",
+        "customSections": "Custom quote sections"
+      },
+      "errors": {
+        "generic": "Check the business type and try again."
+      }
+    },
     "company": {
       "nameLabel": "Company name",
       "nameHint": "Edit the name in the General tab.",

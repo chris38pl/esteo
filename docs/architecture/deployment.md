@@ -1,8 +1,167 @@
 # Deployment and environments
 
-Central reference for how Esteo runs across **localhost**, **Vercel Preview (staging)**, and **Vercel Production (main)** — which external services are involved, where environment variables live, and how Trigger.dev background jobs connect.
+Central reference for how Esteo runs across **localhost**, **Vercel Preview (staging)**, and **Vercel Production (main)** — domain architecture, which external services are involved, where environment variables live, and how Trigger.dev background jobs connect.
 
-Related: [estimate-requests](../features/estimate-requests.md), [estimate-ai](estimate-ai.md), [database](database.md), [backend](backend.md), [database migrations](../dev/database-migrations.md). Incident: [Trigger.dev + Vercel Preview](../incidents/2026-06-08-trigger-dev-vercel-preview.md).
+Related: [estimate-requests](../features/estimate-requests.md), [estimate-ai](estimate-ai.md), [database](database.md), [backend](backend.md), [authentication](../features/authentication.md), [database migrations](../dev/database-migrations.md). Incident: [Trigger.dev + Vercel Preview](../incidents/2026-06-08-trigger-dev-vercel-preview.md).
+
+---
+
+## Domain architecture
+
+### Overview
+
+Esteo uses a single primary application domain and a dedicated staging domain.
+
+Production traffic is served from:
+
+**https://esteo.app**
+
+Staging / preview traffic is served from:
+
+**https://preview.esteo.app**
+
+This approach keeps URLs simple for customers while maintaining a fully isolated testing environment.
+
+### Domain mapping
+
+| Purpose | Environment | Domain |
+| --- | --- | --- |
+| Production application | Production | `https://esteo.app` |
+| Preview / staging application | Preview | `https://preview.esteo.app` |
+| Local development | Development | `http://localhost:3000` |
+| Transactional email | Shared | `mail.esteo.app` |
+| Sender addresses | Shared | `estimates@mail.esteo.app` |
+
+### Application URLs
+
+**Production** — canonical URL: `https://esteo.app`
+
+Examples:
+
+- `https://esteo.app`
+- `https://esteo.app/pl/sign-in`
+- `https://esteo.app/pl/sign-up`
+- `https://esteo.app/pl/dashboard`
+- `https://esteo.app/pl/dashboard/projects`
+- `https://esteo.app/pl/dashboard/estimates`
+
+Example deep link:
+
+`https://esteo.app/pl/dashboard/ogrodzenia/estimates/t1unby250se3c77222h3jkx2`
+
+**Preview** — canonical URL: `https://preview.esteo.app`
+
+Examples:
+
+- `https://preview.esteo.app`
+- `https://preview.esteo.app/pl/sign-in`
+- `https://preview.esteo.app/pl/dashboard`
+
+Example deep link:
+
+`https://preview.esteo.app/pl/dashboard/ogrodzenia/estimates/t1unby250se3c77222h3jkx2`
+
+Preview is connected to the `staging` branch and is intended for QA, acceptance testing, and customer demonstrations before production releases.
+
+### Vercel configuration
+
+**Production**
+
+| Setting | Value |
+| --- | --- |
+| Domain | `esteo.app` |
+| Branch | `main` |
+| `APP_URL` | `https://esteo.app` |
+| `NEXT_PUBLIC_APP_URL` | `https://esteo.app` |
+
+**Preview**
+
+| Setting | Value |
+| --- | --- |
+| Domain | `preview.esteo.app` |
+| Branch | `staging` |
+| `APP_URL` | `https://preview.esteo.app` |
+| `NEXT_PUBLIC_APP_URL` | `https://preview.esteo.app` |
+
+Vercel maps branches automatically: pushes to `staging` create **Preview** deployments; pushes to `main` create **Production** deployments.
+
+**Staging chain:** GitHub branch `staging` → Vercel **Preview** deployment → Trigger.dev project **Esteo-Staging** (Production bucket). Custom domain `preview.esteo.app` points at the same Preview deployment as the default `esteo-git-staging-*.vercel.app` URL.
+
+### DNS provider
+
+DNS is managed in **OVHcloud**.
+
+| Domain | Record type | Target | Environment |
+| --- | --- | --- | --- |
+| `esteo.app` | A | Vercel | Production application |
+| `preview.esteo.app` | CNAME | Vercel (`br8eaxzzss8333u.vercel-dns.com`) | Preview / staging |
+| `mail.esteo.app` | TXT / CNAME / MX | Resend (DKIM, SPF, MX) | Transactional email |
+
+### Email domain
+
+Transactional emails are sent through Resend using a dedicated mail subdomain.
+
+Verified domain: **`mail.esteo.app`**
+
+Examples:
+
+- `estimates@mail.esteo.app`
+- `billing@mail.esteo.app`
+- `support@mail.esteo.app`
+
+Current sender: **`estimates@mail.esteo.app`**
+
+Resend DNS records (DKIM, SPF, MX) are configured in OVHcloud. Set `EMAIL_FROM` in Vercel and Trigger.dev to match the active sender address.
+
+### Authentication
+
+Authentication is provided by [Clerk](../features/authentication.md).
+
+| Environment | URL |
+| --- | --- |
+| Development | `http://localhost:3000` |
+| Preview | `https://preview.esteo.app` |
+| Production | `https://esteo.app` |
+
+OAuth providers (Google, Apple) must allow all active application domains.
+
+Allowed origins:
+
+- `http://localhost:3000`
+- `https://preview.esteo.app`
+- `https://esteo.app`
+
+### URL generation rules
+
+Application URLs must **never** be hardcoded. Always use `process.env.APP_URL` or `process.env.NEXT_PUBLIC_APP_URL` when generating:
+
+- email links
+- magic links
+- OAuth callbacks
+- estimate links
+- customer invitation links
+- Stripe return URLs
+
+Example:
+
+```ts
+const estimateUrl = `${process.env.APP_URL}/pl/estimate/${estimate.id}`;
+```
+
+### Future expansion
+
+The current architecture intentionally leaves room for a dedicated marketing website.
+
+Possible future setup:
+
+| Domain | Purpose |
+| --- | --- |
+| `https://www.esteo.app` | Marketing site |
+| `https://esteo.app` | Application |
+| `https://preview.esteo.app` | Staging application |
+| `https://mail.esteo.app` | Email infrastructure |
+
+No application changes are required to support this future split.
 
 ---
 
@@ -11,31 +170,14 @@ Related: [estimate-requests](../features/estimate-requests.md), [estimate-ai](es
 | Model | Git branch | Vercel environment | Typical URL | Purpose |
 | --- | --- | --- | --- | --- |
 | **localhost** | any (local) | — | `http://localhost:3000` | Developer machine |
-| **staging** | `staging` | **Preview** | **`https://preview.esteo.app`** (also `*.vercel.app`) | Pre-production, user testing |
-| **main** | `main` | **Production** | `app.esteo.pl` (planned) | Public launch |
-
-Vercel maps branches automatically: pushes to `staging` create **Preview** deployments; pushes to `main` create **Production** deployments.
-
-**Staging chain:** GitHub branch `staging` → Vercel **Preview** deployment → Trigger.dev project **Esteo-Staging** (Production bucket). Custom domain `preview.esteo.app` points at the same Preview deployment as the default `esteo-git-staging-*.vercel.app` URL.
-
----
-
-## Domains and DNS
-
-DNS for **`esteo.app`** is managed in **OVH** (zone: Strefa DNS). Vercel hosts the Next.js app; OVH holds the records.
-
-| Host / subdomain | Type | Target | Environment | Notes |
-| --- | --- | --- | --- | --- |
-| `esteo.app` | A | `213.186.33.1` | — | OVH default / landing (not the app) |
-| **`preview.esteo.app`** | **CNAME** | **`br8eaxzzss8333u.vercel-dns.com`** | **Staging** | Custom URL for Vercel Preview (`staging` branch) |
-| `mail.esteo.app` | TXT / CNAME | (Resend) | Staging + Production email | Verified sending domain; `EMAIL_FROM=estimates@mail.esteo.app` |
-| `app.esteo.pl` | — | (planned) | Production | Public launch domain |
+| **staging** | `staging` | **Preview** | **`https://preview.esteo.app`** (also `*.vercel.app`) | Pre-production, QA, acceptance testing |
+| **main** | `main` | **Production** | **`https://esteo.app`** | Live production application |
 
 ### Staging domain setup (`preview.esteo.app`)
 
 Configured **2026-06-18**:
 
-1. **OVH** — add CNAME `preview` → `br8eaxzzss8333u.vercel-dns.com` (propagation up to ~24 h).
+1. **OVHcloud** — add CNAME `preview` → `br8eaxzzss8333u.vercel-dns.com` (propagation up to ~24 h).
 2. **Vercel** — add `preview.esteo.app` to the Esteo project; assign to **Preview** (branch `staging`), not Production.
 3. **GitHub** — push to `staging` triggers Preview deploy (unchanged).
 4. **Trigger.dev** — **Esteo-Staging** project, Production env, GitHub branch `staging` (unchanged).
@@ -45,7 +187,7 @@ After DNS propagates, testers use `https://preview.esteo.app` instead of the aut
 **Checklist when the custom domain is new:**
 
 - Vercel → Domains: `preview.esteo.app` shows **Valid**.
-- Clerk Dashboard (test app): add `https://preview.esteo.app` to allowed origins / redirect URLs if sign-in fails on the custom host.
+- Clerk Dashboard: add `https://preview.esteo.app` to allowed origins / redirect URLs if sign-in fails on the custom host.
 - Stripe test webhooks (if used on staging): endpoint URL must use the hostname you actually test on.
 
 ```mermaid
@@ -81,13 +223,19 @@ flowchart LR
   Browser --> VercelProd
   Localhost --> Neon
   VercelPreview --> Neon
+  VercelProd --> Neon
   Localhost --> Clerk
   VercelPreview --> Clerk
+  VercelProd --> Clerk
   VercelPreview --> TriggerStaging
+  VercelProd --> TriggerMain
   Localhost --> TriggerMain
   TriggerStaging --> OpenAI
   TriggerStaging --> Neon
   TriggerStaging --> UploadThing
+  TriggerMain --> OpenAI
+  TriggerMain --> Neon
+  TriggerMain --> UploadThing
 ```
 
 ---
@@ -111,12 +259,12 @@ Setting `DATABASE_URL` on Vercel does **not** automatically give it to Trigger w
 | --- | --- | --- | --- | --- |
 | **Vercel** | Host Next.js app | — | Preview deploys from `staging` | Production deploys from `main` |
 | **GitHub** (`chris38pl/esteo`) | Source repo | local clone | connected | connected |
-| **Neon Postgres** | Prisma database | **development** branch | **staging** branch | **production** branch (at launch) |
-| **Clerk** | Authentication | test keys (shared with Preview) | same test keys | prod keys (at launch) |
+| **Neon Postgres** | Prisma database | **development** branch | **staging** branch | **production** branch |
+| **Clerk** | Authentication | test keys (shared with Preview) | same test keys | production keys |
 | **OpenAI** | AI estimate draft | via Trigger dev worker (`.env`) | Trigger **Esteo-Staging** dashboard | Trigger **Esteo** dashboard |
 | **UploadThing** | Attachment storage | `.env` + Trigger worker | Vercel + Trigger Staging dashboard | Vercel + Trigger main dashboard |
 | **Trigger.dev** | Background jobs | main project **Development** | **Esteo-Staging** project **Production** | main **Esteo** project **Production** |
-| **Stripe** | Billing, webhooks | test mode (optional) | test mode | live mode (at launch) |
+| **Stripe** | Billing, webhooks | test mode (optional) | test mode | live mode |
 | **Resend** | Estimate send email (+ PDF) | sandbox in `.env` (see below) | `estimates@mail.esteo.app` on Vercel **and** Trigger Staging | `estimates@mail.esteo.app` on Vercel **and** Trigger main |
 | **Cloudflare Turnstile** | Public form captcha (optional) | optional in `.env` | optional on Vercel Preview | optional on Vercel Production |
 
@@ -124,7 +272,7 @@ Setting `DATABASE_URL` on Vercel does **not** automatically give it to Trigger w
 
 ### Email (`EMAIL_FROM`) — quick reference
 
-Official outbound address for estimate sends: **`estimates@mail.esteo.app`** (domain `mail.esteo.app` verified in Resend).
+Official outbound address: **`estimates@mail.esteo.app`** on the verified domain **`mail.esteo.app`** (Resend). Other reserved addresses: `billing@mail.esteo.app`, `support@mail.esteo.app`.
 
 | Environment | `EMAIL_FROM` | Where to set |
 | --- | --- | --- |
@@ -145,7 +293,7 @@ On the Trigger.dev free tier, **Staging** and **Preview** cloud environments are
 | Trigger.dev project | Trigger environment | Used by | Worker env vars (examples) |
 | --- | --- | --- | --- |
 | **Esteo** (main) | **Development** | localhost + `npm run trigger:dev` | N/A — worker reads local `.env` |
-| **Esteo** (main) | **Production** | Vercel Production at launch | prod `DATABASE_URL`, prod OpenAI, prod UploadThing |
+| **Esteo** (main) | **Production** | Vercel Production (`main` branch) | prod `DATABASE_URL`, prod OpenAI, prod UploadThing |
 | **Esteo-Staging** | **Production** | Vercel Preview (`staging` branch) | staging `DATABASE_URL`, staging OpenAI, staging UploadThing |
 
 The name **Production** inside Trigger.dev is only a deployment bucket — Esteo-Staging Production intentionally points at **staging** infrastructure.
@@ -161,13 +309,13 @@ flowchart TB
     NextPreview["Next.js API"]
   end
 
-  subgraph prod [Vercel Production main branch]
+  subgraph prod [Vercel Production main branch esteo.app]
     NextProd["Next.js API"]
   end
 
   subgraph triggerMain [Trigger.dev Esteo]
     MainDev["Development"]
-    MainProd["Production prod DB at launch"]
+    MainProd["Production prod DB"]
   end
 
   subgraph triggerStaging [Trigger.dev Esteo-Staging]
@@ -197,7 +345,7 @@ flowchart TB
 | Trigger project | Production branch mapping |
 | --- | --- |
 | **Esteo-Staging** | `staging` |
-| **Esteo** (main) | `main` (configure at launch) |
+| **Esteo** (main) | `main` |
 
 Pushing to `staging` auto-deploys tasks to Esteo-Staging Production when GitHub integration is connected.
 
@@ -249,6 +397,7 @@ Trigger.dev Vercel integration can sync env vars and trigger deploys. **Not requ
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Stripe test | If testing billing |
 | `STRIPE_PRICE_PRO`, `STRIPE_PRICE_BUSINESS` | Stripe dashboard | If testing billing |
 | `ESTIMATE_REQUEST_TURNSTILE_SECRET_KEY` | Cloudflare | Optional |
+| `APP_URL`, `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` | Yes |
 
 **Run locally (two terminals):**
 
@@ -271,6 +420,7 @@ Without `trigger:dev`, tasks queue in Development and expire (no cloud worker on
 
 | Variable | Value source | Preview checkbox |
 | --- | --- | --- |
+| `APP_URL`, `NEXT_PUBLIC_APP_URL` | `https://preview.esteo.app` | Preview |
 | `DATABASE_URL`, `DIRECT_URL` | Neon **staging** branch | Preview |
 | Clerk keys | Same test app as localhost | Preview |
 | `UPLOADTHING_TOKEN` | UploadThing | Preview |
@@ -295,18 +445,35 @@ Without `trigger:dev`, tasks queue in Development and expire (no cloud worker on
 
 ---
 
-### c) main — Vercel Production (future launch)
+### c) main — Vercel Production
 
-Not yet live. When launching `app.esteo.pl`:
+**Git:** branch `main` → Vercel **Production** deployment at **`https://esteo.app`**.
 
-| Component | Configuration |
+**Vercel → Project → Environment Variables** — ensure **Production** checkbox is enabled for each variable.
+
+| Variable | Value source | Production checkbox |
+| --- | --- | --- |
+| `APP_URL`, `NEXT_PUBLIC_APP_URL` | `https://esteo.app` | Production |
+| `DATABASE_URL`, `DIRECT_URL` | Neon **production** branch | Production |
+| Clerk keys | Production Clerk application | Production |
+| `UPLOADTHING_TOKEN` | UploadThing | Production |
+| `TRIGGER_PROJECT_ID` | **Esteo** (main) project ref | Production |
+| `TRIGGER_SECRET_KEY` | **Esteo → Production** API key (`tr_prod_...`) | Production |
+| Stripe live keys | Stripe dashboard | Production |
+| `EMAIL_FROM` | `estimates@mail.esteo.app` | Production |
+
+**Trigger.dev → Esteo → Production → Environment Variables:**
+
+| Variable | Value |
 | --- | --- |
-| Vercel **Production** env | `TRIGGER_PROJECT_ID` + `TRIGGER_SECRET_KEY` from **main Esteo** Production |
-| Trigger **Esteo** Production env vars | prod Neon, prod OpenAI, prod UploadThing |
-| Clerk | Production application keys |
-| Stripe | Live keys + webhook URL pointing to Production domain |
-| GitHub integration **Esteo** | Production → branch `main` |
-| **Esteo-Staging** | Unchanged — continues to serve Preview only |
+| `DATABASE_URL` | Same production Neon as Vercel Production |
+| `OPENAI_API_KEY` | Production key |
+| `UPLOADTHING_TOKEN` | Same as Vercel |
+| `RESEND_API_KEY`, `EMAIL_FROM` | Production email sending |
+
+**Build on Vercel:** `npm run build:vercel` on Production uses `next build` (migrations run on Preview only via `build:vercel`). Task deploy via GitHub integration on push to `main`.
+
+**Esteo-Staging** remains unchanged — continues to serve Preview only (`preview.esteo.app`).
 
 ---
 
@@ -333,7 +500,7 @@ If step 5 fails → HTTP 500, user message „Nie udało się wysłać zgłoszen
 | Vercel Preview deploy | `git push` to `staging` |
 | Vercel Production deploy | `git push` to `main` |
 | Trigger Staging task deploy | GitHub integration on push to `staging`, or manual `trigger:deploy` |
-| Trigger main task deploy | GitHub integration on push to `main` (at launch) |
+| Trigger main task deploy | GitHub integration on push to `main` |
 | Prisma migrations (local dev) | `npm run prisma:migrate` against Neon **development** `DIRECT_URL` |
 | Prisma migrations (staging, manual) | `npm run prisma:migrate:staging` |
 | Prisma migrations (Preview deploy) | automatic via `build:vercel` on Vercel Preview |
@@ -363,16 +530,29 @@ If step 5 fails → HTTP 500, user message „Nie udało się wysłać zgłoszen
 5. Test on **`https://preview.esteo.app`** (or latest `*.vercel.app` Preview URL): submit estimate request (with and without attachments)
 6. Verify run in **Esteo-Staging → Production → Runs**
 
-### Production launch (future)
+### Production deploy / env change
 
-1. Create prod Neon branch; set Vercel Production `DATABASE_URL` / `DIRECT_URL`
-2. Clerk production instance; update Vercel Production Clerk keys
-3. Stripe live mode; webhook URL on Production domain
-4. `CI_PRODUCTION=true npm run verify-stripe-prices` (catalog vs Stripe `unit_amount` + `pln`)
-5. Trigger **main Esteo → Production** env vars (prod secrets)
-6. Deploy tasks: GitHub integration Production → `main`
-7. Vercel Production: `TRIGGER_*` from main Esteo Production
-8. Smoke test on Production domain; keep Esteo-Staging for Preview unchanged
+1. Update variables in Vercel with **Production** scope where needed
+2. Confirm `APP_URL` and `NEXT_PUBLIC_APP_URL` are `https://esteo.app`
+3. Confirm `TRIGGER_SECRET_KEY` and `TRIGGER_PROJECT_ID` both have Production enabled (main **Esteo** project)
+4. Confirm Trigger **Esteo → Production** dashboard has worker env vars
+5. Redeploy latest Production deployment
+6. Smoke test on **`https://esteo.app`**: sign-in, dashboard, estimate send
+7. Verify Stripe webhook URL points to `https://esteo.app/api/...`
+
+### Production launch checklist (initial or major cutover)
+
+1. DNS: `esteo.app` A record points to Vercel
+2. Vercel → Domains: `esteo.app` shows **Valid**, assigned to **Production** (`main`)
+3. Set `APP_URL` / `NEXT_PUBLIC_APP_URL` to `https://esteo.app` on Vercel Production
+4. Create prod Neon branch; set Vercel Production `DATABASE_URL` / `DIRECT_URL`
+5. Clerk production instance; add `https://esteo.app` to allowed origins; update Vercel Production Clerk keys
+6. Stripe live mode; webhook URL on `https://esteo.app`
+7. `CI_PRODUCTION=true npm run verify-stripe-prices` (catalog vs Stripe `unit_amount` + `pln`)
+8. Trigger **main Esteo → Production** env vars (prod secrets)
+9. Deploy tasks: GitHub integration Production → `main`
+10. Vercel Production: `TRIGGER_*` from main Esteo Production
+11. Smoke test on `https://esteo.app`; keep Esteo-Staging for Preview unchanged
 
 ### Debug public submit 500
 

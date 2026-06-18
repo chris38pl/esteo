@@ -180,6 +180,27 @@
       "usersDescription": "Zarządzaj członkami przestrzeni i zaproszeniami do współpracy.",
       "rulesDescription": "Definiuj reguły AI używane przy generowaniu wycen i odpowiedzi."
     },
+    "aiSetup": {
+      "title": "Konfiguracja AI",
+      "description": "Uzupełnij kontekst, aby AI lepiej rozumiało Twoją działalność i generowało trafniejsze wyceny.",
+      "scoreLabel": "Gotowość AI",
+      "industryLabel": "Branża",
+      "businessTypeLabel": "Typ działalności",
+      "businessTypePlaceholder": "np. Organizacja wesel",
+      "businessTypeHint": "Krótka etykieta branży — używana w promptach AI i analityce.",
+      "save": "Zapisz typ działalności",
+      "saving": "Zapisywanie…",
+      "saved": "Typ działalności zapisany.",
+      "criteria": {
+        "businessType": "Typ działalności",
+        "companyDescription": "Opis firmy",
+        "domainRulesOrRichDescription": "Reguła wyceny lub rozbudowany opis firmy (>300 zn.)",
+        "customSections": "Sekcje wyceny dostosowane"
+      },
+      "errors": {
+        "generic": "Sprawdź typ działalności i spróbuj ponownie."
+      }
+    },
     "company": {
       "nameLabel": "Nazwa firmy",
       "nameHint": "Nazwę edytujesz w zakładce Ogólne.",
