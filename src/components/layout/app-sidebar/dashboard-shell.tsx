@@ -38,6 +38,11 @@ function isAccountRoute(pathname: string): boolean {
   return pathname.endsWith("/dashboard/account");
 }
 
+/** Bare /{locale}/dashboard landing — ClientRedirect hop before onboarding/invitations. */
+function isBareDashboardRoute(pathname: string): boolean {
+  return /\/dashboard$/.test(pathname);
+}
+
 /** Matches Tailwind `md:` — sidebar is visible from this width up. */
 function useMdUp() {
   return useSyncExternalStore(
@@ -66,8 +71,10 @@ export function DashboardShell({
   const contentInset = mdUp ? offset : 0;
   const { modalInboxItem, locale: contextLocale, workspaces } = useWorkspaceContext();
   const isPreWorkspaceAccount = workspaces.length === 0 && isAccountRoute(pathname);
+  const isPreWorkspaceRedirectHop =
+    workspaces.length === 0 && isBareDashboardRoute(pathname);
 
-  if (isFocusedDashboardRoute(pathname) || isPreWorkspaceAccount) {
+  if (isFocusedDashboardRoute(pathname) || isPreWorkspaceAccount || isPreWorkspaceRedirectHop) {
     return (
       <div
         className={cn(
