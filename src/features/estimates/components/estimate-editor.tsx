@@ -267,6 +267,7 @@ export function EstimateEditor({
 
   const activeVersion = versionTree;
   const versionStatus = activeVersion?.status ?? "DRAFT";
+  const workflowStatus = versionWorkflow.status;
   const isArchived = isEstimateVersionArchived(versionWorkflow.archivedAt);
   const { isSending, startPolling, resumePollingIfNeeded, shouldResumePolling } =
     useEstimateSendPolling({
@@ -274,13 +275,16 @@ export function EstimateEditor({
       workspaceId: estimate.workspaceId,
       workspaceSlug,
       locale,
-      versionStatus,
+      versionStatus: workflowStatus,
+      lastSentAt: versionWorkflow.lastSentAt,
       activeSendTransportStatus: versionWorkflow.activeSend?.transportStatus,
+      serverActiveSendId: versionWorkflow.activeSend?.id ?? null,
+      serverActiveSendRunId: versionWorkflow.activeSend?.runId ?? null,
     });
 
   const serverActiveSend = hasActiveSendJob(versionWorkflow.activeSend?.transportStatus);
   const showSendInProgress =
-    serverActiveSend || (isSending && versionStatus === "DRAFT");
+    serverActiveSend || (isSending && workflowStatus === "DRAFT");
 
   useEffect(() => {
     const activeSend = versionWorkflow.activeSend;

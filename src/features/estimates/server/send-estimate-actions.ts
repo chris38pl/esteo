@@ -132,6 +132,31 @@ export async function pollEstimateSendAction(input: {
           },
         };
       }
+
+      if (run.isCompleted) {
+        const refreshed = await findSendAttemptById(input.sendId, input.workspaceId);
+        if (refreshed && TERMINAL_SEND_STATUSES.includes(refreshed.transportStatus)) {
+          revalidateEstimatePaths(input.locale, input.workspaceSlug, input.estimateId);
+
+          if (refreshed.transportStatus === "FAILED") {
+            return {
+              success: true,
+              data: {
+                status: "failed",
+                errorMessage: refreshed.errorMessage ?? undefined,
+              },
+            };
+          }
+
+          return {
+            success: true,
+            data: {
+              status: "completed",
+              transportStatus: refreshed.transportStatus,
+            },
+          };
+        }
+      }
     }
 
     return {

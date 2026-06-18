@@ -52,13 +52,20 @@ function phaseFromTransportStatus(
   }
 }
 
+function isVersionSettled(status: EstimateVersionStatus): boolean {
+  return status === "SENT" || status === "ACCEPTED" || status === "REJECTED";
+}
+
 export function useEstimateSendPolling(input: {
   estimateId: string;
   workspaceId: string;
   workspaceSlug: string;
   locale: Locale;
   versionStatus: EstimateVersionStatus;
+  lastSentAt: string | null;
   activeSendTransportStatus: EstimateSendTransportStatus | null | undefined;
+  serverActiveSendId: string | null;
+  serverActiveSendRunId: string | null;
 }) {
   const t = useTranslations("estimates");
   const router = useRouter();
@@ -67,6 +74,7 @@ export function useEstimateSendPolling(input: {
   const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pollStartedAtRef = useRef<number | null>(null);
   const activeSendRef = useRef<{ sendId: string; runId: string } | null>(null);
+  const lastPollingContextRef = useRef<{ sendId: string; runId: string } | null>(null);
   const terminalSendIdsRef = useRef<Set<string>>(new Set());
   const resumedSendIdsRef = useRef<Set<string>>(new Set());
   const pollInFlightRef = useRef(false);
@@ -116,6 +124,9 @@ export function useEstimateSendPolling(input: {
   const markTerminal = useCallback(
     (sendId: string) => {
       terminalSendIdsRef.current.add(sendId);
+      if (lastPollingContextRef.current?.sendId === sendId) {
+        lastPollingContextRef.current = null;
+      }
     },
     [],
   );
@@ -155,7 +166,7 @@ export function useEstimateSendPolling(input: {
 
   const pollOnce = useCallback(async () => {
     const active = activeSendRef.current;
-    if (!active || !isPollingRef.current || pollInFlightRef.current) {
+    if (!active || pollInFlightRef.current) {
       return;
     }
 
@@ -163,6 +174,7 @@ export function useEstimateSendPolling(input: {
       return;
     }
 
+    const { sendId, runId } = active;
     pollInFlightRef.current = true;
 
     try {
@@ -171,36 +183,36 @@ export function useEstimateSendPolling(input: {
         workspaceId: input.workspaceId,
         workspaceSlug: input.workspaceSlug,
         locale: input.locale,
-        sendId: active.sendId,
-        runId: active.runId,
+        sendId,
+        runId,
       });
 
-      if (!activeSendRef.current || !isPollingRef.current) {
-        return;
-      }
-
-      if (terminalSendIdsRef.current.has(active.sendId)) {
+      if (terminalSendIdsRef.current.has(sendId)) {
         return;
       }
 
       if (!result.success) {
-        handleFailure(active.sendId, result.error);
-        return;
-      }
-
-      if (result.data.status === "pending") {
-        const nextPhase = phaseFromTransportStatus(result.data.transportStatus);
-        setPhase(nextPhase);
-        updateProgressToast(active.sendId, nextPhase);
+        handleFailure(sendId, result.error);
         return;
       }
 
       if (result.data.status === "failed") {
-        handleFailure(active.sendId, result.data.errorMessage);
+        handleFailure(sendId, result.data.errorMessage);
         return;
       }
 
-      handleSuccess(active.sendId);
+      if (result.data.status === "completed") {
+        handleSuccess(sendId);
+        return;
+      }
+
+      if (!isPollingRef.current) {
+        return;
+      }
+
+      const nextPhase = phaseFromTransportStatus(result.data.transportStatus);
+      setPhase(nextPhase);
+      updateProgressToast(sendId, nextPhase);
     } finally {
       pollInFlightRef.current = false;
     }
@@ -242,7 +254,9 @@ export function useEstimateSendPolling(input: {
       }
 
       finishPolling();
-      activeSendRef.current = { sendId, runId };
+      const context = { sendId, runId };
+      activeSendRef.current = context;
+      lastPollingContextRef.current = context;
       pollStartedAtRef.current = Date.now();
       isPollingRef.current = true;
       setPhase("queued");
@@ -313,20 +327,62 @@ export function useEstimateSendPolling(input: {
     }
 
     const serverJobActive = hasActiveSendJob(input.activeSendTransportStatus);
-    const versionSettled =
-      input.versionStatus === "SENT" ||
-      input.versionStatus === "ACCEPTED" ||
-      input.versionStatus === "REJECTED";
+    const versionSettled = isVersionSettled(input.versionStatus);
+    const sendSettledOnServer =
+      versionSettled || (!serverJobActive && input.lastSentAt != null);
 
-    if (versionSettled && !serverJobActive && isSending) {
+    if (sendSettledOnServer && isSending) {
       handleSuccess(trackedSendId);
     }
   }, [
     activeToastSendId,
     handleSuccess,
     input.activeSendTransportStatus,
+    input.lastSentAt,
     input.versionStatus,
     isSending,
+  ]);
+
+  useEffect(() => {
+    if (!activeToastSendId || !isSending || isPollingRef.current) {
+      return;
+    }
+
+    if (terminalSendIdsRef.current.has(activeToastSendId)) {
+      return;
+    }
+
+    const context =
+      lastPollingContextRef.current ??
+      (input.serverActiveSendId &&
+      input.serverActiveSendRunId &&
+      input.serverActiveSendId === activeToastSendId
+        ? {
+            sendId: input.serverActiveSendId,
+            runId: input.serverActiveSendRunId,
+          }
+        : null);
+
+    if (!context || context.sendId !== activeToastSendId) {
+      return;
+    }
+
+    activeSendRef.current = context;
+    lastPollingContextRef.current = context;
+    isPollingRef.current = true;
+    if (pollStartedAtRef.current == null) {
+      pollStartedAtRef.current = Date.now();
+    }
+
+    void pollOnce();
+    schedulePoll();
+  }, [
+    activeToastSendId,
+    input.serverActiveSendId,
+    input.serverActiveSendRunId,
+    isSending,
+    pollOnce,
+    schedulePoll,
   ]);
 
   return {
