@@ -9,7 +9,7 @@
     "dev": "next dev --webpack",
     "trigger:dev": "npx trigger.dev@latest dev",
     "trigger:deploy": "npx trigger.dev@4.4.6 deploy",
-    "trigger:deploy:staging": "npx trigger.dev@4.4.6 deploy --project-ref proj_lkorkbyjorynapnptmqa",
+    "trigger:deploy:staging": "npx trigger.dev@4.4.6 deploy --project-ref proj_lkorkbyjorynapnptmqa --native-build-server",
     "build": "next build",
     "build:vercel": "node scripts/vercel-build.mjs",
     "start": "next start",
@@ -100,6 +100,7 @@
   "devDependencies": {
     "@fontsource/inter": "^5.2.8",
     "@shadcn/ui": "^0.0.4",
+    "@swc/helpers": "^0.5.23",
     "@tailwindcss/postcss": "^4",
     "@trigger.dev/build": "4.4.6",
     "@types/node": "^20",

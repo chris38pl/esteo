@@ -208,9 +208,15 @@ $env:TRIGGER_PROJECT_ID="proj_<staging_ref>"
 npm run trigger:deploy
 ```
 
-Or: `npx trigger.dev@4.4.6 deploy --project-ref proj_<staging_ref>`
+Or: `npm run trigger:deploy:staging` (uses `--native-build-server` — required on Windows; local Depot build often fails with `spawn UNKNOWN`).
+
+```powershell
+npx trigger.dev@4.4.6 deploy --project-ref proj_lkorkbyjorynapnptmqa --native-build-server
+```
 
 Project ref is shown in the Trigger.dev dashboard (e.g. check **Esteo-Staging → Settings**).
+
+**Lockfile:** Trigger’s remote `npm ci` fails if `package.json` and `package-lock.json` are out of sync (e.g. missing `@swc/helpers`). Run `npm install` locally and commit the lockfile before deploy.
 
 ### Vercel integration (optional)
 
