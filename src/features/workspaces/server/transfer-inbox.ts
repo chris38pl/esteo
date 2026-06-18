@@ -34,3 +34,36 @@ export async function hasPendingOwnershipTransfers(email: string): Promise<boole
   const count = await countPendingOwnershipTransfers(email);
   return count > 0;
 }
+
+const transferInclude = {
+  workspace: { select: { id: true, name: true, slug: true } },
+  fromUser: { select: { id: true, name: true, email: true } },
+} as const;
+
+export async function getNextModalOwnershipTransfer(email: string) {
+  await expireStalePendingTransfers();
+
+  return prisma.workspaceOwnershipTransfer.findFirst({
+    where: {
+      ...pendingTransferWhere(email),
+      promptDismissedAt: null,
+    },
+    include: transferInclude,
+    orderBy: { createdAt: "asc" },
+  });
+}
+
+export async function findReceivedOwnershipTransferById(email: string, transferId: string) {
+  await expireStalePendingTransfers();
+
+  return prisma.workspaceOwnershipTransfer.findFirst({
+    where: {
+      id: transferId,
+      toEmail: email.toLowerCase(),
+      status: "PENDING_RECIPIENT",
+      expiresAt: { gt: new Date() },
+      workspace: { deletedAt: null },
+    },
+    include: transferInclude,
+  });
+}

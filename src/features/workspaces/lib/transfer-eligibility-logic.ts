@@ -1,3 +1,4 @@
+import type { BillingOwnershipState } from "@/features/billing/lib/billing-permissions-logic";
 import type { SubscriptionPlan } from "@prisma/client";
 
 import type { WorkspaceEffectiveStatus } from "@/server/permissions/domain";
@@ -9,7 +10,8 @@ export type TransferEligibilityBlockReason =
   | "NO_PAID_PERIOD"
   | "WORKSPACE_NOT_ACTIVE"
   | "FREE_PLAN"
-  | "PENDING_TRANSFER_EXISTS";
+  | "PENDING_TRANSFER_EXISTS"
+  | "BILLING_HANDOFF_UNRESOLVED";
 
 export type TransferEligibilitySnapshot = {
   eligible: boolean;
@@ -30,10 +32,25 @@ export function evaluateTransferEligibility(input: {
   subscription: LiveSubscriptionForTransfer | null;
   effectiveStatus: WorkspaceEffectiveStatus | null;
   hasPendingTransfer: boolean;
+  billingOwnershipState?: BillingOwnershipState;
   now?: Date;
 }): TransferEligibilitySnapshot {
   const { subscription, effectiveStatus, hasPendingTransfer } = input;
   const now = input.now ?? new Date();
+
+  if (
+    input.billingOwnershipState &&
+    input.billingOwnershipState !== "NORMAL"
+  ) {
+    return {
+      eligible: false,
+      blockReason: "BILLING_HANDOFF_UNRESOLVED",
+      plan: subscription?.plan ?? "FREE",
+      cancelAtPeriodEnd: subscription?.cancelAtPeriodEnd ?? false,
+      currentPeriodEnd: subscription?.currentPeriodEnd ?? null,
+      effectiveStatus,
+    };
+  }
 
   if (!subscription) {
     return {
@@ -127,6 +144,8 @@ export function transferEligibilityErrorMessage(
       return "Only Pro or Business workspaces can be transferred.";
     case "PENDING_TRANSFER_EXISTS":
       return "A workspace ownership transfer is already pending.";
+    case "BILLING_HANDOFF_UNRESOLVED":
+      return "Resolve billing handoff before transferring ownership again.";
     default:
       return "This workspace cannot be transferred right now.";
   }

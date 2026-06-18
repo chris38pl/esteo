@@ -177,6 +177,25 @@ export async function syncSubscriptionFromStripe(
 
   const previousCancelAtPeriodEnd = previousSubscription?.cancelAtPeriodEnd ?? false;
 
+  let effectiveCancelAtPeriodEnd = cancelAtPeriodEnd;
+
+  if (
+    billingAccount.workspaceId &&
+    previousCancelAtPeriodEnd &&
+    !cancelAtPeriodEnd
+  ) {
+    const { enforceSubscriptionCancellationDuringHandoff } = await import(
+      "@/features/billing/server/billing-handoff-subscription-guard"
+    );
+    const reverted = await enforceSubscriptionCancellationDuringHandoff(
+      billingAccount.workspaceId,
+      stripeSubscription,
+    );
+    if (reverted) {
+      effectiveCancelAtPeriodEnd = true;
+    }
+  }
+
   if (billingAccount.workspaceId && (status === "ACTIVE" || status === "TRIAL")) {
     await enforceSingleActiveSubscription({
       workspaceId: billingAccount.workspaceId,
@@ -205,7 +224,7 @@ export async function syncSubscriptionFromStripe(
 
       stripePriceId: priceId,
 
-      cancelAtPeriodEnd,
+      cancelAtPeriodEnd: effectiveCancelAtPeriodEnd,
 
       currentPeriodEnd,
 
@@ -225,7 +244,7 @@ export async function syncSubscriptionFromStripe(
 
       stripePriceId: priceId,
 
-      cancelAtPeriodEnd,
+      cancelAtPeriodEnd: effectiveCancelAtPeriodEnd,
 
       currentPeriodEnd,
 
@@ -259,13 +278,13 @@ export async function syncSubscriptionFromStripe(
       stripeSubscription,
     });
 
-    if (previousCancelAtPeriodEnd && !cancelAtPeriodEnd) {
+    if (previousCancelAtPeriodEnd && !effectiveCancelAtPeriodEnd) {
       const { cancelPendingTransferIfSubscriptionReactivated } = await import(
         "@/features/workspaces/server/ownership-transfer"
       );
       await cancelPendingTransferIfSubscriptionReactivated(
         billingAccount.workspaceId,
-        cancelAtPeriodEnd,
+        effectiveCancelAtPeriodEnd,
       );
     }
   }
@@ -292,7 +311,18 @@ export async function expireWorkspaceSubscription(stripeSubscriptionId: string) 
 
     where: { stripeSubscriptionId },
 
-    select: { id: true, billingAccount: { select: { workspaceId: true } } },
+    select: {
+      id: true,
+      billingAccount: {
+        select: {
+          id: true,
+          workspaceId: true,
+          payerUserId: true,
+          handoffExpiredAt: true,
+          workspace: { select: { ownerId: true } },
+        },
+      },
+    },
 
   });
 
@@ -324,10 +354,37 @@ export async function expireWorkspaceSubscription(stripeSubscriptionId: string) 
 
 
 
-  if (subscription.billingAccount?.workspaceId) {
-    await recomputeIsActiveFree(subscription.billingAccount.workspaceId);
-    await cancelAllWorkspaceAddons(subscription.billingAccount.workspaceId);
-    await suspendMembersOnWorkspaceExpired(subscription.billingAccount.workspaceId);
+  const billingAccount = subscription.billingAccount;
+  if (billingAccount?.workspaceId && billingAccount.workspace) {
+    const ownerId = billingAccount.workspace.ownerId;
+    const payerUserId = billingAccount.payerUserId ?? ownerId;
+    const handoffActive = payerUserId !== ownerId;
+
+    if (handoffActive && !billingAccount.handoffExpiredAt) {
+      await prisma.billingAccount.update({
+        where: { id: billingAccount.id },
+        data: { handoffExpiredAt: new Date() },
+      });
+
+      await prisma.auditLog.create({
+        data: {
+          actorUserId: ownerId,
+          workspaceId: billingAccount.workspaceId,
+          entityType: "BillingHandoff",
+          entityId: billingAccount.workspaceId,
+          action: "billing_handoff_expired",
+          diff: {
+            payerUserId,
+            ownerUserId: ownerId,
+            billingOwnershipState: "HANDOFF_EXPIRED",
+          },
+        },
+      });
+    }
+
+    await recomputeIsActiveFree(billingAccount.workspaceId);
+    await cancelAllWorkspaceAddons(billingAccount.workspaceId);
+    await suspendMembersOnWorkspaceExpired(billingAccount.workspaceId);
   }
 
 
@@ -518,6 +575,22 @@ export async function handleCheckoutSessionCompleted(
 
 ) {
 
+  const workspaceId = session.metadata?.workspaceId;
+  const metadataOwnerUserId = session.metadata?.ownerUserId;
+
+  if (workspaceId && metadataOwnerUserId) {
+    const workspace = await prisma.workspace.findUnique({
+      where: { id: workspaceId },
+      select: { ownerId: true },
+    });
+    if (!workspace || workspace.ownerId !== metadataOwnerUserId) {
+      console.warn(
+        `Checkout session owner mismatch for workspace ${workspaceId}; skipping sync.`,
+      );
+      return null;
+    }
+  }
+
   const stripeCustomerId =
 
     typeof session.customer === "string" ? session.customer : session.customer?.id;
@@ -548,11 +621,71 @@ export async function handleCheckoutSessionCompleted(
 
   const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId);
 
-  return syncSubscriptionFromStripe(subscription, stripeCustomerId, {
+  const synced = await syncSubscriptionFromStripe(subscription, stripeCustomerId, {
 
     planHint: session.metadata?.plan ?? subscription.metadata.plan ?? null,
 
   });
+
+  if (!workspaceId || !synced) {
+    return synced;
+  }
+
+  const billingAccount = await prisma.billingAccount.findFirst({
+    where: { workspaceId },
+    select: {
+      id: true,
+      payerUserId: true,
+      handoffExpiredAt: true,
+      billingCustomerId: true,
+      workspace: { select: { ownerId: true } },
+    },
+  });
+
+  if (!billingAccount?.workspace) {
+    return synced;
+  }
+
+  const ownerId = billingAccount.workspace.ownerId;
+  const payerUserId = billingAccount.payerUserId ?? ownerId;
+  const wasHandoffExpired =
+    payerUserId !== ownerId && billingAccount.handoffExpiredAt !== null;
+
+  if (wasHandoffExpired) {
+    const billingCustomer = await prisma.billingCustomer.findFirst({
+      where: { ownerUserId: ownerId, stripeCustomerId: { not: null } },
+      orderBy: { createdAt: "desc" },
+    });
+
+    await prisma.$transaction(async (tx) => {
+      await tx.billingAccount.update({
+        where: { id: billingAccount.id },
+        data: {
+          payerUserId: ownerId,
+          handoffExpiredAt: null,
+          ...(billingCustomer ? { billingCustomerId: billingCustomer.id } : {}),
+        },
+      });
+
+      await tx.auditLog.create({
+        data: {
+          actorUserId: ownerId,
+          workspaceId,
+          entityType: "BillingHandoff",
+          entityId: workspaceId,
+          action: "billing_handoff_completed",
+          diff: {
+            payerUserId: ownerId,
+            previousPayerUserId: payerUserId,
+            ownerUserId: ownerId,
+            billingOwnershipState: "NORMAL",
+          },
+        },
+      });
+    });
+  }
+
+  return synced;
 
 }
 

@@ -8,7 +8,14 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import type { WorkspaceBillingAddonsPageData } from "@/features/billing/billing-addons-page-data";
-import { changeWorkspaceAddonQuantityAction } from "@/features/billing/server/billing-actions";
+import type { BillingChangePreview } from "@/features/billing/billing-page-data";
+import { BillingChangePreviewDialog } from "@/features/billing/components/billing-change-preview-dialog";
+import { BillingCreditConfirmDialog } from "@/features/billing/components/billing-credit-confirm-dialog";
+import { isBillingPreviewExpired } from "@/features/billing/lib/billing-preview-utils";
+import {
+  changeWorkspaceAddonQuantityAction,
+  previewWorkspaceBillingChangeAction,
+} from "@/features/billing/server/billing-actions";
 import {
   ADDON_UNIT_PRICES_PLN,
   MAX_ADDON_QUANTITY,
@@ -60,6 +67,9 @@ export function WorkspaceAddonsPanel({
   const [seatQty, setSeatQty] = useState(entitlements.addons.seats.quantity);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [preview, setPreview] = useState<BillingChangePreview | null>(null);
+  const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
+  const [creditDialogOpen, setCreditDialogOpen] = useState(false);
 
   const baseStorage = entitlements.baseLimits.maxStorageBytes;
   const baseSeats = entitlements.baseLimits.maxInvitedSeats ?? 0;
@@ -76,33 +86,88 @@ export function WorkspaceAddonsPanel({
   const storageMonthly = storageQty * ADDON_UNIT_PRICES_PLN.STORAGE;
   const seatMonthly = seatQty * ADDON_UNIT_PRICES_PLN.SEATS;
 
+  async function applyAddonChanges() {
+    if (storageDirty && canBuyStorage) {
+      const result = await changeWorkspaceAddonQuantityAction(
+        workspaceId,
+        "STORAGE",
+        storageQty,
+      );
+      if (!result.success) {
+        setError(result.error);
+        return false;
+      }
+    }
+
+    if (seatDirty && isBusiness) {
+      const result = await changeWorkspaceAddonQuantityAction(workspaceId, "SEATS", seatQty);
+      if (!result.success) {
+        setError(result.error);
+        return false;
+      }
+    }
+
+    return true;
+  }
+
   function handleSave() {
     setError(null);
     startTransition(async () => {
-      if (storageDirty && canBuyStorage) {
-        const result = await changeWorkspaceAddonQuantityAction(
-          workspaceId,
-          "STORAGE",
-          storageQty,
-        );
-        if (!result.success) {
-          setError(result.error);
-          return;
-        }
+      const previewResult = await previewWorkspaceBillingChangeAction(workspaceId, {
+        kind: "addons",
+        storageQuantity: storageQty,
+        seatQuantity: seatQty,
+      });
+
+      if (!previewResult.success) {
+        setError(previewResult.error);
+        return;
       }
 
-      if (seatDirty && isBusiness) {
-        const result = await changeWorkspaceAddonQuantityAction(workspaceId, "SEATS", seatQty);
-        if (!result.success) {
-          setError(result.error);
-          return;
-        }
+      const nextPreview = previewResult.data;
+      setPreview(nextPreview);
+
+      if (nextPreview.prorationKind === "charge") {
+        setPreviewDialogOpen(true);
+        return;
       }
 
-      toast.success(t("saveSuccess"));
-      window.location.reload();
+      if (nextPreview.prorationKind === "credit") {
+        setCreditDialogOpen(true);
+        return;
+      }
+
+      const ok = await applyAddonChanges();
+      if (ok) {
+        toast.success(t("saveSuccess"));
+        window.location.reload();
+      }
     });
   }
+
+  function handleConfirmPreview() {
+    if (!preview || isBillingPreviewExpired(preview)) {
+      return;
+    }
+
+    startTransition(async () => {
+      setPreviewDialogOpen(false);
+      setCreditDialogOpen(false);
+      const ok = await applyAddonChanges();
+      if (ok) {
+        toast.success(t("saveSuccess"));
+        window.location.reload();
+      }
+    });
+  }
+
+  function handleRecalculatePreview() {
+    setPreviewDialogOpen(false);
+    setCreditDialogOpen(false);
+    handleSave();
+  }
+
+  const previewExpired = isBillingPreviewExpired(preview);
 
   if (isFree) {
     return (
@@ -177,13 +242,39 @@ export function WorkspaceAddonsPanel({
       )}
 
       {canManageBilling ? (
-        <div className="flex justify-end">
-          <Button className="min-w-[160px]" disabled={!isDirty || pending} onClick={handleSave}>
-            {pending ? <Loader2 className="size-4 animate-spin" /> : null}
-            {t("save")}
-          </Button>
+        <div className="space-y-3">
+          {isDirty ? (
+            <p className="text-sm text-muted-foreground">{t("prorationNotice")}</p>
+          ) : null}
+          <div className="flex justify-end">
+            <Button className="min-w-[160px]" disabled={!isDirty || pending} onClick={handleSave}>
+              {pending ? <Loader2 className="size-4 animate-spin" /> : null}
+              {t("save")}
+            </Button>
+          </div>
         </div>
       ) : null}
+
+      <BillingChangePreviewDialog
+        open={previewDialogOpen}
+        preview={preview}
+        locale={locale}
+        pending={pending}
+        expired={previewExpired}
+        onOpenChange={setPreviewDialogOpen}
+        onConfirm={handleConfirmPreview}
+        onRecalculate={handleRecalculatePreview}
+      />
+      <BillingCreditConfirmDialog
+        open={creditDialogOpen}
+        preview={preview}
+        locale={locale}
+        pending={pending}
+        expired={previewExpired}
+        onOpenChange={setCreditDialogOpen}
+        onConfirm={handleConfirmPreview}
+        onRecalculate={handleRecalculatePreview}
+      />
     </div>
   );
 }

@@ -315,10 +315,11 @@ If step 5 fails → HTTP 500, user message „Nie udało się wysłać zgłoszen
 1. Create prod Neon branch; set Vercel Production `DATABASE_URL` / `DIRECT_URL`
 2. Clerk production instance; update Vercel Production Clerk keys
 3. Stripe live mode; webhook URL on Production domain
-4. Trigger **main Esteo → Production** env vars (prod secrets)
-5. Deploy tasks: GitHub integration Production → `main`
-6. Vercel Production: `TRIGGER_*` from main Esteo Production
-7. Smoke test on Production domain; keep Esteo-Staging for Preview unchanged
+4. `CI_PRODUCTION=true npm run verify-stripe-prices` (catalog vs Stripe `unit_amount` + `pln`)
+5. Trigger **main Esteo → Production** env vars (prod secrets)
+6. Deploy tasks: GitHub integration Production → `main`
+7. Vercel Production: `TRIGGER_*` from main Esteo Production
+8. Smoke test on Production domain; keep Esteo-Staging for Preview unchanged
 
 ### Debug public submit 500
 

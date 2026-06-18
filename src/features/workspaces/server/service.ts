@@ -328,20 +328,29 @@ export async function archiveWorkspace(user: User, workspaceId: string) {
     "@/features/workspaces/lib/workspace-delete-eligibility"
   );
 
-  const [subscription, pendingTransfer] = await Promise.all([
+  const [subscription, pendingTransfer, billingOwnershipState] = await Promise.all([
     loadLiveSubscriptionForTransfer(workspaceId),
     getPendingWorkspaceTransfer(workspaceId),
+    import("@/features/billing/server/billing-permissions").then((m) =>
+      m.getWorkspaceBillingOwnershipState(workspaceId),
+    ),
   ]);
 
   const deleteEligibility = evaluateWorkspaceDeleteEligibility({
     subscription,
     hasPendingTransfer: Boolean(pendingTransfer),
+    billingOwnershipState: billingOwnershipState ?? "NORMAL",
   });
 
   if (!deleteEligibility.allowed) {
     if (deleteEligibility.blockReason === "PENDING_TRANSFER_EXISTS") {
       throw new WorkspaceError(
         "Cancel the pending ownership transfer before deleting this workspace.",
+      );
+    }
+    if (deleteEligibility.blockReason === "BILLING_HANDOFF_ACTIVE") {
+      throw new WorkspaceError(
+        "Cannot delete this workspace while billing handoff is active.",
       );
     }
     if (deleteEligibility.blockReason === "CANCEL_SUBSCRIPTION_REQUIRED") {
@@ -770,6 +779,22 @@ export async function dismissInvitationPrompt(user: User, invitationId: string) 
 
   return prisma.workspaceInvitation.update({
     where: { id: invitationId },
+    data: { promptDismissedAt: new Date() },
+  });
+}
+
+export async function dismissTransferPrompt(user: User, transferId: string) {
+  const { findReceivedOwnershipTransferById } = await import(
+    "@/features/workspaces/server/transfer-inbox"
+  );
+  const transfer = await findReceivedOwnershipTransferById(user.email, transferId);
+
+  if (!transfer) {
+    throw new WorkspaceError("Transfer not found or no longer valid.");
+  }
+
+  return prisma.workspaceOwnershipTransfer.update({
+    where: { id: transferId },
     data: { promptDismissedAt: new Date() },
   });
 }

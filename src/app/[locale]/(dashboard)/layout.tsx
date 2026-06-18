@@ -6,7 +6,7 @@ import { resolveRequestLocale } from "@/i18n/request-locale";
 import type { Locale } from "@/lib/locale";
 import { DashboardShell } from "@/components/layout/app-sidebar/dashboard-shell";
 import { WorkspaceProvider } from "@/components/layout/app-sidebar/workspace-context";
-import { toReceivedInvitationView } from "@/features/workspaces/components/invitation-types";
+import type { ModalInboxItemView } from "@/features/workspaces/components/inbox-modal-types";
 import { getBillingSidebarState } from "@/features/billing/server/get-billing-sidebar-state";
 import {
   getBillingPayerWorkspaceIdsForUser,
@@ -16,8 +16,9 @@ import { getAccessibleWorkspaces } from "@/features/workspaces/server/accessible
 import { getActiveWorkspaceMembersData } from "@/features/workspaces/server/get-active-workspace-card-data";
 import { getActiveWorkspaceMenuStats } from "@/features/workspaces/server/get-active-workspace-menu-stats";
 import {
-  getNextModalInvitation,
-} from "@/features/workspaces/server/invitation-inbox";
+  getNextModalInboxItem,
+  toModalInboxItemView,
+} from "@/features/workspaces/server/inbox-modal";
 import { countPendingInboxItems } from "@/features/workspaces/server/inbox-state";
 import { RESERVED_DASHBOARD_SLUGS } from "@/features/workspaces/server/slug-availability";
 import { toCurrentUserProfile } from "@/lib/avatars/user-avatar-presets";
@@ -79,7 +80,7 @@ export default async function DashboardLayout({
         currentUser={currentUser}
         locale={resolvedLocale}
         pendingInvitationCount={0}
-        modalInvitation={null}
+        modalInboxItem={null}
         pinnedEstimates={[]}
       >
         <DashboardShell locale={resolvedLocale}>{children}</DashboardShell>
@@ -113,13 +114,13 @@ export default async function DashboardLayout({
   } else {
     activeWorkspaceId = await resolveActiveWorkspace(user.id);
   }
-  const [canCreateWorkspace, ownedWorkspaceCount, billingSidebarState, pendingInvitationCount, nextModalInvitation] =
+  const [canCreateWorkspace, ownedWorkspaceCount, billingSidebarState, pendingInvitationCount, nextModalInboxItem] =
     await Promise.all([
     canUserCreateWorkspace(user.id),
     countOwnedWorkspaces(user.id),
     getBillingSidebarState(activeWorkspaceId),
     countPendingInboxItems(user.email),
-    getNextModalInvitation(user.email),
+    getNextModalInboxItem(user.email),
   ]);
   const canCreateAdditionalWorkspace = canCreateWorkspace && ownedWorkspaceCount > 0;
 
@@ -180,8 +181,8 @@ export default async function DashboardLayout({
       currentUser={currentUser}
       locale={resolvedLocale}
       pendingInvitationCount={pendingInvitationCount}
-      modalInvitation={
-        nextModalInvitation ? toReceivedInvitationView(nextModalInvitation) : null
+      modalInboxItem={
+        nextModalInboxItem ? toModalInboxItemView(nextModalInboxItem) : null
       }
       pinnedEstimates={pinnedEstimates}
       activeWorkspaceStats={activeWorkspaceStats}

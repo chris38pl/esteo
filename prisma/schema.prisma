@@ -330,6 +330,8 @@ model BillingAccount {
   payerUserId       String?
   workspaceId       String?  @unique
   billingCustomerId String?
+  /// Set when subscription EXPIRED during billing handoff (owner !== payer). 90-day timeout is derived from this.
+  handoffExpiredAt  DateTime?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
@@ -554,6 +556,7 @@ model WorkspaceOwnershipTransfer {
   expiresAt          DateTime
   acceptedAt         DateTime?
   cancelledAt        DateTime?
+  promptDismissedAt  DateTime?
   createdAt          DateTime                         @default(now())
   updatedAt          DateTime                         @updatedAt
 

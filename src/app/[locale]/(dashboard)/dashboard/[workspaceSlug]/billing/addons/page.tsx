@@ -36,7 +36,7 @@ export default async function WorkspaceBillingAddonsPage({
           workspaceSlug={resolved.canonicalSlug}
           locale={resolvedLocale}
           data={data}
-          canManageBilling={resolved.permissions.canManageBilling}
+          canManageBilling={resolved.permissions.canChangePlanOrAddons}
         />
       </Suspense>
     </div>

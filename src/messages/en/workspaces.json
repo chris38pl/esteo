@@ -329,7 +329,8 @@
         "NO_PAID_PERIOD": "This workspace has no remaining paid billing period.",
         "WORKSPACE_NOT_ACTIVE": "This workspace is not active.",
         "FREE_PLAN": "Only Pro or Business workspaces can be transferred.",
-        "PENDING_TRANSFER_EXISTS": "A workspace ownership transfer is already pending."
+        "PENDING_TRANSFER_EXISTS": "A workspace ownership transfer is already pending.",
+        "BILLING_HANDOFF_UNRESOLVED": "Resolve billing handoff before transferring ownership again."
       },
       "wizard": {
         "title": "Transfer {name}",
@@ -371,11 +372,18 @@
       "deleting": "Deleting…",
       "blocked": {
         "CANCEL_SUBSCRIPTION_REQUIRED": "Before deleting this workspace, you must cancel the current subscription. The workspace will remain active until the end of the already paid billing period.",
-        "PENDING_TRANSFER_EXISTS": "This workspace has a pending ownership transfer. Cancel the transfer before deleting the workspace."
+        "PENDING_TRANSFER_EXISTS": "This workspace has a pending ownership transfer. Cancel the transfer before deleting the workspace.",
+        "BILLING_HANDOFF_ACTIVE": "Cannot delete this workspace while billing handoff is active."
       }
     }
   },
   "transfer": {
+    "modalTitle": "Workspace ownership transfer",
+    "modalDescription": "You received a request to take ownership of an Esteo workspace.",
+    "hubHeadlineBefore": "You have been asked to",
+    "hubHeadlineAccent": "take ownership",
+    "hubSubtitle": "{name} wants to transfer workspace ownership to you.",
+    "dismissPrompt": "Don't ask again",
     "inboxTitle": "Ownership transfers",
     "inboxDescription": "Accept a transfer to become the workspace owner, or decline if it is not for you.",
     "fromSender": "From: {name}",

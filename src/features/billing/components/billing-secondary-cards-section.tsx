@@ -1,13 +1,11 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useTransition } from "react";
 import { ChevronRight, Coins, FileText, Puzzle, Users } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 
 import type { WorkspaceBillingPageData } from "@/features/billing/billing-page-data";
-import { openWorkspacePortalAction } from "@/features/billing/server/billing-actions";
 import {
   ADDON_UNIT_PRICES_PLN,
   SEAT_UNIT_COUNT,
@@ -15,7 +13,10 @@ import {
 } from "@/server/billing/addon-catalog";
 import { formatBytes } from "@/features/attachments/lib/format-bytes";
 import { formatCurrency, formatDate } from "@/i18n/formatters";
-import { dashboardBillingAddonsHref } from "@/lib/dashboard-routes";
+import { BillingHandoffSubscriptionCard } from "@/features/billing/components/billing-handoff-subscription-card";
+import { BillingInvoiceAdjustmentRow } from "@/features/billing/components/billing-invoice-adjustment-row";
+import { formatBillingMonthlyPrice } from "@/features/billing/lib/format-billing-amount";
+import { dashboardAccountBillingTabHref, dashboardBillingAddonsHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -23,17 +24,20 @@ export function BillingSecondaryCardsSection({
   data,
   workspaceId,
   workspaceSlug,
+  canManageAddons,
   canManageBilling,
 }: {
   data: WorkspaceBillingPageData;
   workspaceId: string;
   workspaceSlug: string;
+  canManageAddons: boolean;
   canManageBilling: boolean;
 }) {
   const canViewInvoiceHistory = data.entitlements.plan !== "FREE" && canManageBilling;
   const locale = useLocale() as Locale;
   const addonsHref = dashboardBillingAddonsHref(locale, workspaceSlug);
-  const canManageAddons = data.entitlements.plan !== "FREE" && canManageBilling;
+  const showHandoffSubscriptionCard =
+    data.billingOwnershipState === "HANDOFF_ACTIVE" && !canManageBilling;
 
   return (
     <section className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-2">
@@ -42,11 +46,15 @@ export function BillingSecondaryCardsSection({
         addonsHref={addonsHref}
         canManageAddons={canManageAddons}
       />
-      <BillingNextInvoiceCard
-        nextInvoice={data.nextInvoice}
-        workspaceId={workspaceId}
-        canViewInvoiceHistory={canViewInvoiceHistory}
-      />
+      {showHandoffSubscriptionCard ? (
+        <BillingHandoffSubscriptionCard currentPeriodEnd={data.currentPeriodEnd} />
+      ) : (
+        <BillingNextInvoiceCard
+          nextInvoice={data.nextInvoice}
+          pricing={data.pricing}
+          canViewInvoiceHistory={canViewInvoiceHistory}
+        />
+      )}
     </section>
   );
 }
@@ -246,27 +254,27 @@ function BillingAddonRow({
 
 function BillingNextInvoiceCard({
   nextInvoice,
-  workspaceId,
+  pricing,
   canViewInvoiceHistory,
 }: {
   nextInvoice: WorkspaceBillingPageData["nextInvoice"];
-  workspaceId: string;
+  pricing: WorkspaceBillingPageData["pricing"];
   canViewInvoiceHistory: boolean;
 }) {
   const t = useTranslations("billing.workspace.nextInvoice");
   const locale = useLocale() as Locale;
-  const [pending, startTransition] = useTransition();
+  const invoiceHistoryHref = dashboardAccountBillingTabHref(locale);
 
   const hasInvoice = nextInvoice.kind === "invoice";
-
-  function handleViewInvoiceHistory() {
-    startTransition(async () => {
-      const result = await openWorkspacePortalAction(workspaceId);
-      if (result.success) {
-        window.location.href = result.data.url;
-      }
-    });
-  }
+  const catalogRecurringCents = pricing.recurringCents;
+  const currency = hasInvoice ? nextInvoice.currency : pricing.currency;
+  const invoiceDeltaCents = hasInvoice
+    ? nextInvoice.invoiceDeltaCents ??
+      nextInvoice.amountCents - catalogRecurringCents
+    : 0;
+  const hasDelta = Math.abs(invoiceDeltaCents) > 1;
+  const monthlyAmount = formatBillingMonthlyPrice(catalogRecurringCents, locale, currency);
+  const adjustmentTooltip = t("adjustmentTooltip", { monthlyAmount });
 
   return (
     <BillingCardShell
@@ -277,19 +285,61 @@ function BillingNextInvoiceCard({
       footer={
         <BillingCardFooterLink
           label={t("viewInvoiceHistory")}
-          disabled={!canViewInvoiceHistory || pending}
-          onClick={canViewInvoiceHistory ? handleViewInvoiceHistory : undefined}
+          href={invoiceHistoryHref}
+          disabled={!canViewInvoiceHistory}
         />
       }
     >
       {hasInvoice ? (
-        <div className="space-y-2">
-          <p className="text-4xl font-semibold tracking-tight">
-            {formatCurrency(nextInvoice.amountCents / 100, locale, nextInvoice.currency)}
-          </p>
-          <p className="text-lg text-foreground/90">
-            {formatDate(nextInvoice.date, locale, { dateStyle: "long" })}
-          </p>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <p className="text-4xl font-semibold tracking-tight">
+              {formatCurrency(nextInvoice.amountCents / 100, locale, nextInvoice.currency)}
+            </p>
+            <p className="text-lg text-foreground/90">
+              {formatDate(nextInvoice.date, locale, { dateStyle: "long" })}
+            </p>
+          </div>
+
+          {hasDelta ? (
+            <div className="space-y-3 border-t border-border/50 pt-4">
+              <p className="text-sm font-medium text-foreground">{t("breakdown.composedOf")}</p>
+
+              <dl className="space-y-2 text-sm">
+                <div className="flex items-center justify-between gap-4">
+                  <dt className="text-muted-foreground">{t("breakdown.subscription")}</dt>
+                  <dd className="font-medium">{monthlyAmount}</dd>
+                </div>
+
+                {invoiceDeltaCents > 0 ? (
+                  <BillingInvoiceAdjustmentRow
+                    label={t("breakdown.periodCharge")}
+                    amount={formatBillingMonthlyPrice(invoiceDeltaCents, locale, currency)}
+                    tooltip={adjustmentTooltip}
+                  />
+                ) : null}
+
+                {invoiceDeltaCents < 0 ? (
+                  <BillingInvoiceAdjustmentRow
+                    label={t("breakdown.periodCredit")}
+                    amount={formatBillingMonthlyPrice(
+                      Math.abs(invoiceDeltaCents),
+                      locale,
+                      currency,
+                    )}
+                    tooltip={adjustmentTooltip}
+                  />
+                ) : null}
+              </dl>
+
+              <p className="text-sm text-muted-foreground">
+                <span>{t("upcomingInvoices")} </span>
+                <span className="font-medium text-foreground">
+                  {t("recurringMonthlyValue", { amount: monthlyAmount })}
+                </span>
+              </p>
+            </div>
+          ) : null}
         </div>
       ) : (
         <div className="space-y-2">
@@ -298,7 +348,9 @@ function BillingNextInvoiceCard({
         </div>
       )}
 
-      <p className="text-sm leading-relaxed text-muted-foreground">{t("description")}</p>
+      {!hasInvoice || !hasDelta ? (
+        <p className="text-sm leading-relaxed text-muted-foreground">{t("description")}</p>
+      ) : null}
     </BillingCardShell>
   );
 }

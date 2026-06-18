@@ -37,6 +37,10 @@ export default async function WorkspaceBillingPlansPage({
           locale={resolvedLocale}
           data={data}
           canManageBilling={resolved.permissions.canManageBilling}
+          canChangePlanOrAddons={resolved.permissions.canChangePlanOrAddons}
+          canPurchaseSubscription={resolved.permissions.canPurchaseSubscription}
+          billingOwnershipState={resolved.permissions.billingOwnershipState}
+          currentPeriodEnd={data.currentPeriodEnd}
         />
       </Suspense>
     </div>

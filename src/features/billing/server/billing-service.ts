@@ -9,6 +9,9 @@ import type Stripe from "stripe";
 import { prisma } from "@/db/client";
 
 import { getStripeClient } from "@/features/billing/server/stripe-client";
+import { toStripeLocale } from "@/features/billing/lib/stripe-locale";
+import { getWorkspaceBillingOwnershipState } from "@/features/billing/server/billing-permissions";
+import type { Locale } from "@/lib/locale";
 
 import { syncWorkspaceSubscriptionFromStripe } from "@/features/billing/server/subscription-sync";
 
@@ -98,7 +101,7 @@ async function loadWorkspaceBillingTarget(workspaceId: string): Promise<Workspac
 
       billingAccount: {
 
-        select: { id: true, ownerUserId: true, payerUserId: true, billingCustomerId: true },
+        select: { id: true, payerUserId: true, billingCustomerId: true },
 
       },
 
@@ -122,7 +125,7 @@ async function loadWorkspaceBillingTarget(workspaceId: string): Promise<Workspac
 
     slug: workspace.slug,
 
-    ownerUserId: workspace.billingAccount.ownerUserId,
+    ownerUserId: workspace.ownerId,
 
     payerUserId: workspace.billingAccount.payerUserId ?? workspace.ownerId,
 
@@ -156,9 +159,16 @@ export async function resolveBillingCustomer(
 
   const target = await loadWorkspaceBillingTarget(workspaceId);
 
+  const { getWorkspaceBillingOwnershipState } = await import(
+    "@/features/billing/server/billing-permissions"
+  );
+  const billingState = await getWorkspaceBillingOwnershipState(workspaceId);
+  const customerOwnerUserId =
+    billingState === "HANDOFF_EXPIRED" ? target.ownerUserId : target.payerUserId;
 
 
-  if (target.billingCustomerId) {
+
+  if (target.billingCustomerId && billingState !== "HANDOFF_EXPIRED") {
 
     const existing = await prisma.billingCustomer.findUnique({
 
@@ -178,7 +188,7 @@ export async function resolveBillingCustomer(
 
   let customer = await prisma.billingCustomer.findFirst({
 
-    where: { ownerUserId: target.payerUserId, stripeCustomerId: { not: null } },
+    where: { ownerUserId: customerOwnerUserId, stripeCustomerId: { not: null } },
 
   });
 
@@ -194,7 +204,7 @@ export async function resolveBillingCustomer(
 
       name: target.ownerName ?? undefined,
 
-      metadata: { ownerUserId: target.payerUserId },
+      metadata: { ownerUserId: customerOwnerUserId },
 
     });
 
@@ -202,7 +212,7 @@ export async function resolveBillingCustomer(
 
     customer = await prisma.billingCustomer.create({
 
-      data: { ownerUserId: target.payerUserId, stripeCustomerId: stripeCustomer.id },
+      data: { ownerUserId: customerOwnerUserId, stripeCustomerId: stripeCustomer.id },
 
     });
 
@@ -267,7 +277,10 @@ export { changeWorkspaceAddonQuantity } from "@/features/billing/server/addon-ch
 
 /** Opens the Stripe billing portal for a workspace's customer. */
 
-export async function openPortal(params: { workspaceId: string }): Promise<{ url: string }> {
+export async function openPortal(params: {
+  workspaceId: string;
+  locale: Locale;
+}): Promise<{ url: string }> {
 
   const target = await loadWorkspaceBillingTarget(params.workspaceId);
 
@@ -284,6 +297,8 @@ export async function openPortal(params: { workspaceId: string }): Promise<{ url
     customer: stripeCustomerId,
 
     return_url: `${base}/dashboard/${target.slug}/billing/portal-return`,
+
+    locale: toStripeLocale(params.locale),
 
   });
 
@@ -334,6 +349,13 @@ export async function cancelAtPeriodEnd(params: { workspaceId: string }): Promis
 /** Reactivates a subscription that was set to cancel at period end. */
 
 export async function reactivate(params: { workspaceId: string }): Promise<void> {
+
+  const ownershipState = await getWorkspaceBillingOwnershipState(params.workspaceId);
+  if (ownershipState === "HANDOFF_ACTIVE") {
+    throw new WorkspaceError(
+      "Subscription cannot be resumed while workspace ownership transfer is in progress.",
+    );
+  }
 
   const sub = await prisma.workspace
 

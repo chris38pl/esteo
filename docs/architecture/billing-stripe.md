@@ -223,6 +223,9 @@ A paid subscription may contain multiple Stripe subscription items:
 | `plan-change.ts` | Single plan-change entrypoint |
 | `addon-change.ts` | Add-on quantity changes on Stripe subscription |
 | `addon-catalog.ts` | Unit sizes, prices, purchase guards, limit merge |
+| `plan-pricing.ts` | Versioned plan price catalog (`PLAN_PRICES_PLN`), `resolvePlanPrice`, addon monthly cents |
+| `parse-invoice-preview-lines.ts` | Split Stripe preview lines into recurring vs signed proration |
+| `preview-billing-change.ts` | On-demand `createPreview` for plan/add-on change UX |
 | `workspace-addon-sync.ts` | Stripe items ↔ `WorkspaceAddon` rows |
 | `stripe-subscription-items.ts` | Classify base vs add-on items; schedule phase builder |
 | `billing-service.ts` | Customer resolution, portal, re-exports |
@@ -240,3 +243,19 @@ A paid subscription may contain multiple Stripe subscription items:
 | `billing-secondary-cards-section.tsx` | Add-ons summary + next invoice card |
 
 Product / UX overview: [`docs/features/workspace-billing.md`](../features/workspace-billing.md).
+
+## Price catalog alignment
+
+UI prices come from the app catalog (`plan-pricing.ts`, `ADDON_UNIT_PRICES_PLN`). Stripe Prices are execution-only (checkout, `subscriptions.update`, `createPreview`).
+
+Before production deploy:
+
+```bash
+CI_PRODUCTION=true npm run verify-stripe-prices
+```
+
+Locally / PR CI without the flag: mismatches log `WARNING` and exit `0`. With `CI_PRODUCTION=true`: exit `1`.
+
+Checks: `PRO`, `BUSINESS`, `STORAGE_PACK`, `SEAT_PACK` — `unit_amount` **and** `currency === pln`.
+
+Never remove a `planVersion` key from `PLAN_PRICES_PLN` while active subscriptions still pin that version.

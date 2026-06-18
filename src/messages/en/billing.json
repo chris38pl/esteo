@@ -3,6 +3,10 @@
   "description": "Billing management is coming soon. You will be able to view invoices, update payment methods, and manage your subscription here.",
   "soon": "Soon",
   "backToDashboard": "Back to dashboard",
+  "paidWorkspaces": {
+    "title": "Subscriptions you pay for",
+    "description": "Workspaces where you are the billing payer. You can manage payment even if you are no longer a member."
+  },
   "accountInvoices": {
     "title": "Invoices",
     "description": "History of paid Esteo subscription invoices.",
@@ -92,7 +96,7 @@
         "BUSINESS": "All features unlocked."
       },
       "renewal": "Renews: {date}",
-      "cancelsOn": "Cancels: {date}",
+      "cancelsOn": "Ends: {date}",
       "daysUntil": "In {days} days",
       "price": {
         "FREE": "PLN 0",
@@ -100,6 +104,7 @@
         "BUSINESS": "PLN 249"
       },
       "perMonth": "/ month",
+      "priceWithAddons": "Plan + add-ons",
       "changePlan": "Change plan",
       "managePayment": "Manage payment",
       "changePlanDialog": {
@@ -109,13 +114,33 @@
     },
     "banners": {
       "storageOverLimit": "Storage is over your plan limit. Delete files or upgrade to resume uploads.",
-      "seatOverLimit": "Member count exceeds your plan limit. Suspend members or upgrade your plan."
+      "seatOverLimit": "Member count exceeds your plan limit. Suspend members or upgrade your plan.",
+      "handoffActive": "This workspace remains active until {date}.",
+      "handoffCannotManage": "The subscription belongs to the previous owner and cannot be managed by you.",
+      "handoffAfterExpiration": "After expiration you may purchase your own subscription.",
+      "handoffExpired": "The previous owner's subscription has expired.",
+      "handoffExpiredPurchase": "Purchase your own subscription to continue using paid features.",
+      "handoffPayerSubscriptionEnding": "This workspace subscription ends on {date}. Billing remains your responsibility until then.",
+      "handoffPayerFootnote": "Subscription cannot be resumed during ownership transfer. After it expires, the new owner may purchase their own plan.",
+      "handoffReadOnly": "Billing is read-only for your role during ownership transfer."
     },
     "dangerZone": {
       "title": "Danger zone",
       "description": "Canceling your subscription will move this workspace to the FREE plan after the current billing period ends.",
       "activeUntilLabel": "Subscription stays active until:",
       "stripeSecured": "Payments are securely handled by Stripe."
+    },
+    "catalogMismatch": {
+      "title": "A price mismatch was detected between the Esteo catalog and Stripe configuration.",
+      "stripe": "Stripe: {amount}",
+      "esteo": "Esteo: {amount}"
+    },
+    "handoffSubscription": {
+      "title": "Previous owner's subscription",
+      "activeUntilLabel": "This workspace stays active until:",
+      "expiresAfter": "After that date, the subscription will expire.",
+      "purchaseAfter": "To keep using Esteo, you will be able to purchase your own subscription.",
+      "payerFootnote": "Billing for this subscription is still linked to the previous payer."
     },
     "addons": {
       "title": "Active add-ons",
@@ -137,6 +162,7 @@
       "viewPlans": "View plans",
       "save": "Save changes",
       "saveSuccess": "Add-ons updated.",
+      "prorationNotice": "Adjustments for changes during the current billing period will appear on your next invoice.",
       "increase": "Increase",
       "decrease": "Decrease",
       "storage": {
@@ -158,16 +184,54 @@
       "title": "Next invoice",
       "description": "The invoice will be issued automatically at the end of the billing period.",
       "viewInvoiceHistory": "View invoice history",
+      "upcomingInvoices": "Upcoming invoices:",
+      "recurringMonthlyValue": "{amount} / month",
+      "adjustmentTooltip": "You are adding resources during the current billing period.\n\nThis charge covers the cost of using them until the end of the current billing cycle.\n\nStarting from the next billing period, only the standard subscription fee will apply:\n{monthlyAmount} / month.",
+      "breakdown": {
+        "composedOf": "This invoice includes:",
+        "subscription": "Subscription (plan + add-ons)",
+        "periodCharge": "Charge for the current period",
+        "periodCredit": "Credit for unused billing period"
+      },
       "empty": {
         "free_plan": "No active paid subscription.",
         "canceling": "Subscription is ending — no further invoice will be issued.",
         "no_subscription": "No upcoming invoice scheduled."
       }
     },
+    "preview": {
+      "title": "Change summary",
+      "description": "Review the cost before confirming.",
+      "newMonthlyCost": "New monthly cost",
+      "adjustmentCharge": "One-time charge for the current period",
+      "adjustmentCredit": "Credit for unused billing period",
+      "adjustmentTooltip": "You are adding resources during the current billing period.\n\nThis one-time adjustment covers the cost of using them until the end of the current billing cycle.\n\nStarting from the next billing period, only the standard subscription fee will apply:\n{monthlyAmount} / month.",
+      "breakdown": {
+        "composedOf": "This invoice includes:",
+        "subscription": "Subscription (plan + add-ons)"
+      },
+      "badge": {
+        "oneTimeCharge": "One-time",
+        "credit": "Credit"
+      },
+      "chargeOnlyOnce": "This charge will be applied only once.",
+      "chargeNotRecurring": "It will not be added to future invoices.",
+      "hintOneTimeCredit": "This credit applies to your next invoice only.",
+      "nextInvoice": "Next invoice",
+      "upcomingInvoices": "Upcoming invoices",
+      "recurringMonthlyValue": "{amount} / month",
+      "creditTitle": "Confirm change",
+      "creditConfirm": "You will receive a {amount} credit on your next invoice. Future invoices will be {monthlyAmount} / month.",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "expired": "This preview has expired. Recalculate to continue.",
+      "recalculate": "Recalculate"
+    },
     "plans": {
       "title": "Choose a plan",
       "subtitle": "Compare plans and pick the best fit for this workspace.",
       "backToBilling": "Back to billing",
+      "handoffReadOnlyPlans": "Plan changes are not available during billing handoff.",
       "currentPlan": "Current plan",
       "currentPlanBadge": "Your plan",
       "upgradeTo": "Upgrade to {plan}",

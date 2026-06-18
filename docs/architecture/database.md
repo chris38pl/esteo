@@ -159,6 +159,7 @@ Implementation: `src/server/billing/plan-catalog.ts` (`resolvePlanLimits`). Work
 
 - `WorkspaceSettings` — branding JSON (`logoStorageKey`, `logoUrl`, estimate sections/rules), `aiInstructions`, `companyDescription`, company profile columns (`companyAddress`, `companyTaxId`, `companyEmail`, `companyPhone`) — see [`workspace-branding-and-company-profile.md`](../features/workspace-branding-and-company-profile.md)
 - `WorkspaceInvitation` — email invites with `InviteRole`; status `PENDING | ACCEPTED | REVOKED | EXPIRED | DECLINED`; optional `promptDismissedAt` for modal dismissal
+- `WorkspaceOwnershipTransfer` — ownership handoff to another user; optional `promptDismissedAt` for modal dismissal (same queue as invitations)
 - `BillingAccountUsagePeriod` — Phase 2 quota counters
 - `AuditLog` — Phase 3 change tracking
 

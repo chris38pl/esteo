@@ -1,3 +1,6 @@
+import type { SubscriptionPlan } from "@prisma/client";
+
+import type { ProrationKind } from "@/features/billing/lib/parse-invoice-preview-lines";
 import type { WorkspaceEntitlements } from "@/server/billing/entitlement-service";
 
 export type WorkspaceBillingMemberUsage = {
@@ -14,12 +17,32 @@ export type WorkspaceBillingStorageUsage = {
   usedPercent: number;
 };
 
+export type WorkspaceBillingPricing = {
+  plan: SubscriptionPlan;
+  planVersion: string | null;
+  planCents: number;
+  addonCents: number;
+  recurringCents: number;
+  currency: "PLN" | "EUR";
+
+  nextInvoiceCents: number | null;
+  prorationCents: number | null;
+  invoiceDeltaCents: number | null;
+  stripeRecurringCents: number | null;
+  catalogPriceMismatch: boolean;
+  nextInvoiceDate: string | null;
+  prorationKind: ProrationKind | null;
+};
+
 export type WorkspaceBillingNextInvoice =
   | {
       kind: "invoice";
       amountCents: number;
       currency: "PLN" | "EUR";
       date: string;
+      recurringCents: number;
+      prorationCents: number;
+      invoiceDeltaCents: number;
     }
   | {
       kind: "none";
@@ -28,6 +51,7 @@ export type WorkspaceBillingNextInvoice =
 
 export type WorkspaceBillingPageData = {
   entitlements: WorkspaceEntitlements;
+  pricing: WorkspaceBillingPricing;
   cancelAtPeriodEnd: boolean;
   currentPeriodEnd: Date | null;
   memberUsage: WorkspaceBillingMemberUsage[];
@@ -36,5 +60,37 @@ export type WorkspaceBillingPageData = {
   seatOverLimit: boolean;
   nextInvoice: WorkspaceBillingNextInvoice;
   canManageBilling: boolean;
+  canChangePlanOrAddons: boolean;
+  canPurchaseSubscription: boolean;
+  canResumeSubscription: boolean;
   billingHandoffActive: boolean;
+  billingOwnershipState: import("@/features/billing/lib/billing-permissions-logic").BillingOwnershipState;
 };
+
+export const PREVIEW_TTL_MS = 300_000;
+
+export type BillingChangePreview = {
+  recurringCents: number;
+  prorationCents: number;
+  invoiceDeltaCents: number;
+  prorationKind: ProrationKind;
+  nextInvoiceCents: number;
+  currency: "PLN" | "EUR";
+  previewGeneratedAt: string;
+  previewExpiresAt: string;
+};
+
+export type BillingPlanChangePreviewInput = {
+  kind: "plan";
+  targetPlan: Exclude<SubscriptionPlan, "FREE">;
+};
+
+export type BillingAddonChangePreviewInput = {
+  kind: "addons";
+  storageQuantity: number;
+  seatQuantity: number;
+};
+
+export type BillingChangePreviewInput =
+  | BillingPlanChangePreviewInput
+  | BillingAddonChangePreviewInput;

@@ -18,10 +18,11 @@ export type DashboardDebugData = {
 };
 
 async function loadBillingAccount(userId: string) {
-  // Workspace billing: an owner has one BillingAccount per workspace. Surface the oldest owned
-  // workspace's account (with its Stripe customer) for the debug panel.
   return prisma.billingAccount.findFirst({
-    where: { ownerUserId: userId, workspaceId: { not: null } },
+    where: {
+      workspace: { ownerId: userId, deletedAt: null },
+      workspaceId: { not: null },
+    },
     include: { subscription: true, billingCustomer: true },
     orderBy: { createdAt: "asc" },
   });

@@ -36,7 +36,11 @@ export default async function WorkspaceBillingPage({
   const data = {
     ...pageData,
     canManageBilling: resolved.permissions.canManageBilling,
+    canChangePlanOrAddons: resolved.permissions.canChangePlanOrAddons,
+    canPurchaseSubscription: resolved.permissions.canPurchaseSubscription,
+    canResumeSubscription: resolved.permissions.canResumeSubscription,
     billingHandoffActive: resolved.permissions.billingHandoffActive,
+    billingOwnershipState: resolved.permissions.billingOwnershipState,
   };
 
   return (

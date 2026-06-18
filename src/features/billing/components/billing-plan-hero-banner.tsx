@@ -20,6 +20,8 @@ type Props = {
   effectiveStatus: WorkspaceEffectiveStatus;
   cancelAtPeriodEnd: boolean;
   currentPeriodEnd: Date | string | null;
+  monthlyPriceLabel: string;
+  monthlyPriceSubtitle?: string | null;
   pending: boolean;
   plansHref: string;
   canManageBilling: boolean;
@@ -73,6 +75,8 @@ export function BillingPlanHeroBanner({
   effectiveStatus,
   cancelAtPeriodEnd,
   currentPeriodEnd,
+  monthlyPriceLabel,
+  monthlyPriceSubtitle,
   pending,
   plansHref,
   canManageBilling,
@@ -154,11 +158,16 @@ export function BillingPlanHeroBanner({
                 </div>
               ) : null}
 
-              <p className="flex items-baseline gap-2">
-                <span className="text-3xl font-semibold tracking-tight md:text-4xl">
-                  {t(`price.${plan}`)}
+              <p className="flex flex-col gap-1">
+                <span className="flex items-baseline gap-2">
+                  <span className="text-3xl font-semibold tracking-tight md:text-4xl">
+                    {monthlyPriceLabel}
+                  </span>
+                  <span className="text-sm text-muted-foreground">{t("perMonth")}</span>
                 </span>
-                <span className="text-sm text-muted-foreground">{t("perMonth")}</span>
+                {monthlyPriceSubtitle ? (
+                  <span className="text-xs text-muted-foreground">{monthlyPriceSubtitle}</span>
+                ) : null}
               </p>
             </div>
 

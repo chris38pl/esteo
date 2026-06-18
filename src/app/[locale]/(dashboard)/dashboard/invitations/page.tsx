@@ -4,9 +4,9 @@ import { toReceivedInvitationView } from "@/features/workspaces/components/invit
 import { DashboardInvitationsHub } from "@/features/workspaces/components/dashboard-invitations-hub";
 import { toReceivedOwnershipTransferView } from "@/features/workspaces/components/transfer-types";
 import {
-  getNextModalInvitation,
-  listReceivedInvitations,
-} from "@/features/workspaces/server/invitation-inbox";
+  getNextModalInboxItem,
+} from "@/features/workspaces/server/inbox-modal";
+import { listReceivedInvitations } from "@/features/workspaces/server/invitation-inbox";
 import { listReceivedOwnershipTransfers } from "@/features/workspaces/server/transfer-inbox";
 import type { Locale } from "@/lib/locale";
 import { resolveRequestLocale } from "@/i18n/request-locale";
@@ -23,20 +23,22 @@ export default async function InvitationsPage({
   setRequestLocale(resolvedLocale);
 
   const user = await requireAuth(resolvedLocale);
-  const [invitations, featured, transfers] = await Promise.all([
+  const [invitations, nextModalItem, transfers] = await Promise.all([
     listReceivedInvitations(user.email),
-    getNextModalInvitation(user.email),
+    getNextModalInboxItem(user.email),
     listReceivedOwnershipTransfers(user.email),
   ]);
 
   const invitationViews = invitations.map(toReceivedInvitationView);
   const transferViews = transfers.map(toReceivedOwnershipTransferView);
+  const featuredInvitationId =
+    nextModalItem?.kind === "invitation" ? nextModalItem.invitation.id : null;
 
   return (
     <DashboardInvitationsHub
       invitations={invitationViews}
       transfers={transferViews}
-      featuredInvitationId={featured?.id}
+      featuredInvitationId={featuredInvitationId}
       locale={resolvedLocale}
     />
   );

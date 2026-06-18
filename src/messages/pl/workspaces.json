@@ -329,7 +329,8 @@
         "NO_PAID_PERIOD": "Ta przestrzeń nie ma aktywnego opłaconego okresu rozliczeniowego.",
         "WORKSPACE_NOT_ACTIVE": "Ta przestrzeń nie jest aktywna.",
         "FREE_PLAN": "Tylko przestrzenie Pro lub Business mogą być przekazane.",
-        "PENDING_TRANSFER_EXISTS": "Transfer własności jest już w toku."
+        "PENDING_TRANSFER_EXISTS": "Transfer własności jest już w toku.",
+        "BILLING_HANDOFF_UNRESOLVED": "Rozwiąż przekazanie rozliczeń przed kolejnym transferem własności."
       },
       "wizard": {
         "title": "Przekaż {name}",
@@ -371,11 +372,18 @@
       "deleting": "Usuwanie…",
       "blocked": {
         "CANCEL_SUBSCRIPTION_REQUIRED": "Aby usunąć tę przestrzeń, najpierw anuluj bieżącą subskrypcję. Przestrzeń pozostanie aktywna do końca opłaconego okresu.",
-        "PENDING_TRANSFER_EXISTS": "Ta przestrzeń ma oczekujący transfer własności. Anuluj transfer przed usunięciem przestrzeni."
+        "PENDING_TRANSFER_EXISTS": "Ta przestrzeń ma oczekujący transfer własności. Anuluj transfer przed usunięciem przestrzeni.",
+        "BILLING_HANDOFF_ACTIVE": "Nie można usunąć przestrzeni, gdy trwa przekazanie rozliczeń."
       }
     }
   },
   "transfer": {
+    "modalTitle": "Transfer własności przestrzeni",
+    "modalDescription": "Otrzymałeś prośbę o przejęcie własności przestrzeni roboczej w Esteo.",
+    "hubHeadlineBefore": "Zostałeś poproszony o",
+    "hubHeadlineAccent": "przejęcie własności",
+    "hubSubtitle": "{name} chce przekazać Ci własność przestrzeni.",
+    "dismissPrompt": "Nie pytaj ponownie",
     "inboxTitle": "Transfery własności",
     "inboxDescription": "Zaakceptuj transfer, aby zostać właścicielem przestrzeni, lub odrzuć, jeśli to pomyłka.",
     "fromSender": "Od: {name}",

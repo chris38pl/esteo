@@ -51,9 +51,9 @@ Implementation: `src/features/workspaces/server/invitation-inbox.ts`, `src/featu
 
 ### Modal queue (one at a time)
 
-When the user has at least one accessible workspace, pending invitations with `promptDismissedAt IS NULL` are shown in a login modal, **one at a time**, ordered by `createdAt ASC`.
+When the user has at least one accessible workspace, pending **workspace invitations** and **ownership transfers** with `promptDismissedAt IS NULL` are shown in a login modal, **one at a time**, ordered by `createdAt ASC` (FIFO across both types).
 
-"Don't ask again" sets `promptDismissedAt` on that invitation only. The invitation remains visible in the account inbox (`/dashboard/account`).
+"Don't ask again" sets `promptDismissedAt` on that invitation or transfer only. The item remains visible in the account inbox (`/dashboard/account` and `/dashboard/invitations`).
 
 ### Accept checks
 

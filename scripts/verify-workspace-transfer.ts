@@ -1,5 +1,6 @@
 import { evaluateTransferEligibility } from "../src/features/workspaces/lib/transfer-eligibility-logic";
 import { evaluateWorkspaceDeleteEligibility } from "../src/features/workspaces/lib/workspace-delete-eligibility";
+import { evaluateWorkspaceBillingPermissions } from "../src/features/billing/lib/billing-permissions-logic";
 
 let failures = 0;
 let checks = 0;
@@ -157,6 +158,59 @@ const deleteAllowedCancelled = evaluateWorkspaceDeleteEligibility({
   hasPendingTransfer: false,
 });
 assert(deleteAllowedCancelled.allowed === true, "paid + cancelAtPeriodEnd → delete allowed");
+
+console.log("\nBilling permissions after ownership handoff:");
+
+const newOwnerPerms = evaluateWorkspaceBillingPermissions({
+  userId: "new-owner",
+  workspaceOwnerId: "new-owner",
+  payerUserId: "old-payer",
+  isActiveMember: true,
+  subscriptionStatus: "ACTIVE",
+  subscriptionPlan: "BUSINESS",
+  stripeSubscriptionId: "sub_1",
+});
+assert(newOwnerPerms.canViewBilling === true, "new owner (member) → canViewBilling");
+assert(newOwnerPerms.canManageBilling === false, "new owner (not payer) → !canManageBilling");
+assert(newOwnerPerms.canChangePlanOrAddons === false, "new owner handoff → !canChangePlanOrAddons");
+assert(newOwnerPerms.billingHandoffActive === true, "owner !== payer → billingHandoffActive");
+
+const payerPerms = evaluateWorkspaceBillingPermissions({
+  userId: "old-payer",
+  workspaceOwnerId: "new-owner",
+  payerUserId: "old-payer",
+  isActiveMember: false,
+  subscriptionStatus: "ACTIVE",
+  subscriptionPlan: "BUSINESS",
+  stripeSubscriptionId: "sub_1",
+});
+assert(payerPerms.canViewBilling === true, "payer without membership → canViewBilling");
+assert(payerPerms.canManageBilling === true, "payer without membership → canManageBilling");
+assert(payerPerms.canChangePlanOrAddons === false, "payer handoff → !canChangePlanOrAddons");
+
+const payerAligned = evaluateWorkspaceBillingPermissions({
+  userId: "owner-payer",
+  workspaceOwnerId: "owner-payer",
+  payerUserId: "owner-payer",
+  isActiveMember: true,
+  subscriptionStatus: "ACTIVE",
+  subscriptionPlan: "PRO",
+  stripeSubscriptionId: "sub_1",
+});
+assert(payerAligned.billingHandoffActive === false, "owner === payer → no handoff");
+assert(payerAligned.canManageBilling === true, "owner-payer → canManageBilling");
+assert(payerAligned.canChangePlanOrAddons === true, "owner-payer → canChangePlanOrAddons");
+
+const randomMember = evaluateWorkspaceBillingPermissions({
+  userId: "member",
+  workspaceOwnerId: "owner",
+  payerUserId: "owner",
+  isActiveMember: true,
+  subscriptionStatus: "ACTIVE",
+  subscriptionPlan: "PRO",
+  stripeSubscriptionId: "sub_1",
+});
+assert(randomMember.canViewBilling === false, "non-owner member → !canViewBilling");
 
 // Inbox routing (manual): hasPendingInboxItems = member invitations OR ownership transfers.
 // - /dashboard/invitations accessible when hasPendingInboxItems (even with existing workspaces)

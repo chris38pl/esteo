@@ -5,7 +5,10 @@ import { getWorkspaceEntitlements } from "@/server/billing/entitlement-service";
 import { getSeatOverageState } from "@/server/billing/seat-overage";
 import { loadWorkspaceMemberUsage } from "@/features/billing/server/load-workspace-member-usage";
 import { loadWorkspaceStorageUsage } from "@/features/billing/server/load-workspace-storage-usage";
-import { getWorkspaceUpcomingInvoice } from "@/features/billing/server/get-workspace-upcoming-invoice";
+import { loadWorkspaceAddonQuantities } from "@/features/billing/server/workspace-addon-sync";
+import {
+  buildWorkspaceBillingPricing,
+} from "@/features/billing/server/get-workspace-upcoming-invoice";
 import type {
   WorkspaceBillingMemberUsage,
   WorkspaceBillingPageData,
@@ -15,8 +18,18 @@ export type { WorkspaceBillingMemberUsage, WorkspaceBillingPageData };
 
 export async function getWorkspaceBillingPageData(
   workspaceId: string,
-): Promise<WorkspaceBillingPageData> {
-  const [entitlements, memberUsage, { storage, storageOverLimit }, subscriptionRow, seatState] =
+): Promise<
+  Omit<
+    WorkspaceBillingPageData,
+    | "canManageBilling"
+    | "canChangePlanOrAddons"
+    | "canPurchaseSubscription"
+    | "canResumeSubscription"
+    | "billingHandoffActive"
+    | "billingOwnershipState"
+  >
+> {
+  const [entitlements, memberUsage, { storage, storageOverLimit }, workspaceRow, addonRows, seatState] =
     await Promise.all([
       getWorkspaceEntitlements(workspaceId),
       loadWorkspaceMemberUsage(workspaceId),
@@ -24,11 +37,14 @@ export async function getWorkspaceBillingPageData(
       prisma.workspace.findUnique({
         where: { id: workspaceId },
         select: {
+          slug: true,
           billingAccount: {
             select: {
               subscription: {
                 select: {
+                  id: true,
                   plan: true,
+                  planVersion: true,
                   cancelAtPeriodEnd: true,
                   currentPeriodEnd: true,
                   stripeSubscriptionId: true,
@@ -39,14 +55,22 @@ export async function getWorkspaceBillingPageData(
           },
         },
       }),
+      loadWorkspaceAddonQuantities(workspaceId),
       getSeatOverageState(workspaceId),
     ]);
 
-  const subscription = subscriptionRow?.billingAccount?.subscription ?? null;
-  const nextInvoice = await getWorkspaceUpcomingInvoice(subscription);
+  const subscription = workspaceRow?.billingAccount?.subscription ?? null;
+
+  const { pricing, nextInvoice } = await buildWorkspaceBillingPricing({
+    workspaceId,
+    workspaceSlug: workspaceRow?.slug ?? workspaceId,
+    subscription,
+    addonRows,
+  });
 
   return {
     entitlements,
+    pricing,
     cancelAtPeriodEnd: subscription?.cancelAtPeriodEnd ?? false,
     currentPeriodEnd: subscription?.currentPeriodEnd ?? null,
     memberUsage,

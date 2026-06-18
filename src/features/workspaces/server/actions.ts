@@ -25,6 +25,7 @@ import {
   declineWorkspaceInvitation,
   deleteWorkspaceRule,
   dismissInvitationPrompt,
+  dismissTransferPrompt,
   getUserWorkspaces,
   getWorkspace,
   getWorkspaceMembersForUi,
@@ -406,6 +407,17 @@ export async function dismissInvitationPromptAction(
     const invitation = await dismissInvitationPrompt(user, invitationId);
     revalidatePath(`/${locale}/dashboard`, "layout");
     return { success: true as const, data: invitation };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function dismissTransferPromptAction(transferId: string, locale: Locale = "pl") {
+  try {
+    const user = await requireAuth(locale);
+    const transfer = await dismissTransferPrompt(user, transferId);
+    revalidatePath(`/${locale}/dashboard`, "layout");
+    return { success: true as const, data: transfer };
   } catch (error) {
     return toActionError(error);
   }

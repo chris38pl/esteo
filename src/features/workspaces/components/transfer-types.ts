@@ -8,6 +8,7 @@ export type TransferEligibilityView = {
     | "WORKSPACE_NOT_ACTIVE"
     | "FREE_PLAN"
     | "PENDING_TRANSFER_EXISTS"
+    | "BILLING_HANDOFF_UNRESOLVED"
     | null;
   plan: SubscriptionPlan;
   cancelAtPeriodEnd: boolean;

@@ -1,6 +1,8 @@
 import "server-only";
 
 import { prisma } from "@/db/client";
+import { getWorkspaceBillingOwnershipState } from "@/features/billing/server/billing-permissions";
+import { resolveStaleBillingHandoff } from "@/features/billing/server/billing-handoff-cleanup";
 import { getWorkspaceEffectiveStatus } from "@/server/billing/effective-status";
 import { WorkspaceError } from "@/server/permissions/errors";
 
@@ -52,34 +54,43 @@ export async function loadLiveSubscriptionForTransfer(
 export async function getTransferEligibilitySnapshot(
   workspaceId: string,
 ): Promise<TransferEligibilitySnapshot> {
-  const [subscription, effectiveStatus, pendingTransfer] = await Promise.all([
+  await resolveStaleBillingHandoff(workspaceId);
+
+  const [subscription, effectiveStatus, pendingTransfer, billingOwnershipState] =
+    await Promise.all([
     loadLiveSubscriptionForTransfer(workspaceId),
     getWorkspaceEffectiveStatus(workspaceId),
     prisma.workspaceOwnershipTransfer.findFirst({
       where: { workspaceId, status: "PENDING_RECIPIENT" },
       select: { id: true },
     }),
+    getWorkspaceBillingOwnershipState(workspaceId),
   ]);
 
   return evaluateTransferEligibility({
     subscription,
     effectiveStatus,
     hasPendingTransfer: Boolean(pendingTransfer),
+    billingOwnershipState: billingOwnershipState ?? "NORMAL",
   });
 }
 
 export async function getTransferAcceptanceSnapshot(
   workspaceId: string,
 ): Promise<TransferEligibilitySnapshot> {
-  const [subscription, effectiveStatus] = await Promise.all([
+  await resolveStaleBillingHandoff(workspaceId);
+
+  const [subscription, effectiveStatus, billingOwnershipState] = await Promise.all([
     loadLiveSubscriptionForTransfer(workspaceId),
     getWorkspaceEffectiveStatus(workspaceId),
+    getWorkspaceBillingOwnershipState(workspaceId),
   ]);
 
   return evaluateTransferEligibility({
     subscription,
     effectiveStatus,
     hasPendingTransfer: false,
+    billingOwnershipState: billingOwnershipState ?? "NORMAL",
   });
 }
 

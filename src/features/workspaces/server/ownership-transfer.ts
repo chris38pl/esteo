@@ -313,12 +313,14 @@ export async function acceptWorkspaceOwnershipTransfer(
         toUserId: recipientId,
       },
     });
-
-    await tx.billingAccount.updateMany({
-      where: { workspaceId },
-      data: { ownerUserId: recipientId },
-    });
   });
+
+  const billingAccount = await prisma.billingAccount.findFirst({
+    where: { workspaceId },
+    select: { payerUserId: true },
+  });
+  const payerUserId = billingAccount?.payerUserId ?? senderId;
+  const billingHandoffStarted = payerUserId !== recipientId;
 
   await logAuditEvent({
     actorUserId: actor.id,
@@ -326,8 +328,27 @@ export async function acceptWorkspaceOwnershipTransfer(
     entityType: "WorkspaceOwnershipTransfer",
     entityId: transfer.id,
     action: "transfer_accepted",
-    diff: { fromUserId: senderId, toUserId: recipientId },
+    diff: {
+      fromUserId: senderId,
+      toUserId: recipientId,
+      billingHandoffStarted,
+    },
   });
+
+  if (billingHandoffStarted) {
+    await logAuditEvent({
+      actorUserId: actor.id,
+      workspaceId,
+      entityType: "BillingHandoff",
+      entityId: workspaceId,
+      action: "billing_handoff_started",
+      diff: {
+        payerUserId,
+        ownerUserId: recipientId,
+        billingOwnershipState: "HANDOFF_ACTIVE",
+      },
+    });
+  }
 
   return { workspaceSlug: transfer.workspace.slug };
 }

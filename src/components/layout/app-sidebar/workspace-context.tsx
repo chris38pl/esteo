@@ -13,7 +13,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 import type { WorkspaceAppearanceTheme } from "@prisma/client";
 
-import type { ReceivedInvitationView } from "@/features/workspaces/components/invitation-types";
+import type { ModalInboxItemView } from "@/features/workspaces/components/inbox-modal-types";
 import type { BillingSidebarState } from "@/features/billing/billing-sidebar-state";
 import type { WorkspaceMemberPreview } from "@/features/workspaces/server/get-active-workspace-card-data";
 import type { PinnedEstimateSidebarItem } from "@/components/layout/app-sidebar/pinned-config";
@@ -63,7 +63,7 @@ type WorkspaceContextValue = {
   currentUser: CurrentUserProfile;
   locale: Locale;
   pendingInvitationCount: number;
-  modalInvitation: ReceivedInvitationView | null;
+  modalInboxItem: ModalInboxItemView | null;
   /** Pinned estimates for the active workspace (per user). */
   pinnedEstimates: PinnedEstimateSidebarItem[];
   /** Navigate to a workspace by its current slug. */
@@ -105,7 +105,7 @@ export function WorkspaceProvider({
   memberTotalCount,
   locale,
   pendingInvitationCount = 0,
-  modalInvitation = null,
+  modalInboxItem = null,
   pinnedEstimates = [],
   activeWorkspaceStats = null,
   children,
@@ -123,7 +123,7 @@ export function WorkspaceProvider({
   memberTotalCount: number;
   locale: Locale;
   pendingInvitationCount?: number;
-  modalInvitation?: ReceivedInvitationView | null;
+  modalInboxItem?: ModalInboxItemView | null;
   pinnedEstimates?: PinnedEstimateSidebarItem[];
   activeWorkspaceStats?: ActiveWorkspaceMenuStats | null;
   children: ReactNode;
@@ -177,7 +177,7 @@ export function WorkspaceProvider({
       currentUser,
       locale,
       pendingInvitationCount,
-      modalInvitation,
+      modalInboxItem,
       pinnedEstimates,
       isSwitching,
       switchWorkspace(workspaceSlug: string) {
@@ -212,7 +212,7 @@ export function WorkspaceProvider({
       currentUser,
       locale,
       pendingInvitationCount,
-      modalInvitation,
+      modalInboxItem,
       pinnedEstimates,
       isSwitching,
       router,

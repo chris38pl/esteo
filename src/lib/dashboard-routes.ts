@@ -4,6 +4,10 @@ export function dashboardAccountHref(locale: Locale) {
   return `/${locale}/dashboard/account`;
 }
 
+export function dashboardAccountBillingTabHref(locale: Locale) {
+  return `/${locale}/dashboard/account?tab=billing`;
+}
+
 /**
  * Workspace billing lives at `/dashboard/{slug}/billing`.
  * Never link to the legacy `/dashboard/billing` path from the client — soft navigation

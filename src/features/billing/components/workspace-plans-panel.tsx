@@ -9,12 +9,22 @@ import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { BillingHandoffBanner } from "@/features/billing/components/billing-handoff-banner";
+import { BillingChangePreviewDialog } from "@/features/billing/components/billing-change-preview-dialog";
+import { BillingCreditConfirmDialog } from "@/features/billing/components/billing-credit-confirm-dialog";
 import type { WorkspaceBillingPlansPageData } from "@/features/billing/billing-plans-page-data";
+import type { BillingChangePreview } from "@/features/billing/billing-page-data";
+import type { BillingOwnershipState } from "@/features/billing/lib/billing-permissions-logic";
+import { formatBillingMonthlyPrice } from "@/features/billing/lib/format-billing-amount";
+import { isBillingPreviewExpired } from "@/features/billing/lib/billing-preview-utils";
 import {
   formatPlanLimitLabels,
   PLAN_ORDER,
 } from "@/features/billing/lib/format-plan-limit-labels";
-import { changeWorkspacePlanAction } from "@/features/billing/server/billing-actions";
+import {
+  changeWorkspacePlanAction,
+  previewWorkspaceBillingChangeAction,
+} from "@/features/billing/server/billing-actions";
 import { dashboardBillingHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
@@ -25,6 +35,10 @@ type Props = {
   locale: Locale;
   data: WorkspaceBillingPlansPageData;
   canManageBilling: boolean;
+  canChangePlanOrAddons: boolean;
+  canPurchaseSubscription: boolean;
+  billingOwnershipState: BillingOwnershipState;
+  currentPeriodEnd: Date | null;
 };
 
 type PlanCardAction =
@@ -93,6 +107,10 @@ export function WorkspacePlansPanel({
   locale,
   data,
   canManageBilling,
+  canChangePlanOrAddons,
+  canPurchaseSubscription,
+  billingOwnershipState,
+  currentPeriodEnd,
 }: Props) {
   const t = useTranslations("billing.workspace.plans");
   const tHero = useTranslations("billing.workspace.planHero");
@@ -103,10 +121,15 @@ export function WorkspacePlansPanel({
   const [pending, startTransition] = useTransition();
   const [activePlan, setActivePlan] = useState<SubscriptionPlan | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [preview, setPreview] = useState<BillingChangePreview | null>(null);
+  const [previewPlan, setPreviewPlan] = useState<Exclude<SubscriptionPlan, "FREE"> | null>(null);
+  const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
+  const [creditDialogOpen, setCreditDialogOpen] = useState(false);
   const cardRefs = useRef<Partial<Record<SubscriptionPlan, HTMLElement | null>>>({});
 
   const billingHref = dashboardBillingHref(locale, workspaceSlug);
   const unlimitedLabel = t("unlimited");
+  const canChangePlan = canChangePlanOrAddons || canPurchaseSubscription;
 
   useEffect(() => {
     if (!highlightPlan || !PLAN_ORDER.includes(highlightPlan as SubscriptionPlan)) {
@@ -117,6 +140,40 @@ export function WorkspacePlansPanel({
     element?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
   }, [highlightPlan]);
 
+  async function applyPlanChange(plan: Exclude<SubscriptionPlan, "FREE">) {
+    const result = await changeWorkspacePlanAction(workspaceId, plan);
+
+    if (!result.success) {
+      setError(result.error);
+      setActivePlan(null);
+      return;
+    }
+
+    if (result.data.kind === "checkout") {
+      window.location.href = result.data.url;
+      return;
+    }
+
+    if (result.data.kind === "downgrade_scheduled") {
+      toast.success(
+        t("downgradeScheduled", {
+          plan: tHero(`planName.${result.data.targetPlan}`),
+          date: formatLongDate(result.data.effectiveAt),
+        }),
+      );
+      window.location.reload();
+      return;
+    }
+
+    if (result.data.kind === "updated") {
+      toast.success(t("upgradeSuccess", { plan: tHero(`planName.${result.data.plan}`) }));
+      window.location.reload();
+      return;
+    }
+
+    setActivePlan(null);
+  }
+
   function handleSelectPlan(plan: SubscriptionPlan) {
     if (plan === "FREE") {
       return;
@@ -125,40 +182,72 @@ export function WorkspacePlansPanel({
     setError(null);
     setActivePlan(plan);
 
+    const isPaidUpgrade =
+      data.currentPlan !== "FREE" &&
+      PLAN_ORDER.indexOf(plan) > PLAN_ORDER.indexOf(data.currentPlan);
+
     startTransition(async () => {
-      const result = await changeWorkspacePlanAction(workspaceId, plan);
-
-      if (!result.success) {
-        setError(result.error);
-        setActivePlan(null);
+      if (data.currentPlan === "FREE") {
+        await applyPlanChange(plan);
         return;
       }
 
-      if (result.data.kind === "checkout") {
-        window.location.href = result.data.url;
+      if (isPaidUpgrade) {
+        const previewResult = await previewWorkspaceBillingChangeAction(workspaceId, {
+          kind: "plan",
+          targetPlan: plan,
+        });
+
+        if (!previewResult.success) {
+          setError(previewResult.error);
+          setActivePlan(null);
+          return;
+        }
+
+        setPreview(previewResult.data);
+        setPreviewPlan(plan);
+
+        if (previewResult.data.prorationKind === "charge") {
+          setPreviewDialogOpen(true);
+          return;
+        }
+
+        if (previewResult.data.prorationKind === "credit") {
+          setCreditDialogOpen(true);
+          return;
+        }
+
+        await applyPlanChange(plan);
         return;
       }
 
-      if (result.data.kind === "downgrade_scheduled") {
-        toast.success(
-          t("downgradeScheduled", {
-            plan: tHero(`planName.${result.data.targetPlan}`),
-            date: formatLongDate(result.data.effectiveAt),
-          }),
-        );
-        window.location.reload();
-        return;
-      }
-
-      if (result.data.kind === "updated") {
-        toast.success(t("upgradeSuccess", { plan: tHero(`planName.${result.data.plan}`) }));
-        window.location.reload();
-        return;
-      }
-
-      setActivePlan(null);
+      await applyPlanChange(plan);
     });
   }
+
+  function handleConfirmPreview() {
+    if (!previewPlan || !preview || isBillingPreviewExpired(preview)) {
+      return;
+    }
+
+    startTransition(async () => {
+      setPreviewDialogOpen(false);
+      setCreditDialogOpen(false);
+      await applyPlanChange(previewPlan);
+    });
+  }
+
+  function handleRecalculatePreview() {
+    if (!previewPlan) {
+      return;
+    }
+
+    setPreviewDialogOpen(false);
+    setCreditDialogOpen(false);
+    handleSelectPlan(previewPlan);
+  }
+
+  const previewExpired = isBillingPreviewExpired(preview);
 
   return (
     <div className="space-y-8">
@@ -190,6 +279,19 @@ export function WorkspacePlansPanel({
       {error ? (
         <div className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-900 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-100">
           {error}
+        </div>
+      ) : null}
+
+      <BillingHandoffBanner
+        billingOwnershipState={billingOwnershipState}
+        canManageBilling={canManageBilling}
+        canPurchaseSubscription={canPurchaseSubscription}
+        currentPeriodEnd={currentPeriodEnd}
+      />
+
+      {!canChangePlan && billingOwnershipState !== "NORMAL" ? (
+        <div className="rounded-md border border-muted bg-muted/30 p-4 text-sm text-muted-foreground">
+          {t("handoffReadOnlyPlans")}
         </div>
       ) : null}
 
@@ -243,7 +345,7 @@ export function WorkspacePlansPanel({
 
                 <p className="flex items-baseline gap-1.5">
                   <span className="text-3xl font-semibold tracking-tight">
-                    {tHero(`price.${plan}`)}
+                    {formatBillingMonthlyPrice(data.catalogPlanPriceCents[plan], locale)}
                   </span>
                   <span className="text-sm text-muted-foreground">{tHero("perMonth")}</span>
                 </p>
@@ -284,7 +386,7 @@ export function WorkspacePlansPanel({
                   </div>
                 ) : null}
 
-                {action.kind === "select" && canManageBilling ? (
+                {action.kind === "select" && canChangePlan ? (
                   <Button
                     className={cn("h-11 w-full", accent.button)}
                     disabled={pending}
@@ -295,7 +397,7 @@ export function WorkspacePlansPanel({
                   </Button>
                 ) : null}
 
-                {action.kind === "downgrade" && canManageBilling ? (
+                {action.kind === "downgrade" && canChangePlan ? (
                   <Button
                     variant="outline"
                     className="h-11 w-full"
@@ -311,6 +413,27 @@ export function WorkspacePlansPanel({
           );
         })}
       </div>
+
+      <BillingChangePreviewDialog
+        open={previewDialogOpen}
+        preview={preview}
+        locale={locale}
+        pending={pending}
+        expired={previewExpired}
+        onOpenChange={setPreviewDialogOpen}
+        onConfirm={handleConfirmPreview}
+        onRecalculate={handleRecalculatePreview}
+      />
+      <BillingCreditConfirmDialog
+        open={creditDialogOpen}
+        preview={preview}
+        locale={locale}
+        pending={pending}
+        expired={previewExpired}
+        onOpenChange={setCreditDialogOpen}
+        onConfirm={handleConfirmPreview}
+        onRecalculate={handleRecalculatePreview}
+      />
     </div>
   );
 }

@@ -58,11 +58,12 @@ function appBaseUrl(): string {
 
 async function loadWorkspaceSubscription(
   workspaceId: string,
-): Promise<WorkspaceSubscriptionRow & { slug: string }> {
+): Promise<WorkspaceSubscriptionRow & { slug: string; ownerId: string }> {
   const workspace = await prisma.workspace.findUnique({
     where: { id: workspaceId },
     select: {
       slug: true,
+      ownerId: true,
       billingAccount: {
         select: {
           subscription: {
@@ -83,6 +84,7 @@ async function loadWorkspaceSubscription(
 
   return {
     slug: workspace.slug,
+    ownerId: workspace.ownerId,
     plan: workspace.billingAccount.subscription.plan,
     status: workspace.billingAccount.subscription.status,
     stripeSubscriptionId: workspace.billingAccount.subscription.stripeSubscriptionId,
@@ -94,6 +96,7 @@ async function createCheckoutSession(params: {
   slug: string;
   plan: Exclude<SubscriptionPlan, "FREE">;
   stripeCustomerId: string;
+  ownerUserId: string;
 }): Promise<{ url: string }> {
   const stripe = getStripeClient();
   const base = appBaseUrl();
@@ -105,9 +108,17 @@ async function createCheckoutSession(params: {
     success_url: `${base}/dashboard/${params.slug}/billing/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${base}/dashboard/${params.slug}/billing/plans?checkout=cancelled`,
     subscription_data: {
-      metadata: { workspaceId: params.workspaceId, plan: params.plan },
+      metadata: {
+        workspaceId: params.workspaceId,
+        plan: params.plan,
+        ownerUserId: params.ownerUserId,
+      },
     },
-    metadata: { workspaceId: params.workspaceId, plan: params.plan },
+    metadata: {
+      workspaceId: params.workspaceId,
+      plan: params.plan,
+      ownerUserId: params.ownerUserId,
+    },
   });
 
   if (!session.url) {
@@ -315,6 +326,7 @@ export async function changeWorkspaceSubscriptionPlan(params: {
       slug: subscription.slug,
       plan: targetPlan,
       stripeCustomerId,
+      ownerUserId: subscription.ownerId,
     });
     return { kind: "checkout", url: checkout.url };
   }
@@ -326,6 +338,7 @@ export async function changeWorkspaceSubscriptionPlan(params: {
       slug: subscription.slug,
       plan: targetPlan,
       stripeCustomerId,
+      ownerUserId: subscription.ownerId,
     });
     return { kind: "checkout", url: checkout.url };
   }

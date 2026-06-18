@@ -3,6 +3,10 @@
   "description": "Zarządzanie płatnościami wkrótce. Tutaj będziesz mógł przeglądać faktury, aktualizować metody płatności i zarządzać subskrypcją.",
   "soon": "Wkrótce",
   "backToDashboard": "Wróć do panelu",
+  "paidWorkspaces": {
+    "title": "Subskrypcje, które opłacasz",
+    "description": "Przestrzenie, w których jesteś płatnikiem. Możesz zarządzać płatnością nawet bez członkostwa w przestrzeni."
+  },
   "accountInvoices": {
     "title": "Faktury",
     "description": "Historia opłaconych faktur za subskrypcję Esteo.",
@@ -92,7 +96,7 @@
         "BUSINESS": "Wszystkie funkcje odblokowane."
       },
       "renewal": "Odnowienie: {date}",
-      "cancelsOn": "Anulowanie: {date}",
+      "cancelsOn": "Kończy się: {date}",
       "daysUntil": "Za {days} dni",
       "price": {
         "FREE": "0 zł",
@@ -100,6 +104,7 @@
         "BUSINESS": "249 zł"
       },
       "perMonth": "/ miesiąc",
+      "priceWithAddons": "Plan + dodatki",
       "changePlan": "Zmień plan",
       "managePayment": "Zarządzaj płatnością",
       "changePlanDialog": {
@@ -109,13 +114,33 @@
     },
     "banners": {
       "storageOverLimit": "Magazyn jest ponad limitem planu. Usuń pliki lub przejdź na wyższy plan, aby wznawiać przesyłanie.",
-      "seatOverLimit": "Liczba członków przekracza limit planu. Zawieś członków lub przejdź na wyższy plan."
+      "seatOverLimit": "Liczba członków przekracza limit planu. Zawieś członków lub przejdź na wyższy plan.",
+      "handoffActive": "Ta przestrzeń pozostaje aktywna do {date}.",
+      "handoffCannotManage": "Subskrypcja należy do poprzedniego właściciela i nie możesz nią zarządzać.",
+      "handoffAfterExpiration": "Po wygaśnięciu możesz wykupić własną subskrypcję.",
+      "handoffExpired": "Subskrypcja poprzedniego właściciela wygasła.",
+      "handoffExpiredPurchase": "Wykup własną subskrypcję, aby korzystać z płatnych funkcji.",
+      "handoffPayerSubscriptionEnding": "Subskrypcja tego workspace wygaśnie {date}. Rozliczenia pozostają po Twojej stronie do końca okresu.",
+      "handoffPayerFootnote": "Podczas przekazania własności nie można wznowić subskrypcji. Po wygaśnięciu nowy właściciel będzie mógł wykupić własny plan.",
+      "handoffReadOnly": "Rozliczenia są tylko do odczytu dla Twojej roli w trakcie transferu własności."
     },
     "dangerZone": {
       "title": "Strefa niebezpieczna",
       "description": "Anulowanie subskrypcji spowoduje przejście workspace na plan FREE po zakończeniu bieżącego okresu rozliczeniowego.",
       "activeUntilLabel": "Subskrypcja pozostanie aktywna do:",
       "stripeSecured": "Płatności są bezpiecznie obsługiwane przez Stripe."
+    },
+    "catalogMismatch": {
+      "title": "Wykryto rozbieżność cen pomiędzy katalogiem Esteo a konfiguracją Stripe.",
+      "stripe": "Stripe: {amount}",
+      "esteo": "Esteo: {amount}"
+    },
+    "handoffSubscription": {
+      "title": "Subskrypcja poprzedniego właściciela",
+      "activeUntilLabel": "Workspace pozostanie aktywny do:",
+      "expiresAfter": "Po tym terminie subskrypcja wygaśnie.",
+      "purchaseAfter": "Aby kontynuować korzystanie z Esteo, będziesz mógł wykupić własną subskrypcję.",
+      "payerFootnote": "Rozliczenia tej subskrypcji są nadal powiązane z poprzednim płatnikiem."
     },
     "addons": {
       "title": "Aktywne dodatki",
@@ -137,6 +162,7 @@
       "viewPlans": "Zobacz plany",
       "save": "Zapisz zmiany",
       "saveSuccess": "Dodatki zostały zaktualizowane.",
+      "prorationNotice": "Dopłaty za zmiany w bieżącym okresie pojawią się na najbliższej fakturze.",
       "increase": "Zwiększ",
       "decrease": "Zmniejsz",
       "storage": {
@@ -158,16 +184,54 @@
       "title": "Następna faktura",
       "description": "Faktura zostanie wystawiona automatycznie na koniec okresu rozliczeniowego.",
       "viewInvoiceHistory": "Pokaż historyczne faktury",
+      "upcomingInvoices": "Kolejne faktury:",
+      "recurringMonthlyValue": "{amount} / miesiąc",
+      "adjustmentTooltip": "Dokupujesz dodatkowe zasoby w trakcie bieżącego okresu rozliczeniowego.\n\nDopłata pokrywa koszt korzystania z nich do końca obecnego okresu.\n\nOd kolejnego okresu będzie obowiązywał standardowy abonament:\n{monthlyAmount} / miesiąc.",
+      "breakdown": {
+        "composedOf": "Składa się z:",
+        "subscription": "Abonament (plan + dodatki)",
+        "periodCharge": "Dopłata za bieżący okres",
+        "periodCredit": "Kredyt za niewykorzystany okres"
+      },
       "empty": {
         "free_plan": "Brak aktywnej subskrypcji płatnej.",
         "canceling": "Subskrypcja kończy się — kolejna faktura nie zostanie wystawiona.",
         "no_subscription": "Brak zaplanowanej faktury."
       }
     },
+    "preview": {
+      "title": "Podsumowanie zmian",
+      "description": "Sprawdź koszt przed potwierdzeniem.",
+      "newMonthlyCost": "Nowy koszt miesięczny",
+      "adjustmentCharge": "Jednorazowa dopłata za bieżący okres",
+      "adjustmentCredit": "Kredyt za niewykorzystany okres",
+      "adjustmentTooltip": "Dokupujesz dodatkowe zasoby w trakcie bieżącego okresu rozliczeniowego.\n\nJednorazowa dopłata pokrywa koszt korzystania z nich do końca obecnego okresu.\n\nOd kolejnego okresu będzie obowiązywał standardowy abonament:\n{monthlyAmount} / miesiąc.",
+      "breakdown": {
+        "composedOf": "Składa się z:",
+        "subscription": "Abonament (plan + dodatki)"
+      },
+      "badge": {
+        "oneTimeCharge": "Jednorazowa",
+        "credit": "Kredyt"
+      },
+      "chargeOnlyOnce": "Ta dopłata zostanie naliczona tylko raz.",
+      "chargeNotRecurring": "Nie będzie doliczana do kolejnych faktur.",
+      "hintOneTimeCredit": "Ten kredyt dotyczy tylko najbliższej faktury.",
+      "nextInvoice": "Najbliższa faktura",
+      "upcomingInvoices": "Kolejne faktury",
+      "recurringMonthlyValue": "{amount} / miesiąc",
+      "creditTitle": "Potwierdź zmianę",
+      "creditConfirm": "Otrzymasz kredyt {amount} na najbliższą fakturę. Kolejne faktury będą wynosiły {monthlyAmount} / miesiąc.",
+      "confirm": "Potwierdź",
+      "cancel": "Anuluj",
+      "expired": "Ten podgląd wygasł. Przelicz ponownie.",
+      "recalculate": "Przelicz ponownie"
+    },
     "plans": {
       "title": "Wybierz plan",
       "subtitle": "Porównaj plany i wybierz najlepszy dla tego workspace.",
       "backToBilling": "Wróć do płatności",
+      "handoffReadOnlyPlans": "Zmiana planu nie jest dostępna w trakcie przekazania rozliczeń.",
       "currentPlan": "Aktualny plan",
       "currentPlanBadge": "Twój plan",
       "upgradeTo": "Przejdź na {plan}",

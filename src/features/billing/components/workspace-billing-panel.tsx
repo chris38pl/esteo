@@ -5,6 +5,8 @@ import { AlertTriangle, Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
+import { BillingCatalogPriceMismatchBanner } from "@/features/billing/components/billing-catalog-price-mismatch-banner";
+import { BillingHandoffBanner } from "@/features/billing/components/billing-handoff-banner";
 import { BillingPlanHeroBanner } from "@/features/billing/components/billing-plan-hero-banner";
 import { BillingSecondaryCardsSection } from "@/features/billing/components/billing-secondary-cards-section";
 import { BillingUsageStatsSection } from "@/features/billing/components/billing-usage-stats-section";
@@ -14,6 +16,7 @@ import {
   reactivateWorkspaceSubscriptionAction,
 } from "@/features/billing/server/billing-actions";
 import type { WorkspaceBillingPageData } from "@/features/billing/billing-page-data";
+import { formatBillingMonthlyPrice } from "@/features/billing/lib/format-billing-amount";
 import { dashboardBillingPlansHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
 import type { WorkspaceEffectiveStatus } from "@/server/permissions/domain";
@@ -49,12 +52,16 @@ export function WorkspaceBillingPanel({ workspaceId, workspaceSlug, locale, data
   const t = useTranslations("billing.workspace");
   const {
     entitlements,
+    pricing,
     cancelAtPeriodEnd,
     currentPeriodEnd,
     storageOverLimit,
     seatOverLimit,
     canManageBilling,
-    billingHandoffActive,
+    canChangePlanOrAddons,
+    canPurchaseSubscription,
+    canResumeSubscription,
+    billingOwnershipState,
   } = data;
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -95,12 +102,16 @@ export function WorkspaceBillingPanel({ workspaceId, workspaceSlug, locale, data
     });
   }
 
+  const monthlyPriceLabel = formatBillingMonthlyPrice(
+    pricing.addonCents > 0 ? pricing.recurringCents : pricing.planCents,
+    locale,
+    pricing.currency,
+  );
+  const monthlyPriceSubtitle =
+    pricing.addonCents > 0 ? t("planHero.priceWithAddons") : null;
+
   return (
     <div className="space-y-8">
-      <header className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
-      </header>
-
       {notice ? (
         <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-100">
           {notice}
@@ -125,12 +136,15 @@ export function WorkspaceBillingPanel({ workspaceId, workspaceSlug, locale, data
         </div>
       ) : null}
 
-      {billingHandoffActive && !canManageBilling && currentPeriodEnd ? (
-        <div className="rounded-md border border-blue-300 bg-blue-50 p-4 text-sm text-blue-900 dark:border-blue-500/40 dark:bg-blue-500/10 dark:text-blue-100">
-          <p>{t("banners.handoffActive", { date: formatPeriodEndDate(currentPeriodEnd) })}</p>
-          <p className="mt-2">{t("banners.handoffCannotManage")}</p>
-          <p className="mt-2">{t("banners.handoffAfterExpiration")}</p>
-        </div>
+      <BillingHandoffBanner
+        billingOwnershipState={billingOwnershipState}
+        canManageBilling={canManageBilling}
+        canPurchaseSubscription={canPurchaseSubscription}
+        currentPeriodEnd={currentPeriodEnd}
+      />
+
+      {canManageBilling && pricing.catalogPriceMismatch ? (
+        <BillingCatalogPriceMismatchBanner pricing={pricing} />
       ) : null}
 
       <BillingPlanHeroBanner
@@ -138,10 +152,12 @@ export function WorkspaceBillingPanel({ workspaceId, workspaceSlug, locale, data
         effectiveStatus={entitlements.effectiveStatus}
         cancelAtPeriodEnd={cancelAtPeriodEnd}
         currentPeriodEnd={currentPeriodEnd}
+        monthlyPriceLabel={monthlyPriceLabel}
+        monthlyPriceSubtitle={monthlyPriceSubtitle}
         pending={pending}
         plansHref={plansHref}
-        canManageBilling={canManageBilling}
-        onManageBilling={() => run(() => openWorkspacePortalAction(workspaceId))}
+        canManageBilling={canManageBilling || canPurchaseSubscription}
+        onManageBilling={() => run(() => openWorkspacePortalAction(workspaceId, locale))}
       />
 
       <BillingUsageStatsSection data={data} />
@@ -150,12 +166,14 @@ export function WorkspaceBillingPanel({ workspaceId, workspaceSlug, locale, data
         data={data}
         workspaceId={workspaceId}
         workspaceSlug={workspaceSlug}
+        canManageAddons={canChangePlanOrAddons}
         canManageBilling={canManageBilling}
       />
 
       {entitlements.plan !== "FREE" && canManageBilling ? (
         <BillingDangerZone
           cancelAtPeriodEnd={cancelAtPeriodEnd}
+          canResumeSubscription={canResumeSubscription}
           scheduledCancelNotice={scheduledCancelNotice}
           periodEndLabel={periodEndLabel}
           pending={pending}
@@ -177,6 +195,7 @@ export function WorkspaceBillingPanel({ workspaceId, workspaceSlug, locale, data
 
 function BillingDangerZone({
   cancelAtPeriodEnd,
+  canResumeSubscription,
   scheduledCancelNotice,
   periodEndLabel,
   pending,
@@ -185,6 +204,7 @@ function BillingDangerZone({
   labels,
 }: {
   cancelAtPeriodEnd: boolean;
+  canResumeSubscription: boolean;
   scheduledCancelNotice: string | null;
   periodEndLabel: string | null;
   pending: boolean;
@@ -199,7 +219,10 @@ function BillingDangerZone({
     stripeSecured: string;
   };
 }) {
-  const actionButton = cancelAtPeriodEnd ? (
+  const showResume = cancelAtPeriodEnd && canResumeSubscription;
+  const showCancel = !cancelAtPeriodEnd;
+
+  const actionButton = showResume ? (
     <Button
       variant="outline"
       className="h-11 w-full border-border/80 bg-background px-6 text-sm font-medium md:w-full xl:w-auto"
@@ -208,7 +231,7 @@ function BillingDangerZone({
     >
       {labels.resumeSubscription}
     </Button>
-  ) : (
+  ) : showCancel ? (
     <Button
       variant="outline"
       className={cn(
@@ -220,7 +243,7 @@ function BillingDangerZone({
     >
       {labels.cancelAtPeriodEnd}
     </Button>
-  );
+  ) : null;
 
   return (
     <section className="space-y-4">
@@ -259,7 +282,7 @@ function BillingDangerZone({
               </div>
             ) : null}
 
-            <div className="w-full xl:w-auto">{actionButton}</div>
+            {actionButton ? <div className="w-full xl:w-auto">{actionButton}</div> : null}
           </div>
         </div>
       </div>

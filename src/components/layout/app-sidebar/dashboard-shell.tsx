@@ -12,7 +12,7 @@ import { DashboardBreadcrumbDetailProvider } from "@/components/layout/dashboard
 import { DashboardTopNavbar } from "@/components/layout/dashboard-top-nav/dashboard-top-navbar";
 import { FocusedDashboardUserMenu } from "@/components/layout/dashboard-top-nav/focused-dashboard-user-menu";
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
-import { WorkspaceInvitationPrompt } from "@/features/workspaces/components/workspace-invitation-prompt";
+import { WorkspaceInboxPrompt } from "@/features/workspaces/components/workspace-inbox-prompt";
 
 const FOCUSED_ROUTE_SUFFIXES = [
   "/dashboard/onboarding",
@@ -62,7 +62,7 @@ export function DashboardShell({
   const offset = sidebarWidth(collapsed);
   const mdUp = useMdUp();
   const contentInset = mdUp ? offset : 0;
-  const { modalInvitation, locale: contextLocale, workspaces } = useWorkspaceContext();
+  const { modalInboxItem, locale: contextLocale, workspaces } = useWorkspaceContext();
   const isPreWorkspaceAccount = workspaces.length === 0 && isAccountRoute(pathname);
 
   if (isFocusedDashboardRoute(pathname) || isPreWorkspaceAccount) {
@@ -92,7 +92,7 @@ export function DashboardShell({
     <DashboardBreadcrumbDetailProvider>
       <div className="min-h-dvh bg-background">
         <AppSidebar locale={locale} />
-        <WorkspaceInvitationPrompt invitation={modalInvitation} locale={contextLocale} />
+        <WorkspaceInboxPrompt inboxItem={modalInboxItem} locale={contextLocale} />
 
         <motion.div
           initial={false}

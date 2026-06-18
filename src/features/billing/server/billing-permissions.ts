@@ -1,12 +1,15 @@
 import "server-only";
 
-import type { User, Workspace } from "@prisma/client";
+import type { SubscriptionPlan, SubscriptionStatus, User, Workspace } from "@prisma/client";
 import { cache } from "react";
 
 import { prisma } from "@/db/client";
 import {
+  deriveActiveBillingPayerId,
+  deriveBillingOwnershipState,
   evaluateWorkspaceBillingPermissions,
   resolveEffectivePayerUserId,
+  type BillingOwnershipState,
   type BillingPayerWorkspace,
   type WorkspaceBillingPermissions,
 } from "@/features/billing/lib/billing-permissions-logic";
@@ -14,12 +17,29 @@ import { getWorkspaceMembership } from "@/server/permissions/require-workspace";
 import { PermissionError } from "@/server/permissions/errors";
 import { resolveWorkspaceBySlug } from "@/server/workspaces/active-workspace";
 
-export type { WorkspaceBillingPermissions, BillingPayerWorkspace } from "@/features/billing/lib/billing-permissions-logic";
+export type {
+  BillingOwnershipState,
+  WorkspaceBillingPermissions,
+  BillingPayerWorkspace,
+} from "@/features/billing/lib/billing-permissions-logic";
 
 type WorkspaceBillingContext = {
   workspaceId: string;
   ownerId: string;
   payerUserId: string;
+  subscriptionStatus: SubscriptionStatus;
+  subscriptionPlan: SubscriptionPlan;
+  handoffExpiredAt: Date | null;
+  stripeSubscriptionId: string | null;
+};
+
+const DEFAULT_SUBSCRIPTION: Pick<
+  WorkspaceBillingContext,
+  "subscriptionStatus" | "subscriptionPlan" | "stripeSubscriptionId"
+> = {
+  subscriptionStatus: "ACTIVE",
+  subscriptionPlan: "FREE",
+  stripeSubscriptionId: null,
 };
 
 const loadWorkspaceBillingContext = cache(
@@ -29,13 +49,27 @@ const loadWorkspaceBillingContext = cache(
       select: {
         id: true,
         ownerId: true,
-        billingAccount: { select: { payerUserId: true } },
+        billingAccount: {
+          select: {
+            payerUserId: true,
+            handoffExpiredAt: true,
+            subscription: {
+              select: {
+                status: true,
+                plan: true,
+                stripeSubscriptionId: true,
+              },
+            },
+          },
+        },
       },
     });
 
     if (!workspace) {
       return null;
     }
+
+    const subscription = workspace.billingAccount?.subscription;
 
     return {
       workspaceId: workspace.id,
@@ -44,22 +78,63 @@ const loadWorkspaceBillingContext = cache(
         workspace.billingAccount?.payerUserId,
         workspace.ownerId,
       ),
+      subscriptionStatus: subscription?.status ?? DEFAULT_SUBSCRIPTION.subscriptionStatus,
+      subscriptionPlan: subscription?.plan ?? DEFAULT_SUBSCRIPTION.subscriptionPlan,
+      handoffExpiredAt: workspace.billingAccount?.handoffExpiredAt ?? null,
+      stripeSubscriptionId: subscription?.stripeSubscriptionId ?? null,
     };
   },
 );
 
-/** Single source of truth for payer checks — do not compare payerUserId inline elsewhere. */
-export async function getWorkspaceBillingPayerId(workspaceId: string): Promise<string | null> {
+export async function getWorkspaceBillingOwnershipState(
+  workspaceId: string,
+): Promise<BillingOwnershipState | null> {
   const context = await loadWorkspaceBillingContext(workspaceId);
-  return context?.payerUserId ?? null;
+  if (!context) {
+    return null;
+  }
+
+  return deriveBillingOwnershipState({
+    ownerUserId: context.ownerId,
+    payerUserId: context.payerUserId,
+    subscriptionStatus: context.subscriptionStatus,
+    subscriptionPlan: context.subscriptionPlan,
+    handoffExpiredAt: context.handoffExpiredAt,
+    stripeSubscriptionId: context.stripeSubscriptionId,
+  });
+}
+
+/** Single source of truth for active payer checks — use activeBillingPayerId, not raw payerUserId. */
+export async function getWorkspaceActiveBillingPayerId(
+  workspaceId: string,
+): Promise<string | null> {
+  const context = await loadWorkspaceBillingContext(workspaceId);
+  if (!context) {
+    return null;
+  }
+
+  const state = deriveBillingOwnershipState({
+    ownerUserId: context.ownerId,
+    payerUserId: context.payerUserId,
+    subscriptionStatus: context.subscriptionStatus,
+    subscriptionPlan: context.subscriptionPlan,
+    handoffExpiredAt: context.handoffExpiredAt,
+    stripeSubscriptionId: context.stripeSubscriptionId,
+  });
+
+  return deriveActiveBillingPayerId({
+    billingOwnershipState: state,
+    ownerUserId: context.ownerId,
+    payerUserId: context.payerUserId,
+  });
 }
 
 export async function isWorkspaceBillingPayer(
   userId: string,
   workspaceId: string,
 ): Promise<boolean> {
-  const payerUserId = await getWorkspaceBillingPayerId(workspaceId);
-  return payerUserId !== null && payerUserId === userId;
+  const permissions = await resolveWorkspaceBillingPermissions(userId, workspaceId);
+  return permissions?.isBillingPayer ?? false;
 }
 
 export async function resolveWorkspaceBillingPermissions(
@@ -79,14 +154,69 @@ export async function resolveWorkspaceBillingPermissions(
     workspaceOwnerId: context.ownerId,
     payerUserId: context.payerUserId,
     isActiveMember,
+    subscriptionStatus: context.subscriptionStatus,
+    subscriptionPlan: context.subscriptionPlan,
+    handoffExpiredAt: context.handoffExpiredAt,
+    stripeSubscriptionId: context.stripeSubscriptionId,
   });
 }
 
-export async function requireBillingPayer(user: User, workspaceId: string): Promise<void> {
-  const isPayer = await isWorkspaceBillingPayer(user.id, workspaceId);
-  if (!isPayer) {
-    throw new PermissionError("Only the billing payer can manage this subscription.");
+async function requireWorkspaceBillingPermissions(
+  user: User,
+  workspaceId: string,
+): Promise<WorkspaceBillingPermissions> {
+  const permissions = await resolveWorkspaceBillingPermissions(user.id, workspaceId);
+  if (!permissions) {
+    throw new PermissionError("Workspace not found.");
   }
+  return permissions;
+}
+
+export async function assertCanManageBilling(user: User, workspaceId: string): Promise<void> {
+  const permissions = await requireWorkspaceBillingPermissions(user, workspaceId);
+  if (!permissions.canManageBilling) {
+    throw new PermissionError("You do not have permission to manage billing for this workspace.");
+  }
+}
+
+export async function assertCanResumeSubscription(user: User, workspaceId: string): Promise<void> {
+  const permissions = await requireWorkspaceBillingPermissions(user, workspaceId);
+  if (!permissions.canResumeSubscription) {
+    throw new PermissionError(
+      "Subscription cannot be resumed while workspace ownership transfer is in progress.",
+    );
+  }
+}
+
+export async function assertCanChangePlanOrAddons(
+  user: User,
+  workspaceId: string,
+): Promise<void> {
+  const permissions = await requireWorkspaceBillingPermissions(user, workspaceId);
+  if (!permissions.canChangePlanOrAddons) {
+    throw new PermissionError("You do not have permission to change plans or add-ons for this workspace.");
+  }
+}
+
+export async function assertCanPurchaseSubscription(
+  user: User,
+  workspaceId: string,
+): Promise<void> {
+  const permissions = await requireWorkspaceBillingPermissions(user, workspaceId);
+  if (permissions.billingOwnershipState === "HANDOFF_EXPIRED") {
+    if (user.id !== permissions.ownerId) {
+      throw new PermissionError("Only the workspace owner may purchase a subscription.");
+    }
+    return;
+  }
+  if (!permissions.canPurchaseSubscription) {
+    throw new PermissionError("You do not have permission to purchase a subscription for this workspace.");
+  }
+}
+
+/** @deprecated Prefer assertCanManageBilling — kept for gradual migration. */
+export async function requireBillingPayer(user: User, workspaceId: string): Promise<void> {
+  await assertCanManageBilling(user, workspaceId);
 }
 
 export async function requireCanViewWorkspaceBilling(
@@ -166,7 +296,7 @@ export async function resolveWorkspaceForBilling(
   };
 }
 
-/** Workspaces where the user is billing payer (may not be a member). */
+/** Workspaces where the user is the active billing payer (may not be a member). */
 export async function listWorkspacesWhereUserIsBillingPayer(
   userId: string,
 ): Promise<BillingPayerWorkspace[]> {
@@ -177,14 +307,41 @@ export async function listWorkspacesWhereUserIsBillingPayer(
       workspace: { deletedAt: null },
     },
     select: {
-      workspace: { select: { id: true, name: true, slug: true } },
+      workspaceId: true,
+      workspace: { select: { id: true, name: true, slug: true, ownerId: true } },
+      payerUserId: true,
+      handoffExpiredAt: true,
+      subscription: {
+        select: {
+          status: true,
+          plan: true,
+          stripeSubscriptionId: true,
+        },
+      },
     },
     orderBy: { workspace: { name: "asc" } },
   });
 
   return accounts
-    .map((account) => account.workspace)
-    .filter((workspace): workspace is BillingPayerWorkspace => workspace !== null);
+    .filter((account) => {
+      if (!account.workspace || !account.workspaceId) {
+        return false;
+      }
+      const state = deriveBillingOwnershipState({
+        ownerUserId: account.workspace.ownerId,
+        payerUserId: resolveEffectivePayerUserId(account.payerUserId, account.workspace.ownerId),
+        subscriptionStatus: account.subscription?.status ?? "ACTIVE",
+        subscriptionPlan: account.subscription?.plan ?? "FREE",
+        handoffExpiredAt: account.handoffExpiredAt,
+        stripeSubscriptionId: account.subscription?.stripeSubscriptionId ?? null,
+      });
+      return state === "HANDOFF_ACTIVE" && account.payerUserId === userId;
+    })
+    .map((account) => ({
+      id: account.workspace!.id,
+      name: account.workspace!.name,
+      slug: account.workspace!.slug,
+    }));
 }
 
 export async function getBillingPayerWorkspaceIdsForUser(userId: string): Promise<Set<string>> {

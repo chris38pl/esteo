@@ -9,4 +9,5 @@ export type WorkspaceBillingPlansPageData = {
   cancelAtPeriodEnd: boolean;
   currentPeriodEnd: Date | null;
   planLimits: Record<SubscriptionPlan, PlanLimits>;
+  catalogPlanPriceCents: Record<SubscriptionPlan, number>;
 };

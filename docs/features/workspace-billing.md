@@ -121,12 +121,36 @@ Server: `changeWorkspaceAddonQuantity()` (`addon-change.ts`) updates Stripe subs
 
 Server: `getWorkspaceUpcomingInvoice()` → Stripe `invoices.createPreview({ customer, subscription })`.
 
+Parsed breakdown (`parse-invoice-preview-lines.ts`):
+
+| Line bucket | Meaning |
+| --- | --- |
+| `recurringCents` | Next-period subscription lines (non-proration) |
+| `prorationCents` | Signed net proration (positive charge, negative credit) |
+| `amountCents` | `amount_due` |
+
+UI recurring display uses **catalog** (`WorkspaceBillingPricing.recurringCents` from DB `planVersion` + add-on quantities), not the billing page selection state.
+
 | State | UI |
 | --- | --- |
-| Active paid sub | Amount (`amount_due`) + date (`next_payment_attempt` or `period_end`) |
+| Active paid sub | Total + breakdown + optional “Kolejne faktury” when proration ≠ 0 |
 | FREE plan | Empty + copy |
 | `cancelAtPeriodEnd` | Empty + “no further invoice” copy |
-| Stripe preview fails | Fallback: subscription item `unit_amount` + DB `currentPeriodEnd` |
+| Stripe preview fails | Fallback: catalog recurring + DB `currentPeriodEnd` |
+
+### Change preview (paid workspaces)
+
+`previewWorkspaceBillingChangeAction` → Stripe `createPreview` with target items. UX by `prorationKind`:
+
+| Kind | UX |
+| --- | --- |
+| `charge` | Full preview dialog |
+| `credit` | Light credit confirm |
+| `none` | Apply immediately (e.g. scheduled downgrade) |
+
+Preview TTL: 5 minutes (client UX only). Apply re-fetches workspace state; preview amounts are not trusted.
+
+FREE → paid: Checkout only (no preview).
 
 ### Danger zone
 
@@ -141,15 +165,18 @@ Cancel at period end / resume subscription. Stripe footer lock line. Shown only 
 ```typescript
 WorkspaceBillingPageData = {
   entitlements,           // getWorkspaceEntitlements()
+  pricing,                // WorkspaceBillingPricing — catalog recurring + Stripe preview fields
   cancelAtPeriodEnd,
   currentPeriodEnd,
   memberUsage,            // per-user AI + estimate meters
   storage,                // formatted bytes + percent
   storageOverLimit,
   seatOverLimit,
-  nextInvoice,            // Stripe preview or empty reason
+  nextInvoice,            // Stripe preview breakdown or empty reason
 }
 ```
+
+`billing_pricing_computed` structured log (server only): `workspaceId`, `workspaceSlug`, `stripeSubscriptionId`, `plan`, `planVersion`, `recurringCents`, `nextInvoiceCents`.
 
 **Client:** `WorkspaceBillingPanel` calls server actions for mutations; successful portal/checkout redirects via `window.location`.
 
@@ -160,6 +187,7 @@ WorkspaceBillingPageData = {
 | Action | Stripe / DB effect |
 | --- | --- |
 | `changeWorkspaceAddonQuantityAction(workspaceId, addonKey, quantity)` | → `changeWorkspaceAddonQuantity()` — Stripe subscription item qty |
+| `previewWorkspaceBillingChangeAction(workspaceId, change)` | → `previewWorkspaceBillingChange()` — Stripe preview for UX |
 | `changeWorkspacePlanAction(workspaceId, plan)` | → `changeWorkspaceSubscriptionPlan()` — Checkout or in-app update |
 | `openWorkspacePortalAction(workspaceId)` | Stripe Billing Portal session; `return_url` → portal-return |
 | `cancelWorkspaceSubscriptionAction(workspaceId)` | `cancel_at_period_end` + sync |

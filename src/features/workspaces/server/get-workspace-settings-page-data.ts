@@ -13,6 +13,7 @@ import {
   getTransferEligibilitySnapshot,
   loadLiveSubscriptionForTransfer,
 } from "@/features/workspaces/server/transfer-eligibility";
+import { getWorkspaceBillingOwnershipState } from "@/features/billing/server/billing-permissions";
 import { evaluateWorkspaceDeleteEligibility } from "@/features/workspaces/lib/workspace-delete-eligibility";
 import { canInviteWorkspaceMembers } from "@/server/permissions/entitlements";
 
@@ -45,6 +46,7 @@ export async function getWorkspaceSettingsPageData(
     transferEligibility,
     pendingTransfer,
     subscription,
+    billingOwnershipState,
   ] = await Promise.all([
     getWorkspaceMembersForUi(user, workspaceId),
     listPendingWorkspaceInvitations(workspaceId),
@@ -53,11 +55,13 @@ export async function getWorkspaceSettingsPageData(
     getTransferEligibilitySnapshot(workspaceId),
     getPendingWorkspaceTransfer(workspaceId),
     loadLiveSubscriptionForTransfer(workspaceId),
+    getWorkspaceBillingOwnershipState(workspaceId),
   ]);
 
   const deleteEligibility = evaluateWorkspaceDeleteEligibility({
     subscription,
     hasPendingTransfer: Boolean(pendingTransfer),
+    billingOwnershipState: billingOwnershipState ?? "NORMAL",
   });
 
   return {
