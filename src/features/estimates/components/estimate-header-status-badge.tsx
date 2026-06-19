@@ -26,7 +26,7 @@ export function EstimateHeaderStatusBadge({
 
   const versionLabel = isArchived
     ? t("status.ARCHIVED")
-    : t(`header.status.${versionStatus}`);
+    : t(`status.${versionStatus}`);
 
   if (autosaveStatus === "idle") {
     return (

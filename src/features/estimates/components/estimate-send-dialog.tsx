@@ -263,8 +263,8 @@ export function EstimateSendDialog({
 export type EstimateSendDialogMode = SendDialogMode;
 
 export function openEstimateSendDialogDeferred(
-  open: (mode: SendDialogMode) => void,
+  open: (mode: SendDialogMode) => void | Promise<void>,
   mode: SendDialogMode = "send",
 ) {
-  window.setTimeout(() => open(mode), MOBILE_OUTSIDE_DISMISS_GUARD_MS / 3);
+  window.setTimeout(() => void open(mode), MOBILE_OUTSIDE_DISMISS_GUARD_MS / 3);
 }

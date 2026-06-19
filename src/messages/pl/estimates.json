@@ -212,7 +212,7 @@
       "failed": "Generowanie PDF nie powiodło się. Spróbuj ponownie.",
       "companyProfileIncomplete": {
         "title": "Uzupełnij dane firmy",
-        "description": "Na PDF brakuje danych firmy z ustawień przestrzeni. Uzupełnij je, aby dokument wyglądał profesjonalnie — albo kontynuuj z pustymi polami.",
+        "description": "Przy eksporcie lub wysyłce wyceny na PDF brakuje danych firmy z ustawień przestrzeni. Uzupełnij je, aby dokument wyglądał profesjonalnie — albo kontynuuj z pustymi polami.",
         "missingFieldsLabel": "Brakujące elementy:",
         "fields": {
           "logo": "Logo firmy",
@@ -490,7 +490,11 @@
         "sent": "Wysłana",
         "sentDesc": "Wysłano do klienta",
         "acceptance": "Zaakceptowana",
-        "acceptanceDesc": "Klient zaakceptował wycenę"
+        "acceptanceDesc": "Klient zaakceptował wycenę",
+        "acceptanceWaiting": "Czeka na decyzję klienta",
+        "acceptanceWaitingDesc": "Wycena jest u klienta — oczekujemy odpowiedzi",
+        "rejection": "Odrzucona przez klienta",
+        "rejectionDesc": "Klient odrzucił wycenę"
       },
       "scope": {
         "title": "Zakres prac",
@@ -553,7 +557,7 @@
     "itemNamePlaceholder": "Nazwa pozycji",
     "unitPlaceholder": "j.m.",
     "archivedBanner": "Ta wersja jest zarchiwizowana i nie można jej edytować.",
-    "readOnlyBanner": "Ta wersja została wysłana lub rozstrzygnięta — edycja jest zablokowana. Utwórz nową wersję, aby wprowadzić zmiany.",
+    "readOnlyBanner": "Wysłano do klienta — nie można już edytować. Utwórz nową wersję, jeśli coś zmieniasz.",
     "sendInProgressBanner": "Trwa wysyłka wyceny… Edycja pozycji jest tymczasowo zablokowana.",
     "conflictBanner": "Inny użytkownik zapisał tę wycenę. Odśwież, aby kontynuować edycję.",
     "reload": "Odśwież",
@@ -620,12 +624,6 @@
     }
   },
   "header": {
-    "status": {
-      "DRAFT": "Projekt roboczy",
-      "SENT": "Wysłana",
-      "ACCEPTED": "Zaakceptowana",
-      "REJECTED": "Odrzucona"
-    },
     "sendMeta": {
       "count": "Wysłano: {count, plural, one {# raz} few {# razy} many {# razy} other {# razy}}",
       "lastSent": "Ostatnia wysyłka: {date}",

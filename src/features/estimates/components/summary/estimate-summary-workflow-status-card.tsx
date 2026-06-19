@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { Check, Send } from "lucide-react";
+import { Check, Send, X } from "lucide-react";
 
 import type { EstimateForEditorClient, VersionTreeClient } from "@/features/estimates/lib/serialize-estimate";
 import type { EstimateActivityLogClient } from "@/features/estimates/lib/serialize-estimate-activity";
@@ -32,6 +32,14 @@ function formatStepDate(value: string, locale: Locale): string {
 }
 
 function StepIcon({ step }: { step: WorkflowStep }) {
+  if (step.state === "completed" && step.variant === "rejected") {
+    return (
+      <span className="flex size-8 items-center justify-center rounded-full bg-rose-500 text-white">
+        <X className="size-4" />
+      </span>
+    );
+  }
+
   if (step.state === "completed") {
     return (
       <span className="flex size-8 items-center justify-center rounded-full bg-emerald-500 text-white">
@@ -54,10 +62,10 @@ function StepIcon({ step }: { step: WorkflowStep }) {
 }
 
 function stepLabels(
-  stepId: WorkflowStepId,
+  step: WorkflowStep,
   t: ReturnType<typeof useTranslations<"estimates">>,
 ): { title: string; description: string } {
-  switch (stepId) {
+  switch (step.id) {
     case "inquiry":
       return {
         title: t("editor.summary.workflow.inquiry"),
@@ -74,6 +82,18 @@ function stepLabels(
         description: t("editor.summary.workflow.sentDesc"),
       };
     case "acceptance":
+      if (step.variant === "waiting") {
+        return {
+          title: t("editor.summary.workflow.acceptanceWaiting"),
+          description: t("editor.summary.workflow.acceptanceWaitingDesc"),
+        };
+      }
+      if (step.variant === "rejected") {
+        return {
+          title: t("editor.summary.workflow.rejection"),
+          description: t("editor.summary.workflow.rejectionDesc"),
+        };
+      }
       return {
         title: t("editor.summary.workflow.acceptance"),
         description: t("editor.summary.workflow.acceptanceDesc"),
@@ -108,6 +128,7 @@ export function EstimateSummaryWorkflowStatusCard({
         versionNumber: versionTree?.versionNumber ?? 1,
         versionStatus: versionTree?.status ?? "DRAFT",
         acceptedAt: versionTree?.status === "ACCEPTED" ? versionTree.updatedAt : null,
+        rejectedAt: versionTree?.status === "REJECTED" ? versionTree.updatedAt : null,
         lineItemCount,
         activityLogs,
       }),
@@ -132,7 +153,7 @@ export function EstimateSummaryWorkflowStatusCard({
 
         <ol className="mt-4 space-y-0">
           {workflow.steps.map((step, index) => {
-            const labels = stepLabels(step.id, t);
+            const labels = stepLabels(step, t);
             const isLast = index === workflow.steps.length - 1;
             const connectorCompleted = step.state === "completed";
 
@@ -145,7 +166,9 @@ export function EstimateSummaryWorkflowStatusCard({
                       className={cn(
                         "my-1 w-0 flex-1 min-h-6 self-center border-l-2 border-dashed",
                         connectorCompleted
-                          ? "border-emerald-500/70 dark:border-emerald-500/50"
+                          ? step.variant === "rejected"
+                            ? "border-rose-500/70 dark:border-rose-500/50"
+                            : "border-emerald-500/70 dark:border-emerald-500/50"
                           : step.state === "current"
                             ? "border-primary/70 dark:border-primary/40"
                             : "border-neutral-400 dark:border-muted-foreground/30",
@@ -158,7 +181,12 @@ export function EstimateSummaryWorkflowStatusCard({
                   <p
                     className={cn(
                       "text-sm font-semibold",
-                      step.state === "completed" && "text-emerald-600 dark:text-emerald-400",
+                      step.state === "completed" &&
+                        step.variant === "rejected" &&
+                        "text-rose-600 dark:text-rose-400",
+                      step.state === "completed" &&
+                        step.variant !== "rejected" &&
+                        "text-emerald-600 dark:text-emerald-400",
                       step.state === "current" && "text-foreground",
                       step.state === "pending" && "text-foreground",
                     )}

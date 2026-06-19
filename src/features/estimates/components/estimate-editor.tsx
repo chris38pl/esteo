@@ -317,11 +317,6 @@ export function EstimateEditor({
     [startPolling],
   );
 
-  const openSendDialog = useCallback((mode: EstimateSendDialogMode) => {
-    setSendDialogMode(mode);
-    setSendDialogOpen(true);
-  }, []);
-
   const allVersions = estimate.versions.map((v) => ({
     id: v.id,
     versionNumber: v.versionNumber,
@@ -410,6 +405,22 @@ export function EstimateEditor({
       workspaceSlug,
       locale,
     });
+
+  const openSendDialog = useCallback(
+    async (mode: EstimateSendDialogMode) => {
+      const gate = await onBeforePdfExport();
+      if (!gate.proceed) {
+        if (gate.reason === "unsaved") {
+          toast.error(t("editor.pdfExport.saveBeforeExport"));
+        }
+        return;
+      }
+
+      setSendDialogMode(mode);
+      setSendDialogOpen(true);
+    },
+    [onBeforePdfExport, t],
+  );
 
   const { exportPdf } = useEstimatePdfExport({
     estimateId: estimate.id,

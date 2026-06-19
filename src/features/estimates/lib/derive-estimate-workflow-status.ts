@@ -7,10 +7,13 @@ export type WorkflowStepId = "inquiry" | "estimate" | "sent" | "acceptance";
 
 export type WorkflowStepState = "completed" | "current" | "pending";
 
+export type WorkflowStepVariant = "waiting" | "accepted" | "rejected";
+
 export type WorkflowStep = {
   id: WorkflowStepId;
   state: WorkflowStepState;
   completedAt: string | null;
+  variant?: WorkflowStepVariant;
 };
 
 export type EstimateWorkflowStatus = {
@@ -25,6 +28,7 @@ type DeriveWorkflowInput = {
   versionNumber: number;
   versionStatus: EstimateVersionStatus;
   acceptedAt?: string | null;
+  rejectedAt?: string | null;
   lineItemCount: number;
   activityLogs: EstimateActivityLogClient[];
 };
@@ -75,33 +79,48 @@ export function deriveEstimateWorkflowStatus(
     input.versionNumber,
     ESTIMATE_ACTIVITY_ACTIONS.estimate_accepted,
   );
+  const rejectedActivityDate = findActivityDate(
+    input.activityLogs,
+    input.versionNumber,
+    ESTIMATE_ACTIVITY_ACTIONS.estimate_rejected,
+  );
+
   const acceptanceCompleted = input.versionStatus === "ACCEPTED";
+  const rejectionCompleted = input.versionStatus === "REJECTED";
+  const decisionCompleted = acceptanceCompleted || rejectionCompleted;
+
   const acceptanceDate = acceptanceCompleted
     ? (acceptedActivityDate ?? input.acceptedAt ?? input.versionUpdatedAt)
+    : null;
+  const rejectionDate = rejectionCompleted
+    ? (rejectedActivityDate ?? input.rejectedAt ?? input.versionUpdatedAt)
     : null;
 
   const stepCompletion: Record<WorkflowStepId, boolean> = {
     inquiry: inquiryCompleted,
     estimate: estimateCompleted,
     sent: sentCompleted,
-    acceptance: acceptanceCompleted,
+    acceptance: decisionCompleted,
   };
 
   const stepDates: Record<WorkflowStepId, string | null> = {
     inquiry: inquiryCompleted ? input.estimateRequestCreatedAt : null,
     estimate: estimateCompleted ? estimateDate : null,
     sent: sentCompleted ? sentDate : null,
-    acceptance: acceptanceDate,
+    acceptance: acceptanceDate ?? rejectionDate,
   };
 
   const stepOrder: WorkflowStepId[] = ["inquiry", "estimate", "sent", "acceptance"];
 
-  let currentStepId: WorkflowStepId | null = null;
+  const currentStepId = stepOrder.find((id) => !stepCompletion[id]) ?? null;
 
-  if (input.versionStatus === "REJECTED" && sentCompleted && !acceptanceCompleted) {
-    currentStepId = "sent";
-  } else {
-    currentStepId = stepOrder.find((id) => !stepCompletion[id]) ?? null;
+  let acceptanceVariant: WorkflowStepVariant | undefined;
+  if (input.versionStatus === "SENT" && sentCompleted) {
+    acceptanceVariant = "waiting";
+  } else if (acceptanceCompleted) {
+    acceptanceVariant = "accepted";
+  } else if (rejectionCompleted) {
+    acceptanceVariant = "rejected";
   }
 
   const steps: WorkflowStep[] = stepOrder.map((id) => {
@@ -119,6 +138,7 @@ export function deriveEstimateWorkflowStatus(
       id,
       state,
       completedAt: stepDates[id],
+      ...(id === "acceptance" && acceptanceVariant ? { variant: acceptanceVariant } : {}),
     };
   });
 

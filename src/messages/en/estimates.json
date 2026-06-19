@@ -212,7 +212,7 @@
       "failed": "PDF generation failed. Please try again.",
       "companyProfileIncomplete": {
         "title": "Complete company details",
-        "description": "Your workspace is missing company details used on PDFs. Add them for a professional document — or continue with empty fields.",
+        "description": "Your workspace is missing company details used when exporting or sending the estimate as PDF. Add them for a professional document — or continue with empty fields.",
         "missingFieldsLabel": "Missing items:",
         "fields": {
           "logo": "Company logo",
@@ -490,7 +490,11 @@
         "sent": "Sent",
         "sentDesc": "Sent to client",
         "acceptance": "Accepted",
-        "acceptanceDesc": "Customer accepted the estimate"
+        "acceptanceDesc": "Customer accepted the estimate",
+        "acceptanceWaiting": "Awaiting customer decision",
+        "acceptanceWaitingDesc": "The estimate is with the customer — waiting for a response",
+        "rejection": "Rejected by customer",
+        "rejectionDesc": "The customer rejected the estimate"
       },
       "scope": {
         "title": "Scope of work",
@@ -553,7 +557,7 @@
     "itemNamePlaceholder": "Item name",
     "unitPlaceholder": "unit",
     "archivedBanner": "This version is archived and cannot be edited.",
-    "readOnlyBanner": "This version has been sent or decided — editing is locked. Create a new version to make changes.",
+    "readOnlyBanner": "Sent to the client — editing is locked. Create a new version if you need to make changes.",
     "sendInProgressBanner": "Sending estimate… Line-item editing is temporarily locked.",
     "conflictBanner": "Another user saved this estimate. Reload to continue editing.",
     "reload": "Reload",
@@ -620,12 +624,6 @@
     }
   },
   "header": {
-    "status": {
-      "DRAFT": "Draft project",
-      "SENT": "Sent",
-      "ACCEPTED": "Accepted",
-      "REJECTED": "Rejected"
-    },
     "sendMeta": {
       "count": "Sent: {count, plural, one {# time} other {# times}}",
       "lastSent": "Last sent: {date}",

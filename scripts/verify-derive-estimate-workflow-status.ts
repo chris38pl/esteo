@@ -72,6 +72,38 @@ const acceptedVersion = deriveEstimateWorkflowStatus({
 });
 
 assert(acceptedVersion.steps[3].state === "completed", "acceptance should be completed");
+assert(
+  acceptedVersion.steps[3].variant === "accepted",
+  "acceptance variant should be accepted",
+);
+
+const rejectedVersion = deriveEstimateWorkflowStatus({
+  hasEstimateRequest: true,
+  estimateRequestCreatedAt: "2026-06-04T10:00:00.000Z",
+  versionCreatedAt: "2026-06-05T10:00:00.000Z",
+  versionUpdatedAt: "2026-06-11T10:00:00.000Z",
+  versionNumber: 1,
+  versionStatus: "REJECTED",
+  rejectedAt: "2026-06-11T10:00:00.000Z",
+  lineItemCount: 5,
+  activityLogs: [],
+});
+
+assert(rejectedVersion.steps[2].state === "completed", "sent should be completed for rejected");
+assert(rejectedVersion.steps[3].state === "completed", "decision step should be completed");
+assert(
+  rejectedVersion.steps[3].variant === "rejected",
+  "decision variant should be rejected",
+);
+assert(
+  rejectedVersion.steps[3].completedAt === "2026-06-11T10:00:00.000Z",
+  "rejection date should come from rejectedAt",
+);
+
+assert(
+  sentVersion.steps[3].variant === "waiting",
+  "acceptance variant should be waiting when sent",
+);
 
 const sentViaActivity = deriveEstimateWorkflowStatus({
   hasEstimateRequest: true,
