@@ -1,4 +1,4 @@
-import type { SubscriptionPlan, User } from "@prisma/client";
+import type { PlatformRole, SubscriptionPlan, User } from "@prisma/client";
 
 import { prisma } from "@/db/client";
 import { fetchClerkMetadataForUsers } from "@/features/users/server/clerk-user-metadata";
@@ -46,6 +46,7 @@ export type AdminUserRow = {
   email: string;
   avatarUrl: string | null;
   avatarPreset: string | null;
+  platformRole: PlatformRole;
   plan: SubscriptionPlan;
   provider: "google" | "apple" | "standard";
   workspaceCount: number;
@@ -60,6 +61,10 @@ function assertPlatformAdminUser(user: User): void {
     throw new PermissionError("Platform admin access required.");
   }
 }
+
+const ASSIGNABLE_PLATFORM_ROLES = ["NONE", "QA_TESTER"] as const satisfies readonly PlatformRole[];
+
+export type AssignablePlatformRole = (typeof ASSIGNABLE_PLATFORM_ROLES)[number];
 
 function aggregateUserWorkspaceStats(user: {
   ownedWorkspaces: Array<{
@@ -124,6 +129,7 @@ async function mapUsersToRows(
     email: string;
     avatarUrl: string | null;
     avatarPreset: string | null;
+    platformRole: PlatformRole;
     createdAt: Date;
     billingAccounts: Array<{
       subscription: { plan: SubscriptionPlan } | null;
@@ -152,6 +158,7 @@ async function mapUsersToRows(
       email: user.email,
       avatarUrl: user.avatarUrl,
       avatarPreset: user.avatarPreset,
+      platformRole: user.platformRole,
       plan: highestOwnedPlan(user.billingAccounts),
       provider: clerk?.provider ?? "standard",
       workspaceCount: stats.workspaceCount,
@@ -174,6 +181,44 @@ const userListInclude = {
   ownedWorkspaces: workspaceInclude,
   workspaceMemberships: membershipInclude,
 } as const;
+
+export async function adminSetUserPlatformRole(
+  admin: User,
+  userId: string,
+  role: AssignablePlatformRole,
+): Promise<AdminUserRow> {
+  assertPlatformAdminUser(admin);
+
+  if (admin.id === userId) {
+    throw new PermissionError("You cannot change your own platform role.");
+  }
+
+  const target = await prisma.user.findFirst({
+    where: { id: userId, deletedAt: null },
+    include: userListInclude,
+  });
+
+  if (!target) {
+    throw new PermissionError("User not found.");
+  }
+
+  if (target.platformRole === "PLATFORM_ADMIN") {
+    throw new PermissionError("Platform admin roles cannot be changed from the admin panel.");
+  }
+
+  if (!ASSIGNABLE_PLATFORM_ROLES.includes(role)) {
+    throw new PermissionError("Invalid platform role.");
+  }
+
+  const updated = await prisma.user.update({
+    where: { id: userId },
+    data: { platformRole: role },
+    include: userListInclude,
+  });
+
+  const [row] = await mapUsersToRows([updated]);
+  return row;
+}
 
 export async function listAdminUsersPaginated(
   params: PaginationParams,

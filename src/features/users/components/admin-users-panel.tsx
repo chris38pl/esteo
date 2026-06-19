@@ -1,15 +1,26 @@
 "use client";
 
-import { Building2, FileStack, GitBranch, Search } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import type { PlatformRole } from "@prisma/client";
+import { Building2, FileStack, GitBranch, MoreHorizontal, Search } from "lucide-react";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import type { LucideIcon } from "lucide-react";
+import { toast } from "sonner";
 
 import { UserAvatar } from "@/components/avatars/user-avatar";
 import { isAvatarPreset } from "@/lib/avatars/user-avatar-presets";
 import { PaginationControls } from "@/components/shared/pagination-controls";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { adminSetUserPlatformRoleAction } from "@/features/users/server/admin-actions";
 import type { AdminUserRow } from "@/features/users/server/admin-users";
 import type { Locale } from "@/lib/locale";
 import type { PaginatedResult } from "@/lib/pagination";
@@ -82,7 +93,92 @@ function PlanBadge({ label }: { label: string }) {
   );
 }
 
-function AdminUserListRow({ user }: { user: AdminUserRow }) {
+function PlatformRoleBadge({ role }: { role: PlatformRole }) {
+  const t = useTranslations("admin.users.platformRole");
+
+  if (role === "NONE") {
+    return null;
+  }
+
+  return (
+    <Badge
+      variant="secondary"
+      className={cn(
+        "rounded-md px-2 py-0.5 text-[11px] font-medium",
+        role === "PLATFORM_ADMIN" &&
+          "border border-sky-500/20 bg-sky-500/10 text-sky-700 dark:border-sky-400/20 dark:bg-sky-400/10 dark:text-sky-300",
+        role === "QA_TESTER" &&
+          "border border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300",
+      )}
+    >
+      {t(role)}
+    </Badge>
+  );
+}
+
+function UserActionsMenu({
+  user,
+  viewerUserId,
+  onSetQaRole,
+  isPending,
+}: {
+  user: AdminUserRow;
+  viewerUserId: string;
+  onSetQaRole: (userId: string, role: "NONE" | "QA_TESTER") => void;
+  isPending: boolean;
+}) {
+  const t = useTranslations("admin.users.actions");
+
+  const canManageRole =
+    user.id !== viewerUserId && user.platformRole !== "PLATFORM_ADMIN";
+
+  if (!canManageRole) {
+    return null;
+  }
+
+  return (
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="size-8 shrink-0 rounded-lg text-muted-foreground"
+          aria-label={t("menu")}
+          disabled={isPending}
+        >
+          <MoreHorizontal className="size-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-52">
+        {user.platformRole === "QA_TESTER" ? (
+          <DropdownMenuItem disabled={isPending} onSelect={() => onSetQaRole(user.id, "NONE")}>
+            {t("removeQaRole")}
+          </DropdownMenuItem>
+        ) : (
+          <DropdownMenuItem
+            disabled={isPending}
+            onSelect={() => onSetQaRole(user.id, "QA_TESTER")}
+          >
+            {t("setQaRole")}
+          </DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+function AdminUserListRow({
+  user,
+  viewerUserId,
+  onSetQaRole,
+  isPending,
+}: {
+  user: AdminUserRow;
+  viewerUserId: string;
+  onSetQaRole: (userId: string, role: "NONE" | "QA_TESTER") => void;
+  isPending: boolean;
+}) {
   const t = useTranslations("admin.users");
   const locale = useLocale();
   const displayName = user.name?.trim() || user.email;
@@ -97,7 +193,10 @@ function AdminUserListRow({ user }: { user: AdminUserRow }) {
           className="ring-0"
         />
         <div className="min-w-0">
-          <p className="truncate text-[15px] font-semibold leading-tight">{displayName}</p>
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <p className="truncate text-[15px] font-semibold leading-tight">{displayName}</p>
+            <PlatformRoleBadge role={user.platformRole} />
+          </div>
           <p className="mt-0.5 truncate text-xs text-muted-foreground">{user.email}</p>
         </div>
       </div>
@@ -131,26 +230,41 @@ function AdminUserListRow({ user }: { user: AdminUserRow }) {
         <DateColumn label={t("stats.created")} value={user.createdAt} locale={locale} />
         <DateColumn label={t("stats.lastActive")} value={user.lastActiveAt} locale={locale} />
       </div>
+
+      <UserActionsMenu
+        user={user}
+        viewerUserId={viewerUserId}
+        onSetQaRole={onSetQaRole}
+        isPending={isPending}
+      />
     </div>
   );
 }
 
 export function AdminUsersPanel({
   locale,
+  viewerUserId,
   initialData,
   initialSearch,
 }: {
   locale: Locale;
+  viewerUserId: string;
   initialData: PaginatedResult<AdminUserRow>;
   initialSearch: string;
 }) {
   const t = useTranslations("admin.users");
+  const router = useRouter();
   const paginationUrl = usePaginationUrl();
   const [search, setSearch] = useState(() => initialSearch);
-  const [data] = useState(() => initialData);
+  const [data, setData] = useState(() => initialData);
+  const [isPending, startTransition] = useTransition();
 
   const setSearchInUrl = paginationUrl.setSearch;
   const syncedSearchRef = useRef(initialSearch);
+
+  useEffect(() => {
+    setData(initialData);
+  }, [initialData]);
 
   useEffect(() => {
     syncedSearchRef.current = initialSearch;
@@ -168,6 +282,26 @@ export function AdminUsersPanel({
 
     return () => window.clearTimeout(timeout);
   }, [search, setSearchInUrl]);
+
+  function handleSetQaRole(userId: string, role: "NONE" | "QA_TESTER") {
+    startTransition(async () => {
+      const result = await adminSetUserPlatformRoleAction(userId, role, locale);
+
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
+
+      setData((current) => ({
+        ...current,
+        items: current.items.map((row) =>
+          row.id === userId ? { ...row, platformRole: result.data.platformRole } : row,
+        ),
+      }));
+      toast.success(role === "QA_TESTER" ? t("actions.qaRoleGranted") : t("actions.qaRoleRemoved"));
+      router.refresh();
+    });
+  }
 
   return (
     <div className="space-y-4">
@@ -195,7 +329,13 @@ export function AdminUsersPanel({
         ) : (
           <div className="divide-y divide-border/60">
             {data.items.map((user) => (
-              <AdminUserListRow key={user.id} user={user} />
+              <AdminUserListRow
+                key={user.id}
+                user={user}
+                viewerUserId={viewerUserId}
+                onSetQaRole={handleSetQaRole}
+                isPending={isPending}
+              />
             ))}
           </div>
         )}

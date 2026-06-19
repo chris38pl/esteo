@@ -51,7 +51,9 @@ export {
 export {
   filterWorkspaceMembersForUi,
   getWorkspaceMembership,
+  canAccessIssueTriage,
   isPlatformAdmin,
+  isQaTester,
   requireRole,
   requireWorkspace,
   type WorkspaceContext,

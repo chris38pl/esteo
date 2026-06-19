@@ -22,6 +22,7 @@ import {
   issueIsVisible,
 } from "@/features/issues/lib/issues-list-filter";
 import { issuesListMaxWidthClass } from "@/features/issues/lib/issues-layout";
+import type { IssuesRouteVariant } from "@/features/issues/lib/issues-base-path";
 import type { AdminIssueListItem } from "@/features/issues/server/repository";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
@@ -31,9 +32,11 @@ const DEFAULT_PAGE_SIZE = 10;
 export function AdminIssuesListPanel({
   issues,
   locale,
+  issuesVariant = "admin",
 }: {
   issues: AdminIssueListItem[];
   locale: Locale;
+  issuesVariant?: IssuesRouteVariant;
 }) {
   const t = useTranslations("issues");
   const router = useRouter();
@@ -147,6 +150,7 @@ export function AdminIssuesListPanel({
           <IssuesListTable
             issues={pageIssues}
             locale={locale}
+            issuesVariant={issuesVariant}
             footer={
               <PaginationControls
                 className="px-4 pb-4"

@@ -59,6 +59,7 @@ type WorkspaceContextValue = {
   canInviteMembers: boolean;
   billingSidebarState: BillingSidebarState;
   isPlatformAdmin: boolean;
+  isQaTester: boolean;
   issueTrackerEnabled: boolean;
   currentUser: CurrentUserProfile;
   locale: Locale;
@@ -75,6 +76,7 @@ export const WorkspaceContext = createContext<WorkspaceContextValue | null>(null
 
 const RESERVED_DASHBOARD_SEGMENTS = new Set([
   "admin",
+  "qa",
   "account",
   "billing",
   "onboarding",
@@ -99,6 +101,7 @@ export function WorkspaceProvider({
   canInviteMembers = false,
   billingSidebarState,
   isPlatformAdmin,
+  isQaTester,
   issueTrackerEnabled,
   currentUser,
   memberPreviews,
@@ -117,6 +120,7 @@ export function WorkspaceProvider({
   canInviteMembers?: boolean;
   billingSidebarState: BillingSidebarState;
   isPlatformAdmin: boolean;
+  isQaTester: boolean;
   issueTrackerEnabled: boolean;
   currentUser: CurrentUserProfile;
   memberPreviews: WorkspaceMemberPreview[];
@@ -173,6 +177,7 @@ export function WorkspaceProvider({
       canInviteMembers,
       billingSidebarState,
       isPlatformAdmin,
+      isQaTester,
       issueTrackerEnabled,
       currentUser,
       locale,
@@ -208,6 +213,7 @@ export function WorkspaceProvider({
       canInviteMembers,
       billingSidebarState,
       isPlatformAdmin,
+      isQaTester,
       issueTrackerEnabled,
       currentUser,
       locale,

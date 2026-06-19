@@ -23,6 +23,7 @@ import { IssueDetailAttachments } from "@/features/issues/components/issue-detai
 import { issueFormFieldClassName } from "@/features/issues/components/issue-form-fields";
 import { buildCursorPrompt } from "@/features/issues/lib/build-cursor-prompt";
 import { buildIssueAdminUrl } from "@/features/issues/lib/build-issue-admin-url";
+import { getIssuesBasePath, type IssuesRouteVariant } from "@/features/issues/lib/issues-base-path";
 import { parseIssueContext } from "@/features/issues/lib/issue-context";
 import {
   updateIssueStatusAction,
@@ -178,9 +179,11 @@ function DescriptionBlock({ description }: { description: string }) {
 export function AdminIssueDetailPanel({
   issue,
   locale,
+  issuesVariant = "admin",
 }: {
   issue: AdminIssueDetailClient;
   locale: Locale;
+  issuesVariant?: IssuesRouteVariant;
 }) {
   const t = useTranslations("issues");
   const router = useRouter();
@@ -190,7 +193,7 @@ export function AdminIssueDetailPanel({
   );
 
   const context = parseIssueContext(issue.context);
-  const listHref = `/${locale}/dashboard/admin/issues`;
+  const listHref = getIssuesBasePath(locale, issuesVariant);
   const dateLocale = locale === "pl" ? "pl-PL" : "en-US";
 
   const formatDateTime = (value: Date | string) =>
@@ -303,6 +306,7 @@ export function AdminIssueDetailPanel({
                   origin: window.location.origin,
                   locale,
                   number: issue.number,
+                  variant: issuesVariant,
                 }),
                 t("admin.urlCopied"),
               )

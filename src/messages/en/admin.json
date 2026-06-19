@@ -29,7 +29,16 @@
     "actions": {
       "menu": "User actions",
       "setPlan": "Set plan",
-      "currentPlan": "current"
+      "currentPlan": "current",
+      "setQaRole": "Grant QA tester role",
+      "removeQaRole": "Remove QA tester role",
+      "qaRoleGranted": "QA tester role granted.",
+      "qaRoleRemoved": "QA tester role removed."
+    },
+    "platformRole": {
+      "PLATFORM_ADMIN": "Platform admin",
+      "QA_TESTER": "QA tester",
+      "NONE": "Standard user"
     }
   },
   "accountInspector": {

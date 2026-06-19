@@ -11,24 +11,28 @@ import {
 } from "@/features/issues/server/repository";
 import { assertIssueTrackerEnabled } from "@/lib/issue-tracker/guard";
 import type { Locale } from "@/lib/locale";
-import { assertPlatformAdminAccess } from "@/server/auth/require-platform-admin";
+import { assertIssueViewerAccess } from "@/server/auth/require-issue-viewer";
 import { getStorageProvider } from "@/features/attachments/server/storage";
+import { getIssuesBasePath } from "@/features/issues/lib/issues-base-path";
 
 type ActionResult<T> =
   | { success: true; data: T }
   | { success: false; error: string };
 
 function revalidateIssuePaths(locale: Locale, number?: number) {
-  revalidatePath(`/${locale}/dashboard/admin/issues`);
-  if (number !== undefined) {
-    revalidatePath(`/${locale}/dashboard/admin/issues/${number}`);
+  for (const variant of ["admin", "qa"] as const) {
+    const base = getIssuesBasePath(locale, variant);
+    revalidatePath(base);
+    if (number !== undefined) {
+      revalidatePath(`${base}/${number}`);
+    }
   }
 }
 
 export async function listAdminIssuesAction(locale: Locale = "pl") {
   try {
     assertIssueTrackerEnabled();
-    await assertPlatformAdminAccess(locale);
+    await assertIssueViewerAccess(locale);
     const items = await listIssuesForAdmin();
     return { success: true as const, data: items };
   } catch (error) {
@@ -43,7 +47,7 @@ export async function listAdminIssuesAction(locale: Locale = "pl") {
 export async function getAdminIssueAction(number: number, locale: Locale = "pl") {
   try {
     assertIssueTrackerEnabled();
-    await assertPlatformAdminAccess(locale);
+    await assertIssueViewerAccess(locale);
     const issue = await getIssueByNumber(number);
 
     if (!issue) {
@@ -66,7 +70,7 @@ export async function updateIssueStatusAction(
 ) {
   try {
     assertIssueTrackerEnabled();
-    await assertPlatformAdminAccess(locale);
+    await assertIssueViewerAccess(locale);
     const parsed = updateIssueStatusSchema.parse(input);
     const updated = await updateIssueStatus(parsed.number, parsed.status);
 
@@ -91,7 +95,7 @@ export async function getIssueAttachmentSignedUrlAction(
 ): Promise<ActionResult<{ url: string }>> {
   try {
     assertIssueTrackerEnabled();
-    await assertPlatformAdminAccess(locale);
+    await assertIssueViewerAccess(locale);
 
     const attachment = await getIssueAttachmentById(attachmentId);
 

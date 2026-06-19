@@ -8,6 +8,7 @@ import { IssuePriorityBadge } from "@/features/issues/components/issue-priority-
 import { IssueStatusBadge } from "@/features/issues/components/issue-status-badge";
 import { IssueTypeBadge } from "@/features/issues/components/issue-type-badge";
 import type { AdminIssueListItem } from "@/features/issues/server/repository";
+import { getIssueDetailPath, type IssuesRouteVariant } from "@/features/issues/lib/issues-base-path";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -23,14 +24,16 @@ export function IssueListRow({
   issue,
   locale,
   layout = "table",
+  issuesVariant = "admin",
 }: {
   issue: AdminIssueListItem;
   locale: Locale;
   layout?: "table" | "list";
+  issuesVariant?: IssuesRouteVariant;
 }) {
   const t = useTranslations("issues");
   const dateLocale = locale === "pl" ? "pl-PL" : "en-US";
-  const detailHref = `/${locale}/dashboard/admin/issues/${issue.number}`;
+  const detailHref = getIssueDetailPath(locale, issuesVariant, issue.number);
   const issueLabel = `#${issue.number}`;
   const hasAttachments = issue.attachmentCount > 0;
 

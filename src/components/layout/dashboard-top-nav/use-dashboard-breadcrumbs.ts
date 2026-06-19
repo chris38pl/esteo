@@ -105,6 +105,27 @@ function parseAdminIssuesRoute(
   return null;
 }
 
+function parseQaIssuesRoute(
+  pathname: string,
+  locale: Locale,
+): { kind: "list" } | { kind: "detail"; number: string } | null {
+  const base = `/${locale}/dashboard/qa/issues`;
+
+  if (pathname === base) {
+    return { kind: "list" };
+  }
+
+  if (pathname.startsWith(`${base}/`)) {
+    const suffix = pathname.slice(base.length + 1);
+    const number = suffix.split("/")[0];
+    if (number) {
+      return { kind: "detail", number };
+    }
+  }
+
+  return null;
+}
+
 function resolvePageLabelKey(
   pathname: string,
   locale: Locale,
@@ -159,8 +180,10 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
   const requestsRoute = parseRequestsRoute(pathname, locale, workspaceSlug);
   const paymentsRoute = parsePaymentsRoute(pathname, locale, workspaceSlug);
   const adminIssuesRoute = parseAdminIssuesRoute(pathname, locale);
+  const qaIssuesRoute = parseQaIssuesRoute(pathname, locale);
   const pageKey = resolvePageLabelKey(pathname, locale, section, workspaceSlug);
   const isAdminPath = pathname.startsWith(`/${locale}/dashboard/admin`);
+  const isQaPath = pathname.startsWith(`/${locale}/dashboard/qa`);
 
   const workspaceLabel = activeWorkspace?.name?.trim() || t("workspace");
 
@@ -172,6 +195,8 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
 
   if (isAdminPath) {
     crumbs.push({ label: t("admin") });
+  } else if (isQaPath) {
+    crumbs.push({ label: t("qaTesting") });
   } else if (!isUserLevelPage) {
     crumbs.push({ label: workspaceLabel });
   }
@@ -187,6 +212,23 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
     if (adminIssuesRoute.kind === "detail") {
       crumbs.push({
         label: detailLabel?.trim() || `#${adminIssuesRoute.number}`,
+      });
+    }
+
+    return crumbs;
+  }
+
+  if (isQaPath && qaIssuesRoute) {
+    const issuesHref = `/${locale}/dashboard/qa/issues`;
+
+    crumbs.push({
+      label: t("qaIssues"),
+      href: qaIssuesRoute.kind === "detail" ? issuesHref : undefined,
+    });
+
+    if (qaIssuesRoute.kind === "detail") {
+      crumbs.push({
+        label: detailLabel?.trim() || `#${qaIssuesRoute.number}`,
       });
     }
 

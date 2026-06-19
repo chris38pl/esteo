@@ -10,6 +10,7 @@ import { SidebarWorkspace } from "./sidebar-workspace";
 import { SidebarSearch } from "./sidebar-search";
 import { SidebarNav } from "./sidebar-nav";
 import { SidebarAdmin } from "./sidebar-admin";
+import { SidebarQaTesting } from "./sidebar-qa-testing";
 import { SidebarPinned } from "./sidebar-pinned";
 import { SidebarTeam } from "./sidebar-team";
 import { SidebarReportIssue } from "./sidebar-report-issue";
@@ -56,6 +57,7 @@ export function AppSidebar({
       <div className="sidebar-scroll flex min-h-0 flex-1 flex-col overflow-y-auto">
         <SidebarNav locale={locale} />
         <SidebarAdmin locale={locale} />
+        <SidebarQaTesting locale={locale} />
         <SidebarPinned locale={locale} />
         <SidebarTeam />
         <SidebarReportIssue />

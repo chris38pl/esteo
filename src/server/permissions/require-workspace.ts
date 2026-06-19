@@ -13,6 +13,14 @@ export function isPlatformAdmin(user: User): boolean {
   return user.platformRole === ("PLATFORM_ADMIN" satisfies PlatformRole);
 }
 
+export function isQaTester(user: User): boolean {
+  return user.platformRole === ("QA_TESTER" satisfies PlatformRole);
+}
+
+export function canAccessIssueTriage(user: User): boolean {
+  return isPlatformAdmin(user) || isQaTester(user);
+}
+
 export async function getWorkspaceMembership(
   userId: string,
   workspaceId: string,

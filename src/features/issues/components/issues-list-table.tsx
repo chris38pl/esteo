@@ -8,6 +8,7 @@ import {
   IssueListRow,
   issueListIssueColumnClassName,
 } from "@/features/issues/components/issue-list-row";
+import type { IssuesRouteVariant } from "@/features/issues/lib/issues-base-path";
 import type { AdminIssueListItem } from "@/features/issues/server/repository";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
@@ -19,10 +20,12 @@ export function IssuesListTable({
   issues,
   locale,
   footer,
+  issuesVariant = "admin",
 }: {
   issues: AdminIssueListItem[];
   locale: Locale;
   footer?: ReactNode;
+  issuesVariant?: IssuesRouteVariant;
 }) {
   const t = useTranslations("issues");
 
@@ -30,7 +33,7 @@ export function IssuesListTable({
     <>
       <div className="space-y-3 p-3 md:hidden">
         {issues.map((issue) => (
-          <IssueListRow key={issue.number} issue={issue} locale={locale} layout="list" />
+          <IssueListRow key={issue.number} issue={issue} locale={locale} layout="list" issuesVariant={issuesVariant} />
         ))}
       </div>
 
@@ -57,7 +60,7 @@ export function IssuesListTable({
           </thead>
           <tbody>
             {issues.map((issue) => (
-              <IssueListRow key={issue.number} issue={issue} locale={locale} layout="table" />
+              <IssueListRow key={issue.number} issue={issue} locale={locale} layout="table" issuesVariant={issuesVariant} />
             ))}
           </tbody>
         </table>

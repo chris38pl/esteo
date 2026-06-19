@@ -25,9 +25,9 @@ Related: [`scripts.md`](../../scripts.md#issue-tracker--sync-do-cursor), [`deplo
 | --- | --- |
 | Report issue (sidebar dialog) | Any **authenticated** user when tracker is enabled |
 | Upload screenshots to own issue | Reporter only (`reportedById === user.id`) |
-| View issue list / detail | **Platform admin** only |
-| Change status OPEN ↔ RESOLVED | Platform admin only |
-| Copy Cursor Prompt / Copy Issue URL | Platform admin only |
+| View issue list / detail | **Platform admin** or **QA tester** (`User.platformRole = QA_TESTER`) |
+| Change status OPEN ↔ RESOLVED | Platform admin or QA tester |
+| Copy Cursor Prompt / Copy Issue URL | Platform admin or QA tester |
 | `sync:issues` CLI | Developer machine (reads DB + UploadThing) |
 
 Guards: `src/lib/issue-tracker/guard.ts`
@@ -41,7 +41,11 @@ UI flag (sidebar button):
   issueTrackerEnabled = isIssueTrackerEnabled()   // any logged-in user
 
 Admin routes additionally:
-  assertPlatformAdminAccess()
+  assertIssueViewerAccess()   // PLATFORM_ADMIN or QA_TESTER
+
+QA tester UI:
+  Sidebar section "QA Testing" → /dashboard/qa/issues
+  Role assigned by platform admin in Admin → Users
 ```
 
 **Never** set `ENABLE_ISSUE_TRACKER=true` on Vercel **Production**.

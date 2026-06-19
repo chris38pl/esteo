@@ -48,6 +48,14 @@
       "styleguide": "Styleguide"
     }
   },
+  "qaTesting": {
+    "title": "QA Testing",
+    "expand": "Expand QA Testing section",
+    "collapse": "Collapse QA Testing section",
+    "nav": {
+      "issues": "Issues"
+    }
+  },
   "pinned": {
     "title": "Pinned",
     "add": "Pin estimate",

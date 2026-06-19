@@ -22,6 +22,7 @@ import { SidebarWorkspace } from "@/components/layout/app-sidebar/sidebar-worksp
 import { SidebarSearch } from "@/components/layout/app-sidebar/sidebar-search";
 import { SidebarNav } from "@/components/layout/app-sidebar/sidebar-nav";
 import { SidebarAdmin } from "@/components/layout/app-sidebar/sidebar-admin";
+import { SidebarQaTesting } from "@/components/layout/app-sidebar/sidebar-qa-testing";
 import { SidebarPinned } from "@/components/layout/app-sidebar/sidebar-pinned";
 import { SidebarTeam } from "@/components/layout/app-sidebar/sidebar-team";
 import { SidebarReportIssue } from "@/components/layout/app-sidebar/sidebar-report-issue";
@@ -81,6 +82,7 @@ export function DashboardTopNavbar({ locale }: { locale: Locale }) {
                 <div className="sidebar-scroll flex min-h-0 min-w-0 max-w-full flex-1 flex-col overflow-x-hidden overflow-y-auto">
                   <SidebarNav locale={locale} collapsedOverride={false} />
                   <SidebarAdmin locale={locale} collapsedOverride={false} />
+                  <SidebarQaTesting locale={locale} collapsedOverride={false} />
                   <SidebarPinned locale={locale} collapsedOverride={false} />
                   <SidebarTeam collapsedOverride={false} />
                   <SidebarReportIssue collapsedOverride={false} />

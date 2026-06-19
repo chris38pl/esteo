@@ -29,7 +29,16 @@
     "actions": {
       "menu": "Akcje użytkownika",
       "setPlan": "Ustaw plan",
-      "currentPlan": "aktualny"
+      "currentPlan": "aktualny",
+      "setQaRole": "Nadaj rolę QA testera",
+      "removeQaRole": "Odbierz rolę QA testera",
+      "qaRoleGranted": "Rola QA testera została nadana.",
+      "qaRoleRemoved": "Rola QA testera została odebrana."
+    },
+    "platformRole": {
+      "PLATFORM_ADMIN": "Admin platformy",
+      "QA_TESTER": "QA tester",
+      "NONE": "Standardowy użytkownik"
     }
   },
   "accountInspector": {

@@ -20,7 +20,7 @@ export default async function AdminUsersPage({
 
   setRequestLocale(resolvedLocale);
 
-  await assertPlatformAdminAccess(resolvedLocale);
+  const admin = await assertPlatformAdminAccess(resolvedLocale);
   const t = await getServerTranslations(resolvedLocale, "admin.users");
   const pagination = parsePaginationParams(query);
   const data = await listAdminUsersPaginated(pagination, { search: query.search });
@@ -35,6 +35,7 @@ export default async function AdminUsersPage({
       <AdminUsersPanel
         key={`${data.page}-${data.pageSize}-${query.search ?? ""}`}
         locale={resolvedLocale}
+        viewerUserId={admin.id}
         initialData={data}
         initialSearch={query.search ?? ""}
       />

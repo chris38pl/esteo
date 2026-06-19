@@ -3,7 +3,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type SidebarSectionId = "pinned" | "team" | "admin";
+export type SidebarSectionId = "pinned" | "team" | "admin" | "qa";
 
 type SidebarState = {
   collapsed: boolean;
@@ -25,6 +25,7 @@ export const useSidebarStore = create<SidebarState>()(
         pinned: true,
         team: true,
         admin: true,
+        qa: true,
       },
       pinnedOrder: [],
       setCollapsed: (collapsed) => set({ collapsed }),

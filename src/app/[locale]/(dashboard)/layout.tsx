@@ -28,7 +28,7 @@ import {
   canUserCreateWorkspace,
   countOwnedWorkspaces,
 } from "@/server/permissions/entitlements";
-import { isPlatformAdmin } from "@/server/permissions/require-workspace";
+import { isPlatformAdmin, isQaTester } from "@/server/permissions/require-workspace";
 import { isIssueTrackerEnabled } from "@/lib/issue-tracker/guard";
 import { listPinnedEstimatesForSidebar } from "@/features/estimates/server/pinned-estimates";
 import { getWorkspaceStorageSummary } from "@/features/attachments/server/assert-workspace-storage";
@@ -76,6 +76,7 @@ export default async function DashboardLayout({
         canInviteMembers={false}
         billingSidebarState={{ variant: "upsell", currentPlan: "FREE", targetPlan: "PRO" }}
         isPlatformAdmin={isPlatformAdmin(user)}
+        isQaTester={isQaTester(user)}
         issueTrackerEnabled={issueTrackerEnabled}
         currentUser={currentUser}
         locale={resolvedLocale}
@@ -177,6 +178,7 @@ export default async function DashboardLayout({
       canInviteMembers={canInviteMembers}
       billingSidebarState={billingSidebarState}
       isPlatformAdmin={isPlatformAdmin(user)}
+      isQaTester={isQaTester(user)}
       issueTrackerEnabled={issueTrackerEnabled}
       currentUser={currentUser}
       locale={resolvedLocale}

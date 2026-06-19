@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 
 import { SyncDashboardBreadcrumbDetail } from "@/components/layout/dashboard-top-nav/sync-dashboard-breadcrumb-detail";
@@ -8,9 +8,7 @@ import {
 } from "@/features/issues/components/admin-issue-detail-panel";
 import { getIssueByNumber } from "@/features/issues/server/repository";
 import { resolveRequestLocale } from "@/i18n/request-locale";
-import { isIssueTrackerEnabled } from "@/lib/issue-tracker/guard";
 import type { Locale } from "@/lib/locale";
-import { assertIssueViewerAccess } from "@/server/auth/require-issue-viewer";
 
 function serializeIssueForClient(
   issue: NonNullable<Awaited<ReturnType<typeof getIssueByNumber>>>,
@@ -24,7 +22,7 @@ function serializeIssueForClient(
   };
 }
 
-export default async function AdminIssueDetailPage({
+export default async function QaIssueDetailPage({
   params,
 }: {
   params: Promise<{ locale: string; number: string }>;
@@ -34,12 +32,6 @@ export default async function AdminIssueDetailPage({
   const number = Number.parseInt(numberParam, 10);
 
   setRequestLocale(resolvedLocale);
-
-  if (!isIssueTrackerEnabled()) {
-    redirect(`/${resolvedLocale}/dashboard`);
-  }
-
-  await assertIssueViewerAccess(resolvedLocale);
 
   if (!Number.isFinite(number) || number <= 0) {
     notFound();
@@ -54,7 +46,11 @@ export default async function AdminIssueDetailPage({
   return (
     <>
       <SyncDashboardBreadcrumbDetail label={`#${issue.number}`} />
-      <AdminIssueDetailPanel issue={serializeIssueForClient(issue)} locale={resolvedLocale} />
+      <AdminIssueDetailPanel
+        issue={serializeIssueForClient(issue)}
+        locale={resolvedLocale}
+        issuesVariant="qa"
+      />
     </>
   );
 }

@@ -109,13 +109,32 @@ MEMBER | VIEWER
 
 Map invite → member role with `inviteRoleToWorkspaceRole()` in `src/features/workspaces/lib/invite-role.ts`.
 
-## Platform admin
+## Platform roles (`PlatformRole`)
+
+Global roles on `User.platformRole` — separate from workspace RBAC:
+
+```
+NONE | PLATFORM_ADMIN | QA_TESTER
+```
+
+### Platform admin
 
 `User.platformRole = PLATFORM_ADMIN` is a **global** role only.
 
 - Never stored as a `WorkspaceRole`.
 - Never shown in workspace member lists or invite UI (`filterWorkspaceMembersForUi`).
 - Bypasses tenant checks on internal/admin routes only.
+
+### QA tester (Key User)
+
+`User.platformRole = QA_TESTER` grants access to the internal issue tracker triage UI only:
+
+- Sidebar section **QA Testing** → `/dashboard/qa/issues`
+- Full triage: list, detail, status changes, screenshots, Copy Cursor Prompt
+- Does **not** grant access to other `/dashboard/admin/*` routes
+- Assigned/revoked by platform admin in **Admin → Users** (not via seed/Clerk)
+
+Guards: `canAccessIssueTriage()` / `assertIssueViewerAccess()` in `src/server/auth/require-issue-viewer.ts`.
 
 ## WorkspaceRule prompt ordering
 
@@ -176,7 +195,7 @@ User {
   clerkId
   name?
   avatarUrl?
-  platformRole   // NONE | PLATFORM_ADMIN
+  platformRole   // NONE | PLATFORM_ADMIN | QA_TESTER
   createdAt
   updatedAt
 }

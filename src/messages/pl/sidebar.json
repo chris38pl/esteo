@@ -48,6 +48,14 @@
       "styleguide": "Styleguide"
     }
   },
+  "qaTesting": {
+    "title": "QA Testing",
+    "expand": "Rozwiń sekcję QA Testing",
+    "collapse": "Zwiń sekcję QA Testing",
+    "nav": {
+      "issues": "Zgłoszenia"
+    }
+  },
   "pinned": {
     "title": "Przypięte",
     "add": "Przypnij wycenę",

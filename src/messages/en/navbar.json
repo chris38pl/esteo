@@ -14,6 +14,7 @@
     "invitations": "Invitations",
     "account": "Settings",
     "admin": "Admin",
+    "qaTesting": "QA Testing",
     "accountInspector": "Account inspector",
     "adminUsers": "Users",
     "adminWorkspaces": "Workspaces",
@@ -21,6 +22,7 @@
     "adminEstimateRequests": "Estimate Requests",
     "adminEstimateRequestDetail": "Request detail",
     "adminIssues": "Issue Tracker",
+    "qaIssues": "Issues",
     "billingPlans": "Plans",
     "billingAddons": "Add-ons",
     "billingManage": "Subscription"
