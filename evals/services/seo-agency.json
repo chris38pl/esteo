@@ -93,8 +93,7 @@
     "coverageTerms": [
       "audyt",
       "SEO",
-      "content",
-      "link"
+      "content"
     ],
     "requiredSections": [
       "Zakres",

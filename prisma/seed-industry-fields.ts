@@ -15,6 +15,63 @@ const PROPERTY_TYPE_OPTIONS = [
   { value: "other", labelKey: "other" },
 ] as const;
 
+const CARPENTRY_PRODUCT_CATEGORIES = [
+  { value: "kitchen", labelKey: "kitchen" },
+  { value: "wardrobe", labelKey: "wardrobe" },
+  { value: "closet", labelKey: "closet" },
+  { value: "bathroom", labelKey: "bathroom" },
+  { value: "office", labelKey: "office" },
+  { value: "reception", labelKey: "reception" },
+  { value: "commercial", labelKey: "commercial" },
+  { value: "other", labelKey: "other" },
+] as const;
+
+const PROJECT_TYPES_CARPENTRY = [
+  { value: "new_build", labelKey: "new_build" },
+  { value: "extension", labelKey: "extension" },
+  { value: "front_replacement", labelKey: "front_replacement" },
+  { value: "renovation", labelKey: "renovation" },
+  { value: "service", labelKey: "service" },
+  { value: "other", labelKey: "other" },
+] as const;
+
+function dropdownSelectOptions(
+  choices: readonly { value: string; labelKey: string }[],
+  selectMode: "single" | "multi" = "single",
+) {
+  return {
+    selectMode,
+    tiles: false,
+    choices,
+  } as unknown as Prisma.InputJsonValue;
+}
+
+const BUDGET_TIER_OPTIONS = [
+  { value: "economy", labelKey: "economy" },
+  { value: "standard", labelKey: "standard" },
+  { value: "premium", labelKey: "premium" },
+  { value: "luxury", labelKey: "luxury" },
+] as const;
+
+const BUILDING_TYPE_OPTIONS = [
+  { value: "house", labelKey: "house" },
+  { value: "apartment", labelKey: "apartment" },
+  { value: "commercial", labelKey: "commercial" },
+  { value: "industrial", labelKey: "industrial" },
+  { value: "other", labelKey: "other" },
+] as const;
+
+function tileSelectOptions(
+  choices: readonly { value: string; labelKey: string }[],
+  selectMode: "single" | "multi",
+) {
+  return {
+    selectMode,
+    tiles: true,
+    choices,
+  } as unknown as Prisma.InputJsonValue;
+}
+
 type CatalogFieldTranslation = {
   locale: WorkspaceLocale;
   label: string;
@@ -75,6 +132,102 @@ export const INDUSTRY_FIELD_CATALOG: CatalogFieldDefinition[] = [
         placeholder: "e.g. 120",
       },
     ],
+  },
+  {
+    industry: WorkspaceIndustry.CARPENTRY,
+    documentType: BusinessDocumentType.ESTIMATE_REQUEST,
+    key: "product_categories",
+    valueType: IndustryFieldValueType.TEXT,
+    sortOrder: 0,
+    required: true,
+    options: tileSelectOptions(CARPENTRY_PRODUCT_CATEGORIES, "multi"),
+    translations: [
+      {
+        locale: WorkspaceLocale.PL,
+        label: "Typ zabudowy",
+        placeholder: "Wybierz jedną lub więcej kategorii",
+      },
+      {
+        locale: WorkspaceLocale.EN,
+        label: "Fit-out type",
+        placeholder: "Select one or more categories",
+      },
+    ],
+  },
+  {
+    industry: WorkspaceIndustry.CARPENTRY,
+    documentType: BusinessDocumentType.ESTIMATE_REQUEST,
+    key: "project_types",
+    valueType: IndustryFieldValueType.TEXT,
+    sortOrder: 1,
+    required: true,
+    options: dropdownSelectOptions(PROJECT_TYPES_CARPENTRY, "single"),
+    translations: [
+      {
+        locale: WorkspaceLocale.PL,
+        label: "Typ realizacji",
+        placeholder: "Wybierz typ realizacji",
+      },
+      {
+        locale: WorkspaceLocale.EN,
+        label: "Project type",
+        placeholder: "Select project type",
+      },
+    ],
+  },
+  {
+    industry: WorkspaceIndustry.CARPENTRY,
+    documentType: BusinessDocumentType.ESTIMATE_REQUEST,
+    key: "budget_tier",
+    valueType: IndustryFieldValueType.SELECT,
+    sortOrder: 2,
+    required: false,
+    options: BUDGET_TIER_OPTIONS,
+    translations: [
+      {
+        locale: WorkspaceLocale.PL,
+        label: "Poziom budżetu",
+        placeholder: "Standard (domyślnie)",
+      },
+      {
+        locale: WorkspaceLocale.EN,
+        label: "Budget tier",
+        placeholder: "Standard (default)",
+      },
+    ],
+  },
+  {
+    industry: WorkspaceIndustry.ELECTRICAL,
+    documentType: BusinessDocumentType.ESTIMATE_REQUEST,
+    key: "building_type",
+    valueType: IndustryFieldValueType.SELECT,
+    sortOrder: 0,
+    required: true,
+    options: tileSelectOptions(BUILDING_TYPE_OPTIONS, "single"),
+    translations: [
+      {
+        locale: WorkspaceLocale.PL,
+        label: "Typ obiektu",
+        placeholder: "Wybierz typ obiektu",
+      },
+      {
+        locale: WorkspaceLocale.EN,
+        label: "Building type",
+        placeholder: "Select building type",
+      },
+    ],
+  },
+];
+
+/** Removed from catalog — deactivated on seed so existing DB rows stop appearing in forms. */
+const RETIRED_CATALOG_FIELDS: Pick<
+  CatalogFieldDefinition,
+  "industry" | "documentType" | "key"
+>[] = [
+  {
+    industry: WorkspaceIndustry.ELECTRICAL,
+    documentType: BusinessDocumentType.ESTIMATE_REQUEST,
+    key: "project_types",
   },
 ];
 
@@ -158,6 +311,18 @@ export async function seedIndustryFieldCatalog(
     } else {
       created += 1;
     }
+  }
+
+  for (const retired of RETIRED_CATALOG_FIELDS) {
+    await prisma.industryFieldDefinition.updateMany({
+      where: {
+        industry: retired.industry,
+        documentType: retired.documentType,
+        key: retired.key,
+        active: true,
+      },
+      data: { active: false },
+    });
   }
 
   return { created, updated, total: INDUSTRY_FIELD_CATALOG.length };

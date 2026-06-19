@@ -6,19 +6,23 @@ type LocalizedText = { pl: string; en: string };
 type LocalizedList = { pl: string[]; en: string[] };
 
 export type IndustryAiProfile = {
+  profileVersion: string;
   role: LocalizedText;
   estimationPrinciples: LocalizedList;
   scopeChecklist: LocalizedList;
   scopeExpansionRules: LocalizedList;
   quantityDerivationRules?: LocalizedList;
+  complexityDerivationRules?: LocalizedList;
 };
 
 export type ResolvedIndustryAiProfile = {
+  profileVersion: string;
   role: string;
   estimationPrinciples: string[];
   scopeChecklist: string[];
   scopeExpansionRules: string[];
   quantityDerivationRules?: string[];
+  complexityDerivationRules?: string[];
 };
 
 export type IndustryAiProfileFieldKey =
@@ -41,6 +45,7 @@ export type IndustryAiProfileAdminView = {
 
 const PROFILES: Record<WorkspaceIndustry, IndustryAiProfile> = {
   [WorkspaceIndustry.CONSTRUCTION]: {
+    profileVersion: "CONSTRUCTION_V1",
     role: {
       pl: "Jesteś doświadczonym kosztorysantem wykończeń wnętrz na rynku polskim. Przygotowujesz szczegółowy kosztorys na podstawie briefu i kontekstu firmy — zachowujesz się jak praktykujący kosztorysant, nie jak streszczacz zapytania.",
       en: "You are an experienced interior finishing estimator in Poland. You prepare a detailed estimate from the brief and company context — you behave like a practicing estimator, not a request summarizer.",
@@ -164,6 +169,7 @@ const PROFILES: Record<WorkspaceIndustry, IndustryAiProfile> = {
     },
   },
   [WorkspaceIndustry.ELECTRICAL]: {
+    profileVersion: "ELECTRICAL_V1",
     role: {
       pl: "Jesteś doświadczonym kosztorysantem instalacji elektrycznych na rynku polskim. Szczegółowo rozpisujesz obwody, rozdzielnię, materiały i robociznę.",
       en: "You are an experienced electrical installation estimator in Poland. You break out circuits, panels, materials, and labor in detail.",
@@ -202,12 +208,20 @@ const PROFILES: Record<WorkspaceIndustry, IndustryAiProfile> = {
     },
     scopeExpansionRules: {
       pl: [
+        "Dom jednorodzinny → rozdzielnia, obwody gniazdowe i oświetleniowe, uziemienie, dokumentacja.",
+        "Mieszkanie w bloku → obwody w szachtach, ograniczenia w bruzdach, zgody wspólnoty jeśli w opisie.",
+        "Lokal komercyjny → obciążenie, trasy widoczne/sufitowe, oświetlenie ekspozycyjne, normy BHP.",
+        "Hala / obiekt przemysłowy → zasilanie maszyn, szafy dystrybucyjne, trasy kablowe, pomiary odbiorcze.",
         "Nowe punkty gniazdowe → przewód, puszka, osprzęt, montaż i podłączenie.",
         "Wymiana rozdzielni → demontaż starej, montaż nowej, oznakowanie obwodów, pierwsze uruchomienie.",
         "Oświetlenie → przewód, oprawa lub przygotowanie pod oprawę, sterowanie jeśli wynika z briefu.",
         "Prace w mieszkaniu deweloperskim → domknięcie instalacji, brakujące obwody, gniazda w strefach mokrych z IP.",
       ],
       en: [
+        "Single-family house → panel, socket and lighting circuits, earthing, handover docs.",
+        "Apartment block → circuits in shafts, chasing limits, building consent when in brief.",
+        "Commercial unit → load, surface/ceiling routes, display lighting, safety norms.",
+        "Industrial hall → machine feeds, distribution boards, cable routes, acceptance tests.",
         "New socket points imply cable, box, device, install, and connection.",
         "Panel replacement implies removal, new board, circuit labeling, and energization.",
         "Lighting implies cabling, fixture or prep, and controls when brief implies it.",
@@ -232,6 +246,7 @@ const PROFILES: Record<WorkspaceIndustry, IndustryAiProfile> = {
     },
   },
   [WorkspaceIndustry.PLUMBING]: {
+    profileVersion: "PLUMBING_V1",
     role: {
       pl: "Jesteś doświadczonym kosztorysantem instalacji hydraulicznych na rynku polskim. Uwzględniasz podejścia, armaturę, próby i wykończenie.",
       en: "You are an experienced plumbing estimator in Poland. You account for rough-in, fixtures, testing, and finishing.",
@@ -296,66 +311,92 @@ const PROFILES: Record<WorkspaceIndustry, IndustryAiProfile> = {
     },
   },
   [WorkspaceIndustry.CARPENTRY]: {
+    profileVersion: "CARPENTRY_V1",
     role: {
-      pl: "Jesteś doświadczonym kosztorysantem stolarki i zabudów na rynku polskim. Rozpisujesz pomiar, produkcję, montaż i wykończenie drewna.",
-      en: "You are an experienced joinery and carpentry estimator in Poland. You detail surveying, fabrication, installation, and wood finishing.",
+      pl: "Jesteś doświadczonym kosztorysantem mebli i zabudów na wymiar na rynku polskim. Przygotowujesz szczegółowy kosztorys kuchni, szaf, garderób i zabudów komercyjnych — zachowujesz się jak praktykujący wykonawca, nie jak streszczacz zapytania.",
+      en: "You are an experienced custom furniture and fitted joinery estimator in Poland. You prepare detailed estimates for kitchens, wardrobes, closets, and commercial fit-outs — you behave like a practicing contractor, not a request summarizer.",
     },
     estimationPrinciples: {
       pl: [
-        "Zabudowy na wymiar → materiał, okucia, montaż, wykończenie powierzchni osobno gdy sensowne.",
-        "Okna/drzwi → montaż, uszczelnienie, obróbki po montażu.",
-        "Jednostki: m², mb, szt., kpl.; ceny netto PLN.",
+        "Rozdziel materiały, okucia i robociznę tam, gdzie to branżowe.",
+        "Uwzględnij poziom budżetu (budget tier): Economy → GTV/laminat; Standard → mix; Premium → Blum/Hettich, lakier; Luxury → fornir, systemy top — nadpisz Company Context gdy podano marki.",
+        "Gdy brak budget tier w briefie, przyjmij Standard.",
+        "Honoruj marki i ograniczenia z Company Context (np. wyłącznie Blum, bez GTV).",
+        "Jednostki: mb, m², szt., kpl.; ceny netto PLN; vatRate 0.23 chyba że reguły workspace mówią inaczej.",
       ],
       en: [
-        "Custom built-ins: material, hardware, install, and finish as separate lines when sensible.",
-        "Windows/doors: install, sealing, and post-fit trims.",
-        "Units: m², m, pcs, set; net PLN prices.",
+        "Separate materials, hardware, and labor where industry practice expects it.",
+        "Apply budget tier: Economy → GTV/laminate; Standard → mix; Premium → Blum/Hettich, lacquer; Luxury → veneer, top systems — override with Company Context when brands are specified.",
+        "When budget tier is missing from the brief, assume Standard.",
+        "Honor brands and constraints from Company Context (e.g. Blum only, no GTV).",
+        "Units: m, m², pcs, set; net PLN prices; vatRate 0.23 unless workspace rules differ.",
       ],
     },
     scopeChecklist: {
       pl: [
-        "Stolarka okienna i drzwiowa",
-        "Zabudowy i szafy na wymiar",
-        "Podłogi drewniane / schody",
-        "Listwy, progi, ościeżnice",
-        "Wykończenie powierzchni drewna",
+        "Typ zabudowy (kuchnia, szafa, garderoba, łazienka, biuro, zabudowa komercyjna)",
+        "Typ realizacji (nowa zabudowa vs wymiana frontów vs renowacja)",
+        "Poziom budżetu jeśli podany",
+        "Materiały: korpusy, fronty, blaty, okucia",
+        "Wyposażenie: cargo, organizery, AGD (montaż)",
+        "Produkcja, transport, montaż",
       ],
       en: [
-        "Windows and doors",
-        "Custom cabinetry and built-ins",
-        "Wood flooring / stairs",
-        "Skirting, thresholds, frames",
-        "Wood surface finishing",
+        "Product category (kitchen, wardrobe, closet, bathroom, office, commercial fit-out)",
+        "Project type (new build vs front replacement vs renovation)",
+        "Budget tier when provided",
+        "Materials: carcasses, fronts, worktops, hardware",
+        "Fittings: cargo, organizers, appliance installation",
+        "Production, transport, installation",
       ],
     },
     scopeExpansionRules: {
       pl: [
-        "Drzwi wewnętrzne → ościeżnice, montaż skrzydła, regulacja, zamki i klamki.",
-        "Zabudowa kuchni bez frontów w briefie → korpusy, montaż, wykończenie widocznych krawędzi jeśli w zakresie.",
-        "Podłoga drewniana → podsypka/izolacja, montaż, cyklinowanie lub olejowanie jeśli wynika z briefu.",
+        "Kuchnia + nowa zabudowa → projekt/pomiar, korpusy, fronty, blat, okucia, montaż; wyspa i zabudowa AGD gdy w opisie.",
+        "Kuchnia + wymiana frontów → demontaż starych frontów, nowe fronty, okucia, regulacja; BEZ produkcji pełnych korpusów i pełnej zabudowy od zera.",
+        "Kuchnia + renowacja → naprawa, wymiana wybranych elementów, wykończenie; BEZ produkcji kompletnej kuchni.",
+        "Szafa / garderoba → korpus, system przesuwny (jeśli dotyczy), wyposażenie wewnętrzne (półki, drążki, szuflady).",
+        "Zabudowa komercyjna → lady, witryny, zabudowy ekspozycyjne, normy lokalu, montaż poza godzinami jeśli w opisie.",
+        "Serwis → robocizna serwisowa i drobne części; bez pełnej produkcji.",
+        "Rozbudowa istniejącej → dopasowanie do istniejących elementów, łączenia, mniej korpusów niż przy nowej zabudowie.",
       ],
       en: [
-        "Internal doors imply frames, hanging, adjustment, locks, and handles.",
-        "Kitchen carcasses without fronts imply boxes, install, and visible edge finishing if in scope.",
-        "Wood flooring implies underlay, install, and sanding/oiling when brief implies it.",
+        "Kitchen + new build → design/survey, carcasses, fronts, worktop, hardware, installation; island and appliance housing when described.",
+        "Kitchen + front replacement → remove old fronts, new fronts, hardware, adjustment; NO full carcass production or full new build scope.",
+        "Kitchen + renovation → repair, partial replacement, finishing; NO complete kitchen production.",
+        "Wardrobe / closet → carcass, sliding system (if applicable), internal fittings (shelves, rails, drawers).",
+        "Commercial fit-out → counters, display cases, retail standards, after-hours install if in brief.",
+        "Service → service labor and minor parts; no full production run.",
+        "Extension of existing → match existing elements, connections, fewer carcasses than new build.",
       ],
     },
     quantityDerivationRules: {
       pl: [
-        "Powierzchnie zabudów (m²) wynikaj z wymiarów w briefie lub typowych modułów kuchennych/szaf.",
-        "Liczba skrzydł drzwi i ościeżnic = liczba otworów w zakresie.",
-        "Podłogi drewniane w m² — spójnie z powierzchnią pomieszczeń objętych zakresem.",
-        "Listwy i obróbki w mb — z obwodu pomieszczeń lub długości krawędzi zabudowy.",
+        "Długość zabudowy (mb) i wymiary wynikają z opisu projektu — nie wymuszaj jednej liczby na wszystkie pozycje.",
+        "Liczba frontów/szuflad wynika z modułów kuchennych lub segmentów szafy.",
+        "Okucia (kpl.) skaluj z liczbą szuflad, frontów i systemów przesuwnych.",
       ],
       en: [
-        "Built-in areas (m²) follow brief dimensions or typical kitchen/wardrobe modules.",
-        "Door leaf and frame count equals openings in scope.",
-        "Wood flooring in m² — consistent with room areas in scope.",
-        "Skirting and trims in linear m — from room perimeter or built-in edge length.",
+        "Run length (m) and dimensions follow the project description — do not force one figure onto every line.",
+        "Front/drawer counts follow kitchen modules or wardrobe segments.",
+        "Hardware (sets) scales with drawer, front, and sliding system counts.",
+      ],
+    },
+    complexityDerivationRules: {
+      pl: [
+        "Oceń złożoność wewnętrznie (simple/medium/complex) z opisu, kategorii i typu realizacji — nie wymagaj pola od użytkownika.",
+        "Wyspa, zabudowa do sufitu, AGD w słupku, nietypowe kąty → wyższa złożoność.",
+        "Wymiana frontów lub serwis → niższa złożoność niż nowa kuchnia premium.",
+      ],
+      en: [
+        "Assess complexity internally (simple/medium/complex) from description, categories, and project type — no user field required.",
+        "Island, floor-to-ceiling units, appliance column, unusual angles → higher complexity.",
+        "Front replacement or service → lower complexity than premium new kitchen.",
       ],
     },
   },
   [WorkspaceIndustry.OTHER]: {
+    profileVersion: "SERVICES_V1",
     role: {
       pl: "Jesteś doświadczonym kosztorysantem na rynku polskim. Dopasowujesz poziom szczegółowości do branży i briefu klienta.",
       en: "You are an experienced estimator in Poland. You match detail level to the trade and customer brief.",
@@ -454,6 +495,10 @@ export function getIndustryAiProfileAdminView(
   };
 }
 
+export function getIndustryProfileVersion(industry: WorkspaceIndustry): string {
+  return (PROFILES[industry] ?? PROFILES[WorkspaceIndustry.OTHER]).profileVersion;
+}
+
 export function resolveIndustryAiProfileForPrompt(
   industry: WorkspaceIndustry,
   locale: Locale,
@@ -462,10 +507,12 @@ export function resolveIndustryAiProfileForPrompt(
   const lang = locale === "en" ? "en" : "pl";
 
   return {
+    profileVersion: profile.profileVersion,
     role: profile.role[lang],
     estimationPrinciples: profile.estimationPrinciples[lang],
     scopeChecklist: profile.scopeChecklist[lang],
     scopeExpansionRules: profile.scopeExpansionRules[lang],
     quantityDerivationRules: profile.quantityDerivationRules?.[lang],
+    complexityDerivationRules: profile.complexityDerivationRules?.[lang],
   };
 }

@@ -122,11 +122,13 @@ async function validateIndustryFields(input: {
   industry: Prisma.WorkspaceGetPayload<{ select: { industry: true } }>["industry"];
   locale: Locale;
   industryFields: SharedBody["industryFields"];
+  intakeSurface: "public" | "internal";
 }) {
   const fields = await getIndustryFieldsForDocument({
     workspaceId: input.workspaceId,
     documentType: BusinessDocumentType.ESTIMATE_REQUEST,
     locale: input.locale,
+    intakeSurface: input.intakeSurface,
   });
 
   const dynamicValues = coerceIndustryFieldValues({
@@ -210,6 +212,7 @@ export async function submitEstimateRequestWithAttachments(input: {
     industry: workspace.industry,
     locale: input.locale,
     industryFields: input.body.industryFields,
+    intakeSurface: input.source === "INTERNAL_REQUEST" ? "internal" : "public",
   });
 
   const voiceGeneratedTitle =

@@ -1,0 +1,35 @@
+{
+  "id": "electrical-pv-installation",
+  "name": "Electrical — solar PV",
+  "locale": "pl",
+  "category": "business",
+  "quick": false,
+  "critical": false,
+  "profileVersion": "ELECTRICAL_V1",
+  "workspace": {
+    "industry": "ELECTRICAL",
+    "industryOtherText": "Fotowoltaika",
+    "companyDescription": "Instalacje fotowoltaiczne na dachach domów jednorodzinnych. Falowniki, uziemienie, pomiary.",
+    "rules": [],
+    "systemRules": { "rounding": true, "units": true }
+  },
+  "request": {
+    "project": {
+      "description": "Instalacja fotowoltaiczna 8 kWp na dachu domu jednorodzinnego, falownik hybrydowy, okablowanie DC/AC, montaż konstrukcji, dokumentacja do OSD. Wrocław.",
+      "preferredStartDate": "6_12_months"
+    },
+    "industryFields": {
+      "building_type": "house"
+    },
+    "address": { "city": "Wrocław" }
+  },
+  "expectations": {
+    "mustHave": [
+      { "term": "fotowolt", "scope": "any_item" },
+      { "term": "falownik", "scope": "any_item" }
+    ],
+    "coverageTerms": ["montaż", "moduł"],
+    "leakageDomain": "services",
+    "minLineItems": 5
+  }
+}

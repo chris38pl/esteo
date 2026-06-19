@@ -1,0 +1,37 @@
+{
+  "id": "carpentry-wardrobe-sliding",
+  "name": "Carpentry — sliding wardrobe",
+  "locale": "pl",
+  "category": "business",
+  "quick": false,
+  "critical": false,
+  "profileVersion": "CARPENTRY_V1",
+  "workspace": {
+    "industry": "CARPENTRY",
+    "industryOtherText": "Szafy przesuwne",
+    "companyDescription": "Szafy wnękowe i garderoby. Systemy przesuwne Hettich.",
+    "rules": [],
+    "systemRules": { "rounding": true, "units": true }
+  },
+  "request": {
+    "project": {
+      "description": "Szafa przesuwna w sypialni, szerokość 2,8 m, wysokość do sufitu 2,7 m. Drzwi lustrzane, wewnątrz półki i drążek. Kraków.",
+      "preferredStartDate": "1_3_months"
+    },
+    "industryFields": {
+      "product_categories": ["wardrobe"],
+      "project_types": ["new_build"]
+    },
+    "address": { "city": "Kraków" }
+  },
+  "expectations": {
+    "mustHave": [
+      { "term": "przesuw", "scope": "any_item" },
+      { "term": "montaż", "scope": "any_item" }
+    ],
+    "coverageTerms": ["szaf", "system"],
+    "requiredSections": ["Materiały", "Montaż"],
+    "leakageDomain": "services",
+    "minLineItems": 6
+  }
+}

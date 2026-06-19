@@ -7,6 +7,7 @@ import {
   formatScopeChecklistBlock,
   formatScopeExpansionRulesBlock,
   formatQuantityDerivationRulesBlock,
+  formatComplexityDerivationRulesBlock,
   formatServiceEstimateCompletenessBlock,
   formatServiceOutputRulesBlock,
 } from "@/ai/lib/format-industry-profile-blocks";
@@ -24,8 +25,8 @@ import { isServiceWorkspace } from "@/features/workspaces/lib/industries";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 
-/** Bump semver when prompt blocks, role, or output rules change (eval harness tracks this). */
-export const ESTIMATE_PROMPT_VERSION = "1.1.0";
+/** Bump when prompt blocks, role, or output rules change (eval harness tracks this). */
+export const ESTIMATE_PROMPT_VERSION = "1.3.1";
 
 export interface EstimateDraftPromptInput {
   projectBrief: string;
@@ -77,9 +78,13 @@ export function buildEstimateDraftPrompt(input: EstimateDraftPromptInput): strin
     ...(profile.quantityDerivationRules?.length
       ? [formatQuantityDerivationRulesBlock(profile.quantityDerivationRules)]
       : []),
+    ...(profile.complexityDerivationRules?.length
+      ? [formatComplexityDerivationRulesBlock(profile.complexityDerivationRules)]
+      : []),
     formatEstimateStructureBlock(estimateSections),
     formatSectionRulesBlock(estimateSections),
     buildWorkspacePromptFromRules(input.context.rules),
+    `## Industry Profile Version\n${profile.profileVersion}`,
     formatEstimateCompletenessBlock(lang),
     formatOutputRulesBlock(lang),
   ];

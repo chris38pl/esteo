@@ -163,6 +163,7 @@ Env ładowany przez `scripts/load-env.mjs` (jak `voice-intake:benchmark`).
 | `eval:services:baseline` | Full eval + zapis baseline | `npm run eval:services:baseline` | `Baseline saved: evals/baselines/services/<timestamp>.json` | Po akceptowanym Full run; opcjonalny commit `evals/baselines/`. |
 | `eval:services:compare` | Full eval + diff vs baseline | `npm run eval:services:compare` | Prompt diff, delty score, WARNING / CRITICAL / golden regression | Po zmianie promptu — przed merge. Exit `1` przy regresji. |
 | `eval:services:smoke` | Test scorerów bez API | `npm run eval:services:smoke` | `Scorer smoke test passed.` | CI / lokalnie bez klucza OpenAI. |
+| `eval:types` | Type-check katalogu `evals/` (osobny `tsconfig`) | `npm run eval:types` | Brak outputu = OK; błędy TS z `evals/**/*.ts` | Po zmianach w `evals/` — **bez** pełnego `next build`. Katalog `evals/` jest wykluczony z type-checku Vercel (`tsconfig.json` → `exclude: evals`). |
 | `eval:services:seed` | Regeneracja fixture JSON | `npm run eval:services:seed` | Pliki w `evals/services/` nadpisane z seed script | Po zmianie katalogu scenariuszy w `evals/scripts/seed-services-scenarios.ts`. |
 
 **Flagi (po `--`, głównie `eval:services`):**
@@ -190,6 +191,7 @@ Env ładowany przez `scripts/load-env.mjs` (jak `voice-intake:benchmark`).
 
 **Typowy workflow (zmiana promptu):**
 
+0. `npm run eval:types` — gdy edytujesz pliki w `evals/` (szybsze niż `npm run build`)
 1. `npm run eval:services:quick` — szybka bramka lokalnie / w PR
 2. `npm run eval:services` — Full eval, review `evals/results/…/summary.json`
 3. `npm run eval:services:baseline` — zapis baseline po akceptacji

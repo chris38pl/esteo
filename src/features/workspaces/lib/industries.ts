@@ -11,6 +11,8 @@ export const WORKSPACE_INDUSTRIES = [
 /** Industries selectable during workspace signup (post-MVP industries are shown but disabled). */
 export const MVP_AVAILABLE_WORKSPACE_INDUSTRIES = [
   WorkspaceIndustry.CONSTRUCTION,
+  WorkspaceIndustry.CARPENTRY,
+  WorkspaceIndustry.ELECTRICAL,
   WorkspaceIndustry.OTHER,
 ] as const;
 

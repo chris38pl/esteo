@@ -1,0 +1,35 @@
+{
+  "id": "electrical-house-panel",
+  "name": "Electrical — house panel replacement",
+  "locale": "pl",
+  "category": "business",
+  "quick": false,
+  "critical": false,
+  "profileVersion": "ELECTRICAL_V1",
+  "workspace": {
+    "industry": "ELECTRICAL",
+    "industryOtherText": "Domy jednorodzinne",
+    "companyDescription": "Modernizacja instalacji w domach jednorodzinnych. Rozdzielnice, uziemienie, smart home.",
+    "rules": [],
+    "systemRules": { "rounding": true, "units": true }
+  },
+  "request": {
+    "project": {
+      "description": "Wymiana starej rozdzielni w domu jednorodzinnym, nowa rozdzielnia 3-fazowa z RCD, oznakowanie obwodów, pierwsze uruchomienie. Kraków.",
+      "preferredStartDate": "3_6_months"
+    },
+    "industryFields": {
+      "building_type": "house"
+    },
+    "address": { "city": "Kraków" }
+  },
+  "expectations": {
+    "mustHave": [
+      { "term": "rozdziel", "scope": "any_item" },
+      { "term": "RCD", "scope": "any_item" }
+    ],
+    "coverageTerms": ["demont", "montaż"],
+    "leakageDomain": "services",
+    "minLineItems": 5
+  }
+}

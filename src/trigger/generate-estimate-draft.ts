@@ -7,6 +7,7 @@ import {
   logEstimateActivity,
 } from "@/features/estimates/server/activity-log";
 import { syncVersionTotals } from "@/features/estimates/lib/sync-version-totals";
+import { getIndustryProfileVersion } from "@/ai/config/industry-ai-profiles";
 import { generateEstimateDraft } from "@/ai/services/generate-estimate-draft";
 import { validateGeneratedSectionTitles } from "@/ai/lib/validate-generated-section-titles";
 import { buildProjectBrief } from "@/features/estimate-requests/lib/build-project-brief";
@@ -319,6 +320,7 @@ export const generateEstimateDraftTask = task({
               generatedAt: new Date().toISOString(),
               model: "gpt-4o",
               industry: context.industry,
+              profileVersion: getIndustryProfileVersion(context.industry),
               sectionTitleValidation: sectionTitleValidationMeta,
               promptSectionCount: context.estimateSections.length,
             },
@@ -331,6 +333,7 @@ export const generateEstimateDraftTask = task({
             aiMetadata: {
               generatedAt: new Date().toISOString(),
               model: "gpt-4o",
+              profileVersion: getIndustryProfileVersion(context.industry),
               sectionCount: draftOutput.sections.length,
               sectionTitleValidation: sectionTitleValidationMeta,
             },

@@ -151,7 +151,7 @@ export function VoiceExperiencePortal({
         ) : null}
 
         {voice.phase === "analyzing" || voice.phase === "analyzing_follow_up" ? (
-          <div className="flex min-h-full w-full flex-col">
+          <div className="w-full sm:flex sm:min-h-full sm:flex-col sm:items-center sm:justify-center">
             <VoiceAnalyzingStage isFollowUp={voice.phase === "analyzing_follow_up"} />
           </div>
         ) : null}
@@ -160,18 +160,20 @@ export function VoiceExperiencePortal({
         voice.extraction &&
         voice.transcript &&
         voice.cleanedTranscript ? (
-          <VoiceSummaryStage
-            extraction={voice.extraction}
-            cleanedTranscript={voice.cleanedTranscript}
-            locale={locale}
-            industry={industry}
-            missingFields={voice.missingFields}
-            followUpResolvedItems={voice.followUpResolvedItems}
-            followUpNoNewInfo={voice.followUpNoNewInfo}
-            onStartFollowUp={voice.startFollowUpRecording}
-            onApply={handleApply}
-            onReRecord={voice.reRecordFromScratch}
-          />
+          <div className="w-full sm:flex sm:min-h-full sm:flex-col sm:items-center sm:justify-center">
+            <VoiceSummaryStage
+              extraction={voice.extraction}
+              cleanedTranscript={voice.cleanedTranscript}
+              locale={locale}
+              industry={industry}
+              missingFields={voice.missingFields}
+              followUpResolvedItems={voice.followUpResolvedItems}
+              followUpNoNewInfo={voice.followUpNoNewInfo}
+              onStartFollowUp={voice.startFollowUpRecording}
+              onApply={handleApply}
+              onReRecord={voice.reRecordFromScratch}
+            />
+          </div>
         ) : null}
 
         {voice.phase === "error" && voice.error ? (

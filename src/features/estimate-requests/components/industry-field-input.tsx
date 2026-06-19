@@ -1,8 +1,24 @@
 "use client";
 
-import { BriefcaseBusiness, Building2, CalendarDays, Home, Store, Wrench } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  Building2,
+  CalendarDays,
+  ChefHat,
+  Home,
+  Lamp,
+  ShowerHead,
+  Store,
+  Sun,
+  Wrench,
+} from "lucide-react";
 
 import type { IndustryFieldForDocument } from "@/features/industry-fields/server/get-fields-for-workspace";
+import {
+  parseFieldSelectConfig,
+  parseMultiSelectStoredValue,
+  serializeMultiSelectValue,
+} from "@/features/industry-fields/lib/field-select-config";
 import { getIndustryOptionLabel } from "@/features/estimate-requests/config/industry-option-labels";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
@@ -18,7 +34,26 @@ const iconByValue = {
   house: Home,
   office: BriefcaseBusiness,
   commercial: Store,
+  industrial: Building2,
   other: Wrench,
+  kitchen: ChefHat,
+  wardrobe: Home,
+  closet: Home,
+  bathroom: ShowerHead,
+  reception: BriefcaseBusiness,
+  new_build: Home,
+  extension: Building2,
+  front_replacement: Wrench,
+  renovation: Wrench,
+  service: Wrench,
+  economy: Wrench,
+  standard: BriefcaseBusiness,
+  premium: Lamp,
+  luxury: Lamp,
+  new_installation: Home,
+  photovoltaic: Sun,
+  smart_home: Lamp,
+  measurements: Wrench,
 } as const;
 
 const fieldInputClassName = "h-10 rounded-xl border-input bg-background/80 shadow-xs dark:bg-input/30";
@@ -38,14 +73,26 @@ export function IndustryFieldInput({
   selectPlaceholder: string;
   disabled?: boolean;
 }) {
-  if (field.valueType === "SELECT" && field.key === "property_type") {
+  const selectConfig = parseFieldSelectConfig(field.options, field.key);
+
+  if (selectConfig.tiles && selectConfig.choices.length > 0) {
+    const selectedValues = parseMultiSelectStoredValue(value);
+    const isMulti = selectConfig.selectMode === "multi";
+
     return (
       <div className="space-y-3">
         <FieldLabel field={field} />
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
-          {(field.options ?? []).map((option) => {
+        <div
+          className={cn(
+            "grid gap-2",
+            selectConfig.choices.length > 4
+              ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
+              : "grid-cols-2 sm:grid-cols-3",
+          )}
+        >
+          {selectConfig.choices.map((option) => {
             const Icon = iconByValue[option.value as keyof typeof iconByValue] ?? Building2;
-            const selected = value === option.value;
+            const selected = selectedValues.includes(option.value);
 
             return (
               <button
@@ -53,15 +100,30 @@ export function IndustryFieldInput({
                 type="button"
                 disabled={disabled}
                 aria-pressed={selected}
-                onClick={() => onChange(field.key, option.value)}
+                onClick={() => {
+                  if (isMulti) {
+                    const next = selected
+                      ? selectedValues.filter((item) => item !== option.value)
+                      : [...selectedValues, option.value];
+                    onChange(field.key, serializeMultiSelectValue(next));
+                    return;
+                  }
+                  onChange(field.key, serializeMultiSelectValue([option.value]));
+                }}
                 className={cn(
                   "group flex min-h-20 flex-col items-center justify-center rounded-2xl border bg-background/65 p-3 text-center shadow-xs transition dark:bg-input/20",
                   !disabled && "cursor-pointer",
                   "border-input hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
-                  selected && "border-primary/45 bg-primary/20 dark:bg-primary/10 shadow-[0_0_0_1px_rgba(59,130,246,0.22)]",
+                  selected &&
+                    "border-primary/45 bg-primary/20 dark:bg-primary/10 shadow-[0_0_0_1px_rgba(59,130,246,0.22)]",
                 )}
               >
-                <Icon className={cn("mb-3 size-4", selected ? "text-primary" : "text-muted-foreground")} />
+                <Icon
+                  className={cn(
+                    "mb-3 size-4",
+                    selected ? "text-primary" : "text-muted-foreground",
+                  )}
+                />
                 <span className="block text-xs text-foreground">
                   {getIndustryOptionLabel(field.key, option.value, locale, "label")}
                 </span>
@@ -69,6 +131,75 @@ export function IndustryFieldInput({
             );
           })}
         </div>
+      </div>
+    );
+  }
+
+  if (selectConfig.choices.length > 0 && !selectConfig.tiles) {
+    const selectedValues = parseMultiSelectStoredValue(value);
+    const selected =
+      selectConfig.selectMode === "multi"
+        ? selectedValues
+        : (selectedValues[0] ?? "");
+
+    if (selectConfig.selectMode === "multi") {
+      return (
+        <div className="space-y-2">
+          <FieldLabel field={field} />
+          <select
+            multiple
+            value={selectedValues}
+            onChange={(event) => {
+              const next = Array.from(event.target.selectedOptions).map((option) => option.value);
+              onChange(field.key, serializeMultiSelectValue(next));
+            }}
+            required={field.required}
+            disabled={disabled}
+            className={cn(
+              fieldInputClassName,
+              "min-h-24 w-full appearance-none px-3 py-2 text-sm text-foreground outline-none",
+            )}
+          >
+            {selectConfig.choices.map((option) => (
+              <option key={option.value} value={option.value}>
+                {getIndustryOptionLabel(field.key, option.value, locale, "label")}
+              </option>
+            ))}
+          </select>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-2">
+        <FieldLabel field={field} />
+        <select
+          value={typeof selected === "string" ? selected : ""}
+          onChange={(event) => {
+            const next = event.target.value;
+            onChange(
+              field.key,
+              field.valueType === "SELECT"
+                ? next
+                : serializeMultiSelectValue(next ? [next] : []),
+            );
+          }}
+          required={field.required}
+          disabled={disabled}
+          className={cn(
+            fieldInputClassName,
+            "w-full appearance-none px-3 text-sm outline-none",
+            !selected && "text-muted-foreground",
+            selected && "text-foreground",
+          )}
+        >
+          <option value="">{field.placeholder ?? selectPlaceholder}</option>
+          {selectConfig.choices.map((option) => (
+            <option key={option.value} value={option.value}>
+              {getIndustryOptionLabel(field.key, option.value, locale, "label")}
+            </option>
+          ))}
+        </select>
       </div>
     );
   }

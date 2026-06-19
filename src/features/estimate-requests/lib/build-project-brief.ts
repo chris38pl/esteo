@@ -4,6 +4,10 @@ import { getIndustryFieldsForDocument } from "@/features/industry-fields/server/
 import { listDocumentFieldValues } from "@/features/industry-fields/server/repository";
 import { readTypedFieldValue } from "@/features/industry-fields/server/map-field-value";
 import { getIndustryExperienceSegment } from "@/features/estimate-requests/config/industry-experience-config";
+import { getIndustryOptionLabel } from "@/features/estimate-requests/config/industry-option-labels";
+import {
+  parseMultiSelectStoredValue,
+} from "@/features/industry-fields/lib/field-select-config";
 import type { Locale } from "@/lib/locale";
 
 type CustomerData = {
@@ -92,6 +96,29 @@ function formatValue(value: string | number | boolean | Date | null): string {
   return String(value);
 }
 
+function formatFieldValueForBrief(
+  fieldKey: string,
+  value: string | number | boolean | Date | null,
+  locale: Locale,
+): string {
+  if (fieldKey === "product_categories" || fieldKey === "project_types") {
+    const items = parseMultiSelectStoredValue(value);
+    if (items.length === 0) {
+      return "";
+    }
+    return items
+      .map((item) => getIndustryOptionLabel(fieldKey, item, locale, "label"))
+      .join(", ");
+  }
+  if (fieldKey === "budget_tier" && typeof value === "string") {
+    return getIndustryOptionLabel("budget_tier", value, locale, "label");
+  }
+  if (fieldKey === "building_type" && typeof value === "string") {
+    return getIndustryOptionLabel("building_type", value, locale, "label");
+  }
+  return formatValue(value);
+}
+
 export async function buildProjectBrief(input: {
   request: Pick<EstimateRequest, "id" | "workspaceId" | "projectDescription" | "customerData" | "address">;
   industry: WorkspaceIndustry;
@@ -167,7 +194,7 @@ export async function buildProjectBrief(input: {
       continue;
     }
     const raw = readTypedFieldValue(row);
-    const text = formatValue(raw);
+    const text = formatFieldValueForBrief(field.key, raw, input.locale);
     if (!text) {
       continue;
     }

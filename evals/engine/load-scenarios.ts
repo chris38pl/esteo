@@ -7,6 +7,10 @@ export function getServicesFixturesDir(repoRoot: string): string {
   return join(repoRoot, "evals", "services");
 }
 
+export function getEvalFixturesDir(repoRoot: string, suite: string): string {
+  return join(repoRoot, "evals", suite);
+}
+
 function collectJsonFiles(dir: string): string[] {
   const entries = readdirSync(dir, { withFileTypes: true });
   const files: string[] = [];
@@ -21,8 +25,8 @@ function collectJsonFiles(dir: string): string[] {
   return files;
 }
 
-export function loadServicesScenarios(repoRoot: string): EvalScenario[] {
-  const dir = getServicesFixturesDir(repoRoot);
+export function loadEvalScenarios(repoRoot: string, suite: string): EvalScenario[] {
+  const dir = getEvalFixturesDir(repoRoot, suite);
   const files = collectJsonFiles(dir);
   const scenarios: EvalScenario[] = [];
 
@@ -33,6 +37,10 @@ export function loadServicesScenarios(repoRoot: string): EvalScenario[] {
   }
 
   return scenarios.sort((a, b) => a.id.localeCompare(b.id));
+}
+
+export function loadServicesScenarios(repoRoot: string): EvalScenario[] {
+  return loadEvalScenarios(repoRoot, "services");
 }
 
 export function filterScenarios(

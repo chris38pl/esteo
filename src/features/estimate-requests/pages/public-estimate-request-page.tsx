@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 
+import { EstimateRequestPageBackground } from "@/features/estimate-requests/components/estimate-request-page-background";
 import { PublicEstimateRequestClient } from "@/features/estimate-requests/components/public-estimate-request-client";
 import { PublicEstimateHeader } from "@/features/estimate-requests/components/public-estimate-header";
 import { getPublicEstimateRequestPath } from "@/features/estimate-requests/routes";
@@ -82,24 +82,7 @@ export default async function PublicEstimateRequestPage({ params }: { params: Pa
         />
       ) : null}
       <div className="relative isolate overflow-x-hidden">
-        <div className="absolute inset-0 -z-10">
-          <Image
-            src="/images/estimate-request/estimate-request-light.webp"
-            alt=""
-            fill
-            priority
-            className="object-cover object-left-top dark:hidden"
-          />
-          <Image
-            src="/images/estimate-request/estimate-request-dark.webp"
-            alt=""
-            fill
-            priority
-            className="hidden object-cover object-left-top dark:block"
-          />
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_20%_10%,color-mix(in_oklab,var(--color-primary)_18%,transparent),transparent_40%),radial-gradient(circle_at_80%_15%,rgba(99,102,241,0.14),transparent_45%)] dark:bg-[radial-gradient(circle_at_18%_12%,rgba(59,130,246,0.18),transparent_38%),radial-gradient(circle_at_80%_10%,rgba(99,102,241,0.16),transparent_45%)]" />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/35 via-background/55 to-background/95" />
-        </div>
+        <EstimateRequestPageBackground industry={pageData.workspace.industry} />
 
         <PublicEstimateRequestClient
           locale={resolvedLocale}

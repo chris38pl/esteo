@@ -191,6 +191,44 @@
         "description": "czego dotyczy usługa",
         "serviceLocation": "gdzie ma być realizowana usługa"
       }
+    },
+    "carpentry": {
+      "speakFreely": "Możesz wspomnieć o typie zabudowy (kuchnia, szafa, garderoba), rodzaju realizacji (nowa zabudowa, wymiana frontów, renowacja), lokalizacji, zakresie i terminie.",
+      "missingFriendly": {
+        "city": "Lokalizacja",
+        "timeline": "Termin rozpoczęcia",
+        "scope": "Zakres prac",
+        "contact": "Dane kontaktowe",
+        "productCategories": "Kategorie zabudowy",
+        "projectType": "Typ realizacji"
+      },
+      "followUpFriendly": {
+        "city": "gdzie ma być realizowany projekt",
+        "timeline": "kiedy chcesz zacząć",
+        "scope": "jaki jest zakres prac",
+        "contact": "jak się z Tobą skontaktować",
+        "productCategories": "jakiego typu zabudowy dotyczy projekt",
+        "projectType": "czy to nowa zabudowa, wymiana frontów czy renowacja"
+      }
+    },
+    "electrical": {
+      "speakFreely": "Możesz wspomnieć o typie budynku, rodzaju prac (gniazda, oświetlenie, rozdzielnia, fotowoltaika), lokalizacji, zakresie i terminie.",
+      "missingFriendly": {
+        "city": "Lokalizacja",
+        "timeline": "Termin rozpoczęcia",
+        "scope": "Zakres prac",
+        "contact": "Dane kontaktowe",
+        "buildingType": "Typ budynku",
+        "projectTypes": "Rodzaje prac"
+      },
+      "followUpFriendly": {
+        "city": "gdzie ma być realizowany projekt",
+        "timeline": "kiedy chcesz zacząć",
+        "scope": "jaki jest zakres prac elektrycznych",
+        "contact": "jak się z Tobą skontaktować",
+        "buildingType": "jaki to typ budynku",
+        "projectTypes": "jakie prace elektryczne są potrzebne"
+      }
     }
   }
 }

@@ -1,0 +1,36 @@
+{
+  "id": "carpentry-commercial-retail",
+  "name": "Carpentry — commercial retail fit-out",
+  "locale": "pl",
+  "category": "business",
+  "quick": false,
+  "critical": false,
+  "profileVersion": "CARPENTRY_V1",
+  "workspace": {
+    "industry": "CARPENTRY",
+    "industryOtherText": "Zabudowy komercyjne",
+    "companyDescription": "Zabudowy sklepów i lokali usługowych. Lady, witryny, ekspozycja.",
+    "rules": [],
+    "systemRules": { "rounding": true, "units": true }
+  },
+  "request": {
+    "project": {
+      "description": "Zabudowa apteki: lada recepcyjna, witryna ekspozycyjna, regały za ladą, montaż po godzinach otwarcia lokalu. Poznań.",
+      "preferredStartDate": "3_6_months"
+    },
+    "industryFields": {
+      "product_categories": ["commercial"],
+      "project_types": ["new_build"]
+    },
+    "address": { "city": "Poznań" }
+  },
+  "expectations": {
+    "mustHave": [
+      { "term": "lada", "scope": "any_item" },
+      { "term": "witryn", "scope": "any_item" }
+    ],
+    "coverageTerms": ["montaż", "ekspozyc"],
+    "leakageDomain": "services",
+    "minLineItems": 6
+  }
+}

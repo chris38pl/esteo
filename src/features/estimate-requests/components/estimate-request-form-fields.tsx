@@ -1,5 +1,6 @@
 "use client";
 
+import { WorkspaceIndustry } from "@prisma/client";
 import { MapPin } from "lucide-react";
 import type { ReactNode } from "react";
 import { useMemo } from "react";
@@ -8,11 +9,11 @@ import { useTranslations } from "next-intl";
 import { AttachmentDropzone } from "@/features/estimate-requests/components/attachment-dropzone-placeholder";
 import type { PublicAttachmentAvailability } from "@/features/attachments/lib/attachment-availability";
 import { IndustryFieldInput } from "@/features/estimate-requests/components/industry-field-input";
+import { parseFieldSelectConfig } from "@/features/industry-fields/lib/field-select-config";
 import { VOIVODESHIP_KEYS, getVoivodeshipLabel } from "@/features/estimate-requests/config/voivodeships";
 import { START_DATE_KEYS, getStartDateLabel } from "@/features/estimate-requests/config/start-dates";
 import { getIndustryExperienceConfig } from "@/features/estimate-requests/config/industry-experience-config";
 import type { IndustryFieldForDocument } from "@/features/industry-fields/server/get-fields-for-workspace";
-import type { WorkspaceIndustry } from "@prisma/client";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -48,7 +49,32 @@ export const estimateRequestFieldClassName =
 export function createEmptyIndustryFieldValues(
   fields: IndustryFieldForDocument[],
 ): Record<string, IndustryFieldValue> {
-  return Object.fromEntries(fields.map((field) => [field.key, ""]));
+  return Object.fromEntries(
+    fields.map((field) => {
+      const selectConfig = parseFieldSelectConfig(field.options, field.key);
+      if (selectConfig.selectMode === "multi") {
+        return [field.key, "[]"];
+      }
+      return [field.key, ""];
+    }),
+  );
+}
+
+function primaryTileFieldKeys(industry: WorkspaceIndustry): string[] {
+  if (industry === WorkspaceIndustry.CARPENTRY) {
+    return ["product_categories"];
+  }
+  if (industry === WorkspaceIndustry.ELECTRICAL) {
+    return ["building_type"];
+  }
+  return ["property_type"];
+}
+
+function contactRowIndustryFieldKey(industry: WorkspaceIndustry): string | null {
+  if (industry === WorkspaceIndustry.CARPENTRY) {
+    return "project_types";
+  }
+  return null;
 }
 
 export function EstimateRequestFormFields({
@@ -99,13 +125,37 @@ export function EstimateRequestFormFields({
   type FormMessageKey = Parameters<typeof t>[0];
   const formLabel = (key: string) => t(key as FormMessageKey);
 
+  const contactRowFieldKey = contactRowIndustryFieldKey(industry);
+
   const primaryFields = useMemo(
-    () => (experience.form.showIndustryCatalogFields ? fields.filter((field) => field.key === "property_type") : []),
-    [experience.form.showIndustryCatalogFields, fields],
+    () => {
+      if (!experience.form.showIndustryCatalogFields) {
+        return [];
+      }
+      const keys = new Set(primaryTileFieldKeys(industry));
+      return fields.filter((field) => keys.has(field.key));
+    },
+    [experience.form.showIndustryCatalogFields, fields, industry],
+  );
+  const contactRowField = useMemo(
+    () =>
+      contactRowFieldKey
+        ? fields.find((field) => field.key === contactRowFieldKey) ?? null
+        : null,
+    [contactRowFieldKey, fields],
   );
   const secondaryFields = useMemo(
-    () => (experience.form.showIndustryCatalogFields ? fields.filter((field) => field.key !== "property_type") : []),
-    [experience.form.showIndustryCatalogFields, fields],
+    () => {
+      if (!experience.form.showIndustryCatalogFields) {
+        return [];
+      }
+      const excluded = new Set([
+        ...primaryTileFieldKeys(industry),
+        ...(contactRowFieldKey ? [contactRowFieldKey] : []),
+      ]);
+      return fields.filter((field) => !excluded.has(field.key));
+    },
+    [contactRowFieldKey, experience.form.showIndustryCatalogFields, fields, industry],
   );
 
   return (
@@ -158,6 +208,18 @@ export function EstimateRequestFormFields({
             disabled={disabled}
           />
         </div>
+        {contactRowField ? (
+          <div data-voice-field={`industryFields.${contactRowField.key}`}>
+            <IndustryFieldInput
+              field={contactRowField}
+              value={industryFields[contactRowField.key] ?? ""}
+              onChange={onIndustryFieldChange}
+              locale={locale}
+              selectPlaceholder={t("form.selectPlaceholder")}
+              disabled={disabled}
+            />
+          </div>
+        ) : null}
         {secondaryFields.map((field) => (
           <div key={field.key} data-voice-field={`industryFields.${field.key}`}>
             <IndustryFieldInput

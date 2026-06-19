@@ -1,0 +1,75 @@
+{
+  "title": "Program partnerski",
+  "description": "Polecaj Esteo i zarabiaj bonusy, gdy Twoi znajomi zaczną korzystać z płatnego planu.",
+  "inactiveBanner": "Aktywuj plan PRO lub BUSINESS, aby znów polecać Esteo.",
+  "share": {
+    "title": "Poleć znajomego",
+    "linkLabel": "Link",
+    "emailLabel": "Email",
+    "codeLabel": "Kod (opcja)",
+    "copy": "Kopiuj",
+    "copied": "Skopiowano",
+    "sendInvite": "Wyślij zaproszenie"
+  },
+  "hero": {
+    "earned": "Zarobione dzięki poleceniom",
+    "pendingBonuses": "Oczekujące bonusy",
+    "appliedToInvoices": "Wykorzystane na fakturach",
+    "availableBalance": "Dostępne saldo",
+    "activeClients": "Aktywni klienci",
+    "referredMrr": "MRR poleconych"
+  },
+  "tier": {
+    "title": "Twój poziom partnera",
+    "activeCount": "{count} aktywnych klientów",
+    "lifetimeCount": "Poleconych firm: {count}",
+    "nextTier": "Do {tier}: jeszcze {remaining}",
+    "none": "Brak poziomu",
+    "bronze": "Bronze",
+    "silver": "Silver",
+    "gold": "Gold",
+    "diamond": "Diamond",
+    "comingSoon": "Wkrótce"
+  },
+  "table": {
+    "title": "Polecone firmy",
+    "empty": "Nie masz jeszcze poleconych firm.",
+    "columns": {
+      "company": "Firma",
+      "status": "Status",
+      "bonus": "Bonus"
+    }
+  },
+  "payoutStatus": {
+    "awaiting_registration": "Oczekuje na rejestrację",
+    "awaiting_first_payment": "Oczekuje na pierwszą płatność",
+    "awaiting_plan_selection": "Oczekuje na wybór planu",
+    "bonus_granted": "Bonus przyznany {amount}",
+    "inactive": "Nieaktywny"
+  },
+  "bonus": {
+    "projected": "Prognozowany bonus: {amount}",
+    "pending": "Oczekujące bonusy"
+  },
+  "claim": {
+    "title": "Kod polecający",
+    "description": "Masz kod lub email polecającego? Wpisz go tutaj.",
+    "placeholder": "Email lub kod polecającego",
+    "windowHint": "Kod polecający można przypisać do pierwszej płatności lub przez 30 dni od utworzenia workspace.",
+    "submit": "Przypisz",
+    "success": "Kod polecający został przypisany.",
+    "errors": {
+      "SELF_REFERRAL": "Nie możesz polecić samego siebie.",
+      "ALREADY_CLAIMED": "To workspace ma już przypisane polecenie.",
+      "WINDOW_CLOSED": "Okno przypisania kodu wygasło.",
+      "PARTNER_INACTIVE": "Ten partner nie przyjmuje obecnie nowych poleceń.",
+      "NOT_FOUND": "Nie znaleziono partnera.",
+      "FRAUD": "To polecenie nie może zostać zaakceptowane."
+    }
+  },
+  "publicLink": {
+    "accepting": "Przekierowujemy Cię do rejestracji…",
+    "inactive": "Ten partner nie przyjmuje obecnie nowych poleceń.",
+    "invalid": "Nieprawidłowy kod polecający."
+  }
+}

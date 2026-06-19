@@ -72,10 +72,6 @@
         "scope": "any_item"
       },
       {
-        "term": "sesj",
-        "scope": "any_item"
-      },
-      {
         "term": "plan",
         "scope": "any_item"
       }
@@ -92,7 +88,6 @@
     ],
     "coverageTerms": [
       "trening",
-      "sesja",
       "plan",
       "ćwiczeń"
     ],

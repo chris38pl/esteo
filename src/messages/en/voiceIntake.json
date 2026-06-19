@@ -191,6 +191,44 @@
         "description": "what the service is about",
         "serviceLocation": "where the service will be delivered"
       }
+    },
+    "carpentry": {
+      "speakFreely": "You can mention fit-out type (kitchen, wardrobe, closet), project type (new build, front replacement, renovation), location, scope, and timeline.",
+      "missingFriendly": {
+        "city": "Location",
+        "timeline": "Start date",
+        "scope": "Scope of work",
+        "contact": "Contact details",
+        "productCategories": "Product categories",
+        "projectType": "Project type"
+      },
+      "followUpFriendly": {
+        "city": "where the project will take place",
+        "timeline": "when you want to start",
+        "scope": "what work is needed",
+        "contact": "how to contact you",
+        "productCategories": "what type of fit-out it is",
+        "projectType": "whether it is new build, front replacement, or renovation"
+      }
+    },
+    "electrical": {
+      "speakFreely": "You can mention building type, work types (sockets, lighting, panel, solar PV), location, scope, and timeline.",
+      "missingFriendly": {
+        "city": "Location",
+        "timeline": "Start date",
+        "scope": "Scope of work",
+        "contact": "Contact details",
+        "buildingType": "Building type",
+        "projectTypes": "Work types"
+      },
+      "followUpFriendly": {
+        "city": "where the project will take place",
+        "timeline": "when you want to start",
+        "scope": "what electrical work is needed",
+        "contact": "how to contact you",
+        "buildingType": "what type of building it is",
+        "projectTypes": "what electrical work is required"
+      }
     }
   }
 }

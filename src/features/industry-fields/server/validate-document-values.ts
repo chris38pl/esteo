@@ -1,5 +1,9 @@
 import type { BusinessDocumentType, IndustryFieldValueType } from "@prisma/client";
 
+import {
+  parseFieldSelectConfig,
+  parseMultiSelectStoredValue,
+} from "@/features/industry-fields/lib/field-select-config";
 import type { SelectOption } from "@/features/industry-fields/schemas/definition";
 import { listActiveFieldDefinitions } from "@/features/industry-fields/server/repository";
 import type { FieldValueInput } from "@/features/industry-fields/server/map-field-value";
@@ -87,7 +91,32 @@ export async function validateDocumentFieldValues(input: {
   return validated;
 }
 
+function isJsonArrayFieldKey(key: string): boolean {
+  return key === "product_categories" || key === "project_types";
+}
+
 function validateValueForType(definition: Definition, value: FieldValueInput) {
+  if (
+    definition.valueType === "TEXT" &&
+    isJsonArrayFieldKey(definition.key)
+  ) {
+    if (typeof value !== "string") {
+      throw new DocumentFieldValidationError(`Field "${definition.key}" must be a JSON array string.`);
+    }
+    const items = parseMultiSelectStoredValue(value);
+    if (items.length === 0 && definition.required) {
+      throw new DocumentFieldValidationError(`Field "${definition.key}" is required.`);
+    }
+    const selectConfig = parseFieldSelectConfig(definition.options, definition.key);
+    const allowed = new Set((selectConfig.choices ?? []).map((option) => option.value));
+    for (const item of items) {
+      if (allowed.size > 0 && !allowed.has(item)) {
+        throw new DocumentFieldValidationError(`Field "${definition.key}" has an invalid option.`);
+      }
+    }
+    return;
+  }
+
   switch (definition.valueType) {
     case "TEXT":
     case "SELECT":

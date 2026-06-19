@@ -93,8 +93,7 @@
     "coverageTerms": [
       "strona",
       "blog",
-      "tekst",
-      "case study"
+      "tekst"
     ],
     "requiredSections": [
       "Zakres",

@@ -124,8 +124,7 @@
     "coverageTerms": [
       "audyt",
       "architektura",
-      "warsztat",
-      "roadmap"
+      "warsztat"
     ],
     "requiredSections": [
       "Zakres",

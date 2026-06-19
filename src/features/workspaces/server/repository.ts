@@ -10,7 +10,9 @@ import type {
 
 import { prisma } from "@/db/client";
 import type { WorkspaceBranding } from "@/features/workspaces/schemas/branding";
-import { isServiceWorkspace } from "@/features/workspaces/lib/industries";
+import {
+  isServiceWorkspace,
+} from "@/features/workspaces/lib/industries";
 import { inviteRoleToWorkspaceRole } from "@/features/workspaces/lib/invite-role";
 
 export async function findWorkspaceById(workspaceId: string) {
@@ -71,8 +73,9 @@ export async function createWorkspaceRecord(input: {
         slug: input.slug,
         slugIsCustom: input.slugIsCustom ?? false,
         industry: input.industry,
-        industryOtherText:
-          isServiceWorkspace(input.industry) ? input.industryOtherText?.trim() ?? null : null,
+        industryOtherText: isServiceWorkspace(input.industry)
+            ? input.industryOtherText?.trim() ?? null
+            : null,
         defaultLocale: input.defaultLocale,
         ...(input.isActiveFree != null ? { isActiveFree: input.isActiveFree } : {}),
         ...(input.provisioningStatus != null

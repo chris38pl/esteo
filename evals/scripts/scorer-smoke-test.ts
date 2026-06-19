@@ -101,6 +101,13 @@ const matcherChecks = [
   ["Sesja zdjęciowa", "zdjęcia", true],
   ["Fotografia ślubna i plenerowa", "plener", true],
   ["Lekcje angielskiego biznesowego", "angielski", true],
+  ["Przygotowanie umowy najmu", "najem", true],
+  ["Mycie okien", "okna", true],
+  ["Copywriting: Strona główna", "copy", true],
+  ["Pośrednictwo w sprzedaży", "pośrednictw", true],
+  ["Prowadzenie social-media", "social", true],
+  ["Strategia link building", "link", true],
+  ["Budowanie linków", "link", true],
 ] as const;
 
 for (const [haystack, term, expected] of matcherChecks) {

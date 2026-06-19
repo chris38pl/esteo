@@ -14,7 +14,12 @@ const FIELD_LABELS: Record<string, { pl: string; en: string }> = {
   address: { pl: "adres", en: "street address" },
   postalCode: { pl: "kod pocztowy", en: "postal code" },
   voivodeship: { pl: "województwo", en: "voivodeship" },
-  description: { pl: "opis usługi", en: "service description" },
+  description: { pl: "opis projektu", en: "project description" },
+  productCategories: { pl: "kategorie zabudowy", en: "product categories" },
+  projectType: { pl: "typ realizacji", en: "project type" },
+  buildingType: { pl: "typ budynku", en: "building type" },
+  projectTypes: { pl: "rodzaje prac", en: "project types" },
+  budgetTier: { pl: "poziom budżetu", en: "budget tier" },
   serviceLocation: { pl: "miejsce realizacji", en: "service location" },
   contact: { pl: "dane kontaktowe", en: "contact details" },
 };

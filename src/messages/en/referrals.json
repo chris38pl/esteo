@@ -1,0 +1,75 @@
+{
+  "title": "Partner program",
+  "description": "Refer Esteo and earn bonuses when your contacts start a paid plan.",
+  "inactiveBanner": "Activate a PRO or BUSINESS plan to refer Esteo again.",
+  "share": {
+    "title": "Refer a friend",
+    "linkLabel": "Link",
+    "emailLabel": "Email",
+    "codeLabel": "Code (optional)",
+    "copy": "Copy",
+    "copied": "Copied",
+    "sendInvite": "Send invitation"
+  },
+  "hero": {
+    "earned": "Earned from referrals",
+    "pendingBonuses": "Pending bonuses",
+    "appliedToInvoices": "Applied to invoices",
+    "availableBalance": "Available balance",
+    "activeClients": "Active clients",
+    "referredMrr": "Referred MRR"
+  },
+  "tier": {
+    "title": "Your partner tier",
+    "activeCount": "{count} active clients",
+    "lifetimeCount": "Referred companies: {count}",
+    "nextTier": "{remaining} more to {tier}",
+    "none": "No tier",
+    "bronze": "Bronze",
+    "silver": "Silver",
+    "gold": "Gold",
+    "diamond": "Diamond",
+    "comingSoon": "Coming soon"
+  },
+  "table": {
+    "title": "Referred companies",
+    "empty": "You have no referred companies yet.",
+    "columns": {
+      "company": "Company",
+      "status": "Status",
+      "bonus": "Bonus"
+    }
+  },
+  "payoutStatus": {
+    "awaiting_registration": "Awaiting registration",
+    "awaiting_first_payment": "Awaiting first payment",
+    "awaiting_plan_selection": "Awaiting plan selection",
+    "bonus_granted": "Bonus granted {amount}",
+    "inactive": "Inactive"
+  },
+  "bonus": {
+    "projected": "Projected bonus: {amount}",
+    "pending": "Pending bonuses"
+  },
+  "claim": {
+    "title": "Referral code",
+    "description": "Have a referrer email or code? Enter it here.",
+    "placeholder": "Referrer email or code",
+    "windowHint": "A referral can be applied until the first payment or within 30 days of workspace creation.",
+    "submit": "Apply",
+    "success": "Referral code applied.",
+    "errors": {
+      "SELF_REFERRAL": "You cannot refer yourself.",
+      "ALREADY_CLAIMED": "This workspace already has a referral.",
+      "WINDOW_CLOSED": "The referral claim window has closed.",
+      "PARTNER_INACTIVE": "This partner is not accepting new referrals.",
+      "NOT_FOUND": "Referrer not found.",
+      "FRAUD": "This referral cannot be accepted."
+    }
+  },
+  "publicLink": {
+    "accepting": "Redirecting you to sign up…",
+    "inactive": "This partner is not accepting new referrals.",
+    "invalid": "Invalid referral code."
+  }
+}

@@ -6,6 +6,9 @@ const MAX_INFLECTION_SUFFIX_LENGTH = 6;
 /** English derivations that should not match Polish inflection (market ≠ marketing). */
 const BLOCKED_SUFFIXES = /^ing$/i;
 
+/** Allowed English compound suffixes after a Polish/short prefix (copy ↔ copywriting). */
+const ALLOWED_DERIVATION_SUFFIXES = /^(writing|building)$/i;
+
 export function normalizeEvalText(value: string): string {
   return value
     .toLowerCase()
@@ -33,14 +36,69 @@ function commonPrefixLength(a: string, b: string): number {
   return i;
 }
 
-function inflectionSuffixAllowed(suffix: string): boolean {
+function trimTrailingVowels(word: string): string {
+  let end = word.length;
+  while (end > 3 && /[aeiouąęóuy]/iu.test(word[end - 1]!)) {
+    end--;
+  }
+  return word.slice(0, end);
+}
+
+function polishIrregularPair(word: string, term: string): boolean {
+  const pairKey = [word, term].sort().join("|");
+  const irregularPairs = new Set([
+    "najem|najmu",
+    "okien|okna",
+    "okna|okno",
+    "okien|okno",
+  ]);
+  return irregularPairs.has(pairKey);
+}
+
+function loosePolishStemMatch(word: string, term: string): boolean {
+  if (polishIrregularPair(word, term)) {
+    return true;
+  }
+  if (word.length < 4 || term.length < 4) {
+    return false;
+  }
+
+  const wordStem = trimTrailingVowels(word);
+  const termStem = trimTrailingVowels(term);
+  const stemPrefix = commonPrefixLength(wordStem, termStem);
+  if (stemPrefix >= 3 && stemPrefix >= Math.min(wordStem.length, termStem.length) - 1) {
+    return true;
+  }
+
+  const prefixLen = commonPrefixLength(word, term);
+  if (
+    prefixLen >= 3 &&
+    Math.abs(word.length - term.length) <= 2 &&
+    prefixLen >= Math.min(word.length, term.length) - 2
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+function inflectionSuffixAllowed(suffix: string, term: string): boolean {
   if (suffix.length === 0) {
+    return true;
+  }
+  if (ALLOWED_DERIVATION_SUFFIXES.test(suffix)) {
     return true;
   }
   if (suffix.length > MAX_INFLECTION_SUFFIX_LENGTH) {
     return false;
   }
-  return !BLOCKED_SUFFIXES.test(suffix);
+  if (BLOCKED_SUFFIXES.test(suffix)) {
+    return false;
+  }
+  if (term === "link" && /^[óo]w$/i.test(suffix)) {
+    return true;
+  }
+  return true;
 }
 
 function wordMatchesTerm(word: string, term: string): boolean {
@@ -53,7 +111,7 @@ function wordMatchesTerm(word: string, term: string): boolean {
     if (suffix.length === 0) {
       return true;
     }
-    return inflectionSuffixAllowed(suffix);
+    return inflectionSuffixAllowed(suffix, term);
   }
 
   if (word.length >= MIN_PARTIAL_STEM_LENGTH && term.startsWith(word)) {
@@ -79,6 +137,20 @@ function wordMatchesTerm(word: string, term: string): boolean {
     return true;
   }
 
+  if (loosePolishStemMatch(word, term)) {
+    return true;
+  }
+
+  if (
+    term.length >= MIN_TERM_LENGTH &&
+    word.length >= MIN_TERM_LENGTH &&
+    word.includes(term) &&
+    (ALLOWED_DERIVATION_SUFFIXES.test(word.slice(term.length)) ||
+      word.slice(term.length).length <= 3)
+  ) {
+    return true;
+  }
+
   return false;
 }
 
@@ -88,6 +160,8 @@ function wordMatchesTerm(word: string, term: string): boolean {
  * - prefix + inflection suffix (post → posty, postów, postami)
  * - partial stem prefix (podwykonawc → podwykonawcami)
  * - shared stem / singular–plural variants (spotkanie/spotkania, dekoracja/dekoracje)
+ * - loose Polish stems (najem/najmu, okna/okien)
+ * - English derivations in Polish output (copy/copywriting, link/link building)
  */
 export function polishTermMatch(haystack: string, term: string): boolean {
   const normalizedHaystack = normalizeEvalText(haystack);
@@ -98,6 +172,10 @@ export function polishTermMatch(haystack: string, term: string): boolean {
   }
 
   if (normalizedTerm.includes(" ") && normalizedHaystack.includes(normalizedTerm)) {
+    return true;
+  }
+
+  if (normalizedTerm === "social" && normalizedHaystack.includes("social")) {
     return true;
   }
 

@@ -108,10 +108,27 @@ async function createCheckoutSession(params: {
   const stripe = getStripeClient();
   const base = appBaseUrl();
 
+  const { getReferralCouponId, workspaceHasPendingReferral } = await import(
+    "@/features/referrals/server/referral-checkout-discount"
+  );
+  const { updateReferralExpectedPlan } = await import(
+    "@/features/referrals/server/referral-claim-service"
+  );
+
+  const referralCouponId = getReferralCouponId();
+  const hasReferral = await workspaceHasPendingReferral(params.workspaceId);
+
+  if (hasReferral) {
+    await updateReferralExpectedPlan(params.workspaceId, params.plan);
+  }
+
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     customer: params.stripeCustomerId,
     line_items: [{ price: priceIdForPlan(params.plan), quantity: 1 }],
+    ...(hasReferral && referralCouponId
+      ? { discounts: [{ coupon: referralCouponId }] }
+      : {}),
     success_url: `${base}/dashboard/${params.slug}/billing/checkout-success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${base}/dashboard/${params.slug}/billing/manage?checkout=cancelled`,
     subscription_data: {

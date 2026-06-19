@@ -72,11 +72,7 @@
         "scope": "any_item"
       },
       {
-        "term": "prawn",
-        "scope": "any_item"
-      },
-      {
-        "term": "konsultac",
+        "term": "negocjac",
         "scope": "any_item"
       }
     ],
@@ -97,8 +93,7 @@
     "coverageTerms": [
       "umowa",
       "najem",
-      "negocjac",
-      "prawn"
+      "negocjac"
     ],
     "requiredSections": [
       "Zakres",

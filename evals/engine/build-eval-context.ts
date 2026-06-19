@@ -10,6 +10,21 @@ import type { EstimateGenerationContext } from "@/features/workspaces/lib/load-e
 import type { WorkspaceEstimateSection } from "@/features/workspaces/schemas/estimate-sections";
 import type { EvalLocale, EvalScenario } from "@evals/engine/schemas/scenario";
 
+function resolveEvalWorkspaceIndustry(
+  industry: EvalScenario["workspace"]["industry"],
+): WorkspaceIndustry {
+  if (industry === "CONSTRUCTION") {
+    return WorkspaceIndustry.CONSTRUCTION;
+  }
+  if (industry === "CARPENTRY") {
+    return WorkspaceIndustry.CARPENTRY;
+  }
+  if (industry === "ELECTRICAL") {
+    return WorkspaceIndustry.ELECTRICAL;
+  }
+  return WorkspaceIndustry.OTHER;
+}
+
 export type EvalContextSnapshot = {
   locale: EvalLocale;
   industry: WorkspaceIndustry;
@@ -25,6 +40,7 @@ export function buildEvalGenerationContext(
   scenario: EvalScenario,
 ): EstimateGenerationContext {
   const locale = scenario.locale;
+  const industry = resolveEvalWorkspaceIndustry(scenario.workspace.industry);
   const systemRules = scenario.workspace.systemRules ?? {};
   const systemRulePrompts =
     locale === "pl" ? ESTIMATE_SYSTEM_RULE_PROMPT_PL : ESTIMATE_SYSTEM_RULE_PROMPT;
@@ -51,7 +67,7 @@ export function buildEvalGenerationContext(
     : null;
 
   const resolvedSections = resolveEstimateSectionsForPrompt(
-    WorkspaceIndustry.OTHER,
+    industry,
     persistedSections,
     locale,
   );
@@ -63,8 +79,8 @@ export function buildEvalGenerationContext(
   }));
 
   return {
-    industry: WorkspaceIndustry.OTHER,
-    industryOtherText: scenario.workspace.industryOtherText,
+    industry,
+    industryOtherText: scenario.workspace.industryOtherText?.trim() || null,
     locale,
     companyDescription: scenario.workspace.companyDescription || null,
     aiInstructions: scenario.workspace.aiInstructions ?? null,

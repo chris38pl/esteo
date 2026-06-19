@@ -1,0 +1,35 @@
+{
+  "id": "electrical-apartment-sockets",
+  "name": "Electrical — apartment socket points",
+  "locale": "pl",
+  "category": "business",
+  "quick": true,
+  "critical": false,
+  "profileVersion": "ELECTRICAL_V1",
+  "workspace": {
+    "industry": "ELECTRICAL",
+    "industryOtherText": "Instalacje w mieszkaniach",
+    "companyDescription": "Instalacje elektryczne w mieszkaniach i domach. Pomiary i dokumentacja odbioru.",
+    "rules": [],
+    "systemRules": { "rounding": true, "units": true }
+  },
+  "request": {
+    "project": {
+      "description": "Doprowadzenie 8 nowych gniazd w salonie i sypialni, 4 punkty oświetleniowe LED w suficie podwieszanym. Mieszkanie w bloku, Warszawa.",
+      "preferredStartDate": "1_3_months"
+    },
+    "industryFields": {
+      "building_type": "apartment"
+    },
+    "address": { "city": "Warszawa" }
+  },
+  "expectations": {
+    "mustHave": [
+      { "term": "gniazd", "scope": "any_item" },
+      { "term": "oświetl", "scope": "any_item" }
+    ],
+    "coverageTerms": ["przewod", "puszk"],
+    "leakageDomain": "services",
+    "minLineItems": 6
+  }
+}

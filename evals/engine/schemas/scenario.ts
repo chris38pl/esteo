@@ -35,9 +35,16 @@ export const systemRulesFixtureSchema = z.object({
   assumptions: z.boolean().optional(),
 });
 
+export const evalWorkspaceIndustrySchema = z.enum([
+  "OTHER",
+  "CONSTRUCTION",
+  "CARPENTRY",
+  "ELECTRICAL",
+]);
+
 export const workspaceFixtureSchema = z.object({
-  industry: z.literal("OTHER"),
-  industryOtherText: z.string().min(1),
+  industry: evalWorkspaceIndustrySchema.default("OTHER"),
+  industryOtherText: z.string().default(""),
   companyDescription: z.string().default(""),
   aiInstructions: z.string().optional(),
   estimateSections: z.array(workspaceEstimateSectionFixtureSchema).optional(),
@@ -57,9 +64,13 @@ export const requestFixtureSchema = z.object({
     description: z.string().min(1),
     preferredStartDate: z.string().optional(),
   }),
+  industryFields: z
+    .record(z.union([z.string(), z.array(z.string())]))
+    .optional(),
   address: z
     .object({
       serviceLocation: z.string().optional(),
+      city: z.string().optional(),
     })
     .optional(),
 });
@@ -100,6 +111,7 @@ export const evalScenarioSchema = z.object({
   category: scenarioCategorySchema.default("business"),
   quick: z.boolean().default(false),
   critical: z.boolean().default(false),
+  profileVersion: z.string().optional(),
   workspace: workspaceFixtureSchema,
   request: requestFixtureSchema,
   voiceIntake: voiceIntakeFixtureSchema.nullable().optional(),

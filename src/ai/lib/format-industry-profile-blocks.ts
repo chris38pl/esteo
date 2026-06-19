@@ -39,6 +39,14 @@ export function formatQuantityDerivationRulesBlock(
   return `## Quantity Derivation Rules\n${bulletList(rules)}`;
 }
 
+export function formatComplexityDerivationRulesBlock(rules: string[]): string {
+  if (rules.length === 0) {
+    return "";
+  }
+
+  return `## Project Complexity (internal)\n${bulletList(rules)}`;
+}
+
 export function formatIndustryProfileBlocks(profile: ResolvedIndustryAiProfile): string {
   return [
     formatIndustryRoleBlock(profile.role),
@@ -81,6 +89,8 @@ export function formatServiceEstimateCompletenessBlock(locale: "pl" | "en"): str
       "The estimate should be reasonably complete for the described project.",
       "Include all work reasonably required for the project scope and standard practice for this service type.",
       "Infer standard work an experienced estimator would include; the customer does not need to list every task.",
+      "When the brief states document volume (e.g. monthly invoice count), reflect it in bookkeeping line items or service scale.",
+      "When the brief concerns catering or menu requirements (e.g. vegetarian menu share), include menu preparation as a priced line item or explicit scope element.",
       "Prefer several justified line items over one broad summary row.",
       "Do not invent work outside the industry or project scope.",
       "Do not create artificial line items only to increase row count.",
@@ -92,6 +102,8 @@ export function formatServiceEstimateCompletenessBlock(locale: "pl" | "en"): str
     "Kosztorys powinien być rozsądnie kompletny względem opisanego projektu.",
     "Uwzględnij wszystkie prace uzasadnione zakresem i standardem branżowym dla tego typu usług.",
     "Wnioskuj typowe prace, które kosztorysant uwzględniłby z doświadczenia — klient nie musi wymieniać każdego zadania.",
+    "Gdy brief podaje wolumen dokumentów (np. liczba faktur miesięcznie), odzwierciedl to w pozycjach księgowych lub skali usługi.",
+    "Gdy brief dotyczy cateringu lub wymagań menu (np. udział menu wegetariańskiego), uwzględnij przygotowanie menu jako wycenioną pozycję lub element zakresu.",
     "Preferuj kilka uzasadnionych pozycji nad jednym ogólnym opisem.",
     "Nie wymyślaj prac spoza branży lub zakresu projektu.",
     "Nie twórz sztucznych pozycji wyłącznie po to, aby zwiększyć liczbę wierszy.",

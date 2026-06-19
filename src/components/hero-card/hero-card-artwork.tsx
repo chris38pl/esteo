@@ -4,30 +4,45 @@ import { useCallback, useLayoutEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
+type HeroArtworkAlign = "left" | "right";
+
 /**
- * Responsive hero artwork: main image on the right, mirrored on the left when there is gap.
- * Same behavior as estimates list hero cards.
+ * Responsive hero artwork with optional horizontal mirror to fill viewport gap.
+ * - `right` (default): main image on the right, mirrored on the left (estimates list cards).
+ * - `left`: main image on the left, mirrored on the right (public estimate-request page).
  */
 function HeroCardArtworkLayer({
   src,
   modeClassName,
   mainImageClassName,
+  align = "right",
 }: {
   src: string;
   modeClassName: string;
   mainImageClassName?: string;
+  align?: HeroArtworkAlign;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLImageElement>(null);
   const [gapWidth, setGapWidth] = useState(0);
+  const [mainWidth, setMainWidth] = useState(0);
 
   const measureGap = useCallback(() => {
     const main = mainRef.current;
-    if (!main) {
+    const container = containerRef.current;
+    if (!main || !container) {
       return;
     }
+
+    if (align === "left") {
+      const width = Math.round(main.offsetWidth);
+      setMainWidth(width);
+      setGapWidth(Math.max(0, Math.round(container.clientWidth - width)));
+      return;
+    }
+
     setGapWidth(Math.max(0, Math.round(main.offsetLeft)));
-  }, []);
+  }, [align]);
 
   useLayoutEffect(() => {
     measureGap();
@@ -61,7 +76,7 @@ function HeroCardArtworkLayer({
         modeClassName,
       )}
     >
-      {gapWidth > 0 ? (
+      {gapWidth > 0 && align === "right" ? (
         <div
           className="absolute inset-y-0 left-0 overflow-hidden"
           style={{ width: gapWidth }}
@@ -76,6 +91,23 @@ function HeroCardArtworkLayer({
           />
         </div>
       ) : null}
+      {gapWidth > 0 && align === "left" ? (
+        <div
+          className="absolute inset-y-0 overflow-hidden"
+          style={{ left: mainWidth, width: gapWidth }}
+        >
+          <img
+            src={src}
+            alt=""
+            aria-hidden
+            draggable={false}
+            className={cn(
+              artworkImageClassName,
+              "absolute top-0 right-full origin-right -scale-x-100",
+            )}
+          />
+        </div>
+      ) : null}
       <img
         ref={mainRef}
         src={src}
@@ -84,7 +116,8 @@ function HeroCardArtworkLayer({
         onLoad={measureGap}
         className={cn(
           artworkImageClassName,
-          "hero-card-artwork-main absolute top-0 right-0",
+          "hero-card-artwork-main absolute top-0",
+          align === "left" ? "left-0" : "right-0",
           mainImageClassName,
         )}
       />
@@ -96,10 +129,12 @@ export function HeroCardArtwork({
   lightSrc,
   darkSrc,
   mainImageClassName,
+  align = "right",
 }: {
   lightSrc: string;
   darkSrc: string;
   mainImageClassName?: string;
+  align?: HeroArtworkAlign;
 }) {
   return (
     <>
@@ -107,11 +142,13 @@ export function HeroCardArtwork({
         src={lightSrc}
         modeClassName="dark:hidden"
         mainImageClassName={mainImageClassName}
+        align={align}
       />
       <HeroCardArtworkLayer
         src={darkSrc}
         modeClassName="hidden dark:block"
         mainImageClassName={mainImageClassName}
+        align={align}
       />
     </>
   );

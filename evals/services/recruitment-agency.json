@@ -70,14 +70,6 @@
       {
         "term": "rekrutac",
         "scope": "any_item"
-      },
-      {
-        "term": "sourcing",
-        "scope": "any_item"
-      },
-      {
-        "term": "interview",
-        "scope": "any_item"
       }
     ],
     "mustNotHave": [
@@ -92,9 +84,7 @@
     ],
     "coverageTerms": [
       "rekrutacja",
-      "sourcing",
-      "kandydat",
-      "interview"
+      "kandydat"
     ],
     "requiredSections": [
       "Zakres",

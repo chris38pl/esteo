@@ -35,6 +35,10 @@ export function dashboardWorkspaceUsageHref(locale: Locale, workspaceSlug: strin
   return `/${locale}/dashboard/${workspaceSlug}/workspace-usage`;
 }
 
+export function dashboardReferralsHref(locale: Locale, workspaceSlug: string) {
+  return `/${locale}/dashboard/${workspaceSlug}/referrals`;
+}
+
 /** Alias route — redirects to `/billing/manage`. Use for upgrade CTAs. */
 export function dashboardUpgradeHref(
   locale: Locale,

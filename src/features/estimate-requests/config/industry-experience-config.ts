@@ -5,6 +5,21 @@ import type { Locale } from "@/lib/locale";
 
 export type IndustryExperienceSegment = "construction" | "services";
 
+export type CarpentryBudgetTier =
+  | "economy"
+  | "standard"
+  | "premium"
+  | "luxury";
+
+export const CARPENTRY_BUDGET_TIERS: CarpentryBudgetTier[] = [
+  "economy",
+  "standard",
+  "premium",
+  "luxury",
+];
+
+export const DEFAULT_CARPENTRY_BUDGET_TIER: CarpentryBudgetTier = "standard";
+
 export type DocumentTerminology = {
   documentSingular: string;
   documentPlural: string;
@@ -195,6 +210,45 @@ const SERVICES_CONFIG: IndustryExperienceConfig = {
   },
 };
 
+const CARPENTRY_CONFIG: IndustryExperienceConfig = {
+  ...CONSTRUCTION_CONFIG,
+  voice: {
+    missingFieldKeys: [
+      "city",
+      "preferredStartDate",
+      "scopeOfWork",
+      "contact",
+    ],
+    ignoredExtractionKeys: ["propertyType", "area", "budgetTier"],
+    checklistLabelKeys: [
+      "productCategories",
+      "projectType",
+      "scope",
+      "timeline",
+      "contact",
+    ],
+  },
+};
+
+const ELECTRICAL_CONFIG: IndustryExperienceConfig = {
+  ...CONSTRUCTION_CONFIG,
+  voice: {
+    missingFieldKeys: [
+      "city",
+      "preferredStartDate",
+      "scopeOfWork",
+      "contact",
+    ],
+    ignoredExtractionKeys: ["propertyType", "area"],
+    checklistLabelKeys: [
+      "buildingType",
+      "scope",
+      "timeline",
+      "contact",
+    ],
+  },
+};
+
 export function getIndustryExperienceSegment(
   industry: WorkspaceIndustry,
 ): IndustryExperienceSegment {
@@ -204,7 +258,16 @@ export function getIndustryExperienceSegment(
 export function getIndustryExperienceConfig(
   industry: WorkspaceIndustry,
 ): IndustryExperienceConfig {
-  return isServiceWorkspace(industry) ? SERVICES_CONFIG : CONSTRUCTION_CONFIG;
+  if (isServiceWorkspace(industry)) {
+    return SERVICES_CONFIG;
+  }
+  if (industry === WorkspaceIndustry.CARPENTRY) {
+    return CARPENTRY_CONFIG;
+  }
+  if (industry === WorkspaceIndustry.ELECTRICAL) {
+    return ELECTRICAL_CONFIG;
+  }
+  return CONSTRUCTION_CONFIG;
 }
 
 export function getDocumentTerminology(

@@ -2,6 +2,12 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 import type { EstimateDraftOutput } from "@/ai/schemas/estimate-draft-output";
+import {
+  getProtectedFixtureTerm,
+  isProtectedFixtureTerm,
+  listProtectedByReason,
+  type ProtectedReason,
+} from "@evals/engine/config/protected-fixture-terms";
 import { loadServicesScenarios } from "@evals/engine/load-scenarios";
 import { normalizeEvalText, polishTermMatch } from "@evals/engine/lib/text-utils";
 import { buildEstimateCoverageCorpus } from "@evals/engine/scorers/coverage-scorer";
@@ -195,6 +201,9 @@ function classifyScenarioIssues(input: {
   const brief = input.fixture?.request.project.description ?? "";
 
   for (const term of input.missedCoverage) {
+    if (isProtectedFixtureTerm(input.result.id, term)) {
+      continue;
+    }
     if (!termInBrief(brief, term)) {
       classes.add("fixture_unrealistic");
     } else if (termAppearsAsSubstringInCorpus(input.corpus, term) && !polishTermMatch(input.corpus, term)) {
@@ -205,6 +214,9 @@ function classifyScenarioIssues(input: {
   }
 
   for (const term of input.failedMustHave) {
+    if (isProtectedFixtureTerm(input.result.id, term)) {
+      continue;
+    }
     if (!termInBrief(brief, term)) {
       classes.add("fixture_unrealistic");
     } else if (termAppearsAsSubstringInCorpus(input.corpus, term) && !polishTermMatch(input.corpus, term)) {
@@ -239,6 +251,177 @@ function classifyScenarioIssues(input: {
     return [...classes][0]!;
   }
   return "mixed";
+}
+
+function formatProtectedTermsSection(): string[] {
+  const lines: string[] = ["## Protected terms", ""];
+  const reasonLabels: Record<ProtectedReason, string> = {
+    matcher_deficiency: "Matcher deficiencies",
+    prompt_gap: "Prompt gaps",
+    intentional_strict_test: "Intentional strict tests",
+  };
+
+  for (const reason of Object.keys(reasonLabels) as ProtectedReason[]) {
+    const items = listProtectedByReason(reason);
+    lines.push(`### ${reasonLabels[reason]}`);
+    if (items.length === 0) {
+      lines.push("_(empty)_", "");
+      continue;
+    }
+    for (const item of items) {
+      const note = item.note ? ` — ${item.note}` : "";
+      lines.push(`- ${item.scenarioId} / ${item.term}${note}`);
+    }
+    lines.push("");
+  }
+
+  return lines;
+}
+
+export type MatcherDeficiencyEntry = {
+  scenarioId: string;
+  term: string;
+  source: "coverage" | "mustHave";
+  protected: boolean;
+  closestWord: string | null;
+};
+
+export function collectMatcherDeficiencies(input: {
+  scenarios: EvalScenario[];
+  resultsDir: string;
+  summary: RunSummary;
+}): MatcherDeficiencyEntry[] {
+  const scenarioById = new Map(input.scenarios.map((s) => [s.id, s]));
+  const entries: MatcherDeficiencyEntry[] = [];
+  const seen = new Set<string>();
+
+  for (const result of Object.values(input.summary.scenarios)) {
+    const fixture = scenarioById.get(result.id);
+    const brief = fixture?.request.project.description ?? "";
+    const output = loadGeneratedEstimate(input.resultsDir, result.id);
+    const corpus = output ? buildEstimateCoverageCorpus(output) : "";
+    const ruleScore = loadRuleScore(input.resultsDir, result.id);
+
+    const missedCoverage =
+      result.coverageTotal > 0 && result.coverageMatched < result.coverageTotal
+        ? (JSON.parse(
+            existsSync(join(input.resultsDir, result.id, "coverage-score.json"))
+              ? readFileSync(join(input.resultsDir, result.id, "coverage-score.json"), "utf8")
+              : '{"missedTerms":[]}',
+          ) as { missedTerms: string[] }).missedTerms
+        : [];
+
+    const failedMustHave =
+      ruleScore?.checks
+        .filter((c) => c.id.startsWith("mustHave:") && !c.passed)
+        .map((c) => c.id.slice("mustHave:".length)) ?? [];
+
+    const terms: Array<{ term: string; source: "coverage" | "mustHave" }> = [
+      ...fixture?.expectations.coverageTerms.map((term) => ({
+        term,
+        source: "coverage" as const,
+      })) ?? [],
+      ...fixture?.expectations.mustHave.map((rule) => ({
+        term: rule.term,
+        source: "mustHave" as const,
+      })) ?? [],
+    ];
+
+    const seenLocal = new Set<string>();
+    for (const { term, source } of terms) {
+      const key = `${result.id}:${term}`;
+      if (seen.has(key) || seenLocal.has(key)) {
+        continue;
+      }
+      seenLocal.add(key);
+
+      if (!termInBrief(brief, term)) {
+        continue;
+      }
+      if (polishTermMatch(corpus, term)) {
+        continue;
+      }
+
+      seen.add(key);
+      const explain = explainTermMismatch(corpus, term);
+      entries.push({
+        scenarioId: result.id,
+        term,
+        source,
+        protected: isProtectedFixtureTerm(result.id, term),
+        closestWord: explain.closestWord,
+      });
+    }
+
+    for (const term of [...missedCoverage, ...failedMustHave]) {
+      const key = `${result.id}:${term}`;
+      if (seen.has(key)) {
+        continue;
+      }
+      if (!termInBrief(brief, term) || polishTermMatch(corpus, term)) {
+        continue;
+      }
+      seen.add(key);
+      const explain = explainTermMismatch(corpus, term);
+      entries.push({
+        scenarioId: result.id,
+        term,
+        source: missedCoverage.includes(term) ? "coverage" : "mustHave",
+        protected: isProtectedFixtureTerm(result.id, term),
+        closestWord: explain.closestWord,
+      });
+    }
+  }
+
+  return entries;
+}
+
+export function writeMatcherDeficiencyReport(
+  resultsDir: string,
+  summary: RunSummary,
+  scenarios: EvalScenario[],
+): { path: string } {
+  const entries = collectMatcherDeficiencies({ scenarios, resultsDir, summary });
+  const lines: string[] = [
+    "# Matcher deficiency report",
+    "",
+    "Coverage terms present in brief but missed by evaluator.",
+    "",
+    `Run: \`${summary.runId}\` | Prompt: v${summary.promptVersion}`,
+    "",
+  ];
+
+  const toFix = entries.filter((entry) => !entry.protected);
+  const known = entries.filter((entry) => entry.protected);
+
+  lines.push("## To fix (matcher)", "");
+  if (toFix.length === 0) {
+    lines.push("_No open matcher deficiencies._", "");
+  } else {
+    for (const entry of toFix) {
+      lines.push(
+        `- **${entry.scenarioId}** / \`${entry.term}\` (${entry.source}) — closest: ${entry.closestWord ?? "—"}`,
+      );
+    }
+    lines.push("");
+  }
+
+  lines.push("## Known protected (tracked)", "");
+  if (known.length === 0) {
+    lines.push("_None._", "");
+  } else {
+    for (const entry of known) {
+      const protectedEntry = getProtectedFixtureTerm(entry.scenarioId, entry.term);
+      lines.push(
+        `- **${entry.scenarioId}** / \`${entry.term}\` — ${protectedEntry?.reason ?? "protected"}`,
+      );
+    }
+    lines.push("");
+  }
+
+  const outPath = join(resultsDir, "matcher-deficiency.md");
+  writeFileSync(outPath, lines.join("\n"), "utf8");
+  return { path: outPath };
 }
 
 function formatScenarioRow(
@@ -329,9 +512,11 @@ export function writeEvaluatorFalsePositivesReport(
           "",
         );
       } else if (!termInBrief(fixture?.request.project.description ?? "", term)) {
-        fixtureUnrealistic.push(
-          `- **${result.id}** — \`${term}\` (not in brief)`,
-        );
+        if (!isProtectedFixtureTerm(result.id, term)) {
+          fixtureUnrealistic.push(
+            `- **${result.id}** — \`${term}\` (not in brief)`,
+          );
+        }
       } else if (
         explain.kind === "not_in_corpus" &&
         (missedCoverage.includes(term) || failedMustHave.includes(term))
@@ -391,7 +576,9 @@ export function writeEvaluatorFalsePositivesReport(
     lines.push(...extendedFilter);
   }
 
-  lines.push("", "## Matcher gaps (term in corpus, polishTermMatch=false)", "");
+  lines.push("", ...formatProtectedTermsSection());
+
+  lines.push("## Matcher gaps (term in corpus, polishTermMatch=false)", "");
   if (matcherGaps.length === 0) {
     lines.push("_No matcher gaps detected._", "");
   } else {
@@ -422,15 +609,15 @@ export function writeEvaluatorFalsePositivesReport(
   lines.push(
     "## Recommended fix order",
     "",
-    "1. Re-run eval after matcher v2 (done) — use this report on fresh run",
-    "2. mustNot scope — exclude Zakres/Uwagi `unitPrice=0` exclusion lines",
-    "3. Fixture cleanup — remove coverageTerms not grounded in brief",
-    "4. Prompt gaps — only after eval noise removed (e.g. accounting `faktur`)",
+    "1. Matcher v3 — najem/okna/copy and related stems",
+    "2. Fixture cleanup v2 — remove terms not grounded in brief",
+    "3. Prompt gaps — only after eval noise removed (e.g. accounting `faktur`)",
     "",
   );
 
   const outPath = join(resultsDir, "evaluator-false-positives.md");
   writeFileSync(outPath, lines.join("\n"), "utf8");
+  writeMatcherDeficiencyReport(resultsDir, summary, scenarios);
   return { path: outPath };
 }
 

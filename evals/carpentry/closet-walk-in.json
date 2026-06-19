@@ -1,0 +1,36 @@
+{
+  "id": "carpentry-closet-walk-in",
+  "name": "Carpentry — walk-in closet",
+  "locale": "pl",
+  "category": "business",
+  "quick": false,
+  "critical": false,
+  "profileVersion": "CARPENTRY_V1",
+  "workspace": {
+    "industry": "CARPENTRY",
+    "industryOtherText": "Garderoby",
+    "companyDescription": "Garderoby i zabudowy wnęk. Organizery i oświetlenie LED.",
+    "rules": [],
+    "systemRules": { "rounding": true, "units": true }
+  },
+  "request": {
+    "project": {
+      "description": "Garderoba walk-in 6 m², zabudowa L-kształtna, szuflady, drążki, półki, oświetlenie LED w szufladach. Gdańsk.",
+      "preferredStartDate": "flexible"
+    },
+    "industryFields": {
+      "product_categories": ["closet"],
+      "project_types": ["new_build"]
+    },
+    "address": { "city": "Gdańsk" }
+  },
+  "expectations": {
+    "mustHave": [
+      { "term": "garderob", "scope": "any_item" },
+      { "term": "montaż", "scope": "any_item" }
+    ],
+    "coverageTerms": ["szuflad", "półk"],
+    "leakageDomain": "services",
+    "minLineItems": 6
+  }
+}

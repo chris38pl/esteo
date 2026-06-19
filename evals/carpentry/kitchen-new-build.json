@@ -1,0 +1,42 @@
+{
+  "id": "carpentry-kitchen-new-build",
+  "name": "Carpentry — new kitchen",
+  "locale": "pl",
+  "category": "business",
+  "quick": true,
+  "critical": false,
+  "profileVersion": "CARPENTRY_V1",
+  "workspace": {
+    "industry": "CARPENTRY",
+    "industryOtherText": "Kuchnie na wymiar",
+    "companyDescription": "Produkcja kuchni premium. Okucia Blum, fronty lakierowane.",
+    "rules": [],
+    "systemRules": { "rounding": true, "units": true }
+  },
+  "request": {
+    "project": {
+      "description": "Nowa kuchnia na wymiar ok. 4,5 mb zabudowy, wyspa 1,2 mb, zabudowa pod piekarnik i lodówkę. Fronty lakierowane mat, blat spiek kwarcowy. Warszawa, Mokotów.",
+      "preferredStartDate": "3_6_months"
+    },
+    "industryFields": {
+      "product_categories": ["kitchen"],
+      "project_types": ["new_build"]
+    },
+    "address": { "city": "Warszawa" }
+  },
+  "expectations": {
+    "mustHave": [
+      { "term": "korpus", "scope": "any_item" },
+      { "term": "front", "scope": "any_item" },
+      { "term": "montaż", "scope": "any_item" }
+    ],
+    "coverageTerms": ["kuchn", "blat", "okuci"],
+    "requiredSections": ["Materiały", "Montaż", "Produkcja"],
+    "leakageDomain": "services",
+    "minLineItems": 8,
+    "judge": {
+      "focus": ["kitchen new build scope", "materials vs labor split"],
+      "minScore": 7
+    }
+  }
+}

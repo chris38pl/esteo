@@ -1,0 +1,35 @@
+{
+  "id": "electrical-commercial-lighting",
+  "name": "Electrical — commercial lighting",
+  "locale": "pl",
+  "category": "business",
+  "quick": false,
+  "critical": false,
+  "profileVersion": "ELECTRICAL_V1",
+  "workspace": {
+    "industry": "ELECTRICAL",
+    "industryOtherText": "Lokale komercyjne",
+    "companyDescription": "Instalacje w lokalach usługowych i handlowych. Oświetlenie ekspozycyjne, trasy sufitowe.",
+    "rules": [],
+    "systemRules": { "rounding": true, "units": true }
+  },
+  "request": {
+    "project": {
+      "description": "Oświetlenie sklepu odzieżowego 120 m² — szynoprzewody, oprawy LED, sterowanie DALI, trasy w suficie podwieszanym. Poznań.",
+      "preferredStartDate": "3_6_months"
+    },
+    "industryFields": {
+      "building_type": "commercial"
+    },
+    "address": { "city": "Poznań" }
+  },
+  "expectations": {
+    "mustHave": [
+      { "term": "oświetl", "scope": "any_item" },
+      { "term": "LED", "scope": "any_item" }
+    ],
+    "coverageTerms": ["szyn", "montaż"],
+    "leakageDomain": "services",
+    "minLineItems": 6
+  }
+}

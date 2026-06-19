@@ -20,11 +20,13 @@ import { computeOverallScore, determinePassed } from "@evals/engine/composite-sc
 import { writeComparisonReport } from "@evals/engine/comparison-report";
 import { writeCoverageRootCauseReport } from "@evals/engine/coverage-analysis";
 import { writeEvaluatorFalsePositivesReport } from "@evals/engine/evaluator-audit";
+import { writeJudgeFailureReport } from "@evals/engine/judge-analysis";
 import { estimateCostUsd } from "@evals/engine/cost/cost-tracker";
 import { hashPrompt, measurePromptComplexity } from "@evals/engine/cost/prompt-complexity";
 import { generateEstimateForEval } from "@evals/engine/generate-for-eval";
 import { runLlmJudge } from "@evals/engine/judge/llm-judge";
-import { filterScenarios, loadServicesScenarios } from "@evals/engine/load-scenarios";
+import { filterScenarios, loadEvalScenarios, loadServicesScenarios } from "@evals/engine/load-scenarios";
+import { getIndustryProfileVersion } from "@/ai/config/industry-ai-profiles";
 import {
   buildRunSummary,
   printCompareReport,
@@ -42,6 +44,9 @@ import type { EvalMode, ScenarioResult, StabilityResult } from "@evals/engine/ty
 export type RunEngineOptions = {
   repoRoot: string;
   evalMode: EvalMode;
+  fixtureSuite?: string;
+  quickManifest?: string;
+  stabilityManifest?: string;
   mode?: "quick" | "all";
   id?: string;
   category?: string;
@@ -87,8 +92,13 @@ async function runScenarioOnce(
   });
 
   const complexity = measurePromptComplexity(generation.prompt);
+  const expectedProfileVersion =
+    scenario.profileVersion ?? getIndustryProfileVersion(context.industry);
+  const profileVersionInPrompt = generation.prompt.includes(expectedProfileVersion);
   const promptMeta = {
     promptVersion: ESTIMATE_PROMPT_VERSION,
+    profileVersion: expectedProfileVersion,
+    profileVersionInPrompt,
     promptHash: hashPrompt(generation.prompt),
     ...complexity,
   };
@@ -161,6 +171,11 @@ async function runScenarioOnce(
     maxLineItems: scenario.expectations.maxLineItems,
   });
 
+  if (!profileVersionInPrompt) {
+    failReasons.push(`profileVersion missing from prompt: ${expectedProfileVersion}`);
+  }
+  const passedWithProfile = passed && profileVersionInPrompt;
+
   const genCost = estimateCostUsd(
     generation.model,
     generation.usage.promptTokens,
@@ -199,7 +214,7 @@ async function runScenarioOnce(
     length: lengthMetrics,
     cost,
     promptMeta,
-    passed,
+    passed: passedWithProfile,
     failReasons,
     generatedEstimate: generation.object,
   };
@@ -222,7 +237,7 @@ async function runScenarioOnce(
     finalScore: {
       fastScore,
       overallScore,
-      passed,
+      passed: passedWithProfile,
       failReasons,
     },
   };
@@ -287,21 +302,37 @@ export async function runEvalEngine(options: RunEngineOptions): Promise<number> 
   const startedAt = new Date();
   const runId = formatRunId(startedAt);
 
-  const quickManifest = JSON.parse(
-    readFileSync(
-      join(options.repoRoot, "evals", "manifests", "services-quick-mode.json"),
-      "utf8",
-    ),
-  ) as { scenarioIds: string[] };
+  const fixtureSuite = options.fixtureSuite ?? "services";
+  const quickManifestPath =
+    options.quickManifest ??
+    join(options.repoRoot, "evals", "manifests", `${fixtureSuite}-quick-mode.json`);
+  const stabilityManifestPath =
+    options.stabilityManifest ??
+    join(options.repoRoot, "evals", "manifests", `${fixtureSuite}-stability.json`);
 
-  const stabilityManifest = JSON.parse(
-    readFileSync(
-      join(options.repoRoot, "evals", "manifests", "services-stability.json"),
-      "utf8",
-    ),
-  ) as { scenarioIds: string[] };
+  let quickManifest: { scenarioIds: string[] } = { scenarioIds: [] };
+  let stabilityManifest: { scenarioIds: string[] } = { scenarioIds: [] };
 
-  let scenarios = loadServicesScenarios(options.repoRoot);
+  try {
+    quickManifest = JSON.parse(readFileSync(quickManifestPath, "utf8")) as {
+      scenarioIds: string[];
+    };
+  } catch {
+    // optional manifest
+  }
+
+  try {
+    stabilityManifest = JSON.parse(readFileSync(stabilityManifestPath, "utf8")) as {
+      scenarioIds: string[];
+    };
+  } catch {
+    // optional manifest
+  }
+
+  let scenarios =
+    fixtureSuite === "services"
+      ? loadServicesScenarios(options.repoRoot)
+      : loadEvalScenarios(options.repoRoot, fixtureSuite);
 
   if (options.stability) {
     const set = new Set(stabilityManifest.scenarioIds);
@@ -395,8 +426,11 @@ export async function runEvalEngine(options: RunEngineOptions): Promise<number> 
       summary,
       scenarios,
     );
+    const judgeReport = writeJudgeFailureReport(resultsDir, summary);
     console.log(`Coverage analysis: evals/results/${runId}/coverage-root-cause.md (${coverageReport.analyzed} scenarios)`);
     console.log(`Evaluator audit: evals/results/${runId}/evaluator-false-positives.md`);
+    console.log(`Matcher deficiency: evals/results/${runId}/matcher-deficiency.md`);
+    console.log(`Judge failure analysis: evals/results/${runId}/judge-failure-analysis.md (${judgeReport.count} scenarios)`);
   }
 
   printEvalReport(summary);

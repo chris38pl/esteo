@@ -8,6 +8,7 @@ import type {
 import { revalidatePath } from "next/cache";
 
 import { changeWorkspaceSubscriptionPlan } from "@/features/billing/server/billing-service";
+import { processReferralCookieForWorkspace } from "@/features/referrals/server/referral-actions";
 import { createWorkspace } from "@/features/workspaces/server/service";
 import type { Locale } from "@/lib/locale";
 import { requireAuth } from "@/server/auth/require-auth";
@@ -103,8 +104,13 @@ async function createWorkspaceAndActivate(
       locale,
     });
 
-    // Paid plans are provisioned INCOMPLETE; send the owner to Stripe checkout. The webhook
-    // (checkout.session.completed) activates the workspace + subscription.
+    await processReferralCookieForWorkspace({
+      workspaceId: workspace.id,
+      ownerUserId: user.id,
+      expectedPlan: plan !== "FREE" ? plan : null,
+    });
+
+    // Paid plans are provisioned INCOMPLETE; send the owner to Stripe checkout.
     let checkoutUrl: string | null = null;
     if (plan !== "FREE") {
       const result = await changeWorkspaceSubscriptionPlan({

@@ -1,0 +1,35 @@
+{
+  "id": "electrical-developer-flat",
+  "name": "Electrical — developer flat completion",
+  "locale": "pl",
+  "category": "business",
+  "quick": false,
+  "critical": false,
+  "profileVersion": "ELECTRICAL_V1",
+  "workspace": {
+    "industry": "ELECTRICAL",
+    "industryOtherText": "Mieszkania deweloperskie",
+    "companyDescription": "Domykanie instalacji w mieszkaniach od dewelopera. Gniazda, oświetlenie, pomiary.",
+    "rules": [],
+    "systemRules": { "rounding": true, "units": true }
+  },
+  "request": {
+    "project": {
+      "description": "Mieszkanie deweloperskie 62 m² — domknięcie instalacji: gniazda w kuchni i łazience IP44, punkty oświetleniowe, brakujące obwody. Gdańsk.",
+      "preferredStartDate": "asap"
+    },
+    "industryFields": {
+      "building_type": "apartment"
+    },
+    "address": { "city": "Gdańsk" }
+  },
+  "expectations": {
+    "mustHave": [
+      { "term": "gniazd", "scope": "any_item" },
+      { "term": "oświetl", "scope": "any_item" }
+    ],
+    "coverageTerms": ["łazien", "kuchn"],
+    "leakageDomain": "services",
+    "minLineItems": 6
+  }
+}

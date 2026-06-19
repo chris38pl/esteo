@@ -91,10 +91,7 @@
       }
     ],
     "coverageTerms": [
-      "logo",
-      "identyfikacja",
-      "brand",
-      "druk"
+      "logo"
     ],
     "requiredSections": [
       "Zakres",

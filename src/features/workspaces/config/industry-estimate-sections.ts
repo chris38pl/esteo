@@ -151,43 +151,51 @@ export const INDUSTRY_ESTIMATE_SECTION_TEMPLATES: Record<
   ],
   [WorkspaceIndustry.CARPENTRY]: [
     {
-      key: "measurement",
-      title: { pl: "Pomiar i zabudowa", en: "Measurement and framing" },
+      key: "design",
+      title: { pl: "Projekt i pomiary", en: "Design and surveying" },
       defaultRule: {
-        pl: "Uwzględnij pomiar, konstrukcje drewniane i przygotowanie pod stolarkę.",
-        en: "Include surveying, timber framing, and prep for joinery.",
+        pl: "Pomiar, inwentaryzacja, projekt 2D/3D, wizualizacje i dokumentacja produkcyjna.",
+        en: "Surveying, inventory, 2D/3D design, visualizations, and production documentation.",
       },
     },
     {
-      key: "joinery",
-      title: { pl: "Stolarka okienna i drzwiowa", en: "Windows and doors" },
+      key: "materials",
+      title: { pl: "Materiały i komponenty", en: "Materials and components" },
       defaultRule: {
-        pl: "Montaż okien, drzwi i ościeżnic z uszczelnieniem i wykończeniem po montażu.",
-        en: "Install windows, doors, and frames with sealing and finish after fitting.",
+        pl: "Korpusy, fronty, blaty, okucia, szkło, LED — zgodnie z poziomem budżetu i Company Context.",
+        en: "Carcasses, fronts, worktops, hardware, glass, LED — per budget tier and Company Context.",
       },
     },
     {
-      key: "built_ins",
-      title: { pl: "Zabudowy i szafy", en: "Built-ins and cabinetry" },
+      key: "fittings",
+      title: { pl: "Wyposażenie dodatkowe", en: "Additional fittings" },
       defaultRule: {
-        pl: "Zabudowy na wymiar z określeniem materiału, okuć i wykończenia powierzchni.",
-        en: "Custom built-ins with material, hardware, and surface finish specified.",
+        pl: "Cargo, organizery, montaż AGD, wyposażenie szaf i garderób.",
+        en: "Cargo systems, organizers, appliance installation, wardrobe interior fittings.",
       },
     },
     {
-      key: "flooring",
-      title: { pl: "Podłogi i schody", en: "Flooring and stairs" },
+      key: "production",
+      title: { pl: "Produkcja", en: "Production" },
       defaultRule: {
-        pl: "Podłogi drewniane lub schody z podsypką, listwami i wykończeniem powierzchni.",
-        en: "Wood flooring or stairs with underlay, trims, and surface finishing.",
+        pl: "Rozkrój, okleinowanie, CNC, lakierowanie, kontrola jakości.",
+        en: "Cutting, edging, CNC, lacquering, quality control.",
+      },
+    },
+    {
+      key: "transport",
+      title: { pl: "Transport", en: "Transport" },
+      defaultRule: {
+        pl: "Transport, wniesienie, zabezpieczenie i magazynowanie.",
+        en: "Delivery, carrying in, protection, and storage.",
       },
     },
     {
       key: "installation",
-      title: { pl: "Montaż i wykończenie", en: "Installation and finishing" },
+      title: { pl: "Montaż", en: "Installation" },
       defaultRule: {
-        pl: "Końcowy montaż elementów i poprawki po pracach mokrych i malowaniu.",
-        en: "Final fit-out and touch-ups after wet trades and painting.",
+        pl: "Montaż korpusów, frontów i blatów, regulacja, odbiór.",
+        en: "Install carcasses, fronts, and worktops; adjustment and handover.",
       },
     },
   ],

@@ -67,6 +67,7 @@ export async function getPublicEstimateRequestPageData(input: {
     workspaceId: workspace.id,
     documentType: BusinessDocumentType.ESTIMATE_REQUEST,
     locale: input.locale,
+    intakeSurface: "public",
   });
 
   const attachmentAvailability = await getPublicAttachmentAvailability(workspace.id);
@@ -107,6 +108,7 @@ export async function getEstimateRequestFormDataForWorkspace(input: {
     workspaceId: workspace.id,
     documentType: BusinessDocumentType.ESTIMATE_REQUEST,
     locale: input.locale,
+    intakeSurface: "internal",
   });
 
   const attachmentAvailability = await getPublicAttachmentAvailability(workspace.id);

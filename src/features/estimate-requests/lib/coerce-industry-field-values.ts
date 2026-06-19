@@ -1,3 +1,4 @@
+import { parseFieldSelectConfig } from "@/features/industry-fields/lib/field-select-config";
 import type { IndustryFieldForDocument } from "@/features/industry-fields/server/get-fields-for-workspace";
 import type { FieldValueInput } from "@/features/industry-fields/server/map-field-value";
 
@@ -27,6 +28,15 @@ export function coerceIndustryFieldValues(input: {
       case "DATE":
         coerced[key] = new Date(`${String(value)}T00:00:00.000Z`);
         break;
+      case "TEXT": {
+        const selectConfig = parseFieldSelectConfig(definition.options, definition.key);
+        if (selectConfig.selectMode === "multi" || definition.key === "product_categories" || definition.key === "project_types") {
+          coerced[key] = String(value).trim();
+          break;
+        }
+        coerced[key] = String(value).trim();
+        break;
+      }
       default:
         coerced[key] = String(value).trim();
         break;

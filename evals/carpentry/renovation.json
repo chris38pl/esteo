@@ -1,0 +1,47 @@
+{
+  "id": "carpentry-renovation",
+  "name": "Carpentry — renovation (regression)",
+  "locale": "pl",
+  "category": "business",
+  "quick": true,
+  "critical": true,
+  "profileVersion": "CARPENTRY_V1",
+  "workspace": {
+    "industry": "CARPENTRY",
+    "industryOtherText": "Renowacja zabudów",
+    "companyDescription": "Renowacja i naprawa mebli kuchennych i zabudów. Częściowa wymiana elementów.",
+    "rules": [],
+    "systemRules": { "rounding": true, "units": true }
+  },
+  "request": {
+    "project": {
+      "description": "Renowacja istniejącej zabudowy kuchennej: naprawa uszkodzonych frontów szuflad, wymiana dwóch szuflad, odświeżenie oklein na korpusach widocznych, regulacja zawiasów. Bez produkcji nowej kuchni. Łódź.",
+      "preferredStartDate": "asap"
+    },
+    "industryFields": {
+      "product_categories": ["kitchen"],
+      "project_types": ["renovation"]
+    },
+    "address": { "city": "Łódź" }
+  },
+  "expectations": {
+    "mustHave": [
+      { "term": "renow", "scope": "any_item" },
+      { "term": "napraw", "scope": "any_item" },
+      { "term": "wymian", "scope": "any_item" }
+    ],
+    "mustNotHave": [
+      { "term": "komplet", "scope": "any_section" },
+      { "term": "produkcj", "scope": "any_section" }
+    ],
+    "coverageTerms": ["regul", "front"],
+    "leakageDomain": "services",
+    "minLineItems": 4,
+    "maxLineItems": 20,
+    "judge": {
+      "focus": ["renovation scope — partial repair not full kitchen"],
+      "minScore": 7,
+      "minContextAlignment": 8
+    }
+  }
+}

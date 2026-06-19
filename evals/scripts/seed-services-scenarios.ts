@@ -190,7 +190,7 @@ const genericScenarios: ScenarioDef[] = [
     description:
       "Audyt procesów sprzedaży i 2-dniowe warsztaty strategiczne dla zarządu (8 osób), Kraków.",
     mustHave: ["warsztat", "audyt"],
-    coverageTerms: ["konsult", "warsztat", "audyt"],
+    coverageTerms: ["warsztat", "audyt"],
   }),
   genericScenario("generic-uslugi-kreatywne", "Generic: Usługi kreatywne", {
     description:
@@ -308,9 +308,9 @@ const scenarios: ScenarioDef[] = [
       "Kancelaria prawna — prawo gospodarcze i umowy B2B. Nie prowadzimy spraw karnych ani nie wykonujemy remontów.",
     description:
       "Potrzebuję przygotowania i negocjacji umowy najmu lokalu użytkowego 200 m² w Warszawie, z terminem 2 miesięcy.",
-    mustHave: ["umow", "prawn", "konsultac"],
+    mustHave: ["umow", "negocjac"],
     mustNotHave: ["remont", "tynk", "płytki"],
-    coverageTerms: ["umowa", "najem", "negocjac", "prawn"],
+    coverageTerms: ["umowa", "najem", "negocjac"],
   }),
   businessScenario("marketing-agency", "Marketing Agency", {
     industryOtherText: "Agencja marketingowa",
@@ -318,9 +318,9 @@ const scenarios: ScenarioDef[] = [
       "Agencja marketingowa B2B — strategia, content, kampanie. Nie produkujemy oprogramowania ani nie wykonujemy remontów biur.",
     description:
       "Kampania wprowadzenia nowego produktu SaaS na rynek polski, 3 miesiące, budżet mediowy po stronie klienta, potrzebuję strategii i kreacji.",
-    mustHave: ["strateg", "kampan", "content"],
+    mustHave: ["strateg", "kampan"],
     mustNotHave: ["programowanie", "remont"],
-    coverageTerms: ["strategia", "kampania", "content", "kreacja"],
+    coverageTerms: ["strategia", "kampania", "kreacja"],
     critical: true,
     referenceEstimate: {
       sections: [
@@ -345,7 +345,7 @@ const scenarios: ScenarioDef[] = [
       "Audyt architektury systemu ERP przed migracją do chmury, 80 użytkowników, warsztaty z zespołem IT klienta.",
     mustHave: ["audyt", "architektur", "warsztat"],
     mustNotHave: ["programowanie", "wdrożenie", "kod"],
-    coverageTerms: ["audyt", "architektura", "warsztat", "roadmap"],
+    coverageTerms: ["audyt", "architektura", "warsztat"],
     critical: true,
     quick: true,
     referenceEstimate: {
@@ -384,7 +384,7 @@ const scenarios: ScenarioDef[] = [
     description: "Audyt SEO sklepu internetowego, 5000 produktów, optymalizacja on-page i plan contentu na 6 miesięcy.",
     mustHave: ["audyt", "SEO", "content"],
     mustNotHave: ["Google Ads", "płatne kampanie"],
-    coverageTerms: ["audyt", "SEO", "content", "link"],
+    coverageTerms: ["audyt", "SEO", "content"],
   }),
   businessScenario("interior-designer", "Interior Designer", {
     industryOtherText: "Projektant wnętrz",
@@ -400,7 +400,7 @@ const scenarios: ScenarioDef[] = [
     description: "Rebranding logo i podstawowych materiałów firmowych dla startupu fintech, 2 rundy poprawek.",
     mustHave: ["logo", "identyfikac", "materiały"],
     mustNotHave: ["kampania", "remont"],
-    coverageTerms: ["logo", "identyfikacja", "brand", "druk"],
+    coverageTerms: ["logo"],
   }),
   businessScenario("copywriter", "Copywriter", {
     industryOtherText: "Copywriter",
@@ -408,7 +408,7 @@ const scenarios: ScenarioDef[] = [
     description: "Teksty na nową stronę firmową SaaS, 8 podstron + 4 artykuły blogowe, ton profesjonalny.",
     mustHave: ["tekst", "copy", "stron"],
     mustNotHave: ["SEO technicz", "programowanie"],
-    coverageTerms: ["strona", "blog", "tekst", "case study"],
+    coverageTerms: ["strona", "blog", "tekst"],
   }),
   businessScenario("social-media-agency", "Social Media Agency", {
     industryOtherText: "Agencja social media",
@@ -422,9 +422,9 @@ const scenarios: ScenarioDef[] = [
     industryOtherText: "Agencja rekrutacyjna",
     companyDescription: "Rekrutacja specjalistów IT. Model success fee lub flat fee.",
     description: "Rekrutacja Senior Backend Developera, Node.js, proces 4 etapów, start ASAP.",
-    mustHave: ["rekrutac", "sourcing", "interview"],
+    mustHave: ["rekrutac"],
     mustNotHave: ["programowanie", "szkolenie IT"],
-    coverageTerms: ["rekrutacja", "sourcing", "kandydat", "interview"],
+    coverageTerms: ["rekrutacja", "kandydat"],
   }),
   businessScenario("business-consultant", "Business Consultant", {
     industryOtherText: "Konsulting biznesowy",
@@ -459,9 +459,9 @@ const scenarios: ScenarioDef[] = [
     industryOtherText: "Trener personalny",
     companyDescription: "Trening personalny i plan ćwiczeń. Nie prowadzimy dietetyki klinicznej.",
     description: "Trening personalny 2x w tygodniu przez 3 miesiące, plan ćwiczeń domowych, Warszawa Mokotów.",
-    mustHave: ["trening", "sesj", "plan"],
+    mustHave: ["trening", "plan"],
     mustNotHave: ["dieta klinicz", "fizjoterap"],
-    coverageTerms: ["trening", "sesja", "plan", "ćwiczeń"],
+    coverageTerms: ["trening", "plan", "ćwiczeń"],
   }),
   businessScenario("language-school", "Language School", {
     industryOtherText: "Szkoła językowa",
@@ -469,7 +469,7 @@ const scenarios: ScenarioDef[] = [
     description: "Kurs angielskiego biznesowego dla zespołu 8 osób, 2x w tygodniu, poziom B1-B2, 4 miesiące.",
     mustHave: ["kurs", "angielski", "materiały"],
     mustNotHave: ["tłumaczen", "remont"],
-    coverageTerms: ["kurs", "angielski", "zajęcia", "materiały"],
+    coverageTerms: ["kurs", "angielski", "materiały"],
   }),
   businessScenario("architect", "Architect", {
     industryOtherText: "Architekt",
