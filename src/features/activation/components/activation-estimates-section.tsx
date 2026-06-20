@@ -46,7 +46,6 @@ export function ActivationEstimatesSection({
     isCelebrating,
     showChecklist,
     guideMode,
-    formLinkCopied,
     isWorkspaceReadyBannerVisible,
     refreshActivationUi,
   } = useActivationUiState(activationProgress, workspaceSlug);
@@ -112,11 +111,6 @@ export function ActivationEstimatesSection({
     return null;
   }
 
-  const showFormBadge =
-    activationProgress.showFormBadge &&
-    !activationProgress.hasPublicFormSubmission &&
-    !formLinkCopied;
-
   const checklistProps = {
     workspaceSlug,
     steps,
@@ -132,8 +126,6 @@ export function ActivationEstimatesSection({
       {isWorkspaceReadyBannerVisible ? (
         <WorkspaceReadyBanner
           workspaceSlug={workspaceSlug}
-          onCreateClick={onCreateClick}
-          onCopyFormLink={() => void handleCopyFormLink()}
           onDismissed={refreshActivationUi}
         />
       ) : null}
@@ -142,7 +134,6 @@ export function ActivationEstimatesSection({
         <ActivationTipsBanner
           industry={activationProgress.industry}
           locale={locale}
-          showFormBadge={showFormBadge}
         />
       ) : (
         <ActivationCombinedBanner
@@ -150,7 +141,6 @@ export function ActivationEstimatesSection({
           industry={activationProgress.industry}
           locale={locale}
           showChecklist={showChecklist}
-          showFormBadge={showFormBadge}
           checklistProps={showChecklist ? checklistProps : undefined}
         />
       )}

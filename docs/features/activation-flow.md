@@ -5,7 +5,7 @@ Owner-only first-time activation on `/estimates`. No Prisma fields — progress 
 ## Flow
 
 1. **Onboarding** → redirect to `/estimates`; sets `esteo.activation.workspace-ready-pending.{slug}`.
-2. **Workspace ready banner** — primary CTAs (create estimate, copy form link). Auto-dismisses on CTA click or ✕.
+2. **Workspace ready banner** — informational message after onboarding. Dismiss with ✕ only.
 3. **Combined banner** (after banner dismissed) — single card, `xl:grid-cols-3`:
    - **Left (2/3):** “Jak działa Esteo?” — 3-step horizontal flow (desktop) / stacked (mobile).
    - **Right (1/3):** Checklist (3 steps), vertically centered.
@@ -15,8 +15,8 @@ Owner-only first-time activation on `/estimates`. No Prisma fields — progress 
    - Copy client form link (`localStorage`: `form-link-copied`)
 5. **Celebration at 3/3** — “Wszystko gotowe!” with [Ukryj]; guide stays in “Jak działa Esteo?” until dismissed.
 6. **Guide card** — “Jak działa Esteo?” during activation; “Porady” after celebration dismissed.
-7. **Form badge** — “Formularz gotowy” in guide header **before first copy/share** only; hidden after copy or public form submission.
-8. **Form link copy/share toast** — Sonner success toast (5 s, `top-center`) on every copy or share (hero, checklist, workspace banner, Messenger/WhatsApp/X/email/native share). Copy: `activation.formBadge.afterCopyTitle` / `afterCopyDescription`. Handler: `notify-form-link-shared.ts`.
+7. **Form ready intro** — inside the “Twój formularz kontaktowy” hero card: brief “Formularz gotowy” message (~2.6 s), then subtle fade to standard card content + CTA. Only for activation owners before first copy/share; skipped after `form-link-copied` or public submission.
+8. **Form link copy/share toast** — Sonner success toast (5 s, `top-center`) on every copy or share. Handler: `notify-form-link-shared.ts`.
 9. **First AI complete** — Sonner action toast with Generuj PDF / Wyślij klientowi (persists until action).
 10. **PDF gate** — inline company profile modal (no settings redirect).
 
@@ -37,7 +37,7 @@ Owner-only first-time activation on `/estimates`. No Prisma fields — progress 
 |---|---|
 | `workspace-ready-pending` | Show banner after onboarding |
 | `workspace-ready-seen` | Banner dismissed (clears pending) |
-| `form-link-copied` | Checklist step 3 + hide “Formularz gotowy” badge |
+| `form-link-copied` | Checklist step 3 + skip form-ready intro in hero card |
 | `celebration-dismissed` | Hide checklist after 3/3 |
 | `first-ai-toast-shown` | One-time AI WOW toast |
 | `completed-analytics-fired` | One-time `activation_completed` |
@@ -68,5 +68,6 @@ Webpack resolves `process/browser.js` for some client bundles. The `process` pac
 - `src/features/activation/lib/notify-form-link-shared.ts` — copy/share toast + checklist step 3 side effects
 - `src/features/activation/hooks/use-activation-ui-state.ts` — client state merge + hydration-safe storage
 - `src/features/activation/components/activation-combined-banner.tsx` — guide + checklist layout
+- `src/features/estimate-requests/components/estimate-request-form-hero-card.tsx` — form-ready intro animation + share/copy
 - `src/app/.../estimates/page.tsx` — loads progress for owners
 - `src/features/workspaces/components/create-workspace-form.tsx` — sets pending flag on onboarding

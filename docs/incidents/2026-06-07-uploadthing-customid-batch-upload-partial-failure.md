@@ -51,7 +51,7 @@ Module: `src/features/attachments/server/storage/uploadthing-diagnostic.ts`
 
 - **Enabled:** local `npm run dev` only (`NODE_ENV=development`)
 - **Disabled:** Vercel staging and production
-- **Output:** single file `logs/ut-upload-debug.jsonl` (overwritten each batch, gitignored)
+- **Output:** `{OS temp dir}/esteo-ut-upload-debug.jsonl` (overwritten each batch; path from `getUploadDiagnosticLogPath()`)
 - **Disable locally:** `UPLOADTHING_UPLOAD_DEBUG=0` in `.env.local`
 
 Full investigation write-up: [../diagnostics/2026-06-07-uploadthing-customid-batch-upload.md](../diagnostics/2026-06-07-uploadthing-customid-batch-upload.md)
@@ -60,7 +60,7 @@ Full investigation write-up: [../diagnostics/2026-06-07-uploadthing-customid-bat
 
 - Do **not** use long storage paths as UploadThing `customId` — use a short stable ID (attachment/file UUID)
 - If you see `Failed query: insert into file` during upload, inspect **UploadThing ingest HTTP response**, not Prisma
-- When debugging multi-file uploads locally, use `logs/ut-upload-debug.jsonl` and compare `customIdLength` vs outcome
+- When debugging multi-file uploads locally, use `{tmpdir}/esteo-ut-upload-debug.jsonl` and compare `customIdLength` vs outcome
 
 ## Related
 

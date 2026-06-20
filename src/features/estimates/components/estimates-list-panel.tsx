@@ -75,7 +75,10 @@ export function EstimatesListPanel({
     completedCount: 0,
     totalCount: 3,
   };
-  const { refreshActivationUi } = useActivationUiState(activation, workspaceSlug);
+  const { refreshActivationUi, formLinkCopied, hasHydrated } = useActivationUiState(
+    activation,
+    workspaceSlug,
+  );
   const { preferences, toggleOptionalColumn, setPageSize } =
     useEstimatesListPreferences(workspaceSlug);
   const { visibleColumns, pageSize } = preferences;
@@ -183,6 +186,13 @@ export function EstimatesListPanel({
     workspaceSlug,
   ]);
 
+  const showFormReadyIntro =
+    Boolean(activationProgress?.eligible) &&
+    Boolean(activationProgress?.showFormBadge) &&
+    !activationProgress?.hasPublicFormSubmission &&
+    hasHydrated &&
+    !formLinkCopied;
+
   const handleExportCsv = useCallback(() => {
     if (filteredEstimates.length === 0) {
       return;
@@ -241,6 +251,7 @@ export function EstimatesListPanel({
         onFormLinkShared={
           activationProgress?.eligible ? handleFormLinkShared : undefined
         }
+        showFormReadyIntro={showFormReadyIntro}
       />
 
       <EstimatesListPlanLimitBanner

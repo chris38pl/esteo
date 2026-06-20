@@ -142,8 +142,13 @@ export function CreateEstimateModal({
     },
   });
 
+  const prevOpenRef = useRef(false);
+
   useEffect(() => {
-    if (!open) {
+    const justOpened = open && !prevOpenRef.current;
+    prevOpenRef.current = open;
+
+    if (!justOpened) {
       return;
     }
 
@@ -157,7 +162,7 @@ export function CreateEstimateModal({
     setValidationError(null);
     voiceIntakeMetadataRef.current = null;
     voiceAppliedValuesRef.current = null;
-  }, [open, formData.fields]);
+  }, [open]);
 
   const canSubmit =
     project.description.trim().length >= 20 &&

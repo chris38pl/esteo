@@ -28,6 +28,28 @@ const nextConfig: NextConfig = {
   experimental: {
     proxyClientMaxBodySize: "12mb",
   },
+  webpack: (config, { dev }) => {
+    if (dev) {
+      const existingIgnored = config.watchOptions?.ignored;
+      const ignoredList = Array.isArray(existingIgnored)
+        ? existingIgnored
+        : existingIgnored
+          ? [existingIgnored]
+          : [];
+      // Next.js may include "" in ignored (watchpack workaround); Webpack 5 schema rejects empty strings.
+      const validIgnored = ignoredList.filter(
+        (pattern): pattern is string =>
+          typeof pattern === "string" && pattern.length > 0,
+      );
+
+      config.watchOptions = {
+        ...config.watchOptions,
+        ignored: [...validIgnored, "**/logs/**"],
+      };
+    }
+
+    return config;
+  },
   images: {
     remotePatterns: [
       {

@@ -159,7 +159,7 @@ Preview is not logged in v1.
 Optional dev-only diagnostics in `src/features/attachments/server/storage/uploadthing-diagnostic.ts`:
 
 - Auto-on in local `NODE_ENV=development` unless `UPLOADTHING_UPLOAD_DEBUG=0`.
-- Writes HTTP traces to `logs/ut-upload-debug.jsonl`.
+- Writes HTTP traces to OS temp file `esteo-ut-upload-debug.jsonl` (dev only).
 - When enabled, `UTApi` uses `logLevel: "Debug"` — very verbose in Trigger.dev terminal.
 
 **Quiet local dev:** set `UPLOADTHING_UPLOAD_DEBUG=0` in `.env.local` and restart `trigger:dev`.

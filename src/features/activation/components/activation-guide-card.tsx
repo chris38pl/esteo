@@ -5,7 +5,6 @@ import { Fragment } from "react";
 import { useTranslations } from "next-intl";
 
 import { getActivationTipsForIndustry } from "@/features/activation/lib/activation-tips-by-industry";
-import { ActivationFormHeroBadge } from "@/features/activation/components/activation-form-hero-badge";
 import type { ActivationGuideMode } from "@/features/activation/lib/activation-types";
 import type { WorkspaceIndustry } from "@prisma/client";
 import type { Locale } from "@/lib/locale";
@@ -16,7 +15,6 @@ interface ActivationGuideCardProps {
   industry: WorkspaceIndustry;
   locale: Locale;
   embedded?: boolean;
-  showFormBadge?: boolean;
 }
 
 const HOW_IT_WORKS_STEPS = [
@@ -82,26 +80,17 @@ export function ActivationGuideCard({
   industry,
   locale,
   embedded = false,
-  showFormBadge = false,
 }: ActivationGuideCardProps) {
   const t = useTranslations("activation.guide");
-
-  const formBadge =
-    showFormBadge ? (
-      <ActivationFormHeroBadge layout="banner" className="ml-auto shrink-0" />
-    ) : null;
 
   if (mode === "tips") {
     const tips = getActivationTipsForIndustry(industry, locale);
 
     const tipsContent = (
       <>
-        <div className="flex items-start justify-between gap-2 sm:gap-3">
-          <h2 className="shrink-0 text-sm font-semibold tracking-tight text-foreground">
-            {t("tipsTitle")}
-          </h2>
-          {formBadge}
-        </div>
+        <h2 className="shrink-0 text-sm font-semibold tracking-tight text-foreground">
+          {t("tipsTitle")}
+        </h2>
         <ul className="space-y-2">
           {tips.map((tip) => (
             <li key={tip.id} className="flex gap-1.5 text-xs leading-snug text-muted-foreground">
@@ -130,15 +119,12 @@ export function ActivationGuideCard({
 
   const howItWorksContent = (
     <>
-      <div className="flex items-start justify-between gap-2 sm:gap-3">
-        <h2 className="shrink-0 text-sm font-semibold tracking-tight text-foreground md:text-base">
-          {t("howItWorksTitle")}
-        </h2>
-        {formBadge}
-      </div>
+      <h2 className="shrink-0 text-sm font-semibold tracking-tight text-foreground md:text-base">
+        {t("howItWorksTitle")}
+      </h2>
 
       {/* Desktop: icons + arrows on one row (centered), texts below */}
-      <div className={cn("hidden sm:block", showFormBadge ? "mt-7 lg:mt-8" : "mt-6")}>
+      <div className="mt-6 hidden sm:block">
         <div className="flex items-center justify-center">
           {HOW_IT_WORKS_STEPS.map((step, index) => {
             const { Icon, ringClass, iconClass } = step;
@@ -168,12 +154,7 @@ export function ActivationGuideCard({
       </div>
 
       {/* Mobile: stacked steps with centered arrows between */}
-      <ol
-        className={cn(
-          "flex list-none flex-col items-center gap-3 p-0 sm:hidden",
-          showFormBadge ? "mt-5" : "mt-4",
-        )}
-      >
+      <ol className="mt-4 flex list-none flex-col items-center gap-3 p-0 sm:hidden">
         {HOW_IT_WORKS_STEPS.map((step, index) => {
           const { Icon, ringClass, iconClass } = step;
 

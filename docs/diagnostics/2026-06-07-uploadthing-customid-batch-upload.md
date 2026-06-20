@@ -135,7 +135,7 @@ Długie JSON-y z `uploadFiles` i body HTTP 500 ucinały się w buforze PowerShel
 Moduł `uploadthing-diagnostic.ts`:
 
 - Logi per zdarzenie (upload start/success/failure, HTTP request/response)
-- Zapis do `logs/ut-upload-debug.jsonl` (**tylko `NODE_ENV=development`**)
+- Zapis do `{tmpdir}/esteo-ut-upload-debug.jsonl` (**tylko `NODE_ENV=development`**)
 - `createUploadThingDiagnosticFetch()` — pełne body odpowiedzi ingest
 - Pola: `customId`, `customIdLength`, `logicalKey`, `logicalKeyLength`
 - Jeden plik **nadpisywany** na start batcha (nie append w nieskończoność)
@@ -240,7 +240,7 @@ Miniatury (Trigger.dev) po promocji: `customIdLength: 42` (`{attachmentId}-thumb
 1. **Nigdy nie używaj długiej ścieżki storage jako UploadThing `customId`.** Używaj krótkiego stabilnego ID (UUID rekordu pliku).
 2. **Komunikat `insert into file` ≠ Prisma.** Szukaj w odpowiedzi HTTP ingest UploadThing.
 3. **Partial success w public form jest zamierzony** — loguj `storedCount` / `failedCount` i pokazuj `attachmentWarnings` w UI.
-4. **Przy debugowaniu UT** używaj `logs/ut-upload-debug.jsonl` lokalnie; na Vercel diagnostyka jest wyłączona.
+4. **Przy debugowaniu UT** używaj `getUploadDiagnosticLogPath()` / pliku w katalogu temp OS lokalnie; na Vercel diagnostyka jest wyłączona.
 5. **Po sukcesie UT** w DB trzymamy **klucz UT** (`YO4vGzP4JADj...`), nie logiczną ścieżkę — to poprawne dla operacji storage.
 
 ## Powiązana dokumentacja

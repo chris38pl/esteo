@@ -118,5 +118,5 @@ export function useActivationUiState(
     [serverProgress, workspaceSlug, revision, hasHydrated],
   );
 
-  return { ...state, refreshActivationUi: bump };
+  return { ...state, hasHydrated, refreshActivationUi: bump };
 }
