@@ -44,10 +44,13 @@ export function BillingChangePreviewDialog({
 
   const currency = preview.currency;
   const monthlyAmount = formatBillingMonthlyPrice(preview.recurringCents, locale, currency);
-  const invoiceDeltaCents = preview.invoiceDeltaCents;
-  const hasCharge = invoiceDeltaCents > 0;
-  const hasCredit = invoiceDeltaCents < 0;
-  const hasDelta = hasCharge || hasCredit;
+  const prorationCents = preview.prorationCents;
+  const hasCharge = prorationCents > 1;
+  const hasCredit = prorationCents < -1;
+  const referralBalanceAppliedCents = preview.referralBalanceAppliedCents ?? 0;
+  const hasReferralBalance = referralBalanceAppliedCents > 0;
+  const showBreakdown = hasCharge || hasCredit || hasReferralBalance;
+  const referralBalanceTooltip = t("referralBalanceCreditTooltip");
 
   const adjustmentTooltip = t("adjustmentTooltip", { monthlyAmount });
 
@@ -81,7 +84,7 @@ export function BillingChangePreviewDialog({
                 </p>
               </div>
 
-              {hasDelta ? (
+              {showBreakdown ? (
                 <div className="space-y-3">
                   <p className="font-medium text-foreground">{t("breakdown.composedOf")}</p>
 
@@ -94,7 +97,7 @@ export function BillingChangePreviewDialog({
                     {hasCharge ? (
                       <BillingInvoiceAdjustmentRow
                         label={t("adjustmentCharge")}
-                        amount={formatSignedBillingAmount(invoiceDeltaCents, locale, currency)}
+                        amount={formatSignedBillingAmount(prorationCents, locale, currency)}
                         badge={{ label: t("badge.oneTimeCharge"), variant: "amber" }}
                         tooltip={adjustmentTooltip}
                       />
@@ -103,9 +106,21 @@ export function BillingChangePreviewDialog({
                     {hasCredit ? (
                       <BillingInvoiceAdjustmentRow
                         label={t("adjustmentCredit")}
-                        amount={formatSignedBillingAmount(invoiceDeltaCents, locale, currency)}
+                        amount={formatSignedBillingAmount(prorationCents, locale, currency)}
                         badge={{ label: t("badge.credit"), variant: "green" }}
                         tooltip={adjustmentTooltip}
+                      />
+                    ) : null}
+
+                    {hasReferralBalance ? (
+                      <BillingInvoiceAdjustmentRow
+                        label={t("breakdown.referralBalanceCredit")}
+                        amount={`-${formatBillingMonthlyPrice(
+                          referralBalanceAppliedCents,
+                          locale,
+                          currency,
+                        )}`}
+                        tooltip={referralBalanceTooltip}
                       />
                     ) : null}
                   </dl>
@@ -115,9 +130,13 @@ export function BillingChangePreviewDialog({
                       <p>{t("chargeOnlyOnce")}</p>
                       <p>{t("chargeNotRecurring")}</p>
                     </div>
-                  ) : (
+                  ) : hasCredit ? (
                     <p className="text-muted-foreground">{t("hintOneTimeCredit")}</p>
-                  )}
+                  ) : null}
+
+                  {hasReferralBalance && hasCharge ? (
+                    <p className="text-sm text-muted-foreground">{t("referralBalanceAddonsNote")}</p>
+                  ) : null}
                 </div>
               ) : null}
             </div>

@@ -10,7 +10,7 @@
   "referralLink": {
     "title": "Your referral link",
     "subtitle": "Share the link anywhere",
-    "alternateShare": "You do not have to send the link — when signing up, your contact can enter your email or personal code below. They will also receive a welcome discount.",
+    "alternateShare": "The link is the easiest way — your contact gets the welcome discount right away, and you earn a bonus when they subscribe. If they sign up on their own, they can enter your email or code in company settings (within 30 days or before their first payment). You both still receive the benefits.",
     "codeLabel": "Referral code",
     "emailLabel": "Referral email"
   },
@@ -28,10 +28,11 @@
     "sendInvite": "Send invitation"
   },
   "hero": {
-    "earned": "Earned from referrals",
-    "activeReferrals": "Active referrals",
-    "appliedToInvoices": "Applied to invoices",
-    "availableBalance": "Available balance"
+    "referredCompanies": "Referred companies",
+    "grantedRewards": "Rewards granted",
+    "availableBalance": "Available balance",
+    "usedBalance": "Balance used",
+    "processing": "Processing"
   },
   "howItWorks": {
     "title": "How it works",
@@ -73,7 +74,7 @@
   },
   "tier": {
     "title": "Your partner tier",
-    "activeCount": "{count} active clients",
+    "activeCount": "{count} referred companies",
     "lifetimeCount": "Referred companies: {count}",
     "nextTier": "{remaining} more to {tier}",
     "none": "No tier",
@@ -87,8 +88,8 @@
     "awaiting_registration": "Awaiting registration",
     "awaiting_first_payment": "Awaiting first payment",
     "awaiting_plan_selection": "Awaiting plan selection",
-    "processing_bonus": "Processing bonus",
-    "bonus_granted": "Bonus granted",
+    "processing_bonus": "Processing",
+    "bonus_granted": "Granted",
     "inactive": "Inactive"
   },
   "bonus": {
@@ -98,9 +99,9 @@
   },
   "claim": {
     "title": "Referral code",
-    "description": "Have a referrer email or code? Enter it here.",
+    "description": "Who referred you to Esteo? Enter their email or referral code.",
     "placeholder": "Referrer email or code",
-    "windowHint": "A referral can be applied until the first payment or within 30 days of workspace creation.",
+    "windowHint": "You can do this within 30 days of creating your company or before your first plan payment.",
     "submit": "Apply",
     "success": "Referral code applied.",
     "errors": {

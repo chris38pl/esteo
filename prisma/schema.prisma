@@ -1174,6 +1174,12 @@ enum ReferralFraudFlag {
   SUSPICIOUS
 }
 
+enum ReferralRewardStatus {
+  PENDING
+  GRANTED
+  FAILED
+}
+
 model UserReferralProfile {
   id        String   @id @default(cuid())
   userId    String   @unique
@@ -1200,7 +1206,10 @@ model Referral {
   expectedRewardCents            Int?
   rewardCents                    Int                       @default(0)
   rewardType                     ReferralRewardType?
+  rewardStatus                   ReferralRewardStatus?
   rewardGrantedAt                DateTime?
+  rewardFailureReason            String?
+  rewardLastRetryAt              DateTime?
   monthlyRevenueCents            Int                       @default(0)
   referrerTierAtActivation       String?
   referrerWorkspaceCountAtActivation Int?

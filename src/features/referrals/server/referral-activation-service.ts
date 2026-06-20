@@ -26,6 +26,10 @@ import {
   isRewardEligiblePlanVersion,
 } from "@/features/referrals/server/referral-rewards-catalog";
 
+function isReferralRewardSettled(rewardStatus: string | null | undefined): boolean {
+  return rewardStatus === "GRANTED";
+}
+
 function resolvePlanVersionFromStripeSubscription(
   subscription: Stripe.Subscription,
   plan: SubscriptionPlan,
@@ -112,7 +116,7 @@ export async function activateReferralForPaidWorkspace(params: {
     return;
   }
 
-  if (referral.rewardGrantedAt) {
+  if (isReferralRewardSettled(referral.rewardStatus)) {
     await syncReferralMonthlyRevenue(params.workspaceId);
     return;
   }
@@ -142,7 +146,10 @@ export async function activateReferralForPaidWorkspace(params: {
       referredPlanVersion: params.planVersion,
       rewardCents,
       rewardType: "ACTIVATION_BONUS",
-      rewardGrantedAt: new Date(),
+      rewardStatus: "PENDING",
+      rewardGrantedAt: null,
+      rewardFailureReason: null,
+      rewardLastRetryAt: null,
       activatedAt: new Date(),
       monthlyRevenueCents: mrrCents,
       referrerTierAtActivation: tier,
@@ -165,14 +172,14 @@ export async function handleReferralActivationFromInvoice(params: {
 }): Promise<void> {
   const referral = await prisma.referral.findUnique({
     where: { referredWorkspaceId: params.workspaceId },
-    select: { id: true, rewardGrantedAt: true },
+    select: { id: true, rewardStatus: true },
   });
 
   if (!referral) {
     return;
   }
 
-  if (referral.rewardGrantedAt) {
+  if (isReferralRewardSettled(referral.rewardStatus)) {
     await syncReferralMonthlyRevenue(params.workspaceId);
     return;
   }
@@ -206,10 +213,10 @@ export async function tryActivateReferralFromSubscriptionSync(params: {
 
   const referral = await prisma.referral.findUnique({
     where: { referredWorkspaceId: params.workspaceId },
-    select: { rewardGrantedAt: true },
+    select: { rewardStatus: true },
   });
 
-  if (!referral || referral.rewardGrantedAt) {
+  if (!referral || isReferralRewardSettled(referral.rewardStatus)) {
     return;
   }
 

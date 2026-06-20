@@ -10,6 +10,7 @@ import type {
 import { PREVIEW_TTL_MS } from "@/features/billing/billing-page-data";
 import {
   parseInvoicePreviewLines,
+  parseCustomerBalanceAppliedCents,
   resolveInvoiceDeltaCents,
   resolveProrationKind,
 } from "@/features/billing/lib/parse-invoice-preview-lines";
@@ -184,6 +185,7 @@ function toPreviewResponse(
   parsed: ReturnType<typeof parseInvoicePreviewLines>,
   currency: string,
   recurringCents: number,
+  referralBalanceAppliedCents: number,
 ): BillingChangePreview {
   const now = new Date();
   const prorationCents = parsed.prorationCents;
@@ -198,6 +200,7 @@ function toPreviewResponse(
     invoiceDeltaCents,
     prorationKind: resolveProrationKind(invoiceDeltaCents),
     nextInvoiceCents: parsed.amountCents,
+    referralBalanceAppliedCents,
     currency: currency.toUpperCase() === "EUR" ? "EUR" : "PLN",
     previewGeneratedAt: now.toISOString(),
     previewExpiresAt: new Date(now.getTime() + PREVIEW_TTL_MS).toISOString(),
@@ -264,5 +267,10 @@ export async function previewWorkspaceBillingChange(params: {
   const parsed = parseInvoicePreviewLines(invoice.lines.data, invoice.amount_due);
   const recurringCents = catalogRecurringAfterChange(subscription, params.change, addonRows);
 
-  return toPreviewResponse(parsed, invoice.currency, recurringCents);
+  return toPreviewResponse(
+    parsed,
+    invoice.currency,
+    recurringCents,
+    parseCustomerBalanceAppliedCents(invoice),
+  );
 }

@@ -25,6 +25,8 @@ interface EstimatesListHeroCardsProps {
   workspaceSlug: string;
   locale: Locale;
   onCreateClick: () => void;
+  onCopyFormLink?: () => void;
+  onFormLinkShared?: () => void;
 }
 
 function EstimatesListHeroStyles() {
@@ -225,6 +227,8 @@ export function EstimatesListHeroCards({
   workspaceSlug,
   locale,
   onCreateClick,
+  onCopyFormLink,
+  onFormLinkShared,
 }: EstimatesListHeroCardsProps) {
   const t = useTranslations("estimates");
 
@@ -260,7 +264,12 @@ export function EstimatesListHeroCards({
           </div>
         </article>
 
-        <EstimateRequestFormHeroCard workspaceSlug={workspaceSlug} locale={locale} />
+        <EstimateRequestFormHeroCard
+          workspaceSlug={workspaceSlug}
+          locale={locale}
+          onCopyFormLink={onCopyFormLink}
+          onFormLinkShared={onFormLinkShared}
+        />
       </div>
     </>
   );

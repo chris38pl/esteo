@@ -76,7 +76,10 @@ async function activateReferral(params: {
       referredPlanVersion: params.planVersion,
       rewardCents: params.rewardCents,
       rewardType: "ACTIVATION_BONUS",
-      rewardGrantedAt: new Date(),
+      rewardStatus: "PENDING",
+      rewardGrantedAt: null,
+      rewardFailureReason: null,
+      rewardLastRetryAt: null,
       activatedAt: new Date(),
     },
   });
@@ -125,13 +128,35 @@ async function activateReferral(params: {
       invoiceId: params.invoiceId,
     },
   });
+
+  if (stripeBalanceTxnId) {
+    await prisma.referral.update({
+      where: { id: params.referralId },
+      data: {
+        rewardStatus: "GRANTED",
+        rewardGrantedAt: new Date(),
+        rewardFailureReason: null,
+        rewardLastRetryAt: null,
+      },
+    });
+  } else {
+    await prisma.referral.update({
+      where: { id: params.referralId },
+      data: {
+        rewardStatus: "FAILED",
+        rewardGrantedAt: null,
+        rewardFailureReason: "Stripe balance transaction failed during backfill",
+        rewardLastRetryAt: new Date(),
+      },
+    });
+  }
 }
 
 async function main() {
   const pendingReferrals = await prisma.referral.findMany({
     where: {
       status: "PENDING_CLAIM",
-      rewardGrantedAt: null,
+      rewardStatus: { not: "GRANTED" },
       fraudFlag: { not: "SUSPICIOUS" },
     },
     include: {

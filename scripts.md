@@ -217,9 +217,13 @@ STRIPE_REFERRAL_COUPON_ID="..."
 
 | | | |
 | --- | --- | --- |
-| `test:referral-program` | Testy jednostkowe logiki referral (claim, attribution, rewards) | `npm run test:referral-program` |
+| `test:referral-program` | Testy jednostkowe logiki referral (claim, attribution, rewards, KPI) | `npm run test:referral-program` |
+| `audit:referral-kpi` | Audyt KPI referrera vs saldo Stripe (invariant used = granted − available) | `npm run audit:referral-kpi -- --email user@example.com` |
 | `prisma:backfill-referral-profiles` | Profile partnerskie dla ownerów z aktywnym PRO/BUSINESS | `npm run prisma:backfill-referral-profiles` |
 | `prisma:backfill-referral-activations` | Aktywacja bonusów dla poleconych z opłaconą subskrypcją (localhost bez webhooka) | `npm run prisma:backfill-referral-activations` |
+| `prisma:backfill-missing-referral-credits` | Dopisanie brakujących kredytów Stripe balance dla wpisów ledger bez `stripeBalanceTxnId` | `npm run prisma:backfill-missing-referral-credits` |
+
+Pełna dokumentacja: [`docs/features/referral-program.md`](docs/features/referral-program.md) — KPI v6, saldo na fakturze, skrypty, checklista.
 
 **Localhost:** bez `STRIPE_REFERRAL_COUPON_ID` UI na `/billing/manage` nadal pokazuje ceny promocyjne (gdy referral `PENDING_CLAIM`), ale Stripe Checkout pobierze pełną kwotę — w logach dev: `[referral] … STRIPE_REFERRAL_COUPON_ID missing`.
 

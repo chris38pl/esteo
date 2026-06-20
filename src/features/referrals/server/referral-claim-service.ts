@@ -229,9 +229,9 @@ export async function updateReferralExpectedPlan(
 ): Promise<void> {
   const referral = await prisma.referral.findUnique({
     where: { referredWorkspaceId },
-    select: { id: true, status: true, rewardGrantedAt: true },
+    select: { id: true, status: true, rewardStatus: true },
   });
-  if (!referral || referral.status !== "PENDING_CLAIM" || referral.rewardGrantedAt) {
+  if (!referral || referral.status !== "PENDING_CLAIM" || referral.rewardStatus === "GRANTED") {
     return;
   }
 

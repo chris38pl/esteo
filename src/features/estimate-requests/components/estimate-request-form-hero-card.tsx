@@ -46,6 +46,8 @@ interface EstimateRequestFormHeroCardProps {
   workspaceSlug: string;
   locale: Locale;
   className?: string;
+  onCopyFormLink?: () => void;
+  onFormLinkShared?: () => void;
 }
 
 function FormHeroStyles() {
@@ -246,11 +248,13 @@ function ShareIconButton({
   label,
   onClick,
   href,
+  onShare,
   children,
 }: {
   label: string;
   onClick?: () => void;
   href?: string;
+  onShare?: () => void;
   children: ReactNode;
 }) {
   const className = cn(
@@ -266,6 +270,7 @@ function ShareIconButton({
         rel="noopener noreferrer"
         aria-label={label}
         className={className}
+        onClick={() => onShare?.()}
       >
         {children}
       </a>
@@ -312,6 +317,8 @@ export function EstimateRequestFormHeroCard({
   workspaceSlug,
   locale,
   className,
+  onCopyFormLink,
+  onFormLinkShared,
 }: EstimateRequestFormHeroCardProps) {
   const t = useTranslations("estimates");
   const [copied, setCopied] = useState(false);
@@ -339,6 +346,13 @@ export function EstimateRequestFormHeroCard({
   }, [publicUrl, t]);
 
   const handleCopyLink = useCallback(async () => {
+    if (onCopyFormLink) {
+      onCopyFormLink();
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2000);
+      return;
+    }
+
     try {
       await navigator.clipboard.writeText(publicUrl);
       setCopied(true);
@@ -346,7 +360,7 @@ export function EstimateRequestFormHeroCard({
     } catch {
       window.prompt(t("list.hero.form.copyFallback"), publicUrl);
     }
-  }, [publicUrl, t]);
+  }, [onCopyFormLink, publicUrl, t]);
 
   const handleNativeShare = useCallback(async () => {
     if (typeof navigator.share !== "function") {
@@ -357,10 +371,11 @@ export function EstimateRequestFormHeroCard({
         url: publicUrl,
         title: t("list.hero.form.shareEmailSubject"),
       });
+      onFormLinkShared?.();
     } catch {
       // User dismissed share sheet.
     }
-  }, [publicUrl, t]);
+  }, [onFormLinkShared, publicUrl, t]);
 
   return (
     <TooltipProvider>
@@ -405,13 +420,13 @@ export function EstimateRequestFormHeroCard({
                 >
                   <Link2 className="size-4" />
                 </ShareIconButton>
-                <ShareIconButton label="Messenger" href={shareUrls.messenger}>
+                <ShareIconButton label="Messenger" href={shareUrls.messenger} onShare={onFormLinkShared}>
                   <MessengerIcon />
                 </ShareIconButton>
-                <ShareIconButton label="WhatsApp" href={shareUrls.whatsapp}>
+                <ShareIconButton label="WhatsApp" href={shareUrls.whatsapp} onShare={onFormLinkShared}>
                   <WhatsAppIcon />
                 </ShareIconButton>
-                <ShareIconButton label="X" href={shareUrls.x}>
+                <ShareIconButton label="X" href={shareUrls.x} onShare={onFormLinkShared}>
                   <XIcon />
                 </ShareIconButton>
                 <DropdownMenu>
@@ -429,7 +444,7 @@ export function EstimateRequestFormHeroCard({
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem asChild>
-                      <a href={shareUrls.email}>
+                      <a href={shareUrls.email} onClick={() => onFormLinkShared?.()}>
                         <Mail className="size-4" />
                         {t("list.hero.form.shareEmail")}
                       </a>

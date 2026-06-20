@@ -4,12 +4,18 @@ import { prisma } from "@/db/client";
 import { getReferrerStripeBalanceCents } from "@/features/referrals/server/referral-credit-service";
 import { getReferralMrrImpact } from "@/features/referrals/server/referral-mrr-sync";
 import { resolvePartnerTier } from "@/features/referrals/lib/referral-partner-tier";
+import {
+  computeReferralKpiFromRows,
+  computeUsedReferralBalanceCents,
+} from "@/features/referrals/lib/referral-kpi-utils";
 
 export type ReferralEarningsSummary = {
-  earnedCents: number;
-  paidReferredCount: number;
-  appliedCents: number;
+  grantedRewardsCents: number;
+  processingBalanceCents: number;
+  usedBalanceCents: number;
   availableBalanceCents: number;
+  referredCompaniesCount: number;
+  paidReferredCount: number;
   activeReferralCount: number;
   activeMrrCents: number;
   lifetimeReferralCount: number;
@@ -39,6 +45,7 @@ export async function getReferralEarningsSummary(
     select: {
       status: true,
       rewardCents: true,
+      rewardStatus: true,
       referredWorkspace: {
         select: {
           billingAccount: {
@@ -57,32 +64,29 @@ export async function getReferralEarningsSummary(
     },
   });
 
-  let earnedCents = 0;
   let paidReferredCount = 0;
 
   for (const referral of referrals) {
-    if (referral.rewardCents > 0) {
-      earnedCents += referral.rewardCents;
-    }
-
     if (isPaidReferredSubscription(referral.referredWorkspace.billingAccount?.subscription)) {
       paidReferredCount += 1;
     }
   }
 
+  const kpi = computeReferralKpiFromRows(referrals);
   const availableBalanceCents = await getReferrerStripeBalanceCents(referrerUserId);
-  const appliedCents = Math.max(0, earnedCents - availableBalanceCents);
-  const activeReferralCount = referrals.filter((r) => r.status === "ACTIVE").length;
+  const usedBalanceCents = computeUsedReferralBalanceCents(
+    kpi.grantedRewardsCents,
+    availableBalanceCents,
+  );
   const activeMrrCents = await getReferralMrrImpact(referrerUserId);
 
   return {
-    earnedCents,
+    ...kpi,
+    usedBalanceCents,
     paidReferredCount,
-    appliedCents,
     availableBalanceCents,
-    activeReferralCount,
     activeMrrCents,
     lifetimeReferralCount: referrals.length,
-    tier: resolvePartnerTier(activeReferralCount),
+    tier: resolvePartnerTier(kpi.activeReferralCount),
   };
 }

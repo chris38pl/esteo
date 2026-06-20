@@ -128,15 +128,18 @@ Parsed breakdown (`parse-invoice-preview-lines.ts`):
 | `recurringCents` | Next-period subscription lines (non-proration) |
 | `prorationCents` | Signed net proration (positive charge, negative credit) |
 | `amountCents` | `amount_due` |
+| `referralBalanceAppliedCents` | Credit consumed from Stripe customer balance (`ending_balance − starting_balance` when starting credit) |
+
+**Referral program balance (referrer rewards):** When the billing customer has Stripe credit from referral rewards, `amount_due` is already reduced. UI shows a breakdown line **„Saldo programu poleceń”** (billing overview + change preview dialog). Distinct from **„Zniżka polecająca (20%)”** — the coupon for users who were referred. Full spec: [referral-program.md](referral-program.md).
 
 UI recurring display uses **catalog** (`WorkspaceBillingPricing.recurringCents` from DB `planVersion` + add-on quantities), not the billing page selection state.
 
 | State | UI |
 | --- | --- |
-| Active paid sub | Total + breakdown + optional “Kolejne faktury” when proration ≠ 0 |
+| Active paid sub | Total + breakdown (proration / referral coupon / **referral balance**) + „Kolejne faktury” |
 | FREE plan | Empty + copy |
-| `cancelAtPeriodEnd` | Empty + “no further invoice” copy |
-| Stripe preview fails | Fallback: catalog recurring + DB `currentPeriodEnd` |
+| `cancelAtPeriodEnd` | Empty + „no further invoice” copy |
+| Stripe preview fails | Fallback: catalog recurring + DB `currentPeriodEnd` (no balance line — `referralBalanceAppliedCents: 0`) |
 
 ### Change preview (paid workspaces)
 
@@ -144,8 +147,8 @@ UI recurring display uses **catalog** (`WorkspaceBillingPricing.recurringCents` 
 
 | Kind | UX |
 | --- | --- |
-| `charge` | Full preview dialog |
-| `credit` | Light credit confirm |
+| `charge` | Full preview dialog (subscription + proration + optional referral balance line) |
+| `credit` | Light credit confirm (proration credit only — referral balance not shown yet) |
 | `none` | Apply immediately (e.g. scheduled downgrade) |
 
 Preview TTL: 5 minutes (client UX only). Apply re-fetches workspace state; preview amounts are not trusted.
@@ -288,6 +291,8 @@ Hero prices (`planHero.price.*`) are **display placeholders** — authoritative 
 - [ ] Resume subscription clears cancel flag
 - [ ] Usage cards reflect entitlements + storage
 - [ ] Next invoice shows Stripe amount/date (active paid sub)
+- [ ] Next invoice breakdown shows referral balance line when referrer has Stripe credit
+- [ ] Change preview (add-ons) shows proration + referral balance + addons note
 - [ ] `/billing/addons`: PRO can add storage only; BUSINESS can add storage + seats; FREE gated
 - [ ] Seat quantity decrease blocked when over member cap
 - [ ] Canceling sub shows empty next-invoice state with correct copy

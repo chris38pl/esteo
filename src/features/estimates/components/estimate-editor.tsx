@@ -120,6 +120,8 @@ interface EstimateEditorProps {
   initialAttachments?: EstimateAttachmentClient[];
   initialPdfDocuments?: EstimatePdfClient[];
   workspaceCompanyProfile: WorkspaceCompanyProfileClient;
+  workspaceLogoUrl?: string | null;
+  showFirstAiToast?: boolean;
   storageSummary?: WorkspaceStorageSummaryClient;
   currentUserId?: string;
   currentUserAvatarUrl?: string | null;
@@ -187,7 +189,9 @@ export function EstimateEditor({
   initialPaymentInstallments = [],
   initialAttachments = [],
   initialPdfDocuments = [],
-  workspaceCompanyProfile,
+  workspaceCompanyProfile: initialWorkspaceCompanyProfile,
+  workspaceLogoUrl = null,
+  showFirstAiToast = false,
   storageSummary = {
     usedBytes: "0",
     limitBytes: "262144000",
@@ -205,6 +209,9 @@ export function EstimateEditor({
   const t = useTranslations("estimates");
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [workspaceCompanyProfile, setWorkspaceCompanyProfile] = useState(
+    initialWorkspaceCompanyProfile,
+  );
   const [sections, setSections] = useState<SectionData[]>(() =>
     versionTreeToSections(versionTree),
   );
@@ -402,8 +409,11 @@ export function EstimateEditor({
     useEstimatePdfBeforeExport({
       workspaceCompanyProfile,
       ensureSaved: ensureSavedBeforePdfExport,
+      workspaceId: estimate.workspaceId,
       workspaceSlug,
+      workspaceLogoUrl,
       locale,
+      onProfileUpdated: setWorkspaceCompanyProfile,
     });
 
   const openSendDialog = useCallback(
@@ -1007,6 +1017,9 @@ export function EstimateEditor({
           locale={locale}
           initialStatus={requestStatus}
           initialCanManualRetry={canManualRetryAiDraft}
+          showFirstAiToast={showFirstAiToast}
+          onFirstAiGeneratePdf={() => void exportPdf()}
+          onFirstAiSendToClient={() => void openSendDialog("send")}
         />
       ) : (
         <div

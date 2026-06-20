@@ -1,0 +1,28 @@
+import type { WorkspaceIndustry } from "@prisma/client";
+
+export const ACTIVATION_STEP_IDS = [
+  "create_estimate",
+  "generate_pdf",
+  "share_form",
+] as const;
+
+export type ActivationStepId = (typeof ACTIVATION_STEP_IDS)[number];
+
+export type ActivationStep = {
+  id: ActivationStepId;
+  completed: boolean;
+};
+
+export type ActivationGuideMode = "how_it_works" | "tips";
+
+export type ActivationProgressClient = {
+  eligible: boolean;
+  showFormBadge: boolean;
+  guideMode: ActivationGuideMode;
+  industry: WorkspaceIndustry;
+  latestEstimateId: string | null;
+  hasPublicFormSubmission: boolean;
+  steps: ActivationStep[];
+  completedCount: number;
+  totalCount: number;
+};

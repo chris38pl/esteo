@@ -6,13 +6,11 @@ import type { SubscriptionPlan } from "@prisma/client";
 import {
   AlertTriangle,
   ArrowRight,
-  Coins,
   Copy,
   Crown,
   Gift,
   HandCoins,
   Share2,
-  Sparkles,
   UserPlus,
   Users,
 } from "lucide-react";
@@ -21,6 +19,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { buildReferralLink, buildReferralShareMessage } from "@/features/referrals/lib/referral-share-templates";
+import { REFERRAL_INVITE_HERO_IMAGES } from "@/features/referrals/lib/referral-hero-images";
 import type { ReferralPayoutStatusKey } from "@/features/referrals/lib/referral-payout-status";
 import { expectedRewardForPlan } from "@/features/referrals/server/referral-rewards-catalog";
 import { formatBillingMonthlyPrice } from "@/features/billing/lib/format-billing-amount";
@@ -43,28 +42,68 @@ type Props = {
 const MAX_VISIBLE_INVITATIONS = 6;
 const INVITATION_ROW_HEIGHT_REM = 3.25;
 
-function ReferralGiftIllustration() {
+function ReferralGiftGlow() {
+  return (
+    <div className="absolute inset-0 z-0 overflow-visible">
+      <div
+        className={cn(
+          "absolute bottom-[6%] left-1/2 h-[4.125rem] w-[6.5rem] -translate-x-[54%] rotate-[-10deg]",
+          "rounded-[42%_58%_62%_38%] bg-blue-500/30 blur-[2.75rem]",
+          "dark:bg-blue-400/24 lg:h-[4.75rem] lg:w-[7.25rem] lg:blur-[3.25rem]",
+        )}
+      />
+      <div
+        className={cn(
+          "absolute bottom-[9%] left-1/2 h-14 w-24 -translate-x-[44%] rotate-[7deg]",
+          "rounded-[58%_42%_48%_52%] bg-indigo-400/28 blur-[2.25rem]",
+          "dark:bg-sky-400/20 lg:h-16 lg:w-28 lg:blur-[2.75rem]",
+        )}
+      />
+      <div
+        className={cn(
+          "absolute bottom-[11%] left-1/2 h-10 w-[5.5rem] -translate-x-1/2 rotate-[-4deg]",
+          "rounded-[50%_46%_54%_50%] bg-blue-600/32 blur-[1.75rem]",
+          "dark:bg-blue-300/26 lg:h-11 lg:w-24 lg:blur-[2rem]",
+        )}
+      />
+      <div
+        className={cn(
+          "absolute bottom-[13%] left-[34%] h-8 w-16 -rotate-[14deg]",
+          "rounded-[45%_55%_50%_50%] bg-blue-500/22 blur-[1.5rem] dark:bg-blue-400/18",
+        )}
+      />
+      <div
+        className={cn(
+          "absolute bottom-[8%] left-[56%] h-9 w-14 rotate-[11deg]",
+          "rounded-[55%_45%_40%_60%] bg-violet-400/18 blur-[1.75rem] dark:bg-blue-300/16",
+        )}
+      />
+    </div>
+  );
+}
+
+function ReferralGiftIllustration({ className }: { className?: string }) {
   return (
     <div
       aria-hidden
-      className="pointer-events-none relative hidden h-36 w-44 shrink-0 sm:block lg:h-40 lg:w-48"
+      className={cn(
+        "pointer-events-none relative h-36 w-32 shrink-0 overflow-visible sm:h-40 sm:w-44 lg:h-48 lg:w-52",
+        className,
+      )}
     >
-      <div className="absolute right-2 top-2 size-16 rounded-2xl bg-gradient-to-br from-blue-500/30 to-blue-600/10 blur-xl" />
-      <Sparkles className="absolute right-16 top-0 size-4 text-amber-300/80" />
-      <Sparkles className="absolute right-4 top-10 size-3 text-blue-300/70" />
-      <Sparkles className="absolute right-24 top-8 size-3 text-violet-300/60" />
-      <div className="absolute right-6 top-6 flex size-24 flex-col items-center justify-end">
-        <div className="absolute -top-1 left-1/2 h-8 w-10 -translate-x-1/2 rounded-t-lg bg-gradient-to-b from-sky-300 to-blue-500 shadow-lg shadow-blue-500/20">
-          <div className="absolute left-1/2 top-0 h-full w-3 -translate-x-1/2 rounded-t-lg bg-sky-200/80" />
-          <div className="absolute left-1 top-1/2 h-3 w-8 -translate-y-1/2 rounded-full bg-sky-200/80" />
-        </div>
-        <div className="relative h-16 w-full rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 shadow-xl shadow-blue-900/30">
-          <div className="absolute inset-x-0 top-1/2 h-3 -translate-y-1/2 bg-sky-200/90" />
-          <div className="absolute left-1/2 top-0 h-full w-3 -translate-x-1/2 bg-sky-200/90" />
-        </div>
-      </div>
-      <Coins className="absolute bottom-2 right-20 size-5 text-amber-400/90" />
-      <Coins className="absolute bottom-6 right-8 size-4 text-amber-300/80" />
+      <ReferralGiftGlow />
+      <img
+        src={REFERRAL_INVITE_HERO_IMAGES.light}
+        alt=""
+        draggable={false}
+        className="relative z-10 h-full w-full object-contain object-center dark:hidden"
+      />
+      <img
+        src={REFERRAL_INVITE_HERO_IMAGES.dark}
+        alt=""
+        draggable={false}
+        className="relative z-10 hidden h-full w-full object-contain object-center dark:block"
+      />
     </div>
   );
 }
@@ -210,10 +249,31 @@ function ReferralBenefitsBanner({
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex min-h-[7.5rem] flex-col justify-between rounded-xl border border-border/60 bg-card p-6 shadow-sm">
-      <p className="text-sm text-muted-foreground">{label}</p>
+    <div className="flex min-h-[9.5rem] flex-col justify-between rounded-xl border border-border/60 bg-card p-6 pb-7 shadow-sm">
+      <p className="text-sm leading-snug text-muted-foreground">{label}</p>
       <p className="text-2xl font-semibold tracking-tight">{value}</p>
     </div>
+  );
+}
+
+const referredPlanBadgeStyles: Record<
+  Extract<SubscriptionPlan, "PRO" | "BUSINESS">,
+  string
+> = {
+  PRO: "border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400",
+  BUSINESS: "border-violet-500/30 bg-violet-500/10 text-violet-600 dark:text-violet-400",
+};
+
+function ReferredPlanBadge({ plan }: { plan: Extract<SubscriptionPlan, "PRO" | "BUSINESS"> }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+        referredPlanBadgeStyles[plan],
+      )}
+    >
+      {plan}
+    </span>
   );
 }
 
@@ -375,9 +435,17 @@ export function PartnerProgramPanel({
         </div>
       ) : null}
 
-      <section className="overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-br from-blue-50 via-slate-50 to-indigo-100/60 shadow-sm dark:from-[#070b14] dark:via-[#0a1020] dark:to-[#070b14]">
-        <div className="relative flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
-          <div className="relative z-10 max-w-xl space-y-4">
+      <section className="relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-br from-blue-50 via-slate-50 to-indigo-100/60 shadow-sm dark:from-[#070b14] dark:via-[#0a1020] dark:to-[#070b14]">
+        <div
+          aria-hidden
+          className={cn(
+            "pointer-events-none absolute inset-y-0 left-0 z-[1] w-[82%] sm:hidden",
+            "bg-gradient-to-r from-blue-50 from-[38%] via-blue-50/88 via-[62%] to-transparent",
+            "dark:from-[#070b14] dark:from-[34%] dark:via-[#0a1020]/92 dark:via-[58%] dark:to-transparent",
+          )}
+        />
+        <div className="relative flex min-h-[10.5rem] flex-col justify-center p-6 sm:min-h-0 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+          <div className="relative z-10 max-w-xl space-y-4 pr-[36%] sm:max-w-xl sm:pr-0">
             <div className="space-y-2">
               <h2 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl dark:text-white">
                 {t("inviteCard.title")}
@@ -396,7 +464,7 @@ export function PartnerProgramPanel({
               {t("inviteCard.cta")}
             </Button>
           </div>
-          <ReferralGiftIllustration />
+          <ReferralGiftIllustration className="absolute right-1 bottom-1 z-0 sm:relative sm:right-auto sm:bottom-auto sm:z-auto" />
         </div>
       </section>
 
@@ -452,10 +520,13 @@ export function PartnerProgramPanel({
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label={t("hero.earned")} value={formatAmount(summary.earnedCents)} />
-        <StatCard label={t("hero.activeReferrals")} value={String(summary.paidReferredCount)} />
-        <StatCard label={t("hero.appliedToInvoices")} value={formatAmount(summary.appliedCents)} />
+        <StatCard
+          label={t("hero.referredCompanies")}
+          value={String(summary.referredCompaniesCount)}
+        />
+        <StatCard label={t("hero.grantedRewards")} value={formatAmount(summary.grantedRewardsCents)} />
         <StatCard label={t("hero.availableBalance")} value={formatAmount(summary.availableBalanceCents)} />
+        <StatCard label={t("hero.usedBalance")} value={formatAmount(summary.usedBalanceCents)} />
       </section>
 
       <section className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm sm:p-8">
@@ -529,7 +600,14 @@ export function PartnerProgramPanel({
 
                   return (
                     <tr key={row.id} className="border-b border-border/40 last:border-0">
-                      <td className="px-6 py-3.5 sm:px-8">{row.referredEmail}</td>
+                      <td className="px-6 py-3.5 sm:px-8">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="min-w-0 truncate">{row.referredEmail}</span>
+                          {row.referredPlan === "PRO" || row.referredPlan === "BUSINESS" ? (
+                            <ReferredPlanBadge plan={row.referredPlan} />
+                          ) : null}
+                        </div>
+                      </td>
                       <td className="px-4 py-3.5">
                         <span
                           className={cn(

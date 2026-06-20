@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
+import { showFirstAiActionToast } from "@/features/activation/lib/show-first-ai-action-toast";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { retryEstimateGenerationAction } from "@/features/estimates/server/actions";
@@ -17,6 +18,9 @@ interface EstimateGeneratingSkeletonProps {
   locale: Locale;
   initialStatus?: string | null;
   initialCanManualRetry?: boolean;
+  showFirstAiToast?: boolean;
+  onFirstAiGeneratePdf?: () => void;
+  onFirstAiSendToClient?: () => void;
 }
 
 export function EstimateGeneratingSkeleton({
@@ -26,8 +30,12 @@ export function EstimateGeneratingSkeleton({
   locale,
   initialStatus,
   initialCanManualRetry = false,
+  showFirstAiToast = false,
+  onFirstAiGeneratePdf,
+  onFirstAiSendToClient,
 }: EstimateGeneratingSkeletonProps) {
   const t = useTranslations("estimates");
+  const tActivation = useTranslations("activation.firstAiToast");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [retryError, setRetryError] = useState<string | null>(null);
@@ -39,6 +47,20 @@ export function EstimateGeneratingSkeleton({
     locale,
     onFinished: (finalStatus) => {
       if (finalStatus === "COMPLETED") {
+        if (showFirstAiToast && onFirstAiGeneratePdf && onFirstAiSendToClient) {
+          showFirstAiActionToast({
+            workspaceSlug,
+            t: {
+              title: tActivation("title"),
+              descriptionLine1: tActivation("descriptionLine1"),
+              descriptionLine2: tActivation("descriptionLine2"),
+              generatePdf: tActivation("generatePdf"),
+              sendToClient: tActivation("sendToClient"),
+            },
+            onGeneratePdf: onFirstAiGeneratePdf,
+            onSendToClient: onFirstAiSendToClient,
+          });
+        }
         router.refresh();
       }
     },

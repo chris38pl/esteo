@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import { loadEstimatesForListPage } from "@/features/estimates/server/list-estimates-page-data";
 import { EstimatesListPanel } from "@/features/estimates/components/estimates-list-panel";
 import { getEstimateRequestFormDataForWorkspace } from "@/features/estimate-requests/server/public-service";
+import { getActivationProgress } from "@/features/activation/server/activation-progress";
 import { dashboardBillingHref } from "@/lib/dashboard-routes";
 import {
   deriveEstimateProcessingGate,
@@ -52,6 +53,15 @@ export default async function EstimatesPage({
   const isOwner = resolved.workspace.ownerId === user.id;
   const billingHref = isOwner ? dashboardBillingHref(resolvedLocale, workspaceSlug) : null;
 
+  const activationProgress = isOwner
+    ? await getActivationProgress({
+        workspaceId,
+        ownerId: resolved.workspace.ownerId,
+        userId: user.id,
+        industry: resolved.workspace.industry,
+      })
+    : null;
+
   if (!createFormData) {
     redirect(`/${resolvedLocale}/dashboard`);
   }
@@ -65,6 +75,7 @@ export default async function EstimatesPage({
       workspaceId={resolved.workspace.id}
       workspaceSlug={workspaceSlug}
       locale={resolvedLocale}
+      activationProgress={activationProgress}
     />
   );
 }

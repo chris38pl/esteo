@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { setWorkspaceReadyPending } from "@/features/activation/lib/activation-storage";
 import {
   FREE_WORKSPACE_COOLDOWN_DAYS,
   FREE_WORKSPACE_MONTHLY_DELETE_LIMIT,
@@ -158,6 +159,10 @@ export function CreateWorkspaceForm({
         mode === "onboarding"
           ? `/${locale}/dashboard/${result.data.workspace.slug}/estimates`
           : `/${locale}/dashboard/${result.data.workspace.slug}`;
+
+      if (mode === "onboarding") {
+        setWorkspaceReadyPending(result.data.workspace.slug);
+      }
 
       router.replace(destination);
     });

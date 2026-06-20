@@ -6,6 +6,7 @@ import type { WorkspaceBillingPricing } from "@/features/billing/billing-page-da
 import {
   hasCatalogStripeRecurringMismatch,
   parseInvoicePreviewLines,
+  parseCustomerBalanceAppliedCents,
   resolveInvoicePreview,
   resolveProrationKind,
   resolveInvoiceAdjustmentKind,
@@ -261,6 +262,7 @@ export async function getWorkspaceUpcomingInvoice(
       prorationCents: parsed.prorationCents,
       invoiceDeltaCents: resolved.invoiceDeltaCents,
       adjustmentKind: resolved.adjustmentKind,
+      referralBalanceAppliedCents: parseCustomerBalanceAppliedCents(invoice),
     };
   } catch {
     return getUpcomingInvoiceFallback(stripe, subscription, catalogRecurringCents);
@@ -328,6 +330,7 @@ async function getUpcomingInvoiceFallback(
       prorationCents: 0,
       invoiceDeltaCents,
       adjustmentKind,
+      referralBalanceAppliedCents: 0,
     };
   } catch {
     return { kind: "none", reason: "no_subscription" };

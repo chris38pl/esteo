@@ -59,6 +59,7 @@ export type WorkspaceBillingNextInvoice =
       prorationCents: number;
       invoiceDeltaCents: number;
       adjustmentKind: InvoiceAdjustmentKind;
+      referralBalanceAppliedCents: number;
     }
   | {
       kind: "none";
@@ -94,6 +95,7 @@ export type BillingChangePreview = {
   invoiceDeltaCents: number;
   prorationKind: ProrationKind;
   nextInvoiceCents: number;
+  referralBalanceAppliedCents: number;
   currency: "PLN" | "EUR";
   previewGeneratedAt: string;
   previewExpiresAt: string;

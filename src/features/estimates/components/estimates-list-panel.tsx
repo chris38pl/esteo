@@ -3,6 +3,7 @@
 import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 
 import { PaginationControls } from "@/components/shared/pagination-controls";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,13 @@ import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import { CreateEstimateModal } from "./create-estimate-modal";
 import { EstimateEditorLayoutStyles } from "./estimate-editor-layout-styles";
+import {
+  ActivationEstimatesSection,
+} from "@/features/activation/components/activation-estimates-section";
+import { useActivationUiState } from "@/features/activation/hooks/use-activation-ui-state";
+import { copyPublicFormLink } from "@/features/activation/lib/copy-public-form-link";
+import { notifyFormLinkShared } from "@/features/activation/lib/notify-form-link-shared";
+import type { ActivationProgressClient } from "@/features/activation/lib/activation-types";
 import { EstimatesListFilterSheet } from "./estimates-list-filter-sheet";
 import { EstimatesListHeroCards } from "./estimates-list-hero-cards";
 import { EstimatesListPlanLimitBanner } from "./estimates-list-plan-limit-banner";
@@ -41,6 +49,7 @@ interface EstimatesListPanelProps {
   workspaceId: string;
   workspaceSlug: string;
   locale: Locale;
+  activationProgress: ActivationProgressClient | null;
 }
 
 export function EstimatesListPanel({
@@ -51,8 +60,22 @@ export function EstimatesListPanel({
   workspaceId,
   workspaceSlug,
   locale,
+  activationProgress,
 }: EstimatesListPanelProps) {
   const t = useTranslations("estimates");
+  const tFormBadge = useTranslations("activation.formBadge");
+  const activation = activationProgress ?? {
+    eligible: false,
+    showFormBadge: false,
+    guideMode: "how_it_works" as const,
+    industry: "OTHER" as const,
+    latestEstimateId: null,
+    hasPublicFormSubmission: false,
+    steps: [],
+    completedCount: 0,
+    totalCount: 3,
+  };
+  const { refreshActivationUi } = useActivationUiState(activation, workspaceSlug);
   const { preferences, toggleOptionalColumn, setPageSize } =
     useEstimatesListPreferences(workspaceSlug);
   const { visibleColumns, pageSize } = preferences;
@@ -116,6 +139,50 @@ export function EstimatesListPanel({
   const hasEstimates = estimates.length > 0;
   const hasFilteredResults = filteredEstimates.length > 0;
 
+  const handleFormLinkShared = useCallback(() => {
+    if (!activationProgress?.eligible) {
+      return;
+    }
+
+    notifyFormLinkShared({
+      workspaceSlug,
+      title: tFormBadge("afterCopyTitle"),
+      description: tFormBadge("afterCopyDescription"),
+      onStateChange: refreshActivationUi,
+    });
+  }, [activationProgress?.eligible, refreshActivationUi, tFormBadge, workspaceSlug]);
+
+  const handleCopyFormLinkForHero = useCallback(async () => {
+    const copied = await copyPublicFormLink(
+      locale,
+      workspaceSlug,
+      t("list.hero.form.copyFallback"),
+    );
+
+    if (!copied) {
+      return;
+    }
+
+    if (activationProgress?.eligible) {
+      notifyFormLinkShared({
+        workspaceSlug,
+        title: tFormBadge("afterCopyTitle"),
+        description: tFormBadge("afterCopyDescription"),
+        onStateChange: refreshActivationUi,
+      });
+      return;
+    }
+
+    toast.success(t("list.hero.form.copied"));
+  }, [
+    activationProgress?.eligible,
+    locale,
+    refreshActivationUi,
+    t,
+    tFormBadge,
+    workspaceSlug,
+  ]);
+
   const handleExportCsv = useCallback(() => {
     if (filteredEstimates.length === 0) {
       return;
@@ -156,10 +223,24 @@ export function EstimatesListPanel({
         </div>
       ) : null}
       <EstimateEditorLayoutStyles />
+
+      {activationProgress ? (
+        <ActivationEstimatesSection
+          activationProgress={activationProgress}
+          workspaceSlug={workspaceSlug}
+          locale={locale}
+          onCreateClick={() => setCreateOpen(true)}
+        />
+      ) : null}
+
       <EstimatesListHeroCards
         workspaceSlug={workspaceSlug}
         locale={locale}
         onCreateClick={() => setCreateOpen(true)}
+        onCopyFormLink={() => void handleCopyFormLinkForHero()}
+        onFormLinkShared={
+          activationProgress?.eligible ? handleFormLinkShared : undefined
+        }
       />
 
       <EstimatesListPlanLimitBanner

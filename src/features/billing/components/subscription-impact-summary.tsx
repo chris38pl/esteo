@@ -272,6 +272,13 @@ function OverviewSummary(props: OverviewProps) {
     adjustmentKind === "proration" && Math.abs(invoiceDeltaCents) > 1;
   const hasReferralBreakdown =
     adjustmentKind === "subscription_discount" && Math.abs(invoiceDeltaCents) > 1;
+  const referralBalanceAppliedCents = hasInvoice
+    ? (nextInvoice.referralBalanceAppliedCents ?? 0)
+    : 0;
+  const hasReferralBalanceBreakdown = referralBalanceAppliedCents > 0;
+  const showInvoiceBreakdown =
+    hasProrationBreakdown || hasReferralBreakdown || hasReferralBalanceBreakdown;
+  const referralBalanceTooltip = tNext("referralBalanceCreditTooltip");
   const referralPercent = activeReferralDiscount?.percent ?? 20;
   const monthlyAmount = formatBillingMonthlyPrice(currentTotal, locale, currency);
   const adjustmentTooltip = tNext("adjustmentTooltip", { monthlyAmount });
@@ -386,8 +393,10 @@ function OverviewSummary(props: OverviewProps) {
             <p className="text-sm text-muted-foreground">
               {formatDate(nextInvoice.date, locale, { dateStyle: "long" })}
             </p>
-            {hasProrationBreakdown || hasReferralBreakdown ? (
-              <dl className="space-y-2 text-sm">
+            {showInvoiceBreakdown ? (
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-foreground">{tNext("breakdown.composedOf")}</p>
+                <dl className="space-y-2 text-sm">
                 <div className="flex items-center justify-between gap-4">
                   <dt className="text-muted-foreground">{tNext("breakdown.subscription")}</dt>
                   <dd className="font-medium">{monthlyAmount}</dd>
@@ -421,7 +430,29 @@ function OverviewSummary(props: OverviewProps) {
                     tooltip={referralDiscountTooltip}
                   />
                 ) : null}
-              </dl>
+                {hasReferralBalanceBreakdown ? (
+                  <BillingInvoiceAdjustmentRow
+                    label={tNext("breakdown.referralBalanceCredit")}
+                    amount={`-${formatBillingMonthlyPrice(
+                      referralBalanceAppliedCents,
+                      locale,
+                      currency,
+                    )}`}
+                    tooltip={referralBalanceTooltip}
+                  />
+                ) : null}
+                </dl>
+              </div>
+            ) : hasReferralBalanceBreakdown ? (
+              <p className="text-sm text-emerald-600 dark:text-emerald-400">
+                {tNext("referralBalanceAppliedHint", {
+                  amount: formatBillingMonthlyPrice(
+                    referralBalanceAppliedCents,
+                    locale,
+                    currency,
+                  ),
+                })}
+              </p>
             ) : null}
           </div>
         ) : (

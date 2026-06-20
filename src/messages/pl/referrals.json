@@ -10,7 +10,7 @@
   "referralLink": {
     "title": "Twój link polecający",
     "subtitle": "Udostępniaj link w dowolnym miejscu",
-    "alternateShare": "Nie musisz wysyłać linku — przy zakładaniu konta wystarczy, że poda Twój email lub indywidualny kod poniżej. Twój znajomy też dostanie zniżkę na start.",
+    "alternateShare": "Najlepiej wyślij link — znajomy od razu dostaje zniżkę na start, a Ty bonus, gdy wykupi plan. Jeśli założy konto sam, może wpisać Twój e-mail lub kod w ustawieniach firmy (w ciągu 30 dni lub przed pierwszą płatnością). Oboje wtedy skorzystacie z programu.",
     "codeLabel": "Kod polecający",
     "emailLabel": "Email polecający"
   },
@@ -28,10 +28,11 @@
     "sendInvite": "Wyślij zaproszenie"
   },
   "hero": {
-    "earned": "Zarobione dzięki poleceniom",
-    "activeReferrals": "Aktywni poleceni",
-    "appliedToInvoices": "Wykorzystane na fakturach",
-    "availableBalance": "Dostępne saldo"
+    "referredCompanies": "Polecone firmy",
+    "grantedRewards": "Przyznane nagrody",
+    "availableBalance": "Dostępne saldo",
+    "usedBalance": "Wykorzystane saldo",
+    "processing": "W przygotowaniu"
   },
   "howItWorks": {
     "title": "Jak to działa?",
@@ -73,7 +74,7 @@
   },
   "tier": {
     "title": "Twój poziom partnera",
-    "activeCount": "{count} aktywnych klientów",
+    "activeCount": "{count} poleconych firm",
     "lifetimeCount": "Poleconych firm: {count}",
     "nextTier": "Do {tier}: jeszcze {remaining}",
     "none": "Brak poziomu",
@@ -87,8 +88,8 @@
     "awaiting_registration": "Oczekuje na rejestrację",
     "awaiting_first_payment": "Oczekuje na pierwszą płatność",
     "awaiting_plan_selection": "Oczekuje na wybór planu",
-    "processing_bonus": "Przetwarzanie bonusu",
-    "bonus_granted": "Bonus przyznany",
+    "processing_bonus": "W przygotowaniu",
+    "bonus_granted": "Przyznana",
     "inactive": "Nieaktywny"
   },
   "bonus": {
@@ -98,9 +99,9 @@
   },
   "claim": {
     "title": "Kod polecający",
-    "description": "Masz kod lub email polecającego? Wpisz go tutaj.",
-    "placeholder": "Email lub kod polecającego",
-    "windowHint": "Kod polecający można przypisać do pierwszej płatności lub przez 30 dni od utworzenia workspace.",
+    "description": "Kto polecił Ci Esteo? Wpisz jego e-mail lub kod polecający.",
+    "placeholder": "E-mail lub kod polecającego",
+    "windowHint": "Można to zrobić w ciągu 30 dni od założenia firmy lub przed pierwszą płatnością za plan.",
     "submit": "Przypisz",
     "success": "Kod polecający został przypisany.",
     "errors": {

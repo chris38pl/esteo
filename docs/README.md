@@ -22,6 +22,8 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 | [industry-fields.md](features/industry-fields.md) | Dynamic industry fields on documents |
 | [workspace-onboarding.md](features/workspace-onboarding.md) | Workspace creation and onboarding |
 | [workspace-billing.md](features/workspace-billing.md) | Workspace billing page — plans, Stripe, usage, invoices |
+| [referral-program.md](features/referral-program.md) | Partner program — rewards, KPI v6, billing balance disclosure |
+| [activation-flow.md](features/activation-flow.md) | Owner activation checklist on `/estimates` (Phase 1) |
 | [workspace-branding-and-company-profile.md](features/workspace-branding-and-company-profile.md) | Company logo (UploadThing) and company profile tab for PDF/client docs |
 | [admin-workspaces.md](features/admin-workspaces.md) | Platform admin workspace tools |
 | [issue-tracker.md](features/issue-tracker.md) | Internal issue tracker — staging bug capture, admin triage, Cursor sync |

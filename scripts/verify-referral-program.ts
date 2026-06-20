@@ -10,6 +10,8 @@ import {
   extractReferralCodeFromRedirectUrl,
 } from "../src/features/referrals/lib/referral-auth-search-params";
 import { detectReferralFraud } from "../src/features/referrals/server/referral-fraud-detector";
+import { computeReferralKpiFromRows, computeUsedReferralBalanceCents } from "../src/features/referrals/lib/referral-kpi-utils";
+import { resolveReferralPayoutStatusKey } from "../src/features/referrals/lib/referral-payout-status";
 
 let failures = 0;
 let checks = 0;
@@ -93,6 +95,66 @@ assert(
 assert(
   classifyEmailReferrerFailure(true, true) === null,
   "paid user → profile lazy-created on lookup",
+);
+
+console.log("Referral KPI (rewardStatus-based):");
+const kpiRows = [
+  { status: "ACTIVE", rewardCents: 8000, rewardStatus: "GRANTED" as const },
+  { status: "ACTIVE", rewardCents: 3000, rewardStatus: "PENDING" as const },
+  { status: "ACTIVE", rewardCents: 5000, rewardStatus: "FAILED" as const },
+  { status: "PENDING_CLAIM", rewardCents: 0, rewardStatus: null },
+];
+const kpi = computeReferralKpiFromRows(kpiRows);
+assert(kpi.grantedRewardsCents === 8000, "granted = GRANTED only");
+assert(kpi.processingBalanceCents === 8000, "processing = PENDING + FAILED");
+assert(kpi.referredCompaniesCount === 3, "referredCompanies = ACTIVE count");
+assert(
+  kpi.grantedRewardsCents + kpi.processingBalanceCents === 16000,
+  "granted + processing = active reward total",
+);
+
+console.log("Used referral balance (granted - available):");
+assert(computeUsedReferralBalanceCents(11000, 11000) === 0, "nothing used when granted = available");
+assert(computeUsedReferralBalanceCents(11000, 8000) === 3000, "partial use on invoices");
+assert(computeUsedReferralBalanceCents(84000, 65400) === 18600, "large partner partial use");
+assert(
+  computeUsedReferralBalanceCents(8000, 10000) === 0,
+  "used never negative when available exceeds granted",
+);
+assert(
+  computeUsedReferralBalanceCents(kpi.grantedRewardsCents, kpi.grantedRewardsCents) === 0,
+  "used = 0 when available equals granted (processing not counted as used)",
+);
+assert(
+  kpi.grantedRewardsCents + kpi.processingBalanceCents ===
+    computeUsedReferralBalanceCents(kpi.grantedRewardsCents, 0) + kpi.processingBalanceCents,
+  "processing rewards do not inflate used balance",
+);
+
+console.log("Payout status (partner-facing):");
+assert(
+  resolveReferralPayoutStatusKey(
+    { status: "ACTIVE", rewardStatus: "GRANTED", referredPlan: "PRO", expectedRewardCents: 3000 },
+    "ACTIVE",
+    true,
+  ) === "bonus_granted",
+  "GRANTED → bonus_granted",
+);
+assert(
+  resolveReferralPayoutStatusKey(
+    { status: "ACTIVE", rewardStatus: "PENDING", referredPlan: "PRO", expectedRewardCents: 3000 },
+    "ACTIVE",
+    true,
+  ) === "processing_bonus",
+  "PENDING → processing_bonus",
+);
+assert(
+  resolveReferralPayoutStatusKey(
+    { status: "ACTIVE", rewardStatus: "FAILED", referredPlan: "PRO", expectedRewardCents: 3000 },
+    "ACTIVE",
+    true,
+  ) === "processing_bonus",
+  "FAILED → processing_bonus (no error label)",
 );
 
 console.log("Referral auth search params:");

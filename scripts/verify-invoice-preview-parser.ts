@@ -1,5 +1,6 @@
 import {
   hasCatalogStripeRecurringMismatch,
+  parseCustomerBalanceAppliedCents,
   parseInvoicePreviewLines,
   resolveInvoiceAdjustmentKind,
   resolveInvoiceDeltaCents,
@@ -111,6 +112,23 @@ const resolvedReferral = resolveInvoicePreview(referralPreview, referralCatalog)
 assert(resolvedReferral.adjustmentKind === "subscription_discount", "referral coupon is subscription_discount");
 assert(resolvedReferral.invoiceDeltaCents === -2000, "referral delta is -20 PLN");
 assert(resolvedFromProration.adjustmentKind === "proration", "proration lines stay proration kind");
+
+assert(
+  parseCustomerBalanceAppliedCents({ starting_balance: -11000, ending_balance: 0 }) === 11000,
+  "full referral balance applied to invoice",
+);
+assert(
+  parseCustomerBalanceAppliedCents({ starting_balance: -11000, ending_balance: -5000 }) === 6000,
+  "partial referral balance applied",
+);
+assert(
+  parseCustomerBalanceAppliedCents({ starting_balance: 0, ending_balance: 0 }) === 0,
+  "no balance when starting balance is zero",
+);
+assert(
+  parseCustomerBalanceAppliedCents({ starting_balance: -11000, ending_balance: -12000 }) === 0,
+  "no applied amount when balance grows",
+);
 
 if (failures > 0) {
   console.error(`\n${failures} assertion(s) failed.`);

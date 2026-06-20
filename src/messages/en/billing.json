@@ -192,8 +192,11 @@
         "subscription": "Subscription (plan + add-ons)",
         "periodCharge": "Charge for the current period",
         "periodCredit": "Credit for unused billing period",
-        "referralDiscount": "Referral discount ({percent}%)"
+        "referralDiscount": "Referral discount ({percent}%)",
+        "referralBalanceCredit": "Referral program balance"
       },
+      "referralBalanceAppliedHint": "{amount} applied from your referral program balance",
+      "referralBalanceCreditTooltip": "Referral rewards reduce this invoice amount.\n\nThe balance applies to your PRO/Business subscription — it does not discount add-ons.",
       "referralDiscountActive": "{percent}% off until {date}",
       "referralDiscountTooltip": "Referral promotion — {percent}% off your subscription during the promo period.\n\nAfter {date} the standard price applies:\n{monthlyAmount} / month.",
       "empty": {
@@ -211,8 +214,11 @@
       "adjustmentTooltip": "You are adding resources during the current billing period.\n\nThis one-time adjustment covers the cost of using them until the end of the current billing cycle.\n\nStarting from the next billing period, only the standard subscription fee will apply:\n{monthlyAmount} / month.",
       "breakdown": {
         "composedOf": "This invoice includes:",
-        "subscription": "Subscription (plan + add-ons)"
+        "subscription": "Subscription (plan + add-ons)",
+        "referralBalanceCredit": "Referral program balance"
       },
+      "referralBalanceCreditTooltip": "Referral rewards reduce this invoice amount.\n\nThe balance applies to your PRO/Business subscription — it does not discount add-ons.",
+      "referralBalanceAddonsNote": "Referral balance reduces your next invoice. It does not discount add-ons — it is applied to your subscription first.",
       "badge": {
         "oneTimeCharge": "One-time",
         "credit": "Credit"

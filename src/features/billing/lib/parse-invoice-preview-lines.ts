@@ -136,6 +136,21 @@ export function resolveInvoiceAdjustmentKind(params: {
   return "none";
 }
 
+export function parseCustomerBalanceAppliedCents(invoice: {
+  starting_balance?: number | null;
+  ending_balance?: number | null;
+}): number {
+  const starting = invoice.starting_balance ?? 0;
+  const ending = invoice.ending_balance ?? 0;
+
+  if (starting >= 0) {
+    return 0;
+  }
+
+  const applied = ending - starting;
+  return applied > 0 ? applied : 0;
+}
+
 export function hasCatalogStripeRecurringMismatch(
   stripeRecurringCents: number,
   catalogRecurringCents: number,

@@ -1,0 +1,66 @@
+{
+  "workspaceReady": {
+    "title": "Workspace gotowy",
+    "descriptionLine1": "Twoje konto jest gotowe do pracy.",
+    "descriptionLine2": "Utwórz pierwszą wycenę lub wyślij formularz klientowi.",
+    "createCta": "Utwórz pierwszą wycenę",
+    "copyFormCta": "Skopiuj formularz",
+    "dismiss": "Zamknij"
+  },
+  "checklist": {
+    "title": "Wykorzystaj pełnię możliwości Esteo",
+    "steps": {
+      "create_estimate": "Utwórz pierwszą wycenę",
+      "generate_pdf": "Wygeneruj PDF",
+      "share_form": "Skopiuj formularz klienta"
+    },
+    "cta": {
+      "create_estimate": "Utwórz wycenę",
+      "generate_pdf": "Otwórz ostatnią wycenę",
+      "share_form": "Kopiuj link"
+    },
+    "celebration": {
+      "title": "Wszystko gotowe!",
+      "descriptionLine1": "Możesz już tworzyć wyceny samodzielnie",
+      "descriptionLine2": "lub zbierać zapytania od klientów.",
+      "hide": "Ukryj"
+    }
+  },
+  "guide": {
+    "howItWorksTitle": "Jak działa Esteo?",
+    "tipsTitle": "Porady",
+    "howItWorks": {
+      "step1": "Utwórz wycenę samodzielnie lub wyślij formularz klientowi.",
+      "step2": "AI przygotuje kosztorys w kilka sekund.",
+      "step3": "Wygeneruj PDF i wyślij go klientowi."
+    }
+  },
+  "formBadge": {
+    "readyTitle": "Formularz gotowy",
+    "readyDescription": "Skopiuj link i wyślij go klientowi.",
+    "afterCopyTitle": "Wyślij formularz klientowi",
+    "afterCopyDescription": "Link jest skopiowany — wyślij go klientowi, aby zebrać zapytanie."
+  },
+  "firstAiToast": {
+    "title": "Pierwsza wycena gotowa",
+    "descriptionLine1": "Kosztorys został wygenerowany automatycznie.",
+    "descriptionLine2": "Możesz teraz wygenerować PDF lub wysłać go klientowi.",
+    "generatePdf": "Generuj PDF",
+    "sendToClient": "Wyślij klientowi"
+  },
+  "companyProfileModal": {
+    "title": "Dodaj dane swojej firmy",
+    "description": "Logo i dane kontaktowe zostaną umieszczone na wygenerowanym PDF.",
+    "deferHint": "Brakujące dane możesz uzupełnić później.",
+    "missingFieldsLabel": "Brakujące pola:",
+    "fields": {
+      "logo": "Logo firmy",
+      "address": "Adres",
+      "taxId": "NIP",
+      "email": "E-mail",
+      "phone": "Telefon"
+    },
+    "saveAndContinue": "Zapisz i kontynuuj",
+    "skipForNow": "Pomiń na razie"
+  }
+}

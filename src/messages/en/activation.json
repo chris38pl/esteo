@@ -1,0 +1,66 @@
+{
+  "workspaceReady": {
+    "title": "Workspace ready",
+    "descriptionLine1": "Your account is ready to use.",
+    "descriptionLine2": "Create your first estimate or share the client form.",
+    "createCta": "Create your first estimate",
+    "copyFormCta": "Copy form link",
+    "dismiss": "Close"
+  },
+  "checklist": {
+    "title": "Get the most out of Esteo",
+    "steps": {
+      "create_estimate": "Create your first estimate",
+      "generate_pdf": "Generate a PDF",
+      "share_form": "Copy the client form link"
+    },
+    "cta": {
+      "create_estimate": "Create estimate",
+      "generate_pdf": "Open latest estimate",
+      "share_form": "Copy link"
+    },
+    "celebration": {
+      "title": "All set!",
+      "descriptionLine1": "You can now create estimates on your own",
+      "descriptionLine2": "or collect inquiries from clients.",
+      "hide": "Hide"
+    }
+  },
+  "guide": {
+    "howItWorksTitle": "How Esteo works",
+    "tipsTitle": "Tips",
+    "howItWorks": {
+      "step1": "Create an estimate yourself or send the form to a client.",
+      "step2": "AI prepares a cost breakdown in seconds.",
+      "step3": "Generate a PDF and send it to your client."
+    }
+  },
+  "formBadge": {
+    "readyTitle": "Form ready",
+    "readyDescription": "Copy the link and send it to your client.",
+    "afterCopyTitle": "Send the form to your client",
+    "afterCopyDescription": "Link copied — send it to your client to collect an inquiry."
+  },
+  "firstAiToast": {
+    "title": "First estimate ready",
+    "descriptionLine1": "The cost breakdown was generated automatically.",
+    "descriptionLine2": "You can now generate a PDF or send it to your client.",
+    "generatePdf": "Generate PDF",
+    "sendToClient": "Send to client"
+  },
+  "companyProfileModal": {
+    "title": "Add your company details",
+    "description": "Your logo and contact details will appear on the generated PDF.",
+    "deferHint": "You can fill in missing details later.",
+    "missingFieldsLabel": "Missing fields:",
+    "fields": {
+      "logo": "Company logo",
+      "address": "Address",
+      "taxId": "Tax ID",
+      "email": "Email",
+      "phone": "Phone"
+    },
+    "saveAndContinue": "Save and continue",
+    "skipForNow": "Skip for now"
+  }
+}

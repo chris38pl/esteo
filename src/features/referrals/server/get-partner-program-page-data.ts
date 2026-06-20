@@ -72,15 +72,23 @@ export async function getPartnerProgramPageData(params: {
       sub?.plan !== "FREE" &&
       (sub?.status === "ACTIVE" || sub?.status === "TRIAL");
 
+    const livePlan = sub?.plan ?? null;
+    const referredPlan =
+      hasPaid && livePlan && livePlan !== "FREE"
+        ? livePlan
+        : referral.referredPlan;
+
     return {
       id: referral.id,
       referredEmail: referral.referredWorkspace.owner.email,
+      referredPlan: referredPlan === "FREE" ? null : referredPlan,
       workspaceName: referral.referredWorkspace.name,
       workspaceSlug: referral.referredWorkspace.slug,
       status: referral.status,
       attributionSource: referral.attributionSource,
       rewardCents: referral.rewardCents,
       expectedRewardCents: referral.expectedRewardCents,
+      rewardStatus: referral.rewardStatus,
       rewardGrantedAt: referral.rewardGrantedAt?.toISOString() ?? null,
       activatedAt: referral.activatedAt?.toISOString() ?? null,
       claimedAt: referral.claimedAt.toISOString(),

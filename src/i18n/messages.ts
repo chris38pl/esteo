@@ -1,5 +1,6 @@
 import type { Locale } from "@/lib/locale";
 
+import enActivation from "@/messages/en/activation.json";
 import enAdmin from "@/messages/en/admin.json";
 import enAuth from "@/messages/en/auth.json";
 import enBilling from "@/messages/en/billing.json";
@@ -18,6 +19,7 @@ import enStyleguide from "@/messages/en/styleguide.json";
 import enVoiceIntake from "@/messages/en/voiceIntake.json";
 import enWorkspaces from "@/messages/en/workspaces.json";
 import enWorkspaceUsage from "@/messages/en/workspaceUsage.json";
+import plActivation from "@/messages/pl/activation.json";
 import plAdmin from "@/messages/pl/admin.json";
 import plAuth from "@/messages/pl/auth.json";
 import plBilling from "@/messages/pl/billing.json";
@@ -38,6 +40,7 @@ import plWorkspaces from "@/messages/pl/workspaces.json";
 import plWorkspaceUsage from "@/messages/pl/workspaceUsage.json";
 
 export const namespaces = [
+  "activation",
   "common",
   "admin",
   "auth",
@@ -69,6 +72,7 @@ export type Namespace =
   | "workspaces.invitations";
 
 type MessagesByNamespace = {
+  activation: typeof enActivation;
   common: typeof enCommon;
   admin: typeof enAdmin;
   auth: typeof enAuth;
@@ -96,6 +100,7 @@ export type Messages = {
 function forLocale(locale: Locale): Messages {
   return locale === "pl"
     ? {
+        activation: plActivation,
         common: plCommon,
         admin: plAdmin,
         auth: plAuth,
@@ -116,6 +121,7 @@ function forLocale(locale: Locale): Messages {
         workspaces: plWorkspaces,
       }
     : {
+        activation: enActivation,
         common: enCommon,
         admin: enAdmin,
         auth: enAuth,

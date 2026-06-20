@@ -192,8 +192,11 @@
         "subscription": "Abonament (plan + dodatki)",
         "periodCharge": "Dopłata za bieżący okres",
         "periodCredit": "Kredyt za niewykorzystany okres",
-        "referralDiscount": "Zniżka polecająca ({percent}%)"
+        "referralDiscount": "Zniżka polecająca ({percent}%)",
+        "referralBalanceCredit": "Saldo programu poleceń"
       },
+      "referralBalanceAppliedHint": "Zastosowano {amount} z salda programu poleceń",
+      "referralBalanceCreditTooltip": "Nagrody za polecenia zmniejszają kwotę tej faktury.\n\nSaldo obejmuje abonament PRO/Business — nie daje zniżki na dodatki.",
       "referralDiscountActive": "Zniżka {percent}% do {date}",
       "referralDiscountTooltip": "Promocja polecająca — {percent}% zniżki na abonament przez okres promocji.\n\nPo {date} obowiązuje standardowa cena:\n{monthlyAmount} / miesiąc.",
       "empty": {
@@ -211,8 +214,11 @@
       "adjustmentTooltip": "Dokupujesz dodatkowe zasoby w trakcie bieżącego okresu rozliczeniowego.\n\nJednorazowa dopłata pokrywa koszt korzystania z nich do końca obecnego okresu.\n\nOd kolejnego okresu będzie obowiązywał standardowy abonament:\n{monthlyAmount} / miesiąc.",
       "breakdown": {
         "composedOf": "Składa się z:",
-        "subscription": "Abonament (plan + dodatki)"
+        "subscription": "Abonament (plan + dodatki)",
+        "referralBalanceCredit": "Saldo programu poleceń"
       },
+      "referralBalanceCreditTooltip": "Nagrody za polecenia zmniejszają kwotę tej faktury.\n\nSaldo obejmuje abonament PRO/Business — nie daje zniżki na dodatki.",
+      "referralBalanceAddonsNote": "Saldo z poleceń pomniejsza najbliższą fakturę. Nie obejmuje zniżki na dodatki — rozliczane jest w pierwszej kolejności z abonamentem.",
       "badge": {
         "oneTimeCharge": "Jednorazowa",
         "credit": "Kredyt"
