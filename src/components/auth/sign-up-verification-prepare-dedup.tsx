@@ -3,7 +3,9 @@
 import { useClerk } from "@clerk/nextjs";
 import { useEffect } from "react";
 
-type SignUpResource = ReturnType<NonNullable<ReturnType<typeof useClerk>["client"]>["signUp"]>;
+type SignUpResource = NonNullable<
+  NonNullable<ReturnType<typeof useClerk>["client"]>["signUp"]
+>;
 type PrepareVerification = SignUpResource["prepareVerification"];
 
 const inFlightPrepares = new Map<string, Promise<SignUpResource>>();
