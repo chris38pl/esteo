@@ -21,7 +21,7 @@ export async function getPartnerProgramPageData(params: {
     return null;
   }
 
-  const [profile, summary, referrals] = await Promise.all([
+  const [profile, summary, referrals, contextWorkspace] = await Promise.all([
     getOrCreateUserReferralProfile(params.ownerUserId),
     getReferralEarningsSummary(params.ownerUserId),
     prisma.referral.findMany({
@@ -33,6 +33,7 @@ export async function getPartnerProgramPageData(params: {
             name: true,
             slug: true,
             provisioningStatus: true,
+            owner: { select: { email: true } },
             billingAccount: {
               select: {
                 subscription: {
@@ -43,6 +44,18 @@ export async function getPartnerProgramPageData(params: {
                   },
                 },
               },
+            },
+          },
+        },
+      },
+    }),
+    prisma.workspace.findUnique({
+      where: { id: params.contextWorkspaceId },
+      select: {
+        billingAccount: {
+          select: {
+            subscription: {
+              select: { plan: true },
             },
           },
         },
@@ -61,6 +74,7 @@ export async function getPartnerProgramPageData(params: {
 
     return {
       id: referral.id,
+      referredEmail: referral.referredWorkspace.owner.email,
       workspaceName: referral.referredWorkspace.name,
       workspaceSlug: referral.referredWorkspace.slug,
       status: referral.status,
@@ -68,7 +82,8 @@ export async function getPartnerProgramPageData(params: {
       rewardCents: referral.rewardCents,
       expectedRewardCents: referral.expectedRewardCents,
       rewardGrantedAt: referral.rewardGrantedAt?.toISOString() ?? null,
-      monthlyRevenueCents: referral.monthlyRevenueCents,
+      activatedAt: referral.activatedAt?.toISOString() ?? null,
+      claimedAt: referral.claimedAt.toISOString(),
       payoutStatusKey: resolveReferralPayoutStatusKey(
         referral,
         referral.referredWorkspace.provisioningStatus,
@@ -78,12 +93,16 @@ export async function getPartnerProgramPageData(params: {
     };
   });
 
+  const currentPlan =
+    contextWorkspace?.billingAccount?.subscription?.plan ?? "FREE";
+
   return {
     profile: {
       code: profile.code,
       email: profile.user.email,
     },
     canGenerateReferrals: canGenerate,
+    currentPlan,
     summary,
     tierProgress,
     referrals: rows,

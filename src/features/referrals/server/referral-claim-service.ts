@@ -28,12 +28,34 @@ export class ReferralClaimError extends Error {
       | "ALREADY_CLAIMED"
       | "WINDOW_CLOSED"
       | "PARTNER_INACTIVE"
+      | "PARTNER_NOT_ELIGIBLE"
       | "NOT_FOUND"
       | "FRAUD",
   ) {
     super(message);
     this.name = "ReferralClaimError";
   }
+}
+
+async function throwUnresolvedReferrerInput(input: string): Promise<never> {
+  const trimmed = input.trim();
+  if (trimmed.includes("@")) {
+    const normalized = trimmed.toLowerCase();
+    const user = await prisma.user.findUnique({
+      where: { email: normalized },
+      select: { id: true },
+    });
+    if (!user) {
+      throw new ReferralClaimError("No user with this email address.", "NOT_FOUND");
+    }
+    if (!(await canUserGenerateReferrals(user.id))) {
+      throw new ReferralClaimError(
+        "This user does not have an active PRO or BUSINESS plan.",
+        "PARTNER_NOT_ELIGIBLE",
+      );
+    }
+  }
+  throw new ReferralClaimError("Referrer not found.", "NOT_FOUND");
 }
 
 async function workspaceHasPaidSubscription(workspaceId: string): Promise<boolean> {
@@ -132,6 +154,9 @@ export async function claimReferralForWorkspace(params: {
 
   const picked = pickAttributionCandidate(candidates);
   if (!picked) {
+    if (input) {
+      await throwUnresolvedReferrerInput(input);
+    }
     return null;
   }
 

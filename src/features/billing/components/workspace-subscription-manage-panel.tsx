@@ -35,6 +35,7 @@ import {
 } from "@/features/billing/lib/format-plan-limit-labels";
 import {
   buildRecurringLineItems,
+  applyReferralDiscountToLineItems,
   computePlanImpactSummary,
   projectAddonQuantitiesAfterPlanChange,
   splitLimitImpacts,
@@ -170,8 +171,18 @@ export function WorkspaceSubscriptionManagePanel({
   const isBusinessTarget = selectedPlan === "BUSINESS";
   const canBuyStorage = selectedPlan === "PRO" || selectedPlan === "BUSINESS";
 
-  const afterLineItems = buildRecurringLineItems(selectedPlan, targetAddons);
+  const afterLineItemsFull = buildRecurringLineItems(selectedPlan, targetAddons);
+  const afterLineItems = applyReferralDiscountToLineItems(
+    afterLineItemsFull,
+    selectedPlan,
+    data.referralDiscount?.discountedPlanPriceCents,
+  );
   const afterTotal = afterLineItems.reduce((sum, item) => sum + item.cents, 0);
+  const afterTotalRegular = afterLineItemsFull.reduce((sum, item) => sum + item.cents, 0);
+  const referralPromoActive =
+    data.referralDiscount != null &&
+    afterTotal !== afterTotalRegular &&
+    (selectedPlan === "PRO" || selectedPlan === "BUSINESS");
   const currentLineItems = buildRecurringLineItems(data.currentPlan, data.addonQuantities);
   const currentTotal = currentLineItems.reduce((sum, item) => sum + item.cents, 0);
   const addonOnlyDirty = !planDirty && addonDirty;
@@ -457,6 +468,14 @@ export function WorkspaceSubscriptionManagePanel({
       ) : null}
 
       <ManageStep step={1} title={t("planSection")} emphasis>
+        {data.referralDiscount ? (
+          <div className="mb-4 rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-950 dark:text-emerald-100">
+            {t("referralDiscountBanner", {
+              percent: data.referralDiscount.percent,
+              months: data.referralDiscount.months,
+            })}
+          </div>
+        ) : null}
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:items-stretch">
           {PLAN_ORDER.map((plan) => {
             const limits = data.planLimits[plan];
@@ -519,11 +538,30 @@ export function WorkspaceSubscriptionManagePanel({
                       {tHero(`planName.${plan}`)}
                     </h3>
                   </div>
-                  <p className="flex items-baseline gap-1.5">
-                    <span className="text-2xl font-semibold tabular-nums">
-                      {formatBillingMonthlyPrice(data.catalogPlanPriceCents[plan], locale)}
-                    </span>
-                    <span className="text-sm text-muted-foreground">{tHero("perMonth")}</span>
+                  <p className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+                    {data.referralDiscount &&
+                    (plan === "PRO" || plan === "BUSINESS") &&
+                    data.referralDiscount.discountedPlanPriceCents[plan] != null ? (
+                      <>
+                        <span className="text-lg font-medium tabular-nums text-muted-foreground line-through">
+                          {formatBillingMonthlyPrice(data.catalogPlanPriceCents[plan], locale)}
+                        </span>
+                        <span className="text-2xl font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
+                          {formatBillingMonthlyPrice(
+                            data.referralDiscount.discountedPlanPriceCents[plan]!,
+                            locale,
+                          )}
+                        </span>
+                        <span className="text-sm text-muted-foreground">{t("perMonthPromo")}</span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-2xl font-semibold tabular-nums">
+                          {formatBillingMonthlyPrice(data.catalogPlanPriceCents[plan], locale)}
+                        </span>
+                        <span className="text-sm text-muted-foreground">{tHero("perMonth")}</span>
+                      </>
+                    )}
                   </p>
                   <ul className="space-y-1.5 border-t border-border/50 pt-3 text-sm">
                     {featureRows.map((row) => (
@@ -611,8 +649,15 @@ export function WorkspaceSubscriptionManagePanel({
             targetPlan={selectedPlan}
             currentLineItems={currentLineItems}
             afterLineItems={afterLineItems}
+            afterLineItemsRegular={afterLineItemsFull}
             currentTotal={currentTotal}
             afterTotal={afterTotal}
+            afterTotalRegular={afterTotalRegular}
+            referralPromo={
+              referralPromoActive && data.referralDiscount
+                ? { months: data.referralDiscount.months }
+                : null
+            }
             recurringDeltaCents={afterTotal - currentTotal}
             locale={locale}
             planLabels={planLabels}
@@ -804,8 +849,11 @@ function ChangeSummaryCard({
   targetPlan,
   currentLineItems,
   afterLineItems,
+  afterLineItemsRegular,
   currentTotal,
   afterTotal,
+  afterTotalRegular,
+  referralPromo,
   recurringDeltaCents,
   locale,
   planLabels,
@@ -820,8 +868,11 @@ function ChangeSummaryCard({
   targetPlan: SubscriptionPlan;
   currentLineItems: ReturnType<typeof buildRecurringLineItems>;
   afterLineItems: ReturnType<typeof buildRecurringLineItems>;
+  afterLineItemsRegular: ReturnType<typeof buildRecurringLineItems>;
   currentTotal: number;
   afterTotal: number;
+  afterTotalRegular: number;
+  referralPromo: { months: number } | null;
   recurringDeltaCents: number;
   locale: Locale;
   planLabels: Record<SubscriptionPlan, string>;
@@ -840,33 +891,70 @@ function ChangeSummaryCard({
     plan: SubscriptionPlan,
     lineItems: ReturnType<typeof buildRecurringLineItems>,
     total: number,
+    options?: {
+      lineItemsRegular?: ReturnType<typeof buildRecurringLineItems>;
+      showReferralPromo?: boolean;
+      regularTotal?: number;
+    },
   ) {
+    const regularByKind = new Map(
+      (options?.lineItemsRegular ?? []).map((item) => [item.kind, item.cents]),
+    );
+
     return (
       <>
         <ul className="space-y-1 text-xs">
-          {lineItems.map((item) => (
-            <li key={`${item.kind}-${item.quantity ?? 0}`} className="flex justify-between gap-2">
-              <span className="truncate text-muted-foreground">
-                {formatRecurringLineItemLabel(
-                  item,
-                  item.kind === "plan" ? plan : null,
-                  planLabels,
-                  (key, values) => tImpact(key, values ?? {}),
-                )}
-              </span>
-              <span className="shrink-0 font-medium tabular-nums">
-                {formatBillingMonthlyPrice(item.cents, locale)}
-              </span>
-            </li>
-          ))}
+          {lineItems.map((item) => {
+            const regularCents = regularByKind.get(item.kind);
+            const showPlanPromo =
+              options?.showReferralPromo &&
+              item.kind === "plan" &&
+              regularCents != null &&
+              regularCents !== item.cents;
+
+            return (
+              <li key={`${item.kind}-${item.quantity ?? 0}`} className="flex justify-between gap-2">
+                <span className="truncate text-muted-foreground">
+                  {formatRecurringLineItemLabel(
+                    item,
+                    item.kind === "plan" ? plan : null,
+                    planLabels,
+                    (key, values) => tImpact(key, values ?? {}),
+                  )}
+                </span>
+                <span className="shrink-0 font-medium tabular-nums">
+                  {showPlanPromo ? (
+                    <>
+                      <span className="mr-1 text-muted-foreground line-through decoration-muted-foreground/50">
+                        {formatBillingMonthlyPrice(regularCents, locale)}
+                      </span>
+                      {formatBillingMonthlyPrice(item.cents, locale)}
+                    </>
+                  ) : (
+                    formatBillingMonthlyPrice(item.cents, locale)
+                  )}
+                </span>
+              </li>
+            );
+          })}
         </ul>
-        <div className="mt-2 flex justify-between border-t border-border/40 pt-2 text-xs font-semibold">
-          <span>{tImpact("totalMonthly")}</span>
-          <span className="tabular-nums">
-            {tImpact("totalMonthlyValue", {
-              amount: formatBillingMonthlyPrice(total, locale),
-            })}
-          </span>
+        <div className="mt-2 flex flex-col gap-0.5 border-t border-border/40 pt-2 text-xs font-semibold">
+          <div className="flex justify-between">
+            <span>{tImpact("totalMonthly")}</span>
+            <span className="tabular-nums">
+              {tImpact("totalMonthlyValue", {
+                amount: formatBillingMonthlyPrice(total, locale),
+              })}
+            </span>
+          </div>
+          {options?.showReferralPromo && options.regularTotal != null && options.regularTotal !== total ? (
+            <p className="text-right text-[11px] font-normal text-muted-foreground">
+              {tManage("referralSummaryDuration", { months: referralPromo?.months ?? 0 })}{" "}
+              {tManage("referralSummaryThenRegular", {
+                amount: formatBillingMonthlyPrice(options.regularTotal, locale),
+              })}
+            </p>
+          ) : null}
         </div>
       </>
     );
@@ -901,6 +989,14 @@ function ChangeSummaryCard({
               {formatBillingMonthlyPrice(afterTotal, locale)}
               <span className="ml-1.5 text-sm font-normal text-muted-foreground">/ {perMonth}</span>
             </p>
+            {referralPromo ? (
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                {tManage("referralSummaryDuration", { months: referralPromo.months })}{" "}
+                {tManage("referralSummaryThenRegular", {
+                  amount: formatBillingMonthlyPrice(afterTotalRegular, locale),
+                })}
+              </p>
+            ) : null}
             {hasDelta ? (
               <p
                 className={cn(
@@ -922,7 +1018,11 @@ function ChangeSummaryCard({
         </SummaryColumn>
 
         <SummaryColumn title={tImpact("afterChange")}>
-          {renderLineItems(targetPlan, afterLineItems, afterTotal)}
+          {renderLineItems(targetPlan, afterLineItems, afterTotal, {
+            lineItemsRegular: afterLineItemsRegular,
+            showReferralPromo: referralPromo != null,
+            regularTotal: afterTotalRegular,
+          })}
         </SummaryColumn>
 
         <SummaryColumn title={tManage("impactColumnTitle")}>

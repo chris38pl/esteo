@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 
 import { AttachmentDropzone } from "@/features/estimate-requests/components/attachment-dropzone-placeholder";
 import type { PublicAttachmentAvailability } from "@/features/attachments/lib/attachment-availability";
+import type { StagingAttachmentItem } from "@/features/attachments/lib/staging-attachment-client";
 import { IndustryFieldInput } from "@/features/estimate-requests/components/industry-field-input";
 import { parseFieldSelectConfig } from "@/features/industry-fields/lib/field-select-config";
 import { VOIVODESHIP_KEYS, getVoivodeshipLabel } from "@/features/estimate-requests/config/voivodeships";
@@ -94,8 +95,11 @@ export function EstimateRequestFormFields({
   onIndustryFieldChange,
   showAttachments = true,
   attachmentAvailability,
-  attachmentFiles = [],
-  onAttachmentFilesChange,
+  stagingAttachments = [],
+  onStagingAddFiles,
+  onStagingRemove,
+  onStagingRetry,
+  stagingLocalError = null,
   disabled = false,
 }: {
   locale: Locale;
@@ -114,8 +118,11 @@ export function EstimateRequestFormFields({
   onIndustryFieldChange: (key: string, value: IndustryFieldValue) => void;
   showAttachments?: boolean;
   attachmentAvailability?: PublicAttachmentAvailability;
-  attachmentFiles?: File[];
-  onAttachmentFilesChange?: (files: File[]) => void;
+  stagingAttachments?: StagingAttachmentItem[];
+  onStagingAddFiles?: (files: FileList | null) => void;
+  onStagingRemove?: (clientId: string) => void;
+  onStagingRetry?: (clientId: string) => void;
+  stagingLocalError?: string | null;
   disabled?: boolean;
 }) {
   const t = useTranslations("estimateRequests");
@@ -395,10 +402,13 @@ export function EstimateRequestFormFields({
         <div className="space-y-2">
           <Label className={estimateRequestLabelClassName}>{t("attachments.label")}</Label>
           <AttachmentDropzone
-            value={attachmentFiles}
-            onChange={onAttachmentFilesChange ?? (() => undefined)}
+            items={stagingAttachments}
+            onAddFiles={onStagingAddFiles ?? (() => undefined)}
+            onRemove={onStagingRemove ?? (() => undefined)}
+            onRetry={onStagingRetry ?? (() => undefined)}
             attachmentAvailability={attachmentAvailability}
-            disabled={disabled || !onAttachmentFilesChange}
+            localError={stagingLocalError}
+            disabled={disabled || !onStagingAddFiles}
           />
         </div>
       ) : null}

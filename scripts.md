@@ -201,6 +201,30 @@ Więcej: [`docs/features/ai-eval-harness.md`](docs/features/ai-eval-harness.md),
 
 ---
 
+## **Program partnerski — zniżka 20% i aktywacja bonusów**
+
+Kupon Stripe dla poleconych (20% przez 3 miesiące) — wymagany do checkout ze zniżką:
+
+```bash
+stripe coupons create --percent-off=20 --duration=repeating --duration-in-months=3 --name="Referral 20% 3 months"
+```
+
+Skopiuj `id` kuponu do `.env.local`:
+
+```
+STRIPE_REFERRAL_COUPON_ID="..."
+```
+
+| | | |
+| --- | --- | --- |
+| `test:referral-program` | Testy jednostkowe logiki referral (claim, attribution, rewards) | `npm run test:referral-program` |
+| `prisma:backfill-referral-profiles` | Profile partnerskie dla ownerów z aktywnym PRO/BUSINESS | `npm run prisma:backfill-referral-profiles` |
+| `prisma:backfill-referral-activations` | Aktywacja bonusów dla poleconych z opłaconą subskrypcją (localhost bez webhooka) | `npm run prisma:backfill-referral-activations` |
+
+**Localhost:** bez `STRIPE_REFERRAL_COUPON_ID` UI na `/billing/manage` nadal pokazuje ceny promocyjne (gdy referral `PENDING_CLAIM`), ale Stripe Checkout pobierze pełną kwotę — w logach dev: `[referral] … STRIPE_REFERRAL_COUPON_ID missing`.
+
+---
+
 ## **Ograniczenia**
 
 - **Produkcja:** wszystkie komendy blokowane przy `VERCEL_ENV=production`

@@ -4,6 +4,7 @@ export type ReferralPayoutStatusKey =
   | "awaiting_registration"
   | "awaiting_first_payment"
   | "awaiting_plan_selection"
+  | "processing_bonus"
   | "bonus_granted"
   | "inactive";
 
@@ -34,6 +35,10 @@ export function resolveReferralPayoutStatusKey(
     referral.expectedRewardCents == null
   ) {
     return "awaiting_plan_selection";
+  }
+
+  if (referral.status === "PENDING_CLAIM" && hasPaidSubscription) {
+    return "processing_bonus";
   }
 
   if (referral.status === "PENDING_CLAIM" && !hasPaidSubscription) {

@@ -72,6 +72,14 @@ export function buildRequestStorageKey(
   return `${workspaceId}/requests/${requestId}/${fileId}/${suffix}-${sanitizeFileName(fileName)}`;
 }
 
+export function buildStagingStorageKey(
+  workspaceId: string,
+  attachmentId: string,
+  fileName: string,
+): string {
+  return `${workspaceId}/staging/${attachmentId}/original-${sanitizeFileName(fileName)}`;
+}
+
 export function buildIssueStorageKey(
   issueId: string,
   attachmentId: string,
@@ -80,7 +88,10 @@ export function buildIssueStorageKey(
   return `internal/issues/${issueId}/${attachmentId}/original-${sanitizeFileName(fileName)}`;
 }
 
-async function prepareFileBuffers(file: File): Promise<Omit<PreparedUploadFile, "storageKey">> {
+async function prepareFileBuffers(
+  file: File,
+  attachmentId?: string,
+): Promise<Omit<PreparedUploadFile, "storageKey">> {
   assertSingleFileSize(file.size);
 
   if (!isAllowedAttachmentMimeType(file.type)) {
@@ -89,13 +100,13 @@ async function prepareFileBuffers(file: File): Promise<Omit<PreparedUploadFile, 
 
   const attachmentType = resolveAttachmentType(file.type);
   const buffer = Buffer.from(await file.arrayBuffer());
-  const attachmentId = randomUUID();
+  const id = attachmentId ?? randomUUID();
 
   if (attachmentType === AttachmentType.IMAGE) {
     const processed = await processImageOriginal(buffer, file.type);
 
     return {
-      id: attachmentId,
+      id,
       originalFileName: file.name,
       mimeType: processed.mimeType,
       attachmentType,
@@ -112,7 +123,7 @@ async function prepareFileBuffers(file: File): Promise<Omit<PreparedUploadFile, 
     attachmentType === AttachmentType.PDF ? processPdfBuffer(buffer) : processDocxBuffer(buffer);
 
   return {
-    id: attachmentId,
+    id,
     originalFileName: file.name,
     mimeType: file.type,
     attachmentType,
@@ -123,6 +134,13 @@ async function prepareFileBuffers(file: File): Promise<Omit<PreparedUploadFile, 
     originalBuffer: processed.originalBuffer,
     uploadFileName: file.name,
   };
+}
+
+export async function prepareStagingFileBuffers(
+  file: File,
+  attachmentId: string,
+): Promise<Omit<PreparedUploadFile, "storageKey">> {
+  return prepareFileBuffers(file, attachmentId);
 }
 
 export async function prepareUploadFiles(files: File[]): Promise<PreparedUploadFile[]> {

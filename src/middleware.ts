@@ -4,17 +4,22 @@ import createIntlMiddleware from "next-intl/middleware";
 import { NextResponse } from "next/server";
 
 import { defaultLocale, LOCALE_COOKIE_NAME, locales } from "@/lib/locale";
+import { applyReferralAttributionCookie } from "@/features/referrals/lib/apply-referral-attribution-cookie";
 
 const isPublicRoute = createRouteMatcher([
   "/",
   "/:locale",
   "/:locale/sign-in(.*)",
   "/:locale/sign-up(.*)",
+  "/:locale/r/:code",
   "/:locale/styleguide(.*)",
   "/:locale/wycena(.*)",
   "/:locale/estimate-request(.*)",
   "/api/health",
   "/api/public/voice-intake",
+  "/api/public/estimate-requests",
+  "/api/public/request-attachments/upload",
+  "/api/public/request-attachments/(.*)",
   // Stripe webhooks authenticate via signature, not Clerk session.
   "/api/webhooks/stripe",
 ]);
@@ -50,6 +55,7 @@ export default clerkMiddleware(async (auth, request) => {
 
   // If intlMiddleware issues a redirect (e.g. / → /pl/), honour it without modification.
   if (intlResponse.status >= 300 && intlResponse.status < 400) {
+    applyReferralAttributionCookie(request, intlResponse);
     return intlResponse;
   }
 
@@ -65,6 +71,8 @@ export default clerkMiddleware(async (auth, request) => {
   intlResponse.cookies.getAll().forEach(({ name, value, ...options }) => {
     response.cookies.set(name, value, options);
   });
+
+  applyReferralAttributionCookie(request, response);
 
   return response;
 });

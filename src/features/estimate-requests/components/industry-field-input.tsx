@@ -108,7 +108,7 @@ export function IndustryFieldInput({
                     onChange(field.key, serializeMultiSelectValue(next));
                     return;
                   }
-                  onChange(field.key, serializeMultiSelectValue([option.value]));
+                  onChange(field.key, option.value);
                 }}
                 className={cn(
                   "group flex min-h-20 flex-col items-center justify-center rounded-2xl border bg-background/65 p-3 text-center shadow-xs transition dark:bg-input/20",

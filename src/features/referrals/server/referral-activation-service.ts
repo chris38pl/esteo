@@ -1,8 +1,10 @@
 import "server-only";
 
+import type { SubscriptionPlan, SubscriptionStatus } from "@prisma/client";
 import type Stripe from "stripe";
 
 import { prisma } from "@/db/client";
+import { getStripeClient } from "@/features/billing/server/stripe-client";
 import {
   extractStripePriceId,
   findBasePlanSubscriptionItem,
@@ -12,28 +14,22 @@ import {
 import { defaultPlanVersion } from "@/server/billing/plan-catalog";
 import { resolvePartnerTier } from "@/features/referrals/lib/referral-partner-tier";
 import { grantReferralBonus } from "@/features/referrals/server/referral-credit-service";
+import { countActiveReferralsForReferrer } from "@/features/referrals/server/referral-fraud-detector";
+import { countOwnedWorkspaces } from "@/features/referrals/server/referral-eligibility";
 import {
-  countActiveReferralsForReferrer,
-} from "@/features/referrals/server/referral-fraud-detector";
-import {
-  countOwnedWorkspaces,
-} from "@/features/referrals/server/referral-eligibility";
-import { monthlyRevenueForWorkspace } from "@/features/referrals/server/referral-mrr-sync";
+  monthlyRevenueForWorkspace,
+  syncReferralMonthlyRevenue,
+} from "@/features/referrals/server/referral-mrr-sync";
 import {
   rewardForPlanVersion,
   rewardForPriceId,
   isRewardEligiblePlanVersion,
 } from "@/features/referrals/server/referral-rewards-catalog";
-import { syncReferralMonthlyRevenue } from "@/features/referrals/server/referral-mrr-sync";
 
-function planVersionFromInvoice(
-  invoice: Stripe.Invoice,
+function resolvePlanVersionFromStripeSubscription(
   subscription: Stripe.Subscription,
-): { plan: import("@prisma/client").SubscriptionPlan; planVersion: string } {
-  const plan = resolvePlanFromStripeSubscription(subscription, {
-    planHint: subscription.metadata?.plan ?? null,
-  });
-
+  plan: SubscriptionPlan,
+): string {
   const baseItem = findBasePlanSubscriptionItem(subscription);
   const priceId = extractStripePriceId(baseItem);
   let planVersion = defaultPlanVersion(plan);
@@ -55,13 +51,54 @@ function planVersionFromInvoice(
     planVersion = subPlanVersion;
   }
 
-  return { plan, planVersion };
+  return planVersion;
 }
 
-export async function handleReferralActivationFromInvoice(params: {
-  invoice: Stripe.Invoice;
-  subscription: Stripe.Subscription;
+function planVersionFromInvoice(
+  invoice: Stripe.Invoice,
+  subscription: Stripe.Subscription,
+): { plan: SubscriptionPlan; planVersion: string } {
+  const plan = resolvePlanFromStripeSubscription(subscription, {
+    planHint: subscription.metadata?.plan ?? null,
+  });
+
+  return {
+    plan,
+    planVersion: resolvePlanVersionFromStripeSubscription(subscription, plan),
+  };
+}
+
+async function resolveActivationInvoiceId(
+  stripeSubscription: Stripe.Subscription,
+): Promise<string> {
+  try {
+    const stripe = getStripeClient();
+    const invoices = await stripe.invoices.list({
+      subscription: stripeSubscription.id,
+      status: "paid",
+      limit: 10,
+    });
+    const createInvoice = invoices.data.find(
+      (invoice) => invoice.billing_reason === "subscription_create",
+    );
+    if (createInvoice?.id) {
+      return createInvoice.id;
+    }
+  } catch (error) {
+    console.warn(
+      `Failed to resolve activation invoice for subscription ${stripeSubscription.id}:`,
+      error,
+    );
+  }
+
+  return `sync:${stripeSubscription.id}`;
+}
+
+export async function activateReferralForPaidWorkspace(params: {
   workspaceId: string;
+  plan: SubscriptionPlan;
+  planVersion: string;
+  invoiceId: string;
 }): Promise<void> {
   const referral = await prisma.referral.findUnique({
     where: { referredWorkspaceId: params.workspaceId },
@@ -80,21 +117,15 @@ export async function handleReferralActivationFromInvoice(params: {
     return;
   }
 
-  if (params.invoice.billing_reason !== "subscription_create") {
-    await syncReferralMonthlyRevenue(params.workspaceId);
-    return;
-  }
-
-  const { plan, planVersion } = planVersionFromInvoice(params.invoice, params.subscription);
-  if (plan === "FREE") {
+  if (params.plan === "FREE") {
     return;
   }
 
   let rewardCents: number;
   try {
-    rewardCents = rewardForPlanVersion(planVersion);
+    rewardCents = rewardForPlanVersion(params.planVersion);
   } catch {
-    console.warn(`No referral reward for planVersion ${planVersion}`);
+    console.warn(`No referral reward for planVersion ${params.planVersion}`);
     return;
   }
 
@@ -107,8 +138,8 @@ export async function handleReferralActivationFromInvoice(params: {
     where: { id: referral.id },
     data: {
       status: "ACTIVE",
-      referredPlan: plan,
-      referredPlanVersion: planVersion,
+      referredPlan: params.plan,
+      referredPlanVersion: params.planVersion,
       rewardCents,
       rewardType: "ACTIVATION_BONUS",
       rewardGrantedAt: new Date(),
@@ -123,7 +154,76 @@ export async function handleReferralActivationFromInvoice(params: {
     referrerUserId: referral.referrerUserId,
     referralId: referral.id,
     amountCents: rewardCents,
+    invoiceId: params.invoiceId,
+  });
+}
+
+export async function handleReferralActivationFromInvoice(params: {
+  invoice: Stripe.Invoice;
+  subscription: Stripe.Subscription;
+  workspaceId: string;
+}): Promise<void> {
+  const referral = await prisma.referral.findUnique({
+    where: { referredWorkspaceId: params.workspaceId },
+    select: { id: true, rewardGrantedAt: true },
+  });
+
+  if (!referral) {
+    return;
+  }
+
+  if (referral.rewardGrantedAt) {
+    await syncReferralMonthlyRevenue(params.workspaceId);
+    return;
+  }
+
+  if (params.invoice.billing_reason !== "subscription_create") {
+    await syncReferralMonthlyRevenue(params.workspaceId);
+    return;
+  }
+
+  const { plan, planVersion } = planVersionFromInvoice(params.invoice, params.subscription);
+  await activateReferralForPaidWorkspace({
+    workspaceId: params.workspaceId,
+    plan,
+    planVersion,
     invoiceId: params.invoice.id,
+  });
+}
+
+export async function tryActivateReferralFromSubscriptionSync(params: {
+  workspaceId: string;
+  stripeSubscription: Stripe.Subscription;
+  plan: SubscriptionPlan;
+  status: SubscriptionStatus;
+}): Promise<void> {
+  if (
+    params.plan === "FREE" ||
+    (params.status !== "ACTIVE" && params.status !== "TRIAL")
+  ) {
+    return;
+  }
+
+  const referral = await prisma.referral.findUnique({
+    where: { referredWorkspaceId: params.workspaceId },
+    select: { rewardGrantedAt: true },
+  });
+
+  if (!referral || referral.rewardGrantedAt) {
+    return;
+  }
+
+  const planVersion = resolvePlanVersionFromStripeSubscription(
+    params.stripeSubscription,
+    params.plan,
+  );
+  const invoiceId = await resolveActivationInvoiceId(params.stripeSubscription);
+
+  await activateReferralForPaidWorkspace({
+    workspaceId: params.workspaceId,
+    plan: params.plan,
+    planVersion,
+    invoiceId,
   });
 }
 

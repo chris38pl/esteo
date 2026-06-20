@@ -8,6 +8,7 @@ import {
   parseInvoicePreviewLines,
   resolveInvoicePreview,
   resolveProrationKind,
+  resolveInvoiceAdjustmentKind,
 } from "@/features/billing/lib/parse-invoice-preview-lines";
 import { getStripeClient } from "@/features/billing/server/stripe-client";
 import type { WorkspaceBillingNextInvoice } from "@/features/billing/billing-page-data";
@@ -200,6 +201,12 @@ export async function getWorkspaceUpcomingInvoice(
         : {
             ...parsed,
             invoiceDeltaCents: parsed.prorationCents,
+            adjustmentKind: resolveInvoiceAdjustmentKind({
+              parsedProrationCents: parsed.prorationCents,
+              amountCents: parsed.amountCents,
+              catalogRecurringCents: parsed.recurringCents,
+              stripeRecurringCents: parsed.recurringCents,
+            }),
           };
 
     if (
@@ -253,6 +260,7 @@ export async function getWorkspaceUpcomingInvoice(
       recurringCents: parsed.recurringCents,
       prorationCents: parsed.prorationCents,
       invoiceDeltaCents: resolved.invoiceDeltaCents,
+      adjustmentKind: resolved.adjustmentKind,
     };
   } catch {
     return getUpcomingInvoiceFallback(stripe, subscription, catalogRecurringCents);
@@ -299,6 +307,18 @@ async function getUpcomingInvoiceFallback(
           ).invoiceDeltaCents
         : 0;
 
+    const adjustmentKind =
+      catalogRecurringCents != null
+        ? resolveInvoicePreview(
+            {
+              recurringCents: amountCents,
+              prorationCents: 0,
+              amountCents,
+            },
+            catalogRecurringCents,
+          ).adjustmentKind
+        : ("none" as const);
+
     return {
       kind: "invoice",
       amountCents,
@@ -307,6 +327,7 @@ async function getUpcomingInvoiceFallback(
       recurringCents: amountCents,
       prorationCents: 0,
       invoiceDeltaCents,
+      adjustmentKind,
     };
   } catch {
     return { kind: "none", reason: "no_subscription" };

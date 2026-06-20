@@ -27,6 +27,7 @@ import {
   useEstimateRequestSubmit,
   type EstimateRequestSubmitErrorCode,
 } from "@/features/estimate-requests/hooks/use-estimate-request-submit";
+import { useRequestAttachmentUpload } from "@/features/estimate-requests/hooks/use-request-attachment-upload";
 import { createInternalEstimateCreateSchema } from "@/features/estimate-requests/schemas/request";
 import type { PublicEstimateRequestPageData } from "@/features/estimate-requests/server/public-service";
 import { VoiceIntakeController } from "@/features/voice-intake/components/voice-intake-controller";
@@ -55,6 +56,11 @@ const FORM_ERROR_MESSAGES = {
   captcha_failed: "form.errors.captcha_failed",
   storage_full: "form.errors.storage_full",
   all_attachments_failed: "form.errors.all_attachments_failed",
+  attachments_not_ready: "form.errors.attachments_not_ready",
+  payload_too_large: "form.errors.payload_too_large",
+  unauthorized: "form.errors.unauthorized",
+  forbidden: "form.errors.forbidden",
+  server_error: "form.errors.server_error",
   unavailable: "form.errors.unavailable",
 } as const satisfies Record<EstimateRequestSubmitErrorCode, string>;
 
@@ -113,18 +119,23 @@ export function CreateEstimateModal({
   const [industryFields, setIndustryFields] = useState(() =>
     createEmptyIndustryFieldValues(formData.fields),
   );
-  const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
+  const stagingUpload = useRequestAttachmentUpload({
+    uploadEndpoint: "/api/estimate-requests/attachments/upload",
+    deleteEndpointBase: "/api/estimate-requests/attachments",
+    workspaceId,
+  });
   const [validationError, setValidationError] = useState<string | null>(null);
   const voiceIntakeMetadataRef = useRef<VoiceIntakeMetadata | null>(null);
   const voiceAppliedValuesRef = useRef<VoiceAppliedValues | null>(null);
 
-  const { submit, isSubmitting, uploadProgress, errorCode } = useEstimateRequestSubmit({
+  const { submit, isSubmitting, errorCode } = useEstimateRequestSubmit({
     endpoint: `/api/estimate-requests/internal?locale=${locale}`,
     onSuccess: (result) => {
       if (!result.estimateId) {
         return;
       }
 
+      stagingUpload.reset();
       onEstimateOpening?.(result.estimateId);
       onOpenChange(false);
       router.push(`/${locale}/dashboard/${workspaceSlug}/estimates/${result.estimateId}`);
@@ -142,13 +153,16 @@ export function CreateEstimateModal({
     setAddress(initial.address);
     setProject(initial.project);
     setIndustryFields(initial.industryFields);
-    setAttachmentFiles([]);
+    stagingUpload.reset();
     setValidationError(null);
     voiceIntakeMetadataRef.current = null;
     voiceAppliedValuesRef.current = null;
   }, [open, formData.fields]);
 
-  const canSubmit = project.description.trim().length >= 20;
+  const canSubmit =
+    project.description.trim().length >= 20 &&
+    stagingUpload.canSubmitAttachments &&
+    !stagingUpload.isUploading;
   const canCreateEstimate = createEstimateGate.allowed;
   const isPlanLimitReached = createEstimateGate.reason === "PLAN_LIMIT";
   const billingHref = dashboardBillingHref(locale, workspaceSlug);
@@ -172,6 +186,11 @@ export function CreateEstimateModal({
     }
 
     setValidationError(null);
+
+    if (!stagingUpload.canSubmitAttachments) {
+      setValidationError(tForm("form.errors.attachments_not_ready"));
+      return;
+    }
 
     const payload = {
       title: title.trim() || undefined,
@@ -202,7 +221,7 @@ export function CreateEstimateModal({
       propertyType: String(industryFields.property_type ?? ""),
     });
 
-    void submit(parsed.data, attachmentFiles, { workspaceId });
+    void submit(parsed.data, stagingUpload.attachmentIds, { workspaceId });
   }
 
   return (
@@ -247,9 +266,14 @@ export function CreateEstimateModal({
                 setIndustryFields((current) => ({ ...current, [key]: value }))
               }
               attachmentAvailability={formData.attachmentAvailability}
-              attachmentFiles={attachmentFiles}
-              onAttachmentFilesChange={setAttachmentFiles}
-              disabled={isSubmitting}
+              stagingAttachments={stagingUpload.items}
+              onStagingAddFiles={stagingUpload.addFiles}
+              onStagingRemove={(clientId) => {
+                void stagingUpload.remove(clientId);
+              }}
+              onStagingRetry={stagingUpload.retry}
+              stagingLocalError={stagingUpload.localError}
+              disabled={isSubmitting || stagingUpload.isUploading}
             />
 
             <div className="mt-8">
@@ -283,11 +307,6 @@ export function CreateEstimateModal({
             </div>
 
             {error ? <p className="mt-4 text-sm text-destructive">{error}</p> : null}
-            {uploadProgress !== null ? (
-              <p className="mt-4 text-sm text-muted-foreground">
-                {tForm("form.uploading", { percent: uploadProgress })}
-              </p>
-            ) : null}
           </div>
 
           <DialogFooter className="shrink-0 flex-col gap-3 border-t bg-muted/20 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-4">

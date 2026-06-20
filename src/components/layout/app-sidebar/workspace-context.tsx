@@ -61,6 +61,7 @@ type WorkspaceContextValue = {
   isPlatformAdmin: boolean;
   isQaTester: boolean;
   issueTrackerEnabled: boolean;
+  partnerProgramVisible: boolean;
   currentUser: CurrentUserProfile;
   locale: Locale;
   pendingInvitationCount: number;
@@ -103,6 +104,7 @@ export function WorkspaceProvider({
   isPlatformAdmin,
   isQaTester,
   issueTrackerEnabled,
+  partnerProgramVisible,
   currentUser,
   memberPreviews,
   memberTotalCount,
@@ -122,6 +124,7 @@ export function WorkspaceProvider({
   isPlatformAdmin: boolean;
   isQaTester: boolean;
   issueTrackerEnabled: boolean;
+  partnerProgramVisible: boolean;
   currentUser: CurrentUserProfile;
   memberPreviews: WorkspaceMemberPreview[];
   memberTotalCount: number;
@@ -179,6 +182,7 @@ export function WorkspaceProvider({
       isPlatformAdmin,
       isQaTester,
       issueTrackerEnabled,
+      partnerProgramVisible,
       currentUser,
       locale,
       pendingInvitationCount,
@@ -215,6 +219,7 @@ export function WorkspaceProvider({
       isPlatformAdmin,
       isQaTester,
       issueTrackerEnabled,
+      partnerProgramVisible,
       currentUser,
       locale,
       pendingInvitationCount,

@@ -138,7 +138,7 @@ export async function createPublicEstimateRequest(input: {
     locale: input.locale,
     source: "PUBLIC_REQUEST",
     body: { customer, address, project, industryFields },
-    files: [],
+    attachmentIds: input.payload.attachmentIds ?? [],
     workspaceSlug,
     requestMeta: input.requestMeta,
     voiceIntakeMetadata: input.payload.voiceIntake,

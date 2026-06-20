@@ -143,7 +143,7 @@ export function WorkspaceBillingPanel({ workspaceId, workspaceSlug, locale, data
         currentPeriodEnd={currentPeriodEnd}
       />
 
-      {canManageBilling && pricing.catalogPriceMismatch ? (
+      {canManageBilling && pricing.catalogPriceMismatch && !data.activeReferralDiscount ? (
         <BillingCatalogPriceMismatchBanner pricing={pricing} />
       ) : null}
 

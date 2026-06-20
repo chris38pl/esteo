@@ -15,21 +15,18 @@ import {
   scheduleUpsertSearchDocumentsForRequestAttachments,
 } from "@/features/search/server/index-service";
 import {
-  assertRequestAttachmentFileCount,
-  assertRequestAttachmentTotalSize,
-} from "@/features/attachments/lib/assert-request-attachment-limits";
-import {
-  countStoredRequestAttachments,
   type RequestAttachmentRecord,
 } from "@/features/attachments/lib/request-attachment-metadata";
 import { isAttachmentUploadAvailable } from "@/features/attachments/lib/attachment-availability";
 import { getPublicAttachmentAvailability } from "@/features/attachments/server/public-attachment-availability";
-import { StorageQuotaError } from "@/features/attachments/server/storage-errors";
+import { StagingAttachmentError } from "@/features/attachments/server/staging-attachment-errors";
+import {
+  markStagingAttachmentsLinkedInTx,
+  resolveStagingAttachmentsForSubmit,
+} from "@/features/attachments/server/staging-attachment-service";
 import {
   collectStorageKeysFromRecords,
   deleteStorageKeys,
-  precheckRequestUploadQuota,
-  uploadFilesForEstimateRequest,
 } from "@/features/attachments/server/upload-service";
 import { decrementWorkspaceStorageUsed } from "@/features/attachments/server/usage-service";
 import { buildEstimateTitleFromPublicRequest } from "@/features/estimates/lib/build-estimate-title-from-public-request";
@@ -59,7 +56,8 @@ export class SubmitEstimateRequestError extends Error {
       | "STORAGE_FULL"
       | "ALL_ATTACHMENTS_FAILED"
       | "VALIDATION"
-      | "UNAVAILABLE",
+      | "UNAVAILABLE"
+      | "ATTACHMENTS_NOT_READY",
   ) {
     super(message);
     this.name = "SubmitEstimateRequestError";
@@ -131,25 +129,33 @@ async function validateIndustryFields(input: {
     intakeSurface: input.intakeSurface,
   });
 
-  const dynamicValues = coerceIndustryFieldValues({
+  const fieldKeys = fields.map((field) => field.key);
+  const intakeKeySet = new Set(fieldKeys);
+
+  const coercedValues = coerceIndustryFieldValues({
     fields,
     values: input.industryFields,
   });
+
+  const dynamicValues = Object.fromEntries(
+    Object.entries(coercedValues).filter(([key]) => intakeKeySet.has(key)),
+  );
 
   await validateDocumentFieldValues({
     industry: input.industry,
     documentType: BusinessDocumentType.ESTIMATE_REQUEST,
     values: dynamicValues,
+    fieldKeys,
   });
 
-  return { fields, dynamicValues };
+  return { fields, dynamicValues, fieldKeys };
 }
 
 export async function submitEstimateRequestWithAttachments(input: {
   locale: Locale;
   source: Extract<AttachmentUploadSource, "PUBLIC_REQUEST" | "INTERNAL_REQUEST">;
   body: SharedBody;
-  files: File[];
+  attachmentIds?: string[];
   workspaceSlug?: string;
   workspaceId?: string;
   requestMeta?: { ip: string; userAgent: string };
@@ -159,13 +165,7 @@ export async function submitEstimateRequestWithAttachments(input: {
   voiceIntakeMetadata?: Record<string, unknown>;
 }): Promise<SubmitEstimateRequestResult> {
   const attachmentWarnings: string[] = [];
-
-  assertRequestAttachmentFileCount(input.files.length);
-
-  if (input.files.length > 0) {
-    const totalRawBytes = input.files.reduce((sum, file) => sum + file.size, 0);
-    assertRequestAttachmentTotalSize(totalRawBytes);
-  }
+  const attachmentIds = input.attachmentIds ?? [];
 
   const workspace =
     input.source === AttachmentUploadSource.PUBLIC_REQUEST
@@ -194,7 +194,15 @@ export async function submitEstimateRequestWithAttachments(input: {
 
   const runFullPipeline = processingGate.allowed;
 
-  if (input.files.length > 0) {
+  const { dynamicValues, fieldKeys } = await validateIndustryFields({
+    workspaceId: workspace.id,
+    industry: workspace.industry,
+    locale: input.locale,
+    industryFields: input.body.industryFields,
+    intakeSurface: input.source === "INTERNAL_REQUEST" ? "internal" : "public",
+  });
+
+  if (attachmentIds.length > 0) {
     const availability = await getPublicAttachmentAvailability(workspace.id);
 
     if (!isAttachmentUploadAvailable(availability)) {
@@ -203,17 +211,7 @@ export async function submitEstimateRequestWithAttachments(input: {
         "STORAGE_FULL",
       );
     }
-
-    await precheckRequestUploadQuota(workspace.id, input.files);
   }
-
-  const { dynamicValues } = await validateIndustryFields({
-    workspaceId: workspace.id,
-    industry: workspace.industry,
-    locale: input.locale,
-    industryFields: input.body.industryFields,
-    intakeSurface: input.source === "INTERNAL_REQUEST" ? "internal" : "public",
-  });
 
   const voiceGeneratedTitle =
     typeof input.voiceIntakeMetadata?.generatedTitle === "string"
@@ -248,34 +246,6 @@ export async function submitEstimateRequestWithAttachments(input: {
 
   let attachmentRecords: RequestAttachmentRecord[] = [];
 
-  if (input.files.length > 0) {
-    attachmentRecords = await uploadFilesForEstimateRequest({
-      workspaceId: workspace.id,
-      requestId,
-      files: input.files,
-    });
-
-    for (const record of attachmentRecords) {
-      if (record.status === "failed") {
-        attachmentWarnings.push(
-          record.error
-            ? `${record.originalFileName}: ${record.error}`
-            : `${record.originalFileName}: upload failed`,
-        );
-      }
-    }
-
-    if (countStoredRequestAttachments(attachmentRecords) === 0) {
-      await deleteStorageKeys(collectStorageKeysFromRecords(attachmentRecords));
-      throw new SubmitEstimateRequestError(
-        "All attachment uploads failed.",
-        "ALL_ATTACHMENTS_FAILED",
-      );
-    }
-  }
-
-  const storedCount = countStoredRequestAttachments(attachmentRecords);
-
   const baseAiMetadata: Record<string, unknown> =
     input.source === AttachmentUploadSource.PUBLIC_REQUEST
       ? {
@@ -288,7 +258,7 @@ export async function submitEstimateRequestWithAttachments(input: {
           createdByUserId: input.userId,
         };
 
-  if (storedCount > 0) {
+  if (attachmentIds.length > 0) {
     baseAiMetadata.attachmentsPromotionStatus = "PENDING";
   }
 
@@ -311,6 +281,13 @@ export async function submitEstimateRequestWithAttachments(input: {
 
   try {
     const requestNumber = await prisma.$transaction(async (tx) => {
+      attachmentRecords = await resolveStagingAttachmentsForSubmit(tx, {
+        workspaceId: workspace.id,
+        uploadSource: input.source,
+        attachmentIds,
+        uploadedById: input.uploadedById ?? null,
+      });
+
       const generatedRequestNumber = await generateRequestNumber(tx, workspace.id);
 
       if (runFullPipeline && estimateId && versionId) {
@@ -367,6 +344,11 @@ export async function submitEstimateRequestWithAttachments(input: {
         },
       });
 
+      await markStagingAttachmentsLinkedInTx(tx, {
+        attachmentIds,
+        estimateRequestId: requestId,
+      });
+
       return generatedRequestNumber;
     });
 
@@ -377,6 +359,7 @@ export async function submitEstimateRequestWithAttachments(input: {
         documentType: BusinessDocumentType.ESTIMATE_REQUEST,
         documentId: requestId,
         values: dynamicValues,
+        fieldKeys,
       });
     }
 
@@ -424,6 +407,15 @@ export async function submitEstimateRequestWithAttachments(input: {
       queued: !runFullPipeline,
     };
   } catch (error) {
+    if (error instanceof StagingAttachmentError) {
+      throw new SubmitEstimateRequestError(
+        error.message,
+        error.code === "EXPIRED" || error.code === "INVALID_STATUS"
+          ? "ATTACHMENTS_NOT_READY"
+          : "VALIDATION",
+      );
+    }
+
     await rollbackStoredRequestUploads(workspace.id, attachmentRecords);
     throw error;
   }

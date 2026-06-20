@@ -39,15 +39,13 @@ export function EstimateRequestFormPanel({
     setProject,
     industryFields,
     setIndustryFields,
-    attachmentFiles,
-    setAttachmentFiles,
+    stagingUpload,
     companyWebsite,
     setCompanyWebsite,
     requestNumber,
     estimateId,
     queuedForManual,
     isSubmitting,
-    uploadProgress,
     attachmentWarnings,
     error,
     handleSubmit,
@@ -151,23 +149,23 @@ export function EstimateRequestFormPanel({
             setIndustryFields((current) => ({ ...current, [key]: value }))
           }
           attachmentAvailability={pageData.attachmentAvailability}
-          attachmentFiles={attachmentFiles}
-          onAttachmentFilesChange={setAttachmentFiles}
-          disabled={isSubmitting}
+          stagingAttachments={stagingUpload.items}
+          onStagingAddFiles={stagingUpload.addFiles}
+          onStagingRemove={(clientId) => {
+            void stagingUpload.remove(clientId);
+          }}
+          onStagingRetry={stagingUpload.retry}
+          stagingLocalError={stagingUpload.localError}
+          disabled={isSubmitting || stagingUpload.isUploading}
         />
       </div>
 
       {error ? <p className="mt-4 text-sm text-destructive">{error}</p> : null}
-      {uploadProgress !== null ? (
-        <p className="mt-4 text-sm text-muted-foreground">
-          {t("form.uploading", { percent: uploadProgress })}
-        </p>
-      ) : null}
 
       <div className="mt-5">
         <Button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || stagingUpload.isUploading || !stagingUpload.canSubmitAttachments}
           className="h-12 w-full rounded-xl text-base font-medium"
         >
           {isSubmitting ? <Loader2 className="size-4 animate-spin" /> : <ArrowRight className="size-4" />}

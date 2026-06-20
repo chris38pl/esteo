@@ -8,9 +8,12 @@ export type ParsedInvoicePreview = {
 
 export type ResolvedInvoicePreview = ParsedInvoicePreview & {
   invoiceDeltaCents: number;
+  adjustmentKind: InvoiceAdjustmentKind;
 };
 
 export type ProrationKind = "charge" | "credit" | "none";
+
+export type InvoiceAdjustmentKind = "none" | "proration" | "subscription_discount";
 
 /** Minimum |stripeRecurring - catalogRecurring| to flag config mismatch (1 PLN). */
 export const CATALOG_STRIPE_MISMATCH_THRESHOLD_CENTS = 100;
@@ -107,6 +110,32 @@ export function resolveInvoiceDeltaCents(params: {
   return 0;
 }
 
+export function resolveInvoiceAdjustmentKind(params: {
+  parsedProrationCents: number;
+  amountCents: number;
+  catalogRecurringCents: number;
+  stripeRecurringCents: number;
+}): InvoiceAdjustmentKind {
+  if (params.parsedProrationCents !== 0) {
+    return "proration";
+  }
+
+  const derived = params.amountCents - params.catalogRecurringCents;
+  if (Math.abs(derived) <= 1) {
+    return "none";
+  }
+
+  if (
+    params.stripeRecurringCents > 0 &&
+    params.catalogRecurringCents > 0 &&
+    params.stripeRecurringCents < params.catalogRecurringCents
+  ) {
+    return "subscription_discount";
+  }
+
+  return "none";
+}
+
 export function hasCatalogStripeRecurringMismatch(
   stripeRecurringCents: number,
   catalogRecurringCents: number,
@@ -155,12 +184,20 @@ export function resolveInvoicePreview(
   parsed: ParsedInvoicePreview,
   catalogRecurringCents: number,
 ): ResolvedInvoicePreview {
+  const invoiceDeltaCents = resolveInvoiceDeltaCents({
+    amountCents: parsed.amountCents,
+    catalogRecurringCents,
+    parsedProrationCents: parsed.prorationCents,
+  });
+
   return {
     ...parsed,
-    invoiceDeltaCents: resolveInvoiceDeltaCents({
+    invoiceDeltaCents,
+    adjustmentKind: resolveInvoiceAdjustmentKind({
+      parsedProrationCents: parsed.prorationCents,
       amountCents: parsed.amountCents,
       catalogRecurringCents,
-      parsedProrationCents: parsed.prorationCents,
+      stripeRecurringCents: parsed.recurringCents,
     }),
   };
 }

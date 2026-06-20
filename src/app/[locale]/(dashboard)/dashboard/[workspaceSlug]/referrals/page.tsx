@@ -3,6 +3,7 @@ import { setRequestLocale } from "next-intl/server";
 
 import { PartnerProgramPanel } from "@/features/referrals/components/partner-program-panel";
 import { getPartnerProgramPageData } from "@/features/referrals/server/get-partner-program-page-data";
+import { dashboardPageNarrowClass } from "@/lib/dashboard-page-layout";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 import { requireAuth } from "@/server/auth/require-auth";
@@ -40,7 +41,7 @@ export default async function PartnerProgramPage({
   }
 
   return (
-    <div className="mx-auto flex min-w-0 w-full max-w-[1400px] flex-1 flex-col pb-8">
+    <div className={dashboardPageNarrowClass}>
       <PartnerProgramPanel
         locale={resolvedLocale}
         workspaceId={resolved.workspace.id}

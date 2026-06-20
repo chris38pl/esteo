@@ -70,6 +70,7 @@ const sharedRequestFields = {
     })
     .optional(),
   voiceIntake: z.record(z.string(), z.unknown()).optional(),
+  attachmentIds: z.array(z.string().trim().min(1).max(64)).max(10).optional(),
 };
 
 export function createPublicEstimateRequestSchema(industry: WorkspaceIndustry) {

@@ -5,6 +5,10 @@ import {
   rewardForPlanVersion,
 } from "../src/features/referrals/server/referral-rewards-catalog";
 import { isWithinClaimWindow } from "../src/features/referrals/lib/referral-claim-window";
+import {
+  extractReferralCodeFromAuthSearchParams,
+  extractReferralCodeFromRedirectUrl,
+} from "../src/features/referrals/lib/referral-auth-search-params";
 import { detectReferralFraud } from "../src/features/referrals/server/referral-fraud-detector";
 
 let failures = 0;
@@ -64,6 +68,56 @@ const clean = detectReferralFraud({
   referredEmail: "b@client.pl",
 });
 assert(clean.fraudFlag === "NONE", "clean referral passes");
+
+console.log("Email referrer lookup (lazy-create vs granular errors):");
+function classifyEmailReferrerFailure(
+  userExists: boolean,
+  canGenerateReferrals: boolean,
+): "NOT_FOUND" | "PARTNER_NOT_ELIGIBLE" | null {
+  if (!userExists) {
+    return "NOT_FOUND";
+  }
+  if (!canGenerateReferrals) {
+    return "PARTNER_NOT_ELIGIBLE";
+  }
+  return null;
+}
+assert(
+  classifyEmailReferrerFailure(false, false) === "NOT_FOUND",
+  "unknown email → NOT_FOUND",
+);
+assert(
+  classifyEmailReferrerFailure(true, false) === "PARTNER_NOT_ELIGIBLE",
+  "FREE-only user → PARTNER_NOT_ELIGIBLE",
+);
+assert(
+  classifyEmailReferrerFailure(true, true) === null,
+  "paid user → profile lazy-created on lookup",
+);
+
+console.log("Referral auth search params:");
+assert(
+  extractReferralCodeFromRedirectUrl("http://localhost:3000/pl/r/CHAZ") === "CHAZ",
+  "redirect_url extracts referral code",
+);
+assert(
+  extractReferralCodeFromAuthSearchParams({
+    redirect_url: "http://localhost:3000/pl/sign-in?redirect_url=http%3A%2F%2Flocalhost%3A3000%2Fpl%2Fr%2FCHAZ",
+  }) === null,
+  "nested redirect without /r/ path returns null",
+);
+assert(
+  extractReferralCodeFromAuthSearchParams({
+    ref: "CHAZ",
+  }) === "CHAZ",
+  "ref query param extracts referral code",
+);
+assert(
+  extractReferralCodeFromAuthSearchParams({
+    redirect_url: "http://localhost:3000/pl/r/JUNIORKRAWIEC",
+  }) === "JUNIORKRAWIEC",
+  "redirect_url to referral landing extracts code",
+);
 
 console.log(`\n${checks - failures}/${checks} checks passed`);
 if (failures > 0) {

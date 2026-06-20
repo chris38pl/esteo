@@ -1,8 +1,24 @@
-import { parseFieldSelectConfig } from "@/features/industry-fields/lib/field-select-config";
+import {
+  parseFieldSelectConfig,
+  parseMultiSelectStoredValue,
+} from "@/features/industry-fields/lib/field-select-config";
 import type { IndustryFieldForDocument } from "@/features/industry-fields/server/get-fields-for-workspace";
 import type { FieldValueInput } from "@/features/industry-fields/server/map-field-value";
 
 export type IndustryFieldsPayload = Record<string, string | number | boolean | null>;
+
+function normalizeSingleSelectValue(
+  value: string,
+  definition: IndustryFieldForDocument,
+): string {
+  const selectConfig = parseFieldSelectConfig(definition.options, definition.key);
+  if (selectConfig.selectMode === "multi") {
+    return value;
+  }
+
+  const parsed = parseMultiSelectStoredValue(value);
+  return parsed.length > 0 ? parsed[0]! : value;
+}
 
 export function coerceIndustryFieldValues(input: {
   fields: IndustryFieldForDocument[];
@@ -27,6 +43,9 @@ export function coerceIndustryFieldValues(input: {
         break;
       case "DATE":
         coerced[key] = new Date(`${String(value)}T00:00:00.000Z`);
+        break;
+      case "SELECT":
+        coerced[key] = normalizeSingleSelectValue(String(value).trim(), definition);
         break;
       case "TEXT": {
         const selectConfig = parseFieldSelectConfig(definition.options, definition.key);

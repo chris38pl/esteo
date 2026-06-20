@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
-import { AttachmentDropzone } from "@/features/estimate-requests/components/attachment-dropzone-placeholder";
+import { LocalFileAttachmentDropzone } from "@/features/estimate-requests/components/attachment-dropzone-placeholder";
 import { MAX_SINGLE_FILE_BYTES } from "@/features/attachments/lib/constants";
 import { issueFormLabelClassName } from "@/features/issues/components/issue-form-fields";
 import { Label } from "@/components/ui/label";
@@ -24,7 +24,7 @@ export function IssueScreenshotUploader({
   return (
     <div className="space-y-2">
       <Label className={issueFormLabelClassName}>{t("attachments.label")}</Label>
-      <AttachmentDropzone
+      <LocalFileAttachmentDropzone
         value={files}
         onChange={onChange}
         disabled={disabled}

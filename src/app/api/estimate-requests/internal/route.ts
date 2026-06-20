@@ -8,6 +8,7 @@ import {
   SubmitEstimateRequestError,
   submitEstimateRequestWithAttachments,
 } from "@/features/estimate-requests/server/submit-estimate-request-with-attachments";
+import { DocumentFieldValidationError } from "@/features/industry-fields/server/validate-document-values";
 import { syncUserFromClerk } from "@/server/auth/sync-user";
 import { isLocale, type Locale } from "@/lib/locale";
 import { PermissionError } from "@/server/permissions/errors";
@@ -27,46 +28,49 @@ export async function POST(request: Request) {
       return errorJson("unauthorized", 401);
     }
 
-    const formData = await request.formData();
-    const payloadRaw = formData.get("payload");
-    const workspaceId = formData.get("workspaceId");
+    console.info("[internal estimate-requests] incoming", {
+      contentLength: request.headers.get("content-length"),
+      contentType: request.headers.get("content-type"),
+    });
 
-    if (typeof payloadRaw !== "string" || typeof workspaceId !== "string") {
-      return errorJson("invalid", 400);
-    }
-
-    let payloadJson: unknown;
+    let bodyJson: unknown;
 
     try {
-      payloadJson = JSON.parse(payloadRaw);
-    } catch {
+      bodyJson = await request.json();
+    } catch (error) {
+      console.error("[internal estimate-requests] json parse failed", error);
       return errorJson("invalid", 400);
     }
 
-    const parsed = internalEstimateCreateSchema.safeParse(payloadJson);
+    const payload =
+      bodyJson && typeof bodyJson === "object" && "payload" in bodyJson
+        ? (bodyJson as { payload: unknown; workspaceId?: unknown })
+        : null;
+
+    if (!payload || typeof payload.workspaceId !== "string") {
+      return errorJson("invalid", 400);
+    }
+
+    const parsed = internalEstimateCreateSchema.safeParse(payload.payload);
 
     if (!parsed.success) {
       return errorJson("invalid", 400);
     }
 
-    await requireRole(user, workspaceId, "MEMBER");
+    await requireRole(user, payload.workspaceId, "MEMBER");
 
     const localeParam = new URL(request.url).searchParams.get("locale");
     const locale: Locale =
       localeParam !== null && isLocale(localeParam) ? localeParam : "pl";
 
-    const files = formData
-      .getAll("files")
-      .filter((entry): entry is File => entry instanceof File);
-
-    const { voiceIntake, title, ...body } = parsed.data;
+    const { voiceIntake, title, attachmentIds, ...body } = parsed.data;
 
     const result = await submitEstimateRequestWithAttachments({
       locale,
       source: "INTERNAL_REQUEST",
       body,
-      files,
-      workspaceId,
+      attachmentIds: attachmentIds ?? [],
+      workspaceId: payload.workspaceId,
       uploadedById: user.id,
       userId: user.id,
       explicitTitle: title?.trim() || undefined,
@@ -93,10 +97,19 @@ export async function POST(request: Request) {
       if (error.code === "ALL_ATTACHMENTS_FAILED") {
         return errorJson("all_attachments_failed", 422);
       }
+
+      if (error.code === "ATTACHMENTS_NOT_READY") {
+        return errorJson("attachments_not_ready", 422);
+      }
     }
 
     if (error instanceof StorageQuotaError) {
       return errorJson("storage_full", 413);
+    }
+
+    if (error instanceof DocumentFieldValidationError) {
+      console.error("[internal estimate-requests] field validation", error.message);
+      return errorJson("invalid", 400);
     }
 
     console.error("[internal estimate-requests]", error);

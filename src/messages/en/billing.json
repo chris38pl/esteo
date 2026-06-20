@@ -191,8 +191,11 @@
         "composedOf": "This invoice includes:",
         "subscription": "Subscription (plan + add-ons)",
         "periodCharge": "Charge for the current period",
-        "periodCredit": "Credit for unused billing period"
+        "periodCredit": "Credit for unused billing period",
+        "referralDiscount": "Referral discount ({percent}%)"
       },
+      "referralDiscountActive": "{percent}% off until {date}",
+      "referralDiscountTooltip": "Referral promotion — {percent}% off your subscription during the promo period.\n\nAfter {date} the standard price applies:\n{monthlyAmount} / month.",
       "empty": {
         "free_plan": "No active paid subscription.",
         "canceling": "Subscription is ending — no further invoice will be issued.",
@@ -302,6 +305,10 @@
       "subtitle": "Choose your plan and add-ons in one place.",
       "backToBilling": "Back to billing",
       "planSection": "Choose a plan",
+      "referralDiscountBanner": "You have {percent}% off for {months} months thanks to a referral — applies to your first PRO or BUSINESS payment.",
+      "referralSummaryDuration": "for {months} months",
+      "referralSummaryThenRegular": "(then {amount} / mo.)",
+      "perMonthPromo": "/ month (promo)",
       "addonsSection": "Add-ons",
       "summarySection": "Change summary",
       "stepLabel": "Step {step}",

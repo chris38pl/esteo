@@ -26,6 +26,7 @@ import { SidebarQaTesting } from "@/components/layout/app-sidebar/sidebar-qa-tes
 import { SidebarPinned } from "@/components/layout/app-sidebar/sidebar-pinned";
 import { SidebarTeam } from "@/components/layout/app-sidebar/sidebar-team";
 import { SidebarReportIssue } from "@/components/layout/app-sidebar/sidebar-report-issue";
+import { SidebarReferrals } from "@/components/layout/app-sidebar/sidebar-referrals";
 import { SidebarSettings } from "@/components/layout/app-sidebar/sidebar-settings";
 import { DashboardBreadcrumbs } from "./dashboard-breadcrumbs";
 import { NavbarNotificationsButton } from "./navbar-notifications-button";
@@ -85,6 +86,7 @@ export function DashboardTopNavbar({ locale }: { locale: Locale }) {
                   <SidebarQaTesting locale={locale} collapsedOverride={false} />
                   <SidebarPinned locale={locale} collapsedOverride={false} />
                   <SidebarTeam collapsedOverride={false} />
+                  <SidebarReferrals collapsedOverride={false} />
                   <SidebarReportIssue collapsedOverride={false} />
                 </div>
                 <SidebarSettings collapsedOverride={false} />

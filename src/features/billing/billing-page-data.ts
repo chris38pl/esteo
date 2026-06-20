@@ -1,6 +1,6 @@
 import type { SubscriptionPlan } from "@prisma/client";
 
-import type { ProrationKind } from "@/features/billing/lib/parse-invoice-preview-lines";
+import type { ProrationKind, InvoiceAdjustmentKind } from "@/features/billing/lib/parse-invoice-preview-lines";
 import type { AddonQuantities } from "@/features/billing/lib/subscription-impact";
 import type { WorkspaceEntitlements } from "@/server/billing/entitlement-service";
 
@@ -24,6 +24,12 @@ export type WorkspaceBillingStorageUsage = {
   usedFormatted: string;
   limitFormatted: string;
   usedPercent: number;
+};
+
+export type WorkspaceActiveReferralDiscount = {
+  percent: number;
+  endsAt: string;
+  discountedRecurringCents: number;
 };
 
 export type WorkspaceBillingPricing = {
@@ -52,6 +58,7 @@ export type WorkspaceBillingNextInvoice =
       recurringCents: number;
       prorationCents: number;
       invoiceDeltaCents: number;
+      adjustmentKind: InvoiceAdjustmentKind;
     }
   | {
       kind: "none";
@@ -68,6 +75,7 @@ export type WorkspaceBillingPageData = {
   storageOverLimit: boolean;
   seatOverLimit: boolean;
   nextInvoice: WorkspaceBillingNextInvoice;
+  activeReferralDiscount: WorkspaceActiveReferralDiscount | null;
   activeSubscriptionChange: ActiveSubscriptionChange | null;
   addonQuantities: AddonQuantities;
   canManageBilling: boolean;

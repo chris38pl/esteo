@@ -214,6 +214,13 @@ enum AttachmentThumbnailStatus {
   FAILED
 }
 
+enum RequestStagingAttachmentStatus {
+  UPLOADING
+  PENDING
+  FAILED
+  LINKED
+}
+
 model User {
   id                    String       @id @default(cuid())
   email                 String       @unique
@@ -244,6 +251,7 @@ model User {
   estimateNotes        EstimateNote[]
   estimateActivityLogs EstimateActivityLog[]
   estimateAttachments  EstimateAttachment[]
+  requestStagingAttachments RequestStagingAttachment[]
   estimatePdfs         EstimatePdf[]
   estimateVersionSends EstimateVersionSend[]
   estimateVersionsLastSent EstimateVersion[] @relation("EstimateVersionLastSentBy")
@@ -502,6 +510,7 @@ model Workspace {
   slugAliases          WorkspaceSlugAlias[]
   pinnedEstimates      PinnedEstimate[]
   estimateAttachments  EstimateAttachment[]
+  requestStagingAttachments RequestStagingAttachment[]
   estimateVersionSends EstimateVersionSend[]
   workspaceAddons      WorkspaceAddon[]
   searchDocuments      SearchDocument[]
@@ -715,6 +724,7 @@ model EstimateRequest {
 
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   estimate  Estimate? @relation("EstimateRequestEstimate", fields: [estimateId], references: [id], onDelete: SetNull)
+  stagingAttachments RequestStagingAttachment[]
 
   @@unique([workspaceId, requestNumber])
   @@index([workspaceId, status])
@@ -803,6 +813,39 @@ model EstimateAttachment {
 
   @@index([estimateId, createdAt])
   @@index([workspaceId])
+}
+
+model RequestStagingAttachment {
+  id                String                         @id @default(cuid())
+  workspaceId       String
+  status            RequestStagingAttachmentStatus @default(UPLOADING)
+  uploadSource      AttachmentUploadSource
+  uploadedById      String?
+  publicFingerprint String?
+  estimateRequestId String?
+  linkedAt          DateTime?
+  attachmentType    AttachmentType?
+  originalFileName  String
+  mimeType          String?
+  fileSizeBytes     BigInt                         @default(0)
+  storageKey        String?
+  storageProvider   StorageProvider                @default(UPLOADTHING)
+  imageWidth        Int?
+  imageHeight       Int?
+  lastError         String?
+  createdAt         DateTime                       @default(now())
+  updatedAt         DateTime                       @updatedAt
+
+  workspace       Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  estimateRequest EstimateRequest? @relation(fields: [estimateRequestId], references: [id], onDelete: SetNull)
+  uploadedBy      User?            @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, status])
+  @@index([status, createdAt])
+  @@index([status, updatedAt])
+  @@index([workspaceId, publicFingerprint, status])
+  @@index([workspaceId, uploadedById, status])
+  @@index([estimateRequestId])
 }
 
 model PaymentInstallment {

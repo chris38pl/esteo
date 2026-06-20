@@ -1,23 +1,75 @@
 {
   "title": "Partner program",
-  "description": "Refer Esteo and earn bonuses when your contacts start a paid plan.",
+  "description": "Refer Esteo and earn bonuses when your contacts choose a paid plan. You both benefit.",
   "inactiveBanner": "Activate a PRO or BUSINESS plan to refer Esteo again.",
+  "inviteCard": {
+    "title": "Invite a friend",
+    "subtitle": "and earn a bonus when they join Esteo!",
+    "cta": "Invite a friend"
+  },
+  "referralLink": {
+    "title": "Your referral link",
+    "subtitle": "Share the link anywhere",
+    "alternateShare": "You do not have to send the link — when signing up, your contact can enter your email or personal code below. They will also receive a welcome discount.",
+    "codeLabel": "Referral code",
+    "emailLabel": "Referral email"
+  },
+  "benefits": {
+    "youTitle": "You earn",
+    "youFootnote": "When your contact subscribes to PRO, you receive {proAmount}. For BUSINESS — {businessAmount}. Credits are added to your balance and applied to invoices.",
+    "theyTitle": "Your contact saves",
+    "theyValue": "20% off",
+    "theyDuration": "for 3 months",
+    "theyFootnote": "On PRO or BUSINESS when signing up with your link, code, or email."
+  },
   "share": {
-    "title": "Refer a friend",
-    "linkLabel": "Link",
-    "emailLabel": "Email",
-    "codeLabel": "Code (optional)",
     "copy": "Copy",
     "copied": "Copied",
     "sendInvite": "Send invitation"
   },
   "hero": {
     "earned": "Earned from referrals",
-    "pendingBonuses": "Pending bonuses",
+    "activeReferrals": "Active referrals",
     "appliedToInvoices": "Applied to invoices",
-    "availableBalance": "Available balance",
-    "activeClients": "Active clients",
-    "referredMrr": "Referred MRR"
+    "availableBalance": "Available balance"
+  },
+  "howItWorks": {
+    "title": "How it works",
+    "step1Title": "1. You invite",
+    "step1Desc": "Send the link to friends",
+    "step2Title": "2. They join",
+    "step2Desc": "Friends create an Esteo account",
+    "step3Title": "3. You earn",
+    "step3Desc": "You receive a bonus when they choose a paid plan"
+  },
+  "invitations": {
+    "title": "Your invitations",
+    "seeAll": "See all",
+    "empty": "You have no invitations yet.",
+    "columns": {
+      "email": "Email",
+      "status": "Status",
+      "joined": "Joined",
+      "bonus": "Bonus"
+    }
+  },
+  "statusBadge": {
+    "active": "Active",
+    "pending": "Pending",
+    "inactive": "Inactive"
+  },
+  "planBanner": {
+    "yourPlan": "Your plan:",
+    "seePlans": "See plans",
+    "free": {
+      "description": "Earn more with Pro plans. Explore the benefits of paid plans."
+    },
+    "pro": {
+      "description": "You are on Pro. Upgrade to Business to unlock Esteo's full potential."
+    },
+    "business": {
+      "description": "You are on Business — all partner program benefits are unlocked."
+    }
   },
   "tier": {
     "title": "Your partner tier",
@@ -31,23 +83,16 @@
     "diamond": "Diamond",
     "comingSoon": "Coming soon"
   },
-  "table": {
-    "title": "Referred companies",
-    "empty": "You have no referred companies yet.",
-    "columns": {
-      "company": "Company",
-      "status": "Status",
-      "bonus": "Bonus"
-    }
-  },
   "payoutStatus": {
     "awaiting_registration": "Awaiting registration",
     "awaiting_first_payment": "Awaiting first payment",
     "awaiting_plan_selection": "Awaiting plan selection",
-    "bonus_granted": "Bonus granted {amount}",
+    "processing_bonus": "Processing bonus",
+    "bonus_granted": "Bonus granted",
     "inactive": "Inactive"
   },
   "bonus": {
+    "projectedSuffix": "(pending)",
     "projected": "Projected bonus: {amount}",
     "pending": "Pending bonuses"
   },
@@ -63,7 +108,8 @@
       "ALREADY_CLAIMED": "This workspace already has a referral.",
       "WINDOW_CLOSED": "The referral claim window has closed.",
       "PARTNER_INACTIVE": "This partner is not accepting new referrals.",
-      "NOT_FOUND": "Referrer not found.",
+      "PARTNER_NOT_ELIGIBLE": "This user does not have an active PRO or BUSINESS plan.",
+      "NOT_FOUND": "No user found with this email address.",
       "FRAUD": "This referral cannot be accepted."
     }
   },

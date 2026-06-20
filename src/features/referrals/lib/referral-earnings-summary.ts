@@ -7,7 +7,7 @@ import { resolvePartnerTier } from "@/features/referrals/lib/referral-partner-ti
 
 export type ReferralEarningsSummary = {
   earnedCents: number;
-  pendingCents: number;
+  paidReferredCount: number;
   appliedCents: number;
   availableBalanceCents: number;
   activeReferralCount: number;
@@ -15,6 +15,21 @@ export type ReferralEarningsSummary = {
   lifetimeReferralCount: number;
   tier: ReturnType<typeof resolvePartnerTier>;
 };
+
+function isPaidReferredSubscription(
+  subscription: {
+    plan: string;
+    status: string;
+    stripeSubscriptionId: string | null;
+  } | null | undefined,
+): boolean {
+  return Boolean(
+    subscription &&
+      subscription.plan !== "FREE" &&
+      subscription.stripeSubscriptionId &&
+      (subscription.status === "ACTIVE" || subscription.status === "TRIAL"),
+  );
+}
 
 export async function getReferralEarningsSummary(
   referrerUserId: string,
@@ -24,21 +39,34 @@ export async function getReferralEarningsSummary(
     select: {
       status: true,
       rewardCents: true,
-      expectedRewardCents: true,
+      referredWorkspace: {
+        select: {
+          billingAccount: {
+            select: {
+              subscription: {
+                select: {
+                  plan: true,
+                  status: true,
+                  stripeSubscriptionId: true,
+                },
+              },
+            },
+          },
+        },
+      },
     },
   });
 
   let earnedCents = 0;
-  let pendingCents = 0;
+  let paidReferredCount = 0;
 
   for (const referral of referrals) {
     if (referral.rewardCents > 0) {
       earnedCents += referral.rewardCents;
-    } else if (
-      referral.status === "PENDING_CLAIM" &&
-      referral.expectedRewardCents != null
-    ) {
-      pendingCents += referral.expectedRewardCents;
+    }
+
+    if (isPaidReferredSubscription(referral.referredWorkspace.billingAccount?.subscription)) {
+      paidReferredCount += 1;
     }
   }
 
@@ -49,7 +77,7 @@ export async function getReferralEarningsSummary(
 
   return {
     earnedCents,
-    pendingCents,
+    paidReferredCount,
     appliedCents,
     availableBalanceCents,
     activeReferralCount,

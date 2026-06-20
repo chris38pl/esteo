@@ -77,6 +77,11 @@
       "captcha_failed": "We could not verify the form protection. Refresh the page and try again.",
       "storage_full": "Attachments are unavailable because storage is full. Remove files or try again later.",
       "all_attachments_failed": "We could not upload your attachments. Check the files and try again.",
+      "attachments_not_ready": "Wait for all attachments to finish uploading before submitting.",
+      "payload_too_large": "The attachments are too large to send in one request. Reduce file sizes or remove some attachments.",
+      "unauthorized": "You must be signed in to submit this request.",
+      "forbidden": "You do not have permission to perform this action.",
+      "server_error": "A server error occurred. Try again in a moment.",
       "unavailable": "We could not send the request. Try again in a moment."
     }
   },
@@ -87,6 +92,9 @@
     "addFile": "Add file",
     "fileCount": "{current}/{max}",
     "remove": "Remove file",
+    "retry": "Retry",
+    "uploading": "Uploading…",
+    "failed": "Upload failed",
     "notUploadedYet": "At this stage files are only previewed in the form and will not be sent yet.",
     "unavailableTitle": "Attachments are currently unavailable.",
     "unavailableHint": "You can still submit your request without attachments.",

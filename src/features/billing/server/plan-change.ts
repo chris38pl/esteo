@@ -108,7 +108,7 @@ async function createCheckoutSession(params: {
   const stripe = getStripeClient();
   const base = appBaseUrl();
 
-  const { getReferralCouponId, workspaceHasPendingReferral } = await import(
+  const { getReferralCouponId, workspaceHasPendingReferralClaim } = await import(
     "@/features/referrals/server/referral-checkout-discount"
   );
   const { updateReferralExpectedPlan } = await import(
@@ -116,17 +116,23 @@ async function createCheckoutSession(params: {
   );
 
   const referralCouponId = getReferralCouponId();
-  const hasReferral = await workspaceHasPendingReferral(params.workspaceId);
+  const hasPendingReferralClaim = await workspaceHasPendingReferralClaim(params.workspaceId);
 
-  if (hasReferral) {
+  if (hasPendingReferralClaim) {
     await updateReferralExpectedPlan(params.workspaceId, params.plan);
+  }
+
+  if (hasPendingReferralClaim && !referralCouponId) {
+    console.warn(
+      `[referral] PENDING_CLAIM referral for workspace ${params.workspaceId} but STRIPE_REFERRAL_COUPON_ID missing — checkout at full price`,
+    );
   }
 
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     customer: params.stripeCustomerId,
     line_items: [{ price: priceIdForPlan(params.plan), quantity: 1 }],
-    ...(hasReferral && referralCouponId
+    ...(hasPendingReferralClaim && referralCouponId
       ? { discounts: [{ coupon: referralCouponId }] }
       : {}),
     success_url: `${base}/dashboard/${params.slug}/billing/checkout-success?session_id={CHECKOUT_SESSION_ID}`,

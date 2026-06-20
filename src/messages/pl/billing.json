@@ -191,8 +191,11 @@
         "composedOf": "Składa się z:",
         "subscription": "Abonament (plan + dodatki)",
         "periodCharge": "Dopłata za bieżący okres",
-        "periodCredit": "Kredyt za niewykorzystany okres"
+        "periodCredit": "Kredyt za niewykorzystany okres",
+        "referralDiscount": "Zniżka polecająca ({percent}%)"
       },
+      "referralDiscountActive": "Zniżka {percent}% do {date}",
+      "referralDiscountTooltip": "Promocja polecająca — {percent}% zniżki na abonament przez okres promocji.\n\nPo {date} obowiązuje standardowa cena:\n{monthlyAmount} / miesiąc.",
       "empty": {
         "free_plan": "Brak aktywnej subskrypcji płatnej.",
         "canceling": "Subskrypcja kończy się — kolejna faktura nie zostanie wystawiona.",
@@ -302,6 +305,10 @@
       "subtitle": "Wybierz plan i dodatki w jednym miejscu.",
       "backToBilling": "Wróć do płatności",
       "planSection": "Wybierz plan",
+      "referralDiscountBanner": "Masz {percent}% zniżki przez {months} miesiące dzięki poleceniu — obowiązuje przy pierwszej płatności za PRO lub BUSINESS.",
+      "referralSummaryDuration": "przez {months} miesiące",
+      "referralSummaryThenRegular": "(potem {amount} / mies.)",
+      "perMonthPromo": "/ miesiąc (promocja)",
       "addonsSection": "Dodatki",
       "summarySection": "Podsumowanie zmiany",
       "stepLabel": "Krok {step}",

@@ -288,6 +288,33 @@ export async function syncSubscriptionFromStripe(
       stripeSubscription,
     });
 
+    if (
+      plan !== "FREE" &&
+      (status === "ACTIVE" || status === "TRIAL") &&
+      stripeSubscription.id
+    ) {
+      const accountOwner = await prisma.billingAccount.findUnique({
+        where: { id: billingAccount.id },
+        select: { ownerUserId: true },
+      });
+      if (accountOwner) {
+        const { ensureReferralProfileForEligiblePartner } = await import(
+          "@/features/referrals/server/user-referral-profile-service"
+        );
+        await ensureReferralProfileForEligiblePartner(accountOwner.ownerUserId);
+      }
+
+      const { tryActivateReferralFromSubscriptionSync } = await import(
+        "@/features/referrals/server/referral-activation-service"
+      );
+      await tryActivateReferralFromSubscriptionSync({
+        workspaceId: billingAccount.workspaceId,
+        stripeSubscription,
+        plan,
+        status,
+      });
+    }
+
     if (previousCancelAtPeriodEnd && !effectiveCancelAtPeriodEnd) {
       const { cancelPendingTransferIfSubscriptionReactivated } = await import(
         "@/features/workspaces/server/ownership-transfer"

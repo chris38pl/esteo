@@ -102,6 +102,23 @@ export function buildRecurringLineItems(
   return items;
 }
 
+export function applyReferralDiscountToLineItems(
+  lineItems: RecurringLineItem[],
+  plan: SubscriptionPlan,
+  discountedPlanPriceCents: Partial<Record<"PRO" | "BUSINESS", number>> | undefined,
+): RecurringLineItem[] {
+  if (plan !== "PRO" && plan !== "BUSINESS") {
+    return lineItems;
+  }
+  const discounted = discountedPlanPriceCents?.[plan];
+  if (discounted == null) {
+    return lineItems;
+  }
+  return lineItems.map((item) =>
+    item.kind === "plan" ? { ...item, cents: discounted } : item,
+  );
+}
+
 export function computeRecurringCents(plan: SubscriptionPlan, addons: AddonQuantities): number {
   const lineItems = buildRecurringLineItems(plan, addons);
   return lineItems.reduce((sum, item) => sum + item.cents, 0);

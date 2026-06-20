@@ -9,6 +9,7 @@ import { loadWorkspaceAddonQuantities } from "@/features/billing/server/workspac
 import {
   buildWorkspaceBillingPricing,
 } from "@/features/billing/server/get-workspace-upcoming-invoice";
+import { getWorkspaceActiveReferralDiscount } from "@/features/billing/server/get-workspace-active-referral-discount";
 import { getActiveSubscriptionChange } from "@/features/billing/server/subscription-change";
 import { addonRowsToQuantities } from "@/features/billing/lib/subscription-impact";
 import type {
@@ -78,6 +79,11 @@ export async function getWorkspaceBillingPageData(
 
   const { pricing, nextInvoice } = pricingBundle;
 
+  const activeReferralDiscount = await getWorkspaceActiveReferralDiscount({
+    stripeSubscriptionId: subscription?.stripeSubscriptionId,
+    stripeRecurringCents: pricing.stripeRecurringCents,
+  });
+
   return {
     entitlements,
     pricing,
@@ -88,6 +94,7 @@ export async function getWorkspaceBillingPageData(
     storageOverLimit,
     seatOverLimit: seatState.isOverLimit,
     nextInvoice,
+    activeReferralDiscount,
     activeSubscriptionChange,
     addonQuantities,
   };

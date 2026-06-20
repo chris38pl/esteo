@@ -1,6 +1,7 @@
 import {
   hasCatalogStripeRecurringMismatch,
   parseInvoicePreviewLines,
+  resolveInvoiceAdjustmentKind,
   resolveInvoiceDeltaCents,
   resolveInvoicePreview,
   resolveProrationKind,
@@ -97,6 +98,19 @@ assert(
   hasCatalogStripeRecurringMismatch(41500, 41600) === false,
   "small catalog vs stripe diff ignored",
 );
+
+const referralRecurringLine = {
+  amount: 7999,
+  proration: false,
+  subscription: "sub_1",
+  type: "subscription",
+} as const;
+const referralCatalog = 9999;
+const referralPreview = parseInvoicePreviewLines([referralRecurringLine] as never[], 7999);
+const resolvedReferral = resolveInvoicePreview(referralPreview, referralCatalog);
+assert(resolvedReferral.adjustmentKind === "subscription_discount", "referral coupon is subscription_discount");
+assert(resolvedReferral.invoiceDeltaCents === -2000, "referral delta is -20 PLN");
+assert(resolvedFromProration.adjustmentKind === "proration", "proration lines stay proration kind");
 
 if (failures > 0) {
   console.error(`\n${failures} assertion(s) failed.`);

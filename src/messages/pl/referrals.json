@@ -1,23 +1,75 @@
 {
   "title": "Program partnerski",
-  "description": "Polecaj Esteo i zarabiaj bonusy, gdy Twoi znajomi zaczną korzystać z płatnego planu.",
+  "description": "Polecaj Esteo i zarabiaj bonusy, gdy Twoi znajomi wybiorą płatny plan. Wy też coś zyskujecie.",
   "inactiveBanner": "Aktywuj plan PRO lub BUSINESS, aby znów polecać Esteo.",
+  "inviteCard": {
+    "title": "Zaproś znajomego",
+    "subtitle": "i odbierz bonus, gdy dołączy do Esteo!",
+    "cta": "Zaproś znajomego"
+  },
+  "referralLink": {
+    "title": "Twój link polecający",
+    "subtitle": "Udostępniaj link w dowolnym miejscu",
+    "alternateShare": "Nie musisz wysyłać linku — przy zakładaniu konta wystarczy, że poda Twój email lub indywidualny kod poniżej. Twój znajomy też dostanie zniżkę na start.",
+    "codeLabel": "Kod polecający",
+    "emailLabel": "Email polecający"
+  },
+  "benefits": {
+    "youTitle": "Ty zarabiasz",
+    "youFootnote": "Gdy znajomy wykupi plan PRO, otrzymasz {proAmount}. Przy planie BUSINESS — {businessAmount}. Bonus trafia na saldo do wykorzystania na fakturach.",
+    "theyTitle": "Twój znajomy zyskuje",
+    "theyValue": "20% zniżki",
+    "theyDuration": "przez 3 miesiące",
+    "theyFootnote": "Na plan PRO lub BUSINESS po rejestracji z Twoim linkiem, kodem albo emailem."
+  },
   "share": {
-    "title": "Poleć znajomego",
-    "linkLabel": "Link",
-    "emailLabel": "Email",
-    "codeLabel": "Kod (opcja)",
     "copy": "Kopiuj",
     "copied": "Skopiowano",
     "sendInvite": "Wyślij zaproszenie"
   },
   "hero": {
     "earned": "Zarobione dzięki poleceniom",
-    "pendingBonuses": "Oczekujące bonusy",
+    "activeReferrals": "Aktywni poleceni",
     "appliedToInvoices": "Wykorzystane na fakturach",
-    "availableBalance": "Dostępne saldo",
-    "activeClients": "Aktywni klienci",
-    "referredMrr": "MRR poleconych"
+    "availableBalance": "Dostępne saldo"
+  },
+  "howItWorks": {
+    "title": "Jak to działa?",
+    "step1Title": "1. Zapraszasz",
+    "step1Desc": "Wyślij link znajomym",
+    "step2Title": "2. Dołączają",
+    "step2Desc": "Znajomi zakładają konto w Esteo",
+    "step3Title": "3. Zarabiasz",
+    "step3Desc": "Otrzymujesz bonus, gdy wybiorą płatny plan"
+  },
+  "invitations": {
+    "title": "Twoje zaproszenia",
+    "seeAll": "Zobacz wszystkie",
+    "empty": "Nie masz jeszcze zaproszeń.",
+    "columns": {
+      "email": "Email",
+      "status": "Status",
+      "joined": "Dołączył",
+      "bonus": "Bonus"
+    }
+  },
+  "statusBadge": {
+    "active": "Aktywny",
+    "pending": "Oczekuje",
+    "inactive": "Nieaktywny"
+  },
+  "planBanner": {
+    "yourPlan": "Twój plan:",
+    "seePlans": "Zobacz plany",
+    "free": {
+      "description": "Zarabiaj więcej dzięki planom Pro. Sprawdź korzyści płatnych planów."
+    },
+    "pro": {
+      "description": "Korzystasz z planu Pro. Przejdź na Business, aby odblokować pełny potencjał Esteo."
+    },
+    "business": {
+      "description": "Masz plan Business — wszystkie korzyści programu partnerskiego są odblokowane."
+    }
   },
   "tier": {
     "title": "Twój poziom partnera",
@@ -31,23 +83,16 @@
     "diamond": "Diamond",
     "comingSoon": "Wkrótce"
   },
-  "table": {
-    "title": "Polecone firmy",
-    "empty": "Nie masz jeszcze poleconych firm.",
-    "columns": {
-      "company": "Firma",
-      "status": "Status",
-      "bonus": "Bonus"
-    }
-  },
   "payoutStatus": {
     "awaiting_registration": "Oczekuje na rejestrację",
     "awaiting_first_payment": "Oczekuje na pierwszą płatność",
     "awaiting_plan_selection": "Oczekuje na wybór planu",
-    "bonus_granted": "Bonus przyznany {amount}",
+    "processing_bonus": "Przetwarzanie bonusu",
+    "bonus_granted": "Bonus przyznany",
     "inactive": "Nieaktywny"
   },
   "bonus": {
+    "projectedSuffix": "(oczekuje)",
     "projected": "Prognozowany bonus: {amount}",
     "pending": "Oczekujące bonusy"
   },
@@ -63,7 +108,8 @@
       "ALREADY_CLAIMED": "To workspace ma już przypisane polecenie.",
       "WINDOW_CLOSED": "Okno przypisania kodu wygasło.",
       "PARTNER_INACTIVE": "Ten partner nie przyjmuje obecnie nowych poleceń.",
-      "NOT_FOUND": "Nie znaleziono partnera.",
+      "PARTNER_NOT_ELIGIBLE": "Ten użytkownik nie ma aktywnego planu PRO/BUSINESS.",
+      "NOT_FOUND": "Nie znaleziono użytkownika z tym adresem email.",
       "FRAUD": "To polecenie nie może zostać zaakceptowane."
     }
   },

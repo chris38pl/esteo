@@ -7,6 +7,7 @@ import {
   SubmitEstimateRequestError,
   submitEstimateRequestWithAttachments,
 } from "@/features/estimate-requests/server/submit-estimate-request-with-attachments";
+import { DocumentFieldValidationError } from "@/features/industry-fields/server/validate-document-values";
 import { publicEstimateRequestSchema } from "@/features/estimate-requests/schemas/request";
 import {
   assertPublicSubmitRateLimit,
@@ -23,23 +24,22 @@ function errorJson(error: string, status: number) {
 }
 
 export async function POST(request: Request) {
+  console.info("[public estimate-requests] incoming", {
+    contentLength: request.headers.get("content-length"),
+    contentType: request.headers.get("content-type"),
+  });
+
+  let bodyJson: unknown;
+
   try {
-    const formData = await request.formData();
-    const payloadRaw = formData.get("payload");
+    bodyJson = await request.json();
+  } catch (error) {
+    console.error("[public estimate-requests] json parse failed", error);
+    return errorJson("invalid", 400);
+  }
 
-    if (typeof payloadRaw !== "string") {
-      return errorJson("invalid", 400);
-    }
-
-    let payloadJson: unknown;
-
-    try {
-      payloadJson = JSON.parse(payloadRaw);
-    } catch {
-      return errorJson("invalid", 400);
-    }
-
-    const parsed = publicEstimateRequestSchema.safeParse(payloadJson);
+  try {
+    const parsed = publicEstimateRequestSchema.safeParse(bodyJson);
 
     if (!parsed.success) {
       return errorJson("invalid", 400);
@@ -70,17 +70,13 @@ export async function POST(request: Request) {
     const locale: Locale =
       localeParam !== null && isLocale(localeParam) ? localeParam : "pl";
 
-    const files = formData
-      .getAll("files")
-      .filter((entry): entry is File => entry instanceof File);
-
-    const { voiceIntake, ...body } = parsed.data;
+    const { voiceIntake, attachmentIds, ...body } = parsed.data;
 
     const result = await submitEstimateRequestWithAttachments({
       locale,
       source: "PUBLIC_REQUEST",
       body,
-      files,
+      attachmentIds: attachmentIds ?? [],
       workspaceSlug: parsed.data.workspaceSlug,
       requestMeta: fingerprint,
       uploadedById: null,
@@ -109,6 +105,10 @@ export async function POST(request: Request) {
         return errorJson("all_attachments_failed", 422);
       }
 
+      if (error.code === "ATTACHMENTS_NOT_READY") {
+        return errorJson("attachments_not_ready", 422);
+      }
+
       if (error.code === "WORKSPACE_NOT_FOUND") {
         return errorJson("unavailable", 404);
       }
@@ -116,6 +116,11 @@ export async function POST(request: Request) {
 
     if (error instanceof StorageQuotaError) {
       return errorJson("storage_full", 413);
+    }
+
+    if (error instanceof DocumentFieldValidationError) {
+      console.error("[public estimate-requests] field validation", error.message);
+      return errorJson("invalid", 400);
     }
 
     console.error("[public estimate-requests]", error);

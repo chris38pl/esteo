@@ -104,6 +104,7 @@ function BillingSubscriptionImpactCard({
       currentAddons={data.addonQuantities}
       pricing={data.pricing}
       nextInvoice={data.nextInvoice}
+      activeReferralDiscount={data.activeReferralDiscount}
       activeSubscriptionChange={data.activeSubscriptionChange}
       canViewInvoiceHistory={canViewInvoiceHistory}
       canCancelScheduledChange={canCancelScheduledChange && Boolean(data.activeSubscriptionChange)}

@@ -4,7 +4,6 @@ import {
   parseFieldSelectConfig,
   parseMultiSelectStoredValue,
 } from "@/features/industry-fields/lib/field-select-config";
-import type { SelectOption } from "@/features/industry-fields/schemas/definition";
 import { listActiveFieldDefinitions } from "@/features/industry-fields/server/repository";
 import type { FieldValueInput } from "@/features/industry-fields/server/map-field-value";
 
@@ -19,18 +18,24 @@ type Definition = {
   key: string;
   valueType: IndustryFieldValueType;
   required: boolean;
-  options: SelectOption[] | null;
+  options: unknown;
 };
 
 export async function validateDocumentFieldValues(input: {
   industry: import("@prisma/client").WorkspaceIndustry;
   documentType: BusinessDocumentType;
   values: Record<string, FieldValueInput>;
+  fieldKeys?: string[];
 }) {
-  const definitions = await listActiveFieldDefinitions({
+  let definitions = await listActiveFieldDefinitions({
     industry: input.industry,
     documentType: input.documentType,
   });
+
+  if (input.fieldKeys) {
+    const allowed = new Set(input.fieldKeys);
+    definitions = definitions.filter((definition) => allowed.has(definition.key));
+  }
 
   const definitionByKey = new Map(definitions.map((definition) => [definition.key, definition]));
   const validated: Array<{
@@ -55,24 +60,30 @@ export async function validateDocumentFieldValues(input: {
       continue;
     }
 
-    validateValueForType(
+    const normalizedValue = validateValueForType(
       {
         key: definition.key,
         valueType: definition.valueType,
         required: definition.required,
-        options: (definition.options as SelectOption[] | null) ?? null,
+        options: definition.options,
       },
       rawValue,
     );
     validated.push({
       fieldKey: definition.key,
       valueType: definition.valueType,
-      value: rawValue,
+      value: normalizedValue,
     });
   }
 
+  const allowedValueKeys = input.fieldKeys ? new Set(input.fieldKeys) : null;
+
   for (const key of Object.keys(input.values)) {
     if (definitionByKey.has(key)) {
+      continue;
+    }
+
+    if (allowedValueKeys && !allowedValueKeys.has(key)) {
       continue;
     }
 
@@ -95,7 +106,7 @@ function isJsonArrayFieldKey(key: string): boolean {
   return key === "product_categories" || key === "project_types";
 }
 
-function validateValueForType(definition: Definition, value: FieldValueInput) {
+function validateValueForType(definition: Definition, value: FieldValueInput): FieldValueInput {
   if (
     definition.valueType === "TEXT" &&
     isJsonArrayFieldKey(definition.key)
@@ -114,7 +125,7 @@ function validateValueForType(definition: Definition, value: FieldValueInput) {
         throw new DocumentFieldValidationError(`Field "${definition.key}" has an invalid option.`);
       }
     }
-    return;
+    return value;
   }
 
   switch (definition.valueType) {
@@ -125,29 +136,45 @@ function validateValueForType(definition: Definition, value: FieldValueInput) {
       }
 
       if (definition.valueType === "SELECT") {
-        const options = definition.options ?? [];
-        const allowed = new Set(options.map((option) => option.value));
+        const selectConfig = parseFieldSelectConfig(definition.options, definition.key);
+        let normalizedValue = value;
 
-        if (!allowed.has(value)) {
+        if (selectConfig.selectMode === "single") {
+          const parsed = parseMultiSelectStoredValue(value);
+          if (parsed.length === 1) {
+            normalizedValue = parsed[0]!;
+          } else if (parsed.length > 1) {
+            throw new DocumentFieldValidationError(
+              `Field "${definition.key}" allows only one option.`,
+            );
+          }
+        }
+
+        const allowed = new Set(selectConfig.choices.map((option) => option.value));
+
+        if (allowed.size > 0 && !allowed.has(normalizedValue)) {
           throw new DocumentFieldValidationError(`Field "${definition.key}" has an invalid option.`);
         }
+
+        return normalizedValue;
       }
-      break;
+
+      return value;
     case "NUMBER":
       if (typeof value !== "number" || Number.isNaN(value)) {
         throw new DocumentFieldValidationError(`Field "${definition.key}" must be a number.`);
       }
-      break;
+      return value;
     case "DATE":
       if (!(value instanceof Date) || Number.isNaN(value.getTime())) {
         throw new DocumentFieldValidationError(`Field "${definition.key}" must be a valid date.`);
       }
-      break;
+      return value;
     case "BOOLEAN":
       if (typeof value !== "boolean") {
         throw new DocumentFieldValidationError(`Field "${definition.key}" must be true or false.`);
       }
-      break;
+      return value;
     default:
       throw new DocumentFieldValidationError(`Unsupported field type for "${definition.key}".`);
   }
@@ -159,11 +186,13 @@ export async function upsertDocumentFieldValues(input: {
   documentType: BusinessDocumentType;
   documentId: string;
   values: Record<string, FieldValueInput>;
+  fieldKeys?: string[];
 }) {
   const validated = await validateDocumentFieldValues({
     industry: input.industry,
     documentType: input.documentType,
     values: input.values,
+    fieldKeys: input.fieldKeys,
   });
 
   const { upsertDocumentFieldValuesRecord } = await import(

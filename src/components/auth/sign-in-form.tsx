@@ -19,8 +19,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { authCrossLinkPath } from "@/lib/auth-cross-link";
 
-export function SignInForm({ locale }: { locale: string }) {
+export function SignInForm({
+  locale,
+  queryString = "",
+}: {
+  locale: string;
+  queryString?: string;
+}) {
   const t = useTranslations("auth");
   const c = useTranslations("common");
 
@@ -123,7 +130,7 @@ export function SignInForm({ locale }: { locale: string }) {
           <p className="text-center text-xs text-muted-foreground">
             {t("signIn.noAccount")}{" "}
             <Link
-              href={`/${locale}/sign-up`}
+              href={authCrossLinkPath(locale, "sign-up", queryString)}
               className="font-medium text-primary hover:underline"
             >
               {t("signIn.createAccount")}

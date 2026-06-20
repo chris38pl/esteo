@@ -2,16 +2,17 @@
 
 import type { ReactNode } from "react";
 import type { SubscriptionPlan } from "@prisma/client";
-import { Check, ChevronRight, FileText, Loader2, X } from "lucide-react";
+import { Check, ChevronRight, FileText, Loader2, Percent, X } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import type {
+  ActiveSubscriptionChange,
+  WorkspaceActiveReferralDiscount,
   WorkspaceBillingNextInvoice,
   WorkspaceBillingPricing,
 } from "@/features/billing/billing-page-data";
-import { BillingInvoiceAdjustmentRow } from "@/features/billing/components/billing-invoice-adjustment-row";
 import {
   formatBillingMonthlyPrice,
   formatSignedBillingAmount,
@@ -28,7 +29,7 @@ import {
   computePlanImpactSummary,
   splitLimitImpacts,
 } from "@/features/billing/lib/subscription-impact";
-import type { ActiveSubscriptionChange } from "@/features/billing/billing-page-data";
+import { BillingInvoiceAdjustmentRow } from "@/features/billing/components/billing-invoice-adjustment-row";
 import { formatDate } from "@/i18n/formatters";
 import { dashboardAccountBillingTabHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
@@ -41,6 +42,7 @@ type OverviewProps = {
   currentAddons: AddonQuantities;
   pricing: WorkspaceBillingPricing;
   nextInvoice: WorkspaceBillingNextInvoice;
+  activeReferralDiscount: WorkspaceActiveReferralDiscount | null;
   activeSubscriptionChange: ActiveSubscriptionChange | null;
   canViewInvoiceHistory: boolean;
   canCancelScheduledChange?: boolean;
@@ -244,6 +246,7 @@ function OverviewSummary(props: OverviewProps) {
     currentAddons,
     pricing,
     nextInvoice,
+    activeReferralDiscount,
     activeSubscriptionChange,
     canViewInvoiceHistory,
     canCancelScheduledChange,
@@ -261,12 +264,30 @@ function OverviewSummary(props: OverviewProps) {
   const currentLineItems = buildRecurringLineItems(currentPlan, currentAddons);
   const currentTotal = pricing.recurringCents;
   const hasInvoice = nextInvoice.kind === "invoice";
+  const adjustmentKind = hasInvoice ? nextInvoice.adjustmentKind : "none";
   const invoiceDeltaCents = hasInvoice
     ? (nextInvoice.invoiceDeltaCents ?? nextInvoice.amountCents - currentTotal)
     : 0;
-  const hasDelta = Math.abs(invoiceDeltaCents) > 1;
+  const hasProrationBreakdown =
+    adjustmentKind === "proration" && Math.abs(invoiceDeltaCents) > 1;
+  const hasReferralBreakdown =
+    adjustmentKind === "subscription_discount" && Math.abs(invoiceDeltaCents) > 1;
+  const referralPercent = activeReferralDiscount?.percent ?? 20;
   const monthlyAmount = formatBillingMonthlyPrice(currentTotal, locale, currency);
   const adjustmentTooltip = tNext("adjustmentTooltip", { monthlyAmount });
+  const referralDiscountTooltip = activeReferralDiscount
+    ? tNext("referralDiscountTooltip", {
+        percent: activeReferralDiscount.percent,
+        date: formatDate(activeReferralDiscount.endsAt, locale, { dateStyle: "long" }),
+        monthlyAmount,
+      })
+    : tNext("referralDiscountTooltip", {
+        percent: referralPercent,
+        date: hasInvoice
+          ? formatDate(nextInvoice.date, locale, { dateStyle: "long" })
+          : "",
+        monthlyAmount,
+      });
   const invoiceHistoryHref = dashboardAccountBillingTabHref(locale);
 
   const scheduledTargetPlan =
@@ -365,20 +386,20 @@ function OverviewSummary(props: OverviewProps) {
             <p className="text-sm text-muted-foreground">
               {formatDate(nextInvoice.date, locale, { dateStyle: "long" })}
             </p>
-            {hasDelta ? (
+            {hasProrationBreakdown || hasReferralBreakdown ? (
               <dl className="space-y-2 text-sm">
                 <div className="flex items-center justify-between gap-4">
                   <dt className="text-muted-foreground">{tNext("breakdown.subscription")}</dt>
                   <dd className="font-medium">{monthlyAmount}</dd>
                 </div>
-                {invoiceDeltaCents > 0 ? (
+                {hasProrationBreakdown && invoiceDeltaCents > 0 ? (
                   <BillingInvoiceAdjustmentRow
                     label={tNext("breakdown.periodCharge")}
                     amount={formatBillingMonthlyPrice(invoiceDeltaCents, locale, currency)}
                     tooltip={adjustmentTooltip}
                   />
                 ) : null}
-                {invoiceDeltaCents < 0 ? (
+                {hasProrationBreakdown && invoiceDeltaCents < 0 ? (
                   <BillingInvoiceAdjustmentRow
                     label={tNext("breakdown.periodCredit")}
                     amount={formatBillingMonthlyPrice(
@@ -387,6 +408,17 @@ function OverviewSummary(props: OverviewProps) {
                       currency,
                     )}
                     tooltip={adjustmentTooltip}
+                  />
+                ) : null}
+                {hasReferralBreakdown ? (
+                  <BillingInvoiceAdjustmentRow
+                    label={tNext("breakdown.referralDiscount", { percent: referralPercent })}
+                    amount={`-${formatBillingMonthlyPrice(
+                      Math.abs(invoiceDeltaCents),
+                      locale,
+                      currency,
+                    )}`}
+                    tooltip={referralDiscountTooltip}
                   />
                 ) : null}
               </dl>
@@ -402,12 +434,27 @@ function OverviewSummary(props: OverviewProps) {
       {hasInvoice ? (
         <>
           <SectionDivider />
-          <p className="text-sm text-muted-foreground">
-            <span>{tNext("upcomingInvoices")} </span>
-            <span className="font-medium text-foreground">
-              {tNext("recurringMonthlyValue", { amount: monthlyAmount })}
-            </span>
-          </p>
+          <div className="space-y-2">
+            {activeReferralDiscount ? (
+              <p className="flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-400">
+                <Percent className="size-4 shrink-0" aria-hidden />
+                <span>
+                  {tNext("referralDiscountActive", {
+                    percent: activeReferralDiscount.percent,
+                    date: formatDate(activeReferralDiscount.endsAt, locale, {
+                      dateStyle: "short",
+                    }),
+                  })}
+                </span>
+              </p>
+            ) : null}
+            <p className="text-sm text-muted-foreground">
+              <span>{tNext("upcomingInvoices")} </span>
+              <span className="font-medium text-foreground">
+                {tNext("recurringMonthlyValue", { amount: monthlyAmount })}
+              </span>
+            </p>
+          </div>
         </>
       ) : null}
     </ImpactCardShell>

@@ -77,6 +77,11 @@
       "captcha_failed": "Nie udało się potwierdzić zabezpieczenia formularza. Odśwież stronę i spróbuj ponownie.",
       "storage_full": "Załączniki są niedostępne, ponieważ limit miejsca został wyczerpany. Usuń pliki lub spróbuj później.",
       "all_attachments_failed": "Nie udało się przesłać załączników. Sprawdź pliki i spróbuj ponownie.",
+      "attachments_not_ready": "Poczekaj, aż wszystkie załączniki zostaną przesłane, zanim wyślesz formularz.",
+      "payload_too_large": "Załączniki są za duże do wysłania w jednym żądaniu. Zmniejsz rozmiar plików lub usuń część załączników.",
+      "unauthorized": "Musisz być zalogowany, aby wysłać to zgłoszenie.",
+      "forbidden": "Nie masz uprawnień do wykonania tej operacji.",
+      "server_error": "Wystąpił błąd serwera. Spróbuj ponownie za chwilę.",
       "unavailable": "Nie udało się wysłać zgłoszenia. Spróbuj ponownie za chwilę."
     }
   },
@@ -87,6 +92,9 @@
     "addFile": "Dodaj plik",
     "fileCount": "{current}/{max}",
     "remove": "Usuń plik",
+    "retry": "Ponów",
+    "uploading": "Przesyłanie…",
+    "failed": "Błąd przesyłania",
     "notUploadedYet": "Na tym etapie pliki są tylko podglądem w formularzu i nie zostaną jeszcze wysłane.",
     "unavailableTitle": "Załączniki są obecnie niedostępne.",
     "unavailableHint": "Nadal możesz wysłać zapytanie bez załączników.",

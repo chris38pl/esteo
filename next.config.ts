@@ -26,7 +26,7 @@ const legacyDashboardRedirects = LOCALES.flatMap((locale) => [
 const nextConfig: NextConfig = {
   reactCompiler: true,
   experimental: {
-    middlewareClientMaxBodySize: "12mb",
+    proxyClientMaxBodySize: "12mb",
   },
   images: {
     remotePatterns: [
