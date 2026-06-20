@@ -3,7 +3,7 @@ import "server-only";
 import { EstimateSendTransportStatus } from "@prisma/client";
 import { format } from "date-fns";
 import { pl, enUS } from "date-fns/locale";
-import { render } from "@react-email/render";
+import { render } from "react-email";
 
 import { prisma } from "@/db/client";
 import { getStorageProvider } from "@/features/attachments/server/storage";

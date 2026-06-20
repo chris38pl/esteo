@@ -32,6 +32,8 @@
     "prisma:backfill-referral-profiles": "tsx scripts/backfill-referral-profiles.ts",
     "prisma:backfill-referral-profiles:staging": "node scripts/backfill-referral-profiles.mjs --staging",
     "prisma:backfill-referral-activations": "tsx scripts/backfill-referral-activations.ts",
+    "prisma:backfill-missing-referral-credits": "tsx scripts/backfill-missing-referral-stripe-credits.ts",
+    "audit:referral-kpi": "tsx scripts/audit-referral-kpi.ts",
     "sync:issues": "node scripts/sync-issues.mjs",
     "retry-incomplete-ai-drafts": "tsx scripts/retry-incomplete-ai-drafts.ts",
     "test:request-attachments": "tsx scripts/test-request-attachment-metadata.ts",
@@ -88,8 +90,6 @@
     "@paralleldrive/cuid2": "^3.3.0",
     "@prisma/client": "^6",
     "@radix-ui/react-tooltip": "^1.2.8",
-    "@react-email/components": "^1.0.12",
-    "@react-email/render": "^2.0.9",
     "@teispace/next-themes": "^0.5.0",
     "@trigger.dev/sdk": "4.4.6",
     "ai": "^6.0.195",
@@ -102,11 +102,13 @@
     "next": "16.2.6",
     "next-intl": "^4.12.0",
     "nextjs-toploader": "^3.9.17",
+    "process": "^0.11.10",
     "puppeteer-core": "^24.43.1",
     "radix-ui": "^1.5.0",
     "react": "19.2.4",
     "react-day-picker": "^10.0.1",
     "react-dom": "19.2.4",
+    "react-email": "^6.0.0",
     "react-icons": "^5.6.0",
     "resend": "^6.14.0",
     "sharp": "^0.34.5",
@@ -138,6 +140,7 @@
     "typescript": "^5"
   },
   "overrides": {
-    "effect": "3.17.7"
+    "effect": "3.17.7",
+    "tar": "^7.5.16"
   }
 }
