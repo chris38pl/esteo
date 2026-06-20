@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Bug, Paperclip } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { Checkbox } from "@/components/ui/checkbox";
 import { IssuePriorityBadge } from "@/features/issues/components/issue-priority-badge";
 import { IssueStatusBadge } from "@/features/issues/components/issue-status-badge";
 import { IssueTypeBadge } from "@/features/issues/components/issue-type-badge";
@@ -25,17 +26,31 @@ export function IssueListRow({
   locale,
   layout = "table",
   issuesVariant = "admin",
+  selected = false,
+  onSelectedChange,
 }: {
   issue: AdminIssueListItem;
   locale: Locale;
   layout?: "table" | "list";
   issuesVariant?: IssuesRouteVariant;
+  selected?: boolean;
+  onSelectedChange?: (checked: boolean) => void;
 }) {
   const t = useTranslations("issues");
   const dateLocale = locale === "pl" ? "pl-PL" : "en-US";
   const detailHref = getIssueDetailPath(locale, issuesVariant, issue.number);
   const issueLabel = `#${issue.number}`;
   const hasAttachments = issue.attachmentCount > 0;
+  const selectable = Boolean(onSelectedChange);
+
+  const selectionCheckbox = selectable ? (
+    <Checkbox
+      checked={selected}
+      onCheckedChange={(checked) => onSelectedChange?.(checked === true)}
+      aria-label={t("list.bulk.selectIssue", { number: issue.number })}
+      onClick={(event) => event.stopPropagation()}
+    />
+  ) : null;
 
   const formatDate = (value: Date | string) =>
     new Intl.DateTimeFormat(dateLocale, {
@@ -93,35 +108,55 @@ export function IssueListRow({
 
   if (layout === "list") {
     return (
-      <div className="surface-card overflow-hidden rounded-xl border border-border/60">
-        <Link href={detailHref} className="block p-4 transition-colors hover:bg-accent/20">
-          <div className="flex items-start justify-between gap-3">
-            {listTitleCell}
-            <div className="flex shrink-0 flex-col items-end gap-1.5">
-              <IssueStatusBadge status={issue.status} label={t(`status.${issue.status}`)} />
-              <IssueTypeBadge label={t(`type.${issue.type}`)} />
+      <div
+        className={cn(
+          "surface-card overflow-hidden rounded-xl border border-border/60",
+          selected && "border-primary/40 ring-1 ring-primary/20",
+        )}
+      >
+        <div className="flex items-start gap-3 p-4">
+          {selectionCheckbox ? (
+            <div className="pt-1">{selectionCheckbox}</div>
+          ) : null}
+          <Link href={detailHref} className="min-w-0 flex-1 transition-colors hover:text-primary">
+            <div className="flex items-start justify-between gap-3">
+              {listTitleCell}
+              <div className="flex shrink-0 flex-col items-end gap-1.5">
+                <IssueStatusBadge status={issue.status} label={t(`status.${issue.status}`)} />
+                <IssueTypeBadge label={t(`type.${issue.type}`)} />
+              </div>
             </div>
-          </div>
 
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            <IssuePriorityBadge
-              priority={issue.priority}
-              label={t(`priority.${issue.priority}`)}
-            />
-            {hasAttachments ? (
-              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                <Paperclip className="size-3" />
-                {issue.attachmentCount}
-              </span>
-            ) : null}
-          </div>
-        </Link>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <IssuePriorityBadge
+                priority={issue.priority}
+                label={t(`priority.${issue.priority}`)}
+              />
+              {hasAttachments ? (
+                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                  <Paperclip className="size-3" />
+                  {issue.attachmentCount}
+                </span>
+              ) : null}
+            </div>
+          </Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <tr className="border-b border-border/60 transition-colors last:border-b-0 hover:bg-muted/20">
+    <tr
+      className={cn(
+        "border-b border-border/60 transition-colors last:border-b-0 hover:bg-muted/20",
+        selected && "bg-primary/5",
+      )}
+    >
+      {selectable ? (
+        <td className="w-10 px-3 py-3 align-top">
+          {selectionCheckbox}
+        </td>
+      ) : null}
       <td className={cn("px-4 py-3 align-top", issueListIssueColumnClassName)}>{titleCell}</td>
       <td className="px-4 py-3 align-top">{createdCell}</td>
       <td className="px-4 py-3 align-top">

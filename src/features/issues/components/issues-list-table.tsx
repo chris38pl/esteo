@@ -4,6 +4,7 @@ import { ArrowDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   IssueListRow,
   issueListIssueColumnClassName,
@@ -21,19 +22,40 @@ export function IssuesListTable({
   locale,
   footer,
   issuesVariant = "admin",
+  selectedNumbers,
+  onToggleIssue,
+  onTogglePage,
+  pageSelectionState = "none",
 }: {
   issues: AdminIssueListItem[];
   locale: Locale;
   footer?: ReactNode;
   issuesVariant?: IssuesRouteVariant;
+  selectedNumbers?: Set<number>;
+  onToggleIssue?: (number: number, checked: boolean) => void;
+  onTogglePage?: (checked: boolean) => void;
+  pageSelectionState?: "none" | "some" | "all";
 }) {
   const t = useTranslations("issues");
+  const selectable = Boolean(selectedNumbers && onToggleIssue && onTogglePage);
 
   return (
     <>
       <div className="space-y-3 p-3 md:hidden">
         {issues.map((issue) => (
-          <IssueListRow key={issue.number} issue={issue} locale={locale} layout="list" issuesVariant={issuesVariant} />
+          <IssueListRow
+            key={issue.number}
+            issue={issue}
+            locale={locale}
+            layout="list"
+            issuesVariant={issuesVariant}
+            selected={selectedNumbers?.has(issue.number) ?? false}
+            onSelectedChange={
+              onToggleIssue
+                ? (checked) => onToggleIssue(issue.number, checked)
+                : undefined
+            }
+          />
         ))}
       </div>
 
@@ -41,6 +63,21 @@ export function IssuesListTable({
         <table className="w-full min-w-[48rem] text-sm">
           <thead className="border-b border-border/60 bg-muted/30">
             <tr>
+              {selectable ? (
+                <th className="w-10 px-3 py-3">
+                  <Checkbox
+                    checked={
+                      pageSelectionState === "all"
+                        ? true
+                        : pageSelectionState === "some"
+                          ? "indeterminate"
+                          : false
+                    }
+                    onCheckedChange={(checked) => onTogglePage?.(checked === true)}
+                    aria-label={t("list.bulk.selectPage")}
+                  />
+                </th>
+              ) : null}
               <th className={cn(thClassName, issueListIssueColumnClassName)}>
                 {t("list.columns.issue")}
               </th>
@@ -60,7 +97,19 @@ export function IssuesListTable({
           </thead>
           <tbody>
             {issues.map((issue) => (
-              <IssueListRow key={issue.number} issue={issue} locale={locale} layout="table" issuesVariant={issuesVariant} />
+              <IssueListRow
+                key={issue.number}
+                issue={issue}
+                locale={locale}
+                layout="table"
+                issuesVariant={issuesVariant}
+                selected={selectedNumbers?.has(issue.number) ?? false}
+                onSelectedChange={
+                  onToggleIssue
+                    ? (checked) => onToggleIssue(issue.number, checked)
+                    : undefined
+                }
+              />
             ))}
           </tbody>
         </table>

@@ -111,6 +111,18 @@ export async function updateIssueStatus(
   }
 }
 
+export async function bulkUpdateIssueStatus(
+  numbers: number[],
+  status: IssueStatus,
+): Promise<number> {
+  const result = await prisma.issue.updateMany({
+    where: { number: { in: numbers } },
+    data: { status },
+  });
+
+  return result.count;
+}
+
 export async function getIssueAttachmentById(
   attachmentId: string,
 ): Promise<(IssueAttachment & { issue: Pick<Issue, "number"> }) | null> {

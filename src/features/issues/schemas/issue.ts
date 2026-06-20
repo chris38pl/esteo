@@ -36,3 +36,8 @@ export const updateIssueStatusSchema = z.object({
   number: z.number().int().positive(),
   status: z.enum(["OPEN", "RESOLVED"]),
 });
+
+export const bulkUpdateIssueStatusSchema = z.object({
+  numbers: z.array(z.number().int().positive()).min(1).max(100),
+  status: z.enum(["OPEN", "RESOLVED"]),
+});

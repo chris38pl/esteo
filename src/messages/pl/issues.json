@@ -146,6 +146,14 @@
       "descriptionLine1": "Szybko opisz bug lub uwagę UX",
       "descriptionLine2": "znalezioną podczas testów na staging.",
       "cta": "Nowe zgłoszenie"
+    },
+    "bulk": {
+      "selected": "zaznaczonych",
+      "selectIssue": "Zaznacz zgłoszenie #{number}",
+      "selectPage": "Zaznacz zgłoszenia na tej stronie",
+      "applyStatus": "Zmień status",
+      "clearSelection": "Anuluj",
+      "statusUpdated": "Zaktualizowano status {count, plural, one {# zgłoszenia} few {# zgłoszeń} many {# zgłoszeń} other {# zgłoszeń}}"
     }
   }
 }

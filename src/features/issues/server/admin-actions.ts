@@ -2,8 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 
-import { updateIssueStatusSchema } from "@/features/issues/schemas/issue";
 import {
+  bulkUpdateIssueStatusSchema,
+  updateIssueStatusSchema,
+} from "@/features/issues/schemas/issue";
+import {
+  bulkUpdateIssueStatus,
   getIssueAttachmentById,
   getIssueByNumber,
   listIssuesForAdmin,
@@ -60,6 +64,31 @@ export async function getAdminIssueAction(number: number, locale: Locale = "pl")
     return {
       success: false as const,
       error: error instanceof Error ? error.message : "Failed to load issue.",
+    };
+  }
+}
+
+export async function bulkUpdateIssueStatusAction(
+  input: { numbers: number[]; status: "OPEN" | "RESOLVED" },
+  locale: Locale = "pl",
+) {
+  try {
+    assertIssueTrackerEnabled();
+    await assertIssueViewerAccess(locale);
+    const parsed = bulkUpdateIssueStatusSchema.parse(input);
+    const updatedCount = await bulkUpdateIssueStatus(parsed.numbers, parsed.status);
+
+    if (updatedCount === 0) {
+      return { success: false as const, error: "No issues were updated." };
+    }
+
+    revalidateIssuePaths(locale);
+    return { success: true as const, data: { updatedCount } };
+  } catch (error) {
+    console.error("[bulkUpdateIssueStatusAction]", error);
+    return {
+      success: false as const,
+      error: error instanceof Error ? error.message : "Failed to update statuses.",
     };
   }
 }

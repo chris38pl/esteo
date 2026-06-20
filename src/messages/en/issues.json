@@ -146,6 +146,14 @@
       "descriptionLine1": "Quickly describe a bug or UX note",
       "descriptionLine2": "found while testing on staging.",
       "cta": "New issue"
+    },
+    "bulk": {
+      "selected": "selected",
+      "selectIssue": "Select issue #{number}",
+      "selectPage": "Select issues on this page",
+      "applyStatus": "Change status",
+      "clearSelection": "Cancel",
+      "statusUpdated": "Updated status for {count, plural, one {# issue} other {# issues}}"
     }
   }
 }

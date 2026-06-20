@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import { PaginationControls } from "@/components/shared/pagination-controls";
+import { IssuesListBulkActions } from "@/features/issues/components/issues-list-bulk-actions";
 import { IssuesListFilterSheet } from "@/features/issues/components/issues-list-filter-sheet";
 import { IssuesListHeroCard } from "@/features/issues/components/issues-list-hero-card";
 import { IssuesListTable } from "@/features/issues/components/issues-list-table";
@@ -51,9 +52,11 @@ export function AdminIssuesListPanel({
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [issuesList, setIssuesList] = useState(issues);
+  const [selectedNumbers, setSelectedNumbers] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     setIssuesList(issues);
+    setSelectedNumbers(new Set());
   }, [issues]);
 
   function handleIssueCreated(created: CreatedIssueSummary) {
@@ -102,6 +105,67 @@ export function AdminIssuesListPanel({
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const safePage = Math.min(page, totalPages);
   const pageIssues = filteredIssues.slice((safePage - 1) * pageSize, safePage * pageSize);
+  const selectedOnPageCount = pageIssues.filter((issue) =>
+    selectedNumbers.has(issue.number),
+  ).length;
+  const pageSelectionState =
+    pageIssues.length === 0 || selectedOnPageCount === 0
+      ? "none"
+      : selectedOnPageCount === pageIssues.length
+        ? "all"
+        : "some";
+  const selectedNumbersList = useMemo(
+    () => Array.from(selectedNumbers),
+    [selectedNumbers],
+  );
+
+  const clearSelection = useCallback(() => {
+    setSelectedNumbers(new Set());
+  }, []);
+
+  const toggleIssueSelection = useCallback((number: number, checked: boolean) => {
+    setSelectedNumbers((current) => {
+      const next = new Set(current);
+      if (checked) {
+        next.add(number);
+      } else {
+        next.delete(number);
+      }
+      return next;
+    });
+  }, []);
+
+  const togglePageSelection = useCallback(
+    (checked: boolean) => {
+      setSelectedNumbers((current) => {
+        const next = new Set(current);
+        for (const issue of pageIssues) {
+          if (checked) {
+            next.add(issue.number);
+          } else {
+            next.delete(issue.number);
+          }
+        }
+        return next;
+      });
+    },
+    [pageIssues],
+  );
+
+  function handleBulkStatusUpdated(numbers: number[], status: "OPEN" | "RESOLVED") {
+    const updatedNumbers = new Set(numbers);
+    setIssuesList((current) =>
+      current.map((issue) =>
+        updatedNumbers.has(issue.number) ? { ...issue, status } : issue,
+      ),
+    );
+
+    try {
+      router.refresh();
+    } catch {
+      // Keep optimistic rows if refresh fails.
+    }
+  }
 
   const hasIssues = issuesList.length > 0;
   const hasFilteredResults = filteredIssues.length > 0;
@@ -122,18 +186,28 @@ export function AdminIssuesListPanel({
           onSearchQueryChange={(query) => {
             setSearchQuery(query);
             setPage(1);
+            clearSelection();
           }}
           filterActive={filterActive}
           onOpenFilter={() => setFilterSheetOpen(true)}
           onClearFilter={() => {
             setListFilter(EMPTY_ISSUES_LIST_FILTER);
             setPage(1);
+            clearSelection();
           }}
           dateRange={dateRange}
           onDateRangeChange={(range) => {
             setDateRange(range);
             setPage(1);
+            clearSelection();
           }}
+        />
+
+        <IssuesListBulkActions
+          selectedNumbers={selectedNumbersList}
+          locale={locale}
+          onClearSelection={clearSelection}
+          onStatusUpdated={handleBulkStatusUpdated}
         />
 
         {!hasIssues ? (
@@ -151,6 +225,10 @@ export function AdminIssuesListPanel({
             issues={pageIssues}
             locale={locale}
             issuesVariant={issuesVariant}
+            selectedNumbers={selectedNumbers}
+            onToggleIssue={toggleIssueSelection}
+            onTogglePage={togglePageSelection}
+            pageSelectionState={pageSelectionState}
             footer={
               <PaginationControls
                 className="px-4 pb-4"
@@ -160,8 +238,15 @@ export function AdminIssuesListPanel({
                 totalPages={totalPages}
                 hasPreviousPage={safePage > 1}
                 hasNextPage={safePage < totalPages}
-                onPageChange={setPage}
-                onPageSizeChange={setPageSize}
+                onPageChange={(nextPage) => {
+                  setPage(nextPage);
+                  clearSelection();
+                }}
+                onPageSizeChange={(nextPageSize) => {
+                  setPageSize(nextPageSize);
+                  setPage(1);
+                  clearSelection();
+                }}
               />
             }
           />
@@ -178,6 +263,7 @@ export function AdminIssuesListPanel({
         onApply={(filter) => {
           setListFilter(filter);
           setPage(1);
+          clearSelection();
         }}
       />
 
