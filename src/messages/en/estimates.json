@@ -729,6 +729,8 @@
     "placeholder": "Ask AI to modify the estimate…",
     "panelHint": "Fast edits for this estimate",
     "send": "Send",
+    "recordPrompt": "Dictate prompt",
+    "stopRecording": "Stop recording",
     "thinking": "Thinking…",
     "proposed": "Proposed changes ready",
     "approve": "Approve",

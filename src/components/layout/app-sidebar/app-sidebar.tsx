@@ -63,9 +63,8 @@ export function AppSidebar({
         <SidebarTeam />
         <SidebarReferrals />
         <SidebarReportIssue />
+        <SidebarSettings />
       </div>
-
-      <SidebarSettings />
     </motion.aside>
   );
 }

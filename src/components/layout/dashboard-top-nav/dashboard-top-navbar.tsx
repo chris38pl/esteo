@@ -88,8 +88,8 @@ export function DashboardTopNavbar({ locale }: { locale: Locale }) {
                   <SidebarTeam collapsedOverride={false} />
                   <SidebarReferrals collapsedOverride={false} />
                   <SidebarReportIssue collapsedOverride={false} />
+                  <SidebarSettings collapsedOverride={false} />
                 </div>
-                <SidebarSettings collapsedOverride={false} />
               </div>
             </SidebarLayoutProvider>
           </DialogContent>

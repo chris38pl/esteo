@@ -40,7 +40,7 @@ export function SidebarSettings({
 
         sidebarInsetClass(collapsed, inDrawer),
 
-        "pb-3 pt-3",
+        "shrink-0 pb-3 pt-3",
 
         collapsed && "flex flex-col items-center gap-2",
 

@@ -729,6 +729,8 @@
     "placeholder": "Zapytaj AI o modyfikację wyceny…",
     "panelHint": "Szybkie zmiany w wycenie",
     "send": "Wyślij",
+    "recordPrompt": "Dyktuj polecenie",
+    "stopRecording": "Zatrzymaj nagrywanie",
     "thinking": "Analizuję…",
     "proposed": "Proponowane zmiany gotowe",
     "approve": "Zatwierdź",

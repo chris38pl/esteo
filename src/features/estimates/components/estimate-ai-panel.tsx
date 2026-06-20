@@ -4,7 +4,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 
-import { Bot, Check, Loader2, RotateCcw, Send, X } from "lucide-react";
+import { Bot, Check, Loader2, Mic, MicOff, RotateCcw, Send, X } from "lucide-react";
 
 import { useTranslations } from "next-intl";
 
@@ -38,6 +38,7 @@ import {
 
 import type { ProposeEditResult } from "@/features/estimates/lib/estimate-agent-types";
 import type { AiMessageClient } from "@/features/estimates/lib/serialize-ai-messages";
+import { useSpeechRecognition } from "@/features/issues/hooks/use-speech-recognition";
 
 import type { VersionTreeClient } from "@/features/estimates/lib/serialize-estimate";
 
@@ -131,6 +132,8 @@ export function EstimateAiPanel({
 }: EstimateAiPanelProps) {
 
   const t = useTranslations("estimates");
+  const { isListening, isSupported, toggleListening, stopListening } =
+    useSpeechRecognition(locale);
 
   const [messages, setMessages] = useState<Message[]>(() =>
     initialMessages.map((message) => ({
@@ -161,9 +164,20 @@ export function EstimateAiPanel({
     scrollBody.scrollTop = scrollBody.scrollHeight;
   }, [pendingEdit]);
 
+  useEffect(() => () => stopListening(), [stopListening]);
+
+  function appendTranscript(text: string) {
+    setInput((prev) => {
+      const trimmed = prev.trim();
+      return trimmed.length > 0 ? `${trimmed} ${text}` : text;
+    });
+  }
+
   const handleSend = () => {
 
     if (readOnly || !input.trim() || isPending) return;
+
+    stopListening();
 
 
 
@@ -505,9 +519,26 @@ export function EstimateAiPanel({
 
           rows={2}
 
-          className="min-w-0 flex-1 resize-none rounded-xl border border-input bg-background px-3 py-2 text-xs shadow-xs ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+          className={cn(
+            "min-w-0 flex-1 resize-none rounded-xl border border-input bg-background px-3 py-2 text-xs shadow-xs ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+            isListening && "ring-2 ring-primary/40",
+          )}
 
         />
+
+        {isSupported ? (
+          <Button
+            type="button"
+            size="icon-sm"
+            variant={isListening ? "destructive" : "outline"}
+            onClick={() => toggleListening(appendTranscript)}
+            disabled={readOnly || isPending || isAtLimit}
+            className="self-end rounded-lg"
+            aria-label={isListening ? t("ai.stopRecording") : t("ai.recordPrompt")}
+          >
+            {isListening ? <MicOff className="size-3" /> : <Mic className="size-3" />}
+          </Button>
+        ) : null}
 
         <Button
 

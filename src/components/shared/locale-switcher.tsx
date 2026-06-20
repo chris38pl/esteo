@@ -11,7 +11,7 @@ const compactShellClass =
   "inline-flex h-9 overflow-hidden rounded-lg border border-border/60 bg-card/40 shadow-none";
 
 const compactSmShellClass =
-  "inline-flex h-7 overflow-hidden rounded-md border border-border/60 bg-card/40 shadow-none";
+  "inline-flex h-6 overflow-hidden rounded-md border border-border/60 bg-card/40 shadow-none";
 
 const defaultShellClass =
   "inline-flex h-11 overflow-hidden rounded-xl border border-border/60 bg-card/60 shadow-none backdrop-blur supports-[backdrop-filter]:bg-card/40";
@@ -61,7 +61,7 @@ export function LocaleSwitcher({
               "flex h-full flex-1 items-center justify-center font-semibold transition cursor-pointer",
               compact
                 ? compactSize === "sm"
-                  ? "min-w-7 text-xs"
+                  ? "min-w-6 text-[10px] font-medium"
                   : "min-w-9 text-xs"
                 : "min-w-11 text-sm",
               index > 0 && "border-l border-border/60",

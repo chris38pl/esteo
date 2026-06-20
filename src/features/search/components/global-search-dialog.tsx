@@ -183,6 +183,8 @@ export function GlobalSearchDialog() {
       results.inquiries.length > 0 ||
       results.attachments.length > 0);
 
+  const hasRecents = recentSearches.length > 0 || recentDocuments.length > 0;
+
   async function handleSelect(item: NavigableItem) {
     if (!activeWorkspaceId) {
       return;
@@ -274,7 +276,7 @@ export function GlobalSearchDialog() {
           <div className="flex min-h-0 flex-1 flex-col md:flex-row">
             <div className="flex min-h-0 min-w-0 flex-1 flex-col md:basis-[62%] md:border-r md:border-border/60">
               <CommandList className="sidebar-scroll max-h-none min-h-0 flex-1 overflow-y-auto px-2 py-3 pb-4">
-                {!showSearchResults ? (
+                {!showSearchResults && !hasRecents ? (
                   <CommandEmpty className="px-4 py-10 text-left text-sm leading-relaxed">
                     {t("empty.hint")}
                   </CommandEmpty>
@@ -356,7 +358,7 @@ export function GlobalSearchDialog() {
             </div>
 
             <SearchRecentsSidebar
-              className="hidden md:flex"
+              className="flex"
               recentSearches={recentSearches}
               recentDocuments={recentDocuments}
               dateLocale={dateLocale}
