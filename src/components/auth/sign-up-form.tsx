@@ -2,10 +2,12 @@
 
 import * as Clerk from "@clerk/elements/common";
 import * as SignUp from "@clerk/elements/sign-up";
+import { useSignUp } from "@clerk/nextjs";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { SignUpContinue } from "@/components/auth/sign-up-continue";
+import { SignUpVerificationPrepareDedup } from "@/components/auth/sign-up-verification-prepare-dedup";
 import {
   LocalizedClerkFieldError,
   LocalizedClerkGlobalError,
@@ -14,6 +16,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+
+function SignUpVerifyEmail() {
+  const { isLoaded, signUp } = useSignUp();
+  const email = signUp?.emailAddress;
+
+  if (!isLoaded || !email) {
+    return null;
+  }
+
+  return email;
+}
 
 export function SignUpForm({ locale }: { locale: string }) {
   const t = useTranslations("auth");
@@ -24,6 +37,7 @@ export function SignUpForm({ locale }: { locale: string }) {
       routing="path"
       path={`/${locale}/sign-up`}
     >
+      <SignUpVerificationPrepareDedup />
       <LocalizedClerkGlobalError className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive" />
       <div id="clerk-captcha" />
 
@@ -147,7 +161,10 @@ export function SignUpForm({ locale }: { locale: string }) {
         <SignUp.Strategy name="email_code">
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              {t("signUp.verifyEmailTitle")}
+              {t("signUp.verifyEmailTitle")}{" "}
+              <span className="font-medium text-foreground">
+                <SignUpVerifyEmail />
+              </span>
             </p>
 
             <Clerk.Field name="code" className="space-y-2">
@@ -164,6 +181,23 @@ export function SignUpForm({ locale }: { locale: string }) {
               <Button type="submit" className="w-full">
                 {t("signUp.verifySubmit")}
               </Button>
+            </SignUp.Action>
+
+            <SignUp.Action
+              resend
+              fallback={({ resendableAfter }) => (
+                <p className="text-center text-xs text-muted-foreground">
+                  {t("signUp.resendCodeWait", { seconds: resendableAfter })}
+                </p>
+              )}
+              asChild
+            >
+              <button
+                type="button"
+                className="w-full text-center text-xs font-medium text-primary hover:underline disabled:opacity-50"
+              >
+                {t("signUp.resendCode")}
+              </button>
             </SignUp.Action>
           </div>
         </SignUp.Strategy>

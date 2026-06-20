@@ -178,6 +178,26 @@ Custom button calling the same `prepareSecondFactor` API. **Do not** use `SignIn
 
 60s cooldown UI matches previous UX (`resendCodeWait` i18n).
 
+## Sign-up email verification
+
+Sign-up uses Clerk Elements `SignUp.Step name="verifications"` / `SignUp.Strategy name="email_code"`. Unlike sign-in, Elements **does** auto-call `signUp.prepareVerification()` when the strategy mounts.
+
+### Verify step UX — [`sign-up-form.tsx`](../../src/components/auth/sign-up-form.tsx)
+
+| Piece | Implementation |
+| --- | --- |
+| Target email | `SignUpVerifyEmail` via `useSignUp().signUp?.emailAddress` — **not** `SignUp.SafeIdentifier` (not exported by `@clerk/elements/sign-up`) |
+| Resend | `SignUp.Action resend` with `fallback={({ resendableAfter }) => …}` — Clerk server cooldown |
+| Submit | `SignUp.Action submit` — Elements handles `attemptVerification` |
+
+i18n: `auth.signUp.verifyEmailTitle`, `resendCode`, `resendCodeWait`.
+
+### Prepare dedup — `SignUpVerificationPrepareDedup`
+
+Path routing + Strict Mode (dev) can fire **multiple concurrent** `prepareVerification` calls for the same `signUp.id`. [`sign-up-verification-prepare-dedup.tsx`](../../src/components/auth/sign-up-verification-prepare-dedup.tsx) wraps `client.signUp.prepareVerification` and coalesces in-flight calls via module-level `Map<attemptId, Promise>`.
+
+Do not remove without an equivalent guard — users receive multiple OTP emails (see [2026-06-20 incident](../incidents/2026-06-20-sign-up-verify-duplicate-emails.md)).
+
 ### Code submit
 
 Keep `SignIn.Action submit` on the verifications step. Elements handles `attemptSecondFactor` — do not replace with manual SDK calls unless migrating off Elements entirely.
@@ -191,7 +211,8 @@ Keep `SignIn.Action submit` on the verifications step. Elements handles `attempt
 | [`sign-in-second-factor-prepare.tsx`](../../src/components/auth/sign-in-second-factor-prepare.tsx) | Auto-prepare, in-flight lock, custom resend |
 | [`auth-loading-indicator.tsx`](../../src/components/auth/auth-loading-indicator.tsx) | Spinner + message for `SignIn.Root` fallback |
 | [`auth-shell.tsx`](../../src/components/auth/auth-shell.tsx) | Page chrome (not Clerk-managed) |
-| [`sign-up-form.tsx`](../../src/components/auth/sign-up-form.tsx) | Sign-up equivalent (separate flow) |
+| [`sign-up-form.tsx`](../../src/components/auth/sign-up-form.tsx) | Sign-up flow including email OTP verify step |
+| [`sign-up-verification-prepare-dedup.tsx`](../../src/components/auth/sign-up-verification-prepare-dedup.tsx) | Coalesce concurrent `prepareVerification` on sign-up |
 | [`localized-clerk-errors.tsx`](../../src/components/auth/localized-clerk-errors.tsx) | Localized Elements `FieldError` / `GlobalError` wrappers |
 | [`clerk-locale-provider.tsx`](../../src/components/clerk-locale-provider.tsx) | `ClerkProvider` + theme + locale localization |
 | [`clerk-localization.ts`](../../src/lib/clerk-localization.ts) | `pl` / `en` → `plPL` / `enUS` |
@@ -208,6 +229,15 @@ Keep `SignIn.Action submit` on the verifications step. Elements handles `attempt
 | `verifySubmit` | Submit Client Trust code button |
 | `resendCode` | Client Trust resend button label |
 | `resendCodeWait` | Client Trust cooldown text (`{seconds}`) |
+
+### Sign-up (`auth.signUp.*`)
+
+| Key | Usage |
+| --- | --- |
+| `verifyEmailTitle` | Email OTP step intro (with `SignUpVerifyEmail`) |
+| `verifySubmit` | Submit verification code button |
+| `resendCode` | Resend button label |
+| `resendCodeWait` | Resend cooldown text (`{seconds}`) |
 
 ### Forgot password (`auth.forgotPassword.*`)
 

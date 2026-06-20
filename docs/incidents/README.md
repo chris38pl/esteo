@@ -16,5 +16,6 @@ Short postmortems for non-obvious bugs and the patterns that fixed them. Use the
 | 2026-06-13 | [Login „Issue” dev overlay (Router hooks)](./2026-06-13-login-issue-dev-overlay-hooks.md) | Brief Next.js „Issue” badge + `Rendered more hooks...` after login in `npm run dev` only; production/Preview clean |
 | 2026-06-18 | [Global search input double chrome](./2026-06-18-global-search-input-double-chrome.md) | Palette search shows inner rectangle; global `.dark input` + wrapper background |
 | 2026-06-18 | [Estimate send toast polling stuck](./2026-06-18-estimate-send-toast-polling-stuck.md) | Send succeeds (banner SENT) but bottom toast keeps loading; duplicate in-progress banner |
+| 2026-06-20 | [Sign-up verify duplicate OTP / missing UX](./2026-06-20-sign-up-verify-duplicate-emails.md) | Brak emaila i resend na `/sign-up/verify`; potem 3 kody OTP naraz w dev |
 
 When adding a new note, name files `YYYY-MM-DD-short-slug.md` and add a row to this table.
