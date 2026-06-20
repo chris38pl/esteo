@@ -6,15 +6,25 @@ Owner-only first-time activation on `/estimates`. No Prisma fields — progress 
 
 1. **Onboarding** → redirect to `/estimates`; sets `esteo.activation.workspace-ready-pending.{slug}`.
 2. **Workspace ready banner** — primary CTAs (create estimate, copy form link). Auto-dismisses on CTA click or ✕.
-3. **Checklist** (3 steps) — shown after banner is dismissed:
+3. **Combined banner** (after banner dismissed) — single card, `xl:grid-cols-3`:
+   - **Left (2/3):** “Jak działa Esteo?” — 3-step horizontal flow (desktop) / stacked (mobile).
+   - **Right (1/3):** Checklist (3 steps), vertically centered.
+4. **Checklist steps:**
    - Create first estimate (DB: `Estimate` count > 0)
    - Generate PDF (DB: `EstimatePdf` with status `READY`)
    - Copy client form link (`localStorage`: `form-link-copied`)
-4. **Celebration at 3/3** — “Wszystko gotowe!” with [Ukryj]; guide stays in “Jak działa Esteo?” until dismissed.
-5. **Guide card** — “Jak działa Esteo?” during activation; “Porady” after celebration dismissed.
-6. **Form hero badge** — evolving copy; hidden only after first public form submission (adoption).
-7. **First AI complete** — Sonner action toast with Generuj PDF / Wyślij klientowi.
-8. **PDF gate** — inline company profile modal (no settings redirect).
+5. **Celebration at 3/3** — “Wszystko gotowe!” with [Ukryj]; guide stays in “Jak działa Esteo?” until dismissed.
+6. **Guide card** — “Jak działa Esteo?” during activation; “Porady” after celebration dismissed.
+7. **Form badge** — “Formularz gotowy” in guide header **before first copy/share** only; hidden after copy or public form submission.
+8. **Form link copy/share toast** — Sonner success toast (5 s, `top-center`) on every copy or share (hero, checklist, workspace banner, Messenger/WhatsApp/X/email/native share). Copy: `activation.formBadge.afterCopyTitle` / `afterCopyDescription`. Handler: `notify-form-link-shared.ts`.
+9. **First AI complete** — Sonner action toast with Generuj PDF / Wyślij klientowi (persists until action).
+10. **PDF gate** — inline company profile modal (no settings redirect).
+
+## UI notes
+
+- Banner is intentionally **compact** (secondary hint, not primary page content): smaller headings, icons, padding, and checklist row density (~20% less height vs initial design).
+- **Mobile:** extra vertical spacing between “Jak działa Esteo?” and checklist (`pb-6` / `pt-8` on stacked layout).
+- **Hydration:** `useActivationUiState` defers `localStorage` reads until after client mount (`hasHydrated`) so SSR and first client render match (avoids badge/checklist mismatch).
 
 ## Eligibility
 
@@ -27,7 +37,7 @@ Owner-only first-time activation on `/estimates`. No Prisma fields — progress 
 |---|---|
 | `workspace-ready-pending` | Show banner after onboarding |
 | `workspace-ready-seen` | Banner dismissed (clears pending) |
-| `form-link-copied` | Checklist step 3 |
+| `form-link-copied` | Checklist step 3 + hide “Formularz gotowy” badge |
 | `celebration-dismissed` | Hide checklist after 3/3 |
 | `first-ai-toast-shown` | One-time AI WOW toast |
 | `completed-analytics-fired` | One-time `activation_completed` |
@@ -43,6 +53,10 @@ Events dispatch `esteo:activation-analytics` CustomEvents (stub for PostHog wiri
 
 **Adoption** (not checklist): public form received, first estimate sent.
 
+## Build dependency
+
+Webpack resolves `process/browser.js` for some client bundles. The `process` package is a direct dependency in `package.json` — if `ENOENT` for `node_modules/process/browser.js`, run `npm install process`.
+
 ## Phase 2 (deferred)
 
 - Default home `/estimates` until activation complete
@@ -51,5 +65,8 @@ Events dispatch `esteo:activation-analytics` CustomEvents (stub for PostHog wiri
 ## Key files
 
 - `src/features/activation/` — components, hooks, server loader, analytics
+- `src/features/activation/lib/notify-form-link-shared.ts` — copy/share toast + checklist step 3 side effects
+- `src/features/activation/hooks/use-activation-ui-state.ts` — client state merge + hydration-safe storage
+- `src/features/activation/components/activation-combined-banner.tsx` — guide + checklist layout
 - `src/app/.../estimates/page.tsx` — loads progress for owners
 - `src/features/workspaces/components/create-workspace-form.tsx` — sets pending flag on onboarding
