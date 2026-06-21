@@ -57,6 +57,10 @@ export function openEstimateWorkflowDialogDeferred(
   window.setTimeout(() => open(action), MOBILE_OUTSIDE_DISMISS_GUARD_MS / 3);
 }
 
+export function openMobileSheetDialogDeferred(open: () => void) {
+  window.setTimeout(open, MOBILE_OUTSIDE_DISMISS_GUARD_MS / 3);
+}
+
 export function createMobileDismissGuardedOpenChange(
   ignoreRef: RefObject<boolean>,
   onOpenChange: (open: boolean) => void,

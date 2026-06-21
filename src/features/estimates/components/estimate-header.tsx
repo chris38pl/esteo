@@ -28,6 +28,7 @@ import {
 import { EstimateRulesIndicator } from "./estimate-rules-indicator";
 import { EstimateHeaderPinMenuItem } from "./estimate-header-pin-menu-item";
 import { EstimateHeaderRenameMenuItem } from "./estimate-header-rename-menu-item";
+import { EstimateRenameDialog } from "./estimate-rename-dialog";
 import { EstimateHeaderVersionMenuItems } from "./estimate-header-version-menu-items";
 import { EstimateHeaderRetryAiMenuItem } from "./estimate-header-retry-ai-menu-item";
 import { EstimateHeaderPdfExportMenuItem } from "./estimate-header-pdf-export-menu-item";
@@ -97,6 +98,7 @@ interface EstimateHeaderMoreMenuProps {
   isSending: boolean;
   onOpenSendDialog: (mode: EstimateSendDialogMode) => void;
   onOpenWorkflowDialog: (action: EstimateWorkflowDialogAction) => void;
+  onOpenRenameDialog: () => void;
   isPinned: boolean;
   canManualRetryAiDraft?: boolean;
   onBeforePdfExport?: () => Promise<EstimatePdfBeforeExportResult>;
@@ -119,6 +121,7 @@ function EstimateHeaderMoreMenu({
   isSending,
   onOpenSendDialog,
   onOpenWorkflowDialog,
+  onOpenRenameDialog,
   isPinned,
   canManualRetryAiDraft = false,
   onBeforePdfExport,
@@ -147,13 +150,7 @@ function EstimateHeaderMoreMenu({
       <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <EstimateHeaderWorkflowActions {...workflowActionProps} />
-        <EstimateHeaderRenameMenuItem
-          title={title}
-          estimateId={estimateId}
-          workspaceId={workspaceId}
-          workspaceSlug={workspaceSlug}
-          locale={locale}
-        />
+        <EstimateHeaderRenameMenuItem onOpenRenameDialog={onOpenRenameDialog} />
         <EstimateHeaderPinMenuItem
           estimateId={estimateId}
           workspaceId={workspaceId}
@@ -223,6 +220,7 @@ export function EstimateHeader({
   const t = useTranslations("estimates");
   const [workflowDialogAction, setWorkflowDialogAction] =
     useState<EstimateWorkflowDialogAction | null>(null);
+  const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const activeVersion = versions.find((version) => version.id === activeVersionId) ?? versions[0];
   const activeVersionNumber = activeVersion?.versionNumber ?? 1;
   const activeStatus = workflow.status;
@@ -265,6 +263,7 @@ export function EstimateHeader({
     isSending,
     onOpenSendDialog,
     onOpenWorkflowDialog: setWorkflowDialogAction,
+    onOpenRenameDialog: () => setRenameDialogOpen(true),
     isPinned,
     canManualRetryAiDraft,
     onBeforePdfExport,
@@ -389,6 +388,16 @@ export function EstimateHeader({
           locale={locale}
         />
       ) : null}
+
+      <EstimateRenameDialog
+        open={renameDialogOpen}
+        onOpenChange={setRenameDialogOpen}
+        initialTitle={title}
+        estimateId={estimateId}
+        workspaceId={workspaceId}
+        workspaceSlug={workspaceSlug}
+        locale={locale}
+      />
     </>
   );
 }

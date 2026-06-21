@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -24,6 +24,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useEstimateMobileLayout } from "@/features/estimates/hooks/use-estimate-mobile-layout";
+import { useMobileKeyboardViewportInset } from "@/features/estimates/hooks/use-mobile-keyboard-viewport-inset";
 import {
   createMobileDismissGuardedOpenChange,
   getMobileSheetOutsideDismissHandlers,
@@ -55,6 +56,7 @@ export function EstimateRenameDialog({
   const router = useRouter();
   const isMobile = useEstimateMobileLayout();
   const ignoreOutsideDismissRef = useIgnoreInitialOutsideDismiss(open && isMobile);
+  const keyboardInset = useMobileKeyboardViewportInset(open && isMobile);
   const [title, setTitle] = useState(initialTitle ?? "");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -74,6 +76,14 @@ export function EstimateRenameDialog({
     ignoreOutsideDismissRef,
     onOpenChange,
   );
+
+  function scrollTitleInputIntoView() {
+    requestAnimationFrame(() => {
+      document
+        .getElementById("estimate-rename-title")
+        ?.scrollIntoView({ block: "center", behavior: "smooth" });
+    });
+  }
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -128,6 +138,7 @@ export function EstimateRenameDialog({
           maxLength={ESTIMATE_TITLE_MAX_LENGTH}
           disabled={pending}
           autoFocus={!isMobile}
+          onFocus={scrollTitleInputIntoView}
           className="h-11 rounded-xl"
         />
       </div>
@@ -156,13 +167,23 @@ export function EstimateRenameDialog({
     ignoreOutsideDismissRef,
   );
 
+  const mobileSheetStyle: CSSProperties | undefined =
+    keyboardInset > 0
+      ? {
+          bottom: keyboardInset,
+          maxHeight: `calc(100dvh - ${keyboardInset}px)`,
+        }
+      : undefined;
+
   if (isMobile) {
     return (
       <Sheet open={open} onOpenChange={handleOpenChange}>
         <SheetContent
-          className="z-[80] gap-0 p-0"
+          className="z-[80] h-auto max-h-[min(90dvh,100%)] gap-0 p-0"
           overlayClassName="z-[80]"
           showCloseButton
+          style={mobileSheetStyle}
+          onOpenAutoFocus={(event) => event.preventDefault()}
           {...sheetOutsideHandlers}
         >
           <SheetHeader className="border-b border-border/60 pb-4">
@@ -170,8 +191,10 @@ export function EstimateRenameDialog({
             <SheetDescription>{dialogDescription}</SheetDescription>
           </SheetHeader>
 
-          <form onSubmit={handleSubmit} className="flex flex-col">
-            <div className="space-y-4 px-5 py-4">{formFields}</div>
+          <form onSubmit={handleSubmit} className="flex min-h-0 flex-col">
+            <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+              {formFields}
+            </div>
             <SheetFooter className="pb-[max(1rem,env(safe-area-inset-bottom))]">
               {actionButtons}
             </SheetFooter>
