@@ -13,12 +13,9 @@ export type ActivationStep = {
   completed: boolean;
 };
 
-export type ActivationGuideMode = "how_it_works" | "tips";
-
 export type ActivationProgressClient = {
   eligible: boolean;
   showFormBadge: boolean;
-  guideMode: ActivationGuideMode;
   industry: WorkspaceIndustry;
   latestEstimateId: string | null;
   hasPublicFormSubmission: boolean;

@@ -479,37 +479,17 @@
       "estimates": "/estimates (owner)",
       "estimate_editor": "/estimate editor (first AI)",
       "pdf": "PDF (first time)",
-      "checklist_celebration": "Checklist 3/3"
+      "tips": "Tips"
     },
     "items": {
       "workspace_ready_banner": {
         "label": "“Workspace ready” banner",
         "meta": {
           "type": "Inline banner",
-          "what": "“Workspace ready” + short account readiness copy",
-          "notes": "Owner only; hides checklist while visible",
+          "what": "“Workspace ready” + short account readiness copy + CTAs",
+          "notes": "Owner only; replaces tips banner while visible",
           "when": "Redirect to /estimates after creating the first workspace",
           "frequency": "Dismissed with ✕ (localStorage: workspace-ready-seen)"
-        }
-      },
-      "combined_banner": {
-        "label": "Combined banner + checklist",
-        "meta": {
-          "type": "Inline banner (persistent)",
-          "what": "“How Esteo works” + 3-step checklist with CTAs",
-          "notes": "Education + progress; completed steps show ✓ and strikethrough",
-          "when": "After closing workspace-ready banner (or when no pending flag)",
-          "frequency": "Checklist hides after 3/3 + Hide; guide switches to Tips"
-        }
-      },
-      "combined_banner_guide_only": {
-        "label": "Combined banner — guide only",
-        "meta": {
-          "type": "Inline banner (persistent)",
-          "what": "“How Esteo works” without the checklist column",
-          "notes": "Same guide as combined banner, but no right-hand step column",
-          "when": "While workspace-ready banner is visible (checklist hidden) or after activation complete and celebration dismissed",
-          "frequency": "Until guide switches to Tips mode or workspace banner is closed"
         }
       },
       "form_ready_intro": {
@@ -527,8 +507,8 @@
         "meta": {
           "type": "AppToast (action)",
           "what": "“Send the form to your client” + “Link copied…”",
-          "notes": "top-center; action variant (teal); marks checklist step 3",
-          "when": "Every copy or share of the public form link in activation flow (hero, checklist, share)",
+          "notes": "top-center; action variant (teal); marks form link copied",
+          "when": "Every copy or share of the public form link in activation flow (hero, workspace-ready banner, share)",
           "frequency": "Repeatable; auto-dismiss after 5s"
         }
       },
@@ -537,8 +517,8 @@
         "meta": {
           "type": "AppToast (success)",
           "what": "Short “Copied” message after copying the form link",
-          "notes": "top-center; no description; no activation checklist side effects",
-          "when": "Copying the form link when not in activation flow (e.g. invited member or after onboarding checklist done)",
+          "notes": "top-center; no description; no activation side effects",
+          "when": "Copying the form link when not in activation flow (e.g. invited member)",
           "frequency": "On every copy; auto-dismiss after 5s"
         }
       },
@@ -634,23 +614,13 @@
           "frequency": "Every export with blocked popup; auto-dismiss after 5s"
         }
       },
-      "celebration_panel": {
-        "label": "“All set!” panel",
-        "meta": {
-          "type": "Inline banner (checklist column)",
-          "what": "“All set!” + description + [Hide] button",
-          "notes": "Replaces checklist step list",
-          "when": "Checklist 3/3 complete",
-          "frequency": "After [Hide] (localStorage: celebration-dismissed); guide stays until dismissed"
-        }
-      },
       "tips_banner": {
         "label": "“Tips” banner",
         "meta": {
           "type": "Inline banner (persistent)",
           "what": "Header + 3 tip cards + suggestion footer",
           "notes": "Cards with Learn more links; ✕ saves tips-banner-dismissed; suggestion opens ReportIssueDialog (when tracker enabled)",
-          "when": "After checklist 3/3 and clicking [Hide] on celebration panel",
+          "when": "After closing workspace-ready banner (or when no pending flag)",
           "frequency": "Dismissed with ✕ (localStorage: tips-banner-dismissed)"
         }
       }

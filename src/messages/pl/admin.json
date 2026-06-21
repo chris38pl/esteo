@@ -479,37 +479,17 @@
       "estimates": "/estimates (owner)",
       "estimate_editor": "/edytor wyceny (pierwsza AI)",
       "pdf": "PDF (pierwszy raz)",
-      "checklist_celebration": "Checklist 3/3"
+      "tips": "Porady"
     },
     "items": {
       "workspace_ready_banner": {
         "label": "Baner „Workspace gotowy”",
         "meta": {
           "type": "Baner inline",
-          "what": "„Workspace gotowy” + krótki opis gotowości konta",
-          "notes": "Tylko owner; blokuje checklistę dopóki widoczny",
+          "what": "„Workspace gotowy” + krótki opis gotowości konta + CTA",
+          "notes": "Tylko owner; zastępuje baner porad dopóki widoczny",
           "when": "Redirect na /estimates po utworzeniu pierwszego workspace",
           "frequency": "Znika po kliknięciu ✕ (localStorage: workspace-ready-seen)"
-        }
-      },
-      "combined_banner": {
-        "label": "Combined banner + checklista",
-        "meta": {
-          "type": "Baner inline (persistent)",
-          "what": "„Jak działa Esteo?” + checklista 3 kroków z CTA",
-          "notes": "Edukacja + postęp; kroki ukończone mają ✓ i przekreślenie",
-          "when": "Po zamknięciu banera workspace gotowy (lub gdy brak flagi pending)",
-          "frequency": "Checklista znika po 3/3 + „Ukryj”; guide przechodzi w „Porady”"
-        }
-      },
-      "combined_banner_guide_only": {
-        "label": "Combined banner — sam guide",
-        "meta": {
-          "type": "Baner inline (persistent)",
-          "what": "„Jak działa Esteo?” bez kolumny checklisty",
-          "notes": "Ten sam guide co w combined banner, ale bez prawej kolumny kroków",
-          "when": "Gdy widoczny baner „Workspace gotowy” (checklista ukryta) lub po ukończeniu aktywacji i ukryciu celebration",
-          "frequency": "Do momentu przełączenia w tryb „Porady” lub zamknięcia banera workspace"
         }
       },
       "form_ready_intro": {
@@ -527,8 +507,8 @@
         "meta": {
           "type": "AppToast (action)",
           "what": "„Wyślij formularz klientowi” + „Link jest skopiowany…”",
-          "notes": "top-center; wariant action (teal); zaznacza krok 3 checklisty",
-          "when": "Każde kopiowanie lub udostępnienie linku formularza w flow aktywacji (hero, checklista, share)",
+          "notes": "top-center; wariant action (teal); zaznacza kopiowanie linku formularza",
+          "when": "Każde kopiowanie lub udostępnienie linku formularza w flow aktywacji (hero, baner workspace gotowy, share)",
           "frequency": "Powtarzalny; auto-dismiss po 5 s"
         }
       },
@@ -537,8 +517,8 @@
         "meta": {
           "type": "AppToast (success)",
           "what": "Krótki komunikat „Skopiowano” po skopiowaniu linku formularza",
-          "notes": "top-center; bez opisu i bez side-effectów checklisty aktywacji",
-          "when": "Kopiowanie linku formularza, gdy owner nie jest w flow aktywacji (np. invited member lub po zakończeniu onboarding checklisty)",
+          "notes": "top-center; bez opisu i bez side-effectów aktywacji",
+          "when": "Kopiowanie linku formularza, gdy owner nie jest w flow aktywacji (np. invited member)",
           "frequency": "Przy każdym copy; auto-dismiss po 5 s"
         }
       },
@@ -634,23 +614,13 @@
           "frequency": "Przy każdym eksporcie z zablokowanym popup; auto-dismiss po 5 s"
         }
       },
-      "celebration_panel": {
-        "label": "Panel „Wszystko gotowe!”",
-        "meta": {
-          "type": "Baner inline (w kolumnie checklisty)",
-          "what": "„Wszystko gotowe!” + opis + przycisk [Ukryj]",
-          "notes": "Zastępuje listę kroków checklisty",
-          "when": "Checklist 3/3 ukończona",
-          "frequency": "Znika po [Ukryj] (localStorage: celebration-dismissed); guide zostaje do ukrycia"
-        }
-      },
       "tips_banner": {
         "label": "Baner „Porady”",
         "meta": {
           "type": "Baner inline (persistent)",
           "what": "Nagłówek + 3 karty porad + stopka z sugestią",
           "notes": "Karty z linkami Dowiedz się więcej; ✕ zapisuje tips-banner-dismissed; sugestia otwiera ReportIssueDialog (gdy włączony tracker)",
-          "when": "Po 3/3 checklisty i kliknięciu [Ukryj] na panelu celebration",
+          "when": "Po zamknięciu banera workspace gotowy (lub gdy brak flagi pending)",
           "frequency": "Znika po ✕ (localStorage: tips-banner-dismissed)"
         }
       }

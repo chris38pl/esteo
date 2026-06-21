@@ -2,14 +2,11 @@
 
 import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { WorkspaceIndustry } from "@prisma/client";
 
-import { ActivationCombinedBanner } from "@/features/activation/components/activation-combined-banner";
 import { ActivationTipsBanner } from "@/features/activation/components/activation-tips-banner";
 import { WorkspaceReadyBanner } from "@/features/activation/components/workspace-ready-banner";
 import { CompanyProfileCompletionModal } from "@/features/activation/components/company-profile-completion-modal";
 import type { ActivationPreviewItemId } from "@/features/activation/lib/activation-preview-catalog";
-import type { ActivationStep } from "@/features/activation/lib/activation-types";
 import { AppToast } from "@/components/ui/app-toast";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
@@ -72,12 +69,6 @@ function AiGeneratingSkeletonPreview() {
   );
 }
 
-const PREVIEW_CHECKLIST_STEPS: ActivationStep[] = [
-  { id: "create_estimate", completed: true },
-  { id: "generate_pdf", completed: true },
-  { id: "share_form", completed: false },
-];
-
 const PREVIEW_EMPTY_PROFILE = {
   address: "",
   taxId: "",
@@ -117,40 +108,6 @@ export function ActivationPreviewRenderer({
             onDismissed={noop}
             onCreateClick={noop}
             onCopyFormLink={noop}
-          />
-        </PreviewFrame>
-      );
-
-    case "combined_banner":
-      return (
-        <PreviewFrame className="p-0">
-          <ActivationCombinedBanner
-            guideMode="how_it_works"
-            industry={WorkspaceIndustry.CONSTRUCTION}
-            locale={locale}
-            showChecklist
-            checklistProps={{
-              workspaceSlug: "preview",
-              steps: PREVIEW_CHECKLIST_STEPS,
-              isCelebrating: false,
-              latestEstimateId: "preview-estimate",
-              onCreateClick: noop,
-              onCopyFormLink: noop,
-              onCelebrationDismissed: noop,
-              preview: true,
-            }}
-          />
-        </PreviewFrame>
-      );
-
-    case "combined_banner_guide_only":
-      return (
-        <PreviewFrame className="p-0">
-          <ActivationCombinedBanner
-            guideMode="how_it_works"
-            industry={WorkspaceIndustry.CONSTRUCTION}
-            locale={locale}
-            showChecklist={false}
           />
         </PreviewFrame>
       );
@@ -314,28 +271,6 @@ export function ActivationPreviewRenderer({
               progressDurationMs={5000}
             />
           </div>
-        </PreviewFrame>
-      );
-
-    case "celebration_panel":
-      return (
-        <PreviewFrame className="max-w-md">
-          <ActivationCombinedBanner
-            guideMode="how_it_works"
-            industry={WorkspaceIndustry.CONSTRUCTION}
-            locale={locale}
-            showChecklist
-            checklistProps={{
-              workspaceSlug: "preview",
-              steps: PREVIEW_CHECKLIST_STEPS.map((step) => ({ ...step, completed: true })),
-              isCelebrating: true,
-              latestEstimateId: "preview-estimate",
-              onCreateClick: noop,
-              onCopyFormLink: noop,
-              onCelebrationDismissed: noop,
-              preview: true,
-            }}
-          />
         </PreviewFrame>
       );
 

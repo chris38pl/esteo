@@ -71,7 +71,6 @@ export function EstimatesListPanel({
   const activation = activationProgress ?? {
     eligible: false,
     showFormBadge: false,
-    guideMode: "how_it_works" as const,
     industry: "OTHER" as const,
     latestEstimateId: null,
     hasPublicFormSubmission: false,

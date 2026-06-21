@@ -7,8 +7,6 @@ export const ActivationAnalyticsEvents = {
   workspaceReadyViewed: "activation_workspace_ready_viewed",
   workspaceReadyCtaClicked: "activation_workspace_ready_cta_clicked",
   workspaceReadyDismissed: "activation_workspace_ready_dismissed",
-  checklistViewed: "activation_checklist_viewed",
-  checklistCtaClicked: "activation_checklist_cta_clicked",
   firstEstimateCreated: "activation_first_estimate_created",
   firstAiGenerated: "activation_first_ai_generated",
   firstAiToastAction: "activation_first_ai_toast_action",
@@ -17,8 +15,6 @@ export const ActivationAnalyticsEvents = {
   publicFormReceived: "activation_public_form_received",
   firstEstimateSent: "activation_first_estimate_sent",
   companyProfileCompleted: "activation_company_profile_completed",
-  completed: "activation_completed",
-  celebrationDismissed: "activation_celebration_dismissed",
 } as const;
 
 export function trackActivationEvent(

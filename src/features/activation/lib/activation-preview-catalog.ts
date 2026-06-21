@@ -3,15 +3,13 @@ export const ACTIVATION_PREVIEW_GROUP_IDS = [
   "estimates",
   "estimate_editor",
   "pdf",
-  "checklist_celebration",
+  "tips",
 ] as const;
 
 export type ActivationPreviewGroupId = (typeof ACTIVATION_PREVIEW_GROUP_IDS)[number];
 
 export const ACTIVATION_PREVIEW_ITEM_IDS = [
   "workspace_ready_banner",
-  "combined_banner",
-  "combined_banner_guide_only",
   "form_ready_intro",
   "form_link_toast",
   "form_copy_simple_toast",
@@ -24,7 +22,6 @@ export const ACTIVATION_PREVIEW_ITEM_IDS = [
   "pdf_export_toast",
   "pdf_export_error",
   "pdf_popup_blocked_toast",
-  "celebration_panel",
   "tips_banner",
 ] as const;
 
@@ -37,8 +34,6 @@ export type ActivationPreviewCatalogItem = {
 
 export const ACTIVATION_PREVIEW_CATALOG: ActivationPreviewCatalogItem[] = [
   { id: "workspace_ready_banner", groupId: "onboarding" },
-  { id: "combined_banner", groupId: "estimates" },
-  { id: "combined_banner_guide_only", groupId: "estimates" },
   { id: "form_ready_intro", groupId: "estimates" },
   { id: "form_link_toast", groupId: "estimates" },
   { id: "form_copy_simple_toast", groupId: "estimates" },
@@ -51,8 +46,7 @@ export const ACTIVATION_PREVIEW_CATALOG: ActivationPreviewCatalogItem[] = [
   { id: "pdf_export_toast", groupId: "pdf" },
   { id: "pdf_export_error", groupId: "pdf" },
   { id: "pdf_popup_blocked_toast", groupId: "pdf" },
-  { id: "celebration_panel", groupId: "checklist_celebration" },
-  { id: "tips_banner", groupId: "checklist_celebration" },
+  { id: "tips_banner", groupId: "tips" },
 ];
 
 export const DEFAULT_ACTIVATION_PREVIEW_ITEM_ID: ActivationPreviewItemId =

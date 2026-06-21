@@ -6,7 +6,6 @@ import type { WorkspaceIndustry } from "@prisma/client";
 import { prisma } from "@/db/client";
 import {
   ACTIVATION_STEP_IDS,
-  type ActivationGuideMode,
   type ActivationProgressClient,
   type ActivationStepId,
 } from "@/features/activation/lib/activation-types";
@@ -69,7 +68,6 @@ export async function getActivationProgress(
     return {
       eligible: false,
       showFormBadge: false,
-      guideMode: "how_it_works",
       industry: input.industry,
       latestEstimateId: null,
       hasPublicFormSubmission: false,
@@ -97,13 +95,9 @@ export async function getActivationProgress(
 
   const serverCompletedCount = Object.values(serverSteps).filter(Boolean).length;
 
-  const guideMode: ActivationGuideMode =
-    serverCompletedCount >= ACTIVATION_STEP_IDS.length ? "tips" : "how_it_works";
-
   return {
     eligible: true,
     showFormBadge: !hasPublicFormSubmission,
-    guideMode,
     industry: input.industry,
     latestEstimateId,
     hasPublicFormSubmission,

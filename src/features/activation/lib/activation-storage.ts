@@ -45,26 +45,6 @@ export function isFormLinkCopied(workspaceSlug: string): boolean {
   return window.localStorage.getItem(key("form-link-copied", workspaceSlug)) === "1";
 }
 
-export function markCelebrationDismissed(workspaceSlug: string): void {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(key("celebration-dismissed", workspaceSlug), "1");
-}
-
-export function isCelebrationDismissed(workspaceSlug: string): boolean {
-  if (typeof window === "undefined") return false;
-  return window.localStorage.getItem(key("celebration-dismissed", workspaceSlug)) === "1";
-}
-
-export function markActivationCompletedAnalyticsFired(workspaceSlug: string): void {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(key("completed-analytics-fired", workspaceSlug), "1");
-}
-
-export function hasActivationCompletedAnalyticsFired(workspaceSlug: string): boolean {
-  if (typeof window === "undefined") return false;
-  return window.localStorage.getItem(key("completed-analytics-fired", workspaceSlug)) === "1";
-}
-
 export function markPublicFormAnalyticsFired(workspaceSlug: string): void {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(key("public-form-analytics-fired", workspaceSlug), "1");

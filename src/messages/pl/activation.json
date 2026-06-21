@@ -9,33 +9,6 @@
     "sendFormDescription": "Pozyskaj dane od klienta",
     "dismiss": "Zamknij"
   },
-  "checklist": {
-    "title": "Wykorzystaj pełnię możliwości Esteo",
-    "steps": {
-      "create_estimate": "Utwórz pierwszą wycenę",
-      "generate_pdf": "Wygeneruj PDF",
-      "share_form": "Skopiuj formularz klienta"
-    },
-    "cta": {
-      "create_estimate": "Utwórz wycenę",
-      "generate_pdf": "Otwórz ostatnią wycenę",
-      "share_form": "Kopiuj link"
-    },
-    "celebration": {
-      "title": "Wszystko gotowe!",
-      "descriptionLine1": "Możesz już tworzyć wyceny samodzielnie",
-      "descriptionLine2": "lub zbierać zapytania od klientów.",
-      "hide": "Ukryj"
-    }
-  },
-  "guide": {
-    "howItWorksTitle": "Jak działa Esteo?",
-    "howItWorks": {
-      "step1": "Utwórz wycenę samodzielnie lub wyślij formularz klientowi.",
-      "step2": "AI przygotuje kosztorys w kilka sekund.",
-      "step3": "Wygeneruj PDF i wyślij go klientowi."
-    }
-  },
   "formBadge": {
     "readyTitle": "Formularz gotowy",
     "readyDescription": "Skopiuj link i wyślij go klientowi.",

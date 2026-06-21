@@ -3,15 +3,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
-  isCelebrationDismissed,
   isFormLinkCopied,
   isWorkspaceReadyBannerVisible,
 } from "@/features/activation/lib/activation-storage";
-import type {
-  ActivationGuideMode,
-  ActivationProgressClient,
-  ActivationStep,
-} from "@/features/activation/lib/activation-types";
+import type { ActivationProgressClient } from "@/features/activation/lib/activation-types";
 import { isTipsBannerDismissedForSession } from "@/features/tips/lib/tips-storage";
 
 export function mergeActivationProgressWithClientState(
@@ -19,15 +14,8 @@ export function mergeActivationProgressWithClientState(
   workspaceSlug: string,
   options?: { readClientStorage?: boolean; userId?: string | null },
 ): {
-  steps: ActivationStep[];
-  completedCount: number;
-  isComplete: boolean;
-  isCelebrating: boolean;
-  showChecklist: boolean;
-  guideMode: ActivationGuideMode;
   formLinkCopied: boolean;
   isWorkspaceReadyBannerVisible: boolean;
-  isCelebrationDismissed: boolean;
   isTipsBannerDismissed: boolean;
   showTipsBanner: boolean;
 } {
@@ -37,9 +25,6 @@ export function mergeActivationProgressWithClientState(
   const formLinkCopied = readClientStorage
     ? isFormLinkCopied(workspaceSlug)
     : false;
-  const celebrationDismissed = readClientStorage
-    ? isCelebrationDismissed(workspaceSlug)
-    : false;
   const tipsBannerDismissed =
     readClientStorage && userId
       ? isTipsBannerDismissedForSession(userId, workspaceSlug)
@@ -48,37 +33,12 @@ export function mergeActivationProgressWithClientState(
     ? isWorkspaceReadyBannerVisible(workspaceSlug)
     : false;
 
-  const steps = serverProgress.steps.map((step) =>
-    step.id === "share_form"
-      ? { ...step, completed: step.completed || formLinkCopied }
-      : step,
-  );
-
-  const completedCount = steps.filter((step) => step.completed).length;
-  const isComplete = completedCount >= serverProgress.totalCount;
-  const isCelebrating = isComplete && !celebrationDismissed;
-
-  const guideMode: ActivationGuideMode =
-    isComplete && celebrationDismissed ? "tips" : "how_it_works";
-
   const showTipsBanner =
-    serverProgress.eligible && guideMode === "tips" && !tipsBannerDismissed;
-
-  const showChecklist =
-    serverProgress.eligible &&
-    !bannerVisible &&
-    (!isComplete || isCelebrating);
+    serverProgress.eligible && !bannerVisible && !tipsBannerDismissed;
 
   return {
-    steps,
-    completedCount,
-    isComplete,
-    isCelebrating,
-    showChecklist,
-    guideMode,
     formLinkCopied,
     isWorkspaceReadyBannerVisible: bannerVisible,
-    isCelebrationDismissed: celebrationDismissed,
     isTipsBannerDismissed: tipsBannerDismissed,
     showTipsBanner,
   };

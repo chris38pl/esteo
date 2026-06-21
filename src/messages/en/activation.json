@@ -9,33 +9,6 @@
     "sendFormDescription": "Collect data from your client",
     "dismiss": "Close"
   },
-  "checklist": {
-    "title": "Get the most out of Esteo",
-    "steps": {
-      "create_estimate": "Create your first estimate",
-      "generate_pdf": "Generate a PDF",
-      "share_form": "Copy the client form link"
-    },
-    "cta": {
-      "create_estimate": "Create estimate",
-      "generate_pdf": "Open latest estimate",
-      "share_form": "Copy link"
-    },
-    "celebration": {
-      "title": "All set!",
-      "descriptionLine1": "You can now create estimates on your own",
-      "descriptionLine2": "or collect inquiries from clients.",
-      "hide": "Hide"
-    }
-  },
-  "guide": {
-    "howItWorksTitle": "How Esteo works",
-    "howItWorks": {
-      "step1": "Create an estimate yourself or send the form to a client.",
-      "step2": "AI prepares a cost breakdown in seconds.",
-      "step3": "Generate a PDF and send it to your client."
-    }
-  },
   "formBadge": {
     "readyTitle": "Form ready",
     "readyDescription": "Copy the link and send it to your client.",

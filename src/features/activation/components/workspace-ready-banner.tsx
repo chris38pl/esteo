@@ -53,16 +53,16 @@ function WorkspaceReadyActionCard({
     <button
       type="button"
       onClick={onClick}
-      className="group flex min-w-0 flex-1 items-start gap-3 px-4 py-3.5 text-left transition-colors hover:bg-violet-500/5 dark:hover:bg-white/[0.03] sm:px-5"
+      className="group flex min-w-0 flex-1 items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-violet-500/5 dark:hover:bg-white/[0.04] sm:px-5"
     >
       <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-violet-500/12 ring-1 ring-violet-500/20 dark:bg-violet-500/15 dark:ring-violet-400/15">
         <Icon className="size-4 text-violet-600 dark:text-[#8a70ff]" aria-hidden />
       </div>
-      <div className="min-w-0 pt-0.5">
-        <p className="text-sm font-semibold leading-none text-foreground dark:text-white">
+      <div className="min-w-0">
+        <p className="text-sm font-semibold leading-none text-foreground dark:text-card-foreground">
           {title}
         </p>
-        <p className="mt-1.5 text-xs leading-snug text-muted-foreground dark:text-[#a0a0c0]">
+        <p className="mt-1.5 text-xs leading-snug text-muted-foreground">
           {description}
         </p>
       </div>
@@ -123,15 +123,15 @@ export function WorkspaceReadyBanner({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-xl border p-5 md:p-6",
-        "border-violet-500/15 bg-gradient-to-br from-violet-50/90 to-violet-100/40",
-        "dark:border-[#2a2a4a] dark:bg-[#0a0a14] dark:from-[#0a0a14] dark:to-[#0a0a14]",
+        "relative overflow-hidden rounded-xl p-5 md:p-6",
+        "bg-gradient-to-br from-violet-50/90 to-violet-100/40",
+        "dark:from-card dark:to-card",
       )}
     >
       <button
         type="button"
         onClick={dismiss}
-        className="absolute right-3 top-3 inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-violet-500/10 hover:text-foreground dark:text-[#a0a0c0] dark:hover:bg-white/5 dark:hover:text-white"
+        className="absolute right-3 top-3 inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-violet-500/10 hover:text-foreground dark:hover:bg-white/5 dark:hover:text-card-foreground"
         aria-label={t("dismiss")}
       >
         <X className="size-4" />
@@ -142,13 +142,13 @@ export function WorkspaceReadyBanner({
           <WorkspaceReadyIllustration />
 
           <div className="min-w-0 space-y-1 pt-1">
-            <h2 className="text-lg font-semibold tracking-tight text-foreground dark:text-white">
+            <h2 className="text-lg font-semibold tracking-tight text-foreground dark:text-card-foreground">
               {t("title")}
             </h2>
-            <p className="text-sm text-muted-foreground dark:text-[#a0a0c0]">
+            <p className="text-sm text-muted-foreground">
               {t("descriptionLine1")}
             </p>
-            <p className="text-sm text-muted-foreground dark:text-[#a0a0c0]">
+            <p className="text-sm text-muted-foreground">
               {t("descriptionLine2")}
             </p>
           </div>
@@ -156,8 +156,8 @@ export function WorkspaceReadyBanner({
 
         <div
           className={cn(
-            "flex w-full shrink-0 flex-col overflow-hidden rounded-xl border sm:flex-row xl:w-auto xl:min-w-[28rem]",
-            "border-violet-500/10 bg-violet-500/5 dark:border-white/5 dark:bg-[#14142b]",
+            "flex w-full shrink-0 flex-col overflow-hidden rounded-xl sm:flex-row xl:w-auto xl:min-w-[28rem]",
+            "bg-white dark:bg-muted/30",
           )}
         >
           <WorkspaceReadyActionCard
@@ -168,11 +168,11 @@ export function WorkspaceReadyBanner({
           />
 
           <div
-            className="hidden w-px shrink-0 self-stretch bg-border/60 sm:block dark:bg-[#2a2a4a]"
+            className="hidden w-px shrink-0 self-stretch bg-border/60 sm:block"
             aria-hidden
           />
 
-          <div className="h-px w-full bg-border/60 sm:hidden dark:bg-[#2a2a4a]" aria-hidden />
+          <div className="h-px w-full bg-border/60 sm:hidden" aria-hidden />
 
           <WorkspaceReadyActionCard
             icon={Mail}
