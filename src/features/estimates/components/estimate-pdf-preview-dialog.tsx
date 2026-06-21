@@ -13,6 +13,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useEstimateMobileLayout } from "@/features/estimates/hooks/use-estimate-mobile-layout";
+import {
+  createMobileDismissGuardedOpenChange,
+  getMobileSheetOutsideDismissHandlers,
+  useIgnoreInitialOutsideDismiss,
+} from "@/features/estimates/hooks/use-mobile-outside-dismiss-guard";
 import { downloadEstimatePdfFile } from "@/features/estimates/lib/fetch-estimate-pdf-blob-url";
 
 export type EstimatePdfPreviewDialogState =
@@ -38,6 +43,24 @@ export function EstimatePdfPreviewDialog({
   const t = useTranslations("estimates");
   const isMobile = useEstimateMobileLayout();
   const isOpen = state.status !== "closed";
+  const ignoreOutsideDismissRef = useIgnoreInitialOutsideDismiss(isOpen && isMobile);
+
+  const handleOpenChange = createMobileDismissGuardedOpenChange(
+    ignoreOutsideDismissRef,
+    (open) => {
+      if (!open) {
+        onOpenChange(false);
+      }
+    },
+  );
+
+  const dialogOutsideHandlers = isMobile
+    ? getMobileSheetOutsideDismissHandlers(ignoreOutsideDismissRef)
+    : {};
+
+  function handleClose() {
+    handleOpenChange(false);
+  }
 
   function handleDownload() {
     if (state.status !== "ready") {
@@ -56,17 +79,11 @@ export function EstimatePdfPreviewDialog({
   }
 
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(open) => {
-        if (!open) {
-          onOpenChange(false);
-        }
-      }}
-    >
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent
         showCloseButton={state.status !== "loading"}
         className="flex h-[min(90vh,56rem)] max-w-[min(96vw,64rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-[min(96vw,64rem)]"
+        {...dialogOutsideHandlers}
       >
         <DialogHeader className="shrink-0 border-b border-border/60 px-5 py-4 text-left">
           <DialogTitle>
@@ -139,7 +156,7 @@ export function EstimatePdfPreviewDialog({
                   type="button"
                   variant="outline"
                   className="w-full"
-                  onClick={() => onOpenChange(false)}
+                  onClick={handleClose}
                 >
                   {t("editor.pdfPreview.close")}
                 </Button>
@@ -150,7 +167,7 @@ export function EstimatePdfPreviewDialog({
               </>
             ) : (
               <>
-                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                <Button type="button" variant="outline" onClick={handleClose}>
                   {t("editor.pdfPreview.close")}
                 </Button>
                 <Button type="button" onClick={handleDownload}>
@@ -164,7 +181,7 @@ export function EstimatePdfPreviewDialog({
 
         {state.status === "error" ? (
           <DialogFooter className="shrink-0 border-t border-border/60 px-5 py-4">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button type="button" variant="outline" onClick={handleClose}>
               {t("editor.pdfPreview.close")}
             </Button>
           </DialogFooter>

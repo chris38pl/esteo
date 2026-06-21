@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -26,34 +26,16 @@ import {
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { useEstimateMobileLayout } from "@/features/estimates/hooks/use-estimate-mobile-layout";
+import {
+  createMobileDismissGuardedOpenChange,
+  getMobileSheetOutsideDismissHandlers,
+  MOBILE_OUTSIDE_DISMISS_GUARD_MS,
+  useIgnoreInitialOutsideDismiss,
+} from "@/features/estimates/hooks/use-mobile-outside-dismiss-guard";
 import { sendEstimateToCustomerAction } from "@/features/estimates/server/send-estimate-actions";
 import type { Locale } from "@/lib/locale";
 
 type SendDialogMode = "send" | "resend";
-
-const MOBILE_OUTSIDE_DISMISS_GUARD_MS = 450;
-
-function useIgnoreInitialOutsideDismiss(open: boolean) {
-  const ignoreRef = useRef(false);
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    ignoreRef.current = true;
-    const timer = window.setTimeout(() => {
-      ignoreRef.current = false;
-    }, MOBILE_OUTSIDE_DISMISS_GUARD_MS);
-
-    return () => {
-      window.clearTimeout(timer);
-      ignoreRef.current = false;
-    };
-  }, [open]);
-
-  return ignoreRef;
-}
 
 export function EstimateSendDialog({
   open,
@@ -108,12 +90,10 @@ export function EstimateSendDialog({
       ? t("send.resendSubmit")
       : t("send.submit");
 
-  function handleOpenChange(nextOpen: boolean) {
-    if (!nextOpen && ignoreOutsideDismissRef.current) {
-      return;
-    }
-    onOpenChange(nextOpen);
-  }
+  const handleOpenChange = createMobileDismissGuardedOpenChange(
+    ignoreOutsideDismissRef,
+    onOpenChange,
+  );
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -205,18 +185,9 @@ export function EstimateSendDialog({
     </>
   );
 
-  const sheetOutsideHandlers = {
-    onPointerDownOutside: (event: Event) => {
-      if (ignoreOutsideDismissRef.current) {
-        event.preventDefault();
-      }
-    },
-    onInteractOutside: (event: Event) => {
-      if (ignoreOutsideDismissRef.current) {
-        event.preventDefault();
-      }
-    },
-  };
+  const sheetOutsideHandlers = getMobileSheetOutsideDismissHandlers(
+    ignoreOutsideDismissRef,
+  );
 
   if (isMobile) {
     return (
