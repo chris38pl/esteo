@@ -104,6 +104,17 @@
     "windowHint": "Można to zrobić w ciągu 30 dni od założenia firmy lub przed pierwszą płatnością za plan.",
     "submit": "Przypisz",
     "success": "Kod polecający został przypisany.",
+    "claimed": {
+      "title": "Twoje polecenie",
+      "description": "To workspace jest powiązane z programem partnerskim.",
+      "referrerLabel": "Polecił Ci Esteo",
+      "inputLabel": "Wpisany kod lub e-mail",
+      "claimedAt": "Data przypisania",
+      "benefitHint": "Po wyborze planu PRO lub BUSINESS otrzymasz 20% zniżki przez 3 miesiące.",
+      "statusAwaitingPayment": "Aktywuj płatny plan, aby skorzystać ze zniżki polecającej.",
+      "statusActive": "Masz aktywny płatny plan — zniżka polecająca obowiązuje przy rozliczeniach.",
+      "viewPlans": "Zobacz plany"
+    },
     "errors": {
       "SELF_REFERRAL": "Nie możesz polecić samego siebie.",
       "ALREADY_CLAIMED": "To workspace ma już przypisane polecenie.",

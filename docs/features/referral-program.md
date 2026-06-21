@@ -96,6 +96,18 @@ Columns: email, status, joined date, bonus amount. **PRO/BUSINESS badge** next t
 - Fallback copy: invite by company settings within 30-day claim window (before first payment)
 - Gift hero banner: `public/images/referrals/hero-gift-{light|dark}.webp` with blue mist glow (mobile: right artwork + text scrim)
 
+### Referred user — settings card
+
+After claiming a referrer (code, email, or sign-up link), **Ustawienia → Ogólne** shows a persistent **„Twoje polecenie”** card instead of hiding the section:
+
+- Referrer name and email
+- Code or email entered at claim time
+- Claim date
+- Benefit hint (20% for 3 months on PRO/BUSINESS)
+- CTA to plans while still on FREE
+
+Server: `getWorkspaceReferralClaimView()` — UI: `ReferralClaimSettingsSection`.
+
 ---
 
 ## Billing integration — referral balance disclosure

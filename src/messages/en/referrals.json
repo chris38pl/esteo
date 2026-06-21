@@ -104,6 +104,17 @@
     "windowHint": "You can do this within 30 days of creating your company or before your first plan payment.",
     "submit": "Apply",
     "success": "Referral code applied.",
+    "claimed": {
+      "title": "Your referral",
+      "description": "This workspace is linked to the partner program.",
+      "referrerLabel": "Referred by",
+      "inputLabel": "Code or email you entered",
+      "claimedAt": "Applied on",
+      "benefitHint": "When you choose PRO or BUSINESS, you get 20% off for 3 months.",
+      "statusAwaitingPayment": "Upgrade to a paid plan to use your referral discount.",
+      "statusActive": "You have an active paid plan — your referral discount applies to billing.",
+      "viewPlans": "View plans"
+    },
     "errors": {
       "SELF_REFERRAL": "You cannot refer yourself.",
       "ALREADY_CLAIMED": "This workspace already has a referral.",

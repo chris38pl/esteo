@@ -21,6 +21,7 @@ import { WorkspaceSettingsUsersTab } from "@/features/workspaces/components/work
 import { WorkspaceThemePicker } from "@/features/workspaces/components/workspace-theme-picker";
 import { WorkspaceSettingsTransferSection } from "@/features/workspaces/components/workspace-settings-transfer-section";
 import { ReferralClaimSettingsSection } from "@/features/referrals/components/referral-claim-settings-section";
+import type { WorkspaceReferralClaimView } from "@/features/referrals/server/get-workspace-referral-claim-view";
 import type {
   PendingOutboundTransferView,
   TransferEligibilityView,
@@ -77,7 +78,7 @@ export function WorkspaceSettingsPanel({
   transferEligibility,
   pendingTransfer,
   deleteEligibility,
-  hasExistingReferral = false,
+  referralClaim = null,
 }: {
   workspaceId: string;
   workspaceIndustry: WorkspaceIndustry;
@@ -102,7 +103,7 @@ export function WorkspaceSettingsPanel({
   transferEligibility: TransferEligibilityView;
   pendingTransfer: PendingOutboundTransferView | null;
   deleteEligibility: WorkspaceDeleteEligibility;
-  hasExistingReferral?: boolean;
+  referralClaim?: WorkspaceReferralClaimView | null;
 }) {
   const t = useTranslations("workspaces.settings");
   const router = useRouter();
@@ -203,7 +204,7 @@ export function WorkspaceSettingsPanel({
                 workspaceId={workspaceId}
                 workspaceSlug={workspaceSlug}
                 locale={locale}
-                hasExistingReferral={hasExistingReferral}
+                referralClaim={referralClaim}
               />
             ) : null}
             {isOwner ? (

@@ -49,9 +49,9 @@ export default async function WorkspaceSettingsPage({
 
   const isOwner = workspace.ownerId === user.id;
 
-  const existingReferral = isOwner
-    ? await import("@/features/referrals/server/referral-claim-service").then((m) =>
-        m.getReferralForWorkspace(workspace.id),
+  const referralClaim = isOwner
+    ? await import("@/features/referrals/server/get-workspace-referral-claim-view").then((m) =>
+        m.getWorkspaceReferralClaimView(workspace.id),
       )
     : null;
 
@@ -116,7 +116,7 @@ export default async function WorkspaceSettingsPage({
             : null
         }
         deleteEligibility={deleteEligibility}
-        hasExistingReferral={Boolean(existingReferral)}
+        referralClaim={referralClaim}
       />
     </Suspense>
   );
