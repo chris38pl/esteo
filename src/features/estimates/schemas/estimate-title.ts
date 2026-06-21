@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { isLocale, type Locale } from "@/lib/locale";
+import { prismaEntityIdSchema } from "@/lib/schemas/prisma-id";
 
 const CONTROL_CHARACTERS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/;
 
@@ -21,8 +22,8 @@ const estimateTitleValueSchema = z
   .transform((value) => (value.length === 0 ? null : value));
 
 export const updateEstimateTitleSchema = z.object({
-  estimateId: z.string().cuid(),
-  workspaceId: z.string().cuid(),
+  estimateId: prismaEntityIdSchema,
+  workspaceId: prismaEntityIdSchema,
   workspaceSlug: z.string().trim().min(2).max(80).regex(/^[a-z0-9-]+$/),
   title: estimateTitleValueSchema,
   locale: z

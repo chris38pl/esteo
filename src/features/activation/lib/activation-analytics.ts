@@ -8,8 +8,6 @@ export const ActivationAnalyticsEvents = {
   workspaceReadyCtaClicked: "activation_workspace_ready_cta_clicked",
   workspaceReadyDismissed: "activation_workspace_ready_dismissed",
   firstEstimateCreated: "activation_first_estimate_created",
-  firstAiGenerated: "activation_first_ai_generated",
-  firstAiToastAction: "activation_first_ai_toast_action",
   firstPdfGenerated: "activation_first_pdf_generated",
   formLinkCopied: "activation_form_link_copied",
   publicFormReceived: "activation_public_form_received",

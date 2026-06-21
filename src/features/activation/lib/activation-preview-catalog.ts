@@ -10,11 +10,9 @@ export type ActivationPreviewGroupId = (typeof ACTIVATION_PREVIEW_GROUP_IDS)[num
 
 export const ACTIVATION_PREVIEW_ITEM_IDS = [
   "workspace_ready_banner",
-  "form_ready_intro",
   "form_link_toast",
   "form_copy_simple_toast",
   "ai_generating_skeleton",
-  "first_ai_toast",
   "estimate_send_toast_loading",
   "estimate_send_toast_success",
   "estimate_send_toast_error",
@@ -34,11 +32,9 @@ export type ActivationPreviewCatalogItem = {
 
 export const ACTIVATION_PREVIEW_CATALOG: ActivationPreviewCatalogItem[] = [
   { id: "workspace_ready_banner", groupId: "onboarding" },
-  { id: "form_ready_intro", groupId: "estimates" },
   { id: "form_link_toast", groupId: "estimates" },
   { id: "form_copy_simple_toast", groupId: "estimates" },
   { id: "ai_generating_skeleton", groupId: "estimate_editor" },
-  { id: "first_ai_toast", groupId: "estimate_editor" },
   { id: "estimate_send_toast_loading", groupId: "estimate_editor" },
   { id: "estimate_send_toast_success", groupId: "estimate_editor" },
   { id: "estimate_send_toast_error", groupId: "estimate_editor" },

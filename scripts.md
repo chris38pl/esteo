@@ -45,6 +45,17 @@ W `.env` trzymaj `DATABASE_URL_STAGING` + `DIRECT_URL_STAGING` (tylko lokalnie, 
 
 Więcej: `docs/dev/database-migrations.md`.
 
+### Global search index
+
+Indeks `SearchDocument` wymaga **jednorazowego backfillu** po pierwszym deployu migracji global search na danym env (patrz [`docs/features/global-search.md`](../features/global-search.md)).
+
+| | | |
+| --- | --- | --- |
+| `prisma:backfill-search-index` | Backfill indeksu na **development** | `npm run prisma:backfill-search-index` |
+| `prisma:backfill-search-index:staging` | Backfill indeksu na **staging** (Preview) | `npm run prisma:backfill-search-index:staging` |
+| `audit:search-index` | Raport drift `Estimate` vs `SearchDocument` (dev) | `npm run audit:search-index` |
+| `audit:search-index:staging` | Jak wyżej na staging | `npm run audit:search-index:staging -- --workspace=firma-juniora` |
+
 ---
 
 ## **set-plan vs billing-reset**

@@ -492,16 +492,6 @@
           "frequency": "Znika po kliknięciu ✕ (localStorage: workspace-ready-seen)"
         }
       },
-      "form_ready_intro": {
-        "label": "Toast „Formularz gotowy”",
-        "meta": {
-          "type": "AppToast (celebration)",
-          "what": "„Formularz gotowy” + „Skopiuj link i wyślij go klientowi”",
-          "notes": "top-center; wariant celebration (fioletowy)",
-          "when": "Pierwsze wejście ownera na /estimates, zanim link skopiowany/udostępniony",
-          "frequency": "Raz na ładowanie strony (do pierwszego copy); nie po publicznym submitcie"
-        }
-      },
       "form_link_toast": {
         "label": "Toast copy/share linku (aktywacja)",
         "meta": {
@@ -530,16 +520,6 @@
           "notes": "Zastępuje edytor podczas joba AI",
           "when": "Po utworzeniu wyceny, dopóki status joba ≠ COMPLETED",
           "frequency": "Przy każdym generowaniu; w aktywacji — pierwsze ma znaczenie onboardingowe"
-        }
-      },
-      "first_ai_toast": {
-        "label": "Toast „Pierwsza wycena gotowa!”",
-        "meta": {
-          "type": "AppToast (info) z akcją",
-          "what": "„Pierwsza wycena gotowa!” + zachęta do edycji szkicu przed PDF/wysyłką + [Przejrzyj kosztorys]",
-          "notes": "top-center; duration: Infinity; jedna akcja zamyka toast — user zostaje w edytorze",
-          "when": "Pierwsze udane zakończenie generowania AI w workspace (owner)",
-          "frequency": "Raz na workspace (localStorage: first-ai-toast-shown)"
         }
       },
       "estimate_send_toast_loading": {

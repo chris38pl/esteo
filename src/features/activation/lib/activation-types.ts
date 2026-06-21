@@ -15,7 +15,6 @@ export type ActivationStep = {
 
 export type ActivationProgressClient = {
   eligible: boolean;
-  showFormBadge: boolean;
   industry: WorkspaceIndustry;
   latestEstimateId: string | null;
   hasPublicFormSubmission: boolean;

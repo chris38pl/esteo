@@ -55,16 +55,6 @@ export function hasPublicFormAnalyticsFired(workspaceSlug: string): boolean {
   return window.localStorage.getItem(key("public-form-analytics-fired", workspaceSlug)) === "1";
 }
 
-export function markFirstAiToastShown(workspaceSlug: string): void {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(key("first-ai-toast-shown", workspaceSlug), "1");
-}
-
-export function hasFirstAiToastShown(workspaceSlug: string): boolean {
-  if (typeof window === "undefined") return false;
-  return window.localStorage.getItem(key("first-ai-toast-shown", workspaceSlug)) === "1";
-}
-
 export function markFirstEstimateAnalyticsFired(workspaceSlug: string): void {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(key("first-estimate-analytics-fired", workspaceSlug), "1");

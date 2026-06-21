@@ -95,7 +95,6 @@ export function ActivationPreviewRenderer({
   locale: Locale;
 }) {
   const tFormBadge = useTranslations("activation.formBadge");
-  const tFirstAi = useTranslations("activation.firstAiToast");
   const tEstimates = useTranslations("estimates");
 
   switch (itemId) {
@@ -108,18 +107,6 @@ export function ActivationPreviewRenderer({
             onDismissed={noop}
             onCreateClick={noop}
             onCopyFormLink={noop}
-          />
-        </PreviewFrame>
-      );
-
-    case "form_ready_intro":
-      return (
-        <PreviewFrame align="toast-top">
-          <AppToast
-            variant="celebration"
-            title={tFormBadge("readyTitle")}
-            description={tFormBadge("readyDescription")}
-            showProgress={false}
           />
         </PreviewFrame>
       );
@@ -151,19 +138,6 @@ export function ActivationPreviewRenderer({
       return (
         <PreviewFrame align="center">
           <AiGeneratingSkeletonPreview />
-        </PreviewFrame>
-      );
-
-    case "first_ai_toast":
-      return (
-        <PreviewFrame align="toast-top">
-          <AppToast
-            variant="info"
-            title={tFirstAi("title")}
-            description={`${tFirstAi("descriptionLine1")} ${tFirstAi("descriptionLine2")}`}
-            primaryAction={{ label: tFirstAi("reviewEstimate"), onClick: noop }}
-            showProgress={false}
-          />
         </PreviewFrame>
       );
 

@@ -10,16 +10,8 @@
     "dismiss": "Zamknij"
   },
   "formBadge": {
-    "readyTitle": "Formularz gotowy",
-    "readyDescription": "Skopiuj link i wyślij go klientowi.",
     "afterCopyTitle": "Wyślij formularz klientowi",
     "afterCopyDescription": "Link jest skopiowany — wyślij go klientowi, aby zebrać zapytanie."
-  },
-  "firstAiToast": {
-    "title": "Pierwsza wycena gotowa!",
-    "descriptionLine1": "Szkic kosztorysu został wygenerowany automatycznie. Możesz teraz go edytować — uzupełnij brakujące elementy i popraw to, co wymaga zmiany!",
-    "descriptionLine2": "Po weryfikacji wygeneruj PDF lub wyślij wycenę klientowi.",
-    "reviewEstimate": "Przejrzyj kosztorys"
   },
   "companyProfileModal": {
     "title": "Dodaj dane swojej firmy",

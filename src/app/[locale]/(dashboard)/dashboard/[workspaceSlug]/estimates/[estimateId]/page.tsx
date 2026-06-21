@@ -54,7 +54,6 @@ import {
   buildWorkspaceCompanyProfileExport,
   serializeWorkspaceCompanyProfileClient,
 } from "@/features/workspaces/lib/company-profile-for-export";
-import { countCompletedAiGenerationsInWorkspace } from "@/features/activation/server/activation-progress";
 import { loadEstimateVersionWorkflow } from "@/features/estimates/server/load-estimate-version-workflow";
 import type { EstimateVersionWorkflowClient } from "@/features/estimates/lib/serialize-estimate-version-workflow";
 
@@ -196,12 +195,6 @@ export default async function EstimateEditorPage({
     name: resolved.workspace.name,
     settings: workspaceSettings,
   });
-  const isOwner = resolved.workspace.ownerId === user.id;
-  const completedAiGenerations = isOwner
-    ? await countCompletedAiGenerationsInWorkspace(resolved.workspace.id)
-    : 0;
-  const showFirstAiToast = isOwner && completedAiGenerations === 0;
-
   const versionWorkflow: EstimateVersionWorkflowClient =
     (activeVersionId
       ? await loadEstimateVersionWorkflow(
@@ -251,7 +244,6 @@ export default async function EstimateEditorPage({
         maxUndoSteps={maxUndoSteps}
         workspaceCompanyProfile={workspaceCompanyProfile}
         workspaceLogoUrl={workspaceCompanyProfileExport.logoUrl}
-        showFirstAiToast={showFirstAiToast}
         versionWorkflow={versionWorkflow}
       />
     </>

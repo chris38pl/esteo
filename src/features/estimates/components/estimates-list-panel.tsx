@@ -1,7 +1,7 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { appToast } from "@/components/ui/app-toast";
@@ -26,7 +26,7 @@ import {
 } from "@/features/activation/components/activation-estimates-section";
 import { useActivationUiState } from "@/features/activation/hooks/use-activation-ui-state";
 import { copyPublicFormLink } from "@/features/activation/lib/copy-public-form-link";
-import { notifyFormLinkShared, showFormReadyToast } from "@/features/activation/lib/notify-form-link-shared";
+import { notifyFormLinkShared } from "@/features/activation/lib/notify-form-link-shared";
 import type { ActivationProgressClient } from "@/features/activation/lib/activation-types";
 import { EstimatesListFilterSheet } from "./estimates-list-filter-sheet";
 import { EstimatesListHeroCards } from "./estimates-list-hero-cards";
@@ -67,10 +67,8 @@ export function EstimatesListPanel({
   const t = useTranslations("estimates");
   const tFormBadge = useTranslations("activation.formBadge");
   const { currentUserId } = useWorkspaceContext();
-  const formReadyToastShownRef = useRef(false);
   const activation = activationProgress ?? {
     eligible: false,
-    showFormBadge: false,
     industry: "OTHER" as const,
     latestEstimateId: null,
     hasPublicFormSubmission: false,
@@ -78,7 +76,7 @@ export function EstimatesListPanel({
     completedCount: 0,
     totalCount: 3,
   };
-  const { refreshActivationUi, formLinkCopied, hasHydrated } = useActivationUiState(
+  const { refreshActivationUi } = useActivationUiState(
     activation,
     workspaceSlug,
     currentUserId,
@@ -189,22 +187,6 @@ export function EstimatesListPanel({
     tFormBadge,
     workspaceSlug,
   ]);
-
-  const showFormReadyToastOnLoad =
-    Boolean(activationProgress?.eligible) &&
-    Boolean(activationProgress?.showFormBadge) &&
-    !activationProgress?.hasPublicFormSubmission &&
-    hasHydrated &&
-    !formLinkCopied;
-
-  useEffect(() => {
-    if (!showFormReadyToastOnLoad || formReadyToastShownRef.current) {
-      return;
-    }
-
-    formReadyToastShownRef.current = true;
-    showFormReadyToast(tFormBadge("readyTitle"), tFormBadge("readyDescription"));
-  }, [showFormReadyToastOnLoad, tFormBadge]);
 
   const handleExportCsv = useCallback(() => {
     if (filteredEstimates.length === 0) {

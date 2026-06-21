@@ -658,7 +658,11 @@
       "counter": "{count}/{max}",
       "save": "Save",
       "cancel": "Cancel",
-      "saving": "Saving…"
+      "saving": "Saving…",
+      "errors": {
+        "invalidTitle": "Invalid estimate name.",
+        "invalidInput": "Could not save the name. Refresh the page and try again."
+      }
     }
   },
   "send": {

@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { prismaEntityIdSchema } from "@/lib/schemas/prisma-id";
+
 export const PAYMENT_INSTALLMENT_NAME_MAX_LENGTH = 120;
 export const PAYMENT_INSTALLMENT_NOTE_MAX_LENGTH = 500;
 export const PAYMENT_INSTALLMENT_AMOUNT_MAX = 999_999_999.99;
@@ -41,7 +43,7 @@ export const generatePaymentScheduleSchema = z.object({
 });
 
 export const reorderPaymentInstallmentsSchema = z.object({
-  installmentIds: z.array(z.string().cuid()).min(1),
+  installmentIds: z.array(prismaEntityIdSchema).min(1),
 });
 
 export const recordPaymentInstallmentSchema = z.object({

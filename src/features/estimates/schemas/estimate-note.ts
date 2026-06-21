@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { prismaEntityIdSchema } from "@/lib/schemas/prisma-id";
+
 export const ESTIMATE_NOTE_BODY_MAX_LENGTH = 2000;
 
 export const estimateNoteBodySchema = z
@@ -10,7 +12,7 @@ export const estimateNoteBodySchema = z
 
 export const createEstimateNoteSchema = z.object({
   body: estimateNoteBodySchema,
-  parentId: z.string().cuid().optional(),
+  parentId: prismaEntityIdSchema.optional(),
 });
 
 export type CreateEstimateNoteInput = z.infer<typeof createEstimateNoteSchema>;

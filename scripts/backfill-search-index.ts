@@ -3,6 +3,7 @@
  *
  *   npm run prisma:generate
  *   npm run prisma:backfill-search-index
+ *   npm run prisma:backfill-search-index:staging
  */
 import { PrismaClient } from "@prisma/client";
 

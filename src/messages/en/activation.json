@@ -10,16 +10,8 @@
     "dismiss": "Close"
   },
   "formBadge": {
-    "readyTitle": "Form ready",
-    "readyDescription": "Copy the link and send it to your client.",
     "afterCopyTitle": "Send the form to your client",
     "afterCopyDescription": "Link copied — send it to your client to collect an inquiry."
-  },
-  "firstAiToast": {
-    "title": "First estimate ready!",
-    "descriptionLine1": "Your cost breakdown draft was generated automatically. You can edit it now — fill in anything missing and fix what needs changing!",
-    "descriptionLine2": "Once you've reviewed it, generate a PDF or send the estimate to your client.",
-    "reviewEstimate": "Review estimate"
   },
   "companyProfileModal": {
     "title": "Add your company details",

@@ -492,16 +492,6 @@
           "frequency": "Dismissed with ✕ (localStorage: workspace-ready-seen)"
         }
       },
-      "form_ready_intro": {
-        "label": "“Form ready” toast",
-        "meta": {
-          "type": "AppToast (celebration)",
-          "what": "“Form ready” + “Copy the link and send it to your client”",
-          "notes": "top-center; celebration variant (purple)",
-          "when": "Owner’s first visit to /estimates before link copied/shared",
-          "frequency": "Once per page load (until first copy); not after public submit"
-        }
-      },
       "form_link_toast": {
         "label": "Copy/share link toast (activation)",
         "meta": {
@@ -530,16 +520,6 @@
           "notes": "Replaces editor during AI job",
           "when": "After creating an estimate until job status is COMPLETED",
           "frequency": "Every generation; first run matters for onboarding"
-        }
-      },
-      "first_ai_toast": {
-        "label": "“First estimate ready!” toast",
-        "meta": {
-          "type": "AppToast (info) with action",
-          "what": "“First estimate ready!” + prompt to edit the draft before PDF/send + [Review estimate]",
-          "notes": "top-center; duration: Infinity; single action dismisses toast — user stays in editor",
-          "when": "First successful AI generation in workspace (owner)",
-          "frequency": "Once per workspace (localStorage: first-ai-toast-shown)"
         }
       },
       "estimate_send_toast_loading": {

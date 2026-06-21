@@ -56,7 +56,29 @@ In-memory `pending` Set deduplicates in-flight upserts per `(workspaceId, entity
 
 **Hooks:** estimate create/title, inquiry submit/convert, attachment upload/promote/delete, admin archive/restore, `generate-estimate-draft` success.
 
-**Backfill:** `npm run prisma:backfill-search-index`
+### Backfill (required after first deploy)
+
+Existing rows are **not** indexed automatically when the `SearchDocument` migration lands — only entities touched after deploy get index rows via hooks. Run backfill once per environment:
+
+| Command | Database |
+| --- | --- |
+| `npm run prisma:backfill-search-index` | Neon **development** (`DATABASE_URL`) |
+| `npm run prisma:backfill-search-index:staging` | Neon **staging** (Preview) |
+
+Verify drift (optional):
+
+```bash
+npm run audit:search-index:staging -- --workspace=firma-juniora
+npm run audit:search-index:staging -- --workspace=firma-juniora --estimate=<estimateId>
+```
+
+Expect `missingIndexCount: 0` and `targetIndexed: true` for known estimates.
+
+**Typical workflow after global search ships to Preview:**
+
+1. Push migration to `staging` (Vercel runs `migrate deploy`)
+2. `npm run prisma:backfill-search-index:staging`
+3. `npm run audit:search-index:staging` — confirm zero drift
 
 ---
 

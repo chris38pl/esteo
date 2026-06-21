@@ -67,7 +67,6 @@ export async function getActivationProgress(
   if (!eligible) {
     return {
       eligible: false,
-      showFormBadge: false,
       industry: input.industry,
       latestEstimateId: null,
       hasPublicFormSubmission: false,
@@ -97,7 +96,6 @@ export async function getActivationProgress(
 
   return {
     eligible: true,
-    showFormBadge: !hasPublicFormSubmission,
     industry: input.industry,
     latestEstimateId,
     hasPublicFormSubmission,
@@ -108,18 +106,6 @@ export async function getActivationProgress(
     completedCount: serverCompletedCount,
     totalCount: ACTIVATION_STEP_IDS.length,
   };
-}
-
-export async function countCompletedAiGenerationsInWorkspace(
-  workspaceId: string,
-): Promise<number> {
-  return prisma.estimateRequest.count({
-    where: {
-      workspaceId,
-      deletedAt: null,
-      status: "COMPLETED",
-    },
-  });
 }
 
 export async function workspaceHasSuccessfulSend(workspaceId: string): Promise<boolean> {

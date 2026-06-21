@@ -3,6 +3,8 @@
 import "server-only";
 
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
+import type { ZodError } from "zod";
 
 import type { EstimateAgentPatch } from "@/ai/schemas/estimate-agent-patch";
 import type { ProposeEditResult } from "@/features/estimates/lib/estimate-agent-types";
@@ -60,6 +62,20 @@ function toActionError(error: unknown): ActionResult<never> {
   }
   console.error("[estimates action]", error);
   return { success: false, error: "Something went wrong." };
+}
+
+function resolveUpdateEstimateTitleValidationError(
+  error: ZodError,
+  t: Awaited<ReturnType<typeof getTranslations<"estimates">>>,
+): string {
+  const fieldErrors = error.flatten().fieldErrors;
+
+  if (fieldErrors.title?.length) {
+    return t("header.rename.errors.invalidTitle");
+  }
+
+  console.error("[updateEstimateTitleAction] validation failed", error.flatten());
+  return t("header.rename.errors.invalidInput");
 }
 
 // ---------------------------------------------------------------------------
@@ -202,10 +218,15 @@ export async function updateEstimateTitleAction(input: {
   locale?: Locale;
 }): Promise<ActionResult<{ title: string | null }>> {
   const locale = input.locale ?? "pl";
+  const t = await getTranslations({ locale, namespace: "estimates" });
+
   try {
     const parsed = updateEstimateTitleSchema.safeParse(input);
     if (!parsed.success) {
-      return { success: false, error: "Invalid estimate title." };
+      return {
+        success: false,
+        error: resolveUpdateEstimateTitleValidationError(parsed.error, t),
+      };
     }
 
     const user = await requireAuth(locale);
