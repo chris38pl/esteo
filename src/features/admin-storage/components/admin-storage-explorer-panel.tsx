@@ -161,7 +161,6 @@ export function AdminStorageExplorerPanel({
             tree={tree}
             selectedNodeId={selectedNodeId}
             onSelectNode={handleSelectNode}
-            currentEnvironment={summary.currentEnvironment}
           />
         </div>
 
@@ -173,7 +172,6 @@ export function AdminStorageExplorerPanel({
             sort={sort}
             search={search}
             isLoading={listLoading}
-            currentEnvironment={summary.currentEnvironment}
             onSortChange={(next) => {
               setSort(next);
               setPage(1);

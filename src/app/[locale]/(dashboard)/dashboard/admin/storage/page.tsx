@@ -1,12 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 
 import { AdminStorageExplorerPanel } from "@/features/admin-storage/components/admin-storage-explorer-panel";
-import { defaultStorageExplorerNodeId } from "@/features/admin-storage/lib/storage-explorer-environment";
-import {
-  isStorageExplorerContainerNode,
-  normalizeNodeId,
-  parseNodeId,
-} from "@/features/admin-storage/lib/storage-explorer-node-ids";
+import { normalizeNodeId, parseNodeId } from "@/features/admin-storage/lib/storage-explorer-node-ids";
 import {
   getStorageExplorerSummary,
   getStorageExplorerTree,
@@ -33,13 +28,17 @@ export default async function AdminStorageExplorerPage({
   await assertPlatformAdminAccess(resolvedLocale);
   const t = await getServerTranslations(resolvedLocale, "admin");
 
-  const nodeId = normalizeNodeId(query.node ?? defaultStorageExplorerNodeId());
+  const nodeId = normalizeNodeId(query.node ?? "workspaces");
   const parsedNode = parseNodeId(nodeId);
 
   const [tree, summary, initialList] = await Promise.all([
     getStorageExplorerTree(),
     getStorageExplorerSummary(),
-    parsedNode && !isStorageExplorerContainerNode(parsedNode)
+    parsedNode &&
+    parsedNode.kind !== "all" &&
+    parsedNode.kind !== "workspaces" &&
+    parsedNode.kind !== "platform" &&
+    parsedNode.kind !== "orphans"
       ? listStorageExplorerItems({
           node: parsedNode,
           locale: resolvedLocale,

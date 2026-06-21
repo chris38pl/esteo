@@ -16,10 +16,6 @@ import type {
   StorageExplorerItemClient,
   StorageExplorerSortKey,
 } from "@/features/admin-storage/lib/storage-explorer-types";
-import {
-  isStorageExplorerContainerNodeId,
-  parseNodeId,
-} from "@/features/admin-storage/lib/storage-explorer-node-ids";
 import { getAdminStorageSignedUrlAction } from "@/features/admin-storage/server/storage-explorer-actions";
 import { formatBytes } from "@/features/attachments/lib/format-bytes";
 import { PaginationControls } from "@/components/shared/pagination-controls";
@@ -68,7 +64,6 @@ export function StorageExplorerFileList({
   sort,
   search,
   isLoading,
-  currentEnvironment,
   onSortChange,
   onSearchChange,
   onPageChange,
@@ -80,24 +75,20 @@ export function StorageExplorerFileList({
   sort: StorageExplorerSortKey;
   search: string;
   isLoading: boolean;
-  currentEnvironment: string;
   onSortChange: (sort: StorageExplorerSortKey) => void;
   onSearchChange: (search: string) => void;
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
 }) {
   const t = useTranslations("admin.storageExplorer.files");
-  const tEnv = useTranslations("admin.storageExplorer.environments");
   const [downloadingKey, setDownloadingKey] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const isContainerNode = isStorageExplorerContainerNodeId(nodeId);
-  const parsedNode = parseNodeId(nodeId);
-  const isForeignEnvironment =
-    parsedNode !== null &&
-    parsedNode.kind !== "all" &&
-    "environment" in parsedNode &&
-    parsedNode.environment !== currentEnvironment;
+  const isContainerNode =
+    nodeId === "all" ||
+    nodeId === "workspaces" ||
+    nodeId === "platform" ||
+    nodeId === "orphans";
 
   const openSignedUrl = useCallback(
     (storageKey: string, download = false) => {
@@ -176,14 +167,7 @@ export function StorageExplorerFileList({
           isLoading && "opacity-60",
         )}
       >
-        {isForeignEnvironment && parsedNode && "environment" in parsedNode ? (
-          <div className="flex h-40 items-center justify-center p-6 text-center text-sm text-muted-foreground">
-            {t("foreignEnvironment", {
-              environment: tEnv(parsedNode.environment),
-              current: tEnv(currentEnvironment as "development" | "staging" | "production"),
-            })}
-          </div>
-        ) : isContainerNode ? (
+        {isContainerNode ? (
           <div className="flex h-40 items-center justify-center p-6 text-sm text-muted-foreground">
             {t("selectLeaf")}
           </div>

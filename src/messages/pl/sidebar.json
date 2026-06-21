@@ -125,11 +125,11 @@
     "free": {
       "badge": "Plan Free",
       "title": "Więcej mocy. Więcej możliwości.",
-      "body": "Plan Free: 3 wyceny/mies. Ulepsz, aby pracować bez limitu.",
+      "body": "Ulepsz do Pro lub Business i rozwijaj swój biznes.",
       "features": {
-        "estimates": "Nielimitowane wyceny",
-        "clientPortal": "Publiczna strona wyceny",
-        "aiStorage": "100 wywołań AI i 1 GB miejsca w Pro"
+        "projects": "Więcej projektów i klientów",
+        "estimates": "Zaawansowane estymacje",
+        "support": "Priorytetowe wsparcie"
       },
       "ctaPrimary": "Przejdź na Pro",
       "ctaSecondary": "Porównaj plany"
@@ -137,11 +137,12 @@
     "pro": {
       "badge": "Plan Pro",
       "title": "Przenieś swój biznes na wyższy poziom.",
-      "body": "Zaproś zespół i odblokuj nielimitowane AI.",
+      "body": "Odblokuj pełny potencjał z planem Business.",
       "features": {
-        "team": "Zaproszenia zespołu — do 5 użytkowników",
-        "ai": "Nielimitowany asystent AI",
-        "storage": "5 GB miejsca (+ dodatki)"
+        "projects": "Nieograniczona liczba projektów",
+        "team": "Zarządzanie zespołem i rolami",
+        "permissions": "Zaawansowane uprawnienia",
+        "support": "Dedykowane wsparcie"
       },
       "ctaPrimary": "Przejdź na Business"
     },
@@ -151,9 +152,9 @@
       "body": "Korzystasz z pełni możliwości Esteo.",
       "features": {
         "allFeatures": "Wszystkie funkcje odblokowane",
-        "estimatesAi": "Nielimitowane wyceny i AI",
-        "team": "Zespół — do 5 użytkowników",
-        "storage": "5 GB miejsca"
+        "projects": "Nieograniczona liczba projektów",
+        "team": "Zarządzanie zespołem i rolami",
+        "support": "Priorytetowe wsparcie"
       },
       "thankYou": "Dziękujemy, że jesteś z nami! 💜"
     }

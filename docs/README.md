@@ -26,6 +26,7 @@ Product and technical docs for implementation planning. Root overview: [`ARCHITE
 | [activation-flow.md](features/activation-flow.md) | Owner activation checklist on `/estimates` (Phase 1) |
 | [workspace-branding-and-company-profile.md](features/workspace-branding-and-company-profile.md) | Company logo (UploadThing) and company profile tab for PDF/client docs |
 | [admin-workspaces.md](features/admin-workspaces.md) | Platform admin workspace tools |
+| [admin-storage-explorer.md](features/admin-storage-explorer.md) | Platform admin UploadThing browser — tree view, orphans, quota audit |
 | [issue-tracker.md](features/issue-tracker.md) | Internal issue tracker — staging bug capture, admin triage, Cursor sync |
 | [authentication.md](features/authentication.md) | Custom Clerk Elements sign-in, Client Trust, email second-factor |
 | [global-search.md](features/global-search.md) | Workspace command palette (Ctrl+K), SearchDocument index, recents |

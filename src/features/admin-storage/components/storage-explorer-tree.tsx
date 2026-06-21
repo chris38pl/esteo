@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  Building2,
-  ChevronRight,
-  Cloud,
-  Folder,
-  FolderOpen,
-  HardDrive,
-  Layers,
-} from "lucide-react";
+import { ChevronRight, Folder, FolderOpen, HardDrive, Layers, Building2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
@@ -18,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 function nodeIcon(node: StorageExplorerTreeNode, expanded: boolean) {
-  if (node.kind === "environment") return Cloud;
   if (node.kind === "workspace") return Building2;
   if (node.kind === "estimate" || node.kind === "issue") return HardDrive;
   if (node.kind === "category") return HardDrive;
@@ -54,7 +45,6 @@ function TreeNodeRow({
         className={cn(
           "flex min-w-0 items-center gap-1 rounded-md py-1 pr-2 text-sm",
           selected ? "bg-accent text-accent-foreground" : "hover:bg-muted/60",
-          node.isCurrentEnvironment && node.kind === "environment" && "ring-1 ring-primary/20",
         )}
         style={{ paddingLeft: `${depth * 12 + 4}px` }}
       >
@@ -111,36 +101,23 @@ export function StorageExplorerTree({
   tree,
   selectedNodeId,
   onSelectNode,
-  currentEnvironment,
 }: {
   tree: StorageExplorerTreeNode;
   selectedNodeId: string;
   onSelectNode: (nodeId: string) => void;
-  currentEnvironment: string;
 }) {
   const t = useTranslations("admin.storageExplorer.tree");
   const [search, setSearch] = useState("");
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(() => {
-    const envPrefix = `env:${currentEnvironment}:`;
-    return new Set([
-      "all",
-      `env:${currentEnvironment}`,
-      `${envPrefix}workspaces`,
-      `${envPrefix}platform`,
-      `${envPrefix}orphans`,
-    ]);
-  });
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(
+    () => new Set(["workspaces", "platform", "orphans"]),
+  );
 
   const labelForNode = (node: StorageExplorerTreeNode): string => {
     if (node.kind === "root") return t("all");
-    if (node.kind === "environment") {
-      const envLabel = t(`environments.${node.label as "development" | "staging" | "production"}`);
-      return node.isCurrentEnvironment ? `${envLabel} ${t("currentEnvironment")}` : envLabel;
-    }
     if (node.kind === "group") {
-      if (node.label === "workspaces") return t("workspaces");
-      if (node.label === "platform") return t("platform");
-      if (node.label === "orphans") return t("orphans");
+      if (node.id === "workspaces") return t("workspaces");
+      if (node.id === "platform") return t("platform");
+      if (node.id === "orphans") return t("orphans");
     }
     if (node.kind === "category") {
       const key = node.label as

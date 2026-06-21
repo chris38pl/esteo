@@ -4,11 +4,9 @@ import { useTranslations } from "next-intl";
 
 import type { StorageExplorerSummary } from "@/features/admin-storage/lib/storage-explorer-types";
 import { formatBytes } from "@/features/attachments/lib/format-bytes";
-import { Badge } from "@/components/ui/badge";
 
 export function StorageExplorerSummaryCards({ summary }: { summary: StorageExplorerSummary }) {
   const t = useTranslations("admin.storageExplorer.summary");
-  const tEnv = useTranslations("admin.storageExplorer.environments");
 
   const cards = [
     {
@@ -38,13 +36,7 @@ export function StorageExplorerSummaryCards({ summary }: { summary: StorageExplo
   ];
 
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-sm text-muted-foreground">{t("connectedEnvironment")}</span>
-        <Badge variant="secondary">{tEnv(summary.currentEnvironment)}</Badge>
-      </div>
-
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
       {cards.map((card) => (
         <div
           key={card.label}
@@ -57,7 +49,6 @@ export function StorageExplorerSummaryCards({ summary }: { summary: StorageExplo
           <p className="mt-0.5 text-xs text-muted-foreground">{card.detail}</p>
         </div>
       ))}
-      </div>
     </div>
   );
 }

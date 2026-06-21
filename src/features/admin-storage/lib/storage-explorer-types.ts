@@ -1,5 +1,3 @@
-import type { StorageExplorerEnvironment } from "@/features/admin-storage/lib/storage-explorer-environment";
-
 export type StorageItemHealth =
   | "ok"
   | "staging_expired"
@@ -51,19 +49,16 @@ export type StorageExplorerNodeStats = {
 export type StorageExplorerTreeNode = {
   id: string;
   label: string;
-  kind: "root" | "environment" | "group" | "workspace" | "estimate" | "issue" | "category";
+  kind: "root" | "group" | "workspace" | "estimate" | "issue" | "category";
   stats: StorageExplorerNodeStats;
   children?: StorageExplorerTreeNode[];
   workspaceId?: string;
   workspaceSlug?: string;
   storageUsedBytes?: string;
   storageLimitBytes?: string;
-  environment?: StorageExplorerEnvironment;
-  isCurrentEnvironment?: boolean;
 };
 
 export type StorageExplorerSummary = {
-  currentEnvironment: StorageExplorerEnvironment;
   quotaCountedBytes: string;
   quotaCountedFiles: number;
   nonQuotaBytes: string;

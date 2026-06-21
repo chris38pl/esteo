@@ -242,6 +242,8 @@ Scheduled job (e.g. daily Trigger.dev cron) to remove UploadThing blobs without 
 
 Phase 2 mitigates orphans via submit compensation; long-term cleanup remains a planned maintenance task.
 
+Platform admins can inspect orphans and disk usage in the [**Admin storage explorer**](admin-storage-explorer.md) (UploadThing scan + DB categories). v1 is read-only.
+
 ## Feature module
 
 ```txt

@@ -6,7 +6,6 @@ import { useTranslations } from "next-intl";
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import { useDashboardBreadcrumbDetail } from "@/components/layout/dashboard-top-nav/dashboard-breadcrumb-detail-context";
 import type { Locale } from "@/lib/locale";
-import { dashboardEstimatesHref } from "@/lib/dashboard-routes";
 
 export type BreadcrumbItem = {
   label: string;
@@ -179,7 +178,7 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
   const workspaceSlug = activeWorkspace?.slug ?? null;
   const wsBase = workspaceSlug ? `/${locale}/dashboard/${workspaceSlug}` : null;
   const dashboardHref = workspaceSlug
-    ? dashboardEstimatesHref(locale, workspaceSlug)
+    ? `/${locale}/dashboard/${workspaceSlug}`
     : `/${locale}/dashboard`;
   const estimatesRoute = parseEstimatesRoute(pathname, locale, workspaceSlug);
   const requestsRoute = parseRequestsRoute(pathname, locale, workspaceSlug);

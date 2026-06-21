@@ -52,13 +52,7 @@
     "refresh": "Refresh",
     "scanHint": "Run a scan to detect UploadThing-only orphans.",
     "lastScan": "Last scan: {date}",
-    "environments": {
-      "development": "Development",
-      "staging": "Staging",
-      "production": "Production"
-    },
     "summary": {
-      "connectedEnvironment": "Connected environment",
       "quotaCounted": "Quota-counted storage",
       "quotaCountedFiles": "{count} files in workspace quota",
       "nonQuota": "Outside quota",
@@ -72,16 +66,10 @@
     },
     "tree": {
       "all": "All storage",
-      "currentEnvironment": "(connected)",
       "workspaces": "Workspaces",
       "platform": "Platform",
       "orphans": "Orphans & anomalies",
       "searchPlaceholder": "Filter tree…",
-      "environments": {
-        "development": "Development",
-        "staging": "Staging",
-        "production": "Production"
-      },
       "categories": {
         "estimates": "Estimate attachments",
         "stagingActive": "Staging (active)",
@@ -98,7 +86,6 @@
     "files": {
       "searchPlaceholder": "Search files…",
       "selectLeaf": "Select a workspace or category in the tree to list files.",
-      "foreignEnvironment": "Data for {environment} is not available from this deployment. This instance is connected to {current}.",
       "empty": "No files in this category.",
       "sortLabel": "Sort by",
       "sort": {
@@ -662,9 +649,9 @@
         "meta": {
           "type": "Inline banner (persistent)",
           "what": "Header + 3 tip cards + suggestion footer",
-          "notes": "9-tip carousel (3×3); banner ✕ → sessionStorage; card ✕ → localStorage dismiss (carousel only); pin → slide [0]; suggestion → ReportIssueDialog TIP_SUGGESTION",
+          "notes": "Cards with Learn more links; ✕ saves tips-banner-dismissed; suggestion opens ReportIssueDialog (when tracker enabled)",
           "when": "After checklist 3/3 and clicking [Hide] on celebration panel",
-          "frequency": "Banner ✕ hides for browser session; dismiss/pin per user+workspace in localStorage"
+          "frequency": "Dismissed with ✕ (localStorage: tips-banner-dismissed)"
         }
       }
     }

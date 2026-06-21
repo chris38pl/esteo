@@ -27,86 +27,10 @@ import { buildPaginatedResult, type PaginatedResult, type PaginationParams } fro
 import type { Locale } from "@/lib/locale";
 import { workspaceBrandingSchema } from "@/features/workspaces/schemas/branding";
 import { getUtOrphanFilesFromCache } from "@/features/admin-storage/server/storage-explorer-reconcile";
-import {
-  STORAGE_EXPLORER_ENVIRONMENTS,
-  resolveCurrentStorageExplorerEnvironment,
-  storageEnvironmentNodeId,
-  type StorageExplorerEnvironment,
-} from "@/features/admin-storage/lib/storage-explorer-environment";
-import { isStorageExplorerContainerNode } from "@/features/admin-storage/lib/storage-explorer-node-ids";
 
 function stats(fileCount: number, totalBytes: bigint) {
   return { fileCount, totalBytes: totalBytes.toString() };
 }
-
-function prefixTreeNodeIds(node: StorageExplorerTreeNode, prefix: string): StorageExplorerTreeNode {
-  return {
-    ...node,
-    id: `${prefix}${node.id}`,
-    children: node.children?.map((child) => prefixTreeNodeIds(child, prefix)),
-  };
-}
-
-function buildEmptyEnvironmentContent(prefix: string): StorageExplorerTreeNode[] {
-  const empty = stats(0, BigInt(0));
-
-  return [
-    {
-      id: `${prefix}workspaces`,
-      label: "workspaces",
-      kind: "group",
-      stats: empty,
-      children: [],
-    },
-    {
-      id: `${prefix}platform`,
-      label: "platform",
-      kind: "group",
-      stats: empty,
-      children: [
-        {
-          id: `${prefix}platform:issues`,
-          label: "issues",
-          kind: "category",
-          stats: empty,
-          children: [],
-        },
-      ],
-    },
-    {
-      id: `${prefix}orphans`,
-      label: "orphans",
-      kind: "group",
-      stats: empty,
-      children: [
-        { id: `${prefix}orphans:ut-only`, label: "utOnly", kind: "category", stats: empty },
-        { id: `${prefix}orphans:json-unpromoted`, label: "jsonUnpromoted", kind: "category", stats: empty },
-        { id: `${prefix}orphans:legacy`, label: "legacy", kind: "category", stats: empty },
-        { id: `${prefix}orphans:duplicate-keys`, label: "duplicateKeys", kind: "category", stats: empty },
-      ],
-    },
-  ];
-}
-
-function buildEnvironmentTreeNode(input: {
-  environment: StorageExplorerEnvironment;
-  currentEnvironment: StorageExplorerEnvironment;
-  contentChildren: StorageExplorerTreeNode[];
-  contentStats: { fileCount: number; totalBytes: bigint };
-}): StorageExplorerTreeNode {
-  const isCurrent = input.environment === input.currentEnvironment;
-
-  return {
-    id: storageEnvironmentNodeId(input.environment),
-    label: input.environment,
-    kind: "environment",
-    environment: input.environment,
-    isCurrentEnvironment: isCurrent,
-    stats: stats(input.contentStats.fileCount, input.contentStats.totalBytes),
-    children: input.contentChildren,
-  };
-}
-
 
 function formatEstimateLabel(title: string | null, id: string): string {
   const trimmed = title?.trim();
@@ -234,7 +158,6 @@ export async function getStorageExplorerSummary(): Promise<StorageExplorerSummar
   const nonQuotaFiles = issueAgg._count + pdfCount + logoCount;
 
   return {
-    currentEnvironment: resolveCurrentStorageExplorerEnvironment(),
     quotaCountedBytes: quotaCountedBytes.toString(),
     quotaCountedFiles,
     nonQuotaBytes: nonQuotaBytes.toString(),
@@ -473,100 +396,70 @@ export async function getStorageExplorerTree(): Promise<StorageExplorerTreeNode>
   const orphanUtBytes =
     utCache?.utOrphanFiles.reduce((sum, file) => sum + BigInt(file.size), BigInt(0)) ?? BigInt(0);
 
-  const currentEnvironment = resolveCurrentStorageExplorerEnvironment();
-
-  const contentChildren: StorageExplorerTreeNode[] = [
-    {
-      id: "workspaces",
-      label: "workspaces",
-      kind: "group",
-      stats: stats(workspacesTotalFiles, workspacesTotalBytes),
-      children: workspaceNodes,
-    },
-    {
-      id: "platform",
-      label: "platform",
-      kind: "group",
-      stats: stats(issueAgg._count, issueAgg._sum.fileSizeBytes ?? BigInt(0)),
-      children: [
-        {
-          id: "platform:issues",
-          label: "issues",
-          kind: "category",
-          stats: stats(issueAgg._count, issueAgg._sum.fileSizeBytes ?? BigInt(0)),
-          children: issueChildren,
-        },
-      ],
-    },
-    {
-      id: "orphans",
-      label: "orphans",
-      kind: "group",
-      stats: stats(
-        orphanUtCount + jsonOrphanCount + legacyCount + duplicateCount,
-        orphanUtBytes,
-      ),
-      children: [
-        {
-          id: "orphans:ut-only",
-          label: "utOnly",
-          kind: "category",
-          stats: stats(orphanUtCount, orphanUtBytes),
-        },
-        {
-          id: "orphans:json-unpromoted",
-          label: "jsonUnpromoted",
-          kind: "category",
-          stats: stats(jsonOrphanCount, BigInt(0)),
-        },
-        {
-          id: "orphans:legacy",
-          label: "legacy",
-          kind: "category",
-          stats: stats(legacyCount, BigInt(0)),
-        },
-        {
-          id: "orphans:duplicate-keys",
-          label: "duplicateKeys",
-          kind: "category",
-          stats: stats(duplicateCount, BigInt(0)),
-        },
-      ],
-    },
-  ];
-
-  const currentContentStats = {
-    fileCount: workspacesTotalFiles + issueAgg._count + orphanUtCount,
-    totalBytes:
-      workspacesTotalBytes + (issueAgg._sum.fileSizeBytes ?? BigInt(0)) + orphanUtBytes,
-  };
-
-  const environmentNodes = STORAGE_EXPLORER_ENVIRONMENTS.map((environment) => {
-    const prefix = `env:${environment}:`;
-
-    if (environment === currentEnvironment) {
-      return buildEnvironmentTreeNode({
-        environment,
-        currentEnvironment,
-        contentStats: currentContentStats,
-        contentChildren: contentChildren.map((child) => prefixTreeNodeIds(child, prefix)),
-      });
-    }
-
-    return buildEnvironmentTreeNode({
-      environment,
-      currentEnvironment,
-      contentStats: { fileCount: 0, totalBytes: BigInt(0) },
-      contentChildren: buildEmptyEnvironmentContent(prefix),
-    });
-  });
-
   return {
     id: "all",
     label: "all",
     kind: "root",
-    stats: stats(currentContentStats.fileCount, currentContentStats.totalBytes),
-    children: environmentNodes,
+    stats: stats(
+      workspacesTotalFiles + issueAgg._count + orphanUtCount,
+      workspacesTotalBytes + (issueAgg._sum.fileSizeBytes ?? BigInt(0)) + orphanUtBytes,
+    ),
+    children: [
+      {
+        id: "workspaces",
+        label: "workspaces",
+        kind: "group",
+        stats: stats(workspacesTotalFiles, workspacesTotalBytes),
+        children: workspaceNodes,
+      },
+      {
+        id: "platform",
+        label: "platform",
+        kind: "group",
+        stats: stats(issueAgg._count, issueAgg._sum.fileSizeBytes ?? BigInt(0)),
+        children: [
+          {
+            id: "platform:issues",
+            label: "issues",
+            kind: "category",
+            stats: stats(issueAgg._count, issueAgg._sum.fileSizeBytes ?? BigInt(0)),
+            children: issueChildren,
+          },
+        ],
+      },
+      {
+        id: "orphans",
+        label: "orphans",
+        kind: "group",
+        stats: stats(orphanUtCount + jsonOrphanCount + legacyCount + duplicateCount, orphanUtBytes),
+        children: [
+          {
+            id: "orphans:ut-only",
+            label: "utOnly",
+            kind: "category",
+            stats: stats(orphanUtCount, orphanUtBytes),
+          },
+          {
+            id: "orphans:json-unpromoted",
+            label: "jsonUnpromoted",
+            kind: "category",
+            stats: stats(jsonOrphanCount, BigInt(0)),
+          },
+          {
+            id: "orphans:legacy",
+            label: "legacy",
+            kind: "category",
+            stats: stats(legacyCount, BigInt(0)),
+          },
+          {
+            id: "orphans:duplicate-keys",
+            label: "duplicateKeys",
+            kind: "category",
+            stats: stats(duplicateCount, BigInt(0)),
+          },
+        ],
+      },
+    ],
   };
 }
 
@@ -594,11 +487,12 @@ export async function listStorageExplorerItems(input: {
 }): Promise<PaginatedResult<StorageExplorerItemClient>> {
   const { node, locale, pagination, sort, search } = input;
 
-  if (node.kind === "all" || isStorageExplorerContainerNode(node)) {
-    return buildPaginatedResult([], 0, pagination);
-  }
-
-  if (node.environment !== resolveCurrentStorageExplorerEnvironment()) {
+  if (
+    node.kind === "workspaces" ||
+    node.kind === "platform" ||
+    node.kind === "orphans" ||
+    node.kind === "all"
+  ) {
     return buildPaginatedResult([], 0, pagination);
   }
 

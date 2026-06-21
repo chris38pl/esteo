@@ -52,13 +52,7 @@
     "refresh": "Odśwież",
     "scanHint": "Uruchom skan, aby wykryć pliki tylko w UploadThing.",
     "lastScan": "Ostatni skan: {date}",
-    "environments": {
-      "development": "Development",
-      "staging": "Staging",
-      "production": "Produkcja"
-    },
     "summary": {
-      "connectedEnvironment": "Podłączone środowisko",
       "quotaCounted": "Storage w limicie",
       "quotaCountedFiles": "{count} plików w limicie workspace",
       "nonQuota": "Poza limitem",
@@ -72,16 +66,10 @@
     },
     "tree": {
       "all": "Całe storage",
-      "currentEnvironment": "(podłączone)",
       "workspaces": "Przestrzenie",
       "platform": "Platforma",
       "orphans": "Orphany i anomalie",
       "searchPlaceholder": "Filtruj drzewo…",
-      "environments": {
-        "development": "Development",
-        "staging": "Staging",
-        "production": "Produkcja"
-      },
       "categories": {
         "estimates": "Załączniki wycen",
         "stagingActive": "Staging (aktywne)",
@@ -98,7 +86,6 @@
     "files": {
       "searchPlaceholder": "Szukaj plików…",
       "selectLeaf": "Wybierz workspace lub kategorię w drzewie, aby wyświetlić pliki.",
-      "foreignEnvironment": "Dane dla środowiska {environment} nie są dostępne z tego wdrożenia. Ta instancja jest podłączona do {current}.",
       "empty": "Brak plików w tej kategorii.",
       "sortLabel": "Sortuj według",
       "sort": {
@@ -662,9 +649,9 @@
         "meta": {
           "type": "Baner inline (persistent)",
           "what": "Nagłówek + 3 karty porad + stopka z sugestią",
-          "notes": "Karuzela 9 porad (3×3); ✕ bannera → sessionStorage (do końca sesji); ✕ kafelka → localStorage dismiss (tylko karuzela); pin → slajd [0]; sugestia → ReportIssueDialog TIP_SUGGESTION",
+          "notes": "Karty z linkami Dowiedz się więcej; ✕ zapisuje tips-banner-dismissed; sugestia otwiera ReportIssueDialog (gdy włączony tracker)",
           "when": "Po 3/3 checklisty i kliknięciu [Ukryj] na panelu celebration",
-          "frequency": "Banner ✕ ukrywa do końca sesji; dismiss/pin per user+workspace w localStorage"
+          "frequency": "Znika po ✕ (localStorage: tips-banner-dismissed)"
         }
       }
     }
