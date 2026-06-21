@@ -8,6 +8,7 @@ import { appToast } from "@/components/ui/app-toast";
 
 import {
   exportEstimatePdfAction,
+  getEstimatePdfDownloadUrlAction,
   pollEstimatePdfExportAction,
 } from "@/features/estimates/server/pdf-export-actions";
 import {
@@ -41,6 +42,8 @@ export type EstimatePdfReadyPayload = {
   viewerTitle: string;
 };
 
+type PollOutcome = "pending" | "success" | "failure";
+
 export function useEstimatePdfOutput(input: {
   estimateId: string;
   versionId: string | null;
@@ -48,6 +51,8 @@ export function useEstimatePdfOutput(input: {
   workspaceSlug: string;
   locale: Locale;
   mode: EstimatePdfOutputMode;
+  serverLatestPdfId?: string | null;
+  serverLatestPdfGeneratedAt?: string | null;
   onBeforeExport?: () => Promise<EstimatePdfBeforeExportResult>;
   onPreviewGenerationStarted?: () => void;
   onPreviewReady?: (payload: EstimatePdfReadyPayload) => void | Promise<void>;
@@ -60,6 +65,12 @@ export function useEstimatePdfOutput(input: {
   const loadingToastIdRef = useRef<string | number | null>(null);
   const viewerWindowRef = useRef<Window | null>(null);
   const isMountedRef = useRef(true);
+  const exportStartedAtRef = useRef<number | null>(null);
+  const activeRunIdRef = useRef<string | null>(null);
+  const pollLoopActiveRef = useRef(false);
+  const pollInFlightRef = useRef(false);
+  const reconciledExportRef = useRef(false);
+  const lastFailureMessageRef = useRef<string | null>(null);
   const isExportMode = input.mode === "export";
 
   const clearPollTimer = useCallback(() => {
@@ -93,6 +104,20 @@ export function useEstimatePdfOutput(input: {
     viewerWindowRef.current = null;
   }, []);
 
+  const finishExportRun = useCallback(() => {
+    exportStartedAtRef.current = null;
+    activeRunIdRef.current = null;
+    pollLoopActiveRef.current = false;
+    pollInFlightRef.current = false;
+    reconciledExportRef.current = false;
+    lastFailureMessageRef.current = null;
+    clearPollTimer();
+    dismissExportProgress();
+    if (isMountedRef.current) {
+      setIsRunning(false);
+    }
+  }, [clearPollTimer, dismissExportProgress]);
+
   useEffect(() => {
     isMountedRef.current = true;
     return () => {
@@ -105,7 +130,8 @@ export function useEstimatePdfOutput(input: {
 
   const showError = useCallback(
     (message: string) => {
-      dismissExportProgress();
+      lastFailureMessageRef.current = message;
+      finishExportRun();
       clearViewerWindow();
       setError(message);
 
@@ -113,7 +139,7 @@ export function useEstimatePdfOutput(input: {
         appToast.error(message, { position: ESTIMATE_ASYNC_TOAST_POSITION });
       }
     },
-    [clearViewerWindow, dismissExportProgress, isExportMode],
+    [clearViewerWindow, finishExportRun, isExportMode],
   );
 
   const handleExportReady = useCallback(
@@ -153,58 +179,132 @@ export function useEstimatePdfOutput(input: {
     [dismissExportProgress, handleExportReady, input, isExportMode],
   );
 
+  const completeFromServerPdf = useCallback(
+    async (estimatePdfId: string) => {
+      if (reconciledExportRef.current || !isMountedRef.current) {
+        return false;
+      }
+
+      reconciledExportRef.current = true;
+
+      const result = await getEstimatePdfDownloadUrlAction({
+        estimatePdfId,
+        estimateId: input.estimateId,
+        workspaceId: input.workspaceId,
+        locale: input.locale,
+      });
+
+      if (!isMountedRef.current) {
+        return false;
+      }
+
+      if (!result.success) {
+        reconciledExportRef.current = false;
+        return false;
+      }
+
+      await handleReady({
+        url: result.data.url,
+        fileName: result.data.fileName,
+        viewerTitle: result.data.viewerTitle,
+      });
+      finishExportRun();
+      return true;
+    },
+    [finishExportRun, handleReady, input.estimateId, input.locale, input.workspaceId],
+  );
+
+  const pollOnce = useCallback(async (): Promise<PollOutcome> => {
+    const runId = activeRunIdRef.current;
+    if (!runId || !input.versionId || pollInFlightRef.current) {
+      return "pending";
+    }
+
+    pollInFlightRef.current = true;
+
+    try {
+      const result = await pollEstimatePdfExportAction({
+        estimateId: input.estimateId,
+        versionId: input.versionId,
+        workspaceId: input.workspaceId,
+        workspaceSlug: input.workspaceSlug,
+        locale: input.locale,
+        runId,
+      });
+
+      if (!isMountedRef.current) {
+        return "failure";
+      }
+
+      if (!result.success) {
+        showError(result.error);
+        return "failure";
+      }
+
+      if (result.data.status === "ready") {
+        await handleReady({
+          url: result.data.url,
+          fileName: result.data.fileName,
+          viewerTitle: result.data.viewerTitle,
+        });
+        finishExportRun();
+        return "success";
+      }
+
+      if (result.data.status === "failed") {
+        const message = result.data.errorMessage ?? t("editor.pdfExport.failed");
+        showError(message);
+        return "failure";
+      }
+
+      return "pending";
+    } finally {
+      pollInFlightRef.current = false;
+    }
+  }, [
+    finishExportRun,
+    handleReady,
+    input,
+    showError,
+    t,
+  ]);
+
   const pollUntilReady = useCallback(
     async (runId: string): Promise<EstimatePdfOutputResult> => {
       if (!input.versionId) {
         return { ok: false, message: t("editor.pdfExport.failed") };
       }
 
+      activeRunIdRef.current = runId;
+      pollLoopActiveRef.current = true;
       const startedAt = Date.now();
 
-      while (Date.now() - startedAt < MAX_POLL_DURATION_MS) {
-        const result = await pollEstimatePdfExportAction({
-          estimateId: input.estimateId,
-          versionId: input.versionId,
-          workspaceId: input.workspaceId,
-          workspaceSlug: input.workspaceSlug,
-          locale: input.locale,
-          runId,
-        });
+      try {
+        while (Date.now() - startedAt < MAX_POLL_DURATION_MS) {
+          const outcome = await pollOnce();
+          if (outcome === "success") {
+            return { ok: true };
+          }
+          if (outcome === "failure") {
+            return {
+              ok: false,
+              message: lastFailureMessageRef.current ?? t("editor.pdfExport.failed"),
+            };
+          }
 
-        if (!isMountedRef.current) {
-          return { ok: false, message: t("editor.pdfExport.failed") };
-        }
-
-        if (!result.success) {
-          showError(result.error);
-          return { ok: false, message: result.error };
-        }
-
-        if (result.data.status === "ready") {
-          await handleReady({
-            url: result.data.url,
-            fileName: result.data.fileName,
-            viewerTitle: result.data.viewerTitle,
+          await new Promise<void>((resolve) => {
+            pollTimerRef.current = setTimeout(resolve, POLL_INTERVAL_MS);
           });
-          return { ok: true };
         }
 
-        if (result.data.status === "failed") {
-          const message = result.data.errorMessage ?? t("editor.pdfExport.failed");
-          showError(message);
-          return { ok: false, message };
-        }
-
-        await new Promise<void>((resolve) => {
-          pollTimerRef.current = setTimeout(resolve, POLL_INTERVAL_MS);
-        });
+        const message = t("editor.pdfExport.timeout");
+        showError(message);
+        return { ok: false, message };
+      } finally {
+        pollLoopActiveRef.current = false;
       }
-
-      const message = t("editor.pdfExport.timeout");
-      showError(message);
-      return { ok: false, message };
     },
-    [handleReady, input, showError, t],
+    [input.versionId, pollOnce, showError, t],
   );
 
   const runPdfOutput = useCallback(async (): Promise<EstimatePdfOutputResult> => {
@@ -214,6 +314,8 @@ export function useEstimatePdfOutput(input: {
 
     setError(null);
     setIsRunning(true);
+    reconciledExportRef.current = false;
+    exportStartedAtRef.current = Date.now();
     clearPollTimer();
     clearViewerWindow();
 
@@ -223,7 +325,7 @@ export function useEstimatePdfOutput(input: {
     };
 
     const abort = (): EstimatePdfOutputResult => {
-      dismissExportProgress();
+      finishExportRun();
       clearViewerWindow();
       return { ok: false, message: "", cancelled: true };
     };
@@ -258,6 +360,7 @@ export function useEstimatePdfOutput(input: {
       });
 
       if (!isMountedRef.current) {
+        finishExportRun();
         return { ok: false, message: t("editor.pdfExport.failed") };
       }
 
@@ -271,22 +374,18 @@ export function useEstimatePdfOutput(input: {
           fileName: result.data.fileName,
           viewerTitle: result.data.viewerTitle,
         });
+        finishExportRun();
         return { ok: true };
       }
 
-      const polled = await pollUntilReady(result.data.runId);
-      return polled;
-    } finally {
-      dismissExportProgress();
-      if (isMountedRef.current) {
-        setIsRunning(false);
-      }
-      clearPollTimer();
+      return await pollUntilReady(result.data.runId);
+    } catch {
+      return fail(t("editor.pdfExport.failed"));
     }
   }, [
     clearPollTimer,
     clearViewerWindow,
-    dismissExportProgress,
+    finishExportRun,
     handleReady,
     input,
     isExportMode,
@@ -296,6 +395,51 @@ export function useEstimatePdfOutput(input: {
     showExportProgress,
     t,
   ]);
+
+  useEffect(() => {
+    if (
+      !isRunning ||
+      !isExportMode ||
+      !exportStartedAtRef.current ||
+      !input.serverLatestPdfId ||
+      !input.serverLatestPdfGeneratedAt ||
+      reconciledExportRef.current
+    ) {
+      return;
+    }
+
+    const generatedAtMs = Date.parse(input.serverLatestPdfGeneratedAt);
+    if (
+      !Number.isFinite(generatedAtMs) ||
+      generatedAtMs < exportStartedAtRef.current - 2_000
+    ) {
+      return;
+    }
+
+    void completeFromServerPdf(input.serverLatestPdfId);
+  }, [
+    completeFromServerPdf,
+    input.serverLatestPdfGeneratedAt,
+    input.serverLatestPdfId,
+    isExportMode,
+    isRunning,
+  ]);
+
+  useEffect(() => {
+    if (!isRunning || !activeRunIdRef.current) {
+      return;
+    }
+
+    const watchdogId = setInterval(() => {
+      if (!isRunning || pollLoopActiveRef.current || pollInFlightRef.current) {
+        return;
+      }
+
+      void pollOnce();
+    }, POLL_INTERVAL_MS);
+
+    return () => clearInterval(watchdogId);
+  }, [isRunning, pollOnce]);
 
   return {
     runPdfOutput,

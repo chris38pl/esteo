@@ -9,6 +9,8 @@ export function useEstimatePdfExport(input: {
   workspaceId: string;
   workspaceSlug: string;
   locale: Locale;
+  serverLatestPdfId?: string | null;
+  serverLatestPdfGeneratedAt?: string | null;
   onBeforeExport?: () => Promise<EstimatePdfBeforeExportResult>;
 }) {
   const { runPdfOutput, isRunning, error, clearError } = useEstimatePdfOutput({

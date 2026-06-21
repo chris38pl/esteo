@@ -27,6 +27,7 @@ export function markWorkspaceReadySeen(workspaceSlug: string): void {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem(key("workspace-ready-pending", workspaceSlug));
   window.localStorage.setItem(key("workspace-ready-seen", workspaceSlug), "1");
+  notifyActivationStorageChanged(workspaceSlug);
 }
 
 export function isWorkspaceReadyBannerVisible(workspaceSlug: string): boolean {

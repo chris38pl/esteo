@@ -3,8 +3,7 @@
 import { Bug, Lightbulb, Tag, Type } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { toast } from "sonner";
-
+import { appToast } from "@/components/ui/app-toast";
 import { IssueAdvancedFields } from "@/features/issues/components/issue-advanced-fields";
 import { IssueDescriptionField } from "@/features/issues/components/issue-description-field";
 import { IssueFormSelect, IssueFormTextInput } from "@/features/issues/components/issue-form-fields";
@@ -146,7 +145,7 @@ export function ReportIssueDialog({
           const uploadResult = await uploadScreenshots(result.data.issueId, screenshots);
 
           if (!uploadResult.success) {
-            toast.warning(t("form.partialSuccess", { number: createdIssue.number }));
+            appToast.warning(t("form.partialSuccess", { number: createdIssue.number }));
             resetForm();
             onOpenChange(false);
             try {
@@ -158,7 +157,7 @@ export function ReportIssueDialog({
           }
         }
 
-        toast.success(t("form.success", { number: createdIssue.number }));
+        appToast.success(t("form.success", { number: createdIssue.number }));
         resetForm();
         onOpenChange(false);
         try {

@@ -5,25 +5,18 @@ Owner-only first-time activation on `/estimates`. No Prisma fields — progress 
 ## Flow
 
 1. **Onboarding** → redirect to `/estimates`; sets `esteo.activation.workspace-ready-pending.{slug}`.
-2. **Workspace ready banner** — informational message after onboarding. Dismiss with ✕ only.
-3. **Combined banner** (after banner dismissed) — single card, `xl:grid-cols-3`:
-   - **Left (2/3):** “Jak działa Esteo?” — 3-step horizontal flow (desktop) / stacked (mobile).
-   - **Right (1/3):** Checklist (3 steps), vertically centered.
-4. **Checklist steps:**
-   - Create first estimate (DB: `Estimate` count > 0)
-   - Generate PDF (DB: `EstimatePdf` with status `READY`)
-   - Copy client form link (`localStorage`: `form-link-copied`)
-5. **Celebration at 3/3** — “Wszystko gotowe!” with [Ukryj]; guide stays in “Jak działa Esteo?” until dismissed.
-6. **Guide card** — “Jak działa Esteo?” during activation; **Porady** banner (3 tip cards) after celebration dismissed.
-7. **Form link copy/share toast** — action toast (5 s, `top-center`) on every copy or share. Handler: `notify-form-link-shared.ts`.
-8. **PDF export toast** — loading toast (`bottom-center`, until complete). Uses `appToast.loading` in `use-estimate-pdf-output.ts`.
-9. **PDF gate** — inline company profile modal (no settings redirect).
+2. **Workspace ready banner** — informational card after onboarding with ✕ dismiss and two CTAs (create estimate, copy form link). Dismiss or CTA hides the banner and marks `workspace-ready-seen`.
+3. **Porady banner** — after workspace-ready banner is dismissed, shows [`ActivationTipsBanner`](../../src/features/activation/components/activation-tips-banner.tsx) with tip cards (dismiss with ✕).
+4. **Form link copy/share toast** — `appToast.action` (5 s, `top-center`) on every copy or share. Handler: [`notify-form-link-shared.ts`](../../src/features/activation/lib/notify-form-link-shared.ts).
+5. **PDF export toast** — loading toast (`bottom-center`, until complete). Uses `appToast.loading` in [`use-estimate-pdf-output.ts`](../../src/features/estimates/hooks/use-estimate-pdf-output.ts) with server reconcile when a new PDF appears after `router.refresh()`.
+6. **PDF gate** — inline company profile modal (no settings redirect).
+
+**Removed (2026-06):** combined checklist banner, celebration toast „Formularz gotowy”, first-AI toast „Pierwsza wycena gotowa” — activation is now banner + tips only.
 
 ## UI notes
 
-- Banner is intentionally **compact** (secondary hint, not primary page content): smaller headings, icons, padding, and checklist row density (~20% less height vs initial design).
-- **Mobile:** extra vertical spacing between “Jak działa Esteo?” and checklist (`pb-6` / `pt-8` on stacked layout).
-- **Hydration:** `useActivationUiState` defers `localStorage` reads until after client mount (`hasHydrated`) so SSR and first client render match (avoids badge/checklist mismatch).
+- **Mobile:** workspace-ready ✕ uses a 44px touch target (`min-h-11 min-w-11`, `touch-manipulation`).
+- **Hydration:** `useActivationUiState` defers `localStorage` reads until after client mount (`hasHydrated`) so SSR and first client render match.
 
 ## Eligibility
 
@@ -36,10 +29,8 @@ Owner-only first-time activation on `/estimates`. No Prisma fields — progress 
 |---|---|
 | `workspace-ready-pending` | Show banner after onboarding |
 | `workspace-ready-seen` | Banner dismissed (clears pending) |
-| `form-link-copied` | Checklist step 3 |
-| `celebration-dismissed` | Hide checklist after 3/3 |
-| `tips-banner-dismissed` | Hide Porady banner after ✕ |
-| `completed-analytics-fired` | One-time `activation_completed` |
+| `form-link-copied` | Analytics / adoption milestone |
+| `tips-banner-dismissed` | Hide Porady banner after ✕ (per session) |
 | `public-form-analytics-fired` | One-time adoption event |
 | `first-estimate-analytics-fired` | One-time milestone |
 | `first-pdf-analytics-fired` | One-time milestone |
@@ -48,9 +39,7 @@ Owner-only first-time activation on `/estimates`. No Prisma fields — progress 
 
 Events dispatch `esteo:activation-analytics` CustomEvents (stub for PostHog wiring). See `src/features/activation/lib/activation-analytics.ts`.
 
-**Activation** (checklist): form link copied, 3/3 completed.
-
-**Adoption** (not checklist): public form received, first estimate sent.
+**Adoption:** public form received, first estimate created, first PDF generated, form link copied, first estimate sent.
 
 ## Build dependency
 
@@ -65,9 +54,10 @@ Webpack resolves `process/browser.js` for some client bundles. The `process` pac
 
 - `src/features/activation/` — components, hooks, server loader, analytics
 - `src/components/ui/app-toast/` — reusable toast UI (`AppToast`, `appToast` helpers)
-- `src/features/activation/lib/notify-form-link-shared.ts` — copy/share toasts + checklist step 3 side effects
+- `src/features/activation/lib/notify-form-link-shared.ts` — copy/share toasts
 - `src/features/activation/hooks/use-activation-ui-state.ts` — client state merge + hydration-safe storage
-- `src/features/activation/components/activation-combined-banner.tsx` — guide + checklist layout
+- `src/features/activation/components/workspace-ready-banner.tsx` — post-onboarding banner
+- `src/features/activation/components/activation-tips-banner.tsx` — tips after banner dismissed
 - `src/features/estimate-requests/components/estimate-request-form-hero-card.tsx` — form hero card + share/copy
 - `src/app/.../estimates/page.tsx` — loads progress for owners
 - `src/features/workspaces/components/create-workspace-form.tsx` — sets pending flag on onboarding

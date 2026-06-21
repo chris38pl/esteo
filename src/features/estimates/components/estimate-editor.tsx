@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -279,6 +279,23 @@ export function EstimateEditor({
 
   const activeVersion = versionTree;
   const versionStatus = activeVersion?.status ?? "DRAFT";
+  const latestPdfForVersion = useMemo(() => {
+    if (!activeVersionId) {
+      return null;
+    }
+
+    const forVersion = initialPdfDocuments.filter(
+      (document) => document.versionId === activeVersionId,
+    );
+
+    if (forVersion.length === 0) {
+      return null;
+    }
+
+    return forVersion.reduce((latest, document) =>
+      document.generatedAt > latest.generatedAt ? document : latest,
+    );
+  }, [activeVersionId, initialPdfDocuments]);
   const workflowStatus = versionWorkflow.status;
   const isArchived = isEstimateVersionArchived(versionWorkflow.archivedAt);
   const { isSending, startPolling, resumePollingIfNeeded, shouldResumePolling } =
@@ -436,6 +453,8 @@ export function EstimateEditor({
     workspaceId: estimate.workspaceId,
     workspaceSlug,
     locale,
+    serverLatestPdfId: latestPdfForVersion?.id ?? null,
+    serverLatestPdfGeneratedAt: latestPdfForVersion?.generatedAt ?? null,
     onBeforeExport: onBeforePdfExport,
   });
 
@@ -446,6 +465,8 @@ export function EstimateEditor({
       workspaceId: estimate.workspaceId,
       workspaceSlug,
       locale,
+      serverLatestPdfId: latestPdfForVersion?.id ?? null,
+      serverLatestPdfGeneratedAt: latestPdfForVersion?.generatedAt ?? null,
       onBeforeExport: onBeforePdfExport,
     });
 

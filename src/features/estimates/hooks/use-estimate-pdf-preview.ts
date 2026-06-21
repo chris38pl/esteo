@@ -17,6 +17,8 @@ export function useEstimatePdfPreview(input: {
   workspaceId: string;
   workspaceSlug: string;
   locale: Locale;
+  serverLatestPdfId?: string | null;
+  serverLatestPdfGeneratedAt?: string | null;
   onBeforeExport?: () => Promise<EstimatePdfBeforeExportResult>;
 }) {
   const t = useTranslations("estimates");

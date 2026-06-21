@@ -89,12 +89,12 @@ export function WorkspaceReadyBanner({
     });
   }, [preview, workspaceSlug]);
 
-  function dismiss() {
+  function dismiss(reason: "close" | "cta" = "close") {
     if (!preview) {
       markWorkspaceReadySeen(workspaceSlug);
       trackActivationEvent(ActivationAnalyticsEvents.workspaceReadyDismissed, {
         workspaceSlug,
-        reason: "close",
+        reason,
       });
       onDismissed();
     }
@@ -106,6 +106,7 @@ export function WorkspaceReadyBanner({
         workspaceSlug,
         cta: "create_estimate",
       });
+      dismiss("cta");
     }
     onCreateClick();
   }
@@ -116,6 +117,7 @@ export function WorkspaceReadyBanner({
         workspaceSlug,
         cta: "copy_form",
       });
+      dismiss("cta");
     }
     onCopyFormLink();
   }
@@ -130,8 +132,8 @@ export function WorkspaceReadyBanner({
     >
       <button
         type="button"
-        onClick={dismiss}
-        className="absolute right-3 top-3 inline-flex size-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-violet-500/10 hover:text-foreground dark:hover:bg-white/5 dark:hover:text-card-foreground"
+        onClick={() => dismiss("close")}
+        className="absolute right-2 top-2 z-10 inline-flex min-h-11 min-w-11 touch-manipulation items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-violet-500/10 hover:text-foreground dark:hover:bg-white/5 dark:hover:text-card-foreground"
         aria-label={t("dismiss")}
       >
         <X className="size-4" />
