@@ -50,7 +50,7 @@ export function SidebarNav({
   const collapsedFromStore = useSidebarStore((s) => s.collapsed);
   const collapsed = collapsedOverride ?? collapsedFromStore;
   const { inDrawer } = useSidebarLayout();
-  const { activeWorkspace } = useWorkspaceContext();
+  const { activeWorkspace, isPlatformAdmin } = useWorkspaceContext();
   const workspaceSlug = activeWorkspace?.slug ?? null;
   const canAccessWorkspaceSettings = activeWorkspace?.isOwner === true;
 
@@ -65,13 +65,18 @@ export function SidebarNav({
             const href = item.href(locale, workspaceSlug);
             const active = isNavItemActive(item.key, locale, pathname, section, href, workspaceSlug);
             const label = t(item.labelKey);
+            const isDashboardComingSoon = item.key === "dashboard" && !isPlatformAdmin;
             const disabled =
               item.disabled === true ||
-              (item.key === "settings" && !canAccessWorkspaceSettings);
+              (item.key === "settings" && !canAccessWorkspaceSettings) ||
+              isDashboardComingSoon;
+            const badge = isDashboardComingSoon ? t("nav.comingSoon") : item.badge;
             const tooltipLabel =
               disabled && item.key === "settings"
                 ? `${label} — ${t("nav.settingsOwnerOnly")}`
-                : label;
+                : disabled && item.key === "dashboard"
+                  ? `${label} — ${t("nav.comingSoon")}`
+                  : label;
 
             const row = collapsed ? (
               <Link
@@ -106,9 +111,9 @@ export function SidebarNav({
                   strokeWidth={1.75}
                 />
                 <span className="min-w-0 flex-1 truncate">{label}</span>
-                {item.badge ? (
+                {badge ? (
                   <span className="shrink-0 rounded border border-sidebar-search-border bg-[var(--sidebar-search)] px-1 py-px text-[9px] font-medium text-[var(--sidebar-section)]">
-                    {item.badge}
+                    {badge}
                   </span>
                 ) : null}
               </Link>

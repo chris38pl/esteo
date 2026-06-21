@@ -49,7 +49,6 @@ export const TIP_IDS = [
   "what_is_workspace",
   "use_on_phone",
   "report_problem",
-  "dashboard_numbers",
 ] as const;
 
 export type TipId = (typeof TIP_IDS)[number];
@@ -65,7 +64,6 @@ export const TIPS_CATALOG: TipCatalogEntry[] = [
   { id: "review_ai_before_send", categoryId: "getting_started" },
   { id: "undo_mistake", categoryId: "getting_started" },
   { id: "use_on_phone", categoryId: "getting_started" },
-  { id: "dashboard_numbers", categoryId: "getting_started" },
   { id: "send_estimate", categoryId: "estimates" },
   { id: "customize_rules", categoryId: "estimates" },
   { id: "estimate_modes", categoryId: "estimates" },
@@ -137,10 +135,6 @@ function dashboardPaymentsPath(locale: Locale, workspaceSlug: string) {
   return `/${locale}/dashboard/${workspaceSlug}/payments`;
 }
 
-function dashboardOverviewPath(locale: Locale, workspaceSlug: string) {
-  return `/${locale}/dashboard/${workspaceSlug}`;
-}
-
 function dashboardSettingsGeneralPath(locale: Locale, workspaceSlug: string) {
   return `/${locale}/dashboard/${workspaceSlug}/settings?tab=general`;
 }
@@ -177,8 +171,6 @@ export function getTipHref(id: TipId, locale: Locale, workspaceSlug: string): st
     case "payment_deposit":
     case "track_overdue_payments":
       return dashboardPaymentsPath(locale, workspaceSlug);
-    case "dashboard_numbers":
-      return dashboardOverviewPath(locale, workspaceSlug);
     case "what_is_workspace":
     case "report_problem":
     case "theme_switch":

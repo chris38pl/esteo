@@ -312,14 +312,6 @@
 
       "description": "Use Report issue in the menu — describe what's wrong and the Esteo team will help."
 
-    },
-
-    "dashboard_numbers": {
-
-      "title": "What the Dashboard shows",
-
-      "description": "Dashboard is your summary: estimates sent, income earned and what's overdue — check in once a week."
-
     }
 
   },

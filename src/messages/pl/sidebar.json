@@ -6,7 +6,8 @@
     "estimates": "Wyceny",
     "payments": "Płatności",
     "settings": "Ustawienia",
-    "settingsOwnerOnly": "Tylko właściciel przestrzeni może zmieniać ustawienia"
+    "settingsOwnerOnly": "Tylko właściciel przestrzeni może zmieniać ustawienia",
+    "comingSoon": "Wkrótce"
   },
   "tooltips": {
     "collapse": "Zwiń pasek boczny",

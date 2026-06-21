@@ -6,7 +6,8 @@
     "estimates": "Estimates",
     "payments": "Payments",
     "settings": "Settings",
-    "settingsOwnerOnly": "Only workspace owners can change settings"
+    "settingsOwnerOnly": "Only workspace owners can change settings",
+    "comingSoon": "Coming soon"
   },
   "tooltips": {
     "collapse": "Collapse sidebar",

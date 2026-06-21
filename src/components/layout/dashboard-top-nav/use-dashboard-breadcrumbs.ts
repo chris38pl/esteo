@@ -172,7 +172,7 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
   const searchParams = useSearchParams();
   const section = searchParams?.get("section");
   const t = useTranslations("navbar.breadcrumbs");
-  const { activeWorkspace } = useWorkspaceContext();
+  const { activeWorkspace, isPlatformAdmin } = useWorkspaceContext();
   const { detailLabel } = useDashboardBreadcrumbDetail();
 
   const workspaceSlug = activeWorkspace?.slug ?? null;
@@ -194,7 +194,10 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
   const isUserLevelPage = pageKey !== null && USER_LEVEL_PAGES.has(pageKey);
 
   const crumbs: BreadcrumbItem[] = [
-    { label: t("dashboard"), href: dashboardHref },
+    {
+      label: t("dashboard"),
+      href: isPlatformAdmin ? dashboardHref : undefined,
+    },
   ];
 
   if (isAdminPath) {
