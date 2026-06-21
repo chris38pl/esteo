@@ -3,6 +3,7 @@
 import type { InviteRole, WorkspaceAppearanceTheme, WorkspaceIndustry, WorkspaceLocale, WorkspaceRuleType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
+import { dashboardEstimatesHref } from "@/lib/dashboard-routes";
 import {
   type WorkspaceBranding,
   workspaceBrandingSchema,
@@ -618,7 +619,7 @@ export async function acceptWorkspaceOwnershipTransferAction(
     revalidatePath(`/${locale}/dashboard`, "layout");
     return {
       success: true as const,
-      redirectTo: `/${locale}/dashboard/${workspaceSlug}`,
+      redirectTo: dashboardEstimatesHref(locale, workspaceSlug),
     };
   } catch (error) {
     return toActionError(error);

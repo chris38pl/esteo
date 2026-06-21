@@ -18,6 +18,7 @@
     "accountInspector": "Inspektor konta",
     "adminUsers": "Użytkownicy",
     "adminWorkspaces": "Przestrzenie",
+    "adminStorageExplorer": "Eksplorator plików",
     "adminIndustryFields": "Pola branżowe",
     "adminEstimateRequests": "Zapytania o wycenę",
     "adminEstimateRequestDetail": "Szczegóły zapytania",
@@ -25,7 +26,8 @@
     "qaIssues": "Zgłoszenia",
     "billingPlans": "Plany",
     "billingAddons": "Dodatki",
-    "billingManage": "Subskrypcja"
+    "billingManage": "Subskrypcja",
+    "tips": "Porady"
   },
   "notifications": {
     "label": "Powiadomienia",

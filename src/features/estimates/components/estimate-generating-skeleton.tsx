@@ -19,8 +19,6 @@ interface EstimateGeneratingSkeletonProps {
   initialStatus?: string | null;
   initialCanManualRetry?: boolean;
   showFirstAiToast?: boolean;
-  onFirstAiGeneratePdf?: () => void;
-  onFirstAiSendToClient?: () => void;
 }
 
 export function EstimateGeneratingSkeleton({
@@ -31,8 +29,6 @@ export function EstimateGeneratingSkeleton({
   initialStatus,
   initialCanManualRetry = false,
   showFirstAiToast = false,
-  onFirstAiGeneratePdf,
-  onFirstAiSendToClient,
 }: EstimateGeneratingSkeletonProps) {
   const t = useTranslations("estimates");
   const tActivation = useTranslations("activation.firstAiToast");
@@ -47,18 +43,15 @@ export function EstimateGeneratingSkeleton({
     locale,
     onFinished: (finalStatus) => {
       if (finalStatus === "COMPLETED") {
-        if (showFirstAiToast && onFirstAiGeneratePdf && onFirstAiSendToClient) {
+        if (showFirstAiToast) {
           showFirstAiActionToast({
             workspaceSlug,
             t: {
               title: tActivation("title"),
               descriptionLine1: tActivation("descriptionLine1"),
               descriptionLine2: tActivation("descriptionLine2"),
-              generatePdf: tActivation("generatePdf"),
-              sendToClient: tActivation("sendToClient"),
+              reviewEstimate: tActivation("reviewEstimate"),
             },
-            onGeneratePdf: onFirstAiGeneratePdf,
-            onSendToClient: onFirstAiSendToClient,
           });
         }
         router.refresh();

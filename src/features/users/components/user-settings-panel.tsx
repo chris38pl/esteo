@@ -119,7 +119,9 @@ export function UserSettingsPanel({
           paidWorkspaces={paidWorkspaces}
         />
       ) : null}
-      {activeTab === "notifications" ? <UserSettingsNotificationsTab /> : null}
+      {activeTab === "notifications" ? (
+        <UserSettingsNotificationsTab locale={locale} />
+      ) : null}
     </main>
   );
 }

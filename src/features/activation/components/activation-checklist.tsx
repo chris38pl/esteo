@@ -62,6 +62,8 @@ interface ActivationChecklistProps {
   onCopyFormLink: () => void;
   onCelebrationDismissed: () => void;
   embedded?: boolean;
+  /** Admin preview — no analytics side effects. */
+  preview?: boolean;
 }
 
 function StepStatus({ completed }: { completed: boolean }) {
@@ -152,24 +154,37 @@ export function ActivationChecklist({
   onCopyFormLink,
   onCelebrationDismissed,
   embedded = false,
+  preview = false,
 }: ActivationChecklistProps) {
   const t = useTranslations("activation.checklist");
   const router = useRouter();
 
   useEffect(() => {
+    if (preview) {
+      return;
+    }
+
     trackActivationEvent(ActivationAnalyticsEvents.checklistViewed, { workspaceSlug });
-  }, [workspaceSlug]);
+  }, [preview, workspaceSlug]);
 
   useEffect(() => {
+    if (preview) {
+      return;
+    }
+
     const allComplete = steps.every((step) => step.completed);
     if (!allComplete || hasActivationCompletedAnalyticsFired(workspaceSlug)) {
       return;
     }
     markActivationCompletedAnalyticsFired(workspaceSlug);
     trackActivationEvent(ActivationAnalyticsEvents.completed, { workspaceSlug });
-  }, [steps, workspaceSlug]);
+  }, [preview, steps, workspaceSlug]);
 
   function handleStepCta(stepId: ActivationStepId) {
+    if (preview) {
+      return;
+    }
+
     trackActivationEvent(ActivationAnalyticsEvents.checklistCtaClicked, {
       workspaceSlug,
       stepId,
@@ -195,6 +210,10 @@ export function ActivationChecklist({
   }
 
   function handleCelebrationDismiss() {
+    if (preview) {
+      return;
+    }
+
     markCelebrationDismissed(workspaceSlug);
     trackActivationEvent(ActivationAnalyticsEvents.celebrationDismissed, {
       workspaceSlug,

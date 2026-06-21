@@ -9,9 +9,9 @@ import { cn } from "@/lib/utils";
 import { AppSidebar, sidebarWidth } from "./app-sidebar";
 import { useSidebarStore } from "./sidebar-store";
 import { DashboardBreadcrumbDetailProvider } from "@/components/layout/dashboard-top-nav/dashboard-breadcrumb-detail-context";
+import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import { DashboardTopNavbar } from "@/components/layout/dashboard-top-nav/dashboard-top-navbar";
 import { FocusedDashboardUserMenu } from "@/components/layout/dashboard-top-nav/focused-dashboard-user-menu";
-import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import { WorkspaceInboxPrompt } from "@/features/workspaces/components/workspace-inbox-prompt";
 import { GlobalSearchDialog } from "@/features/search/components/global-search-dialog";
 import { GlobalSearchProvider } from "@/features/search/components/global-search-provider";
@@ -69,7 +69,8 @@ export function DashboardShell({
   const offset = sidebarWidth(collapsed);
   const mdUp = useMdUp();
   const contentInset = mdUp ? offset : 0;
-  const { modalInboxItem, locale: contextLocale, workspaces } = useWorkspaceContext();
+  const { modalInboxItem, locale: contextLocale, workspaces, notificationCounts } =
+    useWorkspaceContext();
   const isPreWorkspaceAccount = workspaces.length === 0 && isAccountRoute(pathname);
   const isPreWorkspaceRedirectHop =
     workspaces.length === 0 && isBareDashboardRoute(pathname);
@@ -114,7 +115,7 @@ export function DashboardShell({
             }
             className="flex min-h-dvh min-w-0 flex-col max-md:!pl-0 md:pl-[232px]"
           >
-            <DashboardTopNavbar locale={locale} />
+            <DashboardTopNavbar locale={locale} notificationCounts={notificationCounts} />
             <main className="min-w-0 flex-1 px-4 py-6 md:px-8">{children}</main>
           </motion.div>
           <GlobalSearchDialog />

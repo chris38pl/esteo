@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import { useDashboardBreadcrumbDetail } from "@/components/layout/dashboard-top-nav/dashboard-breadcrumb-detail-context";
 import type { Locale } from "@/lib/locale";
+import { dashboardEstimatesHref } from "@/lib/dashboard-routes";
 
 export type BreadcrumbItem = {
   label: string;
@@ -20,10 +21,12 @@ type PageLabelKey =
   | "pendingAccess"
   | "invitations"
   | "account"
+  | "tips"
   | "requests"
   | "accountInspector"
   | "adminUsers"
   | "adminWorkspaces"
+  | "adminStorageExplorer"
   | "adminIndustryFields"
   | "adminEstimateRequests"
   | "adminEstimateRequestDetail";
@@ -140,6 +143,7 @@ function resolvePageLabelKey(
     if (pathname === `${wsBase}/billing`) return "billing";
     if (pathname === `${wsBase}/settings`) return "settings";
     if (pathname === `${wsBase}/account`) return "account";
+    if (pathname === `${wsBase}/tips`) return "tips";
     if (pathname === wsBase) return null;
   }
 
@@ -156,6 +160,7 @@ function resolvePageLabelKey(
   if (pathname === `${base}/admin/account-inspector`) return "accountInspector";
   if (pathname === `${base}/admin/users`) return "adminUsers";
   if (pathname === `${base}/admin/workspaces`) return "adminWorkspaces";
+  if (pathname === `${base}/admin/storage`) return "adminStorageExplorer";
   if (pathname === `${base}/admin/industry-fields`) return "adminIndustryFields";
   if (pathname === `${base}/admin/estimate-requests`) return "adminEstimateRequests";
   if (pathname.startsWith(`${base}/admin/estimate-requests/`)) return "adminEstimateRequestDetail";
@@ -174,7 +179,7 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
   const workspaceSlug = activeWorkspace?.slug ?? null;
   const wsBase = workspaceSlug ? `/${locale}/dashboard/${workspaceSlug}` : null;
   const dashboardHref = workspaceSlug
-    ? `/${locale}/dashboard/${workspaceSlug}`
+    ? dashboardEstimatesHref(locale, workspaceSlug)
     : `/${locale}/dashboard`;
   const estimatesRoute = parseEstimatesRoute(pathname, locale, workspaceSlug);
   const requestsRoute = parseRequestsRoute(pathname, locale, workspaceSlug);

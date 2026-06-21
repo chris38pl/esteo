@@ -483,3 +483,25 @@ button:not(:disabled),
     animation: none;
   }
 }
+
+@keyframes app-toast-progress-shrink {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+.app-toast-progress {
+  animation-name: app-toast-progress-shrink;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-toast-progress {
+    animation: none;
+    transform: scaleX(0.35);
+  }
+}

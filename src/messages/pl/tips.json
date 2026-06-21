@@ -1,0 +1,166 @@
+{
+
+  "page": {
+
+    "title": "Porady",
+
+    "subtitle": "Krótkie wskazówki o wycenach, ustawieniach workspace, płatnościach i współpracy z zespołem."
+
+  },
+
+  "banner": {
+
+    "title": "Porady",
+
+    "subtitle": "Kilka wskazówek, które pomogą Ci w pełni wykorzystać Esteo.",
+
+    "seeAll": "Zobacz wszystkie porady",
+
+    "learnMore": "Dowiedz się więcej",
+
+    "dismiss": "Zamknij",
+
+    "suggestionTitle": "Masz pomysł na poradę?",
+
+    "suggestionHint": "Daj nam znać, czego potrzebujesz",
+
+    "submitSuggestion": "Prześlij sugestię"
+
+  },
+
+  "carousel": {
+
+    "previous": "Poprzednie porady",
+
+    "next": "Następne porady",
+
+    "goToSlide": "Przejdź do slajdu {slide}"
+
+  },
+
+  "categories": {
+
+    "estimates": "Wyceny i wysyłka",
+
+    "documents": "PDF i branding",
+
+    "clients": "Klienci i formularz",
+
+    "billing": "Plany i płatności",
+
+    "workspace": "Przestrzeń robocza"
+
+  },
+
+  "cards": {
+
+    "send_estimate": {
+
+      "title": "Wyślij gotową wycenę bezpośrednio z Esteo",
+
+      "description": "Szybko generuj i wysyłaj profesjonalne wyceny do klientów jednym kliknięciem."
+
+    },
+
+    "logo_pdf": {
+
+      "title": "Dodaj logo firmy do PDF",
+
+      "description": "Personalizuj swoje dokumenty i buduj rozpoznawalność marki."
+
+    },
+
+    "form_website": {
+
+      "title": "Umieść formularz na swojej stronie",
+
+      "description": "Pozwól klientom przesyłać zapytania bezpośrednio z Twojej strony www."
+
+    },
+
+    "upgrade_plan": {
+
+      "title": "Ulepsz do Pro lub Business",
+
+      "description": "Odblokuj zaawansowane funkcje Esteo — więcej możliwości, zespołu i wsparcia."
+
+    },
+
+    "customize_rules": {
+
+      "title": "Dostosuj reguły dla swoich wycen",
+
+      "description": "Ustaw własne reguły cenowe i instrukcje AI — Esteo zastosuje je przy każdej wycenie."
+
+    },
+
+    "company_description": {
+
+      "title": "Dodaj opis firmy",
+
+      "description": "Opis firmy pojawi się w PDF i innych dokumentach wysyłanych klientom."
+
+    },
+
+    "workspace_transfer": {
+
+      "title": "Możesz przenieść workspace",
+
+      "description": "Przekaż własność przestrzeni innemu użytkownikowi, gdy zmienia się odpowiedzialność za projekt."
+
+    },
+
+    "partner_program": {
+
+      "title": "Program partnerski (Pro/Business)",
+
+      "description": "Polecaj Esteo i zarabiaj — program partnerski jest dostępny w planach Pro i Business."
+
+    },
+
+    "estimate_modes": {
+
+      "title": "Dwa tryby wyceny: podstawowy i zaawansowany",
+
+      "description": "W trybie zaawansowanym widzisz marżę i masz pełniejszą kontrolę nad pozycjami kosztorysu."
+
+    },
+
+    "browse_invoices": {
+
+      "title": "Przeglądaj swoje faktury",
+
+      "description": "Historia opłaconych subskrypcji Esteo jest dostępna w ustawieniach konta."
+
+    },
+
+    "theme_switch": {
+
+      "title": "Motyw jasny i ciemny",
+
+      "description": "Zmień wygląd aplikacji — wybierz jasny lub ciemny motyw w ustawieniach przestrzeni."
+
+    },
+
+    "invite_team": {
+
+      "title": "Zapraszaj innych do workspace",
+
+      "description": "Dodaj członków zespołu i wspólnie pracujcie nad wycenami w jednej przestrzeni."
+
+    }
+
+  },
+
+  "learnMore": "Dowiedz się więcej",
+  "card": {
+    "dismiss": "Ukryj tę poradę",
+    "pin": "Przypnij poradę",
+    "unpin": "Odepnij poradę",
+    "pinnedBadge": "Przypięte"
+  },
+  "pin": {
+    "maxReached": "Możesz przypiąć maksymalnie 3 porady."
+  }
+}
+

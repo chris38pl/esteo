@@ -55,6 +55,7 @@ const namespaces = [
   "styleguide",
   "workspaces",
   "activation",
+  "tips",
 ] as const;
 type Namespace = (typeof namespaces)[number];
 

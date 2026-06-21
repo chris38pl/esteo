@@ -17,6 +17,7 @@
     "appName": "Esteo"
   },
   "reportIssue": "Zgłoś błąd",
+  "tips": "Porady",
   "referrals": "Program partnerski",
   "search": {
     "placeholder": "Szukaj…",
@@ -44,7 +45,9 @@
       "workspaces": "Przestrzenie",
       "estimateRequests": "Zapytania",
       "pdfPreview": "Podgląd PDF",
+      "storageExplorer": "Eksplorator plików",
       "voiceIntakePreview": "Podgląd voice",
+      "activationPreview": "Podgląd aktywacji",
       "issues": "Issue tracker",
       "styleguide": "Styleguide"
     }

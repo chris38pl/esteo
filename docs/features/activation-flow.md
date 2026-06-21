@@ -14,11 +14,12 @@ Owner-only first-time activation on `/estimates`. No Prisma fields — progress 
    - Generate PDF (DB: `EstimatePdf` with status `READY`)
    - Copy client form link (`localStorage`: `form-link-copied`)
 5. **Celebration at 3/3** — “Wszystko gotowe!” with [Ukryj]; guide stays in “Jak działa Esteo?” until dismissed.
-6. **Guide card** — “Jak działa Esteo?” during activation; “Porady” after celebration dismissed.
-7. **Form ready intro** — inside the “Twój formularz kontaktowy” hero card: brief “Formularz gotowy” message (~2.6 s), then subtle fade to standard card content + CTA. Only for activation owners before first copy/share; skipped after `form-link-copied` or public submission.
-8. **Form link copy/share toast** — Sonner success toast (5 s, `top-center`) on every copy or share. Handler: `notify-form-link-shared.ts`.
-9. **First AI complete** — Sonner action toast with Generuj PDF / Wyślij klientowi (persists until action).
-10. **PDF gate** — inline company profile modal (no settings redirect).
+6. **Guide card** — “Jak działa Esteo?” during activation; **Porady** banner (3 tip cards) after celebration dismissed.
+7. **Form ready toast** — celebration toast (`top-center`, 5 s) when owner lands on `/estimates` before first copy/share; skipped after `form-link-copied` or public submission. Handler: `notify-form-link-shared.ts` (`showFormReadyToast`).
+8. **Form link copy/share toast** — action toast (5 s, `top-center`) on every copy or share. Handler: `notify-form-link-shared.ts`.
+9. **First AI complete** — info toast reminding user to review the AI draft before PDF/send; single CTA [Przejrzyj kosztorys] (persists until dismissed). Uses `show-first-ai-action-toast.ts`.
+10. **PDF export toast** — loading toast (`bottom-center`, until complete). Uses `appToast.loading` in `use-estimate-pdf-output.ts`.
+11. **PDF gate** — inline company profile modal (no settings redirect).
 
 ## UI notes
 
@@ -39,6 +40,7 @@ Owner-only first-time activation on `/estimates`. No Prisma fields — progress 
 | `workspace-ready-seen` | Banner dismissed (clears pending) |
 | `form-link-copied` | Checklist step 3 + skip form-ready intro in hero card |
 | `celebration-dismissed` | Hide checklist after 3/3 |
+| `tips-banner-dismissed` | Hide Porady banner after ✕ |
 | `first-ai-toast-shown` | One-time AI WOW toast |
 | `completed-analytics-fired` | One-time `activation_completed` |
 | `public-form-analytics-fired` | One-time adoption event |
@@ -65,9 +67,10 @@ Webpack resolves `process/browser.js` for some client bundles. The `process` pac
 ## Key files
 
 - `src/features/activation/` — components, hooks, server loader, analytics
-- `src/features/activation/lib/notify-form-link-shared.ts` — copy/share toast + checklist step 3 side effects
+- `src/components/ui/app-toast/` — reusable toast UI (`AppToast`, `appToast` helpers)
+- `src/features/activation/lib/notify-form-link-shared.ts` — copy/share + form-ready toasts + checklist step 3 side effects
 - `src/features/activation/hooks/use-activation-ui-state.ts` — client state merge + hydration-safe storage
 - `src/features/activation/components/activation-combined-banner.tsx` — guide + checklist layout
-- `src/features/estimate-requests/components/estimate-request-form-hero-card.tsx` — form-ready intro animation + share/copy
+- `src/features/estimate-requests/components/estimate-request-form-hero-card.tsx` — form hero card + share/copy
 - `src/app/.../estimates/page.tsx` — loads progress for owners
 - `src/features/workspaces/components/create-workspace-form.tsx` — sets pending flag on onboarding

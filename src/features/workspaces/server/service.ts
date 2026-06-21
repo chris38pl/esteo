@@ -69,6 +69,16 @@ import {
   reconcileStaleActiveWorkspace,
   resolveActiveWorkspace,
 } from "@/server/workspaces/active-workspace";
+import {
+  notifyInvitationAccepted,
+  notifyInvitationDeclined,
+  notifyInvitationReceived,
+  notifyInvitationRevoked,
+} from "@/features/notifications/server/notification-emit-helpers";
+import {
+  fireNotification,
+  loadWorkspaceNotificationContext,
+} from "@/features/notifications/server/notification-workspace-context";
 
 const INVITATION_TTL_DAYS = 7;
 
@@ -699,6 +709,19 @@ export async function createWorkspaceInvitation(
     expiresAt: new Date(Date.now() + INVITATION_TTL_DAYS * 24 * 60 * 60 * 1000),
   });
 
+  const workspaceCtx = await loadWorkspaceNotificationContext(workspaceId);
+  if (workspaceCtx) {
+    fireNotification(
+      notifyInvitationReceived({
+        locale: workspaceCtx.locale,
+        invitationId: invitation.id,
+        invitationToken: invitation.token,
+        inviteeEmail: email,
+        workspaceName: workspaceCtx.workspaceName,
+      }),
+    );
+  }
+
   await logAuditEvent({
     actorUserId: user.id,
     workspaceId,
@@ -759,6 +782,16 @@ async function acceptPendingInvitation(
     action: "accepted",
   });
 
+  const workspaceCtx = await loadWorkspaceNotificationContext(invitation.workspaceId);
+  if (workspaceCtx) {
+    fireNotification(
+      notifyInvitationAccepted({
+        ...workspaceCtx,
+        invitationId: invitation.id,
+      }),
+    );
+  }
+
   return result;
 }
 
@@ -801,6 +834,16 @@ export async function declineWorkspaceInvitation(user: User, invitationId: strin
     entityId: invitationId,
     action: "declined",
   });
+
+  const workspaceCtx = await loadWorkspaceNotificationContext(invitation.workspaceId);
+  if (workspaceCtx) {
+    fireNotification(
+      notifyInvitationDeclined({
+        ...workspaceCtx,
+        invitationId,
+      }),
+    );
+  }
 
   return declined;
 }
@@ -850,6 +893,18 @@ export async function revokeWorkspaceInvitation(
   }
 
   const revoked = await revokeInvitationRecord(invitationId);
+
+  const workspaceCtx = await loadWorkspaceNotificationContext(workspaceId);
+  if (workspaceCtx) {
+    fireNotification(
+      notifyInvitationRevoked({
+        locale: workspaceCtx.locale,
+        invitationId,
+        inviteeEmail: invitation.email,
+        workspaceName: workspaceCtx.workspaceName,
+      }),
+    );
+  }
 
   await logAuditEvent({
     actorUserId: user.id,

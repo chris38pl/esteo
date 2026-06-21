@@ -1,0 +1,166 @@
+{
+
+  "page": {
+
+    "title": "Tips",
+
+    "subtitle": "Short pointers on estimates, workspace settings, billing, and working with your team."
+
+  },
+
+  "banner": {
+
+    "title": "Tips",
+
+    "subtitle": "A few pointers to help you get the most out of Esteo.",
+
+    "seeAll": "See all tips",
+
+    "learnMore": "Learn more",
+
+    "dismiss": "Close",
+
+    "suggestionTitle": "Have a tip idea?",
+
+    "suggestionHint": "Let us know what you need",
+
+    "submitSuggestion": "Send suggestion"
+
+  },
+
+  "carousel": {
+
+    "previous": "Previous tips",
+
+    "next": "Next tips",
+
+    "goToSlide": "Go to slide {slide}"
+
+  },
+
+  "categories": {
+
+    "estimates": "Estimates & sending",
+
+    "documents": "PDF & branding",
+
+    "clients": "Clients & forms",
+
+    "billing": "Plans & billing",
+
+    "workspace": "Workspace"
+
+  },
+
+  "cards": {
+
+    "send_estimate": {
+
+      "title": "Send a finished estimate directly from Esteo",
+
+      "description": "Quickly generate and send professional estimates to clients in one click."
+
+    },
+
+    "logo_pdf": {
+
+      "title": "Add your company logo to PDF",
+
+      "description": "Personalize your documents and build brand recognition."
+
+    },
+
+    "form_website": {
+
+      "title": "Embed the form on your website",
+
+      "description": "Let clients submit inquiries directly from your website."
+
+    },
+
+    "upgrade_plan": {
+
+      "title": "Upgrade to Pro or Business",
+
+      "description": "Unlock advanced Esteo features — more capacity, team tools, and priority support."
+
+    },
+
+    "customize_rules": {
+
+      "title": "Customize rules for your estimates",
+
+      "description": "Set your own pricing rules and AI instructions — Esteo applies them on every estimate."
+
+    },
+
+    "company_description": {
+
+      "title": "Add your company description",
+
+      "description": "Your company description appears on PDFs and other documents sent to clients."
+
+    },
+
+    "workspace_transfer": {
+
+      "title": "You can transfer a workspace",
+
+      "description": "Transfer workspace ownership to another user when project responsibility changes."
+
+    },
+
+    "partner_program": {
+
+      "title": "Partner program (Pro/Business)",
+
+      "description": "Refer Esteo and earn — the partner program is available on Pro and Business plans."
+
+    },
+
+    "estimate_modes": {
+
+      "title": "Basic and advanced estimate modes",
+
+      "description": "In advanced mode you can see margin and get fuller control over line items."
+
+    },
+
+    "browse_invoices": {
+
+      "title": "Browse your invoices",
+
+      "description": "Your paid Esteo subscription invoices are available in account settings."
+
+    },
+
+    "theme_switch": {
+
+      "title": "Light and dark theme",
+
+      "description": "Change how the app looks — pick light or dark mode in workspace settings."
+
+    },
+
+    "invite_team": {
+
+      "title": "Invite others to your workspace",
+
+      "description": "Add team members and work on estimates together in one workspace."
+
+    }
+
+  },
+
+  "learnMore": "Learn more",
+  "card": {
+    "dismiss": "Hide this tip",
+    "pin": "Pin tip",
+    "unpin": "Unpin tip",
+    "pinnedBadge": "Pinned"
+  },
+  "pin": {
+    "maxReached": "You can pin up to 3 tips."
+  }
+}
+

@@ -29,7 +29,7 @@ export function buildSearchUrlPath(input: {
       return `dashboard/${workspaceSlug}/estimates`;
     }
     default:
-      return `dashboard/${workspaceSlug}`;
+      return `dashboard/${workspaceSlug}/estimates`;
   }
 }
 

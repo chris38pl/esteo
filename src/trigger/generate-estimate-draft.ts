@@ -16,6 +16,8 @@ import {
   promoteRequestAttachmentsToEstimate,
 } from "@/features/attachments/server/promote-request-attachments";
 import { loadEstimateGenerationContext } from "@/features/workspaces/lib/load-estimate-generation-context";
+import { notifyEstimateRequestOutcome } from "@/features/notifications/server/notification-emit-helpers";
+import { fireNotification } from "@/features/notifications/server/notification-workspace-context";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 
@@ -79,6 +81,7 @@ async function markEstimateRequestFailed(
   estimateRequestId: string,
   priorMetadata: unknown,
   errorMessage: string,
+  workspaceId?: string,
 ): Promise<void> {
   const request = await prisma.estimateRequest.findUnique({
     where: { id: estimateRequestId },
@@ -104,6 +107,16 @@ async function markEstimateRequestFailed(
       },
     },
   });
+
+  if (workspaceId) {
+    fireNotification(
+      notifyEstimateRequestOutcome({
+        requestId: estimateRequestId,
+        workspaceId,
+        outcome: "failed",
+      }),
+    );
+  }
 }
 
 export const generateEstimateDraftTask = task({
@@ -131,6 +144,7 @@ export const generateEstimateDraftTask = task({
       payload.estimateRequestId,
       request?.aiMetadata,
       errorMessage,
+      payload.workspaceId,
     );
   },
   onComplete: async ({ payload, result }) => {
@@ -160,6 +174,7 @@ export const generateEstimateDraftTask = task({
         payload.estimateRequestId,
         request.aiMetadata,
         errorMessage,
+        payload.workspaceId,
       );
     }
   },
@@ -368,6 +383,14 @@ export const generateEstimateDraftTask = task({
         await import("@/features/search/server/index-service");
       scheduleUpsertSearchDocumentForEstimate(estimateId);
       scheduleUpsertSearchDocumentForInquiry(estimateRequestId);
+
+      fireNotification(
+        notifyEstimateRequestOutcome({
+          requestId: estimateRequestId,
+          workspaceId,
+          outcome: "completed",
+        }),
+      );
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
       logger.error("Failed to generate estimate draft", {
@@ -379,6 +402,7 @@ export const generateEstimateDraftTask = task({
         estimateRequestId,
         request.aiMetadata,
         errorMessage,
+        workspaceId,
       );
 
       throw error;

@@ -16,7 +16,7 @@ export function Providers({ children }: { children: ReactNode }) {
     >
       <NavigationProgress />
       {children}
-      <Toaster richColors closeButton position="top-center" />
+      <Toaster position="top-center" />
     </ThemeProvider>
   );
 }

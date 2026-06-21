@@ -13,27 +13,36 @@ import { markWorkspaceReadySeen } from "@/features/activation/lib/activation-sto
 interface WorkspaceReadyBannerProps {
   workspaceSlug: string;
   onDismissed: () => void;
+  /** Admin preview — no analytics or localStorage side effects. */
+  preview?: boolean;
 }
 
 export function WorkspaceReadyBanner({
   workspaceSlug,
   onDismissed,
+  preview = false,
 }: WorkspaceReadyBannerProps) {
   const t = useTranslations("activation.workspaceReady");
 
   useEffect(() => {
+    if (preview) {
+      return;
+    }
+
     trackActivationEvent(ActivationAnalyticsEvents.workspaceReadyViewed, {
       workspaceSlug,
     });
-  }, [workspaceSlug]);
+  }, [preview, workspaceSlug]);
 
   function dismiss() {
-    markWorkspaceReadySeen(workspaceSlug);
-    trackActivationEvent(ActivationAnalyticsEvents.workspaceReadyDismissed, {
-      workspaceSlug,
-      reason: "close",
-    });
-    onDismissed();
+    if (!preview) {
+      markWorkspaceReadySeen(workspaceSlug);
+      trackActivationEvent(ActivationAnalyticsEvents.workspaceReadyDismissed, {
+        workspaceSlug,
+        reason: "close",
+      });
+      onDismissed();
+    }
   }
 
   return (

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 
+import { dashboardEstimatesHref } from "@/lib/dashboard-routes";
 import { resolveRequestLocale } from "@/i18n/request-locale";
 import type { Locale } from "@/lib/locale";
 import { requireAuth } from "@/server/auth/require-auth";
@@ -31,7 +32,7 @@ export default async function WorkspaceSettingsLayout({
     await requireRole(user, resolved.workspace.id, "OWNER");
   } catch (error) {
     if (error instanceof PermissionError) {
-      redirect(`/${resolvedLocale}/dashboard/${resolved.canonicalSlug}`);
+      redirect(dashboardEstimatesHref(resolvedLocale, resolved.canonicalSlug));
     }
     throw error;
   }

@@ -1,0 +1,66 @@
+{
+  "panel": {
+    "title": "Notifications",
+    "tabAll": "All ({count})",
+    "tabActionRequired": "Action required ({count})",
+    "empty": "No notifications in the last 90 days",
+    "emptyActionRequired": "Nothing requires your action",
+    "loadMore": "Load more"
+  },
+  "actions": {
+    "acceptInvite": "Accept",
+    "declineInvite": "Decline",
+    "extendPlan": "Extend plan",
+    "manageBilling": "Manage billing",
+    "retryOrConvert": "Review request",
+    "viewRequest": "View request"
+  },
+  "preferences": {
+    "title": "Notification preferences",
+    "description": "Choose which in-app notification categories you receive. Email notifications are coming soon.",
+    "emailSoon": "Email — coming soon",
+    "categories": {
+      "MEMBERSHIP": "Team & invitations",
+      "BILLING": "Billing & plans",
+      "ESTIMATES": "Estimates & requests",
+      "REFERRALS": "Partner program",
+      "QA": "QA & issues"
+    }
+  },
+  "types": {
+    "invitation_received": "Invitation to join {workspaceName}",
+    "invitation_accepted": "Invitation accepted for {workspaceName}",
+    "invitation_declined": "Invitation declined for {workspaceName}",
+    "invitation_revoked": "Invitation to {workspaceName} was revoked",
+    "invitation_on_hold": "Invitation to {workspaceName} is on hold",
+    "invitation_released": "Invitation to {workspaceName} is active again",
+    "member_removed": "You were removed from {workspaceName}",
+    "member_suspended_seat": "Your access to {workspaceName} was suspended (seats)",
+    "member_suspended_unpaid": "Your access to {workspaceName} was suspended (billing)",
+    "member_reactivated": "Your access to {workspaceName} was restored",
+    "ownership_transfer_received": "Ownership transfer pending for {workspaceName}",
+    "ownership_transfer_accepted": "Ownership transfer completed for {workspaceName}",
+    "ownership_transfer_declined": "Ownership transfer declined for {workspaceName}",
+    "ownership_transfer_expired": "Ownership transfer expired for {workspaceName}",
+    "subscription_past_due": "Payment failed for {workspaceName}",
+    "subscription_grace_period": "Grace period for {workspaceName}",
+    "subscription_expired": "Plan expired for {workspaceName}",
+    "subscription_renewal_soon": "Plan renews in {daysRemaining} days ({workspaceName})",
+    "subscription_cancel_scheduled": "Cancellation scheduled for {workspaceName}",
+    "subscription_resumed": "Subscription resumed for {workspaceName}",
+    "plan_downgrade_scheduled": "Plan downgrade scheduled for {workspaceName}",
+    "checkout_completed": "Checkout completed for {workspaceName}",
+    "workspace_provisioning_incomplete": "Complete billing setup for {workspaceName}",
+    "estimate_limit_near": "Estimate limit almost reached ({used}/{limit}) in {workspaceName}",
+    "estimate_limit_reached": "Estimate limit reached in {workspaceName}",
+    "estimate_request_submitted": "New request: {requestTitle}",
+    "estimate_request_queued_manual": "Request waiting: {requestTitle}",
+    "estimate_request_ai_completed": "AI draft ready: {requestTitle}",
+    "estimate_request_ai_failed": "AI failed for: {requestTitle}",
+    "referral_signup_pending": "New signup via your referral link",
+    "referral_activated": "Referral activated — reward pending",
+    "referral_reward_granted": "Referral reward granted",
+    "referral_reward_failed": "Referral reward failed — action needed",
+    "issue_status_changed": "Issue #{issueNumber} → {newStatus}: {issueTitle}"
+  }
+}

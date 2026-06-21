@@ -30,6 +30,7 @@ export function IssueAdvancedFields({
   onExpectedBehaviorChange,
   onActualBehaviorChange,
   disabled,
+  sectionDisabled = false,
 }: {
   priority: IssuePriority;
   reproductionSteps: string;
@@ -40,27 +41,44 @@ export function IssueAdvancedFields({
   onExpectedBehaviorChange: (value: string) => void;
   onActualBehaviorChange: (value: string) => void;
   disabled?: boolean;
+  sectionDisabled?: boolean;
 }) {
   const t = useTranslations("issues");
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="space-y-4 border-t border-border/60 pt-5">
+    <div
+      className={cn(
+        "space-y-4 border-t border-border/60 pt-5",
+        sectionDisabled && "opacity-50",
+      )}
+    >
       <Button
         type="button"
         variant="ghost"
         size="sm"
+        disabled={disabled || sectionDisabled}
         className={cn(
           "h-9 w-full justify-between rounded-xl px-3 text-muted-foreground hover:bg-accent/50",
-          open && "bg-accent/30 text-foreground",
+          open && !sectionDisabled && "bg-accent/30 text-foreground",
+          sectionDisabled && "cursor-not-allowed hover:bg-transparent",
         )}
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => {
+          if (!sectionDisabled) {
+            setOpen((value) => !value);
+          }
+        }}
       >
         <span className={issueFormLabelClassName}>{t("form.moreDetails")}</span>
-        <ChevronDown className={cn("size-4 shrink-0 transition-transform", open && "rotate-180")} />
+        <ChevronDown
+          className={cn(
+            "size-4 shrink-0 transition-transform",
+            open && !sectionDisabled && "rotate-180",
+          )}
+        />
       </Button>
 
-      {open ? (
+      {open && !sectionDisabled ? (
         <div className="space-y-5">
           <IssueFormSelect
             id="issue-priority"

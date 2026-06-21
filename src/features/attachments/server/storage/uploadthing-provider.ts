@@ -199,6 +199,58 @@ export class UploadThingStorageProvider implements StorageProvider {
     const arrayBuffer = await response.arrayBuffer();
     return Buffer.from(arrayBuffer);
   }
+
+  async listAllFiles(opts?: { pageSize?: number }): Promise<
+    Array<{
+      id: string;
+      key: string;
+      customId: string | null;
+      name: string;
+      size: number;
+      status: string;
+      uploadedAt: number;
+    }>
+  > {
+    const utapi = getUtApi();
+    const pageSize = opts?.pageSize ?? 500;
+    const allFiles: Array<{
+      id: string;
+      key: string;
+      customId: string | null;
+      name: string;
+      size: number;
+      status: string;
+      uploadedAt: number;
+    }> = [];
+
+    let offset = 0;
+    let hasMore = true;
+
+    while (hasMore) {
+      const result = await utapi.listFiles({ limit: pageSize, offset });
+
+      for (const file of result.files) {
+        allFiles.push({
+          id: file.id,
+          key: file.key,
+          customId: file.customId,
+          name: file.name,
+          size: file.size,
+          status: file.status,
+          uploadedAt: file.uploadedAt,
+        });
+      }
+
+      hasMore = result.hasMore;
+      offset += result.files.length;
+
+      if (result.files.length === 0) {
+        break;
+      }
+    }
+
+    return allFiles;
+  }
 }
 
 export const uploadThingStorageProvider = new UploadThingStorageProvider();

@@ -41,9 +41,8 @@ interface ActivationCombinedBannerProps {
     onCopyFormLink: () => void;
 
     onCelebrationDismissed: () => void;
-
+    preview?: boolean;
   };
-
 }
 
 
@@ -127,44 +126,6 @@ export function ActivationCombinedBanner({
         ) : null}
 
       </div>
-
-    </div>
-
-  );
-
-}
-
-
-
-export function ActivationTipsBanner({
-
-  industry,
-
-  locale,
-
-}: {
-
-  industry: WorkspaceIndustry;
-
-  locale: Locale;
-
-}) {
-
-  return (
-
-    <div className="surface-card p-4 md:p-5">
-
-      <ActivationGuideCard
-
-        embedded
-
-        mode="tips"
-
-        industry={industry}
-
-        locale={locale}
-
-      />
 
     </div>
 

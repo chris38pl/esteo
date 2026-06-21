@@ -45,6 +45,94 @@
     "title": "Inspektor konta",
     "subtitle": "Widok debugowania rekordu użytkownika, konta rozliczeniowego i dostępnych przestrzeni."
   },
+  "storageExplorer": {
+    "title": "Eksplorator plików",
+    "subtitle": "Przeglądaj wszystkie pliki UploadThing według workspace, kategorii i statusu orphan.",
+    "scanUploadThing": "Skanuj UploadThing",
+    "refresh": "Odśwież",
+    "scanHint": "Uruchom skan, aby wykryć pliki tylko w UploadThing.",
+    "lastScan": "Ostatni skan: {date}",
+    "environments": {
+      "development": "Development",
+      "staging": "Staging",
+      "production": "Produkcja"
+    },
+    "summary": {
+      "connectedEnvironment": "Podłączone środowisko",
+      "quotaCounted": "Storage w limicie",
+      "quotaCountedFiles": "{count} plików w limicie workspace",
+      "nonQuota": "Poza limitem",
+      "nonQuotaFiles": "{count} plików (issues, PDF, logo)",
+      "workspaces": "Przestrzenie",
+      "workspacesHint": "Ze storage załączników",
+      "utOrphans": "Orphany UT",
+      "notScanned": "Nieskanowane",
+      "scanHint": "Skanuj UploadThing, aby wykryć orphany",
+      "lastScan": "Ostatni skan: {date}"
+    },
+    "tree": {
+      "all": "Całe storage",
+      "currentEnvironment": "(podłączone)",
+      "workspaces": "Przestrzenie",
+      "platform": "Platforma",
+      "orphans": "Orphany i anomalie",
+      "searchPlaceholder": "Filtruj drzewo…",
+      "environments": {
+        "development": "Development",
+        "staging": "Staging",
+        "production": "Produkcja"
+      },
+      "categories": {
+        "estimates": "Załączniki wycen",
+        "stagingActive": "Staging (aktywne)",
+        "stagingLinked": "Staging (powiązane)",
+        "pdfs": "Wygenerowane PDF",
+        "logo": "Logo workspace",
+        "issues": "Zrzuty ekranu issue",
+        "utOnly": "Tylko UploadThing",
+        "jsonUnpromoted": "JSON bez promocji",
+        "legacy": "Legacy request keys",
+        "duplicateKeys": "Duplikaty kluczy"
+      }
+    },
+    "files": {
+      "searchPlaceholder": "Szukaj plików…",
+      "selectLeaf": "Wybierz workspace lub kategorię w drzewie, aby wyświetlić pliki.",
+      "foreignEnvironment": "Dane dla środowiska {environment} nie są dostępne z tego wdrożenia. Ta instancja jest podłączona do {current}.",
+      "empty": "Brak plików w tej kategorii.",
+      "sortLabel": "Sortuj według",
+      "sort": {
+        "dateDesc": "Najnowsze",
+        "dateAsc": "Najstarsze",
+        "nameAsc": "Nazwa A–Z",
+        "nameDesc": "Nazwa Z–A",
+        "sizeDesc": "Największe",
+        "sizeAsc": "Najmniejsze"
+      },
+      "columns": {
+        "name": "Nazwa",
+        "type": "Źródło",
+        "size": "Rozmiar",
+        "date": "Data",
+        "status": "Status"
+      },
+      "health": {
+        "ok": "OK",
+        "staging_expired": "Staging wygasły",
+        "linked_duplicate": "Powiązany duplikat",
+        "ut_orphan": "Orphan UT",
+        "json_orphan": "Orphan JSON",
+        "legacy": "Legacy",
+        "duplicate_key": "Duplikat klucza"
+      },
+      "actions": {
+        "open": "Otwórz",
+        "download": "Pobierz",
+        "copyKey": "Kopiuj klucz storage",
+        "openContext": "Otwórz w kontekście"
+      }
+    }
+  },
   "workspaces": {
     "title": "Przestrzenie",
     "subtitle": "Przeglądaj i zarządzaj wszystkimi aktywnymi przestrzeniami na platformie.",
@@ -384,6 +472,201 @@
       "sparse": "Mało danych",
       "after_follow_up": "Po follow-up",
       "no_new_info": "Brak nowych informacji"
+    }
+  },
+  "activationPreview": {
+    "title": "Podgląd aktywacji (Phase 1)",
+    "subtitle": "Galeria banerów, toastów i modalów z pierwszych kroków ownera — bez side-effectów localStorage.",
+    "selectLabel": "Element",
+    "previewLabel": "Podgląd",
+    "metaLabel": "Metadane",
+    "tableHeaders": {
+      "type": "Typ",
+      "what": "Co",
+      "notes": "Uwagi",
+      "when": "Kiedy",
+      "frequency": "Kiedy znika / częstotliwość"
+    },
+    "groups": {
+      "onboarding": "Onboarding",
+      "estimates": "/estimates (owner)",
+      "estimate_editor": "/edytor wyceny (pierwsza AI)",
+      "pdf": "PDF (pierwszy raz)",
+      "checklist_celebration": "Checklist 3/3"
+    },
+    "items": {
+      "workspace_ready_banner": {
+        "label": "Baner „Workspace gotowy”",
+        "meta": {
+          "type": "Baner inline",
+          "what": "„Workspace gotowy” + krótki opis gotowości konta",
+          "notes": "Tylko owner; blokuje checklistę dopóki widoczny",
+          "when": "Redirect na /estimates po utworzeniu pierwszego workspace",
+          "frequency": "Znika po kliknięciu ✕ (localStorage: workspace-ready-seen)"
+        }
+      },
+      "combined_banner": {
+        "label": "Combined banner + checklista",
+        "meta": {
+          "type": "Baner inline (persistent)",
+          "what": "„Jak działa Esteo?” + checklista 3 kroków z CTA",
+          "notes": "Edukacja + postęp; kroki ukończone mają ✓ i przekreślenie",
+          "when": "Po zamknięciu banera workspace gotowy (lub gdy brak flagi pending)",
+          "frequency": "Checklista znika po 3/3 + „Ukryj”; guide przechodzi w „Porady”"
+        }
+      },
+      "combined_banner_guide_only": {
+        "label": "Combined banner — sam guide",
+        "meta": {
+          "type": "Baner inline (persistent)",
+          "what": "„Jak działa Esteo?” bez kolumny checklisty",
+          "notes": "Ten sam guide co w combined banner, ale bez prawej kolumny kroków",
+          "when": "Gdy widoczny baner „Workspace gotowy” (checklista ukryta) lub po ukończeniu aktywacji i ukryciu celebration",
+          "frequency": "Do momentu przełączenia w tryb „Porady” lub zamknięcia banera workspace"
+        }
+      },
+      "form_ready_intro": {
+        "label": "Toast „Formularz gotowy”",
+        "meta": {
+          "type": "AppToast (celebration)",
+          "what": "„Formularz gotowy” + „Skopiuj link i wyślij go klientowi”",
+          "notes": "top-center; wariant celebration (fioletowy)",
+          "when": "Pierwsze wejście ownera na /estimates, zanim link skopiowany/udostępniony",
+          "frequency": "Raz na ładowanie strony (do pierwszego copy); nie po publicznym submitcie"
+        }
+      },
+      "form_link_toast": {
+        "label": "Toast copy/share linku (aktywacja)",
+        "meta": {
+          "type": "AppToast (action)",
+          "what": "„Wyślij formularz klientowi” + „Link jest skopiowany…”",
+          "notes": "top-center; wariant action (teal); zaznacza krok 3 checklisty",
+          "when": "Każde kopiowanie lub udostępnienie linku formularza w flow aktywacji (hero, checklista, share)",
+          "frequency": "Powtarzalny; auto-dismiss po 5 s"
+        }
+      },
+      "form_copy_simple_toast": {
+        "label": "Toast „Skopiowano” (poza aktywacją)",
+        "meta": {
+          "type": "AppToast (success)",
+          "what": "Krótki komunikat „Skopiowano” po skopiowaniu linku formularza",
+          "notes": "top-center; bez opisu i bez side-effectów checklisty aktywacji",
+          "when": "Kopiowanie linku formularza, gdy owner nie jest w flow aktywacji (np. invited member lub po zakończeniu onboarding checklisty)",
+          "frequency": "Przy każdym copy; auto-dismiss po 5 s"
+        }
+      },
+      "ai_generating_skeleton": {
+        "label": "Skeleton generowania AI",
+        "meta": {
+          "type": "Full-page loader (inline)",
+          "what": "Pulsujący wskaźnik + szkielet sekcji wyceny",
+          "notes": "Zastępuje edytor podczas joba AI",
+          "when": "Po utworzeniu wyceny, dopóki status joba ≠ COMPLETED",
+          "frequency": "Przy każdym generowaniu; w aktywacji — pierwsze ma znaczenie onboardingowe"
+        }
+      },
+      "first_ai_toast": {
+        "label": "Toast „Pierwsza wycena gotowa!”",
+        "meta": {
+          "type": "AppToast (info) z akcją",
+          "what": "„Pierwsza wycena gotowa!” + zachęta do edycji szkicu przed PDF/wysyłką + [Przejrzyj kosztorys]",
+          "notes": "top-center; duration: Infinity; jedna akcja zamyka toast — user zostaje w edytorze",
+          "when": "Pierwsze udane zakończenie generowania AI w workspace (owner)",
+          "frequency": "Raz na workspace (localStorage: first-ai-toast-shown)"
+        }
+      },
+      "estimate_send_toast_loading": {
+        "label": "Toast wysyłki wyceny (loading)",
+        "meta": {
+          "type": "AppToast (loading)",
+          "what": "Faza wysyłki (kolejka / generowanie PDF / wysyłka e-mail) + krótki opis oczekiwania",
+          "notes": "bottom-center; ten sam slot co PDF export; aktualizowany w trakcie pollingu",
+          "when": "Po zatwierdzeniu wysyłki wyceny do klienta (modal Wyślij)",
+          "frequency": "Przy każdej wysyłce; znika po sukcesie/błędzie/timeout"
+        }
+      },
+      "estimate_send_toast_success": {
+        "label": "Toast wysyłki wyceny (success)",
+        "meta": {
+          "type": "AppToast (success)",
+          "what": "„Wycena została wysłana.”",
+          "notes": "bottom-center; ten sam toastId co loading (update in-place)",
+          "when": "Po pomyślnej wysyłce e-maila z wyceną",
+          "frequency": "Przy każdej udanej wysyłce; auto-dismiss po 5 s"
+        }
+      },
+      "estimate_send_toast_error": {
+        "label": "Toast wysyłki wyceny (error)",
+        "meta": {
+          "type": "AppToast (error)",
+          "what": "Komunikat błędu wysyłki (np. „Nie udało się wysłać wyceny.”)",
+          "notes": "bottom-center; ten sam toastId co loading (update in-place)",
+          "when": "Błąd providera, timeout pollingu lub walidacji wysyłki",
+          "frequency": "Przy każdej nieudanej wysyłce; auto-dismiss po 8 s"
+        }
+      },
+      "company_profile_modal": {
+        "label": "Modal profilu firmy",
+        "meta": {
+          "type": "Dialog (inline form)",
+          "what": "„Dodaj dane swojej firmy” — logo, NIP, adres, kontakt",
+          "notes": "Aktywacja: inline modal zamiast redirectu do ustawień",
+          "when": "Pierwsza próba eksportu PDF przy niekompletnym profilu firmy",
+          "frequency": "Przy każdej próbie PDF z brakującymi polami (do uzupełnienia profilu)"
+        },
+        "portalNote": "Modal renderowany przez portal — może nakładać się na stronę admina."
+      },
+      "pdf_export_toast": {
+        "label": "Toast PDF export (loading)",
+        "meta": {
+          "type": "AppToast (loading)",
+          "what": "„Generowanie PDF…” + krótki opis oczekiwania",
+          "notes": "bottom-center (ESTIMATE_ASYNC_TOAST_POSITION); nie specyficzny dla aktywacji",
+          "when": "Podczas asynchronicznego generowania PDF",
+          "frequency": "Przy każdym eksporcie; znika po sukcesie/błędzie/timeout"
+        },
+        "positionHint": "Pozycja produkcyjna: bottom-center"
+      },
+      "pdf_export_error": {
+        "label": "Toast PDF export (error)",
+        "meta": {
+          "type": "AppToast (error)",
+          "what": "Komunikat błędu eksportu PDF (np. „Generowanie PDF nie powiodło się…”)",
+          "notes": "bottom-center; po dismiss loading toast",
+          "when": "Błąd joba PDF, timeout pollingu lub błąd zapisu przed eksportem",
+          "frequency": "Przy każdym nieudanym eksporcie; auto-dismiss po 8 s"
+        }
+      },
+      "pdf_popup_blocked_toast": {
+        "label": "Toast PDF — popup zablokowany (info)",
+        "meta": {
+          "type": "AppToast (info)",
+          "what": "Informacja, że PDF otworzył się w nowej karcie lub został pobrany",
+          "notes": "bottom-center; gdy okno podglądu PDF nie mogło się otworzyć",
+          "when": "Po udanym eksporcie PDF, gdy przeglądarka zablokowała popup / fallback do download",
+          "frequency": "Przy każdym eksporcie z zablokowanym popup; auto-dismiss po 5 s"
+        }
+      },
+      "celebration_panel": {
+        "label": "Panel „Wszystko gotowe!”",
+        "meta": {
+          "type": "Baner inline (w kolumnie checklisty)",
+          "what": "„Wszystko gotowe!” + opis + przycisk [Ukryj]",
+          "notes": "Zastępuje listę kroków checklisty",
+          "when": "Checklist 3/3 ukończona",
+          "frequency": "Znika po [Ukryj] (localStorage: celebration-dismissed); guide zostaje do ukrycia"
+        }
+      },
+      "tips_banner": {
+        "label": "Baner „Porady”",
+        "meta": {
+          "type": "Baner inline (persistent)",
+          "what": "Nagłówek + 3 karty porad + stopka z sugestią",
+          "notes": "Karuzela 9 porad (3×3); ✕ bannera → sessionStorage (do końca sesji); ✕ kafelka → localStorage dismiss (tylko karuzela); pin → slajd [0]; sugestia → ReportIssueDialog TIP_SUGGESTION",
+          "when": "Po 3/3 checklisty i kliknięciu [Ukryj] na panelu celebration",
+          "frequency": "Banner ✕ ukrywa do końca sesji; dismiss/pin per user+workspace w localStorage"
+        }
+      }
     }
   }
 }

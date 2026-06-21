@@ -28,7 +28,6 @@
   },
   "guide": {
     "howItWorksTitle": "How Esteo works",
-    "tipsTitle": "Tips",
     "howItWorks": {
       "step1": "Create an estimate yourself or send the form to a client.",
       "step2": "AI prepares a cost breakdown in seconds.",
@@ -42,11 +41,10 @@
     "afterCopyDescription": "Link copied — send it to your client to collect an inquiry."
   },
   "firstAiToast": {
-    "title": "First estimate ready",
-    "descriptionLine1": "The cost breakdown was generated automatically.",
-    "descriptionLine2": "You can now generate a PDF or send it to your client.",
-    "generatePdf": "Generate PDF",
-    "sendToClient": "Send to client"
+    "title": "First estimate ready!",
+    "descriptionLine1": "Your cost breakdown draft was generated automatically. You can edit it now — fill in anything missing and fix what needs changing!",
+    "descriptionLine2": "Once you've reviewed it, generate a PDF or send the estimate to your client.",
+    "reviewEstimate": "Review estimate"
   },
   "companyProfileModal": {
     "title": "Add your company details",

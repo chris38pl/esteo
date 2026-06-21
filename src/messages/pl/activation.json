@@ -28,7 +28,6 @@
   },
   "guide": {
     "howItWorksTitle": "Jak działa Esteo?",
-    "tipsTitle": "Porady",
     "howItWorks": {
       "step1": "Utwórz wycenę samodzielnie lub wyślij formularz klientowi.",
       "step2": "AI przygotuje kosztorys w kilka sekund.",
@@ -42,11 +41,10 @@
     "afterCopyDescription": "Link jest skopiowany — wyślij go klientowi, aby zebrać zapytanie."
   },
   "firstAiToast": {
-    "title": "Pierwsza wycena gotowa",
-    "descriptionLine1": "Kosztorys został wygenerowany automatycznie.",
-    "descriptionLine2": "Możesz teraz wygenerować PDF lub wysłać go klientowi.",
-    "generatePdf": "Generuj PDF",
-    "sendToClient": "Wyślij klientowi"
+    "title": "Pierwsza wycena gotowa!",
+    "descriptionLine1": "Szkic kosztorysu został wygenerowany automatycznie. Możesz teraz go edytować — uzupełnij brakujące elementy i popraw to, co wymaga zmiany!",
+    "descriptionLine2": "Po weryfikacji wygeneruj PDF lub wyślij wycenę klientowi.",
+    "reviewEstimate": "Przejrzyj kosztorys"
   },
   "companyProfileModal": {
     "title": "Dodaj dane swojej firmy",

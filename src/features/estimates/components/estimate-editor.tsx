@@ -1018,8 +1018,6 @@ export function EstimateEditor({
           initialStatus={requestStatus}
           initialCanManualRetry={canManualRetryAiDraft}
           showFirstAiToast={showFirstAiToast}
-          onFirstAiGeneratePdf={() => void exportPdf()}
-          onFirstAiSendToClient={() => void openSendDialog("send")}
         />
       ) : (
         <div

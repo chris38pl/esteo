@@ -25,7 +25,12 @@
     "partialSuccess": "Issue #{number} saved, but screenshots could not be uploaded",
     "unexpectedError": "Something went wrong. Please try again.",
     "validationError": "Fill in required fields",
-    "uploadError": "Failed to upload screenshots"
+    "uploadError": "Failed to upload screenshots",
+    "tipSuggestion": {
+      "panelTitle": "Tip suggestion",
+      "panelDescription": "Describe a tip you'd like to see in Esteo. We'll review it and consider adding it to the tips list.",
+      "issueTitlePlaceholder": "e.g. How to add your company logo to PDF"
+    }
   },
   "attachments": {
     "label": "Screenshots (optional)",
@@ -44,7 +49,8 @@
     "UX": "UX",
     "FEATURE": "Feature",
     "AI_EXTRACTION": "AI extraction",
-    "PERFORMANCE": "Performance"
+    "PERFORMANCE": "Performance",
+    "TIP_SUGGESTION": "Tip suggestion"
   },
   "priority": {
     "LOW": "Low",

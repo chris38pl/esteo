@@ -3,10 +3,11 @@
 import { useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
 
+import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import {
   ActivationCombinedBanner,
-  ActivationTipsBanner,
 } from "@/features/activation/components/activation-combined-banner";
+import { ActivationTipsBanner } from "@/features/activation/components/activation-tips-banner";
 import { WorkspaceReadyBanner } from "@/features/activation/components/workspace-ready-banner";
 import { useActivationUiState } from "@/features/activation/hooks/use-activation-ui-state";
 import {
@@ -41,14 +42,16 @@ export function ActivationEstimatesSection({
 }: ActivationEstimatesSectionProps) {
   const tEstimates = useTranslations("estimates");
   const tFormBadge = useTranslations("activation.formBadge");
+  const { currentUserId } = useWorkspaceContext();
   const {
     steps,
     isCelebrating,
     showChecklist,
     guideMode,
     isWorkspaceReadyBannerVisible,
+    showTipsBanner,
     refreshActivationUi,
-  } = useActivationUiState(activationProgress, workspaceSlug);
+  } = useActivationUiState(activationProgress, workspaceSlug, currentUserId);
 
   useEffect(() => {
     if (!activationProgress.eligible) {
@@ -130,12 +133,13 @@ export function ActivationEstimatesSection({
         />
       ) : null}
 
-      {guideMode === "tips" ? (
+      {showTipsBanner ? (
         <ActivationTipsBanner
-          industry={activationProgress.industry}
+          workspaceSlug={workspaceSlug}
           locale={locale}
+          onDismissed={refreshActivationUi}
         />
-      ) : (
+      ) : guideMode === "how_it_works" ? (
         <ActivationCombinedBanner
           guideMode={guideMode}
           industry={activationProgress.industry}
@@ -143,7 +147,7 @@ export function ActivationEstimatesSection({
           showChecklist={showChecklist}
           checklistProps={showChecklist ? checklistProps : undefined}
         />
-      )}
+      ) : null}
     </div>
   );
 }

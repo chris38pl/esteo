@@ -16,9 +16,10 @@ import type { WorkspaceAppearanceTheme } from "@prisma/client";
 import type { ModalInboxItemView } from "@/features/workspaces/components/inbox-modal-types";
 import type { BillingSidebarState } from "@/features/billing/billing-sidebar-state";
 import type { WorkspaceMemberPreview } from "@/features/workspaces/server/get-active-workspace-card-data";
-import type { PinnedEstimateSidebarItem } from "@/components/layout/app-sidebar/pinned-config";
+import type { NotificationCounts } from "@/features/notifications/lib/notification-types";
 import type { AvatarPreset } from "@/components/avatars/user-avatar";
 import type { Locale } from "@/lib/locale";
+import { dashboardEstimatesHref } from "@/lib/dashboard-routes";
 import { setActiveWorkspaceAction } from "@/server/workspaces/actions";
 
 export type CurrentUserProfile = {
@@ -62,12 +63,14 @@ type WorkspaceContextValue = {
   isQaTester: boolean;
   issueTrackerEnabled: boolean;
   partnerProgramVisible: boolean;
+  currentUserId: string;
   currentUser: CurrentUserProfile;
   locale: Locale;
   pendingInvitationCount: number;
   modalInboxItem: ModalInboxItemView | null;
   /** Pinned estimates for the active workspace (per user). */
   pinnedEstimates: PinnedEstimateSidebarItem[];
+  notificationCounts: NotificationCounts;
   /** Navigate to a workspace by its current slug. */
   switchWorkspace: (workspaceSlug: string) => void;
   isSwitching: boolean;
@@ -105,6 +108,7 @@ export function WorkspaceProvider({
   isQaTester,
   issueTrackerEnabled,
   partnerProgramVisible,
+  currentUserId,
   currentUser,
   memberPreviews,
   memberTotalCount,
@@ -113,6 +117,7 @@ export function WorkspaceProvider({
   modalInboxItem = null,
   pinnedEstimates = [],
   activeWorkspaceStats = null,
+  notificationCounts = { total: 0, actionRequired: 0 },
   children,
 }: {
   workspaces: WorkspaceSummary[];
@@ -125,6 +130,7 @@ export function WorkspaceProvider({
   isQaTester: boolean;
   issueTrackerEnabled: boolean;
   partnerProgramVisible: boolean;
+  currentUserId: string;
   currentUser: CurrentUserProfile;
   memberPreviews: WorkspaceMemberPreview[];
   memberTotalCount: number;
@@ -133,6 +139,7 @@ export function WorkspaceProvider({
   modalInboxItem?: ModalInboxItemView | null;
   pinnedEstimates?: PinnedEstimateSidebarItem[];
   activeWorkspaceStats?: ActiveWorkspaceMenuStats | null;
+  notificationCounts?: NotificationCounts;
   children: ReactNode;
 }) {
   const router = useRouter();
@@ -183,11 +190,13 @@ export function WorkspaceProvider({
       isQaTester,
       issueTrackerEnabled,
       partnerProgramVisible,
+      currentUserId,
       currentUser,
       locale,
       pendingInvitationCount,
       modalInboxItem,
       pinnedEstimates,
+      notificationCounts,
       isSwitching,
       switchWorkspace(workspaceSlug: string) {
         const target = workspaces.find((w) => w.slug === workspaceSlug);
@@ -201,7 +210,7 @@ export function WorkspaceProvider({
             return;
           }
 
-          router.push(`/${locale}/dashboard/${workspaceSlug}`);
+          router.push(dashboardEstimatesHref(locale, workspaceSlug));
         });
       },
     }),
@@ -220,11 +229,13 @@ export function WorkspaceProvider({
       isQaTester,
       issueTrackerEnabled,
       partnerProgramVisible,
+      currentUserId,
       currentUser,
       locale,
       pendingInvitationCount,
       modalInboxItem,
       pinnedEstimates,
+      notificationCounts,
       isSwitching,
       router,
     ],

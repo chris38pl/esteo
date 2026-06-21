@@ -27,7 +27,6 @@ interface EstimatesListHeroCardsProps {
   onCreateClick: () => void;
   onCopyFormLink?: () => void;
   onFormLinkShared?: () => void;
-  showFormReadyIntro?: boolean;
 }
 
 function EstimatesListHeroStyles() {
@@ -230,7 +229,6 @@ export function EstimatesListHeroCards({
   onCreateClick,
   onCopyFormLink,
   onFormLinkShared,
-  showFormReadyIntro,
 }: EstimatesListHeroCardsProps) {
   const t = useTranslations("estimates");
 
@@ -271,7 +269,6 @@ export function EstimatesListHeroCards({
           locale={locale}
           onCopyFormLink={onCopyFormLink}
           onFormLinkShared={onFormLinkShared}
-          showFormReadyIntro={showFormReadyIntro}
         />
       </div>
     </>

@@ -45,6 +45,94 @@
     "title": "Account inspector",
     "subtitle": "Debug view of your user record, billing account, and accessible workspaces."
   },
+  "storageExplorer": {
+    "title": "Storage explorer",
+    "subtitle": "Browse all UploadThing files by workspace, category, and orphan status.",
+    "scanUploadThing": "Scan UploadThing",
+    "refresh": "Refresh",
+    "scanHint": "Run a scan to detect UploadThing-only orphans.",
+    "lastScan": "Last scan: {date}",
+    "environments": {
+      "development": "Development",
+      "staging": "Staging",
+      "production": "Production"
+    },
+    "summary": {
+      "connectedEnvironment": "Connected environment",
+      "quotaCounted": "Quota-counted storage",
+      "quotaCountedFiles": "{count} files in workspace quota",
+      "nonQuota": "Outside quota",
+      "nonQuotaFiles": "{count} files (issues, PDFs, logos)",
+      "workspaces": "Workspaces",
+      "workspacesHint": "With attachment storage",
+      "utOrphans": "UT orphans",
+      "notScanned": "Not scanned",
+      "scanHint": "Scan UploadThing to detect orphans",
+      "lastScan": "Last scan: {date}"
+    },
+    "tree": {
+      "all": "All storage",
+      "currentEnvironment": "(connected)",
+      "workspaces": "Workspaces",
+      "platform": "Platform",
+      "orphans": "Orphans & anomalies",
+      "searchPlaceholder": "Filter tree…",
+      "environments": {
+        "development": "Development",
+        "staging": "Staging",
+        "production": "Production"
+      },
+      "categories": {
+        "estimates": "Estimate attachments",
+        "stagingActive": "Staging (active)",
+        "stagingLinked": "Staging (linked)",
+        "pdfs": "Generated PDFs",
+        "logo": "Workspace logo",
+        "issues": "Issue screenshots",
+        "utOnly": "UploadThing only",
+        "jsonUnpromoted": "JSON without promotion",
+        "legacy": "Legacy request keys",
+        "duplicateKeys": "Duplicate keys"
+      }
+    },
+    "files": {
+      "searchPlaceholder": "Search files…",
+      "selectLeaf": "Select a workspace or category in the tree to list files.",
+      "foreignEnvironment": "Data for {environment} is not available from this deployment. This instance is connected to {current}.",
+      "empty": "No files in this category.",
+      "sortLabel": "Sort by",
+      "sort": {
+        "dateDesc": "Newest first",
+        "dateAsc": "Oldest first",
+        "nameAsc": "Name A–Z",
+        "nameDesc": "Name Z–A",
+        "sizeDesc": "Largest first",
+        "sizeAsc": "Smallest first"
+      },
+      "columns": {
+        "name": "Name",
+        "type": "Source",
+        "size": "Size",
+        "date": "Date",
+        "status": "Status"
+      },
+      "health": {
+        "ok": "OK",
+        "staging_expired": "Staging expired",
+        "linked_duplicate": "Linked duplicate",
+        "ut_orphan": "UT orphan",
+        "json_orphan": "JSON orphan",
+        "legacy": "Legacy",
+        "duplicate_key": "Duplicate key"
+      },
+      "actions": {
+        "open": "Open",
+        "download": "Download",
+        "copyKey": "Copy storage key",
+        "openContext": "Open in context"
+      }
+    }
+  },
   "workspaces": {
     "title": "Workspaces",
     "subtitle": "Browse and manage all active workspaces across the platform.",
@@ -384,6 +472,201 @@
       "sparse": "Sparse data",
       "after_follow_up": "After follow-up",
       "no_new_info": "No new info"
+    }
+  },
+  "activationPreview": {
+    "title": "Activation preview (Phase 1)",
+    "subtitle": "Gallery of owner first-step banners, toasts, and modals — no localStorage side effects.",
+    "selectLabel": "Element",
+    "previewLabel": "Preview",
+    "metaLabel": "Metadata",
+    "tableHeaders": {
+      "type": "Type",
+      "what": "What",
+      "notes": "Notes",
+      "when": "When",
+      "frequency": "Dismiss / frequency"
+    },
+    "groups": {
+      "onboarding": "Onboarding",
+      "estimates": "/estimates (owner)",
+      "estimate_editor": "/estimate editor (first AI)",
+      "pdf": "PDF (first time)",
+      "checklist_celebration": "Checklist 3/3"
+    },
+    "items": {
+      "workspace_ready_banner": {
+        "label": "“Workspace ready” banner",
+        "meta": {
+          "type": "Inline banner",
+          "what": "“Workspace ready” + short account readiness copy",
+          "notes": "Owner only; hides checklist while visible",
+          "when": "Redirect to /estimates after creating the first workspace",
+          "frequency": "Dismissed with ✕ (localStorage: workspace-ready-seen)"
+        }
+      },
+      "combined_banner": {
+        "label": "Combined banner + checklist",
+        "meta": {
+          "type": "Inline banner (persistent)",
+          "what": "“How Esteo works” + 3-step checklist with CTAs",
+          "notes": "Education + progress; completed steps show ✓ and strikethrough",
+          "when": "After closing workspace-ready banner (or when no pending flag)",
+          "frequency": "Checklist hides after 3/3 + Hide; guide switches to Tips"
+        }
+      },
+      "combined_banner_guide_only": {
+        "label": "Combined banner — guide only",
+        "meta": {
+          "type": "Inline banner (persistent)",
+          "what": "“How Esteo works” without the checklist column",
+          "notes": "Same guide as combined banner, but no right-hand step column",
+          "when": "While workspace-ready banner is visible (checklist hidden) or after activation complete and celebration dismissed",
+          "frequency": "Until guide switches to Tips mode or workspace banner is closed"
+        }
+      },
+      "form_ready_intro": {
+        "label": "“Form ready” toast",
+        "meta": {
+          "type": "AppToast (celebration)",
+          "what": "“Form ready” + “Copy the link and send it to your client”",
+          "notes": "top-center; celebration variant (purple)",
+          "when": "Owner’s first visit to /estimates before link copied/shared",
+          "frequency": "Once per page load (until first copy); not after public submit"
+        }
+      },
+      "form_link_toast": {
+        "label": "Copy/share link toast (activation)",
+        "meta": {
+          "type": "AppToast (action)",
+          "what": "“Send the form to your client” + “Link copied…”",
+          "notes": "top-center; action variant (teal); marks checklist step 3",
+          "when": "Every copy or share of the public form link in activation flow (hero, checklist, share)",
+          "frequency": "Repeatable; auto-dismiss after 5s"
+        }
+      },
+      "form_copy_simple_toast": {
+        "label": "“Copied” toast (non-activation)",
+        "meta": {
+          "type": "AppToast (success)",
+          "what": "Short “Copied” message after copying the form link",
+          "notes": "top-center; no description; no activation checklist side effects",
+          "when": "Copying the form link when not in activation flow (e.g. invited member or after onboarding checklist done)",
+          "frequency": "On every copy; auto-dismiss after 5s"
+        }
+      },
+      "ai_generating_skeleton": {
+        "label": "AI generating skeleton",
+        "meta": {
+          "type": "Full-page loader (inline)",
+          "what": "Pulsing indicator + estimate section skeleton",
+          "notes": "Replaces editor during AI job",
+          "when": "After creating an estimate until job status is COMPLETED",
+          "frequency": "Every generation; first run matters for onboarding"
+        }
+      },
+      "first_ai_toast": {
+        "label": "“First estimate ready!” toast",
+        "meta": {
+          "type": "AppToast (info) with action",
+          "what": "“First estimate ready!” + prompt to edit the draft before PDF/send + [Review estimate]",
+          "notes": "top-center; duration: Infinity; single action dismisses toast — user stays in editor",
+          "when": "First successful AI generation in workspace (owner)",
+          "frequency": "Once per workspace (localStorage: first-ai-toast-shown)"
+        }
+      },
+      "estimate_send_toast_loading": {
+        "label": "Estimate send toast (loading)",
+        "meta": {
+          "type": "AppToast (loading)",
+          "what": "Send phase (queued / generating PDF / sending email) + short wait description",
+          "notes": "bottom-center; same slot as PDF export; updated during polling",
+          "when": "After confirming send to client (Send modal)",
+          "frequency": "Every send; dismisses on success/error/timeout"
+        }
+      },
+      "estimate_send_toast_success": {
+        "label": "Estimate send toast (success)",
+        "meta": {
+          "type": "AppToast (success)",
+          "what": "“Estimate was sent.”",
+          "notes": "bottom-center; same toastId as loading (in-place update)",
+          "when": "After successful estimate email delivery",
+          "frequency": "Every successful send; auto-dismiss after 5s"
+        }
+      },
+      "estimate_send_toast_error": {
+        "label": "Estimate send toast (error)",
+        "meta": {
+          "type": "AppToast (error)",
+          "what": "Send error message (e.g. “Could not send the estimate.”)",
+          "notes": "bottom-center; same toastId as loading (in-place update)",
+          "when": "Provider error, polling timeout, or send validation failure",
+          "frequency": "Every failed send; auto-dismiss after 8s"
+        }
+      },
+      "company_profile_modal": {
+        "label": "Company profile modal",
+        "meta": {
+          "type": "Dialog (inline form)",
+          "what": "“Add your company details” — logo, tax ID, address, contact",
+          "notes": "Activation: inline modal instead of settings redirect",
+          "when": "First PDF export attempt with incomplete company profile",
+          "frequency": "On each PDF attempt with missing fields until profile complete"
+        },
+        "portalNote": "Modal uses a portal — may overlay the admin page."
+      },
+      "pdf_export_toast": {
+        "label": "PDF export toast (loading)",
+        "meta": {
+          "type": "AppToast (loading)",
+          "what": "“Generating PDF…” + short wait description",
+          "notes": "bottom-center (ESTIMATE_ASYNC_TOAST_POSITION); not activation-specific",
+          "when": "During async PDF generation",
+          "frequency": "Every export; dismisses on success/error/timeout"
+        },
+        "positionHint": "Production position: bottom-center"
+      },
+      "pdf_export_error": {
+        "label": "PDF export toast (error)",
+        "meta": {
+          "type": "AppToast (error)",
+          "what": "PDF export error message (e.g. “PDF generation failed…”)",
+          "notes": "bottom-center; after loading toast dismiss",
+          "when": "PDF job failure, polling timeout, or save-before-export error",
+          "frequency": "Every failed export; auto-dismiss after 8s"
+        }
+      },
+      "pdf_popup_blocked_toast": {
+        "label": "PDF — popup blocked toast (info)",
+        "meta": {
+          "type": "AppToast (info)",
+          "what": "Info that PDF opened in a new tab or was downloaded",
+          "notes": "bottom-center; when PDF preview window could not open",
+          "when": "After successful PDF export when browser blocked popup / download fallback",
+          "frequency": "Every export with blocked popup; auto-dismiss after 5s"
+        }
+      },
+      "celebration_panel": {
+        "label": "“All set!” panel",
+        "meta": {
+          "type": "Inline banner (checklist column)",
+          "what": "“All set!” + description + [Hide] button",
+          "notes": "Replaces checklist step list",
+          "when": "Checklist 3/3 complete",
+          "frequency": "After [Hide] (localStorage: celebration-dismissed); guide stays until dismissed"
+        }
+      },
+      "tips_banner": {
+        "label": "“Tips” banner",
+        "meta": {
+          "type": "Inline banner (persistent)",
+          "what": "Header + 3 tip cards + suggestion footer",
+          "notes": "9-tip carousel (3×3); banner ✕ → sessionStorage; card ✕ → localStorage dismiss (carousel only); pin → slide [0]; suggestion → ReportIssueDialog TIP_SUGGESTION",
+          "when": "After checklist 3/3 and clicking [Hide] on celebration panel",
+          "frequency": "Banner ✕ hides for browser session; dismiss/pin per user+workspace in localStorage"
+        }
+      }
     }
   }
 }

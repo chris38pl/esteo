@@ -7,16 +7,17 @@ import { isLocale } from "@/lib/locale";
 import { requireAuth } from "@/server/auth/require-auth";
 import { resolveActiveWorkspace } from "@/server/workspaces/active-workspace";
 import { ClientRedirect } from "@/components/routing/client-redirect";
+import { dashboardEstimatesHref } from "@/lib/dashboard-routes";
 
 /**
  * Bare /dashboard landing — immediately redirects to the appropriate destination:
- *  - User's last active workspace:  /dashboard/[slug]
+ *  - User's last active workspace:  /dashboard/[slug]/estimates
  *  - No workspaces, pending invites: /dashboard/invitations
  *  - No workspaces, no invites:      /dashboard/onboarding
  *
  * Uses ClientRedirect for onboarding/invitations (avoids stalled RSC streams during
  * Clerk's post-login double soft-navigation — see docs/incidents/2026-06-01).
- * Uses server redirect() for workspace landing so /dashboard/[slug] is a full
+ * Uses server redirect() for workspace landing so /dashboard/[slug]/estimates is a full
  * document navigation (client router.replace can 404 on RSC flights with Clerk).
  */
 export default async function DashboardRootPage({
@@ -44,5 +45,5 @@ export default async function DashboardRootPage({
   const activeId = await resolveActiveWorkspace(user.id);
   const target = accessible.find((w) => w.id === activeId) ?? accessible[0];
 
-  redirect(`/${resolvedLocale}/dashboard/${target.slug}`);
+  redirect(dashboardEstimatesHref(resolvedLocale, target.slug));
 }

@@ -14,6 +14,7 @@ import { SidebarQaTesting } from "./sidebar-qa-testing";
 import { SidebarPinned } from "./sidebar-pinned";
 import { SidebarTeam } from "./sidebar-team";
 import { SidebarReportIssue } from "./sidebar-report-issue";
+import { SidebarTips } from "./sidebar-tips";
 import { SidebarReferrals } from "./sidebar-referrals";
 import { SidebarSettings } from "./sidebar-settings";
 
@@ -61,6 +62,7 @@ export function AppSidebar({
         <SidebarQaTesting locale={locale} />
         <SidebarPinned locale={locale} />
         <SidebarTeam />
+        <SidebarTips />
         <SidebarReferrals />
         <SidebarReportIssue />
         <SidebarSettings />

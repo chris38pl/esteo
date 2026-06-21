@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 
 import { resolveStaleBillingHandoff } from "@/features/billing/server/billing-handoff-cleanup";
+import { dashboardEstimatesHref } from "@/lib/dashboard-routes";
 import { resolveRequestLocale } from "@/i18n/request-locale";
 import type { Locale } from "@/lib/locale";
 import { requireAuth } from "@/server/auth/require-auth";
@@ -38,7 +39,7 @@ export default async function WorkspaceLayout({
     const headersList = await headers();
     const currentPath =
       headersList.get("x-pathname") ??
-      `/${resolvedLocale}/dashboard/${resolved.canonicalSlug}`;
+      dashboardEstimatesHref(resolvedLocale, resolved.canonicalSlug);
     const canonicalPath = currentPath.replace(
       `/dashboard/${workspaceSlug}`,
       `/dashboard/${resolved.canonicalSlug}`,

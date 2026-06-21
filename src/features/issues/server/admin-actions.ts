@@ -101,10 +101,34 @@ export async function updateIssueStatusAction(
     assertIssueTrackerEnabled();
     await assertIssueViewerAccess(locale);
     const parsed = updateIssueStatusSchema.parse(input);
+    const existing = await getIssueByNumber(parsed.number);
+
+    if (!existing) {
+      return { success: false as const, error: "Issue not found." };
+    }
+
     const updated = await updateIssueStatus(parsed.number, parsed.status);
 
     if (!updated) {
       return { success: false as const, error: "Issue not found." };
+    }
+
+    if (existing.status !== parsed.status) {
+      const { notifyIssueStatusChanged } = await import(
+        "@/features/notifications/server/notification-emit-helpers"
+      );
+      const { fireNotification } = await import(
+        "@/features/notifications/server/notification-workspace-context"
+      );
+      fireNotification(
+        notifyIssueStatusChanged({
+          locale,
+          issueNumber: updated.number,
+          issueTitle: updated.title,
+          oldStatus: existing.status,
+          newStatus: updated.status,
+        }),
+      );
     }
 
     revalidateIssuePaths(locale, parsed.number);

@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { toast } from "sonner";
+
+import { appToast } from "@/components/ui/app-toast";
 
 import {
   exportEstimatePdfAction,
@@ -70,7 +71,7 @@ export function useEstimatePdfOutput(input: {
 
   const dismissExportProgress = useCallback(() => {
     if (loadingToastIdRef.current != null) {
-      toast.dismiss(loadingToastIdRef.current);
+      appToast.dismiss(loadingToastIdRef.current);
       loadingToastIdRef.current = null;
     }
   }, []);
@@ -81,10 +82,9 @@ export function useEstimatePdfOutput(input: {
     }
 
     dismissExportProgress();
-    loadingToastIdRef.current = toast.loading(t("editor.pdfExport.generating"), {
+    loadingToastIdRef.current = appToast.loading(t("editor.pdfExport.generating"), {
       description: t("editor.pdfExport.generatingHint"),
       position: ESTIMATE_ASYNC_TOAST_POSITION,
-      duration: Infinity,
     });
   }, [dismissExportProgress, isExportMode, t]);
 
@@ -110,7 +110,7 @@ export function useEstimatePdfOutput(input: {
       setError(message);
 
       if (isExportMode) {
-        toast.error(message, { position: ESTIMATE_ASYNC_TOAST_POSITION });
+        appToast.error(message, { position: ESTIMATE_ASYNC_TOAST_POSITION });
       }
     },
     [clearViewerWindow, dismissExportProgress, isExportMode],
@@ -129,7 +129,7 @@ export function useEstimatePdfOutput(input: {
 
       if (!shown) {
         openEstimatePdfFallback(payload.url, payload.fileName);
-        toast.info(t("editor.pdfExport.popupBlocked"), {
+        appToast.info(t("editor.pdfExport.popupBlocked"), {
           position: ESTIMATE_ASYNC_TOAST_POSITION,
         });
       }

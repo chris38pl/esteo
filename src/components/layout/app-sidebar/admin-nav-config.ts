@@ -5,17 +5,21 @@ import {
   Building2,
   ClipboardList,
   FileText,
+  FolderTree,
   Layers3,
   Mic,
+  Sparkles,
   UserRoundSearch,
   Users,
 } from "lucide-react";
 
 export type AdminNavItemKey =
   | "accountInspector"
+  | "activationPreview"
   | "estimateRequests"
   | "industryFields"
   | "pdfPreview"
+  | "storageExplorer"
   | "voiceIntakePreview"
   | "issues"
   | "users"
@@ -67,10 +71,22 @@ export const adminNavItems: AdminNavItem[] = [
     labelKey: "admin.nav.pdfPreview",
   },
   {
+    key: "storageExplorer",
+    icon: FolderTree,
+    href: (locale) => `/${locale}/dashboard/admin/storage`,
+    labelKey: "admin.nav.storageExplorer",
+  },
+  {
     key: "voiceIntakePreview",
     icon: Mic,
     href: (locale) => `/${locale}/dashboard/admin/voice-intake-preview`,
     labelKey: "admin.nav.voiceIntakePreview",
+  },
+  {
+    key: "activationPreview",
+    icon: Sparkles,
+    href: (locale) => `/${locale}/dashboard/admin/activation-preview`,
+    labelKey: "admin.nav.activationPreview",
   },
   {
     key: "issues",

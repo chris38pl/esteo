@@ -19,6 +19,7 @@ import {
   getNextModalInboxItem,
   toModalInboxItemView,
 } from "@/features/workspaces/server/inbox-modal";
+import { getNotificationCounts } from "@/features/notifications/server/get-notifications";
 import { countPendingInboxItems } from "@/features/workspaces/server/inbox-state";
 import { RESERVED_DASHBOARD_SLUGS } from "@/features/workspaces/server/slug-availability";
 import { toCurrentUserProfile } from "@/lib/avatars/user-avatar-presets";
@@ -83,11 +84,13 @@ export default async function DashboardLayout({
         isQaTester={isQaTester(user)}
         issueTrackerEnabled={issueTrackerEnabled}
         partnerProgramVisible={false}
+        currentUserId={user.id}
         currentUser={currentUser}
         locale={resolvedLocale}
         pendingInvitationCount={0}
         modalInboxItem={null}
         pinnedEstimates={[]}
+        notificationCounts={{ total: 0, actionRequired: 0 }}
       >
         <DashboardShell locale={resolvedLocale}>{children}</DashboardShell>
       </WorkspaceProvider>
@@ -120,13 +123,14 @@ export default async function DashboardLayout({
   } else {
     activeWorkspaceId = await resolveActiveWorkspace(user.id);
   }
-  const [canCreateWorkspace, ownedWorkspaceCount, billingSidebarState, pendingInvitationCount, nextModalInboxItem] =
+  const [canCreateWorkspace, ownedWorkspaceCount, billingSidebarState, pendingInvitationCount, nextModalInboxItem, notificationCounts] =
     await Promise.all([
     canUserCreateWorkspace(user.id),
     countOwnedWorkspaces(user.id),
     getBillingSidebarState(activeWorkspaceId),
     countPendingInboxItems(user.email),
     getNextModalInboxItem(user.email),
+    getNotificationCounts(user.id),
   ]);
   const canCreateAdditionalWorkspace = canCreateWorkspace && ownedWorkspaceCount > 0;
 
@@ -195,6 +199,7 @@ export default async function DashboardLayout({
       isQaTester={isQaTester(user)}
       issueTrackerEnabled={issueTrackerEnabled}
       partnerProgramVisible={partnerProgramVisible}
+      currentUserId={user.id}
       currentUser={currentUser}
       locale={resolvedLocale}
       pendingInvitationCount={pendingInvitationCount}
@@ -203,6 +208,7 @@ export default async function DashboardLayout({
       }
       pinnedEstimates={pinnedEstimates}
       activeWorkspaceStats={activeWorkspaceStats}
+      notificationCounts={notificationCounts}
     >
       <DashboardShell locale={resolvedLocale}>{children}</DashboardShell>
     </WorkspaceProvider>

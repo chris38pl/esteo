@@ -25,7 +25,12 @@
     "partialSuccess": "Zgłoszenie #{number} zapisane, ale nie udało się przesłać screenshotów",
     "unexpectedError": "Coś poszło nie tak. Spróbuj ponownie.",
     "validationError": "Uzupełnij wymagane pola",
-    "uploadError": "Nie udało się przesłać screenshotów"
+    "uploadError": "Nie udało się przesłać screenshotów",
+    "tipSuggestion": {
+      "panelTitle": "Sugestia porady",
+      "panelDescription": "Opisz pomysł na poradę, którą chciałbyś zobaczyć w Esteo. Przejrzymy ją i rozważymy dodanie do listy porad.",
+      "issueTitlePlaceholder": "Np. Jak dodać logo firmy do PDF"
+    }
   },
   "attachments": {
     "label": "Screenshoty (opcjonalnie)",
@@ -44,7 +49,8 @@
     "UX": "UX",
     "FEATURE": "Feature",
     "AI_EXTRACTION": "AI extraction",
-    "PERFORMANCE": "Performance"
+    "PERFORMANCE": "Performance",
+    "TIP_SUGGESTION": "Sugestia porady"
   },
   "priority": {
     "LOW": "Low",

@@ -26,6 +26,7 @@ import { SidebarQaTesting } from "@/components/layout/app-sidebar/sidebar-qa-tes
 import { SidebarPinned } from "@/components/layout/app-sidebar/sidebar-pinned";
 import { SidebarTeam } from "@/components/layout/app-sidebar/sidebar-team";
 import { SidebarReportIssue } from "@/components/layout/app-sidebar/sidebar-report-issue";
+import { SidebarTips } from "@/components/layout/app-sidebar/sidebar-tips";
 import { SidebarReferrals } from "@/components/layout/app-sidebar/sidebar-referrals";
 import { SidebarSettings } from "@/components/layout/app-sidebar/sidebar-settings";
 import { DashboardBreadcrumbs } from "./dashboard-breadcrumbs";
@@ -33,7 +34,15 @@ import { NavbarNotificationsButton } from "./navbar-notifications-button";
 import { NavbarSearchButton } from "@/features/search/components/navbar-search-button";
 import { NavbarUserMenu } from "./navbar-user-menu";
 
-export function DashboardTopNavbar({ locale }: { locale: Locale }) {
+import type { NotificationCounts } from "@/features/notifications/lib/notification-types";
+
+export function DashboardTopNavbar({
+  locale,
+  notificationCounts,
+}: {
+  locale: Locale;
+  notificationCounts: NotificationCounts;
+}) {
   const t = useTranslations("sidebar");
 
   useEffect(() => {
@@ -86,6 +95,7 @@ export function DashboardTopNavbar({ locale }: { locale: Locale }) {
                   <SidebarQaTesting locale={locale} collapsedOverride={false} />
                   <SidebarPinned locale={locale} collapsedOverride={false} />
                   <SidebarTeam collapsedOverride={false} />
+                  <SidebarTips collapsedOverride={false} />
                   <SidebarReferrals collapsedOverride={false} />
                   <SidebarReportIssue collapsedOverride={false} />
                   <SidebarSettings collapsedOverride={false} />
@@ -101,7 +111,7 @@ export function DashboardTopNavbar({ locale }: { locale: Locale }) {
 
       <div className="flex shrink-0 items-center gap-1.5">
         <NavbarSearchButton />
-        <NavbarNotificationsButton />
+        <NavbarNotificationsButton locale={locale} initialCounts={notificationCounts} />
         <div className="hidden items-center gap-1.5 md:flex">
           <LocaleSwitcher value={locale} compact />
           <ThemeToggle compact />

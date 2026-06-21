@@ -11,7 +11,7 @@ const optionalText = z
   .transform((value) => (value ? value : undefined));
 
 export const createIssueSchema = z.object({
-  type: z.enum(["BUG", "UX", "FEATURE", "AI_EXTRACTION", "PERFORMANCE"]),
+  type: z.enum(["BUG", "UX", "FEATURE", "AI_EXTRACTION", "PERFORMANCE", "TIP_SUGGESTION"]),
   title: z.string().trim().min(1, "Title is required.").max(200),
   description: z.string().trim().min(1, "Description is required.").max(20_000),
   priority: z

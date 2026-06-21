@@ -1,7 +1,7 @@
 "use client";
 
-import { Bug, Tag, Type } from "lucide-react";
-import { useState, useTransition } from "react";
+import { Bug, Lightbulb, Tag, Type } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
@@ -25,7 +25,13 @@ import {
 } from "@/components/ui/dialog";
 import type { Locale } from "@/lib/locale";
 
-type IssueType = "BUG" | "UX" | "FEATURE" | "AI_EXTRACTION" | "PERFORMANCE";
+type IssueType =
+  | "BUG"
+  | "UX"
+  | "FEATURE"
+  | "AI_EXTRACTION"
+  | "PERFORMANCE"
+  | "TIP_SUGGESTION";
 type IssuePriority = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 
 export type CreatedIssueSummary = {
@@ -36,24 +42,38 @@ export type CreatedIssueSummary = {
   folderSlug: string;
 };
 
+const DEFAULT_ISSUE_TYPE_OPTIONS: IssueType[] = [
+  "BUG",
+  "UX",
+  "FEATURE",
+  "AI_EXTRACTION",
+  "PERFORMANCE",
+];
+
 export function ReportIssueDialog({
   open,
   onOpenChange,
   locale,
   workspaceSlug,
   onSuccess,
+  presetType,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   locale: Locale;
   workspaceSlug: string | null;
   onSuccess?: (issue: CreatedIssueSummary) => void;
+  presetType?: IssueType;
 }) {
   const t = useTranslations("issues");
   const [pending, startTransition] = useTransition();
   const { uploadScreenshots, uploading } = useIssueScreenshotUpload();
 
-  const [type, setType] = useState<IssueType>("BUG");
+  const typeLocked = presetType != null;
+  const isTipSuggestion = presetType === "TIP_SUGGESTION";
+  const defaultType = presetType ?? "BUG";
+
+  const [type, setType] = useState<IssueType>(defaultType);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState<IssuePriority>("MEDIUM");
@@ -65,8 +85,14 @@ export function ReportIssueDialog({
 
   const isBusy = pending || uploading;
 
+  useEffect(() => {
+    if (open && presetType) {
+      setType(presetType);
+    }
+  }, [open, presetType]);
+
   function resetForm() {
-    setType("BUG");
+    setType(defaultType);
     setTitle("");
     setDescription("");
     setPriority("MEDIUM");
@@ -84,7 +110,7 @@ export function ReportIssueDialog({
     const metadata = collectIssueMetadata({ locale, workspaceSlug });
 
     const parsed = createIssueSchema.safeParse({
-      type,
+      type: presetType ?? type,
       title,
       description,
       priority,
@@ -146,6 +172,24 @@ export function ReportIssueDialog({
     });
   }
 
+  const typeOptions = typeLocked
+    ? [{ value: presetType!, label: t(`type.${presetType}`) }]
+    : DEFAULT_ISSUE_TYPE_OPTIONS.map((value) => ({
+        value,
+        label: t(`type.${value}`),
+      }));
+
+  const panelTitle = isTipSuggestion
+    ? t("form.tipSuggestion.panelTitle")
+    : t("form.panelTitle");
+  const panelDescription = isTipSuggestion
+    ? t("form.tipSuggestion.panelDescription")
+    : t("form.panelDescription");
+  const issueTitlePlaceholder = isTipSuggestion
+    ? t("form.tipSuggestion.issueTitlePlaceholder")
+    : t("form.issueTitlePlaceholder");
+  const HeaderIcon = isTipSuggestion ? Lightbulb : Bug;
+
   return (
     <Dialog
       open={open}
@@ -166,14 +210,14 @@ export function ReportIssueDialog({
               className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary"
               aria-hidden
             >
-              <Bug className="size-5" strokeWidth={2} />
+              <HeaderIcon className="size-5" strokeWidth={2} />
             </div>
             <div className="min-w-0 space-y-2">
               <DialogTitle className="text-xl font-bold tracking-normal text-foreground">
-                {t("form.panelTitle")}
+                {panelTitle}
               </DialogTitle>
               <DialogDescription className="text-xs leading-5 text-muted-foreground">
-                {t("form.panelDescription")}
+                {panelDescription}
               </DialogDescription>
             </div>
           </div>
@@ -188,14 +232,8 @@ export function ReportIssueDialog({
               onValueChange={setType}
               icon={<Tag className="size-4" />}
               required
-              disabled={isBusy}
-              options={[
-                { value: "BUG", label: t("type.BUG") },
-                { value: "UX", label: t("type.UX") },
-                { value: "FEATURE", label: t("type.FEATURE") },
-                { value: "AI_EXTRACTION", label: t("type.AI_EXTRACTION") },
-                { value: "PERFORMANCE", label: t("type.PERFORMANCE") },
-              ]}
+              disabled={isBusy || typeLocked}
+              options={typeOptions}
             />
 
             <IssueFormTextInput
@@ -203,7 +241,7 @@ export function ReportIssueDialog({
               label={t("form.issueTitle")}
               value={title}
               onChange={setTitle}
-              placeholder={t("form.issueTitlePlaceholder")}
+              placeholder={issueTitlePlaceholder}
               icon={<Type className="size-4" />}
               required
               disabled={isBusy}
@@ -228,6 +266,7 @@ export function ReportIssueDialog({
               onExpectedBehaviorChange={setExpectedBehavior}
               onActualBehaviorChange={setActualBehavior}
               disabled={isBusy}
+              sectionDisabled={isTipSuggestion}
             />
 
             {error ? <p className="text-sm text-destructive">{error}</p> : null}

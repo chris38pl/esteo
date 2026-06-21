@@ -3,6 +3,7 @@ import { setRequestLocale } from "next-intl/server";
 
 import { WorkspaceUsagePanel } from "@/features/workspace-usage/components/workspace-usage-panel";
 import { getWorkspaceUsagePageData } from "@/features/workspace-usage/server/get-workspace-usage-page-data";
+import { dashboardEstimatesHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 import { requireAuth } from "@/server/auth/require-auth";
@@ -29,7 +30,7 @@ export default async function WorkspaceUsagePage({
   try {
     await requireRole(user, resolved.workspace.id, "MEMBER");
   } catch {
-    redirect(`/${resolvedLocale}/dashboard/${resolved.canonicalSlug}`);
+    redirect(dashboardEstimatesHref(resolvedLocale, resolved.canonicalSlug));
   }
 
   const data = await getWorkspaceUsagePageData(resolved.workspace.id);

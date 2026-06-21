@@ -1,11 +1,13 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { toast } from "sonner";
+
+import { appToast } from "@/components/ui/app-toast";
 
 import { PaginationControls } from "@/components/shared/pagination-controls";
+import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import { Button } from "@/components/ui/button";
 import { estimateEditorMaxWidthClass } from "@/features/estimates/lib/estimate-layout-config";
 import {
@@ -24,7 +26,7 @@ import {
 } from "@/features/activation/components/activation-estimates-section";
 import { useActivationUiState } from "@/features/activation/hooks/use-activation-ui-state";
 import { copyPublicFormLink } from "@/features/activation/lib/copy-public-form-link";
-import { notifyFormLinkShared } from "@/features/activation/lib/notify-form-link-shared";
+import { notifyFormLinkShared, showFormReadyToast } from "@/features/activation/lib/notify-form-link-shared";
 import type { ActivationProgressClient } from "@/features/activation/lib/activation-types";
 import { EstimatesListFilterSheet } from "./estimates-list-filter-sheet";
 import { EstimatesListHeroCards } from "./estimates-list-hero-cards";
@@ -64,6 +66,8 @@ export function EstimatesListPanel({
 }: EstimatesListPanelProps) {
   const t = useTranslations("estimates");
   const tFormBadge = useTranslations("activation.formBadge");
+  const { currentUserId } = useWorkspaceContext();
+  const formReadyToastShownRef = useRef(false);
   const activation = activationProgress ?? {
     eligible: false,
     showFormBadge: false,
@@ -78,6 +82,7 @@ export function EstimatesListPanel({
   const { refreshActivationUi, formLinkCopied, hasHydrated } = useActivationUiState(
     activation,
     workspaceSlug,
+    currentUserId,
   );
   const { preferences, toggleOptionalColumn, setPageSize } =
     useEstimatesListPreferences(workspaceSlug);
@@ -176,7 +181,7 @@ export function EstimatesListPanel({
       return;
     }
 
-    toast.success(t("list.hero.form.copied"));
+    appToast.success(t("list.hero.form.copied"));
   }, [
     activationProgress?.eligible,
     locale,
@@ -186,12 +191,21 @@ export function EstimatesListPanel({
     workspaceSlug,
   ]);
 
-  const showFormReadyIntro =
+  const showFormReadyToastOnLoad =
     Boolean(activationProgress?.eligible) &&
     Boolean(activationProgress?.showFormBadge) &&
     !activationProgress?.hasPublicFormSubmission &&
     hasHydrated &&
     !formLinkCopied;
+
+  useEffect(() => {
+    if (!showFormReadyToastOnLoad || formReadyToastShownRef.current) {
+      return;
+    }
+
+    formReadyToastShownRef.current = true;
+    showFormReadyToast(tFormBadge("readyTitle"), tFormBadge("readyDescription"));
+  }, [showFormReadyToastOnLoad, tFormBadge]);
 
   const handleExportCsv = useCallback(() => {
     if (filteredEstimates.length === 0) {
@@ -251,7 +265,6 @@ export function EstimatesListPanel({
         onFormLinkShared={
           activationProgress?.eligible ? handleFormLinkShared : undefined
         }
-        showFormReadyIntro={showFormReadyIntro}
       />
 
       <EstimatesListPlanLimitBanner

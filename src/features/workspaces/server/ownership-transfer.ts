@@ -12,6 +12,11 @@ import {
 import { logAuditEvent } from "@/features/workspaces/server/repository";
 import { PermissionError, WorkspaceError } from "@/server/permissions/errors";
 import { requireRole } from "@/server/permissions/require-workspace";
+import { notifyOwnershipTransferReceived } from "@/features/notifications/server/notification-emit-helpers";
+import {
+  fireNotification,
+  loadWorkspaceNotificationContext,
+} from "@/features/notifications/server/notification-workspace-context";
 
 const TRANSFER_TTL_DAYS = 7;
 
@@ -156,6 +161,21 @@ export async function initiateWorkspaceOwnershipTransfer(
       planSnapshot: eligibility.plan,
     },
   });
+
+  if (toUserId) {
+    const workspaceCtx = await loadWorkspaceNotificationContext(workspaceId);
+    if (workspaceCtx) {
+      fireNotification(
+        notifyOwnershipTransferReceived({
+          locale: workspaceCtx.locale,
+          transferId: transfer.id,
+          transferToken: transfer.token,
+          recipientUserId: toUserId,
+          workspaceName: workspaceCtx.workspaceName,
+        }),
+      );
+    }
+  }
 
   return transfer;
 }

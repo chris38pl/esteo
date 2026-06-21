@@ -220,6 +220,20 @@ export async function claimReferralForWorkspace(params: {
     },
   });
 
+  const { notifyReferralSignupPending } = await import(
+    "@/features/notifications/server/notification-emit-helpers"
+  );
+  const { fireNotification } = await import(
+    "@/features/notifications/server/notification-workspace-context"
+  );
+  fireNotification(
+    notifyReferralSignupPending({
+      locale: "pl",
+      referrerUserId: picked.referrerUserId,
+      referralId: referral.id,
+    }),
+  );
+
   return { referralId: referral.id };
 }
 

@@ -1,0 +1,66 @@
+{
+  "panel": {
+    "title": "Powiadomienia",
+    "tabAll": "Wszystkie ({count})",
+    "tabActionRequired": "Wymagają reakcji ({count})",
+    "empty": "Brak powiadomień z ostatnich 90 dni",
+    "emptyActionRequired": "Nic nie wymaga Twojej reakcji",
+    "loadMore": "Załaduj więcej"
+  },
+  "actions": {
+    "acceptInvite": "Akceptuj",
+    "declineInvite": "Odrzuć",
+    "extendPlan": "Przedłuż plan",
+    "manageBilling": "Zarządzaj płatnością",
+    "retryOrConvert": "Przejrzyj zapytanie",
+    "viewRequest": "Zobacz zapytanie"
+  },
+  "preferences": {
+    "title": "Preferencje powiadomień",
+    "description": "Wybierz kategorie powiadomień in-app. Powiadomienia e-mail wkrótce.",
+    "emailSoon": "E-mail — wkrótce",
+    "categories": {
+      "MEMBERSHIP": "Zespół i zaproszenia",
+      "BILLING": "Płatności i plany",
+      "ESTIMATES": "Wyceny i zapytania",
+      "REFERRALS": "Program partnerski",
+      "QA": "QA i zgłoszenia"
+    }
+  },
+  "types": {
+    "invitation_received": "Zaproszenie do {workspaceName}",
+    "invitation_accepted": "Zaproszenie zaakceptowane — {workspaceName}",
+    "invitation_declined": "Zaproszenie odrzucone — {workspaceName}",
+    "invitation_revoked": "Zaproszenie do {workspaceName} zostało cofnięte",
+    "invitation_on_hold": "Zaproszenie do {workspaceName} wstrzymane",
+    "invitation_released": "Zaproszenie do {workspaceName} aktywne ponownie",
+    "member_removed": "Usunięto Cię z {workspaceName}",
+    "member_suspended_seat": "Zawieszono dostęp do {workspaceName} (miejsca)",
+    "member_suspended_unpaid": "Zawieszono dostęp do {workspaceName} (płatność)",
+    "member_reactivated": "Przywrócono dostęp do {workspaceName}",
+    "ownership_transfer_received": "Oczekuje transfer właściciela — {workspaceName}",
+    "ownership_transfer_accepted": "Transfer właściciela zakończony — {workspaceName}",
+    "ownership_transfer_declined": "Transfer właściciela odrzucony — {workspaceName}",
+    "ownership_transfer_expired": "Transfer właściciela wygasł — {workspaceName}",
+    "subscription_past_due": "Płatność nieudana — {workspaceName}",
+    "subscription_grace_period": "Okres karencji — {workspaceName}",
+    "subscription_expired": "Plan wygasł — {workspaceName}",
+    "subscription_renewal_soon": "Plan odnawia się za {daysRemaining} dni ({workspaceName})",
+    "subscription_cancel_scheduled": "Anulowanie zaplanowane — {workspaceName}",
+    "subscription_resumed": "Subskrypcja wznowiona — {workspaceName}",
+    "plan_downgrade_scheduled": "Obniżka planu zaplanowana — {workspaceName}",
+    "checkout_completed": "Płatność zakończona — {workspaceName}",
+    "workspace_provisioning_incomplete": "Dokończ konfigurację płatności — {workspaceName}",
+    "estimate_limit_near": "Limit wycen prawie wyczerpany ({used}/{limit}) — {workspaceName}",
+    "estimate_limit_reached": "Osiągnięto limit wycen — {workspaceName}",
+    "estimate_request_submitted": "Nowe zapytanie: {requestTitle}",
+    "estimate_request_queued_manual": "Zapytanie czeka: {requestTitle}",
+    "estimate_request_ai_completed": "Szkic AI gotowy: {requestTitle}",
+    "estimate_request_ai_failed": "AI nie powiodło się: {requestTitle}",
+    "referral_signup_pending": "Nowa rejestracja przez Twój link",
+    "referral_activated": "Referral aktywny — nagroda w toku",
+    "referral_reward_granted": "Przyznano nagrodę partnerską",
+    "referral_reward_failed": "Nie udało się przyznać nagrody",
+    "issue_status_changed": "Zgłoszenie #{issueNumber} → {newStatus}: {issueTitle}"
+  }
+}

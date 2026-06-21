@@ -1,16 +1,7 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Ellipsis, ExternalLink, Link2, Mail, Share2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -43,16 +34,12 @@ const estimateHeroFormButtonClassName = cn(
   "bg-emerald-800 text-white hover:bg-emerald-900 dark:bg-emerald-800 dark:text-white dark:hover:bg-emerald-900",
 );
 
-const FORM_READY_INTRO_HOLD_MS = 2_600;
-
 interface EstimateRequestFormHeroCardProps {
   workspaceSlug: string;
   locale: Locale;
   className?: string;
   onCopyFormLink?: () => void;
   onFormLinkShared?: () => void;
-  /** Brief “Formularz gotowy” intro before standard card content (activation owners). */
-  showFormReadyIntro?: boolean;
 }
 
 function FormHeroStyles() {
@@ -318,73 +305,16 @@ function XIcon({ className }: { className?: string }) {
   );
 }
 
-function FormReadyIntroPanel({
-  eyebrow,
-  title,
-  description,
-}: {
-  eyebrow: string;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="estimates-list-hero-content flex flex-col justify-center">
-      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-500">
-        {eyebrow}
-      </p>
-      <p className="mt-4 text-xl font-semibold tracking-tight text-emerald-900 dark:text-emerald-100 md:text-2xl">
-        <span aria-hidden className="mr-1">
-          ✨
-        </span>
-        {title}
-      </p>
-      <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">{description}</p>
-    </div>
-  );
-}
-
 export function EstimateRequestFormHeroCard({
   workspaceSlug,
   locale,
   className,
   onCopyFormLink,
   onFormLinkShared,
-  showFormReadyIntro = false,
 }: EstimateRequestFormHeroCardProps) {
   const t = useTranslations("estimates");
-  const tFormBadge = useTranslations("activation.formBadge");
-  const reduceMotion = useReducedMotion();
-  const [introVisible, setIntroVisible] = useState(false);
-  const introTimerRef = useRef<number | null>(null);
   const [copied, setCopied] = useState(false);
   const [canNativeShare, setCanNativeShare] = useState(false);
-
-  useLayoutEffect(() => {
-    if (introTimerRef.current != null) {
-      window.clearTimeout(introTimerRef.current);
-      introTimerRef.current = null;
-    }
-
-    if (!showFormReadyIntro) {
-      setIntroVisible(false);
-      return;
-    }
-
-    setIntroVisible(true);
-    introTimerRef.current = window.setTimeout(() => {
-      setIntroVisible(false);
-      introTimerRef.current = null;
-    }, FORM_READY_INTRO_HOLD_MS);
-
-    return () => {
-      if (introTimerRef.current != null) {
-        window.clearTimeout(introTimerRef.current);
-        introTimerRef.current = null;
-      }
-    };
-  }, [showFormReadyIntro]);
-
-  const fadeDuration = reduceMotion ? 0 : 0.4;
 
   useEffect(() => {
     setCanNativeShare(typeof navigator.share === "function");
@@ -455,42 +385,18 @@ export function EstimateRequestFormHeroCard({
         />
         <HeroCardTextScrim />
         <div className="estimates-list-hero-body flex min-h-[11.5rem] flex-col justify-between gap-5 p-6 md:min-h-[12.5rem] md:p-8">
-          <AnimatePresence mode="wait" initial={false}>
-            {introVisible ? (
-              <motion.div
-                key="form-ready-intro"
-                className="flex min-h-[8rem] flex-1 flex-col justify-center md:min-h-[9rem]"
-                initial={{ opacity: 0, y: reduceMotion ? 0 : 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: reduceMotion ? 0 : -4 }}
-                transition={{ duration: fadeDuration, ease: "easeOut" }}
-              >
-                <FormReadyIntroPanel
-                  eyebrow={t("list.hero.form.eyebrow")}
-                  title={tFormBadge("readyTitle")}
-                  description={tFormBadge("readyDescription")}
-                />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="form-hero-main"
-                className="flex flex-1 flex-col justify-between gap-5"
-                initial={{ opacity: 0, y: reduceMotion ? 0 : 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: fadeDuration, ease: "easeOut" }}
-              >
-                <div className="estimates-list-hero-content">
-                  <HeroCardCopy
-                    eyebrow={t("list.hero.form.eyebrow")}
-                    title={t("list.hero.form.title")}
-                    descriptionLine1={t("list.hero.form.descriptionLine1")}
-                    descriptionLine2={t("list.hero.form.descriptionLine2")}
-                    eyebrowClassName="text-emerald-700 dark:text-emerald-500"
-                  />
-                </div>
+          <div className="flex flex-1 flex-col justify-between gap-5">
+            <div className="estimates-list-hero-content">
+              <HeroCardCopy
+                eyebrow={t("list.hero.form.eyebrow")}
+                title={t("list.hero.form.title")}
+                descriptionLine1={t("list.hero.form.descriptionLine1")}
+                descriptionLine2={t("list.hero.form.descriptionLine2")}
+                eyebrowClassName="text-emerald-700 dark:text-emerald-500"
+              />
+            </div>
 
-                <div className="flex w-full flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex w-full flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
                   <Button asChild className={estimateHeroFormButtonClassName}>
                     <Link href={publicPath} target="_blank" rel="noopener noreferrer">
                       {t("list.hero.form.cta")}
@@ -555,11 +461,9 @@ export function EstimateRequestFormHeroCard({
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
-                  </div>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+              </div>
+            </div>
         </div>
       </article>
     </TooltipProvider>

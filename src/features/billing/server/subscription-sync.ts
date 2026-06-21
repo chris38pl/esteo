@@ -172,7 +172,7 @@ export async function syncSubscriptionFromStripe(
 
   const previousSubscription = await prisma.subscription.findUnique({
     where: { billingAccountId: billingAccount.id },
-    select: { cancelAtPeriodEnd: true },
+    select: { cancelAtPeriodEnd: true, status: true },
   });
 
   const previousCancelAtPeriodEnd = previousSubscription?.cancelAtPeriodEnd ?? false;
@@ -324,6 +324,15 @@ export async function syncSubscriptionFromStripe(
         effectiveCancelAtPeriodEnd,
       );
     }
+
+    const { syncBillingStatusNotifications } = await import(
+      "@/features/notifications/server/notification-billing-sync"
+    );
+    await syncBillingStatusNotifications({
+      workspaceId: billingAccount.workspaceId,
+      previousStatus: previousSubscription?.status ?? null,
+      nextStatus: status,
+    });
   }
 
 
@@ -422,6 +431,15 @@ export async function expireWorkspaceSubscription(stripeSubscriptionId: string) 
     await recomputeIsActiveFree(billingAccount.workspaceId);
     await cancelAllWorkspaceAddons(billingAccount.workspaceId);
     await suspendMembersOnWorkspaceExpired(billingAccount.workspaceId);
+
+    const { syncBillingStatusNotifications } = await import(
+      "@/features/notifications/server/notification-billing-sync"
+    );
+    await syncBillingStatusNotifications({
+      workspaceId: billingAccount.workspaceId,
+      previousStatus: null,
+      nextStatus: "EXPIRED",
+    });
   }
 
 

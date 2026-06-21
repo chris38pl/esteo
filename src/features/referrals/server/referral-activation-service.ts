@@ -163,6 +163,20 @@ export async function activateReferralForPaidWorkspace(params: {
     amountCents: rewardCents,
     invoiceId: params.invoiceId,
   });
+
+  const { notifyReferralActivated } = await import(
+    "@/features/notifications/server/notification-emit-helpers"
+  );
+  const { fireNotification } = await import(
+    "@/features/notifications/server/notification-workspace-context"
+  );
+  fireNotification(
+    notifyReferralActivated({
+      locale: "pl",
+      referrerUserId: referral.referrerUserId,
+      referralId: referral.id,
+    }),
+  );
 }
 
 export async function handleReferralActivationFromInvoice(params: {

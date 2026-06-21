@@ -1,4 +1,4 @@
-import { toast } from "sonner";
+import { appToast } from "@/components/ui/app-toast";
 
 export const ESTIMATE_ASYNC_TOAST_POSITION = "bottom-center" as const;
 
@@ -11,11 +11,10 @@ export function showEstimateAsyncLoading(
   title: string,
   description?: string,
 ): void {
-  toast.loading(title, {
+  appToast.loading(title, {
     id,
     description,
     position: ESTIMATE_ASYNC_TOAST_POSITION,
-    duration: Infinity,
   });
 }
 
@@ -24,11 +23,13 @@ export function updateEstimateAsyncLoading(
   title: string,
   description?: string,
 ): void {
-  toast.loading(title, {
-    id,
+  appToast.update(id, {
+    variant: "loading",
+    title,
     description,
-    position: ESTIMATE_ASYNC_TOAST_POSITION,
     duration: Infinity,
+    showProgress: false,
+    position: ESTIMATE_ASYNC_TOAST_POSITION,
   });
 }
 
@@ -37,11 +38,12 @@ export function completeEstimateAsyncSuccess(
   title: string,
   description?: string,
 ): void {
-  toast.success(title, {
-    id,
+  appToast.update(id, {
+    variant: "success",
+    title,
     description,
-    position: ESTIMATE_ASYNC_TOAST_POSITION,
     duration: 5000,
+    position: ESTIMATE_ASYNC_TOAST_POSITION,
   });
 }
 
@@ -50,14 +52,15 @@ export function completeEstimateAsyncError(
   title: string,
   description?: string,
 ): void {
-  toast.error(title, {
-    id,
+  appToast.update(id, {
+    variant: "error",
+    title,
     description,
-    position: ESTIMATE_ASYNC_TOAST_POSITION,
     duration: 8000,
+    position: ESTIMATE_ASYNC_TOAST_POSITION,
   });
 }
 
 export function dismissEstimateAsyncToast(id: string): void {
-  toast.dismiss(id);
+  appToast.dismiss(id);
 }

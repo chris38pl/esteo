@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { Loader2, UploadCloud } from "lucide-react";
+import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -65,10 +66,12 @@ export function WorkspaceLogoField({
   workspaceId,
   initialLogoUrl,
   locale,
+  label,
 }: {
   workspaceId: string;
   initialLogoUrl: string | null;
   locale: Locale;
+  label?: ReactNode;
 }) {
   const t = useTranslations("workspaces.settings.logo");
   const router = useRouter();
@@ -136,15 +139,15 @@ export function WorkspaceLogoField({
   return (
     <div className="space-y-3">
       <div className="space-y-1">
-        <Label>{t("label")}</Label>
+        {label ?? <Label>{t("label")}</Label>}
         <p className="text-sm text-muted-foreground">{t("hint")}</p>
       </div>
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+      <div className="flex items-stretch gap-3">
         <div
           className={cn(
             "relative size-24 shrink-0 overflow-hidden rounded-xl border border-border/60 bg-muted/20",
-            !hasLogo && "flex items-center justify-center border-dashed",
+            !hasLogo && "border-dashed",
           )}
         >
           {hasLogo && logoUrl ? (
@@ -156,55 +159,57 @@ export function WorkspaceLogoField({
               className="object-cover"
               unoptimized
             />
-          ) : (
-            <UploadCloud className="size-8 text-muted-foreground/50" strokeWidth={1.5} />
-          )}
+          ) : null}
         </div>
 
-        <div className="min-w-0 flex-1 space-y-3">
-          <div
-            onDragOver={(event) => {
-              event.preventDefault();
-              if (!isUploading) {
-                setIsDragging(true);
-              }
-            }}
-            onDragLeave={() => setIsDragging(false)}
-            onDrop={handleDrop}
-            className={cn(
-              "rounded-xl border border-dashed border-border/70 bg-muted/10 px-4 py-5 text-center transition-colors",
-              isDragging && "border-primary/50 bg-primary/5",
-              isUploading && "pointer-events-none opacity-70",
-            )}
-          >
-            <input
-              ref={inputRef}
-              type="file"
-              accept={LOGO_ACCEPT_TYPES}
-              className="sr-only"
-              disabled={isUploading}
-              onChange={handleInputChange}
-            />
+        <div
+          onDragOver={(event) => {
+            event.preventDefault();
+            if (!isUploading) {
+              setIsDragging(true);
+            }
+          }}
+          onDragLeave={() => setIsDragging(false)}
+          onDrop={handleDrop}
+          className={cn(
+            "flex min-h-24 min-w-0 flex-1 flex-col justify-center rounded-xl border border-dashed border-border/70 bg-muted/10 px-3 py-3 transition-colors sm:px-4",
+            isDragging && "border-primary/50 bg-primary/5",
+            isUploading && "pointer-events-none opacity-70",
+          )}
+        >
+          <input
+            ref={inputRef}
+            type="file"
+            accept={LOGO_ACCEPT_TYPES}
+            className="sr-only"
+            disabled={isUploading}
+            onChange={handleInputChange}
+          />
 
-            {isUploading ? (
-              <div className="flex flex-col items-center gap-2">
-                <Loader2 className="size-5 animate-spin text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">
-                  {t("uploading", { percent: uploadProgress ?? 0 })}
-                </p>
-                {uploadProgress !== null ? (
-                  <div className="h-1.5 w-full max-w-[200px] overflow-hidden rounded-full bg-muted">
-                    <div
-                      className="h-full rounded-full bg-primary transition-all"
-                      style={{ width: `${uploadProgress}%` }}
-                    />
-                  </div>
-                ) : null}
-              </div>
-            ) : (
-              <>
+          {isUploading ? (
+            <div className="flex flex-col items-center gap-2 text-center">
+              <Loader2 className="size-5 animate-spin text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">
+                {t("uploading", { percent: uploadProgress ?? 0 })}
+              </p>
+              {uploadProgress !== null ? (
+                <div className="h-1.5 w-full max-w-[200px] overflow-hidden rounded-full bg-muted">
+                  <div
+                    className="h-full rounded-full bg-primary transition-all"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                </div>
+              ) : null}
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <UploadCloud
+                className="size-8 shrink-0 text-muted-foreground/50"
+                strokeWidth={1.5}
+              />
+              <div className="min-w-0 flex-1">
                 <p className="text-sm text-foreground/90">{t("dropHint")}</p>
-                <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                <div className="mt-2 flex flex-wrap items-center gap-2">
                   <Button
                     type="button"
                     variant="outline"
@@ -226,9 +231,9 @@ export function WorkspaceLogoField({
                     </Button>
                   ) : null}
                 </div>
-              </>
-            )}
-          </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

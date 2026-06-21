@@ -11,9 +11,11 @@ import enIssues from "@/messages/en/issues.json";
 import enEstimates from "@/messages/en/estimates.json";
 import enPayments from "@/messages/en/payments.json";
 import enReferrals from "@/messages/en/referrals.json";
+import enTips from "@/messages/en/tips.json";
 import enRequests from "@/messages/en/requests.json";
 import enSearch from "@/messages/en/search.json";
 import enNavbar from "@/messages/en/navbar.json";
+import enNotifications from "@/messages/en/notifications.json";
 import enSidebar from "@/messages/en/sidebar.json";
 import enStyleguide from "@/messages/en/styleguide.json";
 import enVoiceIntake from "@/messages/en/voiceIntake.json";
@@ -30,9 +32,11 @@ import plIssues from "@/messages/pl/issues.json";
 import plEstimates from "@/messages/pl/estimates.json";
 import plPayments from "@/messages/pl/payments.json";
 import plReferrals from "@/messages/pl/referrals.json";
+import plTips from "@/messages/pl/tips.json";
 import plRequests from "@/messages/pl/requests.json";
 import plSearch from "@/messages/pl/search.json";
 import plNavbar from "@/messages/pl/navbar.json";
+import plNotifications from "@/messages/pl/notifications.json";
 import plSidebar from "@/messages/pl/sidebar.json";
 import plStyleguide from "@/messages/pl/styleguide.json";
 import plVoiceIntake from "@/messages/pl/voiceIntake.json";
@@ -52,6 +56,8 @@ export const namespaces = [
   "payments",
   "requests",
   "referrals",
+  "tips",
+  "notifications",
   "search",
   "sidebar",
   "styleguide",
@@ -69,6 +75,7 @@ export type Namespace =
   | "admin.estimateRequests"
   | "admin.pdfPreview"
   | "admin.voiceIntakePreview"
+  | "admin.activationPreview"
   | "workspaces.invitations";
 
 type MessagesByNamespace = {
@@ -84,6 +91,8 @@ type MessagesByNamespace = {
   payments: typeof enPayments;
   requests: typeof enRequests;
   referrals: typeof enReferrals;
+  tips: typeof enTips;
+  notifications: typeof enNotifications;
   search: typeof enSearch;
   navbar: typeof enNavbar;
   sidebar: typeof enSidebar;
@@ -112,6 +121,8 @@ function forLocale(locale: Locale): Messages {
         payments: plPayments,
         requests: plRequests,
         referrals: plReferrals,
+        tips: plTips,
+        notifications: plNotifications,
         search: plSearch,
         navbar: plNavbar,
         sidebar: plSidebar,
@@ -133,6 +144,8 @@ function forLocale(locale: Locale): Messages {
         payments: enPayments,
         requests: enRequests,
         referrals: enReferrals,
+        tips: enTips,
+        notifications: enNotifications,
         search: enSearch,
         navbar: enNavbar,
         sidebar: enSidebar,

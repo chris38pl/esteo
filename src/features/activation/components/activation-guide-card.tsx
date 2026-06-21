@@ -4,7 +4,6 @@ import { ArrowRight, FileCheck, FileText, Sparkles } from "lucide-react";
 import { Fragment } from "react";
 import { useTranslations } from "next-intl";
 
-import { getActivationTipsForIndustry } from "@/features/activation/lib/activation-tips-by-industry";
 import type { ActivationGuideMode } from "@/features/activation/lib/activation-types";
 import type { WorkspaceIndustry } from "@prisma/client";
 import type { Locale } from "@/lib/locale";
@@ -77,39 +76,11 @@ function HowItWorksConnector({ vertical = false }: { vertical?: boolean }) {
 
 export function ActivationGuideCard({
   mode,
-  industry,
-  locale,
+  industry: _industry,
+  locale: _locale,
   embedded = false,
 }: ActivationGuideCardProps) {
   const t = useTranslations("activation.guide");
-
-  if (mode === "tips") {
-    const tips = getActivationTipsForIndustry(industry, locale);
-
-    const tipsContent = (
-      <>
-        <h2 className="shrink-0 text-sm font-semibold tracking-tight text-foreground">
-          {t("tipsTitle")}
-        </h2>
-        <ul className="space-y-2">
-          {tips.map((tip) => (
-            <li key={tip.id} className="flex gap-1.5 text-xs leading-snug text-muted-foreground">
-              <span aria-hidden className="shrink-0">
-                💡
-              </span>
-              <span>{tip.text}</span>
-            </li>
-          ))}
-        </ul>
-      </>
-    );
-
-    if (embedded) {
-      return <div className="space-y-3">{tipsContent}</div>;
-    }
-
-    return <div className="surface-card space-y-3 p-4 md:p-5">{tipsContent}</div>;
-  }
 
   const stepTexts = [
     t("howItWorks.step1"),

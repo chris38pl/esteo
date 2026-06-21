@@ -6,6 +6,7 @@ import {
   resolveWorkspaceForBilling,
 } from "@/features/billing/server/billing-permissions";
 import { syncWorkspaceSubscriptionFromStripe } from "@/features/billing/server/subscription-sync";
+import { dashboardEstimatesHref } from "@/lib/dashboard-routes";
 import { resolveRequestLocale } from "@/i18n/request-locale";
 import type { Locale } from "@/lib/locale";
 import { syncUserFromClerk } from "@/server/auth/sync-user";
@@ -35,7 +36,7 @@ export async function GET(
     await assertCanManageBilling(user, resolved.workspace.id);
   } catch {
     return NextResponse.redirect(
-      new URL(`/${resolvedLocale}/dashboard/${resolved.canonicalSlug}`, request.url),
+      new URL(dashboardEstimatesHref(resolvedLocale, resolved.canonicalSlug), request.url),
     );
   }
 

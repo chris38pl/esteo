@@ -139,9 +139,43 @@ export async function grantReferralBonus(params: {
   if (stripeBalanceTxnId) {
     const grantedAt = new Date();
     await markReferralGranted(params.referralId, grantedAt);
+
+    const { notifyReferralRewardGranted } = await import(
+      "@/features/notifications/server/notification-emit-helpers"
+    );
+    const { resolveReferralRewardFailed } = await import(
+      "@/features/notifications/server/resolve-notification"
+    );
+    const { fireNotification } = await import(
+      "@/features/notifications/server/notification-workspace-context"
+    );
+    await resolveReferralRewardFailed(params.referralId);
+    fireNotification(
+      notifyReferralRewardGranted({
+        locale: "pl",
+        referrerUserId: params.referrerUserId,
+        referralId: params.referralId,
+      }),
+    );
+
     return { ledgerId: ledger.id, stripeBalanceTxnId, granted: true };
   }
 
   await markReferralFailed(params.referralId, failureReason ?? "Stripe balance transaction failed");
+
+  const { notifyReferralRewardFailed } = await import(
+    "@/features/notifications/server/notification-emit-helpers"
+  );
+  const { fireNotification } = await import(
+    "@/features/notifications/server/notification-workspace-context"
+  );
+  fireNotification(
+    notifyReferralRewardFailed({
+      locale: "pl",
+      referrerUserId: params.referrerUserId,
+      referralId: params.referralId,
+    }),
+  );
+
   return { ledgerId: ledger.id, stripeBalanceTxnId: null, granted: false };
 }

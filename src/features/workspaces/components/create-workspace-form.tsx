@@ -26,6 +26,7 @@ import {
 } from "@/features/workspaces/lib/industries";
 import { WorkspaceIndustrySelect } from "@/features/workspaces/components/workspace-industry-select";
 import type { Locale } from "@/lib/locale";
+import { dashboardEstimatesHref } from "@/lib/dashboard-routes";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -155,10 +156,7 @@ export function CreateWorkspaceForm({
         return;
       }
 
-      const destination =
-        mode === "onboarding"
-          ? `/${locale}/dashboard/${result.data.workspace.slug}/estimates`
-          : `/${locale}/dashboard/${result.data.workspace.slug}`;
+      const destination = dashboardEstimatesHref(locale, result.data.workspace.slug);
 
       if (mode === "onboarding") {
         setWorkspaceReadyPending(result.data.workspace.slug);

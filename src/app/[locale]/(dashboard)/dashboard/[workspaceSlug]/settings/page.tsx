@@ -5,6 +5,7 @@ import { setRequestLocale } from "next-intl/server";
 import { WorkspaceSettingsPanel } from "@/features/workspaces/components/workspace-settings-panel";
 import { getWorkspaceSettingsPageData } from "@/features/workspaces/server/get-workspace-settings-page-data";
 import { workspaceBrandingSchema } from "@/features/workspaces/schemas/branding";
+import { dashboardEstimatesHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 import { isAvatarPreset } from "@/lib/avatars/user-avatar-presets";
@@ -33,7 +34,7 @@ export default async function WorkspaceSettingsPage({
   const data = await getWorkspaceSettingsPageData(user, resolved.workspace.id);
 
   if (!data) {
-    redirect(`/${resolvedLocale}/dashboard/${resolved.canonicalSlug}`);
+    redirect(dashboardEstimatesHref(resolvedLocale, resolved.canonicalSlug));
   }
 
   const {

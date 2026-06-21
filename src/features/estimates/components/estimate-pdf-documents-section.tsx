@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Download, FileText } from "lucide-react";
-import { toast } from "sonner";
+import { appToast } from "@/components/ui/app-toast";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -66,7 +66,7 @@ export function EstimatePdfDocumentsSection({
 
     if (!shown) {
       openEstimatePdfFallback(result.data.url, result.data.fileName);
-      toast.info(t("editor.pdfExport.popupBlocked"));
+      appToast.info(t("editor.pdfExport.popupBlocked"));
     }
   }
 

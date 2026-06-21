@@ -1,6 +1,15 @@
 "use client";
 
+import {
+  Hash,
+  ImageIcon,
+  Mail,
+  MapPin,
+  Phone,
+  type LucideIcon,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
+import type { ReactNode } from "react";
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 
@@ -28,6 +37,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -35,6 +45,25 @@ const textareaClassName = cn(
   "min-h-[88px] w-full rounded-xl border border-input bg-transparent px-3 py-2.5 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm dark:bg-input/30",
   "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
 );
+
+const fieldLabelIconClassName = "text-primary";
+
+function CompanyProfileFieldLabel({
+  htmlFor,
+  icon: Icon,
+  children,
+}: {
+  htmlFor?: string;
+  icon: LucideIcon;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <Icon className={cn("size-3.5 shrink-0", fieldLabelIconClassName)} aria-hidden />
+      <Label htmlFor={htmlFor}>{children}</Label>
+    </div>
+  );
+}
 
 interface CompanyProfileCompletionModalProps {
   open: boolean;
@@ -62,6 +91,7 @@ export function CompanyProfileCompletionModal({
   onProfileUpdated,
 }: CompanyProfileCompletionModalProps) {
   const t = useTranslations("activation.companyProfileModal");
+  const tCompany = useTranslations("workspaces.settings.company");
   const tErrors = useTranslations("workspaces.settings.company.errors");
   const router = useRouter();
   const [companyAddress, setCompanyAddress] = useState(initialProfile.address ?? "");
@@ -149,24 +179,26 @@ export function CompanyProfileCompletionModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>{t("title")}</DialogTitle>
+      <DialogContent showCloseButton className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
+        <DialogHeader className="space-y-3 pb-3">
+          <DialogTitle className="mb-1">{t("title")}</DialogTitle>
           <DialogDescription className="space-y-2">
             <span className="block">{t("description")}</span>
             <span className="block text-muted-foreground">{t("deferHint")}</span>
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSave} className="space-y-4">
+        <form onSubmit={handleSave} className="space-y-5">
           {missingFields.length > 0 ? (
-            <div className="space-y-2">
+            <div className="space-y-2.5 pb-3">
               <p className="text-sm font-medium text-foreground">{t("missingFieldsLabel")}</p>
-              <ul className="list-inside list-disc space-y-1 text-sm text-muted-foreground">
+              <div className="flex flex-wrap gap-2">
                 {missingFields.map((field) => (
-                  <li key={field}>{t(`fields.${field}`)}</li>
+                  <Badge key={field} variant="secondary" className="px-2.5 py-1">
+                    {t(`fields.${field}`)}
+                  </Badge>
                 ))}
-              </ul>
+              </div>
             </div>
           ) : null}
 
@@ -174,51 +206,72 @@ export function CompanyProfileCompletionModal({
             workspaceId={workspaceId}
             initialLogoUrl={initialLogoUrl}
             locale={locale}
+            label={
+              <CompanyProfileFieldLabel icon={ImageIcon}>
+                {t("fields.logo")}
+              </CompanyProfileFieldLabel>
+            }
           />
 
           <div className="space-y-2">
-            <Label htmlFor="activation-company-address">{t("fields.address")}</Label>
+            <CompanyProfileFieldLabel htmlFor="activation-company-address" icon={MapPin}>
+              {t("fields.address")}
+            </CompanyProfileFieldLabel>
             <textarea
               id="activation-company-address"
               value={companyAddress}
               onChange={(event) => setCompanyAddress(event.target.value)}
+              placeholder={tCompany("addressPlaceholder")}
               disabled={isPending}
               className={textareaClassName}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="activation-company-tax-id">{t("fields.taxId")}</Label>
+            <CompanyProfileFieldLabel htmlFor="activation-company-tax-id" icon={Hash}>
+              {t("fields.taxId")}
+            </CompanyProfileFieldLabel>
             <Input
               id="activation-company-tax-id"
               value={companyTaxId}
               onChange={(event) => setCompanyTaxId(event.target.value)}
+              placeholder={tCompany("taxIdPlaceholder")}
               disabled={isPending}
               className="h-11 rounded-xl"
+              inputMode="numeric"
+              autoComplete="off"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="activation-company-email">{t("fields.email")}</Label>
+            <CompanyProfileFieldLabel htmlFor="activation-company-email" icon={Mail}>
+              {t("fields.email")}
+            </CompanyProfileFieldLabel>
             <Input
               id="activation-company-email"
               type="email"
               value={companyEmail}
               onChange={(event) => setCompanyEmail(event.target.value)}
+              placeholder={tCompany("emailPlaceholder")}
               disabled={isPending}
               className="h-11 rounded-xl"
+              autoComplete="email"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="activation-company-phone">{t("fields.phone")}</Label>
+            <CompanyProfileFieldLabel htmlFor="activation-company-phone" icon={Phone}>
+              {t("fields.phone")}
+            </CompanyProfileFieldLabel>
             <Input
               id="activation-company-phone"
               type="tel"
               value={companyPhone}
               onChange={(event) => setCompanyPhone(event.target.value)}
+              placeholder={tCompany("phonePlaceholder")}
               disabled={isPending}
               className="h-11 rounded-xl"
+              autoComplete="tel"
             />
           </div>
 

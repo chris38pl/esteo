@@ -262,6 +262,8 @@ model User {
   referralProfile      UserReferralProfile?
   referralsAsReferrer  Referral[]           @relation("ReferralReferrer")
   referralCreditLedger ReferralCreditLedger[]
+  notifications        UserNotification[]
+  notificationPreferences UserNotificationPreference[]
 
   @@index([deletedAt])
 }
@@ -284,6 +286,7 @@ enum IssueType {
   FEATURE
   AI_EXTRACTION
   PERFORMANCE
+  TIP_SUGGESTION
 }
 
 enum IssuePriority {
@@ -298,6 +301,62 @@ enum IssueStatus {
   IN_PROGRESS
   RESOLVED
   ARCHIVED
+}
+
+enum NotificationType {
+  invitation_received
+  invitation_accepted
+  invitation_declined
+  invitation_revoked
+  invitation_on_hold
+  invitation_released
+  member_removed
+  member_suspended_seat
+  member_suspended_unpaid
+  member_reactivated
+  ownership_transfer_received
+  ownership_transfer_accepted
+  ownership_transfer_declined
+  ownership_transfer_expired
+  subscription_past_due
+  subscription_grace_period
+  subscription_expired
+  subscription_renewal_soon
+  subscription_cancel_scheduled
+  subscription_resumed
+  plan_downgrade_scheduled
+  checkout_completed
+  workspace_provisioning_incomplete
+  estimate_limit_near
+  estimate_limit_reached
+  estimate_request_submitted
+  estimate_request_queued_manual
+  estimate_request_ai_completed
+  estimate_request_ai_failed
+  referral_signup_pending
+  referral_activated
+  referral_reward_granted
+  referral_reward_failed
+  issue_status_changed
+}
+
+enum NotificationState {
+  INFO
+  ACTION_REQUIRED
+}
+
+enum NotificationPriority {
+  LOW
+  NORMAL
+  HIGH
+}
+
+enum NotificationPreferenceCategory {
+  MEMBERSHIP
+  BILLING
+  ESTIMATES
+  REFERRALS
+  QA
 }
 
 enum IssueEnvironment {
@@ -516,10 +575,52 @@ model Workspace {
   searchDocuments      SearchDocument[]
   recentDocuments      UserRecentDocument[]
   referralAsReferred   Referral?
+  notifications        UserNotification[]
 
   @@index([billingAccountId])
   @@index([ownerId])
   @@index([deletedAt])
+}
+
+model UserNotification {
+  id                      String               @id @default(cuid())
+  userId                  String
+  workspaceId             String?
+  type                    NotificationType
+  state                   NotificationState
+  priority                NotificationPriority @default(NORMAL)
+  dedupeKey               String
+  href                    String
+  primaryActionLabelKey   String?
+  primaryActionHref       String?
+  secondaryActionLabelKey String?
+  secondaryActionHref     String?
+  payload                 Json
+  readAt                  DateTime?
+  resolvedAt              DateTime?
+  archivedAt              DateTime?
+  createdAt               DateTime             @default(now())
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, dedupeKey])
+  @@index([userId, state, resolvedAt, createdAt(sort: Desc)])
+  @@index([userId, createdAt(sort: Desc)])
+}
+
+model UserNotificationPreference {
+  id        String                         @id @default(cuid())
+  userId    String
+  category  NotificationPreferenceCategory
+  enabled   Boolean                        @default(true)
+  createdAt DateTime                       @default(now())
+  updatedAt DateTime                       @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, category])
+  @@index([userId])
 }
 
 model WorkspaceSlugAlias {

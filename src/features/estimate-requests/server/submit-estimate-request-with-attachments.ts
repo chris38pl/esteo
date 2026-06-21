@@ -30,6 +30,9 @@ import {
 } from "@/features/attachments/server/upload-service";
 import { decrementWorkspaceStorageUsed } from "@/features/attachments/server/usage-service";
 import { buildEstimateTitleFromPublicRequest } from "@/features/estimates/lib/build-estimate-title-from-public-request";
+import { notifyEstimateRequestSubmitted } from "@/features/notifications/server/notification-emit-helpers";
+import { fireNotification } from "@/features/notifications/server/notification-workspace-context";
+import { workspaceLocaleToAppLocale } from "@/lib/workspace-locale";
 import { coerceIndustryFieldValues } from "@/features/estimate-requests/lib/coerce-industry-field-values";
 import { normalizeEstimateRequestAddress } from "@/features/estimate-requests/lib/normalize-request-address";
 import type { InternalEstimateCreateInput } from "@/features/estimate-requests/schemas/request";
@@ -111,7 +114,7 @@ async function generateRequestNumber(
 async function resolveWorkspaceForInternal(workspaceId: string) {
   return prisma.workspace.findFirst({
     where: { id: workspaceId, deletedAt: null },
-    select: { id: true, industry: true, name: true },
+    select: { id: true, industry: true, name: true, slug: true, defaultLocale: true },
   });
 }
 
@@ -172,7 +175,7 @@ export async function submitEstimateRequestWithAttachments(input: {
       ? input.workspaceSlug
         ? await prisma.workspace.findFirst({
             where: { slug: input.workspaceSlug, deletedAt: null },
-            select: { id: true, industry: true, name: true },
+            select: { id: true, industry: true, name: true, slug: true, defaultLocale: true },
           })
         : null
       : input.workspaceId
@@ -397,6 +400,18 @@ export async function submitEstimateRequestWithAttachments(input: {
     if (estimateId) {
       scheduleUpsertSearchDocumentForEstimate(estimateId);
     }
+
+    fireNotification(
+      notifyEstimateRequestSubmitted({
+        locale: workspaceLocaleToAppLocale(workspace.defaultLocale),
+        workspaceId: workspace.id,
+        workspaceSlug: workspace.slug,
+        workspaceName: workspace.name,
+        requestId,
+        requestTitle: estimateTitle,
+        queuedManual: !runFullPipeline,
+      }),
+    );
 
     return {
       requestId,

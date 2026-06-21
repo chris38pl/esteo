@@ -3,6 +3,7 @@ import { setRequestLocale } from "next-intl/server";
 
 import { PartnerProgramPanel } from "@/features/referrals/components/partner-program-panel";
 import { getPartnerProgramPageData } from "@/features/referrals/server/get-partner-program-page-data";
+import { dashboardEstimatesHref } from "@/lib/dashboard-routes";
 import { dashboardPageNarrowClass } from "@/lib/dashboard-page-layout";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
@@ -28,7 +29,7 @@ export default async function PartnerProgramPage({
 
   const isOwner = resolved.workspace.ownerId === user.id;
   if (!isOwner) {
-    redirect(`/${resolvedLocale}/dashboard/${resolved.canonicalSlug}`);
+    redirect(dashboardEstimatesHref(resolvedLocale, resolved.canonicalSlug));
   }
 
   const data = await getPartnerProgramPageData({

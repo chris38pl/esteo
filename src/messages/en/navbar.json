@@ -18,6 +18,7 @@
     "accountInspector": "Account inspector",
     "adminUsers": "Users",
     "adminWorkspaces": "Workspaces",
+    "adminStorageExplorer": "Storage explorer",
     "adminIndustryFields": "Industry fields",
     "adminEstimateRequests": "Estimate Requests",
     "adminEstimateRequestDetail": "Request detail",
@@ -25,7 +26,8 @@
     "qaIssues": "Issues",
     "billingPlans": "Plans",
     "billingAddons": "Add-ons",
-    "billingManage": "Subscription"
+    "billingManage": "Subscription",
+    "tips": "Tips"
   },
   "notifications": {
     "label": "Notifications",
