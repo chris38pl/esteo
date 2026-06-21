@@ -18,6 +18,10 @@ import {
   PermissionError,
   WorkspaceError,
 } from "@/server/permissions/errors";
+import {
+  logMutationActionFailure,
+  mapDatabaseUnavailableActionError,
+} from "@/server/db/mutation-action-errors";
 
 type CreateWorkspaceResult = {
   workspace: Awaited<ReturnType<typeof createWorkspace>>;
@@ -29,34 +33,10 @@ type ActionResult<T> =
   | { success: true; data: T }
   | { success: false; error: string; code?: string };
 
-function logCreateWorkspaceFailure(context: {
-  flow: "onboarding" | "additional";
-  userId?: string;
-  industry?: WorkspaceIndustry;
-  error: unknown;
-}): void {
-  const { error, ...rest } = context;
-  const payload = {
-    event: "create_workspace_failed",
-    ...rest,
-    errorName: error instanceof Error ? error.name : undefined,
-    errorMessage: error instanceof Error ? error.message : String(error),
-    prismaCode:
-      error &&
-      typeof error === "object" &&
-      "code" in error &&
-      typeof (error as { code: unknown }).code === "string"
-        ? (error as { code: string }).code
-        : undefined,
-  };
-
-  console.error(JSON.stringify(payload));
-  if (error instanceof Error && error.stack) {
-    console.error(error.stack);
-  }
-}
-
-function toActionError(error: unknown): ActionResult<never> {
+async function toActionError(
+  error: unknown,
+  locale: Locale,
+): Promise<ActionResult<never>> {
   if (error instanceof EntitlementError) {
     return { success: false, error: error.message, code: error.code };
   }
@@ -66,6 +46,11 @@ function toActionError(error: unknown): ActionResult<never> {
     error instanceof WorkspaceError
   ) {
     return { success: false, error: error.message };
+  }
+
+  const dbError = await mapDatabaseUnavailableActionError(error, locale);
+  if (dbError) {
+    return dbError;
   }
 
   return { success: false, error: "Something went wrong.", code: "GENERIC" };
@@ -158,12 +143,11 @@ async function createWorkspaceAndActivate(
 
     return { success: true, data: { workspace, checkoutUrl } };
   } catch (error) {
-    logCreateWorkspaceFailure({
-      flow,
-      userId,
-      industry: input.industry,
+    logMutationActionFailure(
+      "create_workspace_failed",
+      { flow, userId, industry: input.industry },
       error,
-    });
-    return toActionError(error);
+    );
+    return toActionError(error, locale);
   }
 }

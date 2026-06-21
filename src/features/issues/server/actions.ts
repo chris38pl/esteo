@@ -11,15 +11,21 @@ import { resolveIssueEnvironment } from "@/lib/app-environment";
 import { assertIssueTrackerEnabled } from "@/lib/issue-tracker/guard";
 import type { Locale } from "@/lib/locale";
 import { syncUserFromClerk } from "@/server/auth/sync-user";
+import {
+  logMutationActionFailure,
+  mapDatabaseUnavailableActionError,
+} from "@/server/db/mutation-action-errors";
 
 type ActionResult<T> =
   | { success: true; data: T }
-  | { success: false; error: string };
+  | { success: false; error: string; code?: string };
 
 export async function createIssueAction(
   input: CreateIssueInput,
-  _locale: Locale,
+  locale: Locale,
 ): Promise<ActionResult<{ issueId: string; number: number }>> {
+  let userId: string | undefined;
+
   try {
     assertIssueTrackerEnabled();
     const user = await syncUserFromClerk();
@@ -27,6 +33,8 @@ export async function createIssueAction(
     if (!user) {
       return { success: false, error: "Unauthorized." };
     }
+
+    userId = user.id;
 
     const parsed = createIssueSchema.parse(input);
 
@@ -65,7 +73,13 @@ export async function createIssueAction(
       },
     };
   } catch (error) {
-    console.error("[createIssueAction]", error);
+    logMutationActionFailure("create_issue_failed", { userId }, error);
+
+    const dbError = await mapDatabaseUnavailableActionError(error, locale);
+    if (dbError) {
+      return dbError;
+    }
+
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to create issue.",
