@@ -50,7 +50,7 @@ export async function mapDatabaseUnavailableActionError(
   success: false;
   error: string;
   code: typeof DATABASE_UNAVAILABLE_CODE;
-}> | null> {
+} | null> {
   if (!isDatabaseUnavailable(error)) {
     return null;
   }
