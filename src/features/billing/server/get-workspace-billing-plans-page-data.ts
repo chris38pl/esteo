@@ -15,7 +15,7 @@ import {
   REFERRAL_DISCOUNT_MONTHS,
   REFERRAL_DISCOUNT_PERCENT,
 } from "@/features/referrals/lib/referral-discount-config";
-import { getReferralDiscountEligibility, workspaceHasPendingReferralClaim } from "@/features/referrals/server/referral-checkout-discount";
+import { getReferralDiscountEligibility } from "@/features/referrals/server/referral-checkout-discount";
 
 const COMPARISON_PLANS: SubscriptionPlan[] = ["FREE", "PRO", "BUSINESS"];
 
@@ -57,25 +57,25 @@ export async function getWorkspaceBillingPlansPageData(
     COMPARISON_PLANS.map((plan) => [plan, resolveCurrentPlanPrice(plan)]),
   ) as Record<SubscriptionPlan, number>;
 
-  const hasPendingReferralClaim = await workspaceHasPendingReferralClaim(workspaceId);
-  const referralDiscount = hasPendingReferralClaim
-    ? {
-        percent: REFERRAL_DISCOUNT_PERCENT,
-        months: REFERRAL_DISCOUNT_MONTHS,
-        discountedPlanPriceCents: {
-          PRO: applyReferralDiscountCents(catalogPlanPriceCents.PRO),
-          BUSINESS: applyReferralDiscountCents(catalogPlanPriceCents.BUSINESS),
-        },
-      }
-    : null;
+  const referralEligibility = await getReferralDiscountEligibility(workspaceId);
+  const referralDiscount =
+    referralEligibility.eligible
+      ? {
+          percent: REFERRAL_DISCOUNT_PERCENT,
+          months: REFERRAL_DISCOUNT_MONTHS,
+          discountedPlanPriceCents: {
+            PRO: applyReferralDiscountCents(catalogPlanPriceCents.PRO),
+            BUSINESS: applyReferralDiscountCents(catalogPlanPriceCents.BUSINESS),
+          },
+        }
+      : null;
+  const referralDiscountUnavailable =
+    referralEligibility.reason === "no_coupon_config";
 
-  if (hasPendingReferralClaim) {
-    const eligibility = await getReferralDiscountEligibility(workspaceId);
-    if (eligibility.reason === "no_coupon_config") {
-      console.warn(
-        `[referral] Workspace ${workspaceId} has pending referral but STRIPE_REFERRAL_COUPON_ID missing — UI shows promo, checkout will be full price`,
-      );
-    }
+  if (referralDiscountUnavailable) {
+    console.warn(
+      `[referral] Workspace ${workspaceId} has pending referral but STRIPE_REFERRAL_COUPON_ID missing — promo hidden, checkout blocked`,
+    );
   }
 
   return {
@@ -88,5 +88,6 @@ export async function getWorkspaceBillingPlansPageData(
     addonQuantities,
     activeSubscriptionChange,
     referralDiscount,
+    referralDiscountUnavailable,
   };
 }

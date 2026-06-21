@@ -396,6 +396,7 @@ Trigger.dev Vercel integration can sync env vars and trigger deploys. **Not requ
 | `TRIGGER_SECRET_KEY` | **Main Esteo → Development** (`tr_dev_...`) | Yes |
 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` | Stripe test | If testing billing |
 | `STRIPE_PRICE_PRO`, `STRIPE_PRICE_BUSINESS` | Stripe dashboard | If testing billing |
+| `STRIPE_REFERRAL_COUPON_ID` | Stripe coupon (20% off, 3 months) | If testing referral checkout discount |
 | `ESTIMATE_REQUEST_TURNSTILE_SECRET_KEY` | Cloudflare | Optional |
 | `APP_URL`, `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` | Yes |
 
@@ -430,6 +431,7 @@ Without `trigger:dev`, tasks queue in Development and expire (no cloud worker on
 | `TRIGGER_SECRET_KEY` | **Esteo-Staging → Production** API key (`tr_prod_...`) | **Preview** |
 | `OPENAI_API_KEY` | Optional on Vercel (submit API does not call OpenAI directly) | Preview |
 | Stripe test keys | If testing billing on Preview | Preview |
+| `STRIPE_REFERRAL_COUPON_ID` | Stripe coupon (20% off, 3 months) — required for referred-user checkout discount | Preview |
 
 **Trigger.dev → Esteo-Staging → Production → Environment Variables:**
 

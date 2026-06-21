@@ -312,6 +312,8 @@
       "backToBilling": "Back to billing",
       "planSection": "Choose a plan",
       "referralDiscountBanner": "You have {percent}% off for {months} months thanks to a referral — applies to your first PRO or BUSINESS payment.",
+      "referralDiscountUnavailableBanner": "You have a referral linked, but the 20% discount is temporarily unavailable. Please try again later or contact support.",
+      "referralCouponNotConfigured": "The referral discount is temporarily unavailable. Please try again later or contact support.",
       "referralSummaryDuration": "for {months} months",
       "referralSummaryThenRegular": "(then {amount} / mo.)",
       "perMonthPromo": "/ month (promo)",

@@ -26,7 +26,9 @@ import type { Locale } from "@/lib/locale";
 import { syncUserFromClerk } from "@/server/auth/sync-user";
 import { PermissionError, WorkspaceError } from "@/server/permissions/errors";
 
-type ActionResult<T> = { success: true; data: T } | { success: false; error: string };
+type ActionResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: string; errorCode?: string };
 
 function toError(error: unknown): ActionResult<never> {
   if (
@@ -34,7 +36,11 @@ function toError(error: unknown): ActionResult<never> {
     error instanceof WorkspaceError ||
     error instanceof BillingError
   ) {
-    return { success: false, error: error.message };
+    return {
+      success: false,
+      error: error.message,
+      ...(error instanceof BillingError ? { errorCode: error.code } : {}),
+    };
   }
   console.error("[billing-actions]", error);
   return { success: false, error: "Something went wrong." };

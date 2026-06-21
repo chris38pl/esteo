@@ -312,6 +312,8 @@
       "backToBilling": "Wróć do płatności",
       "planSection": "Wybierz plan",
       "referralDiscountBanner": "Masz {percent}% zniżki przez {months} miesiące dzięki poleceniu — obowiązuje przy pierwszej płatności za PRO lub BUSINESS.",
+      "referralDiscountUnavailableBanner": "Masz przypisane polecenie, ale zniżka 20% jest chwilowo niedostępna. Spróbuj ponownie później lub skontaktuj się z nami.",
+      "referralCouponNotConfigured": "Zniżka polecająca jest chwilowo niedostępna. Spróbuj ponownie później lub skontaktuj się z nami.",
       "referralSummaryDuration": "przez {months} miesiące",
       "referralSummaryThenRegular": "(potem {amount} / mies.)",
       "perMonthPromo": "/ miesiąc (promocja)",

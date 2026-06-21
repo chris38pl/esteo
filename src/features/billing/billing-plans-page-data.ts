@@ -21,4 +21,6 @@ export type WorkspaceBillingPlansPageData = {
   addonQuantities: AddonQuantities;
   activeSubscriptionChange: ActiveSubscriptionChange | null;
   referralDiscount: WorkspaceReferralDiscount | null;
+  /** Pending referral claim exists but STRIPE_REFERRAL_COUPON_ID is not configured. */
+  referralDiscountUnavailable: boolean;
 };

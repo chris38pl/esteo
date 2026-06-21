@@ -261,11 +261,18 @@ export function WorkspaceSubscriptionManagePanel({
     return true;
   }
 
+  function resolveBillingActionError(result: { error: string; errorCode?: string }): string {
+    if (result.errorCode === "REFERRAL_COUPON_NOT_CONFIGURED") {
+      return t("referralCouponNotConfigured");
+    }
+    return result.error;
+  }
+
   async function applyPlanChange(plan: Exclude<SubscriptionPlan, "FREE">) {
     const result = await changeWorkspacePlanAction(workspaceId, plan);
 
     if (!result.success) {
-      setError(result.error);
+      setError(resolveBillingActionError(result));
       return false;
     }
 
@@ -474,6 +481,10 @@ export function WorkspaceSubscriptionManagePanel({
               percent: data.referralDiscount.percent,
               months: data.referralDiscount.months,
             })}
+          </div>
+        ) : data.referralDiscountUnavailable ? (
+          <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-950 dark:text-amber-100">
+            {t("referralDiscountUnavailableBanner")}
           </div>
         ) : null}
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:items-stretch">
