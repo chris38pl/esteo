@@ -483,10 +483,10 @@
     },
     "items": {
       "workspace_ready_banner": {
-        "label": "Baner „Workspace gotowy”",
+        "label": "Baner „Twoja przestrzeń gotowa!”",
         "meta": {
           "type": "Baner inline",
-          "what": "„Workspace gotowy” + krótki opis gotowości konta + CTA",
+          "what": "„Twoja przestrzeń gotowa!” + krótki opis gotowości konta + CTA",
           "notes": "Tylko owner; zastępuje baner porad dopóki widoczny",
           "when": "Redirect na /estimates po utworzeniu pierwszego workspace",
           "frequency": "Znika po kliknięciu ✕ (localStorage: workspace-ready-seen)"

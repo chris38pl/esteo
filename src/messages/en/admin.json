@@ -483,10 +483,10 @@
     },
     "items": {
       "workspace_ready_banner": {
-        "label": "“Workspace ready” banner",
+        "label": "“Your space is ready!” banner",
         "meta": {
           "type": "Inline banner",
-          "what": "“Workspace ready” + short account readiness copy + CTAs",
+          "what": "“Your space is ready!” + short account readiness copy + CTAs",
           "notes": "Owner only; replaces tips banner while visible",
           "when": "Redirect to /estimates after creating the first workspace",
           "frequency": "Dismissed with ✕ (localStorage: workspace-ready-seen)"
