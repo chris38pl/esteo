@@ -181,6 +181,34 @@ Tooltip/copy states that referral balance applies to PRO/Business subscription a
 
 ---
 
+## Troubleshooting
+
+### Symptom: referral ACTIVE, status „W przygotowaniu”, notification „Nie udało się przyznac nagrody”
+
+**Typical cause:** Stripe grant used a **stale** `stripeCustomerId` from an old workspace billing account while KPI balance reads a **newer** valid customer.
+
+Historical bug (fixed): `grantReferralBonus` resolved customer via **oldest owned workspace** → `resolveBillingCustomer()`. If that workspace pointed at a deleted Stripe customer (`No such customer: cus_…`), grant failed even though the referrer's active paid workspace had a valid customer.
+
+**Diagnose:**
+
+```bash
+npm run audit:referral-kpi -- --email referrer@example.com
+```
+
+Look for `rewardStatus=FAILED`, `ledger=[…→null]`, and `failure:` line.
+
+**Fix data:**
+
+```bash
+npm run prisma:backfill-missing-referral-credits
+```
+
+Uses `resolveReferrerStripeCustomerId()` — newest `BillingCustomer` first, skips deleted/missing Stripe customers.
+
+**Fix in code (current):** [`referral-billing-customer.ts`](../src/features/referrals/lib/referral-billing-customer.ts) shared by grant, balance KPI, and backfill. `grantReferralBonus` also re-links existing balance transactions by `referralId` metadata before creating a new one.
+
+---
+
 ## Server modules
 
 | Module | Role |
@@ -188,6 +216,7 @@ Tooltip/copy states that referral balance applies to PRO/Business subscription a
 | `referral-claim-service.ts` | Claim referral on workspace creation |
 | `referral-activation-service.ts` | Activate referral on first paid subscription |
 | `referral-credit-service.ts` | Grant Stripe balance; `getReferrerStripeBalanceCents()` |
+| `referral-billing-customer.ts` | `resolveReferrerStripeCustomerId()` — newest valid Stripe customer |
 | `referral-earnings-summary.ts` | KPI aggregation for partner page |
 | `referral-kpi-utils.ts` | Pure KPI helpers + `computeUsedReferralBalanceCents` |
 | `get-partner-program-page-data.ts` | Page loader |

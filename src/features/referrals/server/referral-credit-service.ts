@@ -2,21 +2,19 @@ import "server-only";
 
 import { prisma } from "@/db/client";
 import { getStripeClient } from "@/features/billing/server/stripe-client";
-import { resolveBillingCustomer } from "@/features/billing/server/billing-service";
+import {
+  findReferralBalanceTransactionId,
+  resolveReferrerStripeCustomerId,
+} from "@/features/referrals/lib/referral-billing-customer";
 
 export async function getReferrerStripeBalanceCents(referrerUserId: string): Promise<number> {
-  const customer = await prisma.billingCustomer.findFirst({
-    where: { ownerUserId: referrerUserId, stripeCustomerId: { not: null } },
-    orderBy: { createdAt: "desc" },
-    select: { stripeCustomerId: true },
-  });
-
-  if (!customer?.stripeCustomerId) {
+  const stripeCustomerId = await resolveReferrerStripeCustomerId(referrerUserId);
+  if (!stripeCustomerId) {
     return 0;
   }
 
   const stripe = getStripeClient();
-  const stripeCustomer = await stripe.customers.retrieve(customer.stripeCustomerId);
+  const stripeCustomer = await stripe.customers.retrieve(stripeCustomerId);
   if (stripeCustomer.deleted) {
     return 0;
   }
@@ -57,6 +55,27 @@ async function markReferralFailed(referralId: string, reason: string): Promise<v
   });
 }
 
+async function createReferralBalanceTransaction(params: {
+  stripeCustomerId: string;
+  referralId: string;
+  referrerUserId: string;
+  invoiceId: string;
+  amountCents: number;
+}): Promise<string> {
+  const stripe = getStripeClient();
+  const txn = await stripe.customers.createBalanceTransaction(params.stripeCustomerId, {
+    amount: -params.amountCents,
+    currency: "pln",
+    description: `Referral activation bonus (${params.referralId})`,
+    metadata: {
+      referralId: params.referralId,
+      referrerUserId: params.referrerUserId,
+      invoiceId: params.invoiceId,
+    },
+  });
+  return txn.id;
+}
+
 export async function grantReferralBonus(params: {
   referrerUserId: string;
   referralId: string;
@@ -81,36 +100,33 @@ export async function grantReferralBonus(params: {
     };
   }
 
-  const ownedWorkspace = await prisma.workspace.findFirst({
-    where: { ownerId: params.referrerUserId, deletedAt: null },
-    select: { id: true },
-    orderBy: { createdAt: "asc" },
-  });
-
   let stripeBalanceTxnId: string | null = null;
   let failureReason: string | null = null;
 
-  if (ownedWorkspace) {
+  const stripeCustomerId = await resolveReferrerStripeCustomerId(params.referrerUserId);
+
+  if (stripeCustomerId) {
     try {
-      const { stripeCustomerId } = await resolveBillingCustomer(ownedWorkspace.id);
-      const stripe = getStripeClient();
-      const txn = await stripe.customers.createBalanceTransaction(stripeCustomerId, {
-        amount: -params.amountCents,
-        currency: "pln",
-        description: `Referral activation bonus (${params.referralId})`,
-        metadata: {
+      stripeBalanceTxnId = await findReferralBalanceTransactionId(
+        stripeCustomerId,
+        params.referralId,
+      );
+
+      if (!stripeBalanceTxnId) {
+        stripeBalanceTxnId = await createReferralBalanceTransaction({
+          stripeCustomerId,
           referralId: params.referralId,
           referrerUserId: params.referrerUserId,
           invoiceId: params.invoiceId,
-        },
-      });
-      stripeBalanceTxnId = txn.id;
+          amountCents: params.amountCents,
+        });
+      }
     } catch (error) {
       failureReason = formatGrantError(error);
       console.error("Failed to grant Stripe referral balance:", error);
     }
   } else {
-    failureReason = "Referrer has no owned workspace for Stripe billing";
+    failureReason = "Referrer has no valid Stripe customer for referral credits";
   }
 
   const ledger =
@@ -127,9 +143,7 @@ export async function grantReferralBonus(params: {
       },
     }));
 
-  if (!existing && stripeBalanceTxnId) {
-    // create path already persisted stripeBalanceTxnId
-  } else if (existing && stripeBalanceTxnId) {
+  if (existing && stripeBalanceTxnId) {
     await prisma.referralCreditLedger.update({
       where: { id: existing.id },
       data: { stripeBalanceTxnId },

@@ -8,6 +8,11 @@
 import { PrismaClient } from "@prisma/client";
 import Stripe from "stripe";
 
+import {
+  findReferralBalanceTransactionId,
+  resolveReferrerStripeCustomerId,
+} from "../src/features/referrals/lib/referral-billing-customer";
+
 const prisma = new PrismaClient();
 
 function getStripeClient(): Stripe {
@@ -16,25 +21,6 @@ function getStripeClient(): Stripe {
     throw new Error("Missing STRIPE_SECRET_KEY");
   }
   return new Stripe(key);
-}
-
-async function resolveReferrerStripeCustomerId(referrerUserId: string): Promise<string | null> {
-  const customer = await prisma.billingCustomer.findFirst({
-    where: { ownerUserId: referrerUserId, stripeCustomerId: { not: null } },
-    orderBy: { createdAt: "desc" },
-    select: { stripeCustomerId: true },
-  });
-  return customer?.stripeCustomerId ?? null;
-}
-
-async function findExistingBalanceTxn(
-  stripe: Stripe,
-  stripeCustomerId: string,
-  referralId: string,
-): Promise<string | null> {
-  const txns = await stripe.customers.listBalanceTransactions(stripeCustomerId, { limit: 100 });
-  const match = txns.data.find((txn) => txn.metadata?.referralId === referralId);
-  return match?.id ?? null;
 }
 
 async function main() {
@@ -73,12 +59,15 @@ async function main() {
     const stripeCustomerId = await resolveReferrerStripeCustomerId(ledger.referrerUserId);
 
     if (!stripeCustomerId) {
-      console.warn(`  skip ${label}: referrer has no Stripe customer`);
+      console.warn(`  skip ${label}: referrer has no valid Stripe customer`);
       skipped += 1;
       continue;
     }
 
-    let stripeBalanceTxnId = await findExistingBalanceTxn(stripe, stripeCustomerId, ledger.referralId);
+    let stripeBalanceTxnId = await findReferralBalanceTransactionId(
+      stripeCustomerId,
+      ledger.referralId,
+    );
 
     if (!stripeBalanceTxnId) {
       if (dryRun) {

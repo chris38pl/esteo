@@ -12,6 +12,7 @@ import {
 import { detectReferralFraud } from "../src/features/referrals/server/referral-fraud-detector";
 import { computeReferralKpiFromRows, computeUsedReferralBalanceCents } from "../src/features/referrals/lib/referral-kpi-utils";
 import { resolveReferralPayoutStatusKey } from "../src/features/referrals/lib/referral-payout-status";
+import { selectValidReferrerStripeCustomerId } from "../src/features/referrals/lib/referral-billing-customer";
 
 let failures = 0;
 let checks = 0;
@@ -181,7 +182,31 @@ assert(
   "redirect_url to referral landing extracts code",
 );
 
-console.log(`\n${checks - failures}/${checks} checks passed`);
-if (failures > 0) {
+console.log("Referrer Stripe customer resolution (newest valid first):");
+void (async () => {
+  const pickedCustomer = await selectValidReferrerStripeCustomerId(
+    ["cus_stale", "cus_valid", "cus_older"],
+    async (id) => {
+      if (id === "cus_stale") {
+        throw new Error("No such customer");
+      }
+      if (id === "cus_valid") {
+        return { deleted: false };
+      }
+      return { deleted: true };
+    },
+  );
+  assert(pickedCustomer === "cus_valid", "skips missing/deleted customers, picks newest valid");
+  assert(
+    (await selectValidReferrerStripeCustomerId(["cus_a"], async () => ({ deleted: true }))) === null,
+    "returns null when every candidate is deleted",
+  );
+
+  console.log(`\n${checks - failures}/${checks} checks passed`);
+  if (failures > 0) {
+    process.exit(1);
+  }
+})().catch((error) => {
+  console.error(error);
   process.exit(1);
-}
+});

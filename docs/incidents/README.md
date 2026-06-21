@@ -18,5 +18,6 @@ Short postmortems for non-obvious bugs and the patterns that fixed them. Use the
 | 2026-06-18 | [Estimate send toast polling stuck](./2026-06-18-estimate-send-toast-polling-stuck.md) | Send succeeds (banner SENT) but bottom toast keeps loading; duplicate in-progress banner |
 | 2026-06-20 | [Form reset after attachment upload (dev)](./2026-06-20-form-reset-after-attachment-upload-dev.md) | Pre-upload clears form + "Compiling/Rendering…" on every file add in local dev |
 | 2026-06-20 | [Sign-up verify duplicate OTP / missing UX](./2026-06-20-sign-up-verify-duplicate-emails.md) | Brak emaila i resend na `/sign-up/verify`; potem 3 kody OTP naraz w dev |
+| 2026-06-21 | [Referral grant stale Stripe customer](./2026-06-21-referral-grant-stale-stripe-customer.md) | Referral ACTIVE ale nagroda FAILED; KPI saldo OK; „No such customer” przy grant |
 
 When adding a new note, name files `YYYY-MM-DD-short-slug.md` and add a row to this table.

@@ -7,6 +7,7 @@ import { PrismaClient } from "@prisma/client";
 import Stripe from "stripe";
 
 import { computeReferralKpiFromRows, computeUsedReferralBalanceCents } from "../src/features/referrals/lib/referral-kpi-utils";
+import { resolveReferrerStripeCustomerId } from "../src/features/referrals/lib/referral-billing-customer";
 
 const prisma = new PrismaClient();
 
@@ -54,11 +55,7 @@ async function main() {
     process.exit(1);
   }
 
-  const billingCustomer = await prisma.billingCustomer.findFirst({
-    where: { ownerUserId: user.id, stripeCustomerId: { not: null } },
-    orderBy: { createdAt: "desc" },
-    select: { stripeCustomerId: true },
-  });
+  const stripeCustomerId = await resolveReferrerStripeCustomerId(user.id);
 
   const referrals = await prisma.referral.findMany({
     where: { referrerUserId: user.id },
@@ -78,9 +75,7 @@ async function main() {
   });
 
   const kpi = computeReferralKpiFromRows(referrals);
-  const availableBalanceCents = await getReferrerStripeBalanceCents(
-    billingCustomer?.stripeCustomerId ?? null,
-  );
+  const availableBalanceCents = await getReferrerStripeBalanceCents(stripeCustomerId);
   const usedBalanceCents = computeUsedReferralBalanceCents(
     kpi.grantedRewardsCents,
     availableBalanceCents,
@@ -91,7 +86,7 @@ async function main() {
     .reduce((sum, r) => sum + r.rewardCents, 0);
 
   console.log(`\nReferral KPI audit: ${user.email}`);
-  console.log(`Stripe customer: ${billingCustomer?.stripeCustomerId ?? "none"}`);
+  console.log(`Stripe customer: ${stripeCustomerId ?? "none"}`);
   console.log("--- Hero KPI ---");
   console.log(`  referredCompaniesCount:   ${kpi.referredCompaniesCount}`);
   console.log(`  grantedRewardsCents:      ${kpi.grantedRewardsCents}`);
