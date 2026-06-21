@@ -1,38 +1,90 @@
 import Image from "next/image";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
-import { ArrowRight, Briefcase, Clock, Lock, Sparkles, TrafficCone } from "lucide-react";
+import { ArrowRight, Lock, Rocket, Shield, TrafficCone, Zap } from "lucide-react";
 
 import { HOME_LANDING_HERO_IMAGES } from "@/features/landing/lib/hero-images";
 import { getServerTranslations } from "@/i18n/request-locale";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
-function LandingBackgroundDecor() {
+type LandingStar = {
+  top: string;
+  side: string;
+  sizeClass: string;
+  tone: "blue" | "violet";
+};
+
+const HERO_IMAGE_STARS: LandingStar[] = [
+  { top: "16%", side: "3%", sizeClass: "size-1", tone: "blue" },
+  { top: "22%", side: "24%", sizeClass: "size-1.5", tone: "violet" },
+  { top: "28%", side: "6%", sizeClass: "size-0.5", tone: "blue" },
+  { top: "34%", side: "32%", sizeClass: "size-1", tone: "violet" },
+  { top: "40%", side: "10%", sizeClass: "size-1.5", tone: "blue" },
+  { top: "46%", side: "28%", sizeClass: "size-1", tone: "violet" },
+  { top: "52%", side: "2%", sizeClass: "size-0.5", tone: "blue" },
+  { top: "58%", side: "20%", sizeClass: "size-1", tone: "violet" },
+  { top: "64%", side: "36%", sizeClass: "size-1.5", tone: "blue" },
+  { top: "20%", side: "14%", sizeClass: "size-1", tone: "violet" },
+  { top: "36%", side: "4%", sizeClass: "size-0.5", tone: "blue" },
+  { top: "48%", side: "34%", sizeClass: "size-1", tone: "violet" },
+  { top: "60%", side: "8%", sizeClass: "size-1", tone: "blue" },
+];
+
+function getLandingStarPulse(index: number) {
+  const durations = [3.4, 4.2, 5.1, 5.8, 6.6, 4.6, 6.2, 3.8, 5.4, 7.2];
+  const delays = [0, 0.8, 1.6, 0.5, 2.1, 1.1, 2.4, 1.3, 2.2, 0.3];
+
+  return {
+    animationDuration: `${durations[index % durations.length]}s`,
+    animationDelay: `${delays[index % delays.length]}s`,
+  };
+}
+
+function LandingStarDot({ star, pulseIndex }: { star: LandingStar; pulseIndex: number }) {
+  const toneClass =
+    star.tone === "blue"
+      ? "bg-blue-300/80 shadow-[0_0_12px_2px_rgba(96,165,250,0.75)] dark:bg-blue-300/70"
+      : "bg-violet-300/75 shadow-[0_0_10px_1px_rgba(167,139,250,0.7)] dark:bg-violet-300/65";
+
+  const pulse = getLandingStarPulse(pulseIndex);
+
   return (
-    <>
-      <div
-        aria-hidden
-        className="pointer-events-none absolute right-[8%] top-[6%] hidden h-28 w-28 rounded-full bg-violet-500/10 blur-3xl lg:block dark:bg-violet-500/10"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute right-[14%] top-[10%] hidden size-1.5 rounded-full bg-blue-300/80 shadow-[0_0_12px_2px_rgba(96,165,250,0.8)] lg:block dark:block"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute right-[22%] top-[8%] hidden size-1 rounded-full bg-violet-300/70 shadow-[0_0_10px_1px_rgba(167,139,250,0.7)] lg:block dark:block"
-      />
-    </>
+    <div
+      aria-hidden
+      className={cn(
+        "landing-star-pulse pointer-events-none absolute rounded-full",
+        star.sizeClass,
+        toneClass,
+      )}
+      style={{
+        top: star.top,
+        right: star.side,
+        animationDuration: pulse.animationDuration,
+        animationDelay: pulse.animationDelay,
+      }}
+    />
+  );
+}
+
+function HeroImageStars() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 hidden overflow-visible lg:dark:block"
+    >
+      <div className="absolute right-[14%] top-[38%] h-28 w-28 rounded-full bg-violet-500/10 blur-3xl" />
+      {HERO_IMAGE_STARS.map((star, index) => (
+        <LandingStarDot key={`hero-star-${index}`} star={star} pulseIndex={index} />
+      ))}
+    </div>
   );
 }
 
 function LandingLogo() {
   return (
     <div className="flex items-center gap-3">
-      <div className="relative size-10 shrink-0 rounded-full bg-gradient-to-br from-blue-500 to-violet-500 p-[2px]">
-        <div className="relative size-full overflow-hidden rounded-full bg-background">
-          <Image src="/logo.png" alt="" fill className="object-cover" priority />
-        </div>
+      <div className="relative size-10 shrink-0 overflow-hidden rounded-full">
+        <Image src="/logo.png" alt="" fill className="object-cover" priority />
       </div>
       <span className="text-xl font-bold tracking-tight text-foreground">Esteo</span>
     </div>
@@ -67,12 +119,14 @@ function HeadlineArrow() {
 
 function FeatureItem({
   icon: Icon,
-  label,
+  labelLine1,
+  labelLine2,
   iconClassName,
   mobileList = false,
 }: {
-  icon: typeof Briefcase;
-  label: string;
+  icon: typeof Rocket;
+  labelLine1: string;
+  labelLine2: string;
   iconClassName: string;
   mobileList?: boolean;
 }) {
@@ -87,7 +141,9 @@ function FeatureItem({
         >
           <Icon className="size-[1.125rem]" strokeWidth={2.2} />
         </div>
-        <p className="text-sm text-foreground/90">{label}</p>
+        <p className="text-sm text-foreground/90">
+          {labelLine1} {labelLine2}
+        </p>
       </div>
     );
   }
@@ -96,14 +152,15 @@ function FeatureItem({
     <div className="flex shrink-0 flex-row items-center gap-3 lg:gap-3.5">
       <div
         className={cn(
-          "flex size-9 shrink-0 items-center justify-center rounded-lg shadow-sm lg:size-10",
+          "flex size-9 shrink-0 items-center justify-center rounded-lg lg:size-10",
           iconClassName,
         )}
       >
         <Icon className="size-4 lg:size-[1.125rem]" strokeWidth={2.2} />
       </div>
-      <p className="max-w-[9.5rem] text-sm font-medium leading-snug text-foreground/90 lg:max-w-[11rem] lg:leading-snug xl:max-w-[12.5rem]">
-        {label}
+      <p className="text-sm font-medium leading-tight text-foreground/90">
+        <span className="block">{labelLine1}</span>
+        <span className="block">{labelLine2}</span>
       </p>
     </div>
   );
@@ -124,6 +181,7 @@ function HeroImage() {
         draggable={false}
         className="relative z-0 mx-auto hidden w-[145%] max-w-none -translate-x-[38%] scale-[1.1] object-contain object-center dark:block lg:mx-0 lg:w-full lg:translate-x-0 lg:scale-[1.28] lg:object-contain xl:scale-[1.38]"
       />
+      <HeroImageStars />
     </div>
   );
 }
@@ -197,8 +255,6 @@ export async function HomeLandingPage({ locale }: { locale: Locale }) {
 
   return (
     <main className="relative flex min-h-full flex-1 flex-col overflow-x-hidden bg-background font-sans text-foreground lg:min-h-[100dvh] lg:items-center lg:justify-center">
-      <LandingBackgroundDecor />
-
       <div className="relative mx-auto w-full max-w-6xl px-5 pb-10 pt-8 sm:px-8 sm:pt-10 lg:px-8 lg:py-8">
         <section className="relative grid items-start gap-3 overflow-visible sm:gap-4 lg:min-h-[min(520px,54vh)] lg:grid-cols-1 lg:gap-0">
           <div className="relative z-10 flex max-w-xl flex-col gap-6 sm:gap-7 lg:max-w-[44%] lg:overflow-visible lg:gap-7">
@@ -226,19 +282,22 @@ export async function HomeLandingPage({ locale }: { locale: Locale }) {
 
             <div className="relative z-10 hidden gap-9 lg:flex lg:w-[128%] lg:max-w-none xl:w-[138%]">
               <FeatureItem
-                icon={Briefcase}
-                label={t("features.moreJobsLessAdmin")}
-                iconClassName="bg-gradient-to-br from-violet-500/15 to-blue-500/10 text-violet-600 dark:from-violet-500/25 dark:to-blue-500/15 dark:text-violet-300"
+                icon={Rocket}
+                labelLine1={t("features.modern.line1")}
+                labelLine2={t("features.modern.line2")}
+                iconClassName="bg-gradient-to-br from-violet-500/[0.06] to-blue-500/[0.04] text-violet-600 dark:from-violet-500/10 dark:to-blue-500/[0.06] dark:text-violet-300"
               />
               <FeatureItem
-                icon={Sparkles}
-                label={t("features.aiEstimates")}
-                iconClassName="bg-gradient-to-br from-blue-500/15 to-indigo-500/10 text-blue-600 dark:from-blue-500/25 dark:to-indigo-500/15 dark:text-blue-300"
+                icon={Shield}
+                labelLine1={t("features.security.line1")}
+                labelLine2={t("features.security.line2")}
+                iconClassName="bg-gradient-to-br from-blue-500/[0.06] to-indigo-500/[0.04] text-blue-600 dark:from-blue-500/10 dark:to-indigo-500/[0.06] dark:text-blue-300"
               />
               <FeatureItem
-                icon={Clock}
-                label={t("features.fastQuoteFlow")}
-                iconClassName="bg-gradient-to-br from-emerald-500/15 to-teal-500/10 text-emerald-600 dark:from-emerald-500/20 dark:to-teal-500/15 dark:text-emerald-300"
+                icon={Zap}
+                labelLine1={t("features.aiEstimates.line1")}
+                labelLine2={t("features.aiEstimates.line2")}
+                iconClassName="bg-gradient-to-br from-emerald-500/[0.06] to-teal-500/[0.04] text-emerald-600 dark:from-emerald-500/10 dark:to-teal-500/[0.06] dark:text-emerald-300"
               />
             </div>
           </div>
@@ -249,21 +308,24 @@ export async function HomeLandingPage({ locale }: { locale: Locale }) {
         <div className="relative z-10 mt-8 flex flex-col gap-4 pl-6 sm:pl-8 lg:hidden">
           <FeatureItem
             mobileList
-            icon={Briefcase}
-            label={t("features.moreJobsLessAdmin")}
-            iconClassName="bg-gradient-to-br from-violet-500/15 to-blue-500/10 text-violet-600 dark:from-violet-500/25 dark:to-blue-500/15 dark:text-violet-300"
+            icon={Rocket}
+            labelLine1={t("features.modern.line1")}
+            labelLine2={t("features.modern.line2")}
+            iconClassName="bg-gradient-to-br from-violet-500/[0.06] to-blue-500/[0.04] text-violet-600 dark:from-violet-500/10 dark:to-blue-500/[0.06] dark:text-violet-300"
           />
           <FeatureItem
             mobileList
-            icon={Sparkles}
-            label={t("features.aiEstimates")}
-            iconClassName="bg-gradient-to-br from-blue-500/15 to-indigo-500/10 text-blue-600 dark:from-blue-500/25 dark:to-indigo-500/15 dark:text-blue-300"
+            icon={Shield}
+            labelLine1={t("features.security.line1")}
+            labelLine2={t("features.security.line2")}
+            iconClassName="bg-gradient-to-br from-blue-500/[0.06] to-indigo-500/[0.04] text-blue-600 dark:from-blue-500/10 dark:to-indigo-500/[0.06] dark:text-blue-300"
           />
           <FeatureItem
             mobileList
-            icon={Clock}
-            label={t("features.fastQuoteFlow")}
-            iconClassName="bg-gradient-to-br from-emerald-500/15 to-teal-500/10 text-emerald-600 dark:from-emerald-500/20 dark:to-teal-500/15 dark:text-emerald-300"
+            icon={Zap}
+            labelLine1={t("features.aiEstimates.line1")}
+            labelLine2={t("features.aiEstimates.line2")}
+            iconClassName="bg-gradient-to-br from-emerald-500/[0.06] to-teal-500/[0.04] text-emerald-600 dark:from-emerald-500/10 dark:to-teal-500/[0.06] dark:text-emerald-300"
           />
         </div>
 

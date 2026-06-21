@@ -505,3 +505,25 @@ button:not(:disabled),
     transform: scaleX(0.35);
   }
 }
+
+@keyframes landing-star-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.38;
+  }
+}
+
+.landing-star-pulse {
+  animation-name: landing-star-pulse;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-star-pulse {
+    animation: none;
+  }
+}

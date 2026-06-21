@@ -4,9 +4,18 @@
   "headlineHighlight": "wyjątkowego",
   "description": "Esteo jest jeszcze w budowie, ale już teraz udostępniamy Ci nowe możliwości.",
   "features": {
-    "moreJobsLessAdmin": "Więcej zleceń. Mniej administracji.",
-    "aiEstimates": "Wyceny napędzane sztuczną inteligencją.",
-    "fastQuoteFlow": "Od zapytania do wyceny dla klienta w kilka minut."
+    "modern": {
+      "line1": "Nowoczesne",
+      "line2": "rozwiązania"
+    },
+    "security": {
+      "line1": "Bezpieczeństwo",
+      "line2": "danych"
+    },
+    "aiEstimates": {
+      "line1": "Wyceny napędzane",
+      "line2": "przez AI"
+    }
   },
   "cta": {
     "title": "Aplikacja jest już dostępna!",

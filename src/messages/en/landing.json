@@ -4,9 +4,18 @@
   "headlineHighlight": "exceptional",
   "description": "Esteo is still under construction, but we're already giving you new capabilities.",
   "features": {
-    "moreJobsLessAdmin": "More jobs. Less admin work.",
-    "aiEstimates": "Estimates powered by artificial intelligence.",
-    "fastQuoteFlow": "From inquiry to client-ready quote in minutes."
+    "modern": {
+      "line1": "Modern",
+      "line2": "solutions"
+    },
+    "security": {
+      "line1": "Data",
+      "line2": "security"
+    },
+    "aiEstimates": {
+      "line1": "AI-powered",
+      "line2": "estimates"
+    }
   },
   "cta": {
     "title": "The app is already available!",
