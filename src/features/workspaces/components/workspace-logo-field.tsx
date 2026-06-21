@@ -8,7 +8,10 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { RemoveWorkspaceLogoDialog } from "@/features/workspaces/components/remove-workspace-logo-dialog";
-import { LOGO_ACCEPT_TYPES } from "@/features/workspaces/lib/logo-constants";
+import {
+  LOGO_ACCEPT_TYPES,
+  MAX_LOGO_RAW_BYTES,
+} from "@/features/workspaces/lib/logo-constants";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -90,8 +93,26 @@ export function WorkspaceLogoField({
   const isUploading = uploadState === "uploading";
   const hasLogo = Boolean(logoUrl);
 
+  function resolveUploadErrorMessage(message: string) {
+    if (message === "File is too large.") {
+      return t("errors.tooLarge");
+    }
+
+    if (message === "Upload failed.") {
+      return t("errors.uploadFailed");
+    }
+
+    return message;
+  }
+
   async function handleFile(file: File | null) {
     if (!file || isUploading) {
+      return;
+    }
+
+    if (file.size > MAX_LOGO_RAW_BYTES) {
+      setUploadState("error");
+      setError(t("errors.tooLarge"));
       return;
     }
 
@@ -113,7 +134,11 @@ export function WorkspaceLogoField({
       setUploadState("error");
       setUploadProgress(null);
       setError(
-        uploadError instanceof Error ? uploadError.message : t("errors.uploadFailed"),
+        resolveUploadErrorMessage(
+          uploadError instanceof Error
+            ? uploadError.message
+            : t("errors.uploadFailed"),
+        ),
       );
     }
   }

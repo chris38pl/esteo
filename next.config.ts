@@ -27,6 +27,9 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   experimental: {
     proxyClientMaxBodySize: "12mb",
+    serverActions: {
+      bodySizeLimit: "3mb",
+    },
   },
   webpack: (config, { dev }) => {
     if (dev) {
