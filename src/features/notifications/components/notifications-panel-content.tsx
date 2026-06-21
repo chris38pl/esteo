@@ -69,6 +69,14 @@ export function NotificationsPanelContent({
             : item,
         ),
       );
+      setCounts((prev) => {
+        const next = {
+          ...prev,
+          unread: Math.max(0, prev.unread - 1),
+        };
+        onCountsChange?.(next);
+        return next;
+      });
       router.refresh();
     });
   }

@@ -22,9 +22,9 @@ import {
   countTipsInSlides,
 } from "@/features/tips/lib/build-tips-carousel-slides";
 import { TIPS_BANNER_CATALOG } from "@/features/tips/lib/tips-catalog";
-import { markTipsBannerDismissedForSession } from "@/features/tips/lib/tips-storage";
 import { dashboardTipsHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
+import { cn } from "@/lib/utils";
 
 interface ActivationTipsBannerProps {
   workspaceSlug: string;
@@ -42,15 +42,23 @@ export function ActivationTipsBanner({
   const tBanner = useTranslations("tips.banner");
   const { issueTrackerEnabled, currentUserId } = useWorkspaceContext();
   const [reportOpen, setReportOpen] = useState(false);
-  const { dismissedIds, pinnedIds, togglePin, dismissTip } = useTipsStorageState(
-    preview ? null : currentUserId,
-    workspaceSlug,
-  );
+  const {
+    dismissedIds,
+    pinnedIds,
+    isBannerDismissedForSession,
+    togglePin,
+    dismissTip,
+    dismissBannerForSession,
+  } = useTipsStorageState(preview ? null : currentUserId, workspaceSlug);
 
   const slides = buildTipsCarouselSlides(TIPS_BANNER_CATALOG, {
     pinnedIds: preview ? [] : pinnedIds,
     dismissedIds: preview ? [] : dismissedIds,
   });
+
+  if (!preview && isBannerDismissedForSession) {
+    return null;
+  }
 
   if (!preview && countTipsInSlides(slides) === 0) {
     return null;
@@ -58,33 +66,64 @@ export function ActivationTipsBanner({
 
   function handleDismiss() {
     if (!preview) {
-      markTipsBannerDismissedForSession(currentUserId, workspaceSlug);
+      dismissBannerForSession();
     }
     onDismissed?.();
   }
 
   const tipsPageHref = dashboardTipsHref(locale, workspaceSlug);
 
+  const dismissButtonClassName =
+    "inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground";
+
   return (
     <>
       <section className="surface-card overflow-hidden rounded-t-xl rounded-b-lg border border-border/60">
         <div className="p-4 md:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex min-w-0 items-start gap-3">
-              <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-amber-500/12 ring-1 ring-amber-500/20 dark:bg-amber-400/10 dark:ring-amber-400/15">
-                <Lightbulb
-                  className="size-5 text-amber-600 dark:text-amber-400"
-                  aria-hidden
-                />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between gap-3 sm:hidden">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-amber-500/12 ring-1 ring-amber-500/20 dark:bg-amber-400/10 dark:ring-amber-400/15">
+                    <Lightbulb
+                      className="size-5 text-amber-600 dark:text-amber-400"
+                      aria-hidden
+                    />
+                  </div>
+                  <h2 className="text-lg font-semibold tracking-tight text-foreground">
+                    {tBanner("title")}
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleDismiss}
+                  className={dismissButtonClassName}
+                  aria-label={tBanner("dismiss")}
+                >
+                  <X className="size-4" aria-hidden />
+                </button>
               </div>
-              <div className="min-w-0">
-                <h2 className="text-lg font-semibold tracking-tight text-foreground">
-                  {tBanner("title")}
-                </h2>
-                <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-                  {tBanner("subtitle")}
-                </p>
+
+              <div className="hidden min-w-0 items-start gap-3 sm:flex">
+                <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-amber-500/12 ring-1 ring-amber-500/20 dark:bg-amber-400/10 dark:ring-amber-400/15">
+                  <Lightbulb
+                    className="size-5 text-amber-600 dark:text-amber-400"
+                    aria-hidden
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-lg font-semibold tracking-tight text-foreground">
+                    {tBanner("title")}
+                  </h2>
+                  <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                    {tBanner("subtitle")}
+                  </p>
+                </div>
               </div>
+
+              <p className="mt-1 max-w-2xl pl-14 text-sm leading-relaxed text-muted-foreground sm:hidden">
+                {tBanner("subtitle")}
+              </p>
             </div>
 
             <div className="flex shrink-0 items-center gap-2 self-start sm:pt-0.5">
@@ -104,7 +143,7 @@ export function ActivationTipsBanner({
               <button
                 type="button"
                 onClick={handleDismiss}
-                className="inline-flex size-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+                className={cn(dismissButtonClassName, "hidden sm:inline-flex")}
                 aria-label={tBanner("dismiss")}
               >
                 <X className="size-4" aria-hidden />

@@ -4,7 +4,17 @@
 
     "title": "Porady",
 
-    "subtitle": "Krótkie wskazówki o wycenach, ustawieniach workspace, płatnościach i współpracy z zespołem."
+    "subtitle": "Krótkie wskazówki o wycenach, ustawieniach workspace, płatnościach i współpracy z zespołem.",
+
+    "suggestTopic": "Zaproponuj temat porady",
+
+    "filterAll": "Wszystkie",
+
+    "searchPlaceholder": "Szukaj porady...",
+
+    "moreCategories": "Więcej kategorii",
+
+    "noResults": "Brak porad pasujących do filtra."
 
   },
 

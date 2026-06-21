@@ -118,7 +118,7 @@ export function WorkspaceProvider({
   modalInboxItem = null,
   pinnedEstimates = [],
   activeWorkspaceStats = null,
-  notificationCounts = { total: 0, actionRequired: 0 },
+  notificationCounts = { total: 0, unread: 0, actionRequired: 0 },
   children,
 }: {
   workspaces: WorkspaceSummary[];

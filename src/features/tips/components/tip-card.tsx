@@ -4,6 +4,12 @@ import Link from "next/link";
 import type { TipCardStyle } from "@/features/tips/lib/tip-card-styles";
 import { cn } from "@/lib/utils";
 
+const metaBadgeClassName =
+  "inline-flex shrink-0 items-center rounded-full px-3 py-1.5 text-xs font-medium leading-none whitespace-nowrap";
+
+const actionButtonClassName =
+  "inline-flex size-7 shrink-0 items-center justify-center rounded-md transition-colors duration-200";
+
 export function TipCard({
   title,
   description,
@@ -40,7 +46,12 @@ export function TipCard({
   const { Icon, badgeClassName, iconWrapClassName, iconClassName, linkClassName, categoryClassName } =
     style;
 
-  const hasActions = onDismiss != null || onPinToggle != null;
+  const showMetaRow =
+    (showCategory && categoryLabel) ||
+    (isPinned && pinnedBadgeLabel) ||
+    onPinToggle != null ||
+    (onDismiss != null && !isPinned) ||
+    index != null;
 
   return (
     <article
@@ -49,15 +60,37 @@ export function TipCard({
         isPinned && "border-primary/30 bg-primary/5 ring-2 ring-primary/20",
       )}
     >
-      <div className="absolute right-3 top-3 flex items-center gap-1">
-        {hasActions ? (
-          <>
+      <div className="mb-4 flex items-start gap-3">
+        <div
+          className={cn(
+            "flex size-11 shrink-0 items-center justify-center rounded-full",
+            iconWrapClassName,
+          )}
+        >
+          <Icon className={cn("size-5", iconClassName)} aria-hidden />
+        </div>
+
+        {showMetaRow ? (
+          <div className="ml-auto flex min-w-0 max-w-[calc(100%-3.25rem)] flex-wrap items-center justify-end gap-1.5">
+            {showCategory && categoryLabel ? (
+              <span className={cn(metaBadgeClassName, categoryClassName)}>{categoryLabel}</span>
+            ) : null}
+            {isPinned && pinnedBadgeLabel ? (
+              <span
+                className={cn(
+                  metaBadgeClassName,
+                  "bg-primary/10 text-primary ring-1 ring-primary/20",
+                )}
+              >
+                {pinnedBadgeLabel}
+              </span>
+            ) : null}
             {onPinToggle ? (
               <button
                 type="button"
                 onClick={onPinToggle}
                 className={cn(
-                  "inline-flex size-7 items-center justify-center rounded-md transition-colors duration-200",
+                  actionButtonClassName,
                   isPinned
                     ? "bg-primary/15 text-primary ring-1 ring-primary/25 hover:bg-primary/20"
                     : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
@@ -76,52 +109,27 @@ export function TipCard({
               <button
                 type="button"
                 onClick={onDismiss}
-                className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+                className={cn(
+                  actionButtonClassName,
+                  "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                )}
                 aria-label={dismissLabel}
               >
                 <X className="size-3.5" aria-hidden />
               </button>
             ) : null}
-          </>
+            {index != null ? (
+              <span
+                className={cn(
+                  "inline-flex size-6 shrink-0 items-center justify-center rounded-md text-xs font-semibold",
+                  badgeClassName,
+                )}
+              >
+                {index}
+              </span>
+            ) : null}
+          </div>
         ) : null}
-        {index != null ? (
-          <span
-            className={cn(
-              "inline-flex size-6 items-center justify-center rounded-md text-xs font-semibold",
-              badgeClassName,
-            )}
-          >
-            {index}
-          </span>
-        ) : null}
-      </div>
-
-      <div className="mb-4 flex items-start justify-between gap-3 pr-16">
-        <div
-          className={cn(
-            "flex size-11 shrink-0 items-center justify-center rounded-full",
-            iconWrapClassName,
-          )}
-        >
-          <Icon className={cn("size-5", iconClassName)} aria-hidden />
-        </div>
-        <div className="flex min-w-0 flex-1 flex-col items-end gap-1.5">
-          {isPinned && pinnedBadgeLabel ? (
-            <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium leading-snug text-primary ring-1 ring-primary/20">
-              {pinnedBadgeLabel}
-            </span>
-          ) : null}
-          {showCategory && categoryLabel ? (
-            <span
-              className={cn(
-                "inline-flex max-w-full items-center justify-center rounded-full px-3 py-1.5 text-xs font-medium leading-snug text-center",
-                categoryClassName,
-              )}
-            >
-              {categoryLabel}
-            </span>
-          ) : null}
-        </div>
       </div>
 
       <h3 className="text-sm font-semibold leading-snug text-foreground">{title}</h3>

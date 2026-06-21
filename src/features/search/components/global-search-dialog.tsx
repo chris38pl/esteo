@@ -48,6 +48,7 @@ import {
   RecentDocumentRow,
   SearchGroupIcon,
   SearchResultItemContent,
+  TipSearchResultItemContent,
 } from "./search-result-item";
 
 const DEBOUNCE_MS = 300;
@@ -58,12 +59,13 @@ type NavigableItem = {
   url: string;
   title: string;
   subtitle?: string;
-  iconType: SearchResultItem["iconType"];
-  entityType: SearchResultItem["entityType"];
-  entityId: string;
+  iconType?: SearchResultItem["iconType"];
+  entityType?: SearchResultItem["entityType"];
+  entityId?: string;
+  skipRecentRecord?: boolean;
 };
 
-type SearchGroupKey = "estimates" | "inquiries" | "attachments";
+type SearchGroupKey = "estimates" | "inquiries" | "attachments" | "tips";
 
 export function GlobalSearchDialog() {
   const t = useTranslations("search");
@@ -181,7 +183,8 @@ export function GlobalSearchDialog() {
     results &&
     (results.estimates.length > 0 ||
       results.inquiries.length > 0 ||
-      results.attachments.length > 0);
+      results.attachments.length > 0 ||
+      results.tips.length > 0);
 
   const hasRecents = recentSearches.length > 0 || recentDocuments.length > 0;
 
@@ -194,17 +197,19 @@ export function GlobalSearchDialog() {
       setRecentSearches(addRecentSearch(activeWorkspaceId, debouncedQuery.trim()));
     }
 
-    await recordRecentDocumentAction({
-      workspaceId: activeWorkspaceId,
-      entityType: item.entityType,
-      entityId: item.entityId,
-      title: item.title,
-      subtitle: item.subtitle,
-      iconType: item.iconType,
-      locale,
-    });
+    if (!item.skipRecentRecord && item.entityType && item.entityId && item.iconType) {
+      await recordRecentDocumentAction({
+        workspaceId: activeWorkspaceId,
+        entityType: item.entityType,
+        entityId: item.entityId,
+        title: item.title,
+        subtitle: item.subtitle,
+        iconType: item.iconType,
+        locale,
+      });
 
-    invalidate();
+      invalidate();
+    }
     setOpen(false);
     router.push(item.url);
   }
@@ -344,6 +349,35 @@ export function GlobalSearchDialog() {
                           >
                             <SearchResultItemContent
                               iconType={item.iconType}
+                              title={item.title}
+                              subtitle={item.subtitle}
+                              query={debouncedQuery}
+                            />
+                          </CommandItem>
+                        ))}
+                      </SearchResultsGroup>
+                    ) : null}
+                    {results!.tips.length > 0 ? (
+                      <SearchResultsGroup
+                        group="tips"
+                        label={t("groups.tips")}
+                        count={results!.tips.length}
+                      >
+                        {results!.tips.map((item) => (
+                          <CommandItem
+                            key={`tip:${item.id}`}
+                            value={`tip:${item.id}`}
+                            onSelect={() =>
+                              void handleSelect({
+                                key: `tip:${item.id}`,
+                                url: item.url,
+                                title: item.title,
+                                subtitle: item.subtitle,
+                                skipRecentRecord: true,
+                              })
+                            }
+                          >
+                            <TipSearchResultItemContent
                               title={item.title}
                               subtitle={item.subtitle}
                               query={debouncedQuery}

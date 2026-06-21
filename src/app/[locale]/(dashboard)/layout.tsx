@@ -90,7 +90,7 @@ export default async function DashboardLayout({
         pendingInvitationCount={0}
         modalInboxItem={null}
         pinnedEstimates={[]}
-        notificationCounts={{ total: 0, actionRequired: 0 }}
+        notificationCounts={{ total: 0, unread: 0, actionRequired: 0 }}
       >
         <DashboardShell locale={resolvedLocale}>{children}</DashboardShell>
       </WorkspaceProvider>

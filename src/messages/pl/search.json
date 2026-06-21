@@ -2,12 +2,13 @@
   "placeholder": "Szukaj w Esteo…",
   "noResults": "Nie znaleziono wyników",
   "empty": {
-    "hint": "Wyszukaj wszystko w swoim workspace: wyceny, zapytania, załączniki i więcej."
+    "hint": "Wyszukaj wszystko w swoim workspace: wyceny, zapytania, załączniki, porady i więcej."
   },
   "groups": {
     "estimates": "Wyceny",
     "inquiries": "Zapytania",
-    "attachments": "Załączniki"
+    "attachments": "Załączniki",
+    "tips": "Porady"
   },
   "entityTypes": {
     "estimate": "Wycena",

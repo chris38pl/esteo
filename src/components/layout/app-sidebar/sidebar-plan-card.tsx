@@ -20,9 +20,9 @@ const PLAN_IMAGES = {
 const PLAN_CARD_SURFACE = "#091224";
 
 const FEATURE_KEYS = {
-  free: ["projects", "estimates", "support"] as const,
-  pro: ["projects", "team", "permissions", "support"] as const,
-  business: ["allFeatures", "projects", "team", "support"] as const,
+  free: ["estimates", "clientPortal", "aiStorage"] as const,
+  pro: ["team", "ai", "storage"] as const,
+  business: ["allFeatures", "estimatesAi", "team", "storage"] as const,
 };
 
 type PlanCardVariant = keyof typeof PLAN_IMAGES;
@@ -181,7 +181,7 @@ export function SidebarPlanCard({
               className="h-7 w-full rounded-lg border-white/10 bg-transparent text-[10px] font-medium text-slate-400 shadow-none hover:bg-white/[0.06] hover:text-slate-200"
             >
               <Link
-                href={dashboardUpgradeHref(localeTyped, workspaceSlug, { plan: "BUSINESS" })}
+                href={dashboardUpgradeHref(localeTyped, workspaceSlug)}
                 className="w-full justify-center"
               >
                 {t("free.ctaSecondary")}

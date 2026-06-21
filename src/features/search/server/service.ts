@@ -4,6 +4,7 @@ import type { Locale } from "@/lib/locale";
 
 import { groupSearchResults } from "../lib/group-search-results";
 import { resolveMatchedField } from "../lib/resolve-matched-field";
+import { searchTips } from "../lib/search-tips";
 import { buildSearchUrl } from "../lib/search-url";
 import type { SearchDocumentMetadata, SearchWorkspaceResult } from "../lib/search-types";
 import { searchDocuments } from "./repository";
@@ -36,5 +37,12 @@ export async function searchWorkspace(input: {
     };
   });
 
-  return groupSearchResults(items);
+  return {
+    ...groupSearchResults(items),
+    tips: searchTips({
+      query: input.query,
+      locale: input.locale,
+      workspaceSlug: input.workspaceSlug,
+    }),
+  };
 }

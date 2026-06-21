@@ -35,6 +35,14 @@ export type SearchWorkspaceResult = {
   estimates: SearchResultItem[];
   inquiries: SearchResultItem[];
   attachments: SearchResultItem[];
+  tips: TipSearchResultItem[];
+};
+
+export type TipSearchResultItem = {
+  id: string;
+  title: string;
+  subtitle?: string;
+  url: string;
 };
 
 export type RecentDocumentItem = {

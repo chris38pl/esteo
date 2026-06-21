@@ -34,7 +34,7 @@ export async function searchWorkspaceAction(
   await requireWorkspace(user, parsed.workspaceId);
 
   if (parsed.query.trim().length < 2) {
-    return { estimates: [], inquiries: [], attachments: [] };
+    return { estimates: [], inquiries: [], attachments: [], tips: [] };
   }
 
   const workspaceSlug = await getWorkspaceSlug(parsed.workspaceId);

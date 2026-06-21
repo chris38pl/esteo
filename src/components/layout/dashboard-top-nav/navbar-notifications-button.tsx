@@ -50,8 +50,9 @@ export function NavbarNotificationsButton({
     setCounts(initialCounts);
   }, [initialCounts]);
 
-  const badgeLabel =
-    counts.actionRequired > 99 ? "99+" : String(counts.actionRequired);
+  const badgeCount = counts.unread;
+  const badgeLabel = badgeCount > 99 ? "99+" : String(badgeCount);
+  const hasActionRequired = counts.actionRequired > 0;
 
   const triggerButton = (
     <Button
@@ -59,11 +60,21 @@ export function NavbarNotificationsButton({
       variant="outline"
       size="icon"
       aria-label={tNavbar("label")}
-      className="relative size-9 shrink-0 rounded-lg border-border/60 bg-card/40 text-muted-foreground shadow-none hover:bg-accent/50 hover:text-foreground"
+      className={cn(
+        "relative size-9 shrink-0 rounded-lg border-border/60 bg-card/40 shadow-none hover:bg-accent/50 hover:text-foreground",
+        badgeCount > 0 ? "text-foreground" : "text-muted-foreground",
+      )}
     >
       <Bell className="size-4" strokeWidth={1.75} />
-      {counts.actionRequired > 0 ? (
-        <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-semibold text-destructive-foreground">
+      {badgeCount > 0 ? (
+        <span
+          className={cn(
+            "absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-semibold",
+            hasActionRequired
+              ? "bg-destructive text-destructive-foreground"
+              : "bg-primary text-primary-foreground",
+          )}
+        >
           {badgeLabel}
         </span>
       ) : null}

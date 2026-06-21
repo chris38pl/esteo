@@ -20,7 +20,7 @@ export function groupSearchResults(
     }
   }
 
-  return { estimates, inquiries, attachments };
+  return { estimates, inquiries, attachments, tips: [] };
 
   function bucketForEntityType(entityType: SearchEntityType): SearchResultItem[] {
     switch (entityType) {

@@ -4,7 +4,17 @@
 
     "title": "Tips",
 
-    "subtitle": "Short pointers on estimates, workspace settings, billing, and working with your team."
+    "subtitle": "Short pointers on estimates, workspace settings, billing, and working with your team.",
+
+    "suggestTopic": "Suggest a tip topic",
+
+    "filterAll": "All",
+
+    "searchPlaceholder": "Search tips...",
+
+    "moreCategories": "More categories",
+
+    "noResults": "No tips match your filters."
 
   },
 

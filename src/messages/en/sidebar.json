@@ -125,11 +125,11 @@
     "free": {
       "badge": "Free plan",
       "title": "More power. More possibilities.",
-      "body": "Upgrade to Pro or Business and grow your business.",
+      "body": "Free includes 3 estimates/month. Upgrade for unlimited work.",
       "features": {
-        "projects": "More projects and clients",
-        "estimates": "Advanced estimates",
-        "support": "Priority support"
+        "estimates": "Unlimited estimates",
+        "clientPortal": "Public estimate request page",
+        "aiStorage": "100 AI calls & 1 GB storage on Pro"
       },
       "ctaPrimary": "Upgrade to Pro",
       "ctaSecondary": "Compare plans"
@@ -137,12 +137,11 @@
     "pro": {
       "badge": "Pro plan",
       "title": "Take your business to the next level.",
-      "body": "Unlock the full potential with the Business plan.",
+      "body": "Invite your team and unlock unlimited AI.",
       "features": {
-        "projects": "Unlimited projects",
-        "team": "Team and role management",
-        "permissions": "Advanced permissions",
-        "support": "Dedicated support"
+        "team": "Team invites — up to 5 users",
+        "ai": "Unlimited AI assistant",
+        "storage": "5 GB storage (+ add-ons)"
       },
       "ctaPrimary": "Upgrade to Business"
     },
@@ -152,9 +151,9 @@
       "body": "You are using the full potential of Esteo.",
       "features": {
         "allFeatures": "All features unlocked",
-        "projects": "Unlimited projects",
-        "team": "Team and role management",
-        "support": "Priority support"
+        "estimatesAi": "Unlimited estimates & AI",
+        "team": "Team — up to 5 users",
+        "storage": "5 GB storage"
       },
       "thankYou": "Thank you for being with us! 💜"
     }

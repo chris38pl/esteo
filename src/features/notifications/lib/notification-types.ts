@@ -55,5 +55,6 @@ export type NotificationListItem = {
 
 export type NotificationCounts = {
   total: number;
+  unread: number;
   actionRequired: number;
 };

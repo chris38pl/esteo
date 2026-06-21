@@ -8,6 +8,7 @@ import {
   getDismissedTipIds,
   getPinnedTipIds,
   isTipsBannerDismissedForSession,
+  markTipsBannerDismissedForSession,
   MAX_PINNED_TIPS,
   toggleTipPin,
   type ToggleTipPinResult,
@@ -143,11 +144,24 @@ export function useTipsStorageState(userId: string | null, workspaceSlug: string
     [userId, workspaceSlug],
   );
 
+  const dismissBannerForSession = useCallback(() => {
+    if (!userId) {
+      return;
+    }
+
+    setSnapshot((current) => ({
+      ...current,
+      isBannerDismissedForSession: true,
+    }));
+    markTipsBannerDismissedForSession(userId, workspaceSlug);
+  }, [userId, workspaceSlug]);
+
   return {
     ...snapshot,
     hasHydrated,
     refreshTipsStorage: syncFromStorage,
     togglePin,
     dismissTip,
+    dismissBannerForSession,
   };
 }

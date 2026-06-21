@@ -2,12 +2,13 @@
   "placeholder": "Search in Esteo…",
   "noResults": "No results found",
   "empty": {
-    "hint": "Search everything in your workspace: estimates, inquiries, attachments and more."
+    "hint": "Search everything in your workspace: estimates, inquiries, attachments, tips and more."
   },
   "groups": {
     "estimates": "Estimates",
     "inquiries": "Inquiries",
-    "attachments": "Attachments"
+    "attachments": "Attachments",
+    "tips": "Tips"
   },
   "entityTypes": {
     "estimate": "Estimate",

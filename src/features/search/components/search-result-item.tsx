@@ -1,7 +1,7 @@
 "use client";
 
 import type { SearchEntityType, SearchIconType } from "@prisma/client";
-import { ChevronRight, FileText, MessageSquareQuote, Paperclip } from "lucide-react";
+import { ChevronRight, FileText, Lightbulb, MessageSquareQuote, Paperclip } from "lucide-react";
 
 import { splitSearchHighlight } from "@/features/estimates/lib/split-search-highlight";
 import { cn } from "@/lib/utils";
@@ -12,10 +12,11 @@ const ICON_STYLES: Record<SearchIconType, string> = {
   FILE: "text-amber-500",
 };
 
-const GROUP_ICON_STYLES: Record<"estimates" | "inquiries" | "attachments", string> = {
+const GROUP_ICON_STYLES: Record<"estimates" | "inquiries" | "attachments" | "tips", string> = {
   estimates: "text-emerald-500",
   inquiries: "text-violet-500",
   attachments: "text-amber-500",
+  tips: "text-amber-500",
 };
 
 export function SearchResultIcon({ iconType }: { iconType: SearchIconType }) {
@@ -32,7 +33,11 @@ export function SearchResultIcon({ iconType }: { iconType: SearchIconType }) {
   }
 }
 
-export function SearchGroupIcon({ group }: { group: "estimates" | "inquiries" | "attachments" }) {
+export function SearchGroupIcon({
+  group,
+}: {
+  group: "estimates" | "inquiries" | "attachments" | "tips";
+}) {
   const className = cn("size-4 shrink-0", GROUP_ICON_STYLES[group]);
   switch (group) {
     case "estimates":
@@ -41,7 +46,36 @@ export function SearchGroupIcon({ group }: { group: "estimates" | "inquiries" | 
       return <MessageSquareQuote className={className} strokeWidth={1.75} />;
     case "attachments":
       return <Paperclip className={className} strokeWidth={1.75} />;
+    case "tips":
+      return <Lightbulb className={className} strokeWidth={1.75} />;
   }
+}
+
+export function TipSearchResultItemContent({
+  title,
+  subtitle,
+  query,
+}: {
+  title: string;
+  subtitle?: string;
+  query?: string;
+}) {
+  const showHighlight = Boolean(query?.trim());
+
+  return (
+    <>
+      <Lightbulb className="size-5 shrink-0 text-amber-500" strokeWidth={1.75} />
+      <div className="min-w-0 flex-1">
+        <p className="truncate font-medium text-foreground">
+          {showHighlight ? <HighlightedText text={title} query={query!} /> : title}
+        </p>
+        {subtitle ? (
+          <p className="truncate text-xs text-muted-foreground">{subtitle}</p>
+        ) : null}
+      </div>
+      <ChevronRight className="size-4 shrink-0 text-muted-foreground/70" strokeWidth={1.75} />
+    </>
+  );
 }
 
 function HighlightedText({ text, query }: { text: string; query: string }) {

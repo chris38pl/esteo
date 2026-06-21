@@ -87,8 +87,14 @@ export async function countNotificationsForUser(userId: string): Promise<Notific
   const since = getNotificationListSinceDate();
   const base = listWhereBase(userId, since);
 
-  const [total, actionRequired] = await Promise.all([
+  const [total, unread, actionRequired] = await Promise.all([
     prisma.userNotification.count({ where: base }),
+    prisma.userNotification.count({
+      where: {
+        ...base,
+        readAt: null,
+      },
+    }),
     prisma.userNotification.count({
       where: {
         ...base,
@@ -98,7 +104,7 @@ export async function countNotificationsForUser(userId: string): Promise<Notific
     }),
   ]);
 
-  return { total, actionRequired };
+  return { total, unread, actionRequired };
 }
 
 export async function listNotificationsForUser(input: {
