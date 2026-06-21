@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import type { EstimateVersionStatus } from "@prisma/client";
 import { Check, RotateCcw, Send, X } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -9,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+import { openEstimateWorkflowDialogDeferred } from "@/features/estimates/hooks/use-mobile-outside-dismiss-guard";
 import { canReopenEstimateVersion } from "@/features/estimates/lib/version-reopen";
 import type { EstimateVersionWorkflowClient } from "@/features/estimates/lib/serialize-estimate-version-workflow";
 import {
@@ -18,10 +18,7 @@ import {
 import {
   type EstimateSendDialogMode,
 } from "./estimate-send-dialog";
-import {
-  EstimateWorkflowDialog,
-  type EstimateWorkflowDialogAction,
-} from "./estimate-workflow-dialog";
+import type { EstimateWorkflowDialogAction } from "./estimate-workflow-dialog";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import {
@@ -40,24 +37,19 @@ interface EstimateHeaderWorkflowActionsProps {
   workflow: EstimateVersionWorkflowClient;
   isSending: boolean;
   onOpenSendDialog: (mode: EstimateSendDialogMode) => void;
+  onOpenWorkflowDialog: (action: EstimateWorkflowDialogAction) => void;
   variant?: "inline" | "menu";
 }
 
 export function EstimateHeaderWorkflowActions({
-  estimateId,
-  versionId,
-  workspaceId,
-  workspaceSlug,
-  locale,
   versionStatus,
   workflow,
   isSending,
   onOpenSendDialog,
+  onOpenWorkflowDialog,
   variant = "inline",
 }: EstimateHeaderWorkflowActionsProps) {
   const t = useTranslations("estimates");
-  const [workflowDialogAction, setWorkflowDialogAction] =
-    useState<EstimateWorkflowDialogAction | null>(null);
 
   const isArchived = workflow.archivedAt != null;
   const canSend = versionStatus === "DRAFT" && !isArchived && !isSending;
@@ -71,7 +63,11 @@ export function EstimateHeaderWorkflowActions({
   }
 
   function openWorkflowDialog(action: EstimateWorkflowDialogAction) {
-    setWorkflowDialogAction(action);
+    onOpenWorkflowDialog(action);
+  }
+
+  function openWorkflowDialogFromMenu(action: EstimateWorkflowDialogAction) {
+    openEstimateWorkflowDialogDeferred(onOpenWorkflowDialog, action);
   }
 
   const inlineButtonClass = cn(
@@ -79,27 +75,6 @@ export function EstimateHeaderWorkflowActions({
     estimateHeaderInlineActionButtonClass,
   );
   const menuItemClass = cn("gap-2", estimateHeaderInlineActionMenuItemClass);
-
-  const dialogs = (
-    <>
-      {workflowDialogAction ? (
-        <EstimateWorkflowDialog
-          open
-          onOpenChange={(open) => {
-            if (!open) {
-              setWorkflowDialogAction(null);
-            }
-          }}
-          action={workflowDialogAction}
-          estimateId={estimateId}
-          versionId={versionId}
-          workspaceId={workspaceId}
-          workspaceSlug={workspaceSlug}
-          locale={locale}
-        />
-      ) : null}
-    </>
-  );
 
   if (variant === "menu") {
     return (
@@ -128,7 +103,7 @@ export function EstimateHeaderWorkflowActions({
           <DropdownMenuItem
             className={menuItemClass}
             disabled={isSending}
-            onSelect={() => openWorkflowDialog("accept")}
+            onSelect={() => openWorkflowDialogFromMenu("accept")}
           >
             <Check className="size-4" />
             {t("header.actions.accept")}
@@ -138,7 +113,7 @@ export function EstimateHeaderWorkflowActions({
           <DropdownMenuItem
             className={menuItemClass}
             disabled={isSending}
-            onSelect={() => openWorkflowDialog("reject")}
+            onSelect={() => openWorkflowDialogFromMenu("reject")}
           >
             <X className="size-4" />
             {t("header.actions.reject")}
@@ -148,13 +123,12 @@ export function EstimateHeaderWorkflowActions({
           <DropdownMenuItem
             className={menuItemClass}
             disabled={isSending}
-            onSelect={() => openWorkflowDialog("reopen")}
+            onSelect={() => openWorkflowDialogFromMenu("reopen")}
           >
             <RotateCcw className="size-4" />
             {t("header.actions.reopen")}
           </DropdownMenuItem>
         ) : null}
-        {dialogs}
       </>
     );
   }
@@ -223,7 +197,6 @@ export function EstimateHeaderWorkflowActions({
           {t("header.actions.reopen")}
         </Button>
       ) : null}
-      {dialogs}
     </>
   );
 }

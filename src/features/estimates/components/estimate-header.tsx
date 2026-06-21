@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import type { EstimateVersionStatus } from "@prisma/client";
 import { ChevronDown, Ellipsis, Eye } from "lucide-react";
@@ -20,6 +21,10 @@ import { EstimateVersionSelector } from "./estimate-version-selector";
 import { EstimateHeaderStatusBadge } from "./estimate-header-status-badge";
 import { EstimateHeaderWorkflowActions } from "./estimate-header-workflow-actions";
 import type { EstimateSendDialogMode } from "./estimate-send-dialog";
+import {
+  EstimateWorkflowDialog,
+  type EstimateWorkflowDialogAction,
+} from "./estimate-workflow-dialog";
 import { EstimateRulesIndicator } from "./estimate-rules-indicator";
 import { EstimateHeaderPinMenuItem } from "./estimate-header-pin-menu-item";
 import { EstimateHeaderRenameMenuItem } from "./estimate-header-rename-menu-item";
@@ -91,6 +96,7 @@ interface EstimateHeaderMoreMenuProps {
   workflow: EstimateVersionWorkflowClient;
   isSending: boolean;
   onOpenSendDialog: (mode: EstimateSendDialogMode) => void;
+  onOpenWorkflowDialog: (action: EstimateWorkflowDialogAction) => void;
   isPinned: boolean;
   canManualRetryAiDraft?: boolean;
   onBeforePdfExport?: () => Promise<EstimatePdfBeforeExportResult>;
@@ -112,6 +118,7 @@ function EstimateHeaderMoreMenu({
   workflow,
   isSending,
   onOpenSendDialog,
+  onOpenWorkflowDialog,
   isPinned,
   canManualRetryAiDraft = false,
   onBeforePdfExport,
@@ -131,6 +138,7 @@ function EstimateHeaderMoreMenu({
     workflow,
     isSending,
     onOpenSendDialog,
+    onOpenWorkflowDialog,
     variant: "menu" as const,
   };
 
@@ -213,6 +221,8 @@ export function EstimateHeader({
   isPreviewLoading = false,
 }: EstimateHeaderProps) {
   const t = useTranslations("estimates");
+  const [workflowDialogAction, setWorkflowDialogAction] =
+    useState<EstimateWorkflowDialogAction | null>(null);
   const activeVersion = versions.find((version) => version.id === activeVersionId) ?? versions[0];
   const activeVersionNumber = activeVersion?.versionNumber ?? 1;
   const activeStatus = workflow.status;
@@ -237,6 +247,7 @@ export function EstimateHeader({
     workflow,
     isSending,
     onOpenSendDialog,
+    onOpenWorkflowDialog: setWorkflowDialogAction,
     variant: "inline" as const,
   };
 
@@ -253,6 +264,7 @@ export function EstimateHeader({
     workflow,
     isSending,
     onOpenSendDialog,
+    onOpenWorkflowDialog: setWorkflowDialogAction,
     isPinned,
     canManualRetryAiDraft,
     onBeforePdfExport,
@@ -261,7 +273,8 @@ export function EstimateHeader({
   };
 
   return (
-    <header className={estimateHeaderClass}>
+    <>
+      <header className={estimateHeaderClass}>
       <div className={estimateHeaderPrimaryClass}>
         <div className="min-w-0">
           <h1 className={estimateHeaderTitleClass}>
@@ -359,5 +372,23 @@ export function EstimateHeader({
         </div>
       </div>
     </header>
+
+      {workflowDialogAction ? (
+        <EstimateWorkflowDialog
+          open
+          onOpenChange={(open) => {
+            if (!open) {
+              setWorkflowDialogAction(null);
+            }
+          }}
+          action={workflowDialogAction}
+          estimateId={estimateId}
+          versionId={activeVersionId}
+          workspaceId={workspaceId}
+          workspaceSlug={workspaceSlug}
+          locale={locale}
+        />
+      ) : null}
+    </>
   );
 }

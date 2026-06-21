@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, type RefObject } from "react";
 
+import type { EstimateWorkflowDialogAction } from "@/features/estimates/components/estimate-workflow-dialog";
+
 export const MOBILE_OUTSIDE_DISMISS_GUARD_MS = 450;
 
 export function useIgnoreInitialOutsideDismiss(open: boolean) {
@@ -40,7 +42,19 @@ export function getMobileSheetOutsideDismissHandlers(
         event.preventDefault();
       }
     },
+    onFocusOutside: (event: Event) => {
+      if (ignoreRef.current) {
+        event.preventDefault();
+      }
+    },
   };
+}
+
+export function openEstimateWorkflowDialogDeferred(
+  open: (action: EstimateWorkflowDialogAction) => void,
+  action: EstimateWorkflowDialogAction,
+) {
+  window.setTimeout(() => open(action), MOBILE_OUTSIDE_DISMISS_GUARD_MS / 3);
 }
 
 export function createMobileDismissGuardedOpenChange(

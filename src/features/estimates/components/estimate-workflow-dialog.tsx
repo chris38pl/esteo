@@ -180,6 +180,7 @@ export function EstimateWorkflowDialog({
           className="z-[80] gap-0 p-0"
           overlayClassName="z-[80]"
           showCloseButton
+          onOpenAutoFocus={(event) => event.preventDefault()}
           {...sheetOutsideHandlers}
         >
           <SheetHeader className="border-b border-border/60 pb-4">
