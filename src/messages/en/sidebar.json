@@ -127,9 +127,9 @@
       "title": "More power. More possibilities.",
       "body": "Upgrade to Pro or Business and grow your business.",
       "features": {
-        "projects": "More projects and clients",
         "estimates": "Advanced estimates",
-        "support": "Priority support"
+        "clientPortal": "Client portal",
+        "aiStorage": "More AI and file storage"
       },
       "ctaPrimary": "Upgrade to Pro",
       "ctaSecondary": "Compare plans"
@@ -139,10 +139,9 @@
       "title": "Take your business to the next level.",
       "body": "Unlock the full potential with the Business plan.",
       "features": {
-        "projects": "Unlimited projects",
         "team": "Team and role management",
-        "permissions": "Advanced permissions",
-        "support": "Dedicated support"
+        "ai": "More AI generations",
+        "storage": "More file storage"
       },
       "ctaPrimary": "Upgrade to Business"
     },
@@ -152,9 +151,9 @@
       "body": "You are using the full potential of Esteo.",
       "features": {
         "allFeatures": "All features unlocked",
-        "projects": "Unlimited projects",
+        "estimatesAi": "Unlimited estimates and AI",
         "team": "Team and role management",
-        "support": "Priority support"
+        "storage": "Maximum file storage"
       },
       "thankYou": "Thank you for being with us! 💜"
     }

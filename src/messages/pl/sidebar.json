@@ -127,9 +127,9 @@
       "title": "Więcej mocy. Więcej możliwości.",
       "body": "Ulepsz do Pro lub Business i rozwijaj swój biznes.",
       "features": {
-        "projects": "Więcej projektów i klientów",
-        "estimates": "Zaawansowane estymacje",
-        "support": "Priorytetowe wsparcie"
+        "estimates": "Zaawansowane wyceny",
+        "clientPortal": "Portal klienta",
+        "aiStorage": "Więcej AI i miejsca na pliki"
       },
       "ctaPrimary": "Przejdź na Pro",
       "ctaSecondary": "Porównaj plany"
@@ -139,10 +139,9 @@
       "title": "Przenieś swój biznes na wyższy poziom.",
       "body": "Odblokuj pełny potencjał z planem Business.",
       "features": {
-        "projects": "Nieograniczona liczba projektów",
         "team": "Zarządzanie zespołem i rolami",
-        "permissions": "Zaawansowane uprawnienia",
-        "support": "Dedykowane wsparcie"
+        "ai": "Więcej generacji AI",
+        "storage": "Większa przestrzeń na pliki"
       },
       "ctaPrimary": "Przejdź na Business"
     },
@@ -152,9 +151,9 @@
       "body": "Korzystasz z pełni możliwości Esteo.",
       "features": {
         "allFeatures": "Wszystkie funkcje odblokowane",
-        "projects": "Nieograniczona liczba projektów",
+        "estimatesAi": "Nielimitowane wyceny i AI",
         "team": "Zarządzanie zespołem i rolami",
-        "support": "Priorytetowe wsparcie"
+        "storage": "Maksymalna przestrzeń na pliki"
       },
       "thankYou": "Dziękujemy, że jesteś z nami! 💜"
     }
