@@ -13,10 +13,7 @@ import {
 } from "@/features/tips/lib/build-tips-carousel-slides";
 import { TIP_CARD_STYLES } from "@/features/tips/lib/tip-card-styles";
 import { getTipHref, type TipCatalogEntry, type TipId } from "@/features/tips/lib/tips-catalog";
-import {
-  dismissTipForUser,
-  toggleTipPin,
-} from "@/features/tips/lib/tips-storage";
+import type { ToggleTipPinResult } from "@/features/tips/lib/tips-storage";
 import { Button } from "@/components/ui/button";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
@@ -35,7 +32,8 @@ interface TipsCarouselProps {
   autoPlayIntervalMs?: number;
   enableDismiss?: boolean;
   enablePin?: boolean;
-  onStorageChange?: () => void;
+  onDismissTip?: (tipId: TipId) => void;
+  onPinToggle?: (tipId: TipId) => ToggleTipPinResult;
 }
 
 export function TipsCarousel({
@@ -50,7 +48,8 @@ export function TipsCarousel({
   autoPlayIntervalMs = AUTO_ADVANCE_MS,
   enableDismiss = false,
   enablePin = false,
-  onStorageChange,
+  onDismissTip,
+  onPinToggle,
 }: TipsCarouselProps) {
   const t = useTranslations("tips");
   const tCarousel = useTranslations("tips.carousel");
@@ -125,23 +124,17 @@ export function TipsCarousel({
   }, [autoPlay, autoPlayIntervalMs, autoplayPaused, goNext, reduceMotion, slideCount]);
 
   function handleDismiss(tipId: TipId) {
-    if (!userId) {
-      return;
-    }
-    dismissTipForUser(userId, workspaceSlug, tipId);
-    onStorageChange?.();
+    onDismissTip?.(tipId);
   }
 
   function handlePinToggle(tipId: TipId) {
-    if (!userId) {
+    if (!onPinToggle) {
       return;
     }
-    const result = toggleTipPin(userId, workspaceSlug, tipId);
+    const result = onPinToggle(tipId);
     if (result === "max_reached") {
       toast.message(t("pin.maxReached"));
-      return;
     }
-    onStorageChange?.();
   }
 
   if (countTipsInSlides(slides) === 0) {
@@ -188,11 +181,11 @@ export function TipsCarousel({
                       isPinned={isPinned}
                       pinnedBadgeLabel={isPinned ? t("card.pinnedBadge") : undefined}
                       onDismiss={
-                        enableDismiss && userId ? () => handleDismiss(tip.id) : undefined
+                        enableDismiss && onDismissTip ? () => handleDismiss(tip.id) : undefined
                       }
                       dismissLabel={t("card.dismiss")}
                       onPinToggle={
-                        enablePin && userId ? () => handlePinToggle(tip.id) : undefined
+                        enablePin && onPinToggle ? () => handlePinToggle(tip.id) : undefined
                       }
                       pinLabel={t("card.pin")}
                       unpinLabel={t("card.unpin")}

@@ -9,6 +9,7 @@ import type {
   RecipientToken,
 } from "@/features/notifications/lib/notification-types";
 import { dashboardEstimatesHref } from "@/lib/dashboard-routes";
+import type { Locale } from "@/lib/locale";
 
 const issueStatusSchema = z.enum(["OPEN", "IN_PROGRESS", "RESOLVED", "ARCHIVED"]);
 
@@ -196,7 +197,7 @@ export const NOTIFICATION_TYPE_CATALOG = {
     defaultRecipients: "explicit_user_ids",
     metadataSchema: billingWorkspacePayloadSchema,
     dedupeKey: (ctx) => `member:reactivated:${ctx.workspaceId}:${ctx.userIds?.[0]}`,
-    href: (ctx) => dashboardEstimatesHref(ctx.locale, ctx.workspaceSlug),
+    href: (ctx) => dashboardEstimatesHref(ctx.locale as Locale, ctx.workspaceSlug),
   },
   ownership_transfer_received: {
     state: "ACTION_REQUIRED",

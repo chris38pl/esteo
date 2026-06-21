@@ -42,7 +42,7 @@ export function ActivationTipsBanner({
   const tBanner = useTranslations("tips.banner");
   const { issueTrackerEnabled, currentUserId } = useWorkspaceContext();
   const [reportOpen, setReportOpen] = useState(false);
-  const { dismissedIds, pinnedIds, refreshTipsStorage } = useTipsStorageState(
+  const { dismissedIds, pinnedIds, togglePin, dismissTip } = useTipsStorageState(
     preview ? null : currentUserId,
     workspaceSlug,
   );
@@ -120,9 +120,11 @@ export function ActivationTipsBanner({
               userId={preview ? null : currentUserId}
               pinnedIds={preview ? [] : pinnedIds}
               dismissedIds={preview ? [] : dismissedIds}
+              showIndex={false}
               enableDismiss={!preview}
               enablePin={!preview}
-              onStorageChange={refreshTipsStorage}
+              onDismissTip={preview ? undefined : dismissTip}
+              onPinToggle={preview ? undefined : togglePin}
             />
           </div>
         </div>

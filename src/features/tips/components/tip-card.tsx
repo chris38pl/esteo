@@ -45,8 +45,8 @@ export function TipCard({
   return (
     <article
       className={cn(
-        "relative flex flex-col rounded-xl border border-border/60 bg-muted/20 p-4 md:p-5",
-        isPinned && "ring-1 ring-primary/25",
+        "relative flex flex-col rounded-xl border border-border/60 bg-muted/20 p-4 transition-[box-shadow,background-color,border-color] duration-200 md:p-5",
+        isPinned && "border-primary/30 bg-primary/5 ring-2 ring-primary/20",
       )}
     >
       <div className="absolute right-3 top-3 flex items-center gap-1">
@@ -57,9 +57,9 @@ export function TipCard({
                 type="button"
                 onClick={onPinToggle}
                 className={cn(
-                  "inline-flex size-7 items-center justify-center rounded-md transition-colors",
+                  "inline-flex size-7 items-center justify-center rounded-md transition-colors duration-200",
                   isPinned
-                    ? "bg-primary/10 text-primary hover:bg-primary/15"
+                    ? "bg-primary/15 text-primary ring-1 ring-primary/25 hover:bg-primary/20"
                     : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
                 )}
                 aria-label={isPinned ? unpinLabel : pinLabel}
