@@ -7,6 +7,7 @@ import {
   FileText,
   FolderTree,
   Layers3,
+  LifeBuoy,
   Mic,
   Sparkles,
   UserRoundSearch,
@@ -22,6 +23,7 @@ export type AdminNavItemKey =
   | "storageExplorer"
   | "voiceIntakePreview"
   | "issues"
+  | "opsCases"
   | "users"
   | "workspaces"
   | "styleguide";
@@ -87,6 +89,12 @@ export const adminNavItems: AdminNavItem[] = [
     icon: Sparkles,
     href: (locale) => `/${locale}/dashboard/admin/activation-preview`,
     labelKey: "admin.nav.activationPreview",
+  },
+  {
+    key: "opsCases",
+    icon: LifeBuoy,
+    href: (locale) => `/${locale}/dashboard/admin/ops-cases`,
+    labelKey: "admin.nav.opsCases",
   },
   {
     key: "issues",

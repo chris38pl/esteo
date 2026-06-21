@@ -177,6 +177,20 @@ export async function grantReferralBonus(params: {
 
   await markReferralFailed(params.referralId, failureReason ?? "Stripe balance transaction failed");
 
+  const { processReferralRewardFailedOpsCase } = await import(
+    "@/features/ops-cases/server/emit-referral-reward-failed-ops-case"
+  );
+  const { fireOpsCase } = await import("@/features/ops-cases/server/emit-ops-case");
+  fireOpsCase(
+    processReferralRewardFailedOpsCase({
+      referralId: params.referralId,
+      source: "REFERRAL_SERVICE",
+      failureReason: failureReason ?? "Stripe balance transaction failed",
+      invoiceId: params.invoiceId,
+      amountCents: params.amountCents,
+    }),
+  );
+
   const { notifyReferralRewardFailed } = await import(
     "@/features/notifications/server/notification-emit-helpers"
   );

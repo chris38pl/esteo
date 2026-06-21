@@ -3,8 +3,10 @@
     "title": "Workspace gotowy",
     "descriptionLine1": "Twoje konto jest gotowe do pracy.",
     "descriptionLine2": "Utwórz pierwszą wycenę lub wyślij formularz klientowi.",
-    "createCta": "Utwórz pierwszą wycenę",
-    "copyFormCta": "Skopiuj formularz",
+    "createEstimateTitle": "Utwórz wycenę",
+    "createEstimateDescription": "Dodaj szczegóły i przyspiesz pracę",
+    "sendFormTitle": "Wyślij formularz",
+    "sendFormDescription": "Pozyskaj dane od klienta",
     "dismiss": "Zamknij"
   },
   "checklist": {

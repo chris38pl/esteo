@@ -115,6 +115,8 @@ export function ActivationPreviewRenderer({
             preview
             workspaceSlug="preview"
             onDismissed={noop}
+            onCreateClick={noop}
+            onCopyFormLink={noop}
           />
         </PreviewFrame>
       );

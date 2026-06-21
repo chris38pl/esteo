@@ -264,6 +264,11 @@ model User {
   referralCreditLedger ReferralCreditLedger[]
   notifications        UserNotification[]
   notificationPreferences UserNotificationPreference[]
+  opsCasesAffected     OpsCase[]                    @relation("OpsCaseAffectedUser")
+  opsCasesActor        OpsCase[]                    @relation("OpsCaseActorUser")
+  opsCasesOwned        OpsCase[]                    @relation("OpsCaseOwner")
+  opsCasesAssigned     OpsCase[]                    @relation("OpsCaseAssignee")
+  opsCasesResolved     OpsCase[]                    @relation("OpsCaseResolver")
 
   @@index([deletedAt])
 }
@@ -338,6 +343,7 @@ enum NotificationType {
   referral_reward_granted
   referral_reward_failed
   issue_status_changed
+  ops_case_opened
 }
 
 enum NotificationState {
@@ -357,6 +363,7 @@ enum NotificationPreferenceCategory {
   ESTIMATES
   REFERRALS
   QA
+  OPS
 }
 
 enum IssueEnvironment {
@@ -369,6 +376,32 @@ enum IssueDeviceType {
   MOBILE
   TABLET
   DESKTOP
+}
+
+enum OpsCaseType {
+  REFERRAL_REWARD_FAILED
+}
+
+enum OpsCaseSource {
+  REFERRAL_SERVICE
+  RECONCILIATION_CRON
+  STRIPE_WEBHOOK
+  MANUAL
+}
+
+enum OpsCaseStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  IGNORED
+  ARCHIVED
+}
+
+enum OpsCaseSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
 }
 
 model IssueNumberCounter {
@@ -421,6 +454,59 @@ model IssueAttachment {
   issue Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
 
   @@index([issueId, sortOrder])
+}
+
+model OpsCaseNumberCounter {
+  id    String @id @default("default")
+  value Int    @default(0)
+}
+
+model OpsCase {
+  id               String          @id @default(cuid())
+  number           Int             @unique
+  type             OpsCaseType
+  source           OpsCaseSource
+  status           OpsCaseStatus   @default(OPEN)
+  severity         OpsCaseSeverity @default(MEDIUM)
+  dedupeKey        String
+  fingerprint      String
+  title            String
+  summary          String          @db.Text
+  payload          Json
+  affectedUserId   String?
+  actorUserId      String?
+  workspaceId      String?
+  entityKind       String?
+  entityId         String?
+  ownerUserId      String?
+  assignedToUserId String?
+  dueAt            DateTime?
+  resolutionNotes  String?         @db.Text
+  resolvedAt       DateTime?
+  resolvedById     String?
+  firstSeenAt      DateTime        @default(now())
+  lastSeenAt       DateTime        @default(now())
+  occurrenceCount  Int             @default(1)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  affectedUser User?      @relation("OpsCaseAffectedUser", fields: [affectedUserId], references: [id], onDelete: SetNull)
+  actorUser    User?      @relation("OpsCaseActorUser", fields: [actorUserId], references: [id], onDelete: SetNull)
+  workspace    Workspace? @relation(fields: [workspaceId], references: [id], onDelete: SetNull)
+  owner        User?      @relation("OpsCaseOwner", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  assignedTo   User?      @relation("OpsCaseAssignee", fields: [assignedToUserId], references: [id], onDelete: SetNull)
+  resolvedBy   User?      @relation("OpsCaseResolver", fields: [resolvedById], references: [id], onDelete: SetNull)
+
+  @@index([status, severity, createdAt])
+  @@index([fingerprint, status])
+  @@index([source, status])
+  @@index([status, dueAt])
+  @@index([resolvedAt])
+  @@index([assignedToUserId, status])
+  @@index([affectedUserId])
+  @@index([type, status])
+  @@index([dedupeKey, status])
+  @@index([entityKind, entityId])
 }
 
 /// Canonical billing entity. Target model: 1:1 with Workspace (workspaceId @unique).
@@ -576,6 +662,7 @@ model Workspace {
   recentDocuments      UserRecentDocument[]
   referralAsReferred   Referral?
   notifications        UserNotification[]
+  opsCases             OpsCase[]
 
   @@index([billingAccountId])
   @@index([ownerId])

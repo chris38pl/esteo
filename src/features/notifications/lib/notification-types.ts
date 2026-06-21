@@ -17,6 +17,7 @@ export type RecipientToken =
   | "invitee_by_email"
   | "referrer_user"
   | "platform_role_qa_testers"
+  | "ops_team"
   | "explicit_user_ids";
 
 export type NotificationActionDef = {

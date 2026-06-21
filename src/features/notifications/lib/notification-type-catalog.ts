@@ -49,6 +49,13 @@ const issueStatusPayloadSchema = z.object({
   newStatus: issueStatusSchema,
 });
 
+const opsCasePayloadSchema = z.object({
+  caseNumber: z.number().int(),
+  caseTitle: z.string(),
+  caseType: z.string(),
+  severity: z.string(),
+});
+
 const estimateLimitPayloadSchema = billingWorkspacePayloadSchema.extend({
   used: z.number().int(),
   limit: z.number().int(),
@@ -469,6 +476,16 @@ export const NOTIFICATION_TYPE_CATALOG = {
     metadataSchema: issueStatusPayloadSchema,
     dedupeKey: (ctx) => `issue:status:${ctx.payload.issueNumber}:${ctx.payload.newStatus}`,
     href: (ctx) => `/${ctx.locale}/dashboard/qa/issues/${ctx.payload.issueNumber}`,
+  },
+  ops_case_opened: {
+    state: "ACTION_REQUIRED",
+    priority: "HIGH",
+    scope: "user",
+    category: "OPS",
+    defaultRecipients: "ops_team",
+    metadataSchema: opsCasePayloadSchema,
+    dedupeKey: (ctx) => `ops_case:opened:${ctx.payload.caseNumber}`,
+    href: (ctx) => `/${ctx.locale}/dashboard/admin/ops-cases/${ctx.payload.caseNumber}`,
   },
 } as const satisfies Record<string, NotificationTypeDefinition>;
 

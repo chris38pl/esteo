@@ -23,6 +23,7 @@
     "adminEstimateRequests": "Estimate Requests",
     "adminEstimateRequestDetail": "Request detail",
     "adminIssues": "Issue Tracker",
+    "adminOpsCases": "Ops queue",
     "qaIssues": "Issues",
     "billingPlans": "Plans",
     "billingAddons": "Add-ons",

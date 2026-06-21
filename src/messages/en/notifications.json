@@ -24,7 +24,8 @@
       "BILLING": "Billing & plans",
       "ESTIMATES": "Estimates & requests",
       "REFERRALS": "Partner program",
-      "QA": "QA & issues"
+      "QA": "QA & issues",
+      "OPS": "Operations & user cases"
     }
   },
   "types": {
@@ -61,6 +62,7 @@
     "referral_activated": "Referral activated — reward pending",
     "referral_reward_granted": "Referral reward granted",
     "referral_reward_failed": "Referral reward failed — action needed",
-    "issue_status_changed": "Issue #{issueNumber} → {newStatus}: {issueTitle}"
+    "issue_status_changed": "Issue #{issueNumber} → {newStatus}: {issueTitle}",
+    "ops_case_opened": "Ops case #{caseNumber}: {caseTitle}"
   }
 }

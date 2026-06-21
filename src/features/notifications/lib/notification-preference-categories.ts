@@ -6,4 +6,5 @@ export const NOTIFICATION_PREFERENCE_CATEGORIES: NotificationPreferenceCategory[
   "ESTIMATES",
   "REFERRALS",
   "QA",
+  "OPS",
 ];

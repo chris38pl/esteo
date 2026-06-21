@@ -3,8 +3,10 @@
     "title": "Workspace ready",
     "descriptionLine1": "Your account is ready to use.",
     "descriptionLine2": "Create your first estimate or share the client form.",
-    "createCta": "Create your first estimate",
-    "copyFormCta": "Copy form link",
+    "createEstimateTitle": "Create estimate",
+    "createEstimateDescription": "Add details and speed up your work",
+    "sendFormTitle": "Send form",
+    "sendFormDescription": "Collect data from your client",
     "dismiss": "Close"
   },
   "checklist": {

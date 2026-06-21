@@ -70,6 +70,16 @@ export async function resolveRecipients(input: ResolveRecipientsInput): Promise<
       });
       return testers.map((t) => t.id);
     }
+    case "ops_team": {
+      const admins = await prisma.user.findMany({
+        where: {
+          platformRole: "PLATFORM_ADMIN" satisfies PlatformRole,
+          deletedAt: null,
+        },
+        select: { id: true },
+      });
+      return admins.map((admin) => admin.id);
+    }
     case "explicit_user_ids": {
       return input.userIds ?? [];
     }

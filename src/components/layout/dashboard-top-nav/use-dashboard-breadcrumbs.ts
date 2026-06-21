@@ -107,6 +107,27 @@ function parseAdminIssuesRoute(
   return null;
 }
 
+function parseAdminOpsCasesRoute(
+  pathname: string,
+  locale: Locale,
+): { kind: "list" } | { kind: "detail"; number: string } | null {
+  const base = `/${locale}/dashboard/admin/ops-cases`;
+
+  if (pathname === base) {
+    return { kind: "list" };
+  }
+
+  if (pathname.startsWith(`${base}/`)) {
+    const suffix = pathname.slice(base.length + 1);
+    const number = suffix.split("/")[0];
+    if (number) {
+      return { kind: "detail", number };
+    }
+  }
+
+  return null;
+}
+
 function parseQaIssuesRoute(
   pathname: string,
   locale: Locale,
@@ -184,6 +205,7 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
   const requestsRoute = parseRequestsRoute(pathname, locale, workspaceSlug);
   const paymentsRoute = parsePaymentsRoute(pathname, locale, workspaceSlug);
   const adminIssuesRoute = parseAdminIssuesRoute(pathname, locale);
+  const adminOpsCasesRoute = parseAdminOpsCasesRoute(pathname, locale);
   const qaIssuesRoute = parseQaIssuesRoute(pathname, locale);
   const pageKey = resolvePageLabelKey(pathname, locale, section, workspaceSlug);
   const isAdminPath = pathname.startsWith(`/${locale}/dashboard/admin`);
@@ -219,6 +241,23 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
     if (adminIssuesRoute.kind === "detail") {
       crumbs.push({
         label: detailLabel?.trim() || `#${adminIssuesRoute.number}`,
+      });
+    }
+
+    return crumbs;
+  }
+
+  if (isAdminPath && adminOpsCasesRoute) {
+    const opsCasesHref = `/${locale}/dashboard/admin/ops-cases`;
+
+    crumbs.push({
+      label: t("adminOpsCases"),
+      href: adminOpsCasesRoute.kind === "detail" ? opsCasesHref : undefined,
+    });
+
+    if (adminOpsCasesRoute.kind === "detail") {
+      crumbs.push({
+        label: detailLabel?.trim() || `#${adminOpsCasesRoute.number}`,
       });
     }
 

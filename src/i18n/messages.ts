@@ -7,6 +7,8 @@ import enBilling from "@/messages/en/billing.json";
 import enCommon from "@/messages/en/common.json";
 import enDashboard from "@/messages/en/dashboard.json";
 import enEstimateRequests from "@/messages/en/estimateRequests.json";
+import enOpsCases from "@/messages/en/ops-cases.json";
+import enLanding from "@/messages/en/landing.json";
 import enIssues from "@/messages/en/issues.json";
 import enEstimates from "@/messages/en/estimates.json";
 import enPayments from "@/messages/en/payments.json";
@@ -28,6 +30,8 @@ import plBilling from "@/messages/pl/billing.json";
 import plCommon from "@/messages/pl/common.json";
 import plDashboard from "@/messages/pl/dashboard.json";
 import plEstimateRequests from "@/messages/pl/estimateRequests.json";
+import plOpsCases from "@/messages/pl/ops-cases.json";
+import plLanding from "@/messages/pl/landing.json";
 import plIssues from "@/messages/pl/issues.json";
 import plEstimates from "@/messages/pl/estimates.json";
 import plPayments from "@/messages/pl/payments.json";
@@ -53,6 +57,8 @@ export const namespaces = [
   "estimateRequests",
   "estimates",
   "issues",
+  "landing",
+  "ops-cases",
   "payments",
   "requests",
   "referrals",
@@ -88,6 +94,8 @@ type MessagesByNamespace = {
   estimateRequests: typeof enEstimateRequests;
   estimates: typeof enEstimates;
   issues: typeof enIssues;
+  landing: typeof enLanding;
+  "ops-cases": typeof enOpsCases;
   payments: typeof enPayments;
   requests: typeof enRequests;
   referrals: typeof enReferrals;
@@ -118,6 +126,8 @@ function forLocale(locale: Locale): Messages {
         estimateRequests: plEstimateRequests,
         estimates: plEstimates,
         issues: plIssues,
+        landing: plLanding,
+        "ops-cases": plOpsCases,
         payments: plPayments,
         requests: plRequests,
         referrals: plReferrals,
@@ -141,6 +151,8 @@ function forLocale(locale: Locale): Messages {
         estimateRequests: enEstimateRequests,
         estimates: enEstimates,
         issues: enIssues,
+        landing: enLanding,
+        "ops-cases": enOpsCases,
         payments: enPayments,
         requests: enRequests,
         referrals: enReferrals,

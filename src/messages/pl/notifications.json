@@ -24,7 +24,8 @@
       "BILLING": "Płatności i plany",
       "ESTIMATES": "Wyceny i zapytania",
       "REFERRALS": "Program partnerski",
-      "QA": "QA i zgłoszenia"
+      "QA": "QA i zgłoszenia",
+      "OPS": "Operacje i case'y użytkowników"
     }
   },
   "types": {
@@ -61,6 +62,7 @@
     "referral_activated": "Referral aktywny — nagroda w toku",
     "referral_reward_granted": "Przyznano nagrodę partnerską",
     "referral_reward_failed": "Nie udało się przyznać nagrody",
-    "issue_status_changed": "Zgłoszenie #{issueNumber} → {newStatus}: {issueTitle}"
+    "issue_status_changed": "Zgłoszenie #{issueNumber} → {newStatus}: {issueTitle}",
+    "ops_case_opened": "Case operacyjny #{caseNumber}: {caseTitle}"
   }
 }

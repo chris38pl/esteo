@@ -1,0 +1,22 @@
+{
+  "badge": "Strona w budowie",
+  "headlinePrefix": "Tworzymy coś",
+  "headlineHighlight": "wyjątkowego",
+  "description": "Esteo jest jeszcze w budowie, ale już wkrótce udostępnimy Ci nowe możliwości.",
+  "features": {
+    "modern": "Nowoczesne rozwiązania",
+    "security": "Bezpieczeństwo danych",
+    "comingSoon": "Więcej funkcji wkrótce"
+  },
+  "cta": {
+    "title": "Aplikacja jest już dostępna!",
+    "description": "Zaloguj się, aby korzystać z Esteo i stworzyć pierwszą wycenę.",
+    "signIn": "Przejdź do logowania",
+    "dashboard": "Przejdź do panelu"
+  },
+  "footerLine1": "Dziękujemy za cierpliwość!",
+  "footerLine2": "Najlepsze dopiero przed nami! 💙",
+  "preferences": {
+    "locale": "Zmień język"
+  }
+}

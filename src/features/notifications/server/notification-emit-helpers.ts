@@ -410,3 +410,24 @@ export async function notifyEstimateLimitReached(
     },
   });
 }
+
+export async function notifyOpsCaseOpened(input: {
+  locale: string;
+  caseNumber: number;
+  caseTitle: string;
+  caseType: string;
+  severity: string;
+}) {
+  return emitUserNotification({
+    type: "ops_case_opened",
+    context: {
+      locale: input.locale,
+      payload: {
+        caseNumber: input.caseNumber,
+        caseTitle: input.caseTitle,
+        caseType: input.caseType,
+        severity: input.severity,
+      },
+    },
+  });
+}

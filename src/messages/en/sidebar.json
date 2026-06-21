@@ -48,6 +48,7 @@
       "voiceIntakePreview": "Voice preview",
       "activationPreview": "Activation preview",
       "issues": "Issue tracker",
+      "opsCases": "Ops queue",
       "styleguide": "Styleguide"
     }
   },

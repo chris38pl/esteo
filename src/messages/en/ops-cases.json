@@ -1,0 +1,92 @@
+{
+  "admin": {
+    "title": "Ops queue",
+    "subtitle": "Operational user-account and transaction issues detected automatically.",
+    "summary": {
+      "open": "Open",
+      "high": "High",
+      "critical": "Critical",
+      "overdue": "Overdue"
+    },
+    "list": {
+      "empty": "No ops cases yet.",
+      "searchPlaceholder": "Search by #, title, or email…",
+      "columns": {
+        "number": "#",
+        "title": "Title",
+        "type": "Type",
+        "source": "Source",
+        "severity": "Severity",
+        "status": "Status",
+        "occurrences": "Hits",
+        "affectedUser": "Affected user",
+        "createdAt": "Created"
+      }
+    },
+    "detail": {
+      "back": "Back to ops queue",
+      "runbook": "How to fix this issue",
+      "runbookHint": "Runbook: {path}",
+      "previousIncidents": "Previous incidents: {count}",
+      "sections": {
+        "summary": "Summary",
+        "people": "People",
+        "timeline": "Timeline",
+        "payload": "Payload",
+        "resolution": "Resolution"
+      },
+      "fields": {
+        "type": "Type",
+        "source": "Source",
+        "fingerprint": "Fingerprint",
+        "severity": "Severity",
+        "status": "Status",
+        "occurrenceCount": "Occurrences on active case",
+        "firstSeenAt": "First seen",
+        "lastSeenAt": "Last seen",
+        "dueAt": "Due",
+        "affectedUser": "Affected user",
+        "actorUser": "Actor user",
+        "workspace": "Workspace",
+        "entity": "Entity",
+        "summary": "Summary"
+      },
+      "resolutionNotesLabel": "Resolution notes",
+      "resolutionNotesPlaceholder": "What you did to resolve or ignore this case…",
+      "actions": {
+        "resolve": "Mark resolved",
+        "ignore": "Mark ignored",
+        "resolvedSuccess": "Case #{number} marked as resolved.",
+        "ignoredSuccess": "Case #{number} marked as ignored.",
+        "updateFailed": "Could not update case status."
+      }
+    },
+    "type": {
+      "REFERRAL_REWARD_FAILED": "Referral reward failed"
+    },
+    "source": {
+      "REFERRAL_SERVICE": "Realtime service",
+      "RECONCILIATION_CRON": "Reconciliation cron",
+      "STRIPE_WEBHOOK": "Stripe webhook",
+      "MANUAL": "Manual"
+    },
+    "status": {
+      "OPEN": "Open",
+      "IN_PROGRESS": "In progress",
+      "RESOLVED": "Resolved",
+      "IGNORED": "Ignored",
+      "ARCHIVED": "Archived"
+    },
+    "severity": {
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High",
+      "CRITICAL": "Critical"
+    },
+    "runbookCommands": {
+      "title": "Quick commands",
+      "audit": "npm run audit:referral-kpi -- --email {email}",
+      "backfill": "npm run prisma:backfill-missing-referral-credits"
+    }
+  }
+}

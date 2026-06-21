@@ -17,9 +17,11 @@ import { cn } from "@/lib/utils";
 export function AuthLocaleToggle({
   locale,
   className,
+  dropdownSide = "bottom",
 }: {
   locale: Locale;
   className?: string;
+  dropdownSide?: "top" | "bottom";
 }) {
   const t = useTranslations("auth");
   const router = useRouter();
@@ -54,7 +56,7 @@ export function AuthLocaleToggle({
           <ChevronDown className="size-3 opacity-70" strokeWidth={2.5} aria-hidden />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="min-w-[9rem]">
+      <DropdownMenuContent align="start" side={dropdownSide} className="min-w-[9rem]">
         {locales.map((value) => {
           const option = localeOptions.find((entry) => entry.value === value)!;
 

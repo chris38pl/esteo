@@ -1,0 +1,92 @@
+{
+  "admin": {
+    "title": "Kolejka operacyjna",
+    "subtitle": "Automatycznie wykryte problemy kont użytkowników i transakcji.",
+    "summary": {
+      "open": "Otwarte",
+      "high": "Wysokie",
+      "critical": "Krytyczne",
+      "overdue": "Po terminie"
+    },
+    "list": {
+      "empty": "Brak case'ów operacyjnych.",
+      "searchPlaceholder": "Szukaj po #, tytule lub emailu…",
+      "columns": {
+        "number": "#",
+        "title": "Tytuł",
+        "type": "Typ",
+        "source": "Źródło",
+        "severity": "Priorytet",
+        "status": "Status",
+        "occurrences": "Powt.",
+        "affectedUser": "Poszkodowany",
+        "createdAt": "Utworzono"
+      }
+    },
+    "detail": {
+      "back": "Wróć do kolejki",
+      "runbook": "Jak naprawić ten problem",
+      "runbookHint": "Runbook: {path}",
+      "previousIncidents": "Wcześniejsze incydenty: {count}",
+      "sections": {
+        "summary": "Podsumowanie",
+        "people": "Osoby",
+        "timeline": "Oś czasu",
+        "payload": "Payload",
+        "resolution": "Rozwiązanie"
+      },
+      "fields": {
+        "type": "Typ",
+        "source": "Źródło",
+        "fingerprint": "Fingerprint",
+        "severity": "Priorytet",
+        "status": "Status",
+        "occurrenceCount": "Powtórzenia (aktywny case)",
+        "firstSeenAt": "Pierwsze wystąpienie",
+        "lastSeenAt": "Ostatnie wystąpienie",
+        "dueAt": "Termin SLA",
+        "affectedUser": "Poszkodowany",
+        "actorUser": "Actor",
+        "workspace": "Workspace",
+        "entity": "Encja",
+        "summary": "Opis"
+      },
+      "resolutionNotesLabel": "Notatki rozwiązania",
+      "resolutionNotesPlaceholder": "Co zrobiłeś, aby rozwiązać lub zignorować ten case…",
+      "actions": {
+        "resolve": "Oznacz jako rozwiązany",
+        "ignore": "Oznacz jako zignorowany",
+        "resolvedSuccess": "Case #{number} oznaczony jako rozwiązany.",
+        "ignoredSuccess": "Case #{number} oznaczony jako zignorowany.",
+        "updateFailed": "Nie udało się zaktualizować statusu case'a."
+      }
+    },
+    "type": {
+      "REFERRAL_REWARD_FAILED": "Nieudany bonus referral"
+    },
+    "source": {
+      "REFERRAL_SERVICE": "Serwis realtime",
+      "RECONCILIATION_CRON": "Cron reconciliation",
+      "STRIPE_WEBHOOK": "Webhook Stripe",
+      "MANUAL": "Ręcznie"
+    },
+    "status": {
+      "OPEN": "Otwarty",
+      "IN_PROGRESS": "W trakcie",
+      "RESOLVED": "Rozwiązany",
+      "IGNORED": "Zignorowany",
+      "ARCHIVED": "Zarchiwizowany"
+    },
+    "severity": {
+      "LOW": "Niski",
+      "MEDIUM": "Średni",
+      "HIGH": "Wysoki",
+      "CRITICAL": "Krytyczny"
+    },
+    "runbookCommands": {
+      "title": "Szybkie komendy",
+      "audit": "npm run audit:referral-kpi -- --email {email}",
+      "backfill": "npm run prisma:backfill-missing-referral-credits"
+    }
+  }
+}

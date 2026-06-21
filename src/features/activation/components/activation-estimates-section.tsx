@@ -130,6 +130,8 @@ export function ActivationEstimatesSection({
         <WorkspaceReadyBanner
           workspaceSlug={workspaceSlug}
           onDismissed={refreshActivationUi}
+          onCreateClick={onCreateClick}
+          onCopyFormLink={() => void handleCopyFormLink()}
         />
       ) : null}
 

@@ -1,0 +1,22 @@
+{
+  "badge": "Site under construction",
+  "headlinePrefix": "We're building something",
+  "headlineHighlight": "exceptional",
+  "description": "Esteo is still under construction, but we'll soon give you new capabilities.",
+  "features": {
+    "modern": "Modern solutions",
+    "security": "Data security",
+    "comingSoon": "More features coming soon"
+  },
+  "cta": {
+    "title": "The app is already available!",
+    "description": "Sign in to use Esteo and create your first estimate.",
+    "signIn": "Go to sign in",
+    "dashboard": "Go to dashboard"
+  },
+  "footerLine1": "Thank you for your patience!",
+  "footerLine2": "The best is yet to come! 💙",
+  "preferences": {
+    "locale": "Switch language"
+  }
+}
