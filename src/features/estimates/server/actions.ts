@@ -21,7 +21,7 @@ import {
   serializeVersionWithTree,
   type VersionTreeClient,
 } from "@/features/estimates/lib/serialize-estimate";
-import { updateEstimateTitleSchema } from "@/features/estimates/schemas/estimate-title";
+import { updateEstimateTitleSchema, type UpdateEstimateTitleInput } from "@/features/estimates/schemas/estimate-title";
 import {
   approveEdit,
   archiveEstimateVersion,
@@ -68,7 +68,9 @@ function resolveUpdateEstimateTitleValidationError(
   error: ZodError,
   t: Awaited<ReturnType<typeof getTranslations<"estimates">>>,
 ): string {
-  const fieldErrors = error.flatten().fieldErrors;
+  const fieldErrors = error.flatten().fieldErrors as Partial<
+    Record<keyof UpdateEstimateTitleInput, string[]>
+  >;
 
   if (fieldErrors.title?.length) {
     return t("header.rename.errors.invalidTitle");
