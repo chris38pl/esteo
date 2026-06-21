@@ -408,6 +408,8 @@ npm run trigger:dev
 
 Without `trigger:dev`, tasks queue in Development and expire (no cloud worker on free tier for dev without local process).
 
+**Known warning:** `send-estimate-to-customer.ts` may log **Slow import timing detected (>1s)** on worker start — expected, not a failure. See [diagnostics](../diagnostics/trigger-slow-import-send-estimate-to-customer.md).
+
 **Isolated from Preview:** localhost uses Neon **development**; Vercel Preview uses Neon **staging**. See [database migrations](../dev/database-migrations.md).
 
 ---

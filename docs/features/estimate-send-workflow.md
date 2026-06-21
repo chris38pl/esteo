@@ -116,6 +116,10 @@ Set these on:
 
 The `send-estimate-to-customer` task runs on Trigger; without `RESEND_API_KEY` / `EMAIL_FROM` there, sends fail after enqueue.
 
+### Local dev: slow import warning
+
+`npm run trigger:dev` may warn that `send-estimate-to-customer.ts` has **slow import timing (>1s)**. That is expected: the task file statically imports `processEstimateSendAttempt`, which loads Prisma, React Email, PDF generation, and Resend at worker startup. The worker still starts; send jobs are unaffected. **No fix planned yet** — see [diagnostics note](../diagnostics/trigger-slow-import-send-estimate-to-customer.md).
+
 #### Localhost (development)
 
 By default **`EMAIL_FROM` is ignored** unless `EMAIL_USE_PRODUCTION_FROM=true`. The app uses Resend’s sandbox sender:
@@ -153,3 +157,4 @@ Send and workflow actions require workspace **MEMBER** or higher. Poll/read requ
 - [`estimate-summary.md`](estimate-summary.md) — workflow status card (4 steps)
 - [`../architecture/deployment.md`](../architecture/deployment.md) — env mapping, `mail.esteo.app`
 - Incident: [estimate send toast polling stuck](../incidents/2026-06-18-estimate-send-toast-polling-stuck.md)
+- Diagnostics: [Trigger slow import on send task](../diagnostics/trigger-slow-import-send-estimate-to-customer.md)
