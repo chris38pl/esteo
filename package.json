@@ -34,6 +34,7 @@
     "prisma:backfill-referral-activations": "tsx scripts/backfill-referral-activations.ts",
     "prisma:backfill-missing-referral-credits": "tsx scripts/backfill-missing-referral-stripe-credits.ts",
     "audit:referral-kpi": "tsx scripts/audit-referral-kpi.ts",
+    "audit:onboarding-user": "tsx scripts/audit-onboarding-user.ts",
     "sync:issues": "node scripts/sync-issues.mjs",
     "retry-incomplete-ai-drafts": "tsx scripts/retry-incomplete-ai-drafts.ts",
     "test:request-attachments": "tsx scripts/test-request-attachment-metadata.ts",

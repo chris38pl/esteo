@@ -50,3 +50,5 @@ logs/ut-upload-debug.jsonl
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vercel

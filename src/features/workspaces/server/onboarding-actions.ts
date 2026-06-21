@@ -29,6 +29,33 @@ type ActionResult<T> =
   | { success: true; data: T }
   | { success: false; error: string; code?: string };
 
+function logCreateWorkspaceFailure(context: {
+  flow: "onboarding" | "additional";
+  userId?: string;
+  industry?: WorkspaceIndustry;
+  error: unknown;
+}): void {
+  const { error, ...rest } = context;
+  const payload = {
+    event: "create_workspace_failed",
+    ...rest,
+    errorName: error instanceof Error ? error.name : undefined,
+    errorMessage: error instanceof Error ? error.message : String(error),
+    prismaCode:
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      typeof (error as { code: unknown }).code === "string"
+        ? (error as { code: string }).code
+        : undefined,
+  };
+
+  console.error(JSON.stringify(payload));
+  if (error instanceof Error && error.stack) {
+    console.error(error.stack);
+  }
+}
+
 function toActionError(error: unknown): ActionResult<never> {
   if (error instanceof EntitlementError) {
     return { success: false, error: error.message, code: error.code };
@@ -41,8 +68,7 @@ function toActionError(error: unknown): ActionResult<never> {
     return { success: false, error: error.message };
   }
 
-  console.error(error);
-  return { success: false, error: "Something went wrong." };
+  return { success: false, error: "Something went wrong.", code: "GENERIC" };
 }
 
 type CreateWorkspaceActionInput = {
@@ -73,8 +99,11 @@ async function createWorkspaceAndActivate(
   locale: Locale,
   flow: "onboarding" | "additional",
 ): Promise<ActionResult<CreateWorkspaceResult>> {
+  let userId: string | undefined;
+
   try {
     const user = await requireAuth(locale);
+    userId = user.id;
 
     // First workspace (onboarding) is always frictionless FREE; only additional workspaces
     // may pick a paid plan.
@@ -129,6 +158,12 @@ async function createWorkspaceAndActivate(
 
     return { success: true, data: { workspace, checkoutUrl } };
   } catch (error) {
+    logCreateWorkspaceFailure({
+      flow,
+      userId,
+      industry: input.industry,
+      error,
+    });
     return toActionError(error);
   }
 }

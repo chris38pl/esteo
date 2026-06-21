@@ -63,6 +63,11 @@
     "errors": {
       "industryRequired": "Wybierz branżę.",
       "industryNotAvailable": "Ta branża nie jest jeszcze dostępna.",
+      "nameMin": "Nazwa musi mieć co najmniej 2 znaki.",
+      "nameMax": "Nazwa może mieć maksymalnie 120 znaków.",
+      "industryOtherMin": "Opisz swoją branżę (co najmniej 3 znaki).",
+      "industryOtherMax": "Opis branży może mieć maksymalnie 120 znaków.",
+      "descriptionMax": "Opis firmy może mieć maksymalnie 1500 znaków.",
       "freeSlotCooldown": "Utworzyłeś i usunąłeś już {limit} darmowych przestrzeni w ostatnich {days} dniach. Poczekaj, aż limit się zresetuje, zanim utworzysz kolejną."
     },
     "planLabel": "Plan",

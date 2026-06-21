@@ -36,6 +36,10 @@ import {
   FREE_WORKSPACE_COOLDOWN_DAYS,
   FREE_WORKSPACE_MONTHLY_DELETE_LIMIT,
 } from "@/features/workspaces/lib/free-workspace-policy";
+import {
+  resolveCreateWorkspaceActionError,
+  resolveCreateWorkspaceZodError,
+} from "@/features/workspaces/lib/resolve-create-workspace-form-errors";
 
 type CreateWorkspaceFormMode = "onboarding" | "new";
 
@@ -44,24 +48,6 @@ const PLAN_OPTIONS: SubscriptionPlan[] = [
   SubscriptionPlan.PRO,
   SubscriptionPlan.BUSINESS,
 ];
-
-function resolveCreateWorkspaceError(
-  result: { error: string; code?: string },
-  tForm: ReturnType<typeof useTranslations<"workspaces.createForm">>,
-): string {
-  if (result.code === "FREE_SLOT_COOLDOWN") {
-    return tForm("errors.freeSlotCooldown", {
-      days: FREE_WORKSPACE_COOLDOWN_DAYS,
-      limit: FREE_WORKSPACE_MONTHLY_DELETE_LIMIT,
-    });
-  }
-
-  if (result.code === "FREE_SLOT_ACTIVE" || result.code === "FREE_SLOT_TAKEN") {
-    return tForm("freeTaken");
-  }
-
-  return result.error;
-}
 
 export function CreateWorkspaceForm({
   locale,
@@ -125,7 +111,7 @@ export function CreateWorkspaceForm({
     });
 
     if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? t("errors.generic"));
+      setError(resolveCreateWorkspaceZodError(parsed.error, tForm, t));
       return;
     }
 
@@ -133,36 +119,45 @@ export function CreateWorkspaceForm({
       mode === "new" ? createAdditionalWorkspaceAction : createWorkspaceOnboardingAction;
 
     startTransition(async () => {
-      const result = await action(
-        {
-          name: parsed.data.name,
-          industry: parsed.data.industry,
-          industryOtherText: parsed.data.industryOtherText,
-          appearanceTheme: parsed.data.appearanceTheme,
-          plan: parsed.data.plan,
-          companyDescription: parsed.data.companyDescription,
-        },
-        locale,
-      );
+      try {
+        const result = await action(
+          {
+            name: parsed.data.name,
+            industry: parsed.data.industry,
+            industryOtherText: parsed.data.industryOtherText,
+            appearanceTheme: parsed.data.appearanceTheme,
+            plan: parsed.data.plan,
+            companyDescription: parsed.data.companyDescription,
+          },
+          locale,
+        );
 
-      if (!result.success) {
-        setError(resolveCreateWorkspaceError(result, tForm));
-        return;
+        if (!result.success) {
+          setError(
+            resolveCreateWorkspaceActionError(result, tForm, t, {
+              freeSlotCooldownDays: FREE_WORKSPACE_COOLDOWN_DAYS,
+              freeSlotDeleteLimit: FREE_WORKSPACE_MONTHLY_DELETE_LIMIT,
+            }),
+          );
+          return;
+        }
+
+        // Paid plans return a Stripe checkout URL; the workspace is INCOMPLETE until payment.
+        if (result.data.checkoutUrl) {
+          window.location.href = result.data.checkoutUrl;
+          return;
+        }
+
+        const destination = dashboardEstimatesHref(locale, result.data.workspace.slug);
+
+        if (mode === "onboarding") {
+          setWorkspaceReadyPending(result.data.workspace.slug);
+        }
+
+        router.replace(destination);
+      } catch {
+        setError(t("errors.generic"));
       }
-
-      // Paid plans return a Stripe checkout URL; the workspace is INCOMPLETE until payment.
-      if (result.data.checkoutUrl) {
-        window.location.href = result.data.checkoutUrl;
-        return;
-      }
-
-      const destination = dashboardEstimatesHref(locale, result.data.workspace.slug);
-
-      if (mode === "onboarding") {
-        setWorkspaceReadyPending(result.data.workspace.slug);
-      }
-
-      router.replace(destination);
     });
   }
 

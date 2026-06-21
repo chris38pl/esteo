@@ -63,6 +63,11 @@
     "errors": {
       "industryRequired": "Please select an industry.",
       "industryNotAvailable": "This industry is not available yet.",
+      "nameMin": "Name must be at least 2 characters.",
+      "nameMax": "Name must be at most 120 characters.",
+      "industryOtherMin": "Please describe your business type (at least 3 characters).",
+      "industryOtherMax": "Business type description must be at most 120 characters.",
+      "descriptionMax": "Company description must be at most 1500 characters.",
       "freeSlotCooldown": "You have already created and deleted {limit} free workspaces in the last {days} days. Wait for the limit to reset before creating another."
     },
     "planLabel": "Plan",
