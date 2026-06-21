@@ -5,6 +5,7 @@ import type { NotificationType } from "@prisma/client";
 import {
   NOTIFICATION_TYPE_CATALOG,
   type CatalogNotificationType,
+  type NotificationTypeDefinition,
 } from "@/features/notifications/lib/notification-type-catalog";
 import { resolveRecipients } from "@/features/notifications/lib/notification-recipients";
 import type { EmitContext } from "@/features/notifications/lib/notification-types";
@@ -20,7 +21,7 @@ export type EmitUserNotificationInput = {
 export async function emitUserNotification(
   input: EmitUserNotificationInput,
 ): Promise<{ emitted: number; skipped: number }> {
-  const definition = NOTIFICATION_TYPE_CATALOG[input.type];
+  const definition = NOTIFICATION_TYPE_CATALOG[input.type] as NotificationTypeDefinition;
 
   if (definition.scope === "workspace" && !input.context.workspaceId) {
     throw new Error(`Notification ${input.type} requires workspaceId`);

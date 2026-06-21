@@ -18,6 +18,7 @@ import type { BillingSidebarState } from "@/features/billing/billing-sidebar-sta
 import type { WorkspaceMemberPreview } from "@/features/workspaces/server/get-active-workspace-card-data";
 import type { NotificationCounts } from "@/features/notifications/lib/notification-types";
 import type { AvatarPreset } from "@/components/avatars/user-avatar";
+import type { PinnedEstimateSidebarItem } from "@/components/layout/app-sidebar/pinned-config";
 import type { Locale } from "@/lib/locale";
 import { dashboardEstimatesHref } from "@/lib/dashboard-routes";
 import { setActiveWorkspaceAction } from "@/server/workspaces/actions";

@@ -5,6 +5,8 @@ import { formatDistanceToNow } from "date-fns";
 import { enUS, pl } from "date-fns/locale";
 import { useTranslations } from "next-intl";
 
+import type { NotificationType } from "@prisma/client";
+
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Locale } from "@/lib/locale";
@@ -34,7 +36,7 @@ export function NotificationItem({
 }) {
   const t = useTranslations("notifications");
   const values = getNotificationTranslationValues(item);
-  const body = t(getNotificationTypeKey(item.type), values);
+  const body = t(getNotificationTypeKey(item.type) as `types.${NotificationType}`, values);
   const isUnread = item.readAt === null;
   const isActionRequired = item.state === "ACTION_REQUIRED" && item.resolvedAt === null;
 

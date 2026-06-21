@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { WorkspaceIndustry } from "@prisma/client";
 
+import { ActivationCombinedBanner } from "@/features/activation/components/activation-combined-banner";
 import { ActivationTipsBanner } from "@/features/activation/components/activation-tips-banner";
 import { WorkspaceReadyBanner } from "@/features/activation/components/workspace-ready-banner";
 import { CompanyProfileCompletionModal } from "@/features/activation/components/company-profile-completion-modal";

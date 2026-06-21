@@ -105,16 +105,16 @@ export function TipCard({
         >
           <Icon className={cn("size-5", iconClassName)} aria-hidden />
         </div>
-        <div className="flex flex-col items-end gap-1.5">
+        <div className="flex min-w-0 flex-1 flex-col items-end gap-1.5">
           {isPinned && pinnedBadgeLabel ? (
-            <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-medium leading-none text-primary ring-1 ring-primary/20">
+            <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium leading-snug text-primary ring-1 ring-primary/20">
               {pinnedBadgeLabel}
             </span>
           ) : null}
           {showCategory && categoryLabel ? (
             <span
               className={cn(
-                "inline-flex max-w-[55%] items-center rounded-full px-2.5 py-1 text-[11px] font-medium leading-none",
+                "inline-flex max-w-full items-center justify-center rounded-full px-3 py-1.5 text-xs font-medium leading-snug text-center",
                 categoryClassName,
               )}
             >

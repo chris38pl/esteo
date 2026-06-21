@@ -197,7 +197,10 @@ export const NOTIFICATION_TYPE_CATALOG = {
     defaultRecipients: "explicit_user_ids",
     metadataSchema: billingWorkspacePayloadSchema,
     dedupeKey: (ctx) => `member:reactivated:${ctx.workspaceId}:${ctx.userIds?.[0]}`,
-    href: (ctx) => dashboardEstimatesHref(ctx.locale as Locale, ctx.workspaceSlug),
+    href: (ctx) =>
+      ctx.workspaceSlug
+        ? dashboardEstimatesHref(ctx.locale as Locale, ctx.workspaceSlug)
+        : `/${ctx.locale}/dashboard`,
   },
   ownership_transfer_received: {
     state: "ACTION_REQUIRED",

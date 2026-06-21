@@ -408,7 +408,7 @@ export async function submitEstimateRequestWithAttachments(input: {
         workspaceSlug: workspace.slug,
         workspaceName: workspace.name,
         requestId,
-        requestTitle: estimateTitle,
+        requestTitle: estimateTitle ?? input.body.customer.fullName,
         queuedManual: !runFullPipeline,
       }),
     );
