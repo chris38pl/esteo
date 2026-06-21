@@ -227,6 +227,34 @@ Pełna dokumentacja: [`docs/features/referral-program.md`](docs/features/referra
 
 **Localhost:** bez `STRIPE_REFERRAL_COUPON_ID` UI na `/billing/manage` nadal pokazuje ceny promocyjne (gdy referral `PENDING_CLAIM`), ale Stripe Checkout pobierze pełną kwotę — w logach dev: `[referral] … STRIPE_REFERRAL_COUPON_ID missing`.
 
+### Diagnostyka i naprawa nagrody (grant FAILED)
+
+Gdy polecony ma status **ACTIVE**, referrer widzi **„W przygotowaniu”** lub notyfikację **„Nie udało się przyznac nagrody”**, a KPI saldo się nie zwiększyło:
+
+```bash
+# 1. Sprawdź stan referrali i saldo Stripe referrera
+npm run audit:referral-kpi -- --email referrer@example.com
+
+# 2. Napraw brakujące cbtxn w ledgerze (dry-run opcjonalnie)
+npm run prisma:backfill-missing-referral-credits -- --dry-run
+npm run prisma:backfill-missing-referral-credits
+
+# 3. Powtórz audyt — oczekiwane: rewardStatus=GRANTED, cbtxn w ledgerze
+npm run audit:referral-kpi -- --email referrer@example.com
+```
+
+Typowy błąd w `failure:`: `No such customer: cus_…` — grant trafił na **stary** Stripe customer z najstarszego workspace, podczas gdy saldo KPI czyta **najnowszy** `BillingCustomer`. Od fixa `557fcf8` grant i odczyt salda używają wspólnego helpera `resolveReferrerStripeCustomerId()`.
+
+| Objaw | Prawdopodobna przyczyna | Akcja |
+| --- | --- | --- |
+| `rewardStatus=FAILED`, `ledger=[…→null]` | Stripe grant nie przeszedł (stary customer, brak `STRIPE_SECRET_KEY`) | `audit:referral-kpi` → `backfill-missing-referral-credits` |
+| KPI granted OK, available niższe | Saldo zużyte na fakturze | Normalne — patrz „Wykorzystane saldo” |
+| Referral ACTIVE, brak grantu po płatności | Webhook/sync nie doszedł (localhost) | `prisma:backfill-referral-activations` |
+
+Incident (przykład budmar → chaz): [`docs/incidents/2026-06-21-referral-grant-stale-stripe-customer.md`](docs/incidents/2026-06-21-referral-grant-stale-stripe-customer.md).
+
+**Wymagane env:** `STRIPE_SECRET_KEY`, `DATABASE_URL` (te same co billing dev).
+
 ---
 
 ## **Ograniczenia**
