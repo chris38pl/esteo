@@ -1,5 +1,7 @@
 import { task, logger } from "@trigger.dev/sdk";
 
+import { processEstimateSendAttempt } from "@/features/estimates/server/process-estimate-send-attempt";
+
 export interface SendEstimateToCustomerPayload {
   sendId: string;
   activityNote?: string;
@@ -17,9 +19,6 @@ export const sendEstimateToCustomerTask = task({
   run: async (payload: SendEstimateToCustomerPayload) => {
     logger.info("Estimate send started", { sendId: payload.sendId });
 
-    const { processEstimateSendAttempt } = await import(
-      "@/features/estimates/server/process-estimate-send-attempt"
-    );
     await processEstimateSendAttempt(payload.sendId, payload.activityNote);
 
     logger.info("Estimate send completed", { sendId: payload.sendId });
