@@ -45,9 +45,13 @@ export async function resolveReferrerStripeCustomerId(
   }
 
   const stripe = getStripeClient();
-  return selectValidReferrerStripeCustomerId(candidateIds, (id) =>
-    stripe.customers.retrieve(id),
-  );
+  return selectValidReferrerStripeCustomerId(candidateIds, async (id) => {
+    const customer = await stripe.customers.retrieve(id);
+    if ("deleted" in customer && customer.deleted) {
+      return { deleted: true };
+    }
+    return {};
+  });
 }
 
 export async function findReferralBalanceTransactionId(
