@@ -2,11 +2,11 @@
   "badge": "Site under construction",
   "headlinePrefix": "We're building something",
   "headlineHighlight": "exceptional",
-  "description": "Esteo is still under construction, but we'll soon give you new capabilities.",
+  "description": "Esteo is still under construction, but we're already giving you new capabilities.",
   "features": {
-    "modern": "Modern solutions",
-    "security": "Data security",
-    "comingSoon": "More features coming soon"
+    "moreJobsLessAdmin": "More jobs. Less admin work.",
+    "aiEstimates": "Estimates powered by artificial intelligence.",
+    "fastQuoteFlow": "From inquiry to client-ready quote in minutes."
   },
   "cta": {
     "title": "The app is already available!",

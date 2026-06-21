@@ -2,11 +2,11 @@
   "badge": "Strona w budowie",
   "headlinePrefix": "Tworzymy coś",
   "headlineHighlight": "wyjątkowego",
-  "description": "Esteo jest jeszcze w budowie, ale już wkrótce udostępnimy Ci nowe możliwości.",
+  "description": "Esteo jest jeszcze w budowie, ale już teraz udostępniamy Ci nowe możliwości.",
   "features": {
-    "modern": "Nowoczesne rozwiązania",
-    "security": "Bezpieczeństwo danych",
-    "comingSoon": "Więcej funkcji wkrótce"
+    "moreJobsLessAdmin": "Więcej zleceń. Mniej administracji.",
+    "aiEstimates": "Wyceny napędzane sztuczną inteligencją.",
+    "fastQuoteFlow": "Od zapytania do wyceny dla klienta w kilka minut."
   },
   "cta": {
     "title": "Aplikacja jest już dostępna!",

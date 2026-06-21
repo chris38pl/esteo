@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
@@ -19,6 +19,27 @@ import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
 const AUTO_ADVANCE_MS = 6000;
+const DESKTOP_SLIDE_SIZE = 3;
+const MOBILE_SLIDE_SIZE = 1;
+const DESKTOP_MEDIA_QUERY = "(min-width: 1024px)";
+
+function useResponsiveSlideSize() {
+  const [slideSize, setSlideSize] = useState(MOBILE_SLIDE_SIZE);
+
+  useLayoutEffect(() => {
+    const mediaQuery = window.matchMedia(DESKTOP_MEDIA_QUERY);
+
+    function updateSlideSize() {
+      setSlideSize(mediaQuery.matches ? DESKTOP_SLIDE_SIZE : MOBILE_SLIDE_SIZE);
+    }
+
+    updateSlideSize();
+    mediaQuery.addEventListener("change", updateSlideSize);
+    return () => mediaQuery.removeEventListener("change", updateSlideSize);
+  }, []);
+
+  return slideSize;
+}
 
 interface TipsCarouselProps {
   tips: TipCatalogEntry[];
@@ -54,14 +75,16 @@ export function TipsCarousel({
   const t = useTranslations("tips");
   const tCarousel = useTranslations("tips.carousel");
   const reduceMotion = useReducedMotion();
+  const slideSize = useResponsiveSlideSize();
 
   const slides = useMemo(
     () =>
       buildTipsCarouselSlides(tips, {
         pinnedIds,
         dismissedIds,
+        slideSize,
       }),
-    [tips, pinnedIds, dismissedIds],
+    [tips, pinnedIds, dismissedIds, slideSize],
   );
 
   const slidesKey = slides.map((slide) => slide.map((tip) => tip.id).join("-")).join("|");
@@ -141,6 +164,16 @@ export function TipsCarousel({
     return null;
   }
 
+  const mobileCarouselNav =
+    slideSize === MOBILE_SLIDE_SIZE && slideCount > 1
+      ? {
+          onPrev: goPrev,
+          onNext: goNext,
+          prevLabel: tCarousel("previous"),
+          nextLabel: tCarousel("next"),
+        }
+      : undefined;
+
   return (
     <div
       className="relative"
@@ -189,6 +222,7 @@ export function TipsCarousel({
                       }
                       pinLabel={t("card.pin")}
                       unpinLabel={t("card.unpin")}
+                      carouselNav={mobileCarouselNav}
                     />
                   );
                 })}
@@ -199,7 +233,7 @@ export function TipsCarousel({
       </div>
 
       {slideCount > 1 ? (
-        <div className="mt-5 flex items-center justify-between gap-3">
+        <div className="mt-4 hidden items-center justify-between gap-3 lg:flex md:mt-5">
           <div className="flex items-center gap-2">
             {slides.map((_, index) => (
               <button

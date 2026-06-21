@@ -1,6 +1,7 @@
-import { ChevronRight, Pin, PinOff, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pin, PinOff, X } from "lucide-react";
 import Link from "next/link";
 
+import { Button } from "@/components/ui/button";
 import type { TipCardStyle } from "@/features/tips/lib/tip-card-styles";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +27,7 @@ export function TipCard({
   onPinToggle,
   pinLabel,
   unpinLabel,
+  carouselNav,
 }: {
   title: string;
   description: string;
@@ -42,6 +44,12 @@ export function TipCard({
   onPinToggle?: () => void;
   pinLabel?: string;
   unpinLabel?: string;
+  carouselNav?: {
+    onPrev: () => void;
+    onNext: () => void;
+    prevLabel: string;
+    nextLabel: string;
+  };
 }) {
   const { Icon, badgeClassName, iconWrapClassName, iconClassName, linkClassName, categoryClassName } =
     style;
@@ -58,6 +66,7 @@ export function TipCard({
       className={cn(
         "relative flex flex-col rounded-xl border border-border/60 bg-muted/20 p-4 transition-[box-shadow,background-color,border-color] duration-200 md:p-5",
         isPinned && "border-primary/30 bg-primary/5 ring-2 ring-primary/20",
+        carouselNav && "pb-14 lg:pb-4",
       )}
     >
       <div className="mb-4 flex items-start gap-3">
@@ -145,6 +154,31 @@ export function TipCard({
         {learnMoreLabel}
         <ChevronRight className="size-4 shrink-0" aria-hidden />
       </Link>
+
+      {carouselNav ? (
+        <div className="absolute right-3 bottom-3 flex items-center gap-1 lg:hidden">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="size-8 rounded-lg border-border/70 bg-background/80"
+            onClick={carouselNav.onPrev}
+            aria-label={carouselNav.prevLabel}
+          >
+            <ChevronLeft className="size-4" aria-hidden />
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="size-8 rounded-lg border-border/70 bg-background/80"
+            onClick={carouselNav.onNext}
+            aria-label={carouselNav.nextLabel}
+          >
+            <ChevronRight className="size-4" aria-hidden />
+          </Button>
+        </div>
+      ) : null}
     </article>
   );
 }

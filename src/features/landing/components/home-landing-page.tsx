@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
-import { ArrowRight, Lock, Rocket, Shield, TrafficCone, Zap } from "lucide-react";
+import { ArrowRight, Briefcase, Clock, Lock, Sparkles, TrafficCone } from "lucide-react";
 
 import { HOME_LANDING_HERO_IMAGES } from "@/features/landing/lib/hero-images";
 import { getServerTranslations } from "@/i18n/request-locale";
@@ -71,7 +71,7 @@ function FeatureItem({
   iconClassName,
   mobileList = false,
 }: {
-  icon: typeof Rocket;
+  icon: typeof Briefcase;
   label: string;
   iconClassName: string;
   mobileList?: boolean;
@@ -102,7 +102,7 @@ function FeatureItem({
       >
         <Icon className="size-4 lg:size-[1.125rem]" strokeWidth={2.2} />
       </div>
-      <p className="max-w-[9.5rem] text-sm font-medium leading-snug text-foreground/90 lg:max-w-none lg:whitespace-nowrap">
+      <p className="max-w-[9.5rem] text-sm font-medium leading-snug text-foreground/90 lg:max-w-[11rem] lg:leading-snug xl:max-w-[12.5rem]">
         {label}
       </p>
     </div>
@@ -226,18 +226,18 @@ export async function HomeLandingPage({ locale }: { locale: Locale }) {
 
             <div className="relative z-10 hidden gap-9 lg:flex lg:w-[128%] lg:max-w-none xl:w-[138%]">
               <FeatureItem
-                icon={Rocket}
-                label={t("features.modern")}
+                icon={Briefcase}
+                label={t("features.moreJobsLessAdmin")}
                 iconClassName="bg-gradient-to-br from-violet-500/15 to-blue-500/10 text-violet-600 dark:from-violet-500/25 dark:to-blue-500/15 dark:text-violet-300"
               />
               <FeatureItem
-                icon={Shield}
-                label={t("features.security")}
+                icon={Sparkles}
+                label={t("features.aiEstimates")}
                 iconClassName="bg-gradient-to-br from-blue-500/15 to-indigo-500/10 text-blue-600 dark:from-blue-500/25 dark:to-indigo-500/15 dark:text-blue-300"
               />
               <FeatureItem
-                icon={Zap}
-                label={t("features.comingSoon")}
+                icon={Clock}
+                label={t("features.fastQuoteFlow")}
                 iconClassName="bg-gradient-to-br from-emerald-500/15 to-teal-500/10 text-emerald-600 dark:from-emerald-500/20 dark:to-teal-500/15 dark:text-emerald-300"
               />
             </div>
@@ -249,20 +249,20 @@ export async function HomeLandingPage({ locale }: { locale: Locale }) {
         <div className="relative z-10 mt-8 flex flex-col gap-4 pl-6 sm:pl-8 lg:hidden">
           <FeatureItem
             mobileList
-            icon={Rocket}
-            label={t("features.modern")}
+            icon={Briefcase}
+            label={t("features.moreJobsLessAdmin")}
             iconClassName="bg-gradient-to-br from-violet-500/15 to-blue-500/10 text-violet-600 dark:from-violet-500/25 dark:to-blue-500/15 dark:text-violet-300"
           />
           <FeatureItem
             mobileList
-            icon={Shield}
-            label={t("features.security")}
+            icon={Sparkles}
+            label={t("features.aiEstimates")}
             iconClassName="bg-gradient-to-br from-blue-500/15 to-indigo-500/10 text-blue-600 dark:from-blue-500/25 dark:to-indigo-500/15 dark:text-blue-300"
           />
           <FeatureItem
             mobileList
-            icon={Zap}
-            label={t("features.comingSoon")}
+            icon={Clock}
+            label={t("features.fastQuoteFlow")}
             iconClassName="bg-gradient-to-br from-emerald-500/15 to-teal-500/10 text-emerald-600 dark:from-emerald-500/20 dark:to-teal-500/15 dark:text-emerald-300"
           />
         </div>

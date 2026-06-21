@@ -82,11 +82,11 @@ export function ActivationTipsBanner({
         <div className="p-4 md:p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between gap-3 sm:hidden">
-                <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-amber-500/12 ring-1 ring-amber-500/20 dark:bg-amber-400/10 dark:ring-amber-400/15">
+              <div className="flex items-center justify-between gap-2 sm:hidden">
+                <div className="flex min-w-0 items-center gap-2">
+                  <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-amber-500/12 ring-1 ring-amber-500/20 dark:bg-amber-400/10 dark:ring-amber-400/15">
                     <Lightbulb
-                      className="size-5 text-amber-600 dark:text-amber-400"
+                      className="size-4 text-amber-600 dark:text-amber-400"
                       aria-hidden
                     />
                   </div>
@@ -94,14 +94,23 @@ export function ActivationTipsBanner({
                     {tBanner("title")}
                   </h2>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleDismiss}
-                  className={dismissButtonClassName}
-                  aria-label={tBanner("dismiss")}
-                >
-                  <X className="size-4" aria-hidden />
-                </button>
+                <div className="flex shrink-0 items-center">
+                  <Link
+                    href={tipsPageHref}
+                    className={dismissButtonClassName}
+                    aria-label={tBanner("seeAll")}
+                  >
+                    <BookOpen className="size-4" aria-hidden />
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleDismiss}
+                    className={dismissButtonClassName}
+                    aria-label={tBanner("dismiss")}
+                  >
+                    <X className="size-4" aria-hidden />
+                  </button>
+                </div>
               </div>
 
               <div className="hidden min-w-0 items-start gap-3 sm:flex">
@@ -121,12 +130,12 @@ export function ActivationTipsBanner({
                 </div>
               </div>
 
-              <p className="mt-1 max-w-2xl pl-14 text-sm leading-relaxed text-muted-foreground sm:hidden">
+              <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:hidden">
                 {tBanner("subtitle")}
               </p>
             </div>
 
-            <div className="flex shrink-0 items-center gap-2 self-start sm:pt-0.5">
+            <div className="hidden shrink-0 items-center gap-2 self-start sm:flex sm:pt-0.5">
               <Button
                 type="button"
                 variant="outline"
@@ -151,7 +160,7 @@ export function ActivationTipsBanner({
             </div>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-4 md:mt-6">
             <TipsCarousel
               tips={TIPS_BANNER_CATALOG}
               locale={locale}
@@ -168,7 +177,7 @@ export function ActivationTipsBanner({
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 border-t border-border/50 bg-muted/25 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between md:px-6 dark:bg-muted/20">
+        <div className="hidden flex-col gap-4 border-t border-border/50 bg-muted/25 px-4 py-3.5 sm:flex sm:flex-row sm:items-center sm:justify-between md:px-6 dark:bg-muted/20">
           <div className="flex min-w-0 items-center gap-3">
             <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-amber-500/12 ring-1 ring-amber-500/20 dark:bg-amber-400/10 dark:ring-amber-400/15">
               <Sparkles className="size-4 text-amber-600 dark:text-amber-400" aria-hidden />
