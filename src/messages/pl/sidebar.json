@@ -26,13 +26,11 @@
   },
   "team": {
     "title": "Twój zespół",
-    "invite": "Zaproś członka",
     "expand": "Rozwiń sekcję zespołu",
     "collapse": "Zwiń sekcję zespołu",
-    "members": {
-      "owner": "Właściciel",
-      "colleagueA": "Anna Kowalska",
-      "colleagueB": "Piotr Nowak"
+    "roles": {
+      "PLATFORM_ADMIN": "Admin platformy",
+      "QA_TESTER": "Tester QA"
     }
   },
   "admin": {

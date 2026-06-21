@@ -17,6 +17,10 @@ export function isQaTester(user: User): boolean {
   return user.platformRole === ("QA_TESTER" satisfies PlatformRole);
 }
 
+export function hasProductPlatformRole(user: User): boolean {
+  return user.platformRole !== ("NONE" satisfies PlatformRole);
+}
+
 export function canAccessIssueTriage(user: User): boolean {
   return isPlatformAdmin(user) || isQaTester(user);
 }

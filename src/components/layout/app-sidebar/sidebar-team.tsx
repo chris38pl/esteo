@@ -1,6 +1,7 @@
 "use client";
 
-import { Plus, Users } from "lucide-react";
+import type { PlatformRole } from "@prisma/client";
+import { Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { UserAvatar } from "@/components/avatars/user-avatar";
@@ -10,8 +11,29 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { SidebarSectionLabel } from "./sidebar-section-label";
 import { sidebarInsetClass } from "./sidebar-layout";
 import { useSidebarLayout } from "./sidebar-layout-context";
-import { teamMembers } from "./team-config";
 import { useSidebarStore } from "./sidebar-store";
+
+const TEAM_ROLE_TEXT_INSET = "pl-1.5";
+const TEAM_ROLE_BADGE_INSET = "px-1.5";
+
+function ProductRoleBadge({ role }: { role: Exclude<PlatformRole, "NONE"> }) {
+  const t = useTranslations("sidebar.team.roles");
+
+  return (
+    <span
+      className={cn(
+        "inline-flex w-fit max-w-full truncate rounded py-0.5 text-[9px] font-medium leading-none",
+        TEAM_ROLE_BADGE_INSET,
+        role === "PLATFORM_ADMIN" &&
+          "bg-sky-500/10 text-sky-700 dark:bg-sky-400/10 dark:text-sky-300",
+        role === "QA_TESTER" &&
+          "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-300",
+      )}
+    >
+      {t(role)}
+    </span>
+  );
+}
 
 export function SidebarTeam({ collapsedOverride }: { collapsedOverride?: boolean } = {}) {
   const t = useTranslations("sidebar.team");
@@ -20,24 +42,18 @@ export function SidebarTeam({ collapsedOverride }: { collapsedOverride?: boolean
   const toggleSection = useSidebarStore((s) => s.toggleSection);
   const collapsed = collapsedOverride ?? collapsedFromStore;
   const { inDrawer } = useSidebarLayout();
-  const { currentUser } = useWorkspaceContext();
+  const { canViewProductTeam, productTeamMembers } = useWorkspaceContext();
 
-  const members = teamMembers.map((member, index) => ({
-    ...member,
-    imageUrl: index === 0 ? currentUser.avatarUrl : member.imageUrl,
-    avatarPreset: index === 0 ? currentUser.avatarPreset : member.avatarPreset,
-    displayName:
-      index === 0
-        ? currentUser.name?.trim() || currentUser.email
-        : t(member.nameKey),
-  }));
+  if (!canViewProductTeam) {
+    return null;
+  }
 
   if (collapsed) {
     return (
       <div className={cn(sidebarInsetClass(true, inDrawer), "pb-2 pt-1")}>
         <ul className="space-y-1">
-          {members.slice(0, 3).map((member) => (
-            <li key={member.key}>
+          {productTeamMembers.slice(0, 3).map((member) => (
+            <li key={member.id}>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -54,7 +70,10 @@ export function SidebarTeam({ collapsedOverride }: { collapsedOverride?: boolean
                       />
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent side="right">{member.displayName}</TooltipContent>
+                  <TooltipContent side="right" className="space-y-0.5">
+                    <p>{member.displayName}</p>
+                    <ProductRoleBadge role={member.platformRole} />
+                  </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </li>
@@ -71,56 +90,42 @@ export function SidebarTeam({ collapsedOverride }: { collapsedOverride?: boolean
         teamOpen ? "pb-3" : "pb-0",
       )}
     >
-      <SidebarSectionLabel
-        icon={Users}
-        expanded={teamOpen}
-        onToggle={() => toggleSection("team")}
-        toggleLabel={teamOpen ? t("collapse") : t("expand")}
-        action={
-          <button
-            type="button"
-            aria-label={t("invite")}
-            className="rounded-md p-0.5 text-[var(--sidebar-section)] transition hover:bg-[var(--sidebar-nav-hover)] hover:text-[var(--sidebar-heading)]"
-          >
-            <Plus className="size-3.5" strokeWidth={1.75} />
-          </button>
-        }
-      >
-        {t("title")}
-      </SidebarSectionLabel>
+        <SidebarSectionLabel
+          icon={Users}
+          expanded={teamOpen}
+          onToggle={() => toggleSection("team")}
+          toggleLabel={teamOpen ? t("collapse") : t("expand")}
+        >
+          {t("title")}
+        </SidebarSectionLabel>
 
-      {teamOpen ? (
-        <>
+        {teamOpen ? (
           <ul className="space-y-0.5">
-            {members.map((member) => (
-              <li key={member.key}>
-                <button
-                  type="button"
-                  className="sidebar-nav-link flex w-full items-center gap-2.5 rounded-lg py-1.5 pl-1.5 pr-2 text-left text-xs"
-                >
+            {productTeamMembers.map((member) => (
+              <li key={member.id}>
+                <div className="sidebar-nav-link grid w-full grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2.5 rounded-lg py-1.5 pl-1.5 pr-2 text-left">
                   <UserAvatar
                     imageUrl={member.imageUrl}
                     avatarPreset={member.avatarPreset}
-                    size={22}
+                    size={30}
                     className="ring-0"
                   />
-                  <span className="sidebar-heading min-w-0 flex-1 truncate text-[13px]">
-                    {member.displayName}
-                  </span>
-                </button>
+                  <div className="flex min-w-0 flex-col gap-0.5">
+                    <p
+                      className={cn(
+                        "sidebar-heading truncate text-[13px] leading-none mb-1",
+                        TEAM_ROLE_TEXT_INSET,
+                      )}
+                    >
+                      {member.displayName}
+                    </p>
+                    <ProductRoleBadge role={member.platformRole} />
+                  </div>
+                </div>
               </li>
             ))}
           </ul>
-
-          <button
-            type="button"
-            className="mt-1.5 flex w-full items-center gap-1.5 rounded-lg py-1.5 pl-1.5 pr-2 text-xs font-medium text-primary transition hover:bg-[var(--sidebar-nav-hover)]"
-          >
-            <Plus className="size-3.5" strokeWidth={2} />
-            {t("invite")}
-          </button>
-        </>
-      ) : null}
+        ) : null}
     </div>
   );
 }

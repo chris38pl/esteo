@@ -19,6 +19,7 @@ import type { WorkspaceMemberPreview } from "@/features/workspaces/server/get-ac
 import type { NotificationCounts } from "@/features/notifications/lib/notification-types";
 import type { AvatarPreset } from "@/components/avatars/user-avatar";
 import type { PinnedEstimateSidebarItem } from "@/components/layout/app-sidebar/pinned-config";
+import type { ProductTeamMember } from "@/features/users/server/list-product-team-members";
 import type { Locale } from "@/lib/locale";
 import { dashboardEstimatesHref } from "@/lib/dashboard-routes";
 import { setActiveWorkspaceAction } from "@/server/workspaces/actions";
@@ -62,6 +63,8 @@ type WorkspaceContextValue = {
   billingSidebarState: BillingSidebarState;
   isPlatformAdmin: boolean;
   isQaTester: boolean;
+  canViewProductTeam: boolean;
+  productTeamMembers: ProductTeamMember[];
   issueTrackerEnabled: boolean;
   partnerProgramVisible: boolean;
   currentUserId: string;
@@ -107,6 +110,8 @@ export function WorkspaceProvider({
   billingSidebarState,
   isPlatformAdmin,
   isQaTester,
+  canViewProductTeam,
+  productTeamMembers,
   issueTrackerEnabled,
   partnerProgramVisible,
   currentUserId,
@@ -129,6 +134,8 @@ export function WorkspaceProvider({
   billingSidebarState: BillingSidebarState;
   isPlatformAdmin: boolean;
   isQaTester: boolean;
+  canViewProductTeam: boolean;
+  productTeamMembers: ProductTeamMember[];
   issueTrackerEnabled: boolean;
   partnerProgramVisible: boolean;
   currentUserId: string;
@@ -189,6 +196,8 @@ export function WorkspaceProvider({
       billingSidebarState,
       isPlatformAdmin,
       isQaTester,
+      canViewProductTeam,
+      productTeamMembers,
       issueTrackerEnabled,
       partnerProgramVisible,
       currentUserId,
@@ -228,6 +237,8 @@ export function WorkspaceProvider({
       billingSidebarState,
       isPlatformAdmin,
       isQaTester,
+      canViewProductTeam,
+      productTeamMembers,
       issueTrackerEnabled,
       partnerProgramVisible,
       currentUserId,

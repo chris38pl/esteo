@@ -29,8 +29,9 @@ import {
   canUserCreateWorkspace,
   countOwnedWorkspaces,
 } from "@/server/permissions/entitlements";
-import { isPlatformAdmin, isQaTester } from "@/server/permissions/require-workspace";
+import { isPlatformAdmin, isQaTester, hasProductPlatformRole } from "@/server/permissions/require-workspace";
 import { isIssueTrackerEnabled } from "@/lib/issue-tracker/guard";
+import { listProductTeamMembers } from "@/features/users/server/list-product-team-members";
 import { listPinnedEstimatesForSidebar } from "@/features/estimates/server/pinned-estimates";
 import { getWorkspaceStorageSummary } from "@/features/attachments/server/assert-workspace-storage";
 import { getWorkspaceLogoUrlsByIds } from "@/features/workspaces/server/logo-service";
@@ -64,6 +65,8 @@ export default async function DashboardLayout({
     getBillingPayerWorkspaceIdsForUser(user.id),
   ]);
   const issueTrackerEnabled = isIssueTrackerEnabled();
+  const canViewProductTeam = hasProductPlatformRole(user);
+  const productTeamMembers = canViewProductTeam ? await listProductTeamMembers() : [];
 
   // New users have no workspaces yet and will be immediately redirected to
   // onboarding by the child layout. Skip the remaining sidebar data fetches
@@ -82,6 +85,8 @@ export default async function DashboardLayout({
         billingSidebarState={{ variant: "upsell", currentPlan: "FREE", targetPlan: "PRO" }}
         isPlatformAdmin={isPlatformAdmin(user)}
         isQaTester={isQaTester(user)}
+        canViewProductTeam={canViewProductTeam}
+        productTeamMembers={productTeamMembers}
         issueTrackerEnabled={issueTrackerEnabled}
         partnerProgramVisible={false}
         currentUserId={user.id}
@@ -197,6 +202,8 @@ export default async function DashboardLayout({
       billingSidebarState={billingSidebarState}
       isPlatformAdmin={isPlatformAdmin(user)}
       isQaTester={isQaTester(user)}
+      canViewProductTeam={canViewProductTeam}
+      productTeamMembers={productTeamMembers}
       issueTrackerEnabled={issueTrackerEnabled}
       partnerProgramVisible={partnerProgramVisible}
       currentUserId={user.id}

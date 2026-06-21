@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
+import { SidebarDivider } from "@/components/layout/app-sidebar/sidebar-divider";
 import { sidebarInsetClass } from "@/components/layout/app-sidebar/sidebar-layout";
 import { useSidebarLayout } from "@/components/layout/app-sidebar/sidebar-layout-context";
 import { useSidebarStore } from "@/components/layout/app-sidebar/sidebar-store";
@@ -61,21 +62,24 @@ export function SidebarTips({
   );
 
   return (
-    <div className={cn(sidebarInsetClass(collapsed, inDrawer), "pb-1 pt-1")}>
-      <ul>
-        <li>
-          {collapsed ? (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>{row}</TooltipTrigger>
-                <TooltipContent side="right">{label}</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : (
-            row
-          )}
-        </li>
-      </ul>
-    </div>
+    <>
+      <SidebarDivider />
+      <div className={cn(sidebarInsetClass(collapsed, inDrawer), "pb-1 pt-1")}>
+        <ul>
+          <li>
+            {collapsed ? (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>{row}</TooltipTrigger>
+                  <TooltipContent side="right">{label}</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : (
+              row
+            )}
+          </li>
+        </ul>
+      </div>
+    </>
   );
 }
