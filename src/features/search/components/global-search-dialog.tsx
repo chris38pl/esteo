@@ -54,6 +54,12 @@ import {
 const DEBOUNCE_MS = 300;
 const MIN_QUERY_LENGTH = 2;
 
+/** ~2 compact rows on mobile; inner list scrolls when there are more items. */
+const MOBILE_RECENT_SEARCH_LIST_CLASS =
+  "sidebar-scroll max-md:max-h-[5.25rem] max-md:overflow-y-auto max-md:pr-0.5 md:overflow-visible";
+const MOBILE_RECENT_DOCUMENT_LIST_CLASS =
+  "sidebar-scroll max-md:max-h-[7.25rem] max-md:overflow-y-auto max-md:pr-0.5 md:overflow-visible";
+
 type NavigableItem = {
   key: string;
   url: string;
@@ -285,6 +291,12 @@ export function GlobalSearchDialog() {
                   <CommandEmpty className="px-4 py-10 text-left text-sm leading-relaxed">
                     {t("empty.hint")}
                   </CommandEmpty>
+                ) : !showSearchResults ? (
+                  hasRecents ? (
+                    <CommandEmpty className="hidden px-4 py-10 text-left text-sm leading-relaxed md:block">
+                      {t("empty.hint")}
+                    </CommandEmpty>
+                  ) : null
                 ) : searching ? (
                   <CommandEmpty className="px-4 text-left">…</CommandEmpty>
                 ) : !hasResults ? (
@@ -506,15 +518,19 @@ function SearchRecentsSidebar({
 }) {
   const t = useTranslations("search");
 
+  const visibleRecentDocuments = recentDocuments.slice(0, 5);
+
   return (
     <aside
       className={cn(
-        "sidebar-scroll min-h-0 w-full shrink-0 flex-col gap-6 overflow-y-auto border-t border-border/60 p-5 md:w-[38%] md:min-w-[15.5rem] md:max-w-[21rem] md:border-t-0",
+        "flex w-full shrink-0 flex-col gap-6 border-t border-border/60 p-5",
+        "max-md:gap-3 max-md:overflow-hidden max-md:p-3 max-md:pt-2",
+        "md:sidebar-scroll md:min-h-0 md:w-[38%] md:min-w-[15.5rem] md:max-w-[21rem] md:overflow-y-auto md:border-t-0",
         className,
       )}
     >
-      <div>
-        <div className="mb-3 flex items-center justify-between gap-2">
+      <div className="min-h-0 shrink-0">
+        <div className="mb-2 flex items-center justify-between gap-2 md:mb-3">
           <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
             {t("recentSearches")}
           </p>
@@ -528,11 +544,11 @@ function SearchRecentsSidebar({
             </button>
           ) : null}
         </div>
-        <div className="space-y-1">
-          {recentSearches.length === 0 ? (
-            <p className="px-1 text-sm text-muted-foreground">—</p>
-          ) : (
-            recentSearches.map((term) => (
+        {recentSearches.length === 0 ? (
+          <p className="px-1 text-sm text-muted-foreground">—</p>
+        ) : (
+          <div className={cn("space-y-1", MOBILE_RECENT_SEARCH_LIST_CLASS)}>
+            {recentSearches.map((term) => (
               <div
                 key={term}
                 className="flex items-center gap-1 rounded-xl px-2 py-2.5 hover:bg-accent/50"
@@ -554,20 +570,20 @@ function SearchRecentsSidebar({
                   <X className="size-3.5" />
                 </button>
               </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      <div>
-        <p className="mb-3 text-xs font-medium tracking-wide text-muted-foreground uppercase">
+      <div className="min-h-0 shrink-0">
+        <p className="mb-2 text-xs font-medium tracking-wide text-muted-foreground uppercase md:mb-3">
           {t("recentDocuments")}
         </p>
-        {recentDocuments.length === 0 ? (
+        {visibleRecentDocuments.length === 0 ? (
           <p className="px-1 text-sm text-muted-foreground">—</p>
         ) : (
-          <div className="space-y-1">
-            {recentDocuments.slice(0, 5).map((item) => (
+          <div className={cn("space-y-1", MOBILE_RECENT_DOCUMENT_LIST_CLASS)}>
+            {visibleRecentDocuments.map((item) => (
               <button
                 key={`side:${item.id}`}
                 type="button"
