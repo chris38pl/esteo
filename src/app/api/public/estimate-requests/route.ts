@@ -8,7 +8,7 @@ import {
   submitEstimateRequestWithAttachments,
 } from "@/features/estimate-requests/server/submit-estimate-request-with-attachments";
 import { DocumentFieldValidationError } from "@/features/industry-fields/server/validate-document-values";
-import { publicEstimateRequestSchema } from "@/features/estimate-requests/schemas/request";
+import { parsePublicEstimateRequestBody } from "@/features/estimate-requests/server/parse-estimate-request-body";
 import {
   assertPublicSubmitRateLimit,
   getPublicRequestFingerprint,
@@ -39,10 +39,10 @@ export async function POST(request: Request) {
   }
 
   try {
-    const parsed = publicEstimateRequestSchema.safeParse(bodyJson);
+    const parsed = await parsePublicEstimateRequestBody(bodyJson);
 
     if (!parsed.success) {
-      return errorJson("invalid", 400);
+      return errorJson(parsed.error, parsed.error === "unavailable" ? 404 : 400);
     }
 
     if (isHoneypotFilled(parsed.data.security?.companyWebsite)) {

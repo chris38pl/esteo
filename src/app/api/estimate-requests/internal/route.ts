@@ -3,7 +3,7 @@ import "server-only";
 import { NextResponse } from "next/server";
 
 import { StorageQuotaError } from "@/features/attachments/server/storage-errors";
-import { internalEstimateCreateSchema } from "@/features/estimate-requests/schemas/request";
+import { parseInternalEstimateCreateBody } from "@/features/estimate-requests/server/parse-estimate-request-body";
 import {
   SubmitEstimateRequestError,
   submitEstimateRequestWithAttachments,
@@ -51,13 +51,16 @@ export async function POST(request: Request) {
       return errorJson("invalid", 400);
     }
 
-    const parsed = internalEstimateCreateSchema.safeParse(payload.payload);
+    await requireRole(user, payload.workspaceId, "MEMBER");
+
+    const parsed = await parseInternalEstimateCreateBody(
+      payload.workspaceId,
+      payload.payload,
+    );
 
     if (!parsed.success) {
-      return errorJson("invalid", 400);
+      return errorJson(parsed.error, parsed.error === "unavailable" ? 404 : 400);
     }
-
-    await requireRole(user, payload.workspaceId, "MEMBER");
 
     const localeParam = new URL(request.url).searchParams.get("locale");
     const locale: Locale =

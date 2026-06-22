@@ -1,7 +1,8 @@
 "use server";
 
 import type { Locale } from "@/lib/locale";
-import { publicEstimateRequestSchema, type PublicEstimateRequestInput } from "@/features/estimate-requests/schemas/request";
+import type { PublicEstimateRequestInput } from "@/features/estimate-requests/schemas/request";
+import { parsePublicEstimateRequestBody } from "@/features/estimate-requests/server/parse-estimate-request-body";
 import { createPublicEstimateRequest } from "@/features/estimate-requests/server/public-service";
 import {
   assertPublicSubmitRateLimit,
@@ -18,10 +19,13 @@ export async function submitPublicEstimateRequestAction(
   input: PublicEstimateRequestInput,
   locale: Locale,
 ): Promise<ActionResult<{ id: string | null; requestNumber: string | null }>> {
-  const parsed = publicEstimateRequestSchema.safeParse(input);
+  const parsed = await parsePublicEstimateRequestBody(input);
 
   if (!parsed.success) {
-    return { success: false, error: "invalid" };
+    return {
+      success: false,
+      error: parsed.error === "unavailable" ? "unavailable" : "invalid",
+    };
   }
 
   if (isHoneypotFilled(parsed.data.security?.companyWebsite)) {
