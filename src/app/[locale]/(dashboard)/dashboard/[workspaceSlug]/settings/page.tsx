@@ -80,6 +80,7 @@ export default async function WorkspaceSettingsPage({
           id: member.id,
           userId: member.userId,
           role: member.role,
+          joinedAt: member.createdAt.toISOString(),
           user: {
             name: member.user.name,
             email: member.user.email,
@@ -89,7 +90,12 @@ export default async function WorkspaceSettingsPage({
               : null,
           },
         }))}
-        invitations={invitations}
+        invitations={invitations.map((invitation) => ({
+          id: invitation.id,
+          email: invitation.email,
+          role: invitation.role,
+          invitedAt: invitation.createdAt.toISOString(),
+        }))}
         rules={rules}
         canInviteMembers={canInviteMembers}
         locale={resolvedLocale}

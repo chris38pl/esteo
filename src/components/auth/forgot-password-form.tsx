@@ -45,7 +45,9 @@ export function ForgotPasswordForm({ locale: localeParam }: { locale: string }) 
       setCodeSent(true);
     } catch (sendError) {
       setError(
-        getLocalizedClerkErrorMessage(sendError, locale, t("forgotPassword.error")),
+        getLocalizedClerkErrorMessage(sendError, locale, t("forgotPassword.error"), {
+          emailLimitFallback: t("errors.emailLimitExceeded"),
+        }),
       );
     } finally {
       setIsSubmitting(false);
@@ -88,7 +90,9 @@ export function ForgotPasswordForm({ locale: localeParam }: { locale: string }) 
       setError(t("forgotPassword.error"));
     } catch (resetError) {
       setError(
-        getLocalizedClerkErrorMessage(resetError, locale, t("forgotPassword.error")),
+        getLocalizedClerkErrorMessage(resetError, locale, t("forgotPassword.error"), {
+          emailLimitFallback: t("errors.emailLimitExceeded"),
+        }),
       );
     } finally {
       setIsSubmitting(false);

@@ -759,7 +759,11 @@
   "versions": {
     "createNewVersion": "Create new version",
     "versionLabel": "Version {n}",
-    "shortVersionLabel": "Version {n}"
+    "shortVersionLabel": "Version {n}",
+    "creating": "Creating version…",
+    "creatingHint": "Preparing a new draft from the current version.",
+    "switching": "Switching version…",
+    "switchingHint": "Loading the selected estimate version."
   },
   "context": {
     "request": "Request",

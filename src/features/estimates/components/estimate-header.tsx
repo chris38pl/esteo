@@ -82,6 +82,8 @@ interface EstimateHeaderProps {
   onBeforePdfExport?: () => Promise<EstimatePdfBeforeExportResult>;
   onPreviewPdf?: () => void;
   isPreviewLoading?: boolean;
+  onDownloadPdf?: () => void;
+  isPdfDownloading?: boolean;
 }
 
 interface EstimateHeaderMoreMenuProps {
@@ -104,6 +106,8 @@ interface EstimateHeaderMoreMenuProps {
   onBeforePdfExport?: () => Promise<EstimatePdfBeforeExportResult>;
   onPreviewPdf?: () => void;
   isPreviewLoading?: boolean;
+  onDownloadPdf?: () => void;
+  isPdfDownloading?: boolean;
   trigger: React.ReactNode;
 }
 
@@ -127,6 +131,8 @@ function EstimateHeaderMoreMenu({
   onBeforePdfExport,
   onPreviewPdf,
   isPreviewLoading = false,
+  onDownloadPdf,
+  isPdfDownloading = false,
   trigger,
 }: EstimateHeaderMoreMenuProps) {
   const t = useTranslations("estimates");
@@ -176,12 +182,9 @@ function EstimateHeaderMoreMenu({
           />
         ) : null}
         <EstimateHeaderPdfExportMenuItem
-          estimateId={estimateId}
           versionId={activeVersionId}
-          workspaceId={workspaceId}
-          workspaceSlug={workspaceSlug}
-          locale={locale}
-          onBeforeExport={onBeforePdfExport}
+          onDownloadPdf={onDownloadPdf}
+          isDownloading={isPdfDownloading}
         />
         <DropdownMenuItem
           className={headerMoreMenuInlineActionClassName}
@@ -216,6 +219,8 @@ export function EstimateHeader({
   onBeforePdfExport,
   onPreviewPdf,
   isPreviewLoading = false,
+  onDownloadPdf,
+  isPdfDownloading = false,
 }: EstimateHeaderProps) {
   const t = useTranslations("estimates");
   const [workflowDialogAction, setWorkflowDialogAction] =
@@ -269,6 +274,8 @@ export function EstimateHeader({
     onBeforePdfExport,
     onPreviewPdf,
     isPreviewLoading,
+    onDownloadPdf,
+    isPdfDownloading,
   };
 
   return (

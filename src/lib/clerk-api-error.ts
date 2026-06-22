@@ -13,6 +13,9 @@ export type ClerkElementsError = {
  * Clerk FAPI returns English longMessage even when UI locale is pl.
  * Map known EN strings to stable error codes for @clerk/localizations lookup.
  */
+export const CLERK_DEVELOPMENT_EMAIL_LIMIT_MESSAGE =
+  "Development monthly email limit exceeded";
+
 const ENGLISH_MESSAGE_TO_ERROR_CODE: Record<string, string> = {
   "Password is incorrect. Try again, or use another method.":
     "form_password_incorrect",
@@ -20,7 +23,35 @@ const ENGLISH_MESSAGE_TO_ERROR_CODE: Record<string, string> = {
     "form_password_or_identifier_incorrect",
   "Identifier is invalid.": "form_param_format_invalid__identifier",
   "Incorrect code": "form_code_incorrect",
+  [CLERK_DEVELOPMENT_EMAIL_LIMIT_MESSAGE]: "development_email_limit_exceeded",
 };
+
+function clerkErrorMessages(error: ClerkAPIError): string[] {
+  return [error.message, error.longMessage].filter(
+    (message): message is string => typeof message === "string" && message.length > 0,
+  );
+}
+
+export function isClerkDevelopmentEmailLimitError(error: unknown): boolean {
+  if (isClerkAPIResponseError(error)) {
+    return error.errors.some((clerkError) =>
+      clerkErrorMessages(clerkError).some(
+        (message) =>
+          message.includes(CLERK_DEVELOPMENT_EMAIL_LIMIT_MESSAGE) ||
+          /monthly email limit exceeded/i.test(message),
+      ),
+    );
+  }
+
+  if (error instanceof Error && error.message) {
+    return (
+      error.message.includes(CLERK_DEVELOPMENT_EMAIL_LIMIT_MESSAGE) ||
+      /monthly email limit exceeded/i.test(error.message)
+    );
+  }
+
+  return false;
+}
 
 function inferErrorCodeFromMessage(message: string): string | undefined {
   return ENGLISH_MESSAGE_TO_ERROR_CODE[message.trim()];
@@ -105,7 +136,15 @@ export function getLocalizedClerkErrorMessage(
   error: unknown,
   locale: Locale,
   fallback: string,
+  options?: { emailLimitFallback?: string },
 ): string {
+  if (
+    options?.emailLimitFallback &&
+    isClerkDevelopmentEmailLimitError(error)
+  ) {
+    return options.emailLimitFallback;
+  }
+
   if (isClerkAPIResponseError(error) && error.errors[0]) {
     const clerkError = error.errors[0];
     return resolveLocalizedFieldError(

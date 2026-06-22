@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
 import type { Locale } from "@/lib/locale";
+import { IndeterminateLoadingBar } from "@/components/ui/indeterminate-loading-bar";
 import { NotificationsList } from "@/features/notifications/components/notifications-list";
 import type { SerializedNotificationItem } from "@/features/notifications/components/notification-item";
 import {
@@ -32,32 +33,49 @@ export function NotificationsPanelContent({
   const [items, setItems] = useState<SerializedNotificationItem[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
+  const [isPanelLoading, setIsPanelLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const loadPanel = useCallback(
     (input: { tab: Tab; cursor?: string; append?: boolean }) => {
-      startTransition(async () => {
-        const result = await fetchNotificationPanelAction({
-          locale,
-          actionRequiredOnly: input.tab === "actionRequired",
-          cursor: input.cursor,
-        });
+      if (!input.append) {
+        setIsPanelLoading(true);
+      }
 
-        setCounts(result.counts);
-        onCountsChange?.(result.counts);
-        setItems((prev) =>
-          input.append ? [...prev, ...result.items] : result.items,
-        );
-        setCursor(result.nextCursor);
-        setHasMore(Boolean(result.nextCursor));
+      startTransition(async () => {
+        try {
+          const result = await fetchNotificationPanelAction({
+            locale,
+            actionRequiredOnly: input.tab === "actionRequired",
+            cursor: input.cursor,
+          });
+
+          setCounts(result.counts);
+          onCountsChange?.(result.counts);
+          setItems((prev) =>
+            input.append ? [...prev, ...result.items] : result.items,
+          );
+          setCursor(result.nextCursor);
+          setHasMore(Boolean(result.nextCursor));
+        } finally {
+          if (!input.append) {
+            setIsPanelLoading(false);
+          }
+        }
       });
     },
     [locale, onCountsChange],
   );
 
   useEffect(() => {
+    setItems([]);
+    setCursor(null);
+    setHasMore(false);
+    setIsPanelLoading(true);
     loadPanel({ tab });
   }, [tab, loadPanel]);
+
+  const showLoadingBar = isPanelLoading;
 
   function handleMarkRead(notificationId: string) {
     startTransition(async () => {
@@ -114,10 +132,15 @@ export function NotificationsPanelContent({
         </button>
       </div>
 
+      {showLoadingBar ? (
+        <IndeterminateLoadingBar label={t("panel.loading")} />
+      ) : null}
+
       <div className="min-h-0 flex-1 overflow-y-auto">
         <NotificationsList
           items={items}
           locale={locale}
+          isInitialLoading={showLoadingBar}
           emptyMessage={
             tab === "actionRequired"
               ? t("panel.emptyActionRequired")

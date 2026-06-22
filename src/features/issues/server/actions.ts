@@ -2,10 +2,12 @@
 
 import type { Prisma } from "@prisma/client";
 
+import { prisma } from "@/db/client";
 import { serializeIssueContext } from "@/features/issues/lib/issue-context";
 import { slugifyIssueTitle } from "@/features/issues/lib/slugify-issue-title";
 import { createIssueSchema, type CreateIssueInput } from "@/features/issues/schemas/issue";
 import { allocateIssueNumber } from "@/features/issues/server/allocate-issue-number";
+import { linkIssueStagingAttachmentsInTx } from "@/features/issues/server/issue-staging-attachment-service";
 import { createIssueRecord } from "@/features/issues/server/repository";
 import { resolveIssueEnvironment } from "@/lib/app-environment";
 import { assertIssueTrackerEnabled } from "@/lib/issue-tracker/guard";
@@ -63,7 +65,19 @@ export async function createIssueAction(
       reportedBy: { connect: { id: user.id } },
     };
 
-    const issue = await createIssueRecord(data);
+    const issue = await prisma.$transaction(async (tx) => {
+      const created = await createIssueRecord(data, tx);
+
+      if (parsed.attachmentIds.length > 0) {
+        await linkIssueStagingAttachmentsInTx(tx, {
+          issueId: created.id,
+          uploadedById: user.id,
+          attachmentIds: parsed.attachmentIds,
+        });
+      }
+
+      return created;
+    });
 
     return {
       success: true,

@@ -506,6 +506,28 @@ button:not(:disabled),
   }
 }
 
+@keyframes global-search-indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+.global-search-loading-bar,
+.indeterminate-loading-bar {
+  animation: global-search-indeterminate 1.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .global-search-loading-bar,
+  .indeterminate-loading-bar {
+    animation: none;
+    width: 35%;
+  }
+}
+
 @keyframes landing-star-pulse {
   0%,
   100% {

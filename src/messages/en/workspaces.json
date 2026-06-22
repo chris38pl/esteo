@@ -160,10 +160,12 @@
     "logo": {
       "label": "Company logo",
       "hint": "PNG, JPG, or WebP, max 2 MB. Square or transparent background works best.",
+      "hintShort": "PNG, JPG, or WebP. Max 2 MB.",
       "dropHint": "Drop a file here or choose from disk",
       "upload": "Upload logo",
       "change": "Change logo",
       "remove": "Remove logo",
+      "removeShort": "Remove",
       "uploading": "Uploading… {percent}%",
       "removeConfirmTitle": "Remove company logo?",
       "removeConfirmDescription": "The logo will be permanently removed from this workspace. You can upload a new one at any time.",
@@ -178,12 +180,19 @@
     },
     "tabs": {
       "general": "General",
-      "company": "Company",
+      "company": "Company details",
       "users": "Users",
+      "referral": "Partner program",
       "rules": "Rules",
       "companyDescription": "Company details shown on client-facing documents — address, tax ID, contact.",
       "usersDescription": "Manage workspace members and collaboration invites.",
+      "referralDescription": "Enter a referrer email or code to join the partner program.",
       "rulesDescription": "Define AI rules used when generating estimates and responses."
+    },
+    "basicInfo": {
+      "title": "Basic information",
+      "nameHint": "Name displayed in the application.",
+      "accentHint": "Accent color applied across this workspace interface."
     },
     "aiSetup": {
       "title": "AI setup",
@@ -231,10 +240,13 @@
       "pendingTitle": "Pending invitations",
       "inviteTitle": "Invite user",
       "inviteDescription": "Send an email invitation. The user joins after accepting.",
+      "searchPlaceholder": "Search user…",
+      "roleFilterLabel": "Filter by role",
+      "roleFilterAll": "All roles",
       "emailLabel": "Email address",
       "emailPlaceholder": "jane@company.com",
       "roleLabel": "Role",
-      "inviteSubmit": "Send invitation",
+      "inviteSubmit": "Invite user",
       "inviting": "Sending…",
       "revoke": "Revoke",
       "remove": "Remove",
@@ -249,8 +261,15 @@
       "columns": {
         "member": "User",
         "role": "Role",
+        "status": "Status",
+        "joined": "Joined",
         "email": "Email",
         "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "pending": "Pending",
+        "pendingHint": "Invitation sent"
       },
       "roles": {
         "OWNER": "Owner",

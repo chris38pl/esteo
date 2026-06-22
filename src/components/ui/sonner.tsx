@@ -15,7 +15,7 @@ export function Toaster(props: ToasterProps) {
         unstyled: true,
         classNames: {
           toast:
-            "group toast group-[.toaster]:!border-0 group-[.toaster]:!bg-transparent group-[.toaster]:!p-0 group-[.toaster]:!shadow-none",
+            "group toast group-[.toaster]:!z-[90] group-[.toaster]:!border-0 group-[.toaster]:!bg-transparent group-[.toaster]:!p-0 group-[.toaster]:!shadow-none",
         },
       }}
       {...props}

@@ -258,6 +258,7 @@ model User {
   estimateVersionsAccepted EstimateVersion[] @relation("EstimateVersionAcceptedBy")
   estimateVersionsRejected EstimateVersion[] @relation("EstimateVersionRejectedBy")
   reportedIssues       Issue[]
+  issueStagingAttachments IssueStagingAttachment[]
   recentDocuments      UserRecentDocument[]
   referralProfile      UserReferralProfile?
   referralsAsReferrer  Referral[]           @relation("ReferralReferrer")
@@ -454,6 +455,25 @@ model IssueAttachment {
   issue Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
 
   @@index([issueId, sortOrder])
+}
+
+model IssueStagingAttachment {
+  id               String                         @id @default(cuid())
+  uploadedById     String
+  status           RequestStagingAttachmentStatus @default(UPLOADING)
+  originalFileName String
+  mimeType         String?
+  fileSizeBytes    BigInt                         @default(0)
+  storageKey       String?
+  imageWidth       Int?
+  imageHeight      Int?
+  lastError        String?
+  createdAt        DateTime                       @default(now())
+  updatedAt        DateTime                       @updatedAt
+
+  uploadedBy User @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+
+  @@index([uploadedById, status, createdAt])
 }
 
 model OpsCaseNumberCounter {

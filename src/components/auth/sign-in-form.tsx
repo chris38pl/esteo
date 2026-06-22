@@ -12,7 +12,9 @@ import {
   LocalizedClerkGlobalError,
 } from "@/components/auth/localized-clerk-errors";
 import {
+  SignInSecondFactorErrorBanner,
   SignInSecondFactorPrepare,
+  SignInSecondFactorProvider,
   SignInSecondFactorResend,
 } from "@/components/auth/sign-in-second-factor-prepare";
 import { Button } from "@/components/ui/button";
@@ -150,9 +152,14 @@ export function SignInForm({
 
       <SignIn.Step name="verifications">
         <SignIn.Strategy name="email_code">
-          <SignInSecondFactorPrepare />
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
+          <SignInSecondFactorProvider
+            emailLimitMessage={t("errors.emailLimitExceeded")}
+          >
+            <SignInSecondFactorPrepare />
+            <div className="space-y-4">
+              <SignInSecondFactorErrorBanner className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive" />
+
+              <p className="text-sm text-muted-foreground">
               {t("signIn.verifyEmailTitle")}{" "}
               <span className="font-medium text-foreground">
                 <SignIn.SafeIdentifier />
@@ -181,7 +188,8 @@ export function SignInForm({
                 t("signIn.resendCodeWait", { seconds })
               }
             />
-          </div>
+            </div>
+          </SignInSecondFactorProvider>
         </SignIn.Strategy>
       </SignIn.Step>
     </SignIn.Root>

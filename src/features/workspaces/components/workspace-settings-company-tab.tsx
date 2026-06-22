@@ -1,9 +1,11 @@
 "use client";
 
+import { Hash, Mail, MapPin, Phone } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 
+import { CompanyProfileFieldLabel } from "@/features/workspaces/components/company-profile-field-label";
 import {
   COMPANY_ADDRESS_MAX_LENGTH,
   updateWorkspaceCompanyProfileSchema,
@@ -12,8 +14,8 @@ import { updateWorkspaceCompanyProfileAction } from "@/features/workspaces/serve
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 const textareaClassName = cn(
   "min-h-[100px] w-full rounded-xl border border-input bg-transparent px-3 py-2.5 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm dark:bg-input/30",
@@ -38,7 +40,6 @@ function mapValidationError(
 
 export function WorkspaceSettingsCompanyTab({
   workspaceId,
-  workspaceName,
   initialCompanyAddress,
   initialCompanyTaxId,
   initialCompanyEmail,
@@ -46,7 +47,6 @@ export function WorkspaceSettingsCompanyTab({
   locale,
 }: {
   workspaceId: string;
-  workspaceName: string;
   initialCompanyAddress: string;
   initialCompanyTaxId: string;
   initialCompanyEmail: string;
@@ -54,6 +54,7 @@ export function WorkspaceSettingsCompanyTab({
   locale: Locale;
 }) {
   const t = useTranslations("workspaces.settings.company");
+  const tTabs = useTranslations("workspaces.settings.tabs");
   const tErrors = useTranslations("workspaces.settings.company.errors");
   const tSettings = useTranslations("workspaces.settings");
   const router = useRouter();
@@ -102,86 +103,90 @@ export function WorkspaceSettingsCompanyTab({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="workspace-company-name">{t("nameLabel")}</Label>
-        <Input
-          id="workspace-company-name"
-          value={workspaceName}
-          disabled
-          className="h-11 rounded-xl"
-        />
-        <p className="text-sm text-muted-foreground">{t("nameHint")}</p>
-      </div>
+    <form onSubmit={handleSubmit}>
+      <Card>
+        <CardHeader className="border-b">
+          <CardTitle>{tTabs("company")}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6 pt-6">
+          <div className="space-y-2">
+            <CompanyProfileFieldLabel htmlFor="workspace-company-address" icon={MapPin}>
+              {t("addressLabel")}
+            </CompanyProfileFieldLabel>
+            <textarea
+              id="workspace-company-address"
+              value={companyAddress}
+              onChange={(event) => setCompanyAddress(event.target.value)}
+              placeholder={t("addressPlaceholder")}
+              disabled={isPending}
+              maxLength={COMPANY_ADDRESS_MAX_LENGTH}
+              className={textareaClassName}
+            />
+          </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="workspace-company-address">{t("addressLabel")}</Label>
-        <textarea
-          id="workspace-company-address"
-          value={companyAddress}
-          onChange={(event) => setCompanyAddress(event.target.value)}
-          placeholder={t("addressPlaceholder")}
-          disabled={isPending}
-          maxLength={COMPANY_ADDRESS_MAX_LENGTH}
-          className={textareaClassName}
-        />
-      </div>
+          <div className="space-y-2">
+            <CompanyProfileFieldLabel htmlFor="workspace-company-tax-id" icon={Hash}>
+              {t("taxIdLabel")}
+            </CompanyProfileFieldLabel>
+            <Input
+              id="workspace-company-tax-id"
+              value={companyTaxId}
+              onChange={(event) => setCompanyTaxId(event.target.value)}
+              placeholder={t("taxIdPlaceholder")}
+              disabled={isPending}
+              className="h-11 rounded-xl"
+              inputMode="numeric"
+              autoComplete="off"
+            />
+          </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="workspace-company-tax-id">{t("taxIdLabel")}</Label>
-        <Input
-          id="workspace-company-tax-id"
-          value={companyTaxId}
-          onChange={(event) => setCompanyTaxId(event.target.value)}
-          placeholder={t("taxIdPlaceholder")}
-          disabled={isPending}
-          className="h-11 rounded-xl"
-          inputMode="numeric"
-          autoComplete="off"
-        />
-      </div>
+          <div className="space-y-2">
+            <CompanyProfileFieldLabel htmlFor="workspace-company-email" icon={Mail}>
+              {t("emailLabel")}
+            </CompanyProfileFieldLabel>
+            <Input
+              id="workspace-company-email"
+              type="email"
+              value={companyEmail}
+              onChange={(event) => setCompanyEmail(event.target.value)}
+              placeholder={t("emailPlaceholder")}
+              disabled={isPending}
+              className="h-11 rounded-xl"
+              autoComplete="email"
+            />
+          </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="workspace-company-email">{t("emailLabel")}</Label>
-        <Input
-          id="workspace-company-email"
-          type="email"
-          value={companyEmail}
-          onChange={(event) => setCompanyEmail(event.target.value)}
-          placeholder={t("emailPlaceholder")}
-          disabled={isPending}
-          className="h-11 rounded-xl"
-          autoComplete="email"
-        />
-      </div>
+          <div className="space-y-2">
+            <CompanyProfileFieldLabel htmlFor="workspace-company-phone" icon={Phone}>
+              {t("phoneLabel")}
+            </CompanyProfileFieldLabel>
+            <Input
+              id="workspace-company-phone"
+              type="tel"
+              value={companyPhone}
+              onChange={(event) => setCompanyPhone(event.target.value)}
+              placeholder={t("phonePlaceholder")}
+              disabled={isPending}
+              className="h-11 rounded-xl"
+              autoComplete="tel"
+            />
+          </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="workspace-company-phone">{t("phoneLabel")}</Label>
-        <Input
-          id="workspace-company-phone"
-          type="tel"
-          value={companyPhone}
-          onChange={(event) => setCompanyPhone(event.target.value)}
-          placeholder={t("phonePlaceholder")}
-          disabled={isPending}
-          className="h-11 rounded-xl"
-          autoComplete="tel"
-        />
-      </div>
+          {error ? (
+            <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+              {error}
+            </p>
+          ) : null}
 
-      {error ? (
-        <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {error}
-        </p>
-      ) : null}
+          {saved ? (
+            <p className="text-sm text-muted-foreground">{t("saved")}</p>
+          ) : null}
 
-      {saved ? (
-        <p className="text-sm text-muted-foreground">{t("saved")}</p>
-      ) : null}
-
-      <Button type="submit" className="rounded-lg" disabled={isPending}>
-        {isPending ? tSettings("saving") : tSettings("save")}
-      </Button>
+          <Button type="submit" className="rounded-lg" disabled={isPending}>
+            {isPending ? tSettings("saving") : tSettings("save")}
+          </Button>
+        </CardContent>
+      </Card>
     </form>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
@@ -9,6 +8,7 @@ import { appToast } from "@/components/ui/app-toast";
 import { PaginationControls } from "@/components/shared/pagination-controls";
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import { Button } from "@/components/ui/button";
+import { EstimateNavigationOverlay } from "@/features/estimates/components/estimate-navigation-overlay";
 import { estimateEditorMaxWidthClass } from "@/features/estimates/lib/estimate-layout-config";
 import {
   EMPTY_ESTIMATE_LIST_DATE_RANGE,
@@ -214,18 +214,10 @@ export function EstimatesListPanel({
   return (
     <div className={cn("mx-auto min-w-0 w-full space-y-6", estimateEditorMaxWidthClass)}>
       {openingEstimateId ? (
-        <div
-          role="status"
-          aria-live="polite"
-          aria-busy="true"
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-3 bg-background/85 backdrop-blur-sm"
-        >
-          <Loader2 className="size-8 animate-spin text-primary" />
-          <p className="text-sm font-medium text-foreground">{t("create.opening")}</p>
-          <p className="max-w-xs text-center text-xs text-muted-foreground">
-            {t("create.openingHint")}
-          </p>
-        </div>
+        <EstimateNavigationOverlay
+          label={t("create.opening")}
+          hint={t("create.openingHint")}
+        />
       ) : null}
       <EstimateEditorLayoutStyles />
 

@@ -1,13 +1,96 @@
 "use client";
 
 import { useSignIn } from "@clerk/nextjs";
-import { useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
+
+import { isClerkDevelopmentEmailLimitError } from "@/lib/clerk-api-error";
 
 const RESEND_COOLDOWN_SECONDS = 60;
 
 const inFlightAttemptIds = new Set<string>();
 
 type SignInResource = NonNullable<ReturnType<typeof useSignIn>["signIn"]>;
+
+type SignInSecondFactorContextValue = {
+  prepareError: string | null;
+  reportPrepareError: (error: unknown) => void;
+  clearPrepareError: () => void;
+};
+
+const SignInSecondFactorContext =
+  createContext<SignInSecondFactorContextValue | null>(null);
+
+function useSignInSecondFactorContext() {
+  const context = useContext(SignInSecondFactorContext);
+  if (!context) {
+    throw new Error(
+      "SignInSecondFactor components must be used within SignInSecondFactorProvider",
+    );
+  }
+
+  return context;
+}
+
+export function SignInSecondFactorProvider({
+  emailLimitMessage,
+  children,
+}: {
+  emailLimitMessage: string;
+  children: ReactNode;
+}) {
+  const [prepareError, setPrepareError] = useState<string | null>(null);
+
+  const reportPrepareError = useCallback(
+    (error: unknown) => {
+      if (isClerkDevelopmentEmailLimitError(error)) {
+        setPrepareError(emailLimitMessage);
+      }
+    },
+    [emailLimitMessage],
+  );
+
+  const clearPrepareError = useCallback(() => {
+    setPrepareError(null);
+  }, []);
+
+  return (
+    <SignInSecondFactorContext.Provider
+      value={{ prepareError, reportPrepareError, clearPrepareError }}
+    >
+      {children}
+    </SignInSecondFactorContext.Provider>
+  );
+}
+
+export function SignInSecondFactorErrorBanner({
+  className,
+}: {
+  className?: string;
+}) {
+  const { prepareError } = useSignInSecondFactorContext();
+
+  if (!prepareError) {
+    return null;
+  }
+
+  return (
+    <p
+      className={
+        className ??
+        "rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+      }
+    >
+      {prepareError}
+    </p>
+  );
+}
 
 function getEmailCodeFactor(signIn: SignInResource) {
   return signIn.supportedSecondFactors?.find(
@@ -44,6 +127,7 @@ function devLog(message: string, detail?: unknown) {
 async function runAutoPrepare(
   signIn: SignInResource,
   emailAddressId: string,
+  reportPrepareError: (error: unknown) => void,
 ): Promise<boolean> {
   const attemptId = signIn.id;
   if (!attemptId) {
@@ -66,6 +150,7 @@ async function runAutoPrepare(
     return true;
   } catch (error) {
     devLog("email second factor failed", error);
+    reportPrepareError(error);
     return false;
   } finally {
     inFlightAttemptIds.delete(attemptId);
@@ -74,6 +159,8 @@ async function runAutoPrepare(
 
 export function SignInSecondFactorPrepare() {
   const { isLoaded, signIn } = useSignIn();
+  const { reportPrepareError, clearPrepareError } =
+    useSignInSecondFactorContext();
 
   useEffect(() => {
     if (!isLoaded || !signIn) {
@@ -83,6 +170,7 @@ export function SignInSecondFactorPrepare() {
     const attemptId = signIn.id;
     if (attemptId && signIn.status !== "needs_second_factor") {
       inFlightAttemptIds.delete(attemptId);
+      clearPrepareError();
       return;
     }
 
@@ -99,8 +187,15 @@ export function SignInSecondFactorPrepare() {
       return;
     }
 
-    void runAutoPrepare(signIn, emailFactor.emailAddressId);
-  }, [isLoaded, signIn, signIn?.id, signIn?.status]);
+    void runAutoPrepare(signIn, emailFactor.emailAddressId, reportPrepareError);
+  }, [
+    isLoaded,
+    signIn,
+    signIn?.id,
+    signIn?.status,
+    reportPrepareError,
+    clearPrepareError,
+  ]);
 
   return null;
 }
@@ -113,6 +208,7 @@ export function SignInSecondFactorResend({
   resendWaitLabel: (seconds: number) => string;
 }) {
   const { isLoaded, signIn } = useSignIn();
+  const { reportPrepareError } = useSignInSecondFactorContext();
   const [cooldown, setCooldown] = useState(0);
   const [isResending, setIsResending] = useState(false);
 
@@ -154,6 +250,7 @@ export function SignInSecondFactorResend({
       setCooldown(RESEND_COOLDOWN_SECONDS);
     } catch (error) {
       devLog("email second factor failed", error);
+      reportPrepareError(error);
     } finally {
       setIsResending(false);
     }

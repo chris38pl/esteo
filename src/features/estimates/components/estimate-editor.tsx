@@ -10,6 +10,7 @@ import {
 import { useEstimatePdfExport } from "@/features/estimates/hooks/use-estimate-pdf-export";
 import { useEstimatePdfBeforeExport } from "@/features/estimates/hooks/use-estimate-pdf-before-export";
 import { useEstimatePdfPreview } from "@/features/estimates/hooks/use-estimate-pdf-preview";
+import { useEstimateMobileLayout } from "@/features/estimates/hooks/use-estimate-mobile-layout";
 import { useEstimateAdvancedMode } from "@/features/estimates/hooks/use-estimate-advanced-mode";
 import { useEstimateFocusMode } from "@/features/estimates/hooks/use-estimate-focus-mode";
 import type {
@@ -447,7 +448,7 @@ export function EstimateEditor({
     [onBeforePdfExport, t],
   );
 
-  const { exportPdf } = useEstimatePdfExport({
+  const { exportPdf, isExporting } = useEstimatePdfExport({
     estimateId: estimate.id,
     versionId: activeVersionId,
     workspaceId: estimate.workspaceId,
@@ -469,6 +470,19 @@ export function EstimateEditor({
       serverLatestPdfGeneratedAt: latestPdfForVersion?.generatedAt ?? null,
       onBeforeExport: onBeforePdfExport,
     });
+
+  const isMobile = useEstimateMobileLayout();
+
+  const handleDownloadPdf = useCallback(() => {
+    if (isMobile) {
+      void previewPdf();
+      return;
+    }
+
+    void exportPdf();
+  }, [exportPdf, isMobile, previewPdf]);
+
+  const isPdfDownloading = isMobile ? isPreviewLoading : isExporting;
 
   const isPdfPreviewOpen = previewState.status !== "closed";
 
@@ -974,6 +988,8 @@ export function EstimateEditor({
         onBeforePdfExport={onBeforePdfExport}
         onPreviewPdf={previewPdf}
         isPreviewLoading={isPreviewLoading}
+        onDownloadPdf={handleDownloadPdf}
+        isPdfDownloading={isPdfDownloading}
       />
 
       <EstimatePdfPreviewDialog
@@ -1122,7 +1138,7 @@ export function EstimateEditor({
                   installments={paymentInstallments}
                   attachments={initialAttachments}
                   onOpenTab={setActiveTab}
-                  onExportPdf={exportPdf}
+                  onExportPdf={handleDownloadPdf}
                 />
               ) : activeTab === "items" ? (
                 <fieldset

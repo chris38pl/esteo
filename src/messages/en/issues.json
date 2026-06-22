@@ -22,6 +22,7 @@
     "submitting": "Saving…",
     "cancel": "Cancel",
     "success": "Issue #{number} saved",
+    "waitForUploads": "Wait for screenshots to finish uploading.",
     "partialSuccess": "Issue #{number} saved, but screenshots could not be uploaded",
     "unexpectedError": "Something went wrong. Please try again.",
     "validationError": "Fill in required fields",
@@ -39,6 +40,9 @@
     "addFile": "Add image",
     "fileCount": "{current}/{max}",
     "remove": "Remove image",
+    "retry": "Retry upload",
+    "uploading": "Uploading…",
+    "failed": "Upload failed",
     "errors": {
       "maxFiles": "You can add at most 10 images.",
       "maxSize": "Total file size is too large."

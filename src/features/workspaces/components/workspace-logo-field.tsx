@@ -70,11 +70,13 @@ export function WorkspaceLogoField({
   initialLogoUrl,
   locale,
   label,
+  variant = "default",
 }: {
   workspaceId: string;
   initialLogoUrl: string | null;
   locale: Locale;
   label?: ReactNode;
+  variant?: "default" | "settings";
 }) {
   const t = useTranslations("workspaces.settings.logo");
   const router = useRouter();
@@ -159,6 +161,91 @@ export function WorkspaceLogoField({
 
     const file = event.dataTransfer.files[0] ?? null;
     void handleFile(file);
+  }
+
+  if (variant === "settings") {
+    return (
+      <div className="space-y-3">
+        <div className="space-y-1">
+          {label ?? <Label>{t("label")}</Label>}
+        </div>
+
+        <div className="flex items-start gap-4">
+          <div
+            className={cn(
+              "relative size-20 shrink-0 overflow-hidden rounded-xl border border-border/60 bg-background",
+              !hasLogo && "border-dashed bg-muted/20",
+            )}
+          >
+            {hasLogo && logoUrl ? (
+              <Image
+                src={logoUrl}
+                alt=""
+                fill
+                sizes="80px"
+                className="object-cover"
+                unoptimized
+              />
+            ) : null}
+          </div>
+
+          <div className="min-w-0 space-y-2 pt-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <input
+                ref={inputRef}
+                type="file"
+                accept={LOGO_ACCEPT_TYPES}
+                className="sr-only"
+                disabled={isUploading}
+                onChange={handleInputChange}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="rounded-lg"
+                disabled={isUploading}
+                onClick={() => inputRef.current?.click()}
+              >
+                {hasLogo ? t("change") : t("upload")}
+              </Button>
+              {hasLogo ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="rounded-lg text-destructive hover:bg-destructive/10 hover:text-destructive"
+                  disabled={isUploading}
+                  onClick={() => setRemoveDialogOpen(true)}
+                >
+                  {t("removeShort")}
+                </Button>
+              ) : null}
+            </div>
+            <p className="text-sm text-muted-foreground">{t("hintShort")}</p>
+            {isUploading ? (
+              <p className="text-sm text-muted-foreground">
+                {t("uploading", { percent: uploadProgress ?? 0 })}
+              </p>
+            ) : null}
+          </div>
+        </div>
+
+        {error ? (
+          <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {error}
+          </p>
+        ) : null}
+
+        <RemoveWorkspaceLogoDialog
+          open={removeDialogOpen}
+          onOpenChange={setRemoveDialogOpen}
+          workspaceId={workspaceId}
+          locale={locale}
+          onRemoved={() => setLogoUrl(null)}
+        />
+      </div>
+    );
   }
 
   return (

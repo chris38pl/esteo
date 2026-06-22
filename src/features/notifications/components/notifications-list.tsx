@@ -12,6 +12,7 @@ import {
 export function NotificationsList({
   items,
   locale,
+  isInitialLoading = false,
   emptyMessage,
   onMarkRead,
   onLoadMore,
@@ -20,6 +21,7 @@ export function NotificationsList({
 }: {
   items: SerializedNotificationItem[];
   locale: Locale;
+  isInitialLoading?: boolean;
   emptyMessage: string;
   onMarkRead: (id: string) => void;
   onLoadMore?: () => void;
@@ -27,6 +29,10 @@ export function NotificationsList({
   loadingMore?: boolean;
 }) {
   const t = useTranslations("notifications");
+
+  if (isInitialLoading) {
+    return null;
+  }
 
   if (items.length === 0) {
     return (

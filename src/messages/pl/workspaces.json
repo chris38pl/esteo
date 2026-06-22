@@ -160,10 +160,12 @@
     "logo": {
       "label": "Logo firmy",
       "hint": "PNG, JPG lub WebP, maks. 2 MB. Najlepiej kwadratowe tło lub przezroczyste.",
+      "hintShort": "PNG, JPG lub WebP. Maks. 2 MB.",
       "dropHint": "Upuść plik tutaj lub wybierz z dysku",
       "upload": "Wgraj logo",
       "change": "Zmień logo",
       "remove": "Usuń logo",
+      "removeShort": "Usuń",
       "uploading": "Wgrywanie… {percent}%",
       "removeConfirmTitle": "Usunąć logo firmy?",
       "removeConfirmDescription": "Logo zostanie trwale usunięte z tej przestrzeni. Możesz wgrać nowe w dowolnym momencie.",
@@ -178,12 +180,19 @@
     },
     "tabs": {
       "general": "Ogólne",
-      "company": "Dane",
+      "company": "Dane firmy",
       "users": "Użytkownicy",
+      "referral": "Program partnerski",
       "rules": "Reguły",
       "companyDescription": "Dane firmy widoczne na dokumentach dla klienta — adres, NIP, kontakt.",
       "usersDescription": "Zarządzaj członkami przestrzeni i zaproszeniami do współpracy.",
+      "referralDescription": "Wpisz kod lub e-mail polecającego, aby skorzystać z programu partnerskiego.",
       "rulesDescription": "Definiuj reguły AI używane przy generowaniu wycen i odpowiedzi."
+    },
+    "basicInfo": {
+      "title": "Informacje podstawowe",
+      "nameHint": "Nazwa wyświetlana w aplikacji.",
+      "accentHint": "Kolor akcentu stosowany w interfejsie przestrzeni."
     },
     "aiSetup": {
       "title": "Konfiguracja AI",
@@ -231,10 +240,13 @@
       "pendingTitle": "Oczekujące zaproszenia",
       "inviteTitle": "Zaproś użytkownika",
       "inviteDescription": "Wyślij zaproszenie e-mailem. Użytkownik dołączy po zaakceptowaniu.",
+      "searchPlaceholder": "Szukaj użytkownika…",
+      "roleFilterLabel": "Filtruj po roli",
+      "roleFilterAll": "Wszystkie role",
       "emailLabel": "Adres e-mail",
       "emailPlaceholder": "jan@firma.pl",
       "roleLabel": "Rola",
-      "inviteSubmit": "Wyślij zaproszenie",
+      "inviteSubmit": "Zaproś użytkownika",
       "inviting": "Wysyłanie…",
       "revoke": "Anuluj",
       "remove": "Usuń",
@@ -249,8 +261,15 @@
       "columns": {
         "member": "Użytkownik",
         "role": "Rola",
+        "status": "Status",
+        "joined": "Dołączono",
         "email": "E-mail",
         "actions": "Akcje"
+      },
+      "status": {
+        "active": "Aktywny",
+        "pending": "Oczekuje",
+        "pendingHint": "Zaproszenie wysłane"
       },
       "roles": {
         "OWNER": "Właściciel",

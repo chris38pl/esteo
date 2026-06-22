@@ -42,8 +42,11 @@ const issueListSelect = {
   updatedAt: true,
 } satisfies Prisma.IssueSelect;
 
-export async function createIssueRecord(input: Prisma.IssueCreateInput): Promise<Issue> {
-  return prisma.issue.create({ data: input });
+export async function createIssueRecord(
+  input: Prisma.IssueCreateInput,
+  tx: Prisma.TransactionClient = prisma,
+): Promise<Issue> {
+  return tx.issue.create({ data: input });
 }
 
 export async function getIssueByNumber(number: number): Promise<AdminIssueDetail | null> {

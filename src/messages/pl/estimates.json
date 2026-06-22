@@ -759,7 +759,11 @@
   "versions": {
     "createNewVersion": "Utwórz nową wersję",
     "versionLabel": "Wersja {n}",
-    "shortVersionLabel": "Wersja {n}"
+    "shortVersionLabel": "Wersja {n}",
+    "creating": "Tworzenie wersji…",
+    "creatingHint": "Przygotowujemy nowy szkic na podstawie bieżącej wersji.",
+    "switching": "Przełączanie wersji…",
+    "switchingHint": "Ładujemy wybraną wersję kosztorysu."
   },
   "context": {
     "request": "Zapytanie",

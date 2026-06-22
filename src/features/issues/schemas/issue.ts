@@ -28,6 +28,7 @@ export const createIssueSchema = z.object({
   deviceType: z.enum(["MOBILE", "TABLET", "DESKTOP"]),
   viewportWidth: z.number().int().min(0).max(20_000),
   viewportHeight: z.number().int().min(0).max(20_000),
+  attachmentIds: z.array(z.string().trim().min(1)).max(10).optional().default([]),
 });
 
 export type CreateIssueInput = z.infer<typeof createIssueSchema>;

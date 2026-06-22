@@ -93,7 +93,7 @@ export function NavbarNotificationsButton({
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>{triggerButton}</PopoverTrigger>
-        <PopoverContent align="end" className="w-[400px] p-0">
+        <PopoverContent align="end" className="z-[90] w-[400px] p-0">
           {open ? panel : null}
         </PopoverContent>
       </Popover>
@@ -103,7 +103,11 @@ export function NavbarNotificationsButton({
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>{triggerButton}</SheetTrigger>
-      <SheetContent side="bottom" className={cn("h-[85dvh] p-0")}>
+      <SheetContent
+        side="bottom"
+        overlayClassName="z-[90]"
+        className={cn("z-[90] h-[85dvh] p-0")}
+      >
         <SheetHeader className="sr-only">
           <SheetTitle>{tNavbar("label")}</SheetTitle>
         </SheetHeader>

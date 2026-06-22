@@ -53,7 +53,7 @@ export function AppToast({
       <button
         type="button"
         onClick={onDismiss}
-        className="absolute right-3 top-3 rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+        className="absolute right-2 top-2 z-10 inline-flex min-h-11 min-w-11 touch-manipulation items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
         aria-label="Close"
       >
         <X className="size-4" aria-hidden />
@@ -76,7 +76,7 @@ export function AppToast({
           />
         </div>
 
-        <div className="min-w-0 flex-1 pr-6">
+        <div className="min-w-0 flex-1 pr-10">
           <p className="text-sm font-semibold leading-snug text-foreground">{title}</p>
           {description ? (
             <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{description}</p>

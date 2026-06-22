@@ -5,6 +5,7 @@
     "tabActionRequired": "Action required ({count})",
     "empty": "No notifications in the last 90 days",
     "emptyActionRequired": "Nothing requires your action",
+    "loading": "Loading notifications…",
     "loadMore": "Load more"
   },
   "actions": {

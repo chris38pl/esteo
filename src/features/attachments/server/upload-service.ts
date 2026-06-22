@@ -88,6 +88,14 @@ export function buildIssueStorageKey(
   return `internal/issues/${issueId}/${attachmentId}/original-${sanitizeFileName(fileName)}`;
 }
 
+export function buildIssueStagingStorageKey(
+  uploadedById: string,
+  attachmentId: string,
+  fileName: string,
+): string {
+  return `internal/issues/staging/${uploadedById}/${attachmentId}/original-${sanitizeFileName(fileName)}`;
+}
+
 async function prepareFileBuffers(
   file: File,
   attachmentId?: string,

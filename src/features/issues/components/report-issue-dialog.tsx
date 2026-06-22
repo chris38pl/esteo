@@ -11,7 +11,7 @@ import { IssueScreenshotUploader } from "@/features/issues/components/issue-scre
 import { collectIssueMetadata } from "@/features/issues/lib/collect-issue-metadata";
 import { slugifyIssueTitle } from "@/features/issues/lib/slugify-issue-title";
 import { createIssueSchema } from "@/features/issues/schemas/issue";
-import { useIssueScreenshotUpload } from "@/features/issues/hooks/use-issue-screenshot-upload";
+import { useIssueScreenshotStagingUpload } from "@/features/issues/hooks/use-issue-screenshot-staging-upload";
 import { createIssueAction } from "@/features/issues/server/actions";
 import { Button } from "@/components/ui/button";
 import {
@@ -66,7 +66,7 @@ export function ReportIssueDialog({
 }) {
   const t = useTranslations("issues");
   const [pending, startTransition] = useTransition();
-  const { uploadScreenshots, uploading } = useIssueScreenshotUpload();
+  const screenshotUpload = useIssueScreenshotStagingUpload();
 
   const typeLocked = presetType != null;
   const isTipSuggestion = presetType === "TIP_SUGGESTION";
@@ -79,10 +79,9 @@ export function ReportIssueDialog({
   const [reproductionSteps, setReproductionSteps] = useState("");
   const [expectedBehavior, setExpectedBehavior] = useState("");
   const [actualBehavior, setActualBehavior] = useState("");
-  const [screenshots, setScreenshots] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  const isBusy = pending || uploading;
+  const isBusy = pending || screenshotUpload.isUploading;
 
   useEffect(() => {
     if (open && presetType) {
@@ -98,7 +97,7 @@ export function ReportIssueDialog({
     setReproductionSteps("");
     setExpectedBehavior("");
     setActualBehavior("");
-    setScreenshots([]);
+    screenshotUpload.reset();
     setError(null);
   }
 
@@ -108,6 +107,11 @@ export function ReportIssueDialog({
 
     const metadata = collectIssueMetadata({ locale, workspaceSlug });
 
+    if (!screenshotUpload.canSubmitAttachments) {
+      setError(t("form.waitForUploads"));
+      return;
+    }
+
     const parsed = createIssueSchema.safeParse({
       type: presetType ?? type,
       title,
@@ -116,6 +120,7 @@ export function ReportIssueDialog({
       reproductionSteps,
       expectedBehavior,
       actualBehavior,
+      attachmentIds: screenshotUpload.attachmentIds,
       ...metadata,
     });
 
@@ -140,22 +145,6 @@ export function ReportIssueDialog({
           priority: parsed.data.priority,
           folderSlug: slugifyIssueTitle(parsed.data.title),
         };
-
-        if (screenshots.length > 0) {
-          const uploadResult = await uploadScreenshots(result.data.issueId, screenshots);
-
-          if (!uploadResult.success) {
-            appToast.warning(t("form.partialSuccess", { number: createdIssue.number }));
-            resetForm();
-            onOpenChange(false);
-            try {
-              onSuccess?.(createdIssue);
-            } catch {
-              // Ignore refresh errors from parent callback.
-            }
-            return;
-          }
-        }
 
         appToast.success(t("form.success", { number: createdIssue.number }));
         resetForm();
@@ -201,7 +190,8 @@ export function ReportIssueDialog({
     >
       <DialogContent
         showCloseButton
-        className="flex max-h-[min(90vh,880px)] w-[calc(100%-2rem)] max-w-[min(92vw,56rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-[min(92vw,56rem)] max-sm:fixed max-sm:inset-0 max-sm:h-[100dvh] max-sm:max-h-[100dvh] max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-none max-sm:border-0"
+        overlayClassName="z-[80]"
+        className="z-[80] flex max-h-[min(90vh,880px)] w-[calc(100%-2rem)] max-w-[min(92vw,56rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-[min(92vw,56rem)] max-sm:fixed max-sm:inset-0 max-sm:h-[100dvh] max-sm:max-h-[100dvh] max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-none max-sm:border-0"
       >
         <DialogHeader className="shrink-0 border-b px-4 py-4 text-left sm:px-6 sm:py-5">
           <div className="flex items-start gap-3 pr-8">
@@ -253,7 +243,14 @@ export function ReportIssueDialog({
               disabled={isBusy}
             />
 
-            <IssueScreenshotUploader files={screenshots} onChange={setScreenshots} disabled={isBusy} />
+            <IssueScreenshotUploader
+              items={screenshotUpload.items}
+              onAddFiles={screenshotUpload.addFiles}
+              onRemove={screenshotUpload.remove}
+              onRetry={screenshotUpload.retry}
+              localError={screenshotUpload.localError}
+              disabled={isBusy}
+            />
 
             <IssueAdvancedFields
               priority={priority}

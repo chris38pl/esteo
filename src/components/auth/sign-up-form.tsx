@@ -7,7 +7,11 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { SignUpContinue } from "@/components/auth/sign-up-continue";
-import { SignUpVerificationPrepareDedup } from "@/components/auth/sign-up-verification-prepare-dedup";
+import {
+  SignUpVerificationErrorBanner,
+  SignUpVerificationErrorProvider,
+  SignUpVerificationPrepareDedup,
+} from "@/components/auth/sign-up-verification-prepare-dedup";
 import {
   LocalizedClerkFieldError,
   LocalizedClerkGlobalError,
@@ -40,11 +44,14 @@ export function SignUpForm({
   const c = useTranslations("common");
 
   return (
-    <SignUp.Root
-      routing="path"
-      path={`/${locale}/sign-up`}
+    <SignUpVerificationErrorProvider
+      emailLimitMessage={t("errors.emailLimitExceeded")}
     >
-      <SignUpVerificationPrepareDedup />
+      <SignUp.Root
+        routing="path"
+        path={`/${locale}/sign-up`}
+      >
+        <SignUpVerificationPrepareDedup />
       <LocalizedClerkGlobalError className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive" />
       <div id="clerk-captcha" />
 
@@ -167,6 +174,8 @@ export function SignUpForm({
       <SignUp.Step name="verifications">
         <SignUp.Strategy name="email_code">
           <div className="space-y-4">
+            <SignUpVerificationErrorBanner className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive" />
+
             <p className="text-sm text-muted-foreground">
               {t("signUp.verifyEmailTitle")}{" "}
               <span className="font-medium text-foreground">
@@ -210,5 +219,6 @@ export function SignUpForm({
         </SignUp.Strategy>
       </SignUp.Step>
     </SignUp.Root>
+    </SignUpVerificationErrorProvider>
   );
 }

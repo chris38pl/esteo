@@ -1,11 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ChevronDown, PlusCircle } from "lucide-react";
-import { useState, useTransition } from "react";
+import { ChevronDown, Loader2, PlusCircle } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import type { EstimateVersionStatus } from "@prisma/client";
 
+import { appToast } from "@/components/ui/app-toast";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { EstimateNavigationOverlay } from "@/features/estimates/components/estimate-navigation-overlay";
 import { createNewVersionAction } from "@/features/estimates/server/actions";
 import { estimateOutlineButtonClassName } from "./estimate-action-button-styles";
 import type { Locale } from "@/lib/locale";
@@ -58,8 +60,13 @@ export function EstimateVersionSelector({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [isCreating, setIsCreating] = useState(false);
+  const [isSwitching, setIsSwitching] = useState(false);
 
   const activeVersion = versions.find((v) => v.id === activeVersionId) ?? versions[0];
+
+  useEffect(() => {
+    setIsSwitching(false);
+  }, [activeVersionId]);
 
   const statusLabel = (version: Version) => {
     if (version.archivedAt) {
@@ -76,6 +83,11 @@ export function EstimateVersionSelector({
   };
 
   const handleSelectVersion = (version: Version) => {
+    if (version.id === activeVersionId) {
+      return;
+    }
+
+    setIsSwitching(true);
     router.push(
       `/${locale}/dashboard/${workspaceSlug}/estimates/${estimateId}?v=${version.versionNumber}`,
     );
@@ -97,55 +109,75 @@ export function EstimateVersionSelector({
           router.replace(
             `/${locale}/dashboard/${workspaceSlug}/estimates/${estimateId}?v=${result.data.versionNumber}`,
           );
+          return;
         }
+
+        appToast.error(result.error);
       } finally {
         setIsCreating(false);
       }
     });
   };
 
+  const showOverlay = isCreating || isSwitching;
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          className={estimateOutlineButtonClassName}
-          disabled={isCreating || isPending}
-        >
-          <span className="font-medium">
-            {t("versions.shortVersionLabel", { n: activeVersion?.versionNumber ?? 1 })}
-          </span>
-          <ChevronDown className="size-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="w-48">
-        {versions.map((version) => (
-          <DropdownMenuItem
-            key={version.id}
-            onClick={() => handleSelectVersion(version)}
-            className="flex items-center justify-between"
+    <>
+      {showOverlay ? (
+        <EstimateNavigationOverlay
+          label={isCreating ? t("versions.creating") : t("versions.switching")}
+          hint={isCreating ? t("versions.creatingHint") : t("versions.switchingHint")}
+        />
+      ) : null}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            className={estimateOutlineButtonClassName}
+            disabled={isCreating || isPending || isSwitching}
           >
-            <span>{t("versions.versionLabel", { n: version.versionNumber })}</span>
-            <Badge variant={statusBadgeVariant(version)} className="text-xs">
-              {statusLabel(version)}
-            </Badge>
-          </DropdownMenuItem>
-        ))}
-        {versions.length < 10 ? (
-          <>
-            <DropdownMenuSeparator />
+            {isCreating || isSwitching ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : null}
+            <span className="font-medium">
+              {t("versions.shortVersionLabel", { n: activeVersion?.versionNumber ?? 1 })}
+            </span>
+            <ChevronDown className="size-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-48">
+          {versions.map((version) => (
             <DropdownMenuItem
-              onClick={handleCreateVersion}
-              disabled={isPending || isCreating}
-              className="gap-2"
+              key={version.id}
+              onClick={() => handleSelectVersion(version)}
+              className="flex items-center justify-between"
             >
-              <PlusCircle className="size-4" />
-              {t("versions.createNewVersion")}
+              <span>{t("versions.versionLabel", { n: version.versionNumber })}</span>
+              <Badge variant={statusBadgeVariant(version)} className="text-xs">
+                {statusLabel(version)}
+              </Badge>
             </DropdownMenuItem>
-          </>
-        ) : null}
-      </DropdownMenuContent>
-    </DropdownMenu>
+          ))}
+          {versions.length < 10 ? (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={handleCreateVersion}
+                disabled={isPending || isCreating || isSwitching}
+                className="gap-2"
+              >
+                {isCreating ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <PlusCircle className="size-4" />
+                )}
+                {isCreating ? t("versions.creating") : t("versions.createNewVersion")}
+              </DropdownMenuItem>
+            </>
+          ) : null}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
   );
 }

@@ -29,3 +29,17 @@ Example: [2026-06-01 blank dashboard after login](../../docs/incidents/2026-06-0
 
 - Health check URL: `http://localhost:3000/api/health` (not `/pl/api/health`).
 - Returns `{ "database": "ok" }` or `{ "database": "unreachable" }` (503).
+
+## Clerk development email limit
+
+Clerk **Development** instances cap monthly OTP/verification emails. When exceeded, `prepare_verification` / `prepare_second_factor` returns `"Development monthly email limit exceeded"`.
+
+**Workarounds (no code change):**
+
+1. Sign in with **Google OAuth** (Client Trust does not apply to OAuth).
+2. Use the **same Chrome profile** (not incognito) if the browser was trusted before.
+3. Temporarily disable **Client Trust** in [Clerk Dashboard](https://dashboard.clerk.com) → Configure → Attack protection (Development instance only).
+
+**Restore quota:** wait for the monthly reset, or contact Clerk Support (include `clerk_trace_id` from the failed Network response).
+
+The app shows `auth.errors.emailLimitExceeded` when this limit is hit on sign-in OTP, sign-up verify, or forgot-password flows.

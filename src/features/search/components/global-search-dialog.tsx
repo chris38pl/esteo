@@ -41,6 +41,7 @@ import {
   searchWorkspaceAction,
 } from "@/features/search/server/actions";
 import { cn } from "@/lib/utils";
+import { IndeterminateLoadingBar } from "@/components/ui/indeterminate-loading-bar";
 
 import { useGlobalSearch } from "./global-search-provider";
 import {
@@ -182,6 +183,11 @@ export function GlobalSearchDialog() {
   }, [debouncedQuery, open, activeWorkspaceId, searching]);
 
   const showSearchResults = debouncedQuery.trim().length >= MIN_QUERY_LENGTH;
+  const trimmedQuery = query.trim();
+  const trimmedDebouncedQuery = debouncedQuery.trim();
+  const isSearchLoading =
+    trimmedQuery.length >= MIN_QUERY_LENGTH &&
+    (trimmedQuery !== trimmedDebouncedQuery || searching);
   const dateLocale = locale === "pl" ? pl : enUS;
 
   const hasResults =
@@ -232,8 +238,9 @@ export function GlobalSearchDialog() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         showCloseButton={false}
+        overlayClassName="z-[90]"
         className={cn(
-          "flex h-[min(85vh,700px)] w-[calc(100%-2rem)] max-w-[min(96vw,56rem)] flex-col gap-0 overflow-hidden p-0 outline-none focus:outline-none focus-visible:ring-0 sm:max-w-[min(96vw,56rem)]",
+          "z-[90] flex h-[min(85vh,700px)] w-[calc(100%-2rem)] max-w-[min(96vw,56rem)] flex-col gap-0 overflow-hidden p-0 outline-none focus:outline-none focus-visible:ring-0 sm:max-w-[min(96vw,56rem)]",
           "max-sm:fixed max-sm:inset-0 max-sm:h-[100dvh] max-sm:max-h-[100dvh] max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-none max-sm:border-0",
         )}
       >
@@ -286,6 +293,9 @@ export function GlobalSearchDialog() {
 
           <div className="flex min-h-0 flex-1 flex-col md:flex-row">
             <div className="flex min-h-0 min-w-0 flex-1 flex-col md:basis-[62%] md:border-r md:border-border/60">
+              {isSearchLoading ? (
+                <IndeterminateLoadingBar label={t("loading")} />
+              ) : null}
               <CommandList className="sidebar-scroll max-h-none min-h-0 flex-1 overflow-y-auto px-2 py-3 pb-4">
                 {!showSearchResults && !hasRecents ? (
                   <CommandEmpty className="px-4 py-10 text-left text-sm leading-relaxed">
@@ -297,11 +307,9 @@ export function GlobalSearchDialog() {
                       {t("empty.hint")}
                     </CommandEmpty>
                   ) : null
-                ) : searching ? (
-                  <CommandEmpty className="px-4 text-left">…</CommandEmpty>
-                ) : !hasResults ? (
+                ) : !hasResults && !isSearchLoading ? (
                   <CommandEmpty className="px-4 text-left">{t("noResults")}</CommandEmpty>
-                ) : (
+                ) : hasResults ? (
                   <>
                     {results!.estimates.length > 0 ? (
                       <SearchResultsGroup
@@ -399,7 +407,7 @@ export function GlobalSearchDialog() {
                       </SearchResultsGroup>
                     ) : null}
                   </>
-                )}
+                ) : null}
               </CommandList>
             </div>
 

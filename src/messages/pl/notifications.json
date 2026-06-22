@@ -5,6 +5,7 @@
     "tabActionRequired": "Wymagają reakcji ({count})",
     "empty": "Brak powiadomień z ostatnich 90 dni",
     "emptyActionRequired": "Nic nie wymaga Twojej reakcji",
+    "loading": "Ładowanie powiadomień…",
     "loadMore": "Załaduj więcej"
   },
   "actions": {

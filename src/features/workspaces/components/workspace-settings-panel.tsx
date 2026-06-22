@@ -1,11 +1,19 @@
 "use client";
 
 import type {
+  InviteRole,
   WorkspaceAppearanceTheme,
   WorkspaceIndustry,
-  WorkspaceInvitation,
   WorkspaceRule,
 } from "@prisma/client";
+import {
+  Briefcase,
+  Handshake,
+  LayoutDashboard,
+  ScrollText,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 
 import type { WorkspaceBranding } from "@/features/workspaces/schemas/branding";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -16,11 +24,10 @@ import { WorkspaceSettingsCompanyTab } from "@/features/workspaces/components/wo
 import { WorkspaceAiSetupSection } from "@/features/workspaces/components/workspace-ai-setup-section";
 import { WorkspaceSettingsDeleteSection } from "@/features/workspaces/components/workspace-settings-delete-section";
 import { WorkspaceSettingsForm } from "@/features/workspaces/components/workspace-settings-form";
+import { WorkspaceSettingsReferralTab } from "@/features/workspaces/components/workspace-settings-referral-tab";
 import { WorkspaceSettingsRulesTab } from "@/features/workspaces/components/workspace-settings-rules-tab";
 import { WorkspaceSettingsUsersTab } from "@/features/workspaces/components/workspace-settings-users-tab";
-import { WorkspaceThemePicker } from "@/features/workspaces/components/workspace-theme-picker";
 import { WorkspaceSettingsTransferSection } from "@/features/workspaces/components/workspace-settings-transfer-section";
-import { ReferralClaimSettingsSection } from "@/features/referrals/components/referral-claim-settings-section";
 import type { WorkspaceReferralClaimView } from "@/features/referrals/server/get-workspace-referral-claim-view";
 import type {
   PendingOutboundTransferView,
@@ -31,12 +38,13 @@ import type { AvatarPreset } from "@/components/avatars/user-avatar";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
-type SettingsTab = "general" | "company" | "users" | "rules";
+type SettingsTab = "general" | "company" | "users" | "referral" | "rules";
 
 type MemberRow = {
   id: string;
   userId: string;
   role: "OWNER" | "MEMBER" | "VIEWER";
+  joinedAt: string;
   user: {
     name: string | null;
     email: string;
@@ -45,13 +53,66 @@ type MemberRow = {
   };
 };
 
-const TABS: SettingsTab[] = ["general", "company", "users", "rules"];
+type InvitationRow = {
+  id: string;
+  email: string;
+  role: InviteRole;
+  invitedAt: string;
+};
+
+const TABS: SettingsTab[] = ["general", "company", "users", "referral", "rules"];
+
+const TAB_ICONS: Record<SettingsTab, LucideIcon> = {
+  general: LayoutDashboard,
+  company: Briefcase,
+  users: Users,
+  referral: Handshake,
+  rules: ScrollText,
+};
 
 function parseTab(value: string | null): SettingsTab {
-  if (value === "company" || value === "users" || value === "rules") {
+  if (
+    value === "company" ||
+    value === "users" ||
+    value === "referral" ||
+    value === "rules"
+  ) {
     return value;
   }
   return "general";
+}
+
+function SettingsTabButton({
+  tab,
+  isActive,
+  label,
+  onSelect,
+}: {
+  tab: SettingsTab;
+  isActive: boolean;
+  label: string;
+  onSelect: (tab: SettingsTab) => void;
+}) {
+  const Icon = TAB_ICONS[tab];
+
+  return (
+    <button
+      type="button"
+      role="tab"
+      aria-selected={isActive}
+      onClick={() => onSelect(tab)}
+      className={cn(
+        "relative flex shrink-0 cursor-pointer items-center gap-2 px-4 py-3 text-sm font-medium transition-colors",
+        isActive ? "text-primary" : "text-muted-foreground hover:text-foreground",
+      )}
+    >
+      <Icon className="size-4 shrink-0" aria-hidden />
+      <span>{label}</span>
+      {isActive ? (
+        <span className="absolute inset-x-0 bottom-0 h-0.5 bg-primary" aria-hidden />
+      ) : null}
+    </button>
+  );
 }
 
 export function WorkspaceSettingsPanel({
@@ -91,7 +152,7 @@ export function WorkspaceSettingsPanel({
   initialCompanyEmail: string;
   initialCompanyPhone: string;
   members: MemberRow[];
-  invitations: WorkspaceInvitation[];
+  invitations: InvitationRow[];
   rules: WorkspaceRule[];
   initialAiInstructions: string;
   initialBranding: WorkspaceBranding | null;
@@ -108,7 +169,8 @@ export function WorkspaceSettingsPanel({
   const t = useTranslations("workspaces.settings");
   const router = useRouter();
   const searchParams = useSearchParams();
-  const activeTab = parseTab(searchParams.get("tab"));
+  const rawTab = parseTab(searchParams.get("tab"));
+  const activeTab = rawTab === "referral" && !isOwner ? "general" : rawTab;
   const [appearanceTheme, setAppearanceTheme] = useState(initialAppearanceTheme);
   const [themePickerDisabled, setThemePickerDisabled] = useState(false);
 
@@ -134,53 +196,46 @@ export function WorkspaceSettingsPanel({
         ? t("tabs.companyDescription")
         : activeTab === "users"
           ? t("tabs.usersDescription")
-          : t("tabs.rulesDescription");
+          : activeTab === "referral"
+            ? t("tabs.referralDescription")
+            : t("tabs.rulesDescription");
 
   return (
     <div className="flex w-full justify-center px-3 sm:px-4 lg:px-6">
-      <div
-        className={cn(
-          "w-full py-8",
-          activeTab === "rules" ? "max-w-5xl" : "max-w-[560px]",
-        )}
-      >
+      <div className="w-full max-w-6xl py-8">
         <div className="mb-6 space-y-1">
-          <div className="flex items-center justify-between gap-4">
-            <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
-            {activeTab === "general" ? (
-              <div className="shrink-0">
-                <WorkspaceThemePicker
-                  variant="header"
-                  value={appearanceTheme}
-                  onChange={setAppearanceTheme}
-                  disabled={themePickerDisabled}
-                />
-              </div>
-            ) : null}
-          </div>
+          <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
           <p className="text-sm text-muted-foreground">{tabDescription}</p>
         </div>
 
-        <div className="mb-8 flex gap-1 border-b border-border/60">
-          {TABS.map((tab) => (
-            <button
+        <div
+          className="mb-8 flex gap-1 overflow-x-auto border-b border-border/60"
+          role="tablist"
+        >
+          {TABS.filter((tab) => tab !== "referral" || isOwner).map((tab) => (
+            <SettingsTabButton
               key={tab}
-              type="button"
-              onClick={() => setTab(tab)}
-              className={cn(
-                "cursor-pointer border-b-2 px-4 py-2.5 text-sm font-medium transition-colors",
-                activeTab === tab
-                  ? "border-primary text-foreground"
-                  : "border-transparent text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {t(`tabs.${tab}`)}
-            </button>
+              tab={tab}
+              isActive={activeTab === tab}
+              label={t(`tabs.${tab}`)}
+              onSelect={setTab}
+            />
           ))}
         </div>
 
         {activeTab === "general" ? (
           <>
+            <WorkspaceSettingsForm
+              workspaceId={workspaceId}
+              initialName={initialName}
+              initialCompanyDescription={initialCompanyDescription}
+              initialLogoUrl={initialBranding?.logoUrl ?? null}
+              appearanceTheme={appearanceTheme}
+              onAppearanceThemeChange={setAppearanceTheme}
+              onPendingChange={setThemePickerDisabled}
+              themePickerDisabled={themePickerDisabled}
+              locale={locale}
+            />
             <WorkspaceAiSetupSection
               workspaceId={workspaceId}
               workspaceIndustry={workspaceIndustry}
@@ -190,23 +245,6 @@ export function WorkspaceSettingsPanel({
               rules={rules}
               locale={locale}
             />
-            <WorkspaceSettingsForm
-              workspaceId={workspaceId}
-              initialName={initialName}
-              initialCompanyDescription={initialCompanyDescription}
-              initialLogoUrl={initialBranding?.logoUrl ?? null}
-              appearanceTheme={appearanceTheme}
-              onPendingChange={setThemePickerDisabled}
-              locale={locale}
-            />
-            {isOwner ? (
-              <ReferralClaimSettingsSection
-                workspaceId={workspaceId}
-                workspaceSlug={workspaceSlug}
-                locale={locale}
-                referralClaim={referralClaim}
-              />
-            ) : null}
             {isOwner ? (
               <WorkspaceSettingsTransferSection
                 workspaceId={workspaceId}
@@ -230,7 +268,6 @@ export function WorkspaceSettingsPanel({
         {activeTab === "company" ? (
           <WorkspaceSettingsCompanyTab
             workspaceId={workspaceId}
-            workspaceName={initialName}
             initialCompanyAddress={initialCompanyAddress}
             initialCompanyTaxId={initialCompanyTaxId}
             initialCompanyEmail={initialCompanyEmail}
@@ -248,6 +285,15 @@ export function WorkspaceSettingsPanel({
             isOwner={isOwner}
             ownerUserId={ownerUserId}
             locale={locale}
+          />
+        ) : null}
+
+        {activeTab === "referral" && isOwner ? (
+          <WorkspaceSettingsReferralTab
+            workspaceId={workspaceId}
+            workspaceSlug={workspaceSlug}
+            locale={locale}
+            referralClaim={referralClaim}
           />
         ) : null}
 

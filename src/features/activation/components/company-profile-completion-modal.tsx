@@ -1,18 +1,17 @@
 "use client";
 
 import {
-  Hash,
   ImageIcon,
   Mail,
   MapPin,
   Phone,
-  type LucideIcon,
+  Hash,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import type { ReactNode } from "react";
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 
+import { CompanyProfileFieldLabel } from "@/features/workspaces/components/company-profile-field-label";
 import {
   ActivationAnalyticsEvents,
   trackActivationEvent,
@@ -39,31 +38,11 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 const textareaClassName = cn(
   "min-h-[88px] w-full rounded-xl border border-input bg-transparent px-3 py-2.5 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm dark:bg-input/30",
   "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
 );
-
-const fieldLabelIconClassName = "text-primary";
-
-function CompanyProfileFieldLabel({
-  htmlFor,
-  icon: Icon,
-  children,
-}: {
-  htmlFor?: string;
-  icon: LucideIcon;
-  children: ReactNode;
-}) {
-  return (
-    <div className="flex items-center gap-2">
-      <Icon className={cn("size-3.5 shrink-0", fieldLabelIconClassName)} aria-hidden />
-      <Label htmlFor={htmlFor}>{children}</Label>
-    </div>
-  );
-}
 
 interface CompanyProfileCompletionModalProps {
   open: boolean;

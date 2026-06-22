@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { FileText } from "lucide-react";
 
@@ -8,6 +9,7 @@ import type {
   EstimateForEditorClient,
 } from "@/features/estimates/lib/serialize-estimate";
 import { EstimateListStatusBadge } from "@/features/estimates/components/estimate-list-status-badge";
+import { EstimateNavigationOverlay } from "@/features/estimates/components/estimate-navigation-overlay";
 import { formatCurrency, type Currency } from "@/i18n/formatters";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
@@ -39,9 +41,19 @@ export function EstimateSummaryVersionsCard({
 }: EstimateSummaryVersionsCardProps) {
   const t = useTranslations("estimates");
   const router = useRouter();
+  const [switchingVersionId, setSwitchingVersionId] = useState<string | null>(null);
   const currency: Currency = estimate.currency === "EUR" ? "EUR" : "PLN";
 
+  useEffect(() => {
+    setSwitchingVersionId(null);
+  }, [activeVersionId]);
+
   const handleSelectVersion = (version: VersionRow) => {
+    if (version.id === activeVersionId) {
+      return;
+    }
+
+    setSwitchingVersionId(version.id);
     router.push(
       `/${locale}/dashboard/${workspaceSlug}/estimates/${estimate.id}?v=${version.versionNumber}`,
     );
@@ -58,7 +70,14 @@ export function EstimateSummaryVersionsCard({
   }
 
   return (
-    <EstimateSummaryCardShell title={t("editor.summary.versions.title")}>
+    <>
+      {switchingVersionId ? (
+        <EstimateNavigationOverlay
+          label={t("versions.switching")}
+          hint={t("versions.switchingHint")}
+        />
+      ) : null}
+      <EstimateSummaryCardShell title={t("editor.summary.versions.title")}>
       <div className="space-y-3 px-4 py-4">
         {estimate.versions.map((version) => {
           const isSelected = version.id === activeVersionId;
@@ -121,5 +140,6 @@ export function EstimateSummaryVersionsCard({
         })}
       </div>
     </EstimateSummaryCardShell>
+    </>
   );
 }

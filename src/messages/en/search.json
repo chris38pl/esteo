@@ -1,6 +1,7 @@
 {
   "placeholder": "Search in Esteo…",
   "noResults": "No results found",
+  "loading": "Searching…",
   "empty": {
     "hint": "Search everything in your workspace: estimates, inquiries, attachments, tips and more."
   },
