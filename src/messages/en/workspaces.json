@@ -113,9 +113,16 @@
     "seeAllInvitations": "See all",
     "accept": "Accept",
     "accepting": "Accepting…",
-    "decline": "Decline",
-    "dismissPrompt": "Don't ask again",
-    "upgradePlan": "Upgrade your plan",
+      "decline": "Decline",
+      "dismissPrompt": "Don't ask again",
+      "actionAccepted": "You joined the workspace",
+      "actionDeclined": "Invitation declined",
+      "actionErrors": {
+        "not_found": "Invitation not found or expired.",
+        "invalid": "This invitation is no longer active.",
+        "generic": "Could not process the invitation. Please try again."
+      },
+      "upgradePlan": "Upgrade your plan",
     "contactOwner": "Contact the workspace owner to add more seats.",
     "pendingBadge": "{count, plural, one {# pending notification} other {# pending notifications}}",
     "roles": {
@@ -263,6 +270,8 @@
       "emailPlaceholder": "jane@company.com",
       "roleLabel": "Role",
       "inviteSubmit": "Invite user",
+      "inviteSuccess": "Invitation sent",
+      "inviteSuccessDescription": "An invitation was sent to {email}.",
       "inviting": "Sending…",
       "revoke": "Revoke",
       "remove": "Remove",

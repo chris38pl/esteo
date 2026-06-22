@@ -27,6 +27,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { WorkspaceSettingsCard } from "@/features/workspaces/components/workspace-settings-card";
+import { appToast } from "@/components/ui/app-toast";
 import { INVITE_ROLES } from "@/features/workspaces/lib/invite-role";
 import { RemoveWorkspaceMemberDialog } from "@/features/workspaces/components/remove-workspace-member-dialog";
 import {
@@ -409,7 +410,11 @@ export function WorkspaceSettingsUsersTab({
         return;
       }
 
+      const invitedEmail = email.trim();
       setEmail("");
+      appToast.success(t("inviteSuccess"), {
+        description: t("inviteSuccessDescription", { email: invitedEmail }),
+      });
       router.refresh();
     });
   }

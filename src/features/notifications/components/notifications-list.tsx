@@ -15,6 +15,7 @@ export function NotificationsList({
   isInitialLoading = false,
   emptyMessage,
   onMarkRead,
+  onActionComplete,
   onLoadMore,
   hasMore,
   loadingMore,
@@ -24,6 +25,7 @@ export function NotificationsList({
   isInitialLoading?: boolean;
   emptyMessage: string;
   onMarkRead: (id: string) => void;
+  onActionComplete?: (notificationId: string) => void;
   onLoadMore?: () => void;
   hasMore?: boolean;
   loadingMore?: boolean;
@@ -45,7 +47,13 @@ export function NotificationsList({
   return (
     <div>
       {items.map((item) => (
-        <NotificationItem key={item.id} item={item} locale={locale} onMarkRead={onMarkRead} />
+        <NotificationItem
+          key={item.id}
+          item={item}
+          locale={locale}
+          onMarkRead={onMarkRead}
+          onActionComplete={onActionComplete}
+        />
       ))}
       {hasMore && onLoadMore ? (
         <div className="border-t border-border/50 p-3">

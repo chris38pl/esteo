@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 
 import type { ReceivedInvitationView } from "@/features/workspaces/components/invitation-types";
+import { InvitationsHubFeedback } from "@/features/workspaces/components/invitations-hub-feedback";
 import { InvitationsHubShell } from "@/features/workspaces/components/invitations-hub-shell";
 import { ReceivedInvitationsInbox } from "@/features/workspaces/components/received-invitations-inbox";
 import type { ReceivedOwnershipTransferView } from "@/features/workspaces/components/transfer-types";
@@ -27,17 +28,21 @@ export function DashboardInvitationsHub({
 
   if (!hasInvitations && !hasTransfers) {
     return (
-      <ReceivedInvitationsInbox
-        invitations={[]}
-        featuredInvitationId={featuredInvitationId}
-        locale={locale}
-        layout="hub"
-      />
+      <>
+        <InvitationsHubFeedback />
+        <ReceivedInvitationsInbox
+          invitations={[]}
+          featuredInvitationId={featuredInvitationId}
+          locale={locale}
+          layout="hub"
+        />
+      </>
     );
   }
 
   return (
     <InvitationsHubShell>
+      <InvitationsHubFeedback />
       <div className="space-y-10">
         {hasTransfers ? (
           <section className="space-y-4">

@@ -62,6 +62,7 @@ import {
 } from "@/server/permissions/errors";
 import { requireRole } from "@/server/permissions/require-workspace";
 import { persistActiveWorkspace } from "@/server/workspaces/active-workspace";
+import { resolveInvitationNotification } from "@/features/notifications/server/resolve-notification";
 
 type ActionResult<T> =
   | { success: true; data: T }
@@ -81,6 +82,17 @@ function toActionError(error: unknown): ActionResult<never> {
 
   console.error(error);
   return { success: false, error: "Something went wrong." };
+}
+
+const STALE_INVITATION_ERROR = "Invitation not found or no longer valid.";
+
+function isStaleInvitationError(error: unknown): boolean {
+  return error instanceof WorkspaceError && error.message === STALE_INVITATION_ERROR;
+}
+
+async function resolveClosedInvitationNotification(invitationId: string, locale: Locale) {
+  await resolveInvitationNotification(invitationId);
+  revalidatePath(`/${locale}/dashboard`, "layout");
 }
 
 export async function listMyWorkspacesAction(locale: Locale = "pl") {
@@ -399,6 +411,10 @@ export async function acceptReceivedInvitationAction(
     revalidatePath(`/${locale}/dashboard`, "layout");
     return { success: true as const, data: invitation };
   } catch (error) {
+    if (isStaleInvitationError(error)) {
+      await resolveClosedInvitationNotification(invitationId, locale);
+      return { success: true as const, data: { closed: true as const } };
+    }
     return toActionError(error);
   }
 }
@@ -413,6 +429,10 @@ export async function declineReceivedInvitationAction(
     revalidatePath(`/${locale}/dashboard`, "layout");
     return { success: true as const, data: invitation };
   } catch (error) {
+    if (isStaleInvitationError(error)) {
+      await resolveClosedInvitationNotification(invitationId, locale);
+      return { success: true as const, data: { closed: true as const } };
+    }
     return toActionError(error);
   }
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  ImageIcon,
   Mail,
   MapPin,
   Phone,
@@ -158,7 +157,7 @@ export function CompanyProfileCompletionModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
+      <DialogContent showCloseButton className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader className="space-y-3 pb-3">
           <DialogTitle className="mb-1">{t("title")}</DialogTitle>
           <DialogDescription className="space-y-2">
@@ -185,11 +184,7 @@ export function CompanyProfileCompletionModal({
             workspaceId={workspaceId}
             initialLogoUrl={initialLogoUrl}
             locale={locale}
-            label={
-              <CompanyProfileFieldLabel icon={ImageIcon}>
-                {t("fields.logo")}
-              </CompanyProfileFieldLabel>
-            }
+            variant="settings"
           />
 
           <div className="space-y-2">

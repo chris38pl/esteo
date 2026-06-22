@@ -283,7 +283,12 @@ export async function createInvitationRecord(input: {
 export async function findInvitationByToken(token: string) {
   return prisma.workspaceInvitation.findUnique({
     where: { token },
-    include: { workspace: true },
+    include: {
+      workspace: true,
+      invitedBy: {
+        select: { id: true, name: true, email: true },
+      },
+    },
   });
 }
 

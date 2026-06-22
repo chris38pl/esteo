@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { appToast } from "@/components/ui/app-toast";
@@ -66,6 +67,11 @@ export function EstimatesListPanel({
 }: EstimatesListPanelProps) {
   const t = useTranslations("estimates");
   const tFormBadge = useTranslations("activation.formBadge");
+  const tInvites = useTranslations("workspaces.invitations");
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+  const inviteAcceptedHandledRef = useRef(false);
   const { currentUserId } = useWorkspaceContext();
   const activation = activationProgress ?? {
     eligible: false,
@@ -91,6 +97,16 @@ export function EstimatesListPanel({
   const [dateRange, setDateRange] = useState(EMPTY_ESTIMATE_LIST_DATE_RANGE);
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    if (searchParams.get("inviteAccepted") !== "1" || inviteAcceptedHandledRef.current) {
+      return;
+    }
+
+    inviteAcceptedHandledRef.current = true;
+    appToast.success(tInvites("actionAccepted"));
+    router.replace(pathname, { scroll: false });
+  }, [pathname, router, searchParams, tInvites]);
 
   const handlePageSizeChange = (nextPageSize: number) => {
     if (nextPageSize !== 10 && nextPageSize !== 20 && nextPageSize !== 50) {

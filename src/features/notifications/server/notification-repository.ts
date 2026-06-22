@@ -186,7 +186,7 @@ export async function resolveNotificationsByDedupeKeys(input: {
 
   const result = await prisma.userNotification.updateMany({
     where,
-    data: { resolvedAt: now },
+    data: { resolvedAt: now, readAt: now, state: "INFO" },
   });
 
   return result.count;

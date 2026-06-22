@@ -75,6 +75,7 @@ import {
   notifyInvitationReceived,
   notifyInvitationRevoked,
 } from "@/features/notifications/server/notification-emit-helpers";
+import { resolveInvitationNotification } from "@/features/notifications/server/resolve-notification";
 import {
   fireNotification,
   loadWorkspaceNotificationContext,
@@ -782,6 +783,8 @@ async function acceptPendingInvitation(
     action: "accepted",
   });
 
+  await resolveInvitationNotification(invitation.id);
+
   const workspaceCtx = await loadWorkspaceNotificationContext(invitation.workspaceId);
   if (workspaceCtx) {
     fireNotification(
@@ -834,6 +837,8 @@ export async function declineWorkspaceInvitation(user: User, invitationId: strin
     entityId: invitationId,
     action: "declined",
   });
+
+  await resolveInvitationNotification(invitationId);
 
   const workspaceCtx = await loadWorkspaceNotificationContext(invitation.workspaceId);
   if (workspaceCtx) {

@@ -9,6 +9,7 @@ import {
   getNotificationsList,
   markNotificationAsRead,
 } from "@/features/notifications/server/get-notifications";
+import { reconcileStaleInvitationNotifications } from "@/features/notifications/server/reconcile-invitation-notifications";
 import {
   getNotificationPreferencesForUser,
   setNotificationPreference,
@@ -22,6 +23,8 @@ export async function fetchNotificationPanelAction(input: {
   cursor?: string;
 }) {
   const user = await requireAuth(input.locale);
+
+  await reconcileStaleInvitationNotifications(user.id);
 
   const [counts, list] = await Promise.all([
     getNotificationCounts(user.id),

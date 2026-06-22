@@ -113,9 +113,16 @@
     "seeAllInvitations": "Zobacz wszystko",
     "accept": "Akceptuj",
     "accepting": "Akceptowanie…",
-    "decline": "Odrzuć",
-    "dismissPrompt": "Nie pytaj ponownie",
-    "upgradePlan": "Ulepsz plan",
+      "decline": "Odrzuć",
+      "dismissPrompt": "Nie pytaj ponownie",
+      "actionAccepted": "Dołączono do przestrzeni",
+      "actionDeclined": "Zaproszenie odrzucone",
+      "actionErrors": {
+        "not_found": "Nie znaleziono zaproszenia lub wygasło.",
+        "invalid": "To zaproszenie nie jest już aktywne.",
+        "generic": "Nie udało się przetworzyć zaproszenia. Spróbuj ponownie."
+      },
+      "upgradePlan": "Ulepsz plan",
     "contactOwner": "Skontaktuj się z właścicielem przestrzeni, aby dodać więcej miejsc.",
     "pendingBadge": "{count, plural, one {# oczekujące powiadomienie} few {# oczekujące powiadomienia} many {# oczekujących powiadomień} other {# oczekujących powiadomień}}",
     "roles": {
@@ -263,6 +270,8 @@
       "emailPlaceholder": "jan@firma.pl",
       "roleLabel": "Rola",
       "inviteSubmit": "Zaproś użytkownika",
+      "inviteSuccess": "Zaproszenie wysłane",
+      "inviteSuccessDescription": "Zaproszenie zostało wysłane na adres {email}.",
       "inviting": "Wysyłanie…",
       "revoke": "Anuluj",
       "remove": "Usuń",

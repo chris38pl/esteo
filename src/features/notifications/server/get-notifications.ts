@@ -7,8 +7,10 @@ import {
   listNotificationsForUser,
   markNotificationReadForUser,
 } from "@/features/notifications/server/notification-repository";
+import { reconcileStaleInvitationNotifications } from "@/features/notifications/server/reconcile-invitation-notifications";
 
 export const getNotificationCounts = cache(async (userId: string) => {
+  await reconcileStaleInvitationNotifications(userId);
   return countNotificationsForUser(userId);
 });
 

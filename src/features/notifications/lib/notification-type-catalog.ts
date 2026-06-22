@@ -107,11 +107,11 @@ export const NOTIFICATION_TYPE_CATALOG = {
     dedupeKey: (ctx) => `invite:${ctx.payload.invitationId}`,
     href: invitationHref,
     primaryAction: (ctx) => ({
-      labelKey: "notifications.actions.acceptInvite",
+      labelKey: "actions.acceptInvite",
       href: `${invitationHref(ctx)}?action=accept`,
     }),
     secondaryAction: (ctx) => ({
-      labelKey: "notifications.actions.declineInvite",
+      labelKey: "actions.declineInvite",
       href: `${invitationHref(ctx)}?action=decline`,
     }),
     resolveWhen: "invitation_closed",
@@ -259,7 +259,7 @@ export const NOTIFICATION_TYPE_CATALOG = {
     dedupeKey: (ctx) => `billing:past_due:${ctx.payload.workspaceId}`,
     href: (ctx) => workspaceBillingHref(ctx),
     primaryAction: (ctx) => ({
-      labelKey: "notifications.actions.manageBilling",
+      labelKey: "actions.manageBilling",
       href: workspaceBillingHref(ctx),
     }),
     resolveWhen: "subscription_active",
@@ -285,7 +285,7 @@ export const NOTIFICATION_TYPE_CATALOG = {
     dedupeKey: (ctx) => `billing:expired:${ctx.payload.workspaceId}`,
     href: (ctx) => workspaceBillingHref(ctx, "billing/plans"),
     primaryAction: (ctx) => ({
-      labelKey: "notifications.actions.extendPlan",
+      labelKey: "actions.extendPlan",
       href: workspaceBillingHref(ctx, "billing/plans"),
     }),
     resolveWhen: "subscription_active",
@@ -396,7 +396,7 @@ export const NOTIFICATION_TYPE_CATALOG = {
     dedupeKey: (ctx) => `request:${ctx.payload.requestId}:queued`,
     href: requestHref,
     primaryAction: (ctx) => ({
-      labelKey: "notifications.actions.viewRequest",
+      labelKey: "actions.viewRequest",
       href: requestHref(ctx),
     }),
     resolveWhen: "request_linked",
@@ -421,7 +421,7 @@ export const NOTIFICATION_TYPE_CATALOG = {
     dedupeKey: (ctx) => `trigger:ai_failed:${ctx.payload.requestId}`,
     href: requestHref,
     primaryAction: (ctx) => ({
-      labelKey: "notifications.actions.retryOrConvert",
+      labelKey: "actions.retryOrConvert",
       href: requestHref(ctx),
     }),
     resolveWhen: "request_linked",

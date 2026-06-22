@@ -408,10 +408,6 @@ export function WorkspaceLogoField({
                 </div>
               ) : null}
             </div>
-
-            {!hasLogo ? (
-              <p className="w-full text-xs text-muted-foreground">{t("hintShort")}</p>
-            ) : null}
           </div>
         </div>
 
