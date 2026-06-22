@@ -128,6 +128,8 @@ interface EstimateEditorProps {
   currentUserAvatarPreset?: AvatarPreset | null;
   /** Undo depth available for AI edits, resolved from the workspace plan. */
   maxUndoSteps?: number;
+  /** Snapshots currently available to undo (capped by plan). */
+  availableUndoSteps?: number;
   versionWorkflow: EstimateVersionWorkflowClient;
 }
 
@@ -203,6 +205,7 @@ export function EstimateEditor({
   currentUserAvatarUrl = null,
   currentUserAvatarPreset = null,
   maxUndoSteps = 1,
+  availableUndoSteps = 0,
   versionWorkflow,
 }: EstimateEditorProps) {
   const t = useTranslations("estimates");
@@ -1216,6 +1219,7 @@ export function EstimateEditor({
                 estimateId={estimate.id}
                 locale={locale}
                 maxUndoSteps={maxUndoSteps}
+                availableUndoSteps={availableUndoSteps}
                 readOnly={isVersionReadOnly}
                 onApproved={handleAiMutation}
                 initialMessages={initialAiMessages}
@@ -1265,6 +1269,7 @@ export function EstimateEditor({
           estimateId={estimate.id}
           locale={locale}
           maxUndoSteps={maxUndoSteps}
+          availableUndoSteps={availableUndoSteps}
           readOnly={isVersionReadOnly}
           onApproved={handleAiMutation}
           initialMessages={initialAiMessages}

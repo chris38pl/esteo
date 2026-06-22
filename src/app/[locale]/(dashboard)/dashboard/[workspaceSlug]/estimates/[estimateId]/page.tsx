@@ -10,6 +10,7 @@ import { resolveWorkspaceBySlug } from "@/server/workspaces/active-workspace";
 import {
   getEstimateForEditor,
   getVersionWithTree,
+  countRevisions,
 } from "@/features/estimates/server/repository";
 import { SyncDashboardBreadcrumbDetail } from "@/components/layout/dashboard-top-nav/sync-dashboard-breadcrumb-detail";
 import { EstimateEditor } from "@/features/estimates/components/estimate-editor";
@@ -186,6 +187,9 @@ export default async function EstimateEditorPage({
   const initialPdfDocuments = serializeEstimatePdfs(pdfRows);
 
   const maxUndoSteps = await getMaxUndoSteps(resolved.workspace.id);
+  const revisionCount =
+    activeVersionId != null ? await countRevisions(activeVersionId) : 0;
+  const availableUndoSteps = Math.min(revisionCount, maxUndoSteps);
   const workspaceSettings = await findWorkspaceSettings(resolved.workspace.id);
   const workspaceCompanyProfile = serializeWorkspaceCompanyProfileClient({
     name: resolved.workspace.name,
@@ -242,6 +246,7 @@ export default async function EstimateEditorPage({
           isAvatarPreset(user.avatarPreset) ? user.avatarPreset : null
         }
         maxUndoSteps={maxUndoSteps}
+        availableUndoSteps={availableUndoSteps}
         workspaceCompanyProfile={workspaceCompanyProfile}
         workspaceLogoUrl={workspaceCompanyProfileExport.logoUrl}
         versionWorkflow={versionWorkflow}

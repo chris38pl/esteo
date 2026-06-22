@@ -743,6 +743,7 @@
     "upgradeForMore": "Ulepsz dla więcej",
     "undoTooltipFree": "Plan Free: 1 krok cofnięcia. Ulepsz do Pro lub Business dla 3.",
     "undoTooltipPaid": "Cofnij do {steps} kroków",
+    "noUndoAvailable": "Brak zmian AI do cofnięcia.",
     "limitReached": "Miesięczny limit AI osiągnięty.",
     "callsLeft": "{remaining} / {max} wywołań pozostało",
     "emptyHint": "Poproś AI o modyfikację wyceny. Np. „Dodaj 5 gniazd elektrycznych” lub „Zwiększ narzut do 25%”.",

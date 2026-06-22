@@ -743,6 +743,7 @@
     "upgradeForMore": "Upgrade for more",
     "undoTooltipFree": "Free plan: 1 undo step. Upgrade to Pro or Business for 3.",
     "undoTooltipPaid": "Undo up to {steps} steps",
+    "noUndoAvailable": "No AI changes to undo.",
     "limitReached": "Monthly AI limit reached.",
     "callsLeft": "{remaining} / {max} calls left",
     "emptyHint": "Ask the AI to modify the estimate. E.g. \"Add 5 electrical outlets\" or \"Increase margin to 25%\".",

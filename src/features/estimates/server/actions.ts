@@ -527,13 +527,13 @@ export async function undoChangeAction(input: {
       },
     };
   } catch (error) {
+    if (error instanceof Error && error.message === "NO_REVISIONS") {
+      const t = await getTranslations({ locale, namespace: "estimates" });
+      return { success: false, error: t("ai.noUndoAvailable") };
+    }
     return toActionError(error);
   }
 }
-
-// ---------------------------------------------------------------------------
-// Generation retry
-// ---------------------------------------------------------------------------
 
 export async function retryEstimateGenerationAction(input: {
   estimateId: string;

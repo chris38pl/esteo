@@ -50,6 +50,7 @@ import {
   autoSave,
   createVersionCopy,
   deleteEstimateVersion as deleteEstimateVersionInRepository,
+  deleteRevision,
   getRevisions,
   getVersionWithTree,
   restoreRevision,
@@ -447,11 +448,13 @@ export async function approveEdit(input: {
 }): Promise<{ updatedAt: Date }> {
   await assertVersionEditable(input.versionId, input.workspaceId);
 
+  const maxRetainSteps = await getMaxUndoSteps(input.workspaceId);
   await saveRevision({
     versionId: input.versionId,
     workspaceId: input.workspaceId,
     userId: input.userId,
     source: "AI_APPROVED",
+    maxRetainSteps,
   });
 
   await applyPatch(input.versionId, input.workspaceId, input.patch);
@@ -495,6 +498,7 @@ export async function undoLastChange(input: {
 
   const latest = revisions[0];
   await restoreRevision(input.versionId, input.workspaceId, latest.id);
+  await deleteRevision(latest.id, input.versionId);
 }
 
 // ---------------------------------------------------------------------------

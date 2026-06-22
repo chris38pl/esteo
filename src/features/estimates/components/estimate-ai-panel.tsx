@@ -65,6 +65,8 @@ export interface EstimateAiPanelProps {
 
   maxUndoSteps?: number;
 
+  availableUndoSteps?: number;
+
   onApproved: (result: {
 
     updatedAt: string;
@@ -117,6 +119,8 @@ export function EstimateAiPanel({
 
   maxUndoSteps = 1,
 
+  availableUndoSteps = 0,
+
   onApproved,
 
   initialMessages = [],
@@ -154,6 +158,12 @@ export function EstimateAiPanel({
   const [isPending, startTransition] = useTransition();
 
   const [isUndoing, startUndoTransition] = useTransition();
+
+  const [undoStepsLeft, setUndoStepsLeft] = useState(availableUndoSteps);
+
+  useEffect(() => {
+    setUndoStepsLeft(availableUndoSteps);
+  }, [availableUndoSteps]);
 
   const scrollBodyRef = useRef<HTMLDivElement>(null);
 
@@ -328,6 +338,8 @@ export function EstimateAiPanel({
         return;
 
       }
+
+      setUndoStepsLeft((steps) => Math.max(0, steps - 1));
 
       onApproved(result.data);
 
@@ -586,7 +598,7 @@ export function EstimateAiPanel({
 
                 onClick={handleUndo}
 
-                disabled={readOnly || isUndoing || maxUndoSteps === 0}
+                disabled={readOnly || isUndoing || undoStepsLeft === 0}
 
               >
 
@@ -610,11 +622,11 @@ export function EstimateAiPanel({
 
             <TooltipContent>
 
-              {maxUndoSteps === 1
-
-                ? t("ai.undoTooltipFree")
-
-                : t("ai.undoTooltipPaid", { steps: maxUndoSteps })}
+              {undoStepsLeft === 0
+                ? t("ai.noUndoAvailable")
+                : maxUndoSteps === 1
+                  ? t("ai.undoTooltipFree")
+                  : t("ai.undoTooltipPaid", { steps: undoStepsLeft })}
 
             </TooltipContent>
 

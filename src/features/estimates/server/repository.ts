@@ -702,6 +702,7 @@ export async function saveRevision(input: {
   workspaceId: string;
   userId: string;
   source: "AI_APPROVED" | "MANUAL";
+  maxRetainSteps?: number;
 }): Promise<void> {
   const version = await prisma.estimateVersion.findUniqueOrThrow({
     where: { id: input.versionId },
@@ -753,12 +754,28 @@ export async function saveRevision(input: {
       orderBy: { createdAt: "asc" },
     });
 
-    if (revisions.length > 3) {
-      const toDelete = revisions.slice(0, revisions.length - 3);
+    const maxRetain = input.maxRetainSteps ?? 3;
+    if (revisions.length > maxRetain) {
+      const toDelete = revisions.slice(0, revisions.length - maxRetain);
       await tx.estimateRevision.deleteMany({
         where: { id: { in: toDelete.map((r) => r.id) } },
       });
     }
+  });
+}
+
+export async function countRevisions(versionId: string): Promise<number> {
+  return prisma.estimateRevision.count({
+    where: { versionId },
+  });
+}
+
+export async function deleteRevision(
+  revisionId: string,
+  versionId: string,
+): Promise<void> {
+  await prisma.estimateRevision.deleteMany({
+    where: { id: revisionId, versionId },
   });
 }
 
