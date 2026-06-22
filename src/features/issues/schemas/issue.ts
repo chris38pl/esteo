@@ -33,12 +33,27 @@ export const createIssueSchema = z.object({
 
 export type CreateIssueInput = z.infer<typeof createIssueSchema>;
 
+export const ADMIN_ISSUE_STATUS_VALUES = ["OPEN", "RESOLVED", "ON_HOLD"] as const;
+export type AdminIssueStatus = (typeof ADMIN_ISSUE_STATUS_VALUES)[number];
+
+export function toAdminIssueStatus(status: string): AdminIssueStatus {
+  if (status === "RESOLVED") {
+    return "RESOLVED";
+  }
+
+  if (status === "ON_HOLD") {
+    return "ON_HOLD";
+  }
+
+  return "OPEN";
+}
+
 export const updateIssueStatusSchema = z.object({
   number: z.number().int().positive(),
-  status: z.enum(["OPEN", "RESOLVED"]),
+  status: z.enum(ADMIN_ISSUE_STATUS_VALUES),
 });
 
 export const bulkUpdateIssueStatusSchema = z.object({
   numbers: z.array(z.number().int().positive()).min(1).max(100),
-  status: z.enum(["OPEN", "RESOLVED"]),
+  status: z.enum(ADMIN_ISSUE_STATUS_VALUES),
 });

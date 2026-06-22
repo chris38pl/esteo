@@ -26,6 +26,10 @@ import { buildIssueAdminUrl } from "@/features/issues/lib/build-issue-admin-url"
 import { getIssuesBasePath, type IssuesRouteVariant } from "@/features/issues/lib/issues-base-path";
 import { parseIssueContext } from "@/features/issues/lib/issue-context";
 import {
+  type AdminIssueStatus,
+  toAdminIssueStatus,
+} from "@/features/issues/schemas/issue";
+import {
   updateIssueStatusAction,
 } from "@/features/issues/server/admin-actions";
 import type { AdminIssueDetail } from "@/features/issues/server/repository";
@@ -188,9 +192,7 @@ export function AdminIssueDetailPanel({
   const t = useTranslations("issues");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const [status, setStatus] = useState<"OPEN" | "RESOLVED">(
-    issue.status === "RESOLVED" ? "RESOLVED" : "OPEN",
-  );
+  const [status, setStatus] = useState<AdminIssueStatus>(toAdminIssueStatus(issue.status));
 
   const context = parseIssueContext(issue.context);
   const listHref = getIssuesBasePath(locale, issuesVariant);
@@ -222,7 +224,7 @@ export function AdminIssueDetailPanel({
     }
   }
 
-  function handleStatusChange(nextStatus: "OPEN" | "RESOLVED") {
+  function handleStatusChange(nextStatus: AdminIssueStatus) {
     setStatus(nextStatus);
 
     startTransition(async () => {
@@ -233,7 +235,7 @@ export function AdminIssueDetailPanel({
 
       if (!result.success) {
         toast.error(result.error);
-        setStatus(issue.status === "RESOLVED" ? "RESOLVED" : "OPEN");
+        setStatus(toAdminIssueStatus(issue.status));
         return;
       }
 
@@ -357,7 +359,7 @@ export function AdminIssueDetailPanel({
               <p className="mb-2 text-xs font-medium text-muted-foreground">{t("admin.status")}</p>
               <Select
                 value={status}
-                onValueChange={(value) => handleStatusChange(value as "OPEN" | "RESOLVED")}
+                onValueChange={(value) => handleStatusChange(value as AdminIssueStatus)}
                 disabled={pending}
               >
                 <SelectTrigger className={cn(issueFormFieldClassName, "w-full")}>
@@ -365,6 +367,7 @@ export function AdminIssueDetailPanel({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="OPEN">{t("status.OPEN")}</SelectItem>
+                  <SelectItem value="ON_HOLD">{t("status.ON_HOLD")}</SelectItem>
                   <SelectItem value="RESOLVED">{t("status.RESOLVED")}</SelectItem>
                 </SelectContent>
               </Select>

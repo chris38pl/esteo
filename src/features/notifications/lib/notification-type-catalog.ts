@@ -11,7 +11,7 @@ import type {
 import { dashboardEstimatesHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
 
-const issueStatusSchema = z.enum(["OPEN", "IN_PROGRESS", "RESOLVED", "ARCHIVED"]);
+const issueStatusSchema = z.enum(["OPEN", "IN_PROGRESS", "ON_HOLD", "RESOLVED", "ARCHIVED"]);
 
 const requestPayloadSchema = z.object({
   requestId: z.string(),

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import {
   bulkUpdateIssueStatusSchema,
+  type AdminIssueStatus,
   updateIssueStatusSchema,
 } from "@/features/issues/schemas/issue";
 import {
@@ -69,7 +70,7 @@ export async function getAdminIssueAction(number: number, locale: Locale = "pl")
 }
 
 export async function bulkUpdateIssueStatusAction(
-  input: { numbers: number[]; status: "OPEN" | "RESOLVED" },
+  input: { numbers: number[]; status: AdminIssueStatus },
   locale: Locale = "pl",
 ) {
   try {
@@ -94,7 +95,7 @@ export async function bulkUpdateIssueStatusAction(
 }
 
 export async function updateIssueStatusAction(
-  input: { number: number; status: "OPEN" | "RESOLVED" },
+  input: { number: number; status: AdminIssueStatus },
   locale: Locale = "pl",
 ) {
   try {

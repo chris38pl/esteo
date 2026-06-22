@@ -52,7 +52,7 @@ async function listIssuesForFolderCleanup(
 ): Promise<Array<Pick<Issue, "number" | "folderSlug">>> {
   return prisma.issue.findMany({
     where: {
-      status: { in: ["RESOLVED", "ARCHIVED"] },
+      status: { in: ["ON_HOLD", "RESOLVED", "ARCHIVED"] },
     },
     select: {
       number: true,
@@ -92,7 +92,7 @@ async function main() {
 
       if (missing.length > 0) {
         console.warn(
-          `Skipping issue(s) not OPEN/IN_PROGRESS or missing: ${missing.join(", ")}`,
+          `Skipping issue(s) not synced (OPEN/IN_PROGRESS only) or missing: ${missing.join(", ")}`,
         );
       }
     }

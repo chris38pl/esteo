@@ -165,7 +165,7 @@ export async function listIssuesForFolderCleanup(): Promise<
 > {
   return prisma.issue.findMany({
     where: {
-      status: { in: ["RESOLVED", "ARCHIVED"] },
+      status: { in: ["ON_HOLD", "RESOLVED", "ARCHIVED"] },
     },
     select: {
       number: true,

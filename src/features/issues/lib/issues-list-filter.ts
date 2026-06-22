@@ -10,6 +10,7 @@ export const ISSUE_FEATURE_TYPES: IssueType[] = ["FEATURE"];
 export const ISSUE_LIST_STATUS_VALUES: IssueStatus[] = [
   "OPEN",
   "IN_PROGRESS",
+  "ON_HOLD",
   "RESOLVED",
   "ARCHIVED",
 ];

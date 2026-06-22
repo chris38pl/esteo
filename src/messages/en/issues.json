@@ -65,6 +65,7 @@
   "status": {
     "OPEN": "Open",
     "IN_PROGRESS": "In progress",
+    "ON_HOLD": "On hold",
     "RESOLVED": "Resolved",
     "ARCHIVED": "Archived"
   },

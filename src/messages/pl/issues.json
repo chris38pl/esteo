@@ -63,10 +63,11 @@
     "CRITICAL": "Critical"
   },
   "status": {
-    "OPEN": "Open",
-    "IN_PROGRESS": "In progress",
-    "RESOLVED": "Resolved",
-    "ARCHIVED": "Archived"
+    "OPEN": "Otwarte",
+    "IN_PROGRESS": "W trakcie",
+    "ON_HOLD": "Wstrzymane",
+    "RESOLVED": "Rozwiązane",
+    "ARCHIVED": "Zarchiwizowane"
   },
   "admin": {
     "title": "Issue tracker",

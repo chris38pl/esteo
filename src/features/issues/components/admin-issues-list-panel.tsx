@@ -15,6 +15,7 @@ import {
   ReportIssueDialog,
   type CreatedIssueSummary,
 } from "@/features/issues/components/report-issue-dialog";
+import type { AdminIssueStatus } from "@/features/issues/schemas/issue";
 import {
   EMPTY_ISSUES_LIST_DATE_RANGE,
   EMPTY_ISSUES_LIST_FILTER,
@@ -152,7 +153,7 @@ export function AdminIssuesListPanel({
     [pageIssues],
   );
 
-  function handleBulkStatusUpdated(numbers: number[], status: "OPEN" | "RESOLVED") {
+  function handleBulkStatusUpdated(numbers: number[], status: AdminIssueStatus) {
     const updatedNumbers = new Set(numbers);
     setIssuesList((current) =>
       current.map((issue) =>

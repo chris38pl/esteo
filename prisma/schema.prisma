@@ -305,6 +305,7 @@ enum IssuePriority {
 enum IssueStatus {
   OPEN
   IN_PROGRESS
+  ON_HOLD
   RESOLVED
   ARCHIVED
 }
