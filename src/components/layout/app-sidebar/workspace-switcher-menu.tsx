@@ -134,7 +134,7 @@ export function WorkspaceSwitcherMenuContent({
           </DropdownMenuItem>
         )
       ) : null}
-      {activeWorkspace ? (
+      {activeWorkspace?.isOwner ? (
         <DropdownMenuItem asChild className="gap-2 text-xs">
           <Link href={`/${locale}/dashboard/${activeWorkspace.slug}/workspace-usage`}>
             <BarChart3 className="size-3.5 text-muted-foreground" />
@@ -150,10 +150,14 @@ export function WorkspaceSwitcherMenuContent({
           </Link>
         </DropdownMenuItem>
       ) : null}
-      <DropdownMenuItem className="gap-2 text-xs">
-        <Users className="size-3.5 text-muted-foreground" />
-        {t("account.workspaceMembers")}
-      </DropdownMenuItem>
+      {activeWorkspace?.isOwner ? (
+        <DropdownMenuItem asChild className="gap-2 text-xs">
+          <Link href={`/${locale}/dashboard/${activeWorkspace.slug}/settings?tab=users`}>
+            <Users className="size-3.5 text-muted-foreground" />
+            {t("account.workspaceMembers")}
+          </Link>
+        </DropdownMenuItem>
+      ) : null}
       {activeWorkspace && !activeWorkspace.isOwner ? (
         <>
           <DropdownMenuSeparator className="bg-[color:var(--sidebar-divider)]" />

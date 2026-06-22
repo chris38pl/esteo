@@ -53,9 +53,10 @@ export function ActiveWorkspaceCard({
     workspace.slug && (workspace.isOwner || workspace.isBillingPayer)
       ? dashboardBillingHref(locale, workspace.slug)
       : null;
-  const workspaceUsageHref = workspace.slug
-    ? dashboardWorkspaceUsageHref(locale, workspace.slug)
-    : null;
+  const workspaceUsageHref =
+    workspace.slug && workspace.isOwner
+      ? dashboardWorkspaceUsageHref(locale, workspace.slug)
+      : null;
   const storageLabel = t("storageUsed", {
     used: storage.usedFormatted,
     limit: storage.limitFormatted,
@@ -193,9 +194,7 @@ export function ActiveWorkspaceCard({
           >
             {storageSectionContent}
           </Link>
-        ) : (
-          <div className={storageSectionClassName}>{storageSectionContent}</div>
-        )}
+        ) : null}
       </div>
 
       <WorkspaceSwitcherMenuContent side="bottom" align="start" />

@@ -27,6 +27,10 @@ export default async function WorkspaceUsagePage({
     redirect(`/${resolvedLocale}/dashboard`);
   }
 
+  if (resolved.workspace.ownerId !== user.id) {
+    redirect(dashboardEstimatesHref(resolvedLocale, resolved.canonicalSlug));
+  }
+
   try {
     await requireRole(user, resolved.workspace.id, "MEMBER");
   } catch {
