@@ -18,10 +18,6 @@ import {
 import { CompanyDescriptionField } from "@/features/workspaces/components/company-description-field";
 import { createWorkspaceSchema } from "@/features/workspaces/schemas/create-workspace";
 import {
-  WorkspaceIconPicker,
-  type WorkspaceIconKey,
-} from "@/features/workspaces/components/workspace-icon-picker";
-import {
   isWorkspaceIndustryAvailableAtSignup,
 } from "@/features/workspaces/lib/industries";
 import { WorkspaceIndustrySelect } from "@/features/workspaces/components/workspace-industry-select";
@@ -69,7 +65,6 @@ export function CreateWorkspaceForm({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [name, setName] = useState("");
-  const [workspaceIcon, setWorkspaceIcon] = useState<WorkspaceIconKey>("building");
   const [industry, setIndustry] = useState<WorkspaceIndustry | "">("");
   const [industryOtherText, setIndustryOtherText] = useState("");
   const [companyDescription, setCompanyDescription] = useState("");
@@ -175,12 +170,6 @@ export function CreateWorkspaceForm({
           className="h-11 rounded-xl"
         />
       </div>
-
-      <WorkspaceIconPicker
-        value={workspaceIcon}
-        onChange={setWorkspaceIcon}
-        disabled={isPending}
-      />
 
       <WorkspaceIndustrySelect
         value={industry}

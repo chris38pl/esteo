@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { ArrowRightLeft } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
@@ -10,6 +9,7 @@ import type {
   PendingOutboundTransferView,
   TransferEligibilityView,
 } from "@/features/workspaces/components/transfer-types";
+import { WorkspaceSettingsSubscriptionRequiredWarning } from "@/features/workspaces/components/workspace-settings-subscription-required-warning";
 import { WorkspaceTransferWizard } from "@/features/workspaces/components/workspace-transfer-wizard";
 import { cancelWorkspaceOwnershipTransferAction } from "@/features/workspaces/server/actions";
 import { dashboardBillingHref } from "@/lib/dashboard-routes";
@@ -22,6 +22,7 @@ export function WorkspaceSettingsTransferSection({
   eligibility,
   pendingTransfer,
   locale,
+  embedded = false,
 }: {
   workspaceId: string;
   workspaceName: string;
@@ -29,8 +30,10 @@ export function WorkspaceSettingsTransferSection({
   eligibility: TransferEligibilityView;
   pendingTransfer: PendingOutboundTransferView | null;
   locale: Locale;
+  embedded?: boolean;
 }) {
   const t = useTranslations("workspaces.settings.transfer");
+  const tSubscriptionBlock = useTranslations("workspaces.settings.subscriptionBlock");
   const [wizardOpen, setWizardOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -63,7 +66,10 @@ export function WorkspaceSettingsTransferSection({
 
   return (
     <>
-      <div id="workspace-transfer" className="mt-10 border-t border-border/60 pt-8">
+      <div
+        id="workspace-transfer"
+        className={embedded ? "space-y-4" : "mt-10 border-t border-border/60 pt-8"}
+      >
         <div className="flex items-start gap-3">
           <div className="mt-0.5 rounded-lg bg-muted/50 p-2">
             <ArrowRightLeft className="size-4 text-muted-foreground" />
@@ -110,15 +116,19 @@ export function WorkspaceSettingsTransferSection({
               {t("startButton")}
             </Button>
           </div>
+        ) : eligibility.blockReason === "CANCEL_SUBSCRIPTION_REQUIRED" ? (
+          <WorkspaceSettingsSubscriptionRequiredWarning
+            title={tSubscriptionBlock("title")}
+            description={t("blocked.CANCEL_SUBSCRIPTION_REQUIRED")}
+            activeUntilLabel={tSubscriptionBlock("activeUntilLabel")}
+            periodEndLabel={periodEndLabel}
+            ctaLabel={t("openBilling")}
+            ctaHref={dashboardBillingHref(locale, workspaceSlug)}
+          />
         ) : (
           <div className="mt-4 space-y-3 rounded-xl border border-border/60 bg-muted/15 px-4 py-4">
             {blockMessage ? (
               <p className="text-sm text-muted-foreground">{blockMessage}</p>
-            ) : null}
-            {eligibility.blockReason === "CANCEL_SUBSCRIPTION_REQUIRED" ? (
-              <Button type="button" variant="outline" size="sm" asChild>
-                <Link href={dashboardBillingHref(locale, workspaceSlug)}>{t("openBilling")}</Link>
-              </Button>
             ) : null}
           </div>
         )}

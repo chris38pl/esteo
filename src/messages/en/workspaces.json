@@ -152,6 +152,7 @@
   "settings": {
     "title": "Workspace settings",
     "description": "Change the workspace name, appearance theme, and short company description. These are shown in the app and used by AI for estimates and responses.",
+    "tabLoading": "Loading tab…",
     "nameLabel": "Workspace name",
     "appearanceLabel": "Appearance theme",
     "save": "Save changes",
@@ -159,11 +160,18 @@
     "saved": "Changes saved.",
     "logo": {
       "label": "Company logo",
+      "settingsSubtitle": "Shown in the app and client-facing materials.",
       "hint": "PNG, JPG, or WebP, max 2 MB. Square or transparent background works best.",
       "hintShort": "PNG, JPG, or WebP. Max 2 MB.",
+      "addLogo": "Add logo",
+      "previewLabel": "Preview",
+      "uploadedStatus": "Logo uploaded",
+      "formatRecommendation": "Recommended format: square (1:1). The logo is displayed at up to 128px.",
+      "fileMeta": "{format} • {size} {dimensions}",
       "dropHint": "Drop a file here or choose from disk",
       "upload": "Upload logo",
       "change": "Change logo",
+      "changeShort": "Change",
       "remove": "Remove logo",
       "removeShort": "Remove",
       "uploading": "Uploading… {percent}%",
@@ -184,6 +192,7 @@
       "users": "Users",
       "referral": "Partner program",
       "rules": "Rules",
+      "more": "More tabs",
       "companyDescription": "Company details shown on client-facing documents — address, tax ID, contact.",
       "usersDescription": "Manage workspace members and collaboration invites.",
       "referralDescription": "Enter a referrer email or code to join the partner program.",
@@ -192,7 +201,14 @@
     "basicInfo": {
       "title": "Basic information",
       "nameHint": "Name displayed in the application.",
-      "accentHint": "Accent color applied across this workspace interface."
+      "accentHint": "Accent color shown on the workspace preview in the sidebar."
+    },
+    "management": {
+      "title": "Workspace management"
+    },
+    "subscriptionBlock": {
+      "title": "Cancel subscription first",
+      "activeUntilLabel": "Subscription stays active until:"
     },
     "aiSetup": {
       "title": "AI setup",
@@ -235,7 +251,7 @@
       }
     },
     "users": {
-      "membersTitle": "Members",
+      "cardTitle": "Users",
       "membersDescription": "People with access to this workspace.",
       "pendingTitle": "Pending invitations",
       "inviteTitle": "Invite user",

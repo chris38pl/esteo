@@ -132,9 +132,11 @@ export async function requireRole(
   return context;
 }
 
-/** Exclude platform admins from workspace member listings shown in UI. */
+/** Exclude platform admins from workspace member listings shown in UI (owner always shown). */
 export function filterWorkspaceMembersForUi<
-  T extends { user: { platformRole: PlatformRole } },
+  T extends { user: { platformRole: PlatformRole }; role: WorkspaceMember["role"] },
 >(members: T[]): T[] {
-  return members.filter((member) => member.user.platformRole !== "PLATFORM_ADMIN");
+  return members.filter(
+    (member) => member.role === "OWNER" || member.user.platformRole !== "PLATFORM_ADMIN",
+  );
 }

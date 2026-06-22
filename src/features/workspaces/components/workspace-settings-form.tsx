@@ -8,16 +8,12 @@ import { useTranslations } from "next-intl";
 
 import { CompanyDescriptionField } from "@/features/workspaces/components/company-description-field";
 import { WorkspaceLogoField } from "@/features/workspaces/components/workspace-logo-field";
-import {
-  WorkspaceIconPicker,
-  type WorkspaceIconKey,
-} from "@/features/workspaces/components/workspace-icon-picker";
 import { WorkspaceThemePicker } from "@/features/workspaces/components/workspace-theme-picker";
 import { updateWorkspaceProfileAction } from "@/features/workspaces/server/actions";
 import { updateWorkspaceProfileSchema } from "@/features/workspaces/schemas/update-workspace-profile";
 import type { Locale } from "@/lib/locale";
+import { WorkspaceSettingsCard } from "@/features/workspaces/components/workspace-settings-card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -53,7 +49,6 @@ export function WorkspaceSettingsForm({
   const tErrors = useTranslations("workspaces.errors");
   const router = useRouter();
   const [name, setName] = useState(initialName);
-  const [workspaceIcon, setWorkspaceIcon] = useState<WorkspaceIconKey>("building");
   const [companyDescription, setCompanyDescription] = useState(initialCompanyDescription);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -98,11 +93,7 @@ export function WorkspaceSettingsForm({
 
   return (
     <form onSubmit={handleSubmit} className="mb-8">
-      <Card>
-        <CardHeader className="border-b">
-          <CardTitle>{t("basicInfo.title")}</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-6">
+      <WorkspaceSettingsCard title={t("basicInfo.title")}>
           <div className="grid gap-8 lg:grid-cols-2">
             <div className="space-y-6">
               <div className="space-y-2">
@@ -120,12 +111,6 @@ export function WorkspaceSettingsForm({
                 <p className="text-sm text-muted-foreground">{t("basicInfo.nameHint")}</p>
               </div>
 
-              <WorkspaceIconPicker
-                value={workspaceIcon}
-                onChange={setWorkspaceIcon}
-                disabled={isPending}
-              />
-
               <CompanyDescriptionField
                 id="workspace-settings-company-description"
                 value={companyDescription}
@@ -133,17 +118,8 @@ export function WorkspaceSettingsForm({
                 disabled={isPending}
                 variant="create"
               />
-            </div>
 
-            <div className="space-y-6">
-              <WorkspaceLogoField
-                workspaceId={workspaceId}
-                initialLogoUrl={initialLogoUrl}
-                locale={locale}
-                variant="settings"
-              />
-
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <div className="flex items-center gap-1.5">
                   <Label>{t("appearanceLabel")}</Label>
                   <TooltipProvider>
@@ -171,6 +147,15 @@ export function WorkspaceSettingsForm({
                 />
               </div>
             </div>
+
+            <div className="space-y-6">
+              <WorkspaceLogoField
+                workspaceId={workspaceId}
+                initialLogoUrl={initialLogoUrl}
+                locale={locale}
+                variant="settings"
+              />
+            </div>
           </div>
 
           {error ? (
@@ -188,8 +173,7 @@ export function WorkspaceSettingsForm({
               {isPending ? t("saving") : t("save")}
             </Button>
           </div>
-        </CardContent>
-      </Card>
+      </WorkspaceSettingsCard>
     </form>
   );
 }

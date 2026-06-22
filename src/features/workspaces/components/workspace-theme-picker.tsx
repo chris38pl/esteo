@@ -29,7 +29,7 @@ export function WorkspaceThemePicker({
   const t = useTranslations("workspaces.appearance");
 
   const dotSize =
-    variant === "header" ? "size-4" : size === "sm" ? "size-2.5" : "size-3";
+    variant === "header" ? "size-5" : size === "sm" ? "size-2.5" : "size-3";
 
   return (
     <div
@@ -64,7 +64,7 @@ export function WorkspaceThemePicker({
               variant === "header"
                 ? selected
                   ? ""
-                  : "opacity-80 hover:opacity-100"
+                  : "opacity-50 hover:opacity-70"
                 : cn(
                     "ring-2 ring-offset-2 ring-offset-card",
                     selected ? "scale-110" : "opacity-70 hover:opacity-100",

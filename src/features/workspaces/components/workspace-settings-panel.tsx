@@ -10,24 +10,32 @@ import {
   Briefcase,
   Handshake,
   LayoutDashboard,
+  MoreHorizontal,
   ScrollText,
   Users,
   type LucideIcon,
 } from "lucide-react";
 
 import type { WorkspaceBranding } from "@/features/workspaces/schemas/branding";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 
+import { TopBarLoadingIndicator } from "@/components/layout/top-bar-loading-indicator";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { WorkspaceSettingsCompanyTab } from "@/features/workspaces/components/workspace-settings-company-tab";
-import { WorkspaceAiSetupSection } from "@/features/workspaces/components/workspace-ai-setup-section";
-import { WorkspaceSettingsDeleteSection } from "@/features/workspaces/components/workspace-settings-delete-section";
 import { WorkspaceSettingsForm } from "@/features/workspaces/components/workspace-settings-form";
+import { WorkspaceSettingsDeleteSection } from "@/features/workspaces/components/workspace-settings-delete-section";
+import { WorkspaceAiSetupSection } from "@/features/workspaces/components/workspace-ai-setup-section";
+import { WorkspaceSettingsManagementCard } from "@/features/workspaces/components/workspace-settings-management-card";
 import { WorkspaceSettingsReferralTab } from "@/features/workspaces/components/workspace-settings-referral-tab";
 import { WorkspaceSettingsRulesTab } from "@/features/workspaces/components/workspace-settings-rules-tab";
 import { WorkspaceSettingsUsersTab } from "@/features/workspaces/components/workspace-settings-users-tab";
-import { WorkspaceSettingsTransferSection } from "@/features/workspaces/components/workspace-settings-transfer-section";
 import type { WorkspaceReferralClaimView } from "@/features/referrals/server/get-workspace-referral-claim-view";
 import type {
   PendingOutboundTransferView,
@@ -62,6 +70,8 @@ type InvitationRow = {
 
 const TABS: SettingsTab[] = ["general", "company", "users", "referral", "rules"];
 
+const MOBILE_PRIMARY_TABS: SettingsTab[] = ["general", "company", "rules"];
+
 const TAB_ICONS: Record<SettingsTab, LucideIcon> = {
   general: LayoutDashboard,
   company: Briefcase,
@@ -82,15 +92,36 @@ function parseTab(value: string | null): SettingsTab {
   return "general";
 }
 
+function resolveActiveTab(value: string | null, isOwner: boolean): SettingsTab {
+  const raw = parseTab(value);
+  return raw === "referral" && !isOwner ? "general" : raw;
+}
+
+function getVisibleTabs(isOwner: boolean): SettingsTab[] {
+  return TABS.filter((tab) => tab !== "referral" || isOwner);
+}
+
+function getMobileOverflowTabs(isOwner: boolean): SettingsTab[] {
+  const overflow: SettingsTab[] = ["users"];
+  if (isOwner) {
+    overflow.push("referral");
+  }
+  return overflow;
+}
+
 function SettingsTabButton({
   tab,
   isActive,
   label,
+  disabled,
+  compact = false,
   onSelect,
 }: {
   tab: SettingsTab;
   isActive: boolean;
   label: string;
+  disabled?: boolean;
+  compact?: boolean;
   onSelect: (tab: SettingsTab) => void;
 }) {
   const Icon = TAB_ICONS[tab];
@@ -100,18 +131,142 @@ function SettingsTabButton({
       type="button"
       role="tab"
       aria-selected={isActive}
+      disabled={disabled}
       onClick={() => onSelect(tab)}
       className={cn(
-        "relative flex shrink-0 cursor-pointer items-center gap-2 px-4 py-3 text-sm font-medium transition-colors",
+        "relative flex cursor-pointer items-center gap-2 py-3 text-sm font-medium transition-colors",
+        compact
+          ? "min-w-0 flex-1 justify-center px-2"
+          : "shrink-0 px-4",
         isActive ? "text-primary" : "text-muted-foreground hover:text-foreground",
+        disabled && "pointer-events-none opacity-70",
       )}
     >
       <Icon className="size-4 shrink-0" aria-hidden />
-      <span>{label}</span>
+      <span className={cn(compact && "truncate")}>{label}</span>
       {isActive ? (
         <span className="absolute inset-x-0 bottom-0 h-0.5 bg-primary" aria-hidden />
       ) : null}
     </button>
+  );
+}
+
+function SettingsTabOverflowMenu({
+  tabs,
+  activeTab,
+  disabled,
+  moreLabel,
+  tabLabel,
+  onSelect,
+}: {
+  tabs: SettingsTab[];
+  activeTab: SettingsTab;
+  disabled?: boolean;
+  moreLabel: string;
+  tabLabel: (tab: SettingsTab) => string;
+  onSelect: (tab: SettingsTab) => void;
+}) {
+  const isOverflowActive = tabs.includes(activeTab);
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={isOverflowActive}
+          disabled={disabled}
+          className={cn(
+            "relative flex shrink-0 cursor-pointer items-center justify-center px-3 py-3 text-sm font-medium transition-colors",
+            isOverflowActive ? "text-primary" : "text-muted-foreground hover:text-foreground",
+            disabled && "pointer-events-none opacity-70",
+          )}
+          aria-label={moreLabel}
+        >
+          <MoreHorizontal className="size-5" aria-hidden />
+          {isOverflowActive ? (
+            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-primary" aria-hidden />
+          ) : null}
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-[12rem]">
+        {tabs.map((tab) => {
+          const Icon = TAB_ICONS[tab];
+
+          return (
+            <DropdownMenuItem
+              key={tab}
+              onClick={() => onSelect(tab)}
+              className={cn(
+                "gap-2",
+                activeTab === tab && "bg-accent font-medium text-primary",
+              )}
+            >
+              <Icon className="size-4 shrink-0" aria-hidden />
+              {tabLabel(tab)}
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+function WorkspaceSettingsTabList({
+  activeTab,
+  disabled,
+  isOwner,
+  moreLabel,
+  tabLabel,
+  onSelect,
+}: {
+  activeTab: SettingsTab;
+  disabled?: boolean;
+  isOwner: boolean;
+  moreLabel: string;
+  tabLabel: (tab: SettingsTab) => string;
+  onSelect: (tab: SettingsTab) => void;
+}) {
+  const visibleTabs = getVisibleTabs(isOwner);
+  const mobileOverflowTabs = getMobileOverflowTabs(isOwner);
+
+  return (
+    <div className="mb-8 border-b border-border/60" role="tablist">
+      <div className="flex min-w-0 items-stretch md:hidden">
+        {MOBILE_PRIMARY_TABS.map((tab) => (
+          <SettingsTabButton
+            key={tab}
+            tab={tab}
+            isActive={activeTab === tab}
+            label={tabLabel(tab)}
+            disabled={disabled}
+            compact
+            onSelect={onSelect}
+          />
+        ))}
+        <SettingsTabOverflowMenu
+          tabs={mobileOverflowTabs}
+          activeTab={activeTab}
+          disabled={disabled}
+          moreLabel={moreLabel}
+          tabLabel={tabLabel}
+          onSelect={onSelect}
+        />
+      </div>
+
+      <div className="hidden min-w-0 md:flex">
+        {visibleTabs.map((tab) => (
+          <SettingsTabButton
+            key={tab}
+            tab={tab}
+            isActive={activeTab === tab}
+            label={tabLabel(tab)}
+            disabled={disabled}
+            onSelect={onSelect}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -167,27 +322,58 @@ export function WorkspaceSettingsPanel({
   referralClaim?: WorkspaceReferralClaimView | null;
 }) {
   const t = useTranslations("workspaces.settings");
-  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const rawTab = parseTab(searchParams.get("tab"));
-  const activeTab = rawTab === "referral" && !isOwner ? "general" : rawTab;
+  const [activeTab, setActiveTab] = useState<SettingsTab>(() =>
+    resolveActiveTab(searchParams.get("tab"), isOwner),
+  );
+  const [isTabPending, startTabTransition] = useTransition();
   const [appearanceTheme, setAppearanceTheme] = useState(initialAppearanceTheme);
   const [themePickerDisabled, setThemePickerDisabled] = useState(false);
+
+  useEffect(() => {
+    setActiveTab(resolveActiveTab(searchParams.get("tab"), isOwner));
+  }, [searchParams, isOwner]);
+
+  useEffect(() => {
+    function handlePopState() {
+      const params = new URLSearchParams(window.location.search);
+      startTabTransition(() => {
+        setActiveTab(resolveActiveTab(params.get("tab"), isOwner));
+      });
+    }
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [isOwner]);
 
   useEffect(() => {
     setAppearanceTheme(initialAppearanceTheme);
   }, [initialAppearanceTheme]);
 
-  function setTab(tab: SettingsTab) {
-    const params = new URLSearchParams(searchParams.toString());
-    if (tab === "general") {
-      params.delete("tab");
-    } else {
-      params.set("tab", tab);
-    }
-    const query = params.toString();
-    router.replace(query ? `?${query}` : "?", { scroll: false });
-  }
+  const setTab = useCallback(
+    (tab: SettingsTab) => {
+      if (tab === activeTab) {
+        return;
+      }
+
+      startTabTransition(() => {
+        setActiveTab(tab);
+
+        const params = new URLSearchParams(window.location.search);
+        if (tab === "general") {
+          params.delete("tab");
+        } else {
+          params.set("tab", tab);
+        }
+
+        const query = params.toString();
+        const nextUrl = query ? `${pathname}?${query}` : pathname;
+        window.history.replaceState(window.history.state, "", nextUrl);
+      });
+    },
+    [activeTab, pathname],
+  );
 
   const tabDescription =
     activeTab === "general"
@@ -201,27 +387,23 @@ export function WorkspaceSettingsPanel({
             : t("tabs.rulesDescription");
 
   return (
-    <div className="flex w-full justify-center px-3 sm:px-4 lg:px-6">
-      <div className="w-full max-w-6xl py-8">
+    <>
+      <TopBarLoadingIndicator active={isTabPending} label={t("tabLoading")} />
+      <div className="flex w-full justify-center px-3 sm:px-4 lg:px-6">
+        <div className="w-full max-w-6xl py-8">
         <div className="mb-6 space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
           <p className="text-sm text-muted-foreground">{tabDescription}</p>
         </div>
 
-        <div
-          className="mb-8 flex gap-1 overflow-x-auto border-b border-border/60"
-          role="tablist"
-        >
-          {TABS.filter((tab) => tab !== "referral" || isOwner).map((tab) => (
-            <SettingsTabButton
-              key={tab}
-              tab={tab}
-              isActive={activeTab === tab}
-              label={t(`tabs.${tab}`)}
-              onSelect={setTab}
-            />
-          ))}
-        </div>
+        <WorkspaceSettingsTabList
+          activeTab={activeTab}
+          disabled={isTabPending}
+          isOwner={isOwner}
+          moreLabel={t("tabs.more")}
+          tabLabel={(tab) => t(`tabs.${tab}`)}
+          onSelect={setTab}
+        />
 
         {activeTab === "general" ? (
           <>
@@ -246,22 +428,25 @@ export function WorkspaceSettingsPanel({
               locale={locale}
             />
             {isOwner ? (
-              <WorkspaceSettingsTransferSection
+              <WorkspaceSettingsManagementCard
                 workspaceId={workspaceId}
                 workspaceName={initialName}
                 workspaceSlug={workspaceSlug}
-                eligibility={transferEligibility}
-                pendingTransfer={pendingTransfer}
                 locale={locale}
+                transferEligibility={transferEligibility}
+                pendingTransfer={pendingTransfer}
+                deleteEligibility={deleteEligibility}
               />
-            ) : null}
-            <WorkspaceSettingsDeleteSection
-              workspaceId={workspaceId}
-              workspaceName={initialName}
-              locale={locale}
-              workspaceSlug={workspaceSlug}
-              deleteEligibility={deleteEligibility}
-            />
+            ) : (
+              <WorkspaceSettingsDeleteSection
+                workspaceId={workspaceId}
+                workspaceName={initialName}
+                locale={locale}
+                workspaceSlug={workspaceSlug}
+                deleteEligibility={deleteEligibility}
+                currentPeriodEnd={transferEligibility.currentPeriodEnd}
+              />
+            )}
           </>
         ) : null}
 
@@ -307,7 +492,8 @@ export function WorkspaceSettingsPanel({
             locale={locale}
           />
         ) : null}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

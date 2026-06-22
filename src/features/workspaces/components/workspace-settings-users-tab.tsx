@@ -26,6 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { WorkspaceSettingsCard } from "@/features/workspaces/components/workspace-settings-card";
 import { INVITE_ROLES } from "@/features/workspaces/lib/invite-role";
 import { RemoveWorkspaceMemberDialog } from "@/features/workspaces/components/remove-workspace-member-dialog";
 import {
@@ -115,6 +116,19 @@ function avatarColorClass(seed: string) {
   return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length]!;
 }
 
+function sortUserRows(rows: UserTableRow[]) {
+  return [...rows].sort((left, right) => {
+    const leftIsOwner = left.kind === "member" && left.role === "OWNER";
+    const rightIsOwner = right.kind === "member" && right.role === "OWNER";
+
+    if (leftIsOwner !== rightIsOwner) {
+      return leftIsOwner ? -1 : 1;
+    }
+
+    return new Date(left.joinedAt).getTime() - new Date(right.joinedAt).getTime();
+  });
+}
+
 function RolePill({ role, label }: { role: WorkspaceRole | InviteRole; label: string }) {
   return (
     <span
@@ -126,7 +140,7 @@ function RolePill({ role, label }: { role: WorkspaceRole | InviteRole; label: st
       )}
     >
       {label}
-      <ChevronDown className="size-3 opacity-60" aria-hidden />
+      <ChevronDown className="size-3 opacity-60 md:inline" aria-hidden />
     </span>
   );
 }
@@ -162,6 +176,140 @@ function PendingAvatar({ email }: { email: string }) {
     >
       {emailInitials(email)}
     </span>
+  );
+}
+
+function WorkspaceUserMobileCard({
+  row,
+  locale,
+  isOwner,
+  ownerUserId,
+  isPending,
+  t,
+  onRemove,
+  onRevoke,
+}: {
+  row: UserTableRow;
+  locale: Locale;
+  isOwner: boolean;
+  ownerUserId: string;
+  isPending: boolean;
+  t: ReturnType<typeof useTranslations<"workspaces.settings.users">>;
+  onRemove: (member: MemberToRemove) => void;
+  onRevoke: (invitationId: string) => void;
+}) {
+  const joinedLabel = formatDate(row.joinedAt, locale, {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+
+  if (row.kind === "member") {
+    const canRemove = isOwner && row.userId !== ownerUserId;
+
+    return (
+      <article className="rounded-lg border border-border/60 px-4 py-4">
+        <div className="flex items-start gap-3">
+          <UserAvatar
+            imageUrl={row.avatarUrl}
+            avatarPreset={row.avatarPreset}
+            size={40}
+          />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="truncate font-semibold">{row.displayName}</p>
+                <p className="mt-0.5 truncate text-xs text-muted-foreground">{row.email}</p>
+              </div>
+              {canRemove ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon-sm"
+                      disabled={isPending}
+                      aria-label={t("columns.actions")}
+                      className="size-8 shrink-0 rounded-md"
+                    >
+                      <MoreHorizontal className="size-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      variant="destructive"
+                      onClick={() =>
+                        onRemove({
+                          userId: row.userId,
+                          name: row.displayName,
+                        })
+                      }
+                    >
+                      {t("remove")}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : null}
+            </div>
+
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <RolePill role={row.role} label={t(`roles.${row.role}`)} />
+              <StatusBadge status="active" label={t("status.active")} />
+            </div>
+
+            <p className="mt-2 text-xs text-muted-foreground">
+              {t("columns.joined")}: {joinedLabel}
+            </p>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
+  return (
+    <article className="rounded-lg border border-border/60 px-4 py-4">
+      <div className="flex items-start gap-3">
+        <PendingAvatar email={row.email} />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="truncate font-semibold text-muted-foreground">{row.email}</p>
+              <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                {t("status.pendingHint")}
+              </p>
+            </div>
+            {isOwner ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    disabled={isPending}
+                    aria-label={t("columns.actions")}
+                    className="size-8 shrink-0 rounded-md"
+                  >
+                    <MoreHorizontal className="size-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => onRevoke(row.id)}>{t("revoke")}</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : null}
+          </div>
+
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <RolePill role={row.role} label={t(`roles.${row.role}`)} />
+            <StatusBadge status="pending" label={t("status.pending")} />
+          </div>
+
+          <p className="mt-2 text-xs text-muted-foreground">
+            {t("columns.joined")}: {joinedLabel}
+          </p>
+        </div>
+      </div>
+    </article>
   );
 }
 
@@ -218,9 +366,7 @@ export function WorkspaceSettingsUsersTab({
       email: invitation.email,
     }));
 
-    return [...memberRows, ...invitationRows].sort(
-      (left, right) => new Date(left.joinedAt).getTime() - new Date(right.joinedAt).getTime(),
-    );
+    return sortUserRows([...memberRows, ...invitationRows]);
   }, [members, invitations]);
 
   const filteredRows = useMemo(() => {
@@ -288,8 +434,8 @@ export function WorkspaceSettingsUsersTab({
   }
 
   return (
-    <div className="space-y-8">
-      <div className="space-y-4">
+    <>
+      <WorkspaceSettingsCard title={t("cardTitle")}>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="relative w-full sm:max-w-sm">
             <Search
@@ -324,44 +470,118 @@ export function WorkspaceSettingsUsersTab({
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-xl border border-border/60 bg-card">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("columns.member")}</TableHead>
-                <TableHead>{t("columns.role")}</TableHead>
-                <TableHead>{t("columns.status")}</TableHead>
-                <TableHead>{t("columns.joined")}</TableHead>
-                {isOwner ? <TableHead className="w-[52px]" /> : null}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredRows.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={isOwner ? 5 : 4}
-                    className="py-10 text-center text-muted-foreground"
-                  >
-                    {t("emptyMembers")}
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredRows.map((row) => {
-                  if (row.kind === "member") {
-                    const canRemove = isOwner && row.userId !== ownerUserId;
+        {filteredRows.length === 0 ? (
+          <p className="py-8 text-center text-sm text-muted-foreground">{t("emptyMembers")}</p>
+        ) : (
+          <>
+            <div className="space-y-3 md:hidden">
+              {filteredRows.map((row) => (
+                <WorkspaceUserMobileCard
+                  key={`${row.kind}-${row.id}`}
+                  row={row}
+                  locale={locale}
+                  isOwner={isOwner}
+                  ownerUserId={ownerUserId}
+                  isPending={isPending}
+                  t={t}
+                  onRemove={setMemberToRemove}
+                  onRevoke={handleRevoke}
+                />
+              ))}
+            </div>
+
+            <div className="hidden overflow-hidden rounded-xl border border-border/60 md:block">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t("columns.member")}</TableHead>
+                    <TableHead>{t("columns.role")}</TableHead>
+                    <TableHead>{t("columns.status")}</TableHead>
+                    <TableHead>{t("columns.joined")}</TableHead>
+                    {isOwner ? <TableHead className="w-[52px]" /> : null}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredRows.map((row) => {
+                    if (row.kind === "member") {
+                      const canRemove = isOwner && row.userId !== ownerUserId;
+
+                      return (
+                        <TableRow key={`member-${row.id}`}>
+                          <TableCell>
+                            <div className="flex items-center gap-3">
+                              <UserAvatar
+                                imageUrl={row.avatarUrl}
+                                avatarPreset={row.avatarPreset}
+                                size={36}
+                              />
+                              <div className="min-w-0">
+                                <p className="truncate font-medium">{row.displayName}</p>
+                                <p className="truncate text-xs text-muted-foreground">{row.email}</p>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <RolePill role={row.role} label={t(`roles.${row.role}`)} />
+                          </TableCell>
+                          <TableCell>
+                            <StatusBadge status="active" label={t("status.active")} />
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">
+                            {formatDate(row.joinedAt, locale, {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })}
+                          </TableCell>
+                          {isOwner ? (
+                            <TableCell>
+                              {canRemove ? (
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon-sm"
+                                      disabled={isPending}
+                                      aria-label={t("columns.actions")}
+                                    >
+                                      <MoreHorizontal className="size-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem
+                                      variant="destructive"
+                                      onClick={() =>
+                                        setMemberToRemove({
+                                          userId: row.userId,
+                                          name: row.displayName,
+                                        })
+                                      }
+                                    >
+                                      {t("remove")}
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              ) : null}
+                            </TableCell>
+                          ) : null}
+                        </TableRow>
+                      );
+                    }
 
                     return (
-                      <TableRow key={`member-${row.id}`}>
+                      <TableRow key={`invitation-${row.id}`}>
                         <TableCell>
                           <div className="flex items-center gap-3">
-                            <UserAvatar
-                              imageUrl={row.avatarUrl}
-                              avatarPreset={row.avatarPreset}
-                              size={36}
-                            />
+                            <PendingAvatar email={row.email} />
                             <div className="min-w-0">
-                              <p className="truncate font-medium">{row.displayName}</p>
-                              <p className="truncate text-xs text-muted-foreground">{row.email}</p>
+                              <p className="truncate font-medium text-muted-foreground">
+                                {row.email}
+                              </p>
+                              <p className="truncate text-xs text-muted-foreground">
+                                {t("status.pendingHint")}
+                              </p>
                             </div>
                           </div>
                         </TableCell>
@@ -369,7 +589,7 @@ export function WorkspaceSettingsUsersTab({
                           <RolePill role={row.role} label={t(`roles.${row.role}`)} />
                         </TableCell>
                         <TableCell>
-                          <StatusBadge status="active" label={t("status.active")} />
+                          <StatusBadge status="pending" label={t("status.pending")} />
                         </TableCell>
                         <TableCell className="text-muted-foreground">
                           {formatDate(row.joinedAt, locale, {
@@ -380,163 +600,109 @@ export function WorkspaceSettingsUsersTab({
                         </TableCell>
                         {isOwner ? (
                           <TableCell>
-                            {canRemove ? (
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="icon-sm"
-                                    disabled={isPending}
-                                    aria-label={t("columns.actions")}
-                                  >
-                                    <MoreHorizontal className="size-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem
-                                    variant="destructive"
-                                    onClick={() =>
-                                      setMemberToRemove({
-                                        userId: row.userId,
-                                        name: row.displayName,
-                                      })
-                                    }
-                                  >
-                                    {t("remove")}
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            ) : null}
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon-sm"
+                                  disabled={isPending}
+                                  aria-label={t("columns.actions")}
+                                >
+                                  <MoreHorizontal className="size-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => handleRevoke(row.id)}>
+                                  {t("revoke")}
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </TableCell>
                         ) : null}
                       </TableRow>
                     );
-                  }
-
-                  return (
-                    <TableRow key={`invitation-${row.id}`}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <PendingAvatar email={row.email} />
-                          <div className="min-w-0">
-                            <p className="truncate font-medium text-muted-foreground">
-                              {row.email}
-                            </p>
-                            <p className="truncate text-xs text-muted-foreground">
-                              {t("status.pendingHint")}
-                            </p>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <RolePill role={row.role} label={t(`roles.${row.role}`)} />
-                      </TableCell>
-                      <TableCell>
-                        <StatusBadge status="pending" label={t("status.pending")} />
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {formatDate(row.joinedAt, locale, {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}
-                      </TableCell>
-                      {isOwner ? (
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon-sm"
-                                disabled={isPending}
-                                aria-label={t("columns.actions")}
-                              >
-                                <MoreHorizontal className="size-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => handleRevoke(row.id)}>
-                                {t("revoke")}
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      ) : null}
-                    </TableRow>
-                  );
-                })
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-
-      <div>
-        <h2 className="text-base font-semibold tracking-tight">{t("inviteTitle")}</h2>
-        {canInviteMembers ? (
-          <>
-            <p className="mt-1 text-sm text-muted-foreground">{t("inviteDescription")}</p>
-
-            <form onSubmit={handleInvite} className="mt-4 space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="workspace-invite-email">{t("emailLabel")}</Label>
-                <Input
-                  id="workspace-invite-email"
-                  type="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  placeholder={t("emailPlaceholder")}
-                  required
-                  disabled={isPending}
-                  className="h-11 rounded-xl"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="workspace-invite-role">{t("roleLabel")}</Label>
-                <select
-                  id="workspace-invite-role"
-                  value={inviteRole}
-                  onChange={(event) => setInviteRole(event.target.value as InviteRole)}
-                  disabled={isPending}
-                  className={selectClassName}
-                >
-                  {INVITE_ROLES.map((nextRole) => (
-                    <option key={nextRole} value={nextRole}>
-                      {t(`roles.${nextRole}`)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {error ? (
-                <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-                  {error}
-                </p>
-              ) : null}
-
-              <Button type="submit" className="gap-2 rounded-lg" disabled={isPending}>
-                <UserPlus className="size-4" aria-hidden />
-                {isPending ? t("inviting") : t("inviteSubmit")}
-              </Button>
-            </form>
+                  })}
+                </TableBody>
+              </Table>
+            </div>
           </>
-        ) : (
-          <div className="mt-4 rounded-xl border border-border/60 bg-muted/20 px-4 py-4">
-            <p className="text-sm text-muted-foreground">{t("inviteUpgradeDescription")}</p>
-            {billingHref ? (
-              <Link
-                href={billingHref}
-                className="mt-3 inline-flex text-sm font-medium text-primary underline-offset-4 hover:underline"
-              >
-                {t("inviteUpgradeCta")}
-              </Link>
-            ) : null}
-          </div>
         )}
-      </div>
+
+        <div className="space-y-4 border-t border-border/60 pt-6">
+          <div className="flex items-start gap-3">
+            <div className="mt-0.5 rounded-lg bg-muted/50 p-2">
+              <UserPlus className="size-4 text-muted-foreground" aria-hidden />
+            </div>
+            <div className="min-w-0 flex-1 space-y-1">
+              <h3 className="text-base font-semibold tracking-tight">{t("inviteTitle")}</h3>
+              {canInviteMembers ? (
+                <p className="text-sm text-muted-foreground">{t("inviteDescription")}</p>
+              ) : null}
+            </div>
+          </div>
+
+          {canInviteMembers ? (
+            <>
+              <form onSubmit={handleInvite} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="workspace-invite-email">{t("emailLabel")}</Label>
+                  <Input
+                    id="workspace-invite-email"
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder={t("emailPlaceholder")}
+                    required
+                    disabled={isPending}
+                    className="h-11 rounded-xl"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="workspace-invite-role">{t("roleLabel")}</Label>
+                  <select
+                    id="workspace-invite-role"
+                    value={inviteRole}
+                    onChange={(event) => setInviteRole(event.target.value as InviteRole)}
+                    disabled={isPending}
+                    className={selectClassName}
+                  >
+                    {INVITE_ROLES.map((nextRole) => (
+                      <option key={nextRole} value={nextRole}>
+                        {t(`roles.${nextRole}`)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {error ? (
+                  <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                    {error}
+                  </p>
+                ) : null}
+
+                <Button type="submit" className="gap-2 rounded-lg" disabled={isPending}>
+                  <UserPlus className="size-4" aria-hidden />
+                  {isPending ? t("inviting") : t("inviteSubmit")}
+                </Button>
+              </form>
+            </>
+          ) : (
+            <div className="rounded-xl border border-border/60 bg-muted/20 px-4 py-4">
+              <p className="text-sm text-muted-foreground">{t("inviteUpgradeDescription")}</p>
+              {billingHref ? (
+                <Link
+                  href={billingHref}
+                  className="mt-3 inline-flex text-sm font-medium text-primary underline-offset-4 hover:underline"
+                >
+                  {t("inviteUpgradeCta")}
+                </Link>
+              ) : null}
+            </div>
+          )}
+        </div>
+      </WorkspaceSettingsCard>
 
       {memberToRemove ? (
         <RemoveWorkspaceMemberDialog
@@ -552,6 +718,6 @@ export function WorkspaceSettingsUsersTab({
           locale={locale}
         />
       ) : null}
-    </div>
+    </>
   );
 }

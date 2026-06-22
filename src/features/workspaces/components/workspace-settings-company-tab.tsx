@@ -13,8 +13,8 @@ import {
 import { updateWorkspaceCompanyProfileAction } from "@/features/workspaces/server/actions";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
+import { WorkspaceSettingsCard } from "@/features/workspaces/components/workspace-settings-card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 const textareaClassName = cn(
@@ -104,11 +104,7 @@ export function WorkspaceSettingsCompanyTab({
 
   return (
     <form onSubmit={handleSubmit}>
-      <Card>
-        <CardHeader className="border-b">
-          <CardTitle>{tTabs("company")}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6 pt-6">
+      <WorkspaceSettingsCard title={tTabs("company")}>
           <div className="space-y-2">
             <CompanyProfileFieldLabel htmlFor="workspace-company-address" icon={MapPin}>
               {t("addressLabel")}
@@ -182,11 +178,10 @@ export function WorkspaceSettingsCompanyTab({
             <p className="text-sm text-muted-foreground">{t("saved")}</p>
           ) : null}
 
-          <Button type="submit" className="rounded-lg" disabled={isPending}>
+          <Button type="submit" className="w-full rounded-lg sm:w-auto" disabled={isPending}>
             {isPending ? tSettings("saving") : tSettings("save")}
           </Button>
-        </CardContent>
-      </Card>
+      </WorkspaceSettingsCard>
     </form>
   );
 }

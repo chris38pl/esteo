@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { WorkspaceSettingsCard } from "@/features/workspaces/components/workspace-settings-card";
 import { claimReferralAction } from "@/features/referrals/server/referral-actions";
 import type { WorkspaceReferralClaimView } from "@/features/referrals/server/get-workspace-referral-claim-view";
 import { formatDate } from "@/i18n/formatters";
@@ -21,7 +22,7 @@ type Props = {
   referralClaim: WorkspaceReferralClaimView | null;
 };
 
-function ReferralClaimedCard({
+function ReferralClaimedContent({
   claim,
   locale,
   workspaceSlug,
@@ -35,13 +36,12 @@ function ReferralClaimedCard({
     claim.referrerName?.trim() || claim.referrerEmail;
 
   return (
-    <section className="space-y-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-5">
+    <div className="space-y-4">
       <div className="flex items-start gap-3">
         <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-emerald-500/25 bg-emerald-500/10">
           <Handshake className="size-4 text-emerald-600 dark:text-emerald-400" aria-hidden />
         </div>
         <div className="min-w-0 space-y-1">
-          <h2 className="text-base font-medium">{t("title")}</h2>
           <p className="text-sm text-muted-foreground">{t("description")}</p>
         </div>
       </div>
@@ -69,7 +69,7 @@ function ReferralClaimedCard({
       <p className="text-sm text-muted-foreground">{t("benefitHint")}</p>
 
       {!claim.hasPaidSubscription ? (
-        <div className="space-y-2 border-t border-emerald-500/15 pt-4">
+        <div className="space-y-2 border-t border-border/60 pt-4">
           <p className="text-sm text-emerald-800 dark:text-emerald-200">{t("statusAwaitingPayment")}</p>
           <Button type="button" variant="outline" size="sm" asChild>
             <Link href={dashboardBillingPlansHref(locale, workspaceSlug)}>{t("viewPlans")}</Link>
@@ -78,7 +78,7 @@ function ReferralClaimedCard({
       ) : (
         <p className="text-sm text-emerald-700 dark:text-emerald-300">{t("statusActive")}</p>
       )}
-    </section>
+    </div>
   );
 }
 
@@ -94,46 +94,54 @@ export function ReferralClaimSettingsSection({
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  if (referralClaim) {
-    return (
-      <ReferralClaimedCard claim={referralClaim} locale={locale} workspaceSlug={workspaceSlug} />
-    );
-  }
-
-  function submit() {
-    setError(null);
-    startTransition(async () => {
-      const result = await claimReferralAction(
-        { workspaceId, workspaceSlug, emailOrCode: value.trim() },
-        locale,
-      );
-      if (result.success) {
-        setValue("");
-        router.refresh();
-      } else {
-        const code = result.code as keyof typeof import("@/messages/pl/referrals.json")["claim"]["errors"] | undefined;
-        setError(code ? t(`errors.${code}`) : result.error ?? t("errors.NOT_FOUND"));
-      }
-    });
-  }
-
   return (
-    <section className="space-y-3 rounded-xl border p-5">
-      <h2 className="text-base font-medium">{t("title")}</h2>
-      <p className="text-sm text-muted-foreground">{t("description")}</p>
-      <p className="text-xs text-muted-foreground">{t("windowHint")}</p>
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <Input
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          placeholder={t("placeholder")}
-          disabled={pending}
+    <WorkspaceSettingsCard title={t("title")}>
+      {referralClaim ? (
+        <ReferralClaimedContent
+          claim={referralClaim}
+          locale={locale}
+          workspaceSlug={workspaceSlug}
         />
-        <Button type="button" onClick={submit} disabled={pending || !value.trim()}>
-          {t("submit")}
-        </Button>
-      </div>
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
-    </section>
+      ) : (
+        <div className="space-y-4">
+          <p className="text-sm text-muted-foreground">{t("description")}</p>
+          <p className="text-xs text-muted-foreground">{t("windowHint")}</p>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Input
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              placeholder={t("placeholder")}
+              disabled={pending}
+              className="h-11 rounded-xl"
+            />
+            <Button
+              type="button"
+              onClick={() => {
+                setError(null);
+                startTransition(async () => {
+                  const result = await claimReferralAction(
+                    { workspaceId, workspaceSlug, emailOrCode: value.trim() },
+                    locale,
+                  );
+                  if (result.success) {
+                    setValue("");
+                    router.refresh();
+                  } else {
+                    const code = result.code as
+                      | keyof typeof import("@/messages/pl/referrals.json")["claim"]["errors"]
+                      | undefined;
+                    setError(code ? t(`errors.${code}`) : result.error ?? t("errors.NOT_FOUND"));
+                  }
+                });
+              }}
+              disabled={pending || !value.trim()}
+            >
+              {t("submit")}
+            </Button>
+          </div>
+          {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        </div>
+      )}
+    </WorkspaceSettingsCard>
   );
 }

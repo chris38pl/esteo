@@ -152,6 +152,7 @@
   "settings": {
     "title": "Ustawienia przestrzeni",
     "description": "Zmień nazwę, motyw wyglądu i krótki opis firmy. Te informacje są widoczne w aplikacji i używane przez AI przy wycenach oraz odpowiedziach.",
+    "tabLoading": "Ładowanie zakładki…",
     "nameLabel": "Nazwa przestrzeni",
     "appearanceLabel": "Motyw wyglądu",
     "save": "Zapisz zmiany",
@@ -159,11 +160,18 @@
     "saved": "Zmiany zapisane.",
     "logo": {
       "label": "Logo firmy",
+      "settingsSubtitle": "Wyświetlane w aplikacji i materiałach.",
       "hint": "PNG, JPG lub WebP, maks. 2 MB. Najlepiej kwadratowe tło lub przezroczyste.",
       "hintShort": "PNG, JPG lub WebP. Maks. 2 MB.",
+      "addLogo": "Dodaj logo",
+      "previewLabel": "Podgląd",
+      "uploadedStatus": "Logo zostało dodane",
+      "formatRecommendation": "Zalecany format: kwadrat (1:1). Logo będzie wyświetlane w rozmiarze do 128px.",
+      "fileMeta": "{format} • {size} {dimensions}",
       "dropHint": "Upuść plik tutaj lub wybierz z dysku",
       "upload": "Wgraj logo",
       "change": "Zmień logo",
+      "changeShort": "Zmień",
       "remove": "Usuń logo",
       "removeShort": "Usuń",
       "uploading": "Wgrywanie… {percent}%",
@@ -184,6 +192,7 @@
       "users": "Użytkownicy",
       "referral": "Program partnerski",
       "rules": "Reguły",
+      "more": "Więcej zakładek",
       "companyDescription": "Dane firmy widoczne na dokumentach dla klienta — adres, NIP, kontakt.",
       "usersDescription": "Zarządzaj członkami przestrzeni i zaproszeniami do współpracy.",
       "referralDescription": "Wpisz kod lub e-mail polecającego, aby skorzystać z programu partnerskiego.",
@@ -192,7 +201,14 @@
     "basicInfo": {
       "title": "Informacje podstawowe",
       "nameHint": "Nazwa wyświetlana w aplikacji.",
-      "accentHint": "Kolor akcentu stosowany w interfejsie przestrzeni."
+      "accentHint": "Kolor akcentu widoczny w podglądzie przestrzeni na pasku bocznym."
+    },
+    "management": {
+      "title": "Zarządzanie przestrzenią"
+    },
+    "subscriptionBlock": {
+      "title": "Najpierw anuluj subskrypcję",
+      "activeUntilLabel": "Subskrypcja pozostanie aktywna do:"
     },
     "aiSetup": {
       "title": "Konfiguracja AI",
@@ -235,7 +251,7 @@
       }
     },
     "users": {
-      "membersTitle": "Członkowie",
+      "cardTitle": "Użytkownicy",
       "membersDescription": "Osoby z dostępem do tej przestrzeni.",
       "pendingTitle": "Oczekujące zaproszenia",
       "inviteTitle": "Zaproś użytkownika",
