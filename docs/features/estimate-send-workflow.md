@@ -142,6 +142,26 @@ EMAIL_USE_PRODUCTION_FROM=true
 
 Reply-To is the workspace company email when configured, otherwise the sending user’s email — not `EMAIL_FROM`. See `resolveReplyToEmail` in `resend-client.ts`.
 
+### Staging / Preview troubleshooting (#35)
+
+When a send is **dequeued** in Trigger but never completes on Vercel Preview (staging), verify infrastructure before changing app code.
+
+| Where | Variables |
+| --- | --- |
+| **Vercel Preview** | `TRIGGER_PROJECT_ID`, `TRIGGER_SECRET_KEY` (project **Esteo-Staging**) |
+| **Trigger.dev → Esteo-Staging → Production** | `DATABASE_URL` (Neon staging), `RESEND_API_KEY`, `EMAIL_FROM` |
+| **Trigger deploy** | Task `send-estimate-to-customer` deployed from branch `staging` |
+
+**Diagnosis:**
+
+1. Trigger dashboard → run for `sendId` → note failure at `GENERATING_PDF` vs `SENDING`.
+2. DB: `EstimateVersionSend.transportStatus`, `errorMessage`, `triggerRunId`.
+3. Retry send **without** PDF attachment to isolate Chromium/PDF worker issues.
+
+The client surfaces `errorMessage` via the send toast (`formatEstimateSendErrorMessage`). Common Resend failures (unverified domain, sandbox recipient limits) are mapped to Polish hints in `src/features/estimates/lib/format-estimate-send-error.ts`.
+
+Incidents: [Trigger + Vercel Preview](../incidents/2026-06-08-trigger-dev-vercel-preview.md), [PDF Chromium on worker](../incidents/2026-06-10-estimate-pdf-chromium-trigger-worker.md).
+
 ---
 
 ## Permissions

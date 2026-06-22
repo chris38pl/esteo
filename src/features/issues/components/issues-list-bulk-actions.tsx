@@ -3,7 +3,7 @@
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
-import { toast } from "sonner";
+import { appToast } from "@/components/ui/app-toast";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -46,13 +46,13 @@ export function IssuesListBulkActions({
       );
 
       if (!result.success) {
-        toast.error(result.error);
+        appToast.error(result.error);
         return;
       }
 
       onStatusUpdated(selectedNumbers, status);
       onClearSelection();
-      toast.success(
+      appToast.success(
         t("list.bulk.statusUpdated", { count: result.data.updatedCount }),
       );
     });

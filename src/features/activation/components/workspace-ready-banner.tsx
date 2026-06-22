@@ -2,7 +2,7 @@
 
 import { FileText, Mail, PartyPopper, X } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import {
@@ -78,6 +78,7 @@ export function WorkspaceReadyBanner({
   preview = false,
 }: WorkspaceReadyBannerProps) {
   const t = useTranslations("activation.workspaceReady");
+  const [isDismissed, setIsDismissed] = useState(false);
 
   useEffect(() => {
     if (preview) {
@@ -90,6 +91,7 @@ export function WorkspaceReadyBanner({
   }, [preview, workspaceSlug]);
 
   function dismiss(reason: "close" | "cta" = "close") {
+    setIsDismissed(true);
     if (!preview) {
       markWorkspaceReadySeen(workspaceSlug);
       trackActivationEvent(ActivationAnalyticsEvents.workspaceReadyDismissed, {
@@ -122,6 +124,10 @@ export function WorkspaceReadyBanner({
     onCopyFormLink();
   }
 
+  if (isDismissed && !preview) {
+    return null;
+  }
+
   return (
     <div
       className={cn(
@@ -132,8 +138,11 @@ export function WorkspaceReadyBanner({
     >
       <button
         type="button"
-        onClick={() => dismiss("close")}
-        className="absolute right-2 top-2 z-10 inline-flex min-h-11 min-w-11 touch-manipulation items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-violet-500/10 hover:text-foreground dark:hover:bg-white/5 dark:hover:text-card-foreground"
+        onPointerUp={(event) => {
+          event.stopPropagation();
+          dismiss("close");
+        }}
+        className="absolute right-2 top-2 z-20 inline-flex min-h-11 min-w-11 touch-manipulation items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-violet-500/10 hover:text-foreground dark:hover:bg-white/5 dark:hover:text-card-foreground"
         aria-label={t("dismiss")}
       >
         <X className="size-4" />

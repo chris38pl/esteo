@@ -76,6 +76,8 @@ export function CompanyProfileCompletionModal({
   const [companyTaxId, setCompanyTaxId] = useState(initialProfile.taxId ?? "");
   const [companyEmail, setCompanyEmail] = useState(initialProfile.email ?? "");
   const [companyPhone, setCompanyPhone] = useState(initialProfile.phone ?? "");
+  const [logoStorageKey, setLogoStorageKey] = useState(initialProfile.logoStorageKey);
+  const [logoUrl, setLogoUrl] = useState(initialLogoUrl);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -119,7 +121,8 @@ export function CompanyProfileCompletionModal({
         taxId: initialProfile.taxId,
         email: initialProfile.email,
         phone: initialProfile.phone,
-        logoStorageKey: initialProfile.logoStorageKey,
+        logoStorageKey,
+        logoUrl,
       });
 
       const result = await updateWorkspaceCompanyProfileAction(
@@ -138,7 +141,8 @@ export function CompanyProfileCompletionModal({
         taxId: parsed.data.companyTaxId,
         email: parsed.data.companyEmail,
         phone: parsed.data.companyPhone,
-        logoStorageKey: initialProfile.logoStorageKey,
+        logoStorageKey,
+        logoUrl,
       };
 
       onProfileUpdated(nextProfile);
@@ -180,12 +184,34 @@ export function CompanyProfileCompletionModal({
             </div>
           ) : null}
 
-          <WorkspaceLogoField
-            workspaceId={workspaceId}
-            initialLogoUrl={initialLogoUrl}
-            locale={locale}
-            variant="settings"
-          />
+          {missingFields.includes("logo") ? (
+            <WorkspaceLogoField
+              workspaceId={workspaceId}
+              initialLogoUrl={logoUrl}
+              locale={locale}
+              variant="settings"
+              onLogoUpdated={({ logoUrl: nextLogoUrl, logoStorageKey: nextLogoStorageKey }) => {
+                setLogoUrl(nextLogoUrl);
+                setLogoStorageKey(nextLogoStorageKey);
+                onProfileUpdated({
+                  address: companyAddress.trim() || null,
+                  taxId: companyTaxId.trim() || null,
+                  email: companyEmail.trim() || null,
+                  phone: companyPhone.trim() || null,
+                  logoStorageKey: nextLogoStorageKey,
+                  logoUrl: nextLogoUrl,
+                });
+              }}
+            />
+          ) : logoUrl ? (
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-foreground">{t("fields.logo")}</p>
+              <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-xl border border-border/60 bg-muted/30">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={logoUrl} alt="" className="max-h-full max-w-full object-contain" />
+              </div>
+            </div>
+          ) : null}
 
           <div className="space-y-2">
             <CompanyProfileFieldLabel htmlFor="activation-company-address" icon={MapPin}>

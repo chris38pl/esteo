@@ -90,6 +90,7 @@ export function buildEstimateAgentPrompt(input: EstimateAgentPromptInput): strin
         .join("\n\n");
 
   const blocks = [
+    `## Response locale\nUser interface locale: ${locale === "pl" ? "Polish (pl)" : "English (en)"}. All reasoning and labels must match this locale.`,
     industryBlock,
     contextBlock,
     formatFinancialSnapshotBlock(input.agentContext),

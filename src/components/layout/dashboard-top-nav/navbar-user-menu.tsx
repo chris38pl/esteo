@@ -199,10 +199,44 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
             <div className="px-4 pt-2 pb-1">
               <MenuSectionLabel>{t("activeWorkspace")}</MenuSectionLabel>
 
+              <div className="mt-1 md:hidden">
+                <div className="flex items-center gap-2.5 rounded-lg px-1 py-2">
+                  <WorkspaceAvatar
+                    name={activeWorkspace.name}
+                    logoUrl={activeWorkspace.logoUrl}
+                    size={36}
+                    className="rounded-lg ring-0"
+                  />
+                  <span className="min-w-0 flex-1 truncate text-left text-sm font-semibold text-foreground">
+                    {activeWorkspace.name}
+                  </span>
+                </div>
+                <div className="max-h-48 space-y-0.5 overflow-y-auto rounded-lg border border-border/60 bg-muted/20 p-1">
+                  {workspaces.map((workspace) => (
+                    <DropdownMenuItem
+                      key={workspace.id}
+                      className="gap-2.5 text-sm"
+                      onSelect={() => switchWorkspace(workspace.slug)}
+                    >
+                      <WorkspaceAvatar
+                        name={workspace.name}
+                        logoUrl={workspace.logoUrl}
+                        size={24}
+                        className="rounded-md ring-0"
+                      />
+                      <span className="min-w-0 flex-1 truncate">{workspace.name}</span>
+                      {workspace.id === activeWorkspace.id ? (
+                        <Check className="size-4 shrink-0 text-primary" strokeWidth={2} />
+                      ) : null}
+                    </DropdownMenuItem>
+                  ))}
+                </div>
+              </div>
+
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger
                   className={cn(
-                    "mt-1 h-auto w-full rounded-lg px-1 py-0.5",
+                    "mt-1 hidden h-auto w-full rounded-lg px-1 py-0.5 md:flex",
                     "focus:bg-accent/40 data-[state=open]:bg-accent/40",
                     "[&>svg:last-child]:hidden",
                   )}

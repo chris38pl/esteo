@@ -47,6 +47,7 @@ export function buildEstimateDraftPrompt(input: EstimateDraftPromptInput): strin
   if (isServiceWorkspace(input.context.industry)) {
     const servicePrinciples = SERVICE_ESTIMATION_PRINCIPLES[locale];
     const blocks = [
+      `## Response locale\nUser interface locale: ${locale === "pl" ? "Polish (pl)" : "English (en)"}. All section titles and line item names must match this locale.`,
       formatCompanyContextBlock(input.context.companyDescription),
       formatGeneralAiInstructionsBlock(input.context.aiInstructions),
       buildWorkspacePromptFromRules(input.context.rules),
@@ -68,6 +69,7 @@ export function buildEstimateDraftPrompt(input: EstimateDraftPromptInput): strin
   );
 
   const blocks = [
+    `## Response locale\nUser interface locale: ${locale === "pl" ? "Polish (pl)" : "English (en)"}. All section titles and line item names must match this locale.`,
     formatIndustryRoleBlock(profile.role),
     formatEstimationPrinciplesBlock(profile.estimationPrinciples),
     formatCompanyContextBlock(input.context.companyDescription),

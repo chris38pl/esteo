@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { enUS, pl } from "date-fns/locale";
+import { Check } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import type { NotificationType } from "@prisma/client";
@@ -67,33 +68,50 @@ export function NotificationItem({
         isActionRequired && "bg-destructive/5",
       )}
     >
-      <Link
-        href={item.href}
-        onClick={handleNavigate}
-        className="group block space-y-1.5 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        <div className="flex items-start gap-2">
-          <span
-            className={cn(
-              "mt-1.5 size-2 shrink-0 rounded-full",
-              isUnread ? "bg-primary" : "bg-transparent",
-            )}
-            aria-hidden
-          />
-          <div className="min-w-0 flex-1 space-y-1">
-            <p className="text-sm leading-snug text-foreground group-hover:underline">{body}</p>
-            {item.workspaceName ? (
-              <p className="text-xs text-muted-foreground">{item.workspaceName}</p>
-            ) : null}
-            <p className="text-xs text-muted-foreground">
-              {formatDistanceToNow(new Date(item.createdAt), {
-                addSuffix: true,
-                locale: locale === "pl" ? pl : enUS,
-              })}
-            </p>
+      <div className="flex items-start gap-1">
+        <Link
+          href={item.href}
+          onClick={handleNavigate}
+          className="group min-w-0 flex-1 space-y-1.5 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <div className="flex items-start gap-2">
+            <span
+              className={cn(
+                "mt-1.5 size-2 shrink-0 rounded-full",
+                isUnread ? "bg-primary" : "bg-transparent",
+              )}
+              aria-hidden
+            />
+            <div className="min-w-0 flex-1 space-y-1">
+              <p className="text-sm leading-snug text-foreground group-hover:underline">{body}</p>
+              {item.workspaceName ? (
+                <p className="text-xs text-muted-foreground">{item.workspaceName}</p>
+              ) : null}
+              <p className="text-xs text-muted-foreground">
+                {formatDistanceToNow(new Date(item.createdAt), {
+                  addSuffix: true,
+                  locale: locale === "pl" ? pl : enUS,
+                })}
+              </p>
+            </div>
           </div>
-        </div>
-      </Link>
+        </Link>
+
+        {isUnread ? (
+          <button
+            type="button"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onMarkRead(item.id);
+            }}
+            className="inline-flex min-h-11 min-w-11 shrink-0 touch-manipulation items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
+            aria-label={t("actions.markAsRead")}
+          >
+            <Check className="size-4" aria-hidden />
+          </button>
+        ) : null}
+      </div>
 
       {useInvitationActions ? (
         <NotificationInvitationActions

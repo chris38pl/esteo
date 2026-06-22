@@ -171,7 +171,7 @@ export function IssueFormSelect<T extends string>({
           >
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="z-[90]">
             {options.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}

@@ -42,7 +42,7 @@ export function AppToast({
   return (
     <div
       className={cn(
-        "relative w-full overflow-hidden rounded-xl border bg-popover text-popover-foreground shadow-lg",
+        "relative w-full overflow-hidden rounded-xl border bg-popover text-popover-foreground shadow-lg pointer-events-auto",
         "ring-1 ring-black/5 dark:ring-white/5",
         config.borderClassName,
         className,

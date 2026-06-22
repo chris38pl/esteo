@@ -152,6 +152,7 @@ export function formatOutputRulesBlock(locale: "pl" | "en"): string {
   if (locale === "en") {
     return [
       "## Output Rules",
+      "CRITICAL: Every user-visible string in your response MUST be in English (en). Never mix languages.",
       "- Return only structured JSON (sections with title and items).",
       "- Every line item must be justified by scope or standard industry practice.",
       "- section.title: use titles from Estimate Structure when possible.",
@@ -166,6 +167,7 @@ export function formatOutputRulesBlock(locale: "pl" | "en"): string {
 
   return [
     "## Output Rules",
+    "CRITICAL: Każdy tekst widoczny dla użytkownika MUSI być po polsku (pl). Nie mieszaj języków.",
     "- Zwróć wyłącznie structured JSON (sekcje z title i items).",
     "- Każda pozycja musi być uzasadniona zakresem lub standardem branżowym.",
     "- section.title: używaj tytułów z Estimate Structure, gdy to możliwe.",

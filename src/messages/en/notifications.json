@@ -14,7 +14,8 @@
     "extendPlan": "Extend plan",
     "manageBilling": "Manage billing",
     "retryOrConvert": "Review request",
-    "viewRequest": "View request"
+    "viewRequest": "View request",
+    "markAsRead": "Mark as read"
   },
   "preferences": {
     "title": "Notification preferences",

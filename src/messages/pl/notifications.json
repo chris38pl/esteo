@@ -14,7 +14,8 @@
     "extendPlan": "Przedłuż plan",
     "manageBilling": "Zarządzaj płatnością",
     "retryOrConvert": "Przejrzyj zapytanie",
-    "viewRequest": "Zobacz zapytanie"
+    "viewRequest": "Zobacz zapytanie",
+    "markAsRead": "Oznacz jako przeczytane"
   },
   "preferences": {
     "title": "Preferencje powiadomień",

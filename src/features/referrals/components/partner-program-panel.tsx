@@ -18,6 +18,7 @@ import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { appToast } from "@/components/ui/app-toast";
 import { buildReferralLink, buildReferralShareMessage } from "@/features/referrals/lib/referral-share-templates";
 import { REFERRAL_INVITE_HERO_IMAGES } from "@/features/referrals/lib/referral-hero-images";
 import type { ReferralPayoutStatusKey } from "@/features/referrals/lib/referral-payout-status";
@@ -152,6 +153,7 @@ function CopyRow({
   copiedLabel,
   disabled,
   mono = true,
+  pasteable = false,
 }: {
   label: string;
   value: string;
@@ -159,12 +161,25 @@ function CopyRow({
   copiedLabel: string;
   disabled?: boolean;
   mono?: boolean;
+  pasteable?: boolean;
 }) {
   return (
     <div className="space-y-1">
       <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
       <div className={COPY_FIELD_CLASS}>
-        <span className={cn(COPY_VALUE_CLASS, mono && "font-mono")}>{value}</span>
+        {pasteable ? (
+          <Input
+            readOnly
+            value={value}
+            onFocus={(event) => event.target.select()}
+            className={cn(
+              "h-8 min-w-0 flex-1 border-0 bg-transparent px-0 text-xs shadow-none focus-visible:ring-0",
+              mono && "font-mono",
+            )}
+          />
+        ) : (
+          <span className={cn(COPY_VALUE_CLASS, mono && "font-mono")}>{value}</span>
+        )}
         <CopyIconButton
           value={value}
           copyLabel={copyLabel}
@@ -407,6 +422,7 @@ export function PartnerProgramPanel({
       if (result.success) {
         setClaimSuccess(true);
         setClaimInput("");
+        appToast.success(t("claim.success"));
       } else {
         const code = result.code as keyof typeof import("@/messages/pl/referrals.json")["claim"]["errors"] | undefined;
         setClaimError(code ? t(`claim.errors.${code}`) : result.error ?? t("claim.errors.NOT_FOUND"));
@@ -515,6 +531,7 @@ export function PartnerProgramPanel({
             copiedLabel={t("share.copied")}
             disabled={!canGenerateReferrals}
             mono={false}
+            pasteable
           />
         </div>
       </section>
@@ -673,6 +690,10 @@ export function PartnerProgramPanel({
               onChange={(e) => setClaimInput(e.target.value)}
               placeholder={t("claim.placeholder")}
               disabled={pending}
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              autoCapitalize="none"
             />
             <Button type="button" onClick={handleClaimSubmit} disabled={pending || !claimInput.trim()}>
               {t("claim.submit")}

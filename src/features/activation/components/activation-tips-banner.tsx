@@ -74,7 +74,7 @@ export function ActivationTipsBanner({
   const tipsPageHref = dashboardTipsHref(locale, workspaceSlug);
 
   const dismissButtonClassName =
-    "inline-flex size-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground";
+    "inline-flex min-h-11 min-w-11 shrink-0 touch-manipulation items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground";
 
   return (
     <>

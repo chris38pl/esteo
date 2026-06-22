@@ -141,7 +141,8 @@ export function useEstimateSendPolling(input: {
       finishPolling();
       completeEstimateAsyncError(
         estimateSendToastId(sendId),
-        friendlyMessage,
+        t("send.error"),
+        friendlyMessage !== t("send.error") ? friendlyMessage : undefined,
       );
       setActiveToastSendId(null);
       router.refresh();

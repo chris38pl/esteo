@@ -13,6 +13,7 @@ export type WorkspaceCompanyProfileClient = {
   email: string | null;
   phone: string | null;
   logoStorageKey: string | null;
+  logoUrl?: string | null;
 };
 
 export type WorkspaceCompanyProfileExport = WorkspaceCompanyProfileClient & {
@@ -61,6 +62,7 @@ export function serializeWorkspaceCompanyProfileClient(
     email: profile.email,
     phone: profile.phone,
     logoStorageKey: profile.logoStorageKey,
+    logoUrl: profile.logoUrl,
   };
 }
 
@@ -73,7 +75,7 @@ export function getMissingWorkspaceCompanyProfileFields(
 ): WorkspaceCompanyProfileField[] {
   const missing: WorkspaceCompanyProfileField[] = [];
 
-  if (!hasValue(profile.logoStorageKey)) {
+  if (!hasValue(profile.logoStorageKey) && !hasValue(profile.logoUrl)) {
     missing.push("logo");
   }
   if (!hasValue(profile.address)) {

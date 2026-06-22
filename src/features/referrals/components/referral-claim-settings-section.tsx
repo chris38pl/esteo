@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { appToast } from "@/components/ui/app-toast";
 import { WorkspaceSettingsCard } from "@/features/workspaces/components/workspace-settings-card";
 import { claimReferralAction } from "@/features/referrals/server/referral-actions";
 import type { WorkspaceReferralClaimView } from "@/features/referrals/server/get-workspace-referral-claim-view";
@@ -113,6 +114,10 @@ export function ReferralClaimSettingsSection({
               placeholder={t("placeholder")}
               disabled={pending}
               className="h-11 rounded-xl"
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              autoCapitalize="none"
             />
             <Button
               type="button"
@@ -125,6 +130,7 @@ export function ReferralClaimSettingsSection({
                   );
                   if (result.success) {
                     setValue("");
+                    appToast.success(t("success"));
                     router.refresh();
                   } else {
                     const code = result.code as

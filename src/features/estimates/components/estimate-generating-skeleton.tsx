@@ -115,12 +115,12 @@ export function EstimateGeneratingSkeleton({
 
       {[1, 2, 3].map((i) => (
         <div key={i} className="space-y-2">
-          <div className={cn("h-5 w-32 animate-pulse rounded bg-muted", i === 2 && "w-40")} />
+          <div className={cn("h-5 w-32 animate-pulse rounded bg-foreground/10 dark:bg-muted", i === 2 && "w-40")} />
           {[1, 2, 3].map((j) => (
             <div
               key={j}
               className={cn(
-                "h-9 animate-pulse rounded bg-muted/60",
+                "h-9 animate-pulse rounded bg-foreground/10 dark:bg-muted/60",
                 j === 1 && "w-full",
                 j === 2 && "w-11/12",
                 j === 3 && "w-10/12",

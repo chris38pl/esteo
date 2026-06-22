@@ -14,7 +14,7 @@ import type { LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition, type ReactNode } from "react";
-import { toast } from "sonner";
+import { appToast } from "@/components/ui/app-toast";
 
 import { IssuePriorityBadge } from "@/features/issues/components/issue-priority-badge";
 import { IssueStatusBadge } from "@/features/issues/components/issue-status-badge";
@@ -218,9 +218,9 @@ export function AdminIssueDetailPanel({
   async function copyText(text: string, message: string) {
     try {
       await navigator.clipboard.writeText(text);
-      toast.success(message);
+      appToast.success(message);
     } catch {
-      toast.error(t("admin.copyFailed"));
+      appToast.error(t("admin.copyFailed"));
     }
   }
 
@@ -234,13 +234,13 @@ export function AdminIssueDetailPanel({
       );
 
       if (!result.success) {
-        toast.error(result.error);
+        appToast.error(result.error);
         setStatus(toAdminIssueStatus(issue.status));
         return;
       }
 
       router.refresh();
-      toast.success(t("admin.statusUpdated"));
+      appToast.success(t("admin.statusUpdated"));
     });
   }
 

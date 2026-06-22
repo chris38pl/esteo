@@ -128,12 +128,14 @@ export function WorkspaceLogoField({
   locale,
   label,
   variant = "default",
+  onLogoUpdated,
 }: {
   workspaceId: string;
   initialLogoUrl: string | null;
   locale: Locale;
   label?: ReactNode;
   variant?: "default" | "settings";
+  onLogoUpdated?: (logo: { logoUrl: string | null; logoStorageKey: string | null }) => void;
 }) {
   const t = useTranslations("workspaces.settings.logo");
   const router = useRouter();
@@ -251,6 +253,10 @@ export function WorkspaceLogoField({
       });
       setUploadState("idle");
       setUploadProgress(null);
+      onLogoUpdated?.({
+        logoUrl: result.logoUrl,
+        logoStorageKey: result.logoStorageKey,
+      });
       router.refresh();
     } catch (uploadError) {
       setUploadState("error");
@@ -290,6 +296,7 @@ export function WorkspaceLogoField({
   function handleRemoved() {
     setLogoUrl(null);
     setFileMeta(null);
+    onLogoUpdated?.({ logoUrl: null, logoStorageKey: null });
   }
 
   const fileMetaCompact = fileMeta

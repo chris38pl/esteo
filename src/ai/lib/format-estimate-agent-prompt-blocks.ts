@@ -123,6 +123,7 @@ export function formatOutputRulesBlock(locale: "pl" | "en"): string {
   const lang = locale === "pl" ? "Polish (pl)" : "English (en)";
   return [
     "## Output rules",
+    `CRITICAL: Every user-visible string in your response MUST be in ${lang}. Never mix languages.`,
     `- Respond in language: ${lang}`,
     "- Return only a patch — do NOT return the full estimate.",
     "- Reference existing items by id when updating or deleting.",
