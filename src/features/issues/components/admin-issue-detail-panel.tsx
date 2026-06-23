@@ -100,7 +100,10 @@ import type { AvatarPreset } from "@/components/avatars/user-avatar";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
-export type AdminIssueDetailClient = Omit<AdminIssueDetail, "attachments" | "comments"> & {
+export type AdminIssueDetailClient = Omit<
+  AdminIssueDetail,
+  "attachments" | "comments" | "activityLogs"
+> & {
   attachments: Array<
     Omit<AdminIssueDetail["attachments"][number], "fileSizeBytes"> & {
       fileSizeBytes: number;
