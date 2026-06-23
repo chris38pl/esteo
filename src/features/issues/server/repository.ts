@@ -3,6 +3,8 @@ import "server-only";
 import type { Issue, IssueAttachment, IssueStatus, Prisma } from "@prisma/client";
 
 import { prisma } from "@/db/client";
+import type { IssueActivityLogRow } from "@/features/issues/server/activity-repository";
+import type { IssueCommentRow } from "@/features/issues/server/comments-repository";
 
 export type IssueWithAttachments = Issue & {
   attachments: IssueAttachment[];
@@ -10,6 +12,8 @@ export type IssueWithAttachments = Issue & {
 
 export type AdminIssueDetail = Issue & {
   attachments: IssueAttachment[];
+  comments: IssueCommentRow[];
+  activityLogs: IssueActivityLogRow[];
   reportedBy: {
     name: string | null;
     email: string;
@@ -55,6 +59,49 @@ export async function getIssueByNumber(number: number): Promise<AdminIssueDetail
     include: {
       attachments: {
         orderBy: { sortOrder: "asc" },
+      },
+      comments: {
+        orderBy: { createdAt: "asc" },
+        select: {
+          id: true,
+          issueId: true,
+          parentId: true,
+          actorType: true,
+          authorUserId: true,
+          body: true,
+          createdAt: true,
+          updatedAt: true,
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              avatarUrl: true,
+              avatarPreset: true,
+            },
+          },
+        },
+      },
+      activityLogs: {
+        orderBy: { occurredAt: "desc" },
+        select: {
+          id: true,
+          issueId: true,
+          actorType: true,
+          actorUserId: true,
+          action: true,
+          metadata: true,
+          occurredAt: true,
+          actor: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              avatarUrl: true,
+              avatarPreset: true,
+            },
+          },
+        },
       },
       reportedBy: {
         select: {
@@ -108,6 +155,24 @@ export async function updateIssueStatus(
     return await prisma.issue.update({
       where: { number },
       data: { status },
+    });
+  } catch {
+    return null;
+  }
+}
+
+export async function updateIssueDetails(
+  number: number,
+  input: {
+    title?: string;
+    description?: string;
+  },
+  tx: Prisma.TransactionClient | typeof prisma = prisma,
+): Promise<Issue | null> {
+  try {
+    return await tx.issue.update({
+      where: { number },
+      data: input,
     });
   } catch {
     return null;

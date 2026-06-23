@@ -16,3 +16,4 @@ alwaysApply: false
 - Use RHF + Zod for forms
 - Use skeletons for async loading
 - Application uses dark and light theme
+- On mobile, `Edit` flows that open an overlay should use a bottom `Sheet` with safe-area/keyboard handling instead of a centered `Dialog`, so Android browser/navigation UI does not cover the form.

@@ -1,0 +1,21 @@
+---
+description: Enforce the issue fix workflow and implementation comments
+alwaysApply: true
+---
+
+# Issue Fix Workflow
+
+When a task references internal issue numbers (for example `#12`, `issue #12`, or files under `docs/issues/`):
+
+1. Run or verify the issue sync first: `npm run sync:issues` (or a scoped sync when appropriate).
+2. Plan the fix before editing, then implement the changes.
+3. Before the final response, add one implementation comment per completed issue:
+
+```bash
+npm run issue:comment -- --issue=12 --resolve --message="Zaimplementowano: ... Testy: ..."
+```
+
+Use `--local` only when the issue came from the local database. Include `--fixed-in=...` when a preview URL, deployment id, or commit SHA is known.
+By default the script records the actor as Cursor AI; pass `--author-email=...` only when a real user should be recorded.
+
+If the comment command cannot be run, say that explicitly in the final response with the issue number and the reason. Do not mark an issue as fixed without a durable comment describing what changed.

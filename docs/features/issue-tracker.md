@@ -2,7 +2,7 @@
 
 Staging-only tool for **quick bug capture** during manual testing on Vercel Preview (or localhost). Issues are stored in the Neon **staging** database and can be analyzed in Cursor either via **Copy Cursor Prompt** in the admin panel or via the local **`sync:issues`** script.
 
-This is **not** a full ticket system — no Jira-style comments, assignees, SLA, or AI triage in v1.
+This is **not** a full ticket system — no assignees, SLA, or AI triage in v1.
 
 Related: [`scripts.md`](../../scripts.md#issue-tracker--sync-do-cursor), [`deployment.md`](../architecture/deployment.md), [`database-migrations.md`](../dev/database-migrations.md).
 
@@ -26,9 +26,12 @@ Related: [`scripts.md`](../../scripts.md#issue-tracker--sync-do-cursor), [`deplo
 | Report issue (sidebar dialog) | Any **authenticated** user when tracker is enabled |
 | Upload screenshots to own issue | Reporter only (`reportedById === user.id`) |
 | View issue list / detail | **Platform admin** or **QA tester** (`User.platformRole = QA_TESTER`) |
-| Change status OPEN ↔ RESOLVED | Platform admin or QA tester |
+| Add comments / replies | Platform admin or QA tester |
+| Edit own comments | Platform admin or QA tester |
+| Edit issue title / description | Platform admin or QA tester |
+| Change status OPEN ↔ RESOLVED | Platform admin or QA tester; `RESOLVED` requires an implementation comment |
 | Copy Cursor Prompt / Copy Issue URL | Platform admin or QA tester |
-| `sync:issues` CLI | Developer machine (reads DB + UploadThing) |
+| `sync:issues` / `issue:comment` CLI | Developer machine (reads DB + UploadThing for sync) |
 
 Guards: `src/lib/issue-tracker/guard.ts`
 
@@ -102,15 +105,25 @@ Sidebar footer → "Zgłoś błąd"
 | Route | Purpose |
 | --- | --- |
 | `/dashboard/admin/issues` | Table: #, title, type, priority, status, created |
-| `/dashboard/admin/issues/[number]` | Detail, screenshots (signed URLs), status toggle |
+| `/dashboard/admin/issues/[number]` | Detail, screenshots (signed URLs), comments, status toggle |
 
-**Status in UI v1:** `OPEN` ↔ `RESOLVED` only.
+**Status in UI v1:** `OPEN`, `ON_HOLD`, `RESOLVED`. Moving to `RESOLVED` requires a comment describing what was implemented.
 
 **Status outside UI (DB / future admin):** `IN_PROGRESS`, `ARCHIVED`.
 
 **Copy Cursor Prompt** — clipboard markdown for Cursor chat (`build-cursor-prompt.ts`).
 
 **Copy Issue URL** — deep link to admin detail on current origin (`build-issue-admin-url.ts`).
+
+**Implementation comments** — after a fix, add a durable comment per issue. CLI shortcut:
+
+```bash
+npm run issue:comment -- --issue=123 --resolve --message="Zaimplementowano: ... Testy: ..."
+```
+
+Without `--author-email` / `ISSUE_COMMENT_AUTHOR_EMAIL`, the CLI writes the comment and activity history as **Cursor AI**.
+
+**History** — issue detail has a `Pokaż: Komentarze / Historia` switch. History logs title changes, description changes, status changes, and comment add/edit/delete events with actor and timestamp.
 
 Nav: Admin sidebar → **Issue tracker** (hidden when tracker disabled).
 

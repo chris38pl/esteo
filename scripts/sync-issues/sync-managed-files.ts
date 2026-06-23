@@ -16,7 +16,22 @@ import {
   type ScreenshotCacheEntry,
 } from "./screenshot-cache";
 
-export type IssueWithAttachments = Issue & { attachments: IssueAttachment[] };
+export type IssueSyncComment = {
+  id: string;
+  parentId: string | null;
+  actorType: string;
+  body: string;
+  createdAt: Date;
+  author: {
+    name: string | null;
+    email: string;
+  } | null;
+};
+
+export type IssueWithAttachments = Issue & {
+  attachments: IssueAttachment[];
+  comments: IssueSyncComment[];
+};
 
 const MANAGED_FILE_PREFIXES = ["issue.md", "context.json", "screenshot-"];
 

@@ -3,7 +3,21 @@ import type { Issue, IssueAttachment } from "@prisma/client";
 import { parseIssueContext } from "@/features/issues/lib/issue-context";
 import { buildIssueFolderName } from "@/features/issues/lib/slugify-issue-title";
 
-export function generateIssueMarkdown(issue: Issue & { attachments: IssueAttachment[] }): string {
+type IssueMarkdownComment = {
+  id: string;
+  parentId: string | null;
+  actorType: string;
+  body: string;
+  createdAt: Date;
+  author: {
+    name: string | null;
+    email: string;
+  } | null;
+};
+
+export function generateIssueMarkdown(
+  issue: Issue & { attachments: IssueAttachment[]; comments: IssueMarkdownComment[] },
+): string {
   const context = parseIssueContext(issue.context);
   const lines = [
     `# Issue #${issue.number}`,
@@ -53,6 +67,11 @@ export function generateIssueMarkdown(issue: Issue & { attachments: IssueAttachm
     issue.attachments.forEach((attachment, index) => {
       lines.push(`- screenshot-${index + 1}.${extensionForMime(attachment.mimeType)}`);
     });
+  }
+
+  if (issue.comments.length > 0) {
+    lines.push("", "Comments:");
+    appendCommentsMarkdown(lines, issue.comments);
   }
 
   return lines.join("\n");
@@ -106,6 +125,38 @@ function extensionForMime(mimeType: string): string {
   if (mimeType === "image/png") return "png";
   if (mimeType === "image/webp") return "webp";
   return "jpg";
+}
+
+function appendCommentsMarkdown(lines: string[], comments: IssueMarkdownComment[]): void {
+  const repliesByParent = new Map<string, IssueMarkdownComment[]>();
+  const topLevel: IssueMarkdownComment[] = [];
+
+  for (const comment of comments) {
+    if (comment.parentId) {
+      const replies = repliesByParent.get(comment.parentId) ?? [];
+      replies.push(comment);
+      repliesByParent.set(comment.parentId, replies);
+      continue;
+    }
+
+    topLevel.push(comment);
+  }
+
+  for (const comment of topLevel) {
+    lines.push(formatCommentLine(comment));
+
+    for (const reply of repliesByParent.get(comment.id) ?? []) {
+      lines.push(`  ${formatCommentLine(reply)}`);
+    }
+  }
+}
+
+function formatCommentLine(comment: IssueMarkdownComment): string {
+  const author =
+    comment.actorType === "CURSOR_AI"
+      ? "Cursor AI"
+      : comment.author?.name?.trim() || comment.author?.email || "System";
+  return `- ${author} (${comment.createdAt.toISOString()}): ${comment.body}`;
 }
 
 export { extensionForMime };

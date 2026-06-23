@@ -1,4 +1,4 @@
-import type { Issue, IssueAttachment } from "@prisma/client";
+import type { Issue } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
 import path from "node:path";
 import { mkdir, rm } from "node:fs/promises";
@@ -41,6 +41,22 @@ async function listIssuesForSync(
     include: {
       attachments: {
         orderBy: { sortOrder: "asc" },
+      },
+      comments: {
+        orderBy: { createdAt: "asc" },
+        select: {
+          id: true,
+          parentId: true,
+          actorType: true,
+          body: true,
+          createdAt: true,
+          author: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+        },
       },
     },
     orderBy: { number: "asc" },

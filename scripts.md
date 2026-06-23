@@ -118,6 +118,7 @@ Lokalny eksport issue ze staging (lub dev) do `docs/issues/` — do analizy w Cu
 | | Wiele issue | `npm run sync:issues -- --issue=123,124,130` | Jak wyżej, lista numerów | Kilka issue naraz bez pełnego sync. |
 | | Dev DB zamiast staging | `npm run sync:issues -- --local` | `Syncing issues from default DATABASE_URL…` | Gdy testujesz issue tracker lokalnie (`ENABLE_ISSUE_TRACKER=true`). |
 | | Dev DB + jedno issue | `npm run sync:issues -- --local --issue=5` | Jak wyżej | Kombinacja flag. |
+| `issue:comment` | Dodaje trwały komentarz do issue; z `--resolve` ustawia `RESOLVED` | `npm run issue:comment -- --issue=123 --resolve --message="Zaimplementowano: ... Testy: ..."` | `Added comment ...` + `Issue #123 marked RESOLVED.` | Obowiązkowy krok po poprawce issue przez Cursora. Domyślny aktor to `Cursor AI`; opcjonalnie podaj `ISSUE_COMMENT_AUTHOR_EMAIL` albo `--author-email`. |
 
 **Struktura folderów:**
 
@@ -137,6 +138,7 @@ Format katalogu: `{number}-{folderSlug}/` — `folderSlug` immutable (ustawiany 
 
 - **OPEN / IN_PROGRESS** → upsert folderu (`issue.md`, `context.json`, screenshoty)
 - **RESOLVED / ARCHIVED** → usuwa folder
+- Komentarze z DB są dopisywane do `issue.md`
 - Screenshoty: **cache-aware** — pomija download gdy `context.json` + plik lokalny aktualne
 - Ręczne pliki (np. `notes.md`, plan naprawczy) poza listą managed — **zachowane**
 
@@ -146,6 +148,7 @@ Format katalogu: `{number}-{folderSlug}/` — `folderSlug` immutable (ustawiany 
 2. (Opcjonalnie) Admin → Copy Cursor Prompt — analiza bez sync
 3. `npm run sync:issues -- --issue=123` — szybki sync jednego issue
 4. Otwórz `docs/issues/123-…/` w Cursorze — `issue.md` + screenshoty + własne `notes.md`
+5. Po poprawce: `npm run issue:comment -- --issue=123 --resolve --message="Zaimplementowano: ... Testy: ..."`
 
 Alternatywa: admin → **Copy Cursor Prompt** / **Copy Issue URL** — bez `sync:issues`.
 

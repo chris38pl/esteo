@@ -5,13 +5,18 @@ import { revalidatePath } from "next/cache";
 import {
   bulkUpdateIssueStatusSchema,
   type AdminIssueStatus,
+  updateIssueDetailsSchema,
   updateIssueStatusSchema,
 } from "@/features/issues/schemas/issue";
+import { ISSUE_ACTIVITY_ACTIONS } from "@/features/issues/lib/issue-activity-types";
+import { createIssueActivityLog } from "@/features/issues/server/activity-repository";
+import { resolveIssueWithComment } from "@/features/issues/server/comments-repository";
 import {
   bulkUpdateIssueStatus,
   getIssueAttachmentById,
   getIssueByNumber,
   listIssuesForAdmin,
+  updateIssueDetails,
   updateIssueStatus,
 } from "@/features/issues/server/repository";
 import { assertIssueTrackerEnabled } from "@/lib/issue-tracker/guard";
@@ -77,6 +82,14 @@ export async function bulkUpdateIssueStatusAction(
     assertIssueTrackerEnabled();
     await assertIssueViewerAccess(locale);
     const parsed = bulkUpdateIssueStatusSchema.parse(input);
+
+    if (parsed.status === "RESOLVED") {
+      return {
+        success: false as const,
+        error: "Resolving issues requires an implementation comment per issue.",
+      };
+    }
+
     const updatedCount = await bulkUpdateIssueStatus(parsed.numbers, parsed.status);
 
     if (updatedCount === 0) {
@@ -95,12 +108,17 @@ export async function bulkUpdateIssueStatusAction(
 }
 
 export async function updateIssueStatusAction(
-  input: { number: number; status: AdminIssueStatus },
+  input: {
+    number: number;
+    status: AdminIssueStatus;
+    resolutionComment?: string;
+    fixedIn?: string;
+  },
   locale: Locale = "pl",
 ) {
   try {
     assertIssueTrackerEnabled();
-    await assertIssueViewerAccess(locale);
+    const user = await assertIssueViewerAccess(locale);
     const parsed = updateIssueStatusSchema.parse(input);
     const existing = await getIssueByNumber(parsed.number);
 
@@ -108,13 +126,55 @@ export async function updateIssueStatusAction(
       return { success: false as const, error: "Issue not found." };
     }
 
-    const updated = await updateIssueStatus(parsed.number, parsed.status);
+    if (parsed.status === "RESOLVED" && !parsed.resolutionComment) {
+      return {
+        success: false as const,
+        error: "Resolving an issue requires an implementation comment.",
+      };
+    }
+
+    const fixedIn = parsed.fixedIn?.trim() || undefined;
+    const resolvedResult =
+      parsed.status === "RESOLVED"
+        ? await resolveIssueWithComment({
+            number: parsed.number,
+            authorUserId: user.id,
+            body: parsed.resolutionComment ?? "",
+            fixedIn,
+          })
+        : null;
+    const updated = resolvedResult?.issue ?? (await updateIssueStatus(parsed.number, parsed.status));
 
     if (!updated) {
       return { success: false as const, error: "Issue not found." };
     }
 
+    if (resolvedResult) {
+      await createIssueActivityLog({
+        issueId: existing.id,
+        actorType: "USER",
+        actorUserId: user.id,
+        action: ISSUE_ACTIVITY_ACTIONS.comment_added,
+        metadata: {
+          commentId: resolvedResult.comment.id,
+          commentBody: resolvedResult.comment.body,
+        },
+      });
+    }
+
     if (existing.status !== parsed.status) {
+      await createIssueActivityLog({
+        issueId: existing.id,
+        actorType: "USER",
+        actorUserId: user.id,
+        action: ISSUE_ACTIVITY_ACTIONS.status_changed,
+        metadata: {
+          oldStatus: existing.status,
+          newStatus: updated.status,
+          ...(fixedIn ? { fixedIn } : {}),
+        },
+      });
+
       const { notifyIssueStatusChanged } = await import(
         "@/features/notifications/server/notification-emit-helpers"
       );
@@ -139,6 +199,77 @@ export async function updateIssueStatusAction(
     return {
       success: false as const,
       error: error instanceof Error ? error.message : "Failed to update status.",
+    };
+  }
+}
+
+export async function updateIssueDetailsAction(
+  input: {
+    number: number;
+    title: string;
+    description: string;
+  },
+  locale: Locale = "pl",
+) {
+  try {
+    assertIssueTrackerEnabled();
+    const user = await assertIssueViewerAccess(locale);
+    const parsed = updateIssueDetailsSchema.parse(input);
+    const existing = await getIssueByNumber(parsed.number);
+
+    if (!existing) {
+      return { success: false as const, error: "Issue not found." };
+    }
+
+    const titleChanged = existing.title !== parsed.title;
+    const descriptionChanged = existing.description !== parsed.description;
+
+    if (!titleChanged && !descriptionChanged) {
+      return { success: true as const, data: existing };
+    }
+
+    const updated = await updateIssueDetails(parsed.number, {
+      title: parsed.title,
+      description: parsed.description,
+    });
+
+    if (!updated) {
+      return { success: false as const, error: "Issue not found." };
+    }
+
+    if (titleChanged) {
+      await createIssueActivityLog({
+        issueId: existing.id,
+        actorType: "USER",
+        actorUserId: user.id,
+        action: ISSUE_ACTIVITY_ACTIONS.title_changed,
+        metadata: {
+          oldTitle: existing.title,
+          newTitle: parsed.title,
+        },
+      });
+    }
+
+    if (descriptionChanged) {
+      await createIssueActivityLog({
+        issueId: existing.id,
+        actorType: "USER",
+        actorUserId: user.id,
+        action: ISSUE_ACTIVITY_ACTIONS.description_changed,
+        metadata: {
+          oldDescription: existing.description,
+          newDescription: parsed.description,
+        },
+      });
+    }
+
+    revalidateIssuePaths(locale, parsed.number);
+    return { success: true as const, data: updated };
+  } catch (error) {
+    console.error("[updateIssueDetailsAction]", error);
+    return {
+      success: false as const,
+      error: error instanceof Error ? error.message : "Failed to update issue details.",
     };
   }
 }

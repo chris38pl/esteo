@@ -96,8 +96,68 @@
     "copyFailed": "Could not copy",
     "statusUpdated": "Status updated",
     "notFound": "Issue not found",
+    "edit": {
+      "trigger": "Edit",
+      "title": "Edit issue",
+      "description": "Change the issue title or description. Changes will be saved in history.",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "success": "Issue updated",
+      "validationError": "Fill in the title and description."
+    },
+    "activity": {
+      "title": "Activity",
+      "show": "Show:",
+      "tabs": {
+        "comments": "Comments",
+        "history": "History"
+      }
+    },
+    "comments": {
+      "title": "Comments",
+      "placeholder": "Add an issue comment…",
+      "submit": "Add comment",
+      "submitting": "Adding…",
+      "save": "Save",
+      "saving": "Saving…",
+      "empty": "No comments yet.",
+      "viewOlder": "View older comments ({count})",
+      "reply": "Reply",
+      "replyPlaceholder": "Write a reply…",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this comment?",
+      "deleteConfirmWithReplies": "Delete this comment and its replies?",
+      "error": "Could not update the comment.",
+      "resolveTitle": "Mark as resolved",
+      "resolveDescription": "Add a comment describing what was implemented. This entry will be saved in the issue history.",
+      "resolveCommentLabel": "What was implemented",
+      "resolvePlaceholder": "For example: Fixed form validation, added coverage for the scenario, and verified the flow on staging.",
+      "resolveRequired": "Add a comment describing the implementation.",
+      "resolveSubmit": "Add comment and mark resolved",
+      "resolving": "Saving…",
+      "fixedInLabel": "Fixed in (optional)",
+      "fixedInPlaceholder": "For example: preview-123 or commit SHA"
+    },
+    "history": {
+      "badge": "History",
+      "empty": "No change history yet.",
+      "showOlder": "Show older history ({count})",
+      "actorCursorAi": "Cursor AI",
+      "actorSystem": "System",
+      "actions": {
+        "titleChanged": "changed the title from “{oldTitle}” to “{newTitle}”",
+        "descriptionChanged": "changed the issue description",
+        "statusChanged": "changed status from “{oldStatus}” to “{newStatus}”",
+        "commentAdded": "added a comment",
+        "commentEdited": "edited a comment",
+        "commentDeleted": "deleted a comment",
+        "commentDeletedWithReplies": "deleted a comment and its replies ({count})"
+      }
+    },
     "detail": {
       "eyebrow": "Issue tracker",
+      "back": "Back",
       "backToList": "Back to list",
       "metaLine": "Created: {created} · Updated: {updated}",
       "detailsSection": "Details",
@@ -109,6 +169,7 @@
       "openScreenshot": "Open screenshot",
       "download": "Download",
       "fileActions": "File actions",
+      "moreActions": "More actions",
       "showMore": "Show more",
       "showLess": "Show less"
     }

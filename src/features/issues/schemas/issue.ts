@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { issueContextSchema } from "@/features/issues/lib/issue-context";
+import { issueCommentBodySchema } from "@/features/issues/schemas/issue-comment";
 
 const optionalText = z
   .string()
@@ -51,6 +52,14 @@ export function toAdminIssueStatus(status: string): AdminIssueStatus {
 export const updateIssueStatusSchema = z.object({
   number: z.number().int().positive(),
   status: z.enum(ADMIN_ISSUE_STATUS_VALUES),
+  resolutionComment: issueCommentBodySchema.optional(),
+  fixedIn: z.string().trim().max(200).optional().or(z.literal("")),
+});
+
+export const updateIssueDetailsSchema = z.object({
+  number: z.number().int().positive(),
+  title: z.string().trim().min(1, "Title is required.").max(200),
+  description: z.string().trim().min(1, "Description is required.").max(20_000),
 });
 
 export const bulkUpdateIssueStatusSchema = z.object({

@@ -39,6 +39,7 @@
     "audit:search-index": "tsx scripts/audit-search-index.ts",
     "audit:search-index:staging": "node scripts/audit-search-index.mjs --staging",
     "sync:issues": "node scripts/sync-issues.mjs",
+    "issue:comment": "node scripts/comment-issue.mjs",
     "retry-incomplete-ai-drafts": "tsx scripts/retry-incomplete-ai-drafts.ts",
     "test:request-attachments": "tsx scripts/test-request-attachment-metadata.ts",
     "test:staging-attachments": "tsx scripts/verify-staging-attachments.ts",
