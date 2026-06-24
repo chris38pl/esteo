@@ -50,7 +50,7 @@ export function SignUpContinue() {
         </Clerk.Field>
 
         <SignUp.Action submit asChild>
-          <Button type="submit" className="h-11 w-full rounded-lg">
+          <Button type="submit" className="h-11 w-full">
             {t("signUp.continueSubmit")}
           </Button>
         </SignUp.Action>

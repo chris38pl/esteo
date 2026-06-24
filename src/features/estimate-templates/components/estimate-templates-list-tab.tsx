@@ -531,7 +531,7 @@ export function EstimateTemplatesListTab({
                     <span className="inline-flex w-full sm:w-auto">
                       <Button
                         variant="outline"
-                        className="h-10 w-full shrink-0 justify-center gap-2 whitespace-nowrap rounded-lg px-4 sm:w-auto"
+                        className="h-10 w-full shrink-0 justify-center gap-2 whitespace-nowrap px-4 sm:w-auto"
                         disabled
                       >
                         <FileInput className="size-4 shrink-0" />
@@ -543,7 +543,7 @@ export function EstimateTemplatesListTab({
                 </Tooltip>
               </TooltipProvider>
               <Button
-                className="h-10 w-full shrink-0 justify-center gap-2 whitespace-nowrap rounded-lg px-4 sm:w-auto"
+                className="h-10 w-full shrink-0 justify-center gap-2 whitespace-nowrap px-4 sm:w-auto"
                 disabled={!canEdit}
                 asChild={canEdit}
               >

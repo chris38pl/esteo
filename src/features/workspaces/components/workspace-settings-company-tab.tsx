@@ -174,7 +174,7 @@ export function WorkspaceSettingsCompanyTab({
             </p>
           ) : null}
 
-          <Button type="submit" className="w-full rounded-lg sm:w-auto" disabled={isPending}>
+          <Button type="submit" className="w-full sm:w-auto" disabled={isPending}>
             {isPending ? tSettings("saving") : tSettings("save")}
           </Button>
       </WorkspaceSettingsCard>

@@ -78,7 +78,7 @@ export function WorkspaceRuleListItem({
             type="button"
             variant="ghost"
             size="icon"
-            className="size-9 rounded-full text-muted-foreground hover:text-foreground"
+            className="size-9 rounded-md text-muted-foreground hover:text-foreground"
             disabled={isPending}
             onClick={onEdit}
             aria-label={t("edit")}
@@ -91,7 +91,7 @@ export function WorkspaceRuleListItem({
             type="button"
             variant="ghost"
             size="icon"
-            className="size-9 rounded-full text-muted-foreground hover:text-destructive"
+            className="size-9 rounded-md text-muted-foreground hover:text-destructive"
             disabled={isPending}
             onClick={onDelete}
             aria-label={t("delete")}

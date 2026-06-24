@@ -68,7 +68,7 @@ export function SignInForm({
           </Clerk.Field>
 
           <SignIn.Action submit asChild>
-            <Button type="submit" className="h-11 w-full rounded-lg">
+            <Button type="submit" className="h-11 w-full">
               {t("signIn.submit")}
             </Button>
           </SignIn.Action>
@@ -177,7 +177,7 @@ export function SignInForm({
             </Clerk.Field>
 
             <SignIn.Action submit asChild>
-              <Button type="submit" className="h-11 w-full rounded-lg">
+              <Button type="submit" className="h-11 w-full">
                 {t("signIn.verifySubmit")}
               </Button>
             </SignIn.Action>

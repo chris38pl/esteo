@@ -537,6 +537,7 @@ export function WorkspaceEstimateSectionsPanel({
   return (
     <section
       id="workspace-estimate-sections-panel"
+      data-ai-setup-field="estimateSections"
       className="rounded-2xl border border-border/50 bg-card p-4 shadow-sm dark:shadow-none sm:p-5 md:p-6"
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -552,7 +553,7 @@ export function WorkspaceEstimateSectionsPanel({
           <Button
             type="button"
             variant="outline"
-            className="w-full rounded-full sm:w-auto"
+            className="w-full sm:w-auto"
             disabled={isPending}
             onClick={handleReset}
           >
@@ -560,7 +561,7 @@ export function WorkspaceEstimateSectionsPanel({
           </Button>
           <Button
             type="button"
-            className="w-full rounded-full bg-violet-600 text-white hover:bg-violet-700 dark:bg-primary dark:hover:bg-primary/90 sm:w-auto sm:px-5"
+            className="w-full sm:w-auto sm:px-5"
             disabled={isPending || !canAdd}
             onClick={openCreate}
           >
@@ -692,7 +693,7 @@ export function WorkspaceEstimateSectionsPanel({
       <div className="mt-4 flex justify-stretch sm:justify-end">
         <Button
           type="button"
-          className="w-full rounded-full bg-violet-600 px-6 text-white hover:bg-violet-700 dark:bg-primary dark:hover:bg-primary/90 sm:w-auto"
+          className="w-full sm:w-auto sm:px-6"
           disabled={isPending}
           onClick={handleSave}
         >

@@ -338,7 +338,7 @@ export function WorkspaceSettingsRulesTab({
             />
             <Button
               type="button"
-              className="w-full rounded-full bg-violet-600 text-white hover:bg-violet-700 dark:bg-primary dark:hover:bg-primary/90"
+              className="w-full"
               disabled={isPending}
               onClick={saveGeneralRules}
             >
@@ -379,7 +379,7 @@ export function WorkspaceSettingsRulesTab({
             <Button
               id="workspace-estimate-rules-add"
               type="button"
-              className="rounded-full bg-violet-600 px-5 text-white hover:bg-violet-700 dark:bg-primary dark:hover:bg-primary/90"
+              className="sm:px-5"
               disabled={isPending || !canAddRule}
               onClick={openCreateDialog}
             >

@@ -689,7 +689,7 @@ export function WorkspaceSettingsUsersTab({
                   </p>
                 ) : null}
 
-                <Button type="submit" className="gap-2 rounded-lg" disabled={isPending}>
+                <Button type="submit" className="gap-2" disabled={isPending}>
                   <UserPlus className="size-4" aria-hidden />
                   {isPending ? t("inviting") : t("inviteSubmit")}
                 </Button>

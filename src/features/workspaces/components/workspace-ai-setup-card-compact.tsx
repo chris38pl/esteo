@@ -109,7 +109,7 @@ export function WorkspaceAiSetupCardCompact({
           </div>
         </div>
 
-        <ul className="flex flex-wrap gap-x-4 gap-y-2">
+        <ul className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-x-4 sm:gap-y-2">
           {readiness.criteria.map((criterion) => (
             <li
               key={criterion.key}

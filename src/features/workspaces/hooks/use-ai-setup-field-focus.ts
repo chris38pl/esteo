@@ -4,30 +4,28 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
 import {
-  AI_SETUP_FOCUS_FIELD_IDS,
   AI_SETUP_FOCUS_PARAM,
+  applyAiSetupFieldFocus,
+  findAiSetupFocusTarget,
   isAiSetupFocusField,
+  type AiSetupFocusField,
 } from "@/features/workspaces/lib/ai-setup-focus";
 
-const HIGHLIGHT_CLASS = "ai-setup-focus-active";
-const HIGHLIGHT_MS = 4_000;
+const FOCUS_RETRY_MS = 100;
+const FOCUS_MAX_ATTEMPTS = 20;
 
-function findFocusTarget(focus: keyof typeof AI_SETUP_FOCUS_FIELD_IDS): HTMLElement | null {
-  const id = AI_SETUP_FOCUS_FIELD_IDS[focus];
-  const byId = document.getElementById(id);
-  if (byId) {
-    return byId;
+function tryApplyFocus(focus: AiSetupFocusField, attempt = 0): void {
+  if (applyAiSetupFieldFocus(focus)) {
+    return;
   }
-  return document.querySelector<HTMLElement>(`[data-ai-setup-field="${focus}"]`);
-}
 
-function focusWithinTarget(target: HTMLElement) {
-  const focusable =
-    target.matches("input, textarea, button, select")
-      ? target
-      : target.querySelector<HTMLElement>("input, textarea, button, select");
+  if (attempt >= FOCUS_MAX_ATTEMPTS) {
+    return;
+  }
 
-  focusable?.focus({ preventScroll: true });
+  window.setTimeout(() => {
+    tryApplyFocus(focus, attempt + 1);
+  }, FOCUS_RETRY_MS);
 }
 
 export function useAiSetupFieldFocus() {
@@ -41,21 +39,9 @@ export function useAiSetupFieldFocus() {
       return;
     }
 
-    let removeHighlightTimer: number | undefined;
-
+    const focus = focusParam;
     const applyTimer = window.setTimeout(() => {
-      const target = findFocusTarget(focusParam);
-      if (!target) {
-        return;
-      }
-
-      target.scrollIntoView({ behavior: "smooth", block: "center" });
-      target.classList.add(HIGHLIGHT_CLASS);
-      focusWithinTarget(target);
-
-      removeHighlightTimer = window.setTimeout(() => {
-        target.classList.remove(HIGHLIGHT_CLASS);
-      }, HIGHLIGHT_MS);
+      tryApplyFocus(focus);
 
       const params = new URLSearchParams(searchParams.toString());
       params.delete(AI_SETUP_FOCUS_PARAM);
@@ -65,9 +51,21 @@ export function useAiSetupFieldFocus() {
 
     return () => {
       window.clearTimeout(applyTimer);
-      if (removeHighlightTimer) {
-        window.clearTimeout(removeHighlightTimer);
-      }
     };
   }, [focusParam, pathname, router, searchParams]);
+}
+
+export function scrollToAiSetupFieldOnPage(focus: AiSetupFocusField): boolean {
+  if (!findAiSetupFocusTarget(focus)) {
+    return false;
+  }
+  applyAiSetupFieldFocus(focus);
+  return true;
+}
+
+export function isConfigurationRulesPath(pathname: string, tab: string | null): boolean {
+  if (!pathname.includes("/configuration")) {
+    return false;
+  }
+  return tab === "rules" || tab === null;
 }

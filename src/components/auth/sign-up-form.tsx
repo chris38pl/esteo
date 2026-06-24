@@ -94,7 +94,7 @@ export function SignUpForm({
           </Clerk.Field>
 
           <SignUp.Action submit asChild>
-            <Button type="submit" className="h-11 w-full rounded-lg">
+            <Button type="submit" className="h-11 w-full">
               {t("signUp.submit")}
             </Button>
           </SignUp.Action>

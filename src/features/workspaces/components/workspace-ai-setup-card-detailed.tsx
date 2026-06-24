@@ -3,10 +3,15 @@
 import type { WorkspaceIndustry, WorkspaceRule } from "@prisma/client";
 import { Check, ChevronRight, Circle } from "lucide-react";
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import { WorkspaceAiReadinessRing } from "@/features/workspaces/components/workspace-ai-readiness-ring";
 import { aiSetupFocusHref } from "@/features/workspaces/lib/ai-setup-focus";
+import {
+  isConfigurationRulesPath,
+  scrollToAiSetupFieldOnPage,
+} from "@/features/workspaces/hooks/use-ai-setup-field-focus";
 import { isServiceWorkspace } from "@/features/workspaces/lib/industries";
 import type { WorkspaceBranding } from "@/features/workspaces/schemas/branding";
 import {
@@ -49,6 +54,8 @@ export function WorkspaceAiSetupCardDetailed({
   workspaceSlug,
 }: WorkspaceAiSetupCardDetailedProps) {
   const t = useTranslations("workspaces.settings.aiSetup");
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { readiness } = useWorkspaceAiReadiness({
     workspaceIndustry,
     industryOtherText,
@@ -99,10 +106,29 @@ export function WorkspaceAiSetupCardDetailed({
     }
   }
 
+  function handleCriterionClick(
+    event: React.MouseEvent<HTMLAnchorElement>,
+    criterionKey: AiReadinessCriterionKey,
+    met: boolean,
+  ) {
+    if (met) {
+      return;
+    }
+
+    if (
+      criterionKey === "customSections" &&
+      isConfigurationRulesPath(pathname, searchParams.get("tab"))
+    ) {
+      if (scrollToAiSetupFieldOnPage("estimateSections")) {
+        event.preventDefault();
+      }
+    }
+  }
+
   return (
     <section className="mb-6 rounded-2xl border border-border/70 bg-card/60 p-5 md:p-6">
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,11rem)_minmax(0,1fr)] lg:items-start">
-        <div className="flex w-full justify-center md:justify-start">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,11rem)_minmax(0,1fr)] lg:items-center">
+        <div className="flex w-full items-center justify-center">
           <WorkspaceAiReadinessRing percent={readiness.percent} />
         </div>
 
@@ -163,6 +189,7 @@ export function WorkspaceAiSetupCardDetailed({
                 <li key={criterion.key}>
                   <Link
                     href={navigation.href}
+                    onClick={(event) => handleCriterionClick(event, criterion.key, criterion.met)}
                     className="flex items-center justify-between gap-4 px-4 py-3.5 transition-colors hover:bg-muted/30"
                   >
                     {rowContent}

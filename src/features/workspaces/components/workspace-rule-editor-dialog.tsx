@@ -93,7 +93,6 @@ export function WorkspaceRuleEditorDialog({
             <Button
               type="button"
               variant="outline"
-              className="rounded-full"
               disabled={isPending}
               onClick={() => onOpenChange(false)}
             >
@@ -101,7 +100,6 @@ export function WorkspaceRuleEditorDialog({
             </Button>
             <Button
               type="submit"
-              className="rounded-full bg-violet-600 text-white hover:bg-violet-700 dark:bg-primary dark:hover:bg-primary/90"
               disabled={isPending || !content.trim() || overLimit}
             >
               {isPending

@@ -17,3 +17,12 @@ alwaysApply: false
 - Use skeletons for async loading
 - Application uses dark and light theme
 - On mobile, `Edit` flows that open an overlay should use a bottom `Sheet` with safe-area/keyboard handling instead of a centered `Dialog`, so Android browser/navigation UI does not cover the form.
+
+## Buttons
+
+Standard action buttons use [`src/components/ui/button.tsx`](src/components/ui/button.tsx): `rounded-md`, default `h-10`, `px-4`.
+
+- Do **not** add `rounded-full` to `<Button>` or rectangular CTA `<button>` elements — reserve `rounded-full` for badges, avatars, progress bars, switches, and intentionally circular icon-only controls (FAB, floating theme toggle).
+- Do **not** override primary CTA colors with `bg-violet-*` — use `variant="default"` / `outline` / `ghost`.
+- Avoid redundant `rounded-lg` / `rounded-md` on `<Button>` unless a deliberate exception (e.g. voice-intake fullscreen flow with `rounded-xl`).
+- Prefer shared classes like `estimatePrimaryButtonClassName` for estimate toolbars instead of duplicating radius/height.

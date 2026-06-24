@@ -256,7 +256,7 @@ export function WorkspaceSettingsForm({
           ) : null}
 
           <div className="mt-6">
-            <Button type="submit" className="rounded-lg" disabled={isPending}>
+            <Button type="submit" disabled={isPending}>
               {isPending ? t("saving") : t("save")}
             </Button>
           </div>
