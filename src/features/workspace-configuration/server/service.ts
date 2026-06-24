@@ -131,6 +131,8 @@ export function serializePriceList(priceList: PriceListWithItems) {
 }
 
 export type SerializedTemplate = ReturnType<typeof serializeTemplate>;
+export type SerializedTemplateSection = SerializedTemplate["sections"][number];
+export type SerializedTemplateItem = SerializedTemplateSection["items"][number];
 export type SerializedPriceList = ReturnType<typeof serializePriceList>;
 
 export type SerializedTemplateListItem = {
