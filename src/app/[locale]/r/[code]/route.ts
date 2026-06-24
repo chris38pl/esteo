@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { getTranslations } from "next-intl/server";
 
 import { referralCookieSerializeOptions, REFERRAL_COOKIE_NAME } from "@/features/referrals/lib/referral-cookie";
-import { canUserGenerateReferrals } from "@/features/referrals/server/referral-eligibility";
 import {
   isValidReferralCodeFormat,
   resolveReferrerByCode,
@@ -47,11 +46,6 @@ export async function GET(
   const profile = await resolveReferrerByCode(code);
   if (!profile) {
     return referralErrorResponse(t("invalid"));
-  }
-
-  const canGenerate = await canUserGenerateReferrals(profile.userId);
-  if (!canGenerate) {
-    return referralErrorResponse(t("inactive"));
   }
 
   const redirectUrl = new URL(

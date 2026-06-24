@@ -4,7 +4,6 @@ import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import type { SubscriptionPlan } from "@prisma/client";
 import {
-  AlertTriangle,
   ArrowRight,
   Copy,
   Crown,
@@ -19,6 +18,10 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { appToast } from "@/components/ui/app-toast";
+import {
+  ReferralAnalyticsEvents,
+  trackReferralEvent,
+} from "@/features/referrals/lib/referral-analytics";
 import { buildReferralLink, buildReferralShareMessage } from "@/features/referrals/lib/referral-share-templates";
 import { REFERRAL_INVITE_HERO_IMAGES } from "@/features/referrals/lib/referral-hero-images";
 import type { ReferralPayoutStatusKey } from "@/features/referrals/lib/referral-payout-status";
@@ -118,12 +121,12 @@ function CopyIconButton({
   value,
   copyLabel,
   copiedLabel,
-  disabled,
+  onCopied,
 }: {
   value: string;
   copyLabel: string;
   copiedLabel: string;
-  disabled?: boolean;
+  onCopied?: () => void;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -132,11 +135,11 @@ function CopyIconButton({
       type="button"
       variant="ghost"
       size="icon"
-      disabled={disabled}
       className="size-8 shrink-0 text-muted-foreground hover:text-foreground"
       onClick={async () => {
         await navigator.clipboard.writeText(value);
         setCopied(true);
+        onCopied?.();
         window.setTimeout(() => setCopied(false), 2000);
       }}
     >
@@ -151,7 +154,7 @@ function CopyRow({
   value,
   copyLabel,
   copiedLabel,
-  disabled,
+  onCopied,
   mono = true,
   pasteable = false,
 }: {
@@ -159,7 +162,7 @@ function CopyRow({
   value: string;
   copyLabel: string;
   copiedLabel: string;
-  disabled?: boolean;
+  onCopied?: () => void;
   mono?: boolean;
   pasteable?: boolean;
 }) {
@@ -184,7 +187,7 @@ function CopyRow({
           value={value}
           copyLabel={copyLabel}
           copiedLabel={copiedLabel}
-          disabled={disabled}
+          onCopied={onCopied}
         />
       </div>
     </div>
@@ -345,11 +348,19 @@ export function PartnerProgramPanel({
   const [pending, startTransition] = useTransition();
   const invitationsRef = useRef<HTMLDivElement>(null);
 
-  const { profile, canGenerateReferrals, currentPlan, summary, referrals } = data;
+  const { profile, currentPlan, summary, referrals } = data;
   const link = buildReferralLink(locale, profile.code);
   const shareMessage = buildReferralShareMessage(locale, link);
   const billingHref = `/${locale}/dashboard/${workspaceSlug}/billing`;
   const planStyle = planAccent[currentPlan];
+
+  function trackLinkCopied(copyTarget: "link" | "code" | "email") {
+    trackReferralEvent(ReferralAnalyticsEvents.linkCopied, {
+      workspaceSlug,
+      referralCode: profile.code,
+      copyTarget,
+    });
+  }
 
   function formatAmount(cents: number): string {
     return formatBillingMonthlyPrice(cents, locale);
@@ -392,9 +403,6 @@ export function PartnerProgramPanel({
   }
 
   async function handleInviteShare() {
-    if (!canGenerateReferrals) {
-      return;
-    }
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share({
@@ -402,11 +410,21 @@ export function PartnerProgramPanel({
           text: shareMessage,
           url: link,
         });
+        trackReferralEvent(ReferralAnalyticsEvents.shareClicked, {
+          workspaceSlug,
+          referralCode: profile.code,
+          method: "native_share",
+        });
         return;
       } catch {
         // fall through
       }
     }
+    trackReferralEvent(ReferralAnalyticsEvents.shareClicked, {
+      workspaceSlug,
+      referralCode: profile.code,
+      method: "mailto",
+    });
     const subject = locale === "pl" ? "Polecam Esteo" : "I recommend Esteo";
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(shareMessage)}`;
   }
@@ -444,13 +462,6 @@ export function PartnerProgramPanel({
         <p className="text-sm text-muted-foreground">{t("description")}</p>
       </header>
 
-      {!canGenerateReferrals ? (
-        <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100">
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-          <p>{t("inactiveBanner")}</p>
-        </div>
-      ) : null}
-
       <section className="relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-br from-blue-50 via-slate-50 to-indigo-100/60 shadow-sm dark:from-[#070b14] dark:via-[#0a1020] dark:to-[#070b14]">
         <div
           aria-hidden
@@ -473,7 +484,6 @@ export function PartnerProgramPanel({
             <Button
               type="button"
               className="h-11 gap-2 bg-primary px-5 text-primary-foreground hover:bg-primary/90"
-              disabled={!canGenerateReferrals}
               onClick={handleInviteShare}
             >
               <Share2 className="h-4 w-4" />
@@ -510,7 +520,7 @@ export function PartnerProgramPanel({
             value={link}
             copyLabel={t("share.copy")}
             copiedLabel={t("share.copied")}
-            disabled={!canGenerateReferrals}
+            onCopied={() => trackLinkCopied("link")}
           />
         </div>
 
@@ -522,14 +532,14 @@ export function PartnerProgramPanel({
             value={profile.code}
             copyLabel={t("share.copy")}
             copiedLabel={t("share.copied")}
-            disabled={!canGenerateReferrals}
+            onCopied={() => trackLinkCopied("code")}
           />
           <CopyRow
             label={t("referralLink.emailLabel")}
             value={profile.email}
             copyLabel={t("share.copy")}
             copiedLabel={t("share.copied")}
-            disabled={!canGenerateReferrals}
+            onCopied={() => trackLinkCopied("email")}
             mono={false}
             pasteable
           />

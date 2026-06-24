@@ -72,31 +72,15 @@ const clean = detectReferralFraud({
 });
 assert(clean.fraudFlag === "NONE", "clean referral passes");
 
-console.log("Email referrer lookup (lazy-create vs granular errors):");
-function classifyEmailReferrerFailure(
-  userExists: boolean,
-  canGenerateReferrals: boolean,
-): "NOT_FOUND" | "PARTNER_NOT_ELIGIBLE" | null {
+console.log("Email referrer lookup (any existing user can refer):");
+function classifyEmailReferrerFailure(userExists: boolean): "NOT_FOUND" | null {
   if (!userExists) {
     return "NOT_FOUND";
   }
-  if (!canGenerateReferrals) {
-    return "PARTNER_NOT_ELIGIBLE";
-  }
   return null;
 }
-assert(
-  classifyEmailReferrerFailure(false, false) === "NOT_FOUND",
-  "unknown email → NOT_FOUND",
-);
-assert(
-  classifyEmailReferrerFailure(true, false) === "PARTNER_NOT_ELIGIBLE",
-  "FREE-only user → PARTNER_NOT_ELIGIBLE",
-);
-assert(
-  classifyEmailReferrerFailure(true, true) === null,
-  "paid user → profile lazy-created on lookup",
-);
+assert(classifyEmailReferrerFailure(false) === "NOT_FOUND", "unknown email → NOT_FOUND");
+assert(classifyEmailReferrerFailure(true) === null, "existing user → profile lazy-created on lookup");
 
 console.log("Referral KPI (rewardStatus-based):");
 const kpiRows = [

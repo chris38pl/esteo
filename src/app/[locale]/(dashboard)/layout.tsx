@@ -39,10 +39,6 @@ import {
   resolveActiveWorkspace,
   resolveWorkspaceBySlug,
 } from "@/server/workspaces/active-workspace";
-import {
-  canAccessPartnerProgram,
-  canUserGenerateReferrals,
-} from "@/features/referrals/server/referral-eligibility";
 
 export default async function DashboardLayout({
   children,
@@ -172,14 +168,7 @@ export default async function DashboardLayout({
     : [{ previews: [], totalCount: 0 }, false, null];
 
   const activeWorkspaceSummary = workspaceSummaries.find((w) => w.id === activeWorkspaceId);
-  const [canAccessPartner, canGenerateReferrals] = activeWorkspaceSummary?.isOwner
-    ? await Promise.all([
-        canAccessPartnerProgram(user.id),
-        canUserGenerateReferrals(user.id),
-      ])
-    : [false, false];
-  const partnerProgramVisible =
-    Boolean(activeWorkspaceSummary?.isOwner) && (canAccessPartner || canGenerateReferrals);
+  const partnerProgramVisible = Boolean(activeWorkspaceSummary?.isOwner);
 
   const pinnedEstimates =
     activeWorkspaceId && activeWorkspaceSummary

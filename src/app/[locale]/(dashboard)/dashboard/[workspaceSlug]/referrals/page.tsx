@@ -37,10 +37,6 @@ export default async function PartnerProgramPage({
     contextWorkspaceId: resolved.workspace.id,
   });
 
-  if (!data) {
-    redirect(`/${resolvedLocale}/dashboard/${resolved.canonicalSlug}/billing`);
-  }
-
   return (
     <div className={dashboardPageNarrowClass}>
       <PartnerProgramPanel

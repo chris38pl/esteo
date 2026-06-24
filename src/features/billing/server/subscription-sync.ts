@@ -298,10 +298,10 @@ export async function syncSubscriptionFromStripe(
         select: { ownerUserId: true },
       });
       if (accountOwner) {
-        const { ensureReferralProfileForEligiblePartner } = await import(
+        const { ensureReferralProfile } = await import(
           "@/features/referrals/server/user-referral-profile-service"
         );
-        await ensureReferralProfileForEligiblePartner(accountOwner.ownerUserId);
+        await ensureReferralProfile(accountOwner.ownerUserId);
       }
 
       const { tryActivateReferralFromSubscriptionSync } = await import(

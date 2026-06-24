@@ -124,6 +124,11 @@ async function createWorkspaceAndActivate(
       expectedPlan: plan !== "FREE" ? plan : null,
     });
 
+    const { ensureReferralProfile } = await import(
+      "@/features/referrals/server/user-referral-profile-service"
+    );
+    await ensureReferralProfile(user.id);
+
     // Paid plans are provisioned INCOMPLETE; send the owner to Stripe checkout.
     let checkoutUrl: string | null = null;
     if (plan !== "FREE") {

@@ -1,7 +1,6 @@
 {
   "title": "Program partnerski",
-  "description": "Polecaj Esteo i zarabiaj bonusy, gdy Twoi znajomi wybiorą płatny plan. Wy też coś zyskujecie.",
-  "inactiveBanner": "Aktywuj plan PRO lub BUSINESS, aby znów polecać Esteo.",
+  "description": "Poleć Esteo znajomym. Znajomy otrzyma 20% zniżki na pierwszy plan PRO lub BUSINESS, a Ty otrzymasz bonus po jego aktywacji.",
   "inviteCard": {
     "title": "Zaproś znajomego",
     "subtitle": "i odbierz bonus, gdy dołączy do Esteo!",
@@ -63,7 +62,7 @@
     "yourPlan": "Twój plan:",
     "seePlans": "Zobacz plany",
     "free": {
-      "description": "Zarabiaj więcej dzięki planom Pro. Sprawdź korzyści płatnych planów."
+      "description": "Możesz polecać Esteo już na planie Free."
     },
     "pro": {
       "description": "Korzystasz z planu Pro. Przejdź na Business, aby odblokować pełny potencjał Esteo."
@@ -119,15 +118,12 @@
       "SELF_REFERRAL": "Nie możesz polecić samego siebie.",
       "ALREADY_CLAIMED": "To workspace ma już przypisane polecenie.",
       "WINDOW_CLOSED": "Okno przypisania kodu wygasło.",
-      "PARTNER_INACTIVE": "Ten partner nie przyjmuje obecnie nowych poleceń.",
-      "PARTNER_NOT_ELIGIBLE": "Ten użytkownik nie ma aktywnego planu PRO/BUSINESS.",
       "NOT_FOUND": "Nie znaleziono użytkownika z tym adresem email.",
       "FRAUD": "To polecenie nie może zostać zaakceptowane."
     }
   },
   "publicLink": {
     "accepting": "Przekierowujemy Cię do rejestracji…",
-    "inactive": "Ten partner nie przyjmuje obecnie nowych poleceń.",
     "invalid": "Nieprawidłowy kod polecający."
   }
 }

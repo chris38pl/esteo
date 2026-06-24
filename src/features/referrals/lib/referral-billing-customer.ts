@@ -1,5 +1,6 @@
 import { prisma } from "@/db/client";
 import { getStripeClient } from "@/features/billing/server/stripe-client";
+import { isUniqueConstraintError } from "@/lib/database/is-unique-constraint-error";
 
 type StripeCustomerSnapshot = { deleted?: boolean } | null;
 
@@ -52,6 +53,68 @@ export async function resolveReferrerStripeCustomerId(
     }
     return {};
   });
+}
+
+async function deleteOrphanStripeCustomer(stripeCustomerId: string): Promise<void> {
+  try {
+    const stripe = getStripeClient();
+    await stripe.customers.del(stripeCustomerId);
+  } catch {
+    // Best-effort cleanup after a lost create race.
+  }
+}
+
+/**
+ * Returns a valid Stripe customer for referral credits, creating BillingCustomer
+ * lazily when the referrer has never checked out. Idempotent and race-safe when
+ * BillingCustomer.ownerUserId is unique.
+ */
+export async function ensureReferrerStripeCustomerId(
+  referrerUserId: string,
+): Promise<string | null> {
+  const existing = await resolveReferrerStripeCustomerId(referrerUserId);
+  if (existing) {
+    return existing;
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: referrerUserId },
+    select: { email: true, name: true },
+  });
+  if (!user) {
+    return null;
+  }
+
+  const stripe = getStripeClient();
+  const stripeCustomer = await stripe.customers.create({
+    email: user.email,
+    name: user.name ?? undefined,
+    metadata: { ownerUserId: referrerUserId },
+  });
+
+  try {
+    await prisma.billingCustomer.create({
+      data: {
+        ownerUserId: referrerUserId,
+        stripeCustomerId: stripeCustomer.id,
+      },
+    });
+    return stripeCustomer.id;
+  } catch (error) {
+    if (isUniqueConstraintError(error)) {
+      const winner = await prisma.billingCustomer.findFirst({
+        where: { ownerUserId: referrerUserId, stripeCustomerId: { not: null } },
+        orderBy: { createdAt: "desc" },
+        select: { stripeCustomerId: true },
+      });
+      if (winner?.stripeCustomerId) {
+        await deleteOrphanStripeCustomer(stripeCustomer.id);
+        return winner.stripeCustomerId;
+      }
+      return resolveReferrerStripeCustomerId(referrerUserId);
+    }
+    throw error;
+  }
 }
 
 export async function findReferralBalanceTransactionId(

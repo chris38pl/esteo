@@ -616,6 +616,7 @@ model BillingCustomer {
   owner           User             @relation(fields: [ownerUserId], references: [id], onDelete: Restrict)
   billingAccounts BillingAccount[]
 
+  @@unique([ownerUserId])
   @@index([ownerUserId])
 }
 

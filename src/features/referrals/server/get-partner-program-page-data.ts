@@ -4,23 +4,12 @@ import { prisma } from "@/db/client";
 import { resolveReferralPayoutStatusKey } from "@/features/referrals/lib/referral-payout-status";
 import { getReferralEarningsSummary } from "@/features/referrals/lib/referral-earnings-summary";
 import { nextTierProgress } from "@/features/referrals/lib/referral-partner-tier";
-import {
-  canAccessPartnerProgram,
-  canUserGenerateReferrals,
-} from "@/features/referrals/server/referral-eligibility";
 import { getOrCreateUserReferralProfile } from "@/features/referrals/server/user-referral-profile-service";
 
 export async function getPartnerProgramPageData(params: {
   ownerUserId: string;
   contextWorkspaceId: string;
 }) {
-  const canGenerate = await canUserGenerateReferrals(params.ownerUserId);
-  const canAccess = await canAccessPartnerProgram(params.ownerUserId);
-
-  if (!canAccess && !canGenerate) {
-    return null;
-  }
-
   const [profile, summary, referrals, contextWorkspace] = await Promise.all([
     getOrCreateUserReferralProfile(params.ownerUserId),
     getReferralEarningsSummary(params.ownerUserId),
@@ -109,7 +98,6 @@ export async function getPartnerProgramPageData(params: {
       code: profile.code,
       email: profile.user.email,
     },
-    canGenerateReferrals: canGenerate,
     currentPlan,
     summary,
     tierProgress,

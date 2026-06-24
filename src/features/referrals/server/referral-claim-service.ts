@@ -5,9 +5,6 @@ import type { ReferralAttributionSource, SubscriptionPlan } from "@prisma/client
 import { prisma } from "@/db/client";
 import { expectedRewardForPlan } from "@/features/referrals/server/referral-rewards-catalog";
 import {
-  canUserGenerateReferrals,
-} from "@/features/referrals/server/referral-eligibility";
-import {
   detectReferralFraud,
   pickAttributionCandidate,
   type AttributionCandidate,
@@ -27,8 +24,6 @@ export class ReferralClaimError extends Error {
       | "SELF_REFERRAL"
       | "ALREADY_CLAIMED"
       | "WINDOW_CLOSED"
-      | "PARTNER_INACTIVE"
-      | "PARTNER_NOT_ELIGIBLE"
       | "NOT_FOUND"
       | "FRAUD",
   ) {
@@ -47,12 +42,6 @@ async function throwUnresolvedReferrerInput(input: string): Promise<never> {
     });
     if (!user) {
       throw new ReferralClaimError("No user with this email address.", "NOT_FOUND");
-    }
-    if (!(await canUserGenerateReferrals(user.id))) {
-      throw new ReferralClaimError(
-        "This user does not have an active PRO or BUSINESS plan.",
-        "PARTNER_NOT_ELIGIBLE",
-      );
     }
   }
   throw new ReferralClaimError("Referrer not found.", "NOT_FOUND");
@@ -162,14 +151,6 @@ export async function claimReferralForWorkspace(params: {
 
   if (picked.referrerUserId === params.referredOwnerId) {
     throw new ReferralClaimError("Self-referral is not allowed.", "SELF_REFERRAL");
-  }
-
-  const canGenerate = await canUserGenerateReferrals(picked.referrerUserId);
-  if (!canGenerate) {
-    throw new ReferralClaimError(
-      "This partner is not accepting new referrals.",
-      "PARTNER_INACTIVE",
-    );
   }
 
   const [referrerUser, referredUser] = await Promise.all([

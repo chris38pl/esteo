@@ -12,11 +12,59 @@ Workspace **owners** who refer other companies earn **PLN credits** (Stripe cust
 
 | Surface | Path | Access |
 | --- | --- | --- |
-| Partner program | `/[locale]/dashboard/referrals` | Authenticated user (referrer dashboard) |
+| Partner program | `/[locale]/dashboard/[workspaceSlug]/referrals` | Workspace **owner** (any plan: FREE, PRO, BUSINESS) |
 | Claim referral (sign-up) | `/sign-up?ref=…` | Public |
 | Billing (balance applied) | `/[locale]/dashboard/[workspaceSlug]/billing` | Owner |
 
-Referral link is per **referrer user**, not per workspace. Rewards credit the referrer's **BillingCustomer** (owner-level Stripe customer).
+**Who can refer (MVP):** every workspace owner — no paid-plan gate. Link and profile are per **referrer user**, not per workspace.
+
+---
+
+## Reward ownership (per user, not per workspace)
+
+Nagroda referral jest przypisana do **użytkownika** (`referrerUserId`), nie do konkretnego workspace.
+
+Example: Jan owns workspace A, B, and C — the bonus lands on Jan's Stripe **BillingCustomer** balance (account level). There is no “bonus in workspace B”.
+
+### V1 assumption: customer-per-owner
+
+- **One owner = one `BillingCustomer`** (shared across all owned workspaces).
+- Referral balance can be applied to invoices for any workspace that uses that owner's BillingCustomer.
+- **Where does the bonus go?** To the **owner's account**, not a specific workspace.
+
+Future (V2+): corporate vs personal workspaces may need an explicit decision if billing moves to customer-per-workspace. On MVP the answer is always: **owner account**.
+
+---
+
+## Stripe customer for referrers
+
+`ensureReferrerStripeCustomerId()` creates a Stripe customer + `BillingCustomer` lazily when a FREE referrer earns their first bonus (no prior checkout).
+
+Race-safe: `BillingCustomer.ownerUserId` is unique. Concurrent activations use create + `isUniqueConstraintError` retry (orphan Stripe customer cleaned up best-effort).
+
+**Deploy step 0** before unique migration:
+
+```sql
+SELECT "ownerUserId", COUNT(*)
+FROM "BillingCustomer"
+GROUP BY "ownerUserId"
+HAVING COUNT(*) > 1;
+```
+
+→ 0 rows on staging and production, otherwise dedupe before `prisma migrate deploy`.
+
+---
+
+## Analytics events (client)
+
+CustomEvent `esteo:referral-analytics`:
+
+| Event | When |
+| --- | --- |
+| `referral_link_copied` | Copy link, code, or email on partner page |
+| `referral_share_clicked` | Invite share button (native share or mailto) |
+
+Example funnel after a month: 1000 owners → 120 copied link → 17 activations.
 
 ---
 
@@ -216,7 +264,7 @@ Uses `resolveReferrerStripeCustomerId()` — newest `BillingCustomer` first, ski
 | `referral-claim-service.ts` | Claim referral on workspace creation |
 | `referral-activation-service.ts` | Activate referral on first paid subscription |
 | `referral-credit-service.ts` | Grant Stripe balance; `getReferrerStripeBalanceCents()` |
-| `referral-billing-customer.ts` | `resolveReferrerStripeCustomerId()` — newest valid Stripe customer |
+| `referral-billing-customer.ts` | `resolveReferrerStripeCustomerId()`, `ensureReferrerStripeCustomerId()` (lazy create + race-safe) |
 | `referral-earnings-summary.ts` | KPI aggregation for partner page |
 | `referral-kpi-utils.ts` | Pure KPI helpers + `computeUsedReferralBalanceCents` |
 | `get-partner-program-page-data.ts` | Page loader |
@@ -237,7 +285,7 @@ Billing:
 | --- | --- |
 | `npm run test:referral-program` | Unit/invariant checks (claim, KPI, grant flow) |
 | `npm run audit:referral-kpi -- --email user@example.com` | Audit KPI invariants vs Stripe balance for one referrer |
-| `npm run prisma:backfill-referral-profiles` | Partner profiles for owners on paid plans |
+| `npm run prisma:backfill-referral-profiles` | Partner profiles for **all** workspace owners (recommended post-deploy, not required) |
 | `npm run prisma:backfill-referral-activations` | Activate referrals when webhooks missed (localhost) |
 | `npm run prisma:backfill-missing-referral-credits` | Grant missing Stripe balance for ledger rows without `stripeBalanceTxnId` |
 | `tsx scripts/verify-invoice-preview-parser.ts` | Parser tests incl. customer balance applied |

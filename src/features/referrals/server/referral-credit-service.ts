@@ -3,6 +3,7 @@ import "server-only";
 import { prisma } from "@/db/client";
 import { getStripeClient } from "@/features/billing/server/stripe-client";
 import {
+  ensureReferrerStripeCustomerId,
   findReferralBalanceTransactionId,
   resolveReferrerStripeCustomerId,
 } from "@/features/referrals/lib/referral-billing-customer";
@@ -103,7 +104,7 @@ export async function grantReferralBonus(params: {
   let stripeBalanceTxnId: string | null = null;
   let failureReason: string | null = null;
 
-  const stripeCustomerId = await resolveReferrerStripeCustomerId(params.referrerUserId);
+  const stripeCustomerId = await ensureReferrerStripeCustomerId(params.referrerUserId);
 
   if (stripeCustomerId) {
     try {

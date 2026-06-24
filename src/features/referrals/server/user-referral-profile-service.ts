@@ -1,7 +1,6 @@
 import "server-only";
 
 import { prisma } from "@/db/client";
-import { canUserGenerateReferrals } from "@/features/referrals/server/referral-eligibility";
 import { isUniqueConstraintError } from "@/lib/database/is-unique-constraint-error";
 
 const CODE_MIN_LENGTH = 4;
@@ -106,10 +105,7 @@ export async function resolveReferrerByCode(code: string) {
   });
 }
 
-export async function ensureReferralProfileForEligiblePartner(userId: string): Promise<void> {
-  if (!(await canUserGenerateReferrals(userId))) {
-    return;
-  }
+export async function ensureReferralProfile(userId: string): Promise<void> {
   await getOrCreateUserReferralProfile(userId);
 }
 
@@ -132,9 +128,6 @@ export async function resolveReferrerByEmail(email: string) {
   });
 
   if (!profile) {
-    if (!(await canUserGenerateReferrals(user.id))) {
-      return null;
-    }
     profile = await getOrCreateUserReferralProfile(user.id);
   }
 

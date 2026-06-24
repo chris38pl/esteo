@@ -1,5 +1,5 @@
 /**
- * Backfills UserReferralProfile for owners with ACTIVE PRO/BUSINESS subscriptions.
+ * Backfills UserReferralProfile for all workspace owners.
  *
  *   npm run prisma:backfill-referral-profiles
  *   npm run prisma:backfill-referral-profiles:staging
@@ -75,85 +75,39 @@ async function getOrCreateUserReferralProfile(prisma: PrismaClient, userId: stri
   });
 }
 
-async function canUserGenerateReferrals(prisma: PrismaClient, userId: string): Promise<boolean> {
-  const owned = await prisma.workspace.findMany({
-    where: { ownerId: userId, deletedAt: null },
-    select: {
-      billingAccount: {
-        select: {
-          subscription: {
-            select: {
-              plan: true,
-              status: true,
-              stripeSubscriptionId: true,
-            },
-          },
-        },
-      },
-    },
-  });
-
-  return owned.some((ws) => {
-    const sub = ws.billingAccount?.subscription;
-    if (!sub) {
-      return false;
-    }
-    return (
-      (sub.plan === "PRO" || sub.plan === "BUSINESS") &&
-      (sub.status === "ACTIVE" || sub.status === "TRIAL") &&
-      Boolean(sub.stripeSubscriptionId)
-    );
-  });
-}
-
 const prisma = new PrismaClientCtor();
 
 async function main() {
-  const accounts = await prisma.billingAccount.findMany({
-    where: {
-      subscription: {
-        plan: { in: ["PRO", "BUSINESS"] },
-        status: { in: ["ACTIVE", "TRIAL"] },
-        stripeSubscriptionId: { not: null },
-      },
-    },
+  const owners = await prisma.workspace.findMany({
+    where: { deletedAt: null },
     select: {
-      ownerUserId: true,
+      ownerId: true,
       owner: { select: { email: true } },
     },
+    distinct: ["ownerId"],
   });
 
-  const seen = new Set<string>();
   let created = 0;
   let skipped = 0;
 
-  for (const account of accounts) {
-    if (seen.has(account.ownerUserId)) {
-      continue;
-    }
-    seen.add(account.ownerUserId);
-
-    if (!(await canUserGenerateReferrals(prisma, account.ownerUserId))) {
-      continue;
-    }
-
+  for (const row of owners) {
     const before = await prisma.userReferralProfile.findUnique({
-      where: { userId: account.ownerUserId },
+      where: { userId: row.ownerId },
       select: { code: true },
     });
 
-    const after = await getOrCreateUserReferralProfile(prisma, account.ownerUserId);
+    const after = await getOrCreateUserReferralProfile(prisma, row.ownerId);
 
     if (!before) {
       created += 1;
-      console.log(`  + ${account.owner.email ?? account.ownerUserId} → ${after.code}`);
+      console.log(`  + ${row.owner.email ?? row.ownerId} → ${after.code}`);
     } else {
       skipped += 1;
     }
   }
 
   console.log(
-    `Backfill complete: ${created} profile(s) created, ${skipped} already existed, ${seen.size} eligible owner(s) scanned.`,
+    `Backfill complete: ${created} profile(s) created, ${skipped} already existed, ${owners.length} owner(s) scanned.`,
   );
 }
 

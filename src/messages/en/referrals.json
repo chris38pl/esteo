@@ -1,7 +1,6 @@
 {
   "title": "Partner program",
-  "description": "Refer Esteo and earn bonuses when your contacts choose a paid plan. You both benefit.",
-  "inactiveBanner": "Activate a PRO or BUSINESS plan to refer Esteo again.",
+  "description": "Refer Esteo to friends. They get 20% off their first PRO or BUSINESS plan, and you receive a bonus when they activate.",
   "inviteCard": {
     "title": "Invite a friend",
     "subtitle": "and earn a bonus when they join Esteo!",
@@ -63,7 +62,7 @@
     "yourPlan": "Your plan:",
     "seePlans": "See plans",
     "free": {
-      "description": "Earn more with Pro plans. Explore the benefits of paid plans."
+      "description": "You can refer Esteo on the Free plan."
     },
     "pro": {
       "description": "You are on Pro. Upgrade to Business to unlock Esteo's full potential."
@@ -119,15 +118,12 @@
       "SELF_REFERRAL": "You cannot refer yourself.",
       "ALREADY_CLAIMED": "This workspace already has a referral.",
       "WINDOW_CLOSED": "The referral claim window has closed.",
-      "PARTNER_INACTIVE": "This partner is not accepting new referrals.",
-      "PARTNER_NOT_ELIGIBLE": "This user does not have an active PRO or BUSINESS plan.",
       "NOT_FOUND": "No user found with this email address.",
       "FRAUD": "This referral cannot be accepted."
     }
   },
   "publicLink": {
     "accepting": "Redirecting you to sign up…",
-    "inactive": "This partner is not accepting new referrals.",
     "invalid": "Invalid referral code."
   }
 }
