@@ -6,7 +6,10 @@ export function countTemplateSections(template: Pick<SerializedTemplate, "sectio
 }
 
 export function countTemplateItems(template: Pick<SerializedTemplate, "sections">): number {
-  return template.sections.reduce((sum, section) => sum + section.items.length, 0);
+  return template.sections.reduce(
+    (sum: number, section) => sum + section.items.length,
+    0,
+  );
 }
 
 export function countDraftSections(sections: TemplateSectionDraft[]): number {
@@ -14,5 +17,5 @@ export function countDraftSections(sections: TemplateSectionDraft[]): number {
 }
 
 export function countDraftItems(sections: TemplateSectionDraft[]): number {
-  return sections.reduce((sum, section) => sum + section.items.length, 0);
+  return sections.reduce((sum: number, section) => sum + section.items.length, 0);
 }

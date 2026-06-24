@@ -41,6 +41,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { SystemEstimateTemplate } from "@/features/estimate-templates/config/system-templates";
+import { countTemplateItems } from "@/features/estimate-templates/lib/template-display";
 import {
   deleteEstimateTemplateAction,
   setDefaultEstimateTemplateAction,
@@ -87,10 +88,6 @@ function PlanBadge({ plan }: { plan: ConfigurationAccess["plan"] }) {
       {plan === "BUSINESS" ? t("businessBadge") : t("proBadge")}
     </Badge>
   );
-}
-
-function countTemplateItems(template: SerializedTemplate): number {
-  return template.sections.reduce((sum, section) => sum + section.items.length, 0);
 }
 
 function sortTemplates(templates: SerializedTemplate[], sort: TemplateSort): SerializedTemplate[] {
