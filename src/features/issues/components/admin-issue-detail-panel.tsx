@@ -5,6 +5,7 @@ import {
   AlignLeft,
   CalendarClock,
   CalendarPlus,
+  Check,
   ChevronDown,
   Copy,
   ImageIcon,
@@ -14,6 +15,8 @@ import {
   MoreVertical,
   Pencil,
   Settings2,
+  Type,
+  X,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -38,6 +41,11 @@ import { IssueHistoryPanel } from "@/features/issues/components/issue-history-pa
 import { issueFormFieldClassName } from "@/features/issues/components/issue-form-fields";
 import { buildCursorPrompt } from "@/features/issues/lib/build-cursor-prompt";
 import { buildIssueAdminUrl } from "@/features/issues/lib/build-issue-admin-url";
+import {
+  ISSUE_IMPLEMENTATION_COMMENT_MIN_LENGTH,
+  validateImplementationComment,
+  type ImplementationCommentValidationError,
+} from "@/features/issues/lib/issue-implementation-comment";
 import { getIssuesBasePath, type IssuesRouteVariant } from "@/features/issues/lib/issues-base-path";
 import { parseIssueContext } from "@/features/issues/lib/issue-context";
 import type { IssueActivityLogClient } from "@/features/issues/lib/serialize-issue-activity";
@@ -121,6 +129,15 @@ export type AdminIssueCurrentUserClient = {
 
 const detailCardIconClassName =
   "flex size-5 shrink-0 items-center justify-center text-primary";
+
+const editDialogHeaderIconClassName =
+  "flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary";
+
+const editFieldLabelIconClassName =
+  "flex size-8 shrink-0 items-center justify-center text-primary";
+
+const editDialogActionButtonClassName =
+  "inline-flex h-10 items-center justify-center gap-2 rounded-lg px-5 text-sm font-medium [&_svg]:size-3.5 [&_svg]:shrink-0";
 
 type IssueDetailPanelTab = "comments" | "history";
 
@@ -424,10 +441,32 @@ export function AdminIssueDetailPanel({
     submitStatusChange(nextStatus);
   }
 
+  function formatResolutionValidationError(
+    errors: ImplementationCommentValidationError[],
+  ): string {
+    if (errors.includes("stub")) {
+      return t("admin.comments.resolveStub");
+    }
+
+    if (errors.includes("too_short")) {
+      return t("admin.comments.resolveTooShort", {
+        min: ISSUE_IMPLEMENTATION_COMMENT_MIN_LENGTH,
+      });
+    }
+
+    return t("admin.comments.resolveRequired");
+  }
+
   function handleResolveSubmit() {
     const trimmedComment = resolutionComment.trim();
     if (!trimmedComment) {
       appToast.error(t("admin.comments.resolveRequired"));
+      return;
+    }
+
+    const validation = validateImplementationComment(trimmedComment);
+    if (!validation.ok) {
+      appToast.error(formatResolutionValidationError(validation.errors));
       return;
     }
 
@@ -448,17 +487,16 @@ export function AdminIssueDetailPanel({
   }
 
   const editFormFields = (
-    <>
-      <div className={cn("space-y-2", isMobile && "rounded-2xl border border-border/70 bg-card/95 p-4 shadow-sm")}>
-        <label
-          className={cn(
-            "text-sm font-medium",
-            isMobile && "text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground",
-          )}
-          htmlFor="issue-title"
-        >
-          {t("form.issueTitle")}
-        </label>
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <div className="flex items-center gap-2.5">
+          <span className={editFieldLabelIconClassName}>
+            <Type className="size-4" aria-hidden />
+          </span>
+          <label className="text-sm font-semibold text-foreground" htmlFor="issue-title">
+            {t("form.issueTitle")}
+          </label>
+        </div>
         <Input
           id="issue-title"
           value={draftTitle}
@@ -467,23 +505,19 @@ export function AdminIssueDetailPanel({
           maxLength={200}
           disabled={pending}
           autoFocus={!isMobile}
-          className={cn(
-            isMobile &&
-              "h-11 rounded-xl border-border/70 bg-background/70 text-base font-semibold shadow-none",
-          )}
+          className="h-11 w-full rounded-lg border-border/70 bg-background/80 px-3 shadow-none"
         />
       </div>
 
-      <div className={cn("space-y-2", isMobile && "rounded-2xl border border-border/70 bg-card/95 p-4 shadow-sm")}>
-        <label
-          className={cn(
-            "text-sm font-medium",
-            isMobile && "text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground",
-          )}
-          htmlFor="issue-description"
-        >
-          {t("form.description")}
-        </label>
+      <div className="space-y-2">
+        <div className="flex items-center gap-2.5">
+          <span className={editFieldLabelIconClassName}>
+            <AlignLeft className="size-4" aria-hidden />
+          </span>
+          <label className="text-sm font-semibold text-foreground" htmlFor="issue-description">
+            {t("form.description")}
+          </label>
+        </div>
         <textarea
           id="issue-description"
           value={draftDescription}
@@ -492,13 +526,37 @@ export function AdminIssueDetailPanel({
           maxLength={20_000}
           rows={8}
           className={cn(
-            issueFormFieldClassName,
-            "min-h-44 resize-y py-2",
-            isMobile &&
-              "min-h-56 rounded-xl border-border/70 bg-background/70 text-base leading-relaxed shadow-none",
+            "w-full min-h-44 resize-y rounded-lg border border-input bg-background/80 px-3 py-3 text-sm text-foreground shadow-none outline-none",
+            "placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
+            "disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30",
+            isMobile && "min-h-56 text-base leading-relaxed",
           )}
           disabled={pending}
         />
+      </div>
+    </div>
+  );
+
+  const editDialogHeaderContent = (
+    <>
+      {isMobile ? (
+        <div className="mb-3 flex min-w-0 items-center gap-2">
+          <span className="inline-flex shrink-0 rounded-lg border border-primary/15 bg-primary/10 px-2 py-0.5 font-mono text-sm font-bold text-primary">
+            #{issue.number}
+          </span>
+          <span className="truncate text-sm font-medium text-muted-foreground">{issueTitle}</span>
+        </div>
+      ) : null}
+      <div className="flex gap-3">
+        <span className={editDialogHeaderIconClassName}>
+          <Pencil className="size-5" aria-hidden />
+        </span>
+        <div className="min-w-0 space-y-1">
+          <p className="text-lg font-semibold leading-tight tracking-tight text-foreground">
+            {t("admin.edit.title")}
+          </p>
+          <p className="text-sm leading-relaxed text-muted-foreground">{t("admin.edit.description")}</p>
+        </div>
       </div>
     </>
   );
@@ -508,17 +566,19 @@ export function AdminIssueDetailPanel({
       <Button
         type="button"
         variant="outline"
-        className={cn(isMobile && "h-11 flex-1 rounded-xl")}
+        className={cn(editDialogActionButtonClassName, isMobile && "flex-1")}
         onClick={() => handleEditOpenChange(false)}
         disabled={pending}
       >
+        <X aria-hidden />
         {t("form.cancel")}
       </Button>
       <Button
         type="submit"
-        className={cn(isMobile && "h-11 flex-1 rounded-xl")}
+        className={cn(editDialogActionButtonClassName, isMobile && "flex-1")}
         disabled={pending || !draftTitle.trim() || !draftDescription.trim()}
       >
+        <Check aria-hidden />
         {pending ? t("admin.edit.saving") : t("admin.edit.save")}
       </Button>
     </>
@@ -819,6 +879,7 @@ export function AdminIssueDetailPanel({
                 placeholder={t("admin.comments.resolvePlaceholder")}
                 disabled={pending}
               />
+              <p className="text-xs text-muted-foreground">{t("admin.comments.resolveHint")}</p>
             </div>
 
             <div className="space-y-2">
@@ -866,21 +927,10 @@ export function AdminIssueDetailPanel({
             onOpenAutoFocus={(event) => event.preventDefault()}
             {...editSheetOutsideHandlers}
           >
-            <SheetHeader className="border-b border-border/60 px-5 pt-5 pb-4 text-left">
-              <div className="mb-1 flex items-center gap-2">
-                <span className="inline-flex rounded-lg border border-primary/15 bg-primary/10 px-2 py-0.5 font-mono text-sm font-bold text-primary">
-                  #{issue.number}
-                </span>
-                <span className="truncate text-sm font-medium text-muted-foreground">
-                  {issueTitle}
-                </span>
-              </div>
-              <SheetTitle className="text-xl font-semibold tracking-tight">
-                {t("admin.edit.title")}
-              </SheetTitle>
-              <SheetDescription className="leading-relaxed">
-                {t("admin.edit.description")}
-              </SheetDescription>
+            <SheetHeader className="space-y-0 border-b border-border/60 px-5 pt-5 pb-4 text-left">
+              <SheetTitle className="sr-only">{t("admin.edit.title")}</SheetTitle>
+              <SheetDescription className="sr-only">{t("admin.edit.description")}</SheetDescription>
+              {editDialogHeaderContent}
             </SheetHeader>
 
             <form
@@ -890,7 +940,7 @@ export function AdminIssueDetailPanel({
               }}
               className="flex min-h-0 flex-col"
             >
-              <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-4">
+              <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
                 {editFormFields}
               </div>
               <SheetFooter className="flex-row gap-2 border-t border-border/60 bg-background/95 px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
@@ -901,10 +951,11 @@ export function AdminIssueDetailPanel({
         </Sheet>
       ) : (
         <Dialog open={editDialogOpen} onOpenChange={handleEditOpenChange}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{t("admin.edit.title")}</DialogTitle>
-              <DialogDescription>{t("admin.edit.description")}</DialogDescription>
+          <DialogContent className="gap-0 overflow-hidden rounded-2xl p-0 sm:max-w-lg">
+            <DialogHeader className="space-y-0 border-b border-border/60 px-6 pt-6 pb-5 text-left">
+              <DialogTitle className="sr-only">{t("admin.edit.title")}</DialogTitle>
+              <DialogDescription className="sr-only">{t("admin.edit.description")}</DialogDescription>
+              {editDialogHeaderContent}
             </DialogHeader>
 
             <form
@@ -912,10 +963,12 @@ export function AdminIssueDetailPanel({
                 event.preventDefault();
                 handleIssueDetailsSubmit();
               }}
-              className="space-y-4"
+              className="flex flex-col"
             >
-              {editFormFields}
-              <DialogFooter>{editActionButtons}</DialogFooter>
+              <div className="px-6 py-5">{editFormFields}</div>
+              <DialogFooter className="gap-2 border-t border-border/60 px-6 py-4 sm:justify-end">
+                {editActionButtons}
+              </DialogFooter>
             </form>
           </DialogContent>
         </Dialog>

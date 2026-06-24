@@ -1,6 +1,7 @@
 import type { Issue, IssueAttachment } from "@prisma/client";
 
 import { parseIssueContext } from "@/features/issues/lib/issue-context";
+import { buildIssueCommentDraftRelativePath } from "@/features/issues/lib/issue-implementation-comment";
 import type { IssueCommentClient } from "@/features/issues/lib/serialize-issue-comments";
 
 type CursorPromptIssue = Pick<
@@ -93,9 +94,13 @@ export function buildCursorPrompt(issue: CursorPromptIssue): string {
     "Obowiązkowy workflow dla Cursora:",
     "1. Najpierw uruchom `npm run sync:issues` (lub sync konkretnego issue, jeśli to celowe).",
     "2. Przygotuj plan i wprowadź poprawki.",
-    "3. Dla każdego obsłużonego issue dodaj komentarz implementacyjny:",
-    `   npm run issue:comment -- --issue=${issue.number} --resolve --message="Zaimplementowano: ... Testy: ..."`,
-    "4. Nie kończ pracy bez komentarza per issue albo jawnie zgłoś, dlaczego komentarz nie mógł zostać dodany.",
+    "3. Zapisz pełne podsumowanie implementacji do pliku:",
+    `   ${buildIssueCommentDraftRelativePath(issue.number)}`,
+    "   Treść pliku = to samo podsumowanie co w odpowiedzi (nie skrót, nie placeholder).",
+    "4. Wyślij komentarz implementacyjny:",
+    `   npm run issue:comment -- --issue=${issue.number} --resolve --draft`,
+    "5. W planie (Create Plan) i po Built: obowiązkowe todo closeout per issue + tabela „Issue closeout” w odpowiedzi (reguła issue-plan-closeout).",
+    "6. Nie kończ pracy bez komentarza per issue albo jawnie zgłoś, dlaczego komentarz nie mógł zostać dodany.",
   );
 
   return lines.join("\n");

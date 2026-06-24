@@ -115,13 +115,17 @@ Sidebar footer → "Zgłoś błąd"
 
 **Copy Issue URL** — deep link to admin detail on current origin (`build-issue-admin-url.ts`).
 
-**Implementation comments** — after a fix, add a durable comment per issue. CLI shortcut:
+**Implementation comments** — after a fix, write the full summary to `.cursor/issue-comments/{number}.md`, then:
 
 ```bash
-npm run issue:comment -- --issue=123 --resolve --message="Zaimplementowano: ... Testy: ..."
+npm run issue:comment -- --issue=123 --resolve --draft
 ```
 
+With `--resolve`, stub placeholders (for example `Zaimplementowano:`) are rejected. Minimum length applies. Use `--message-file=...` for a custom path. `--lenient` skips validation (manual only).
+
 Without `--author-email` / `ISSUE_COMMENT_AUTHOR_EMAIL`, the CLI writes the comment and activity history as **Cursor AI**.
+
+**Cursor Plan + Built** — project rules (`issue-plan-closeout.mdc`, `issue-workflow.mdc`) require every issue plan to end with per-issue closeout todos (draft `.md` → `issue:comment --draft` → verify). After Built, the agent must reply with an **Issue closeout** table (draft path, CLI output, status).
 
 **History** — issue detail has a `Pokaż: Komentarze / Historia` switch. History logs title changes, description changes, status changes, and comment add/edit/delete events with actor and timestamp.
 

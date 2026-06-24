@@ -36,6 +36,7 @@ logs/ut-upload-debug.jsonl
 
 # Cursor IDE (ephemeral debug output)
 .cursor/debug*.log
+.cursor/issue-comments/
 
 # env files (can opt-in for committing if needed)
 .env*

@@ -1,0 +1,45 @@
+---
+description: Require per-issue closeout todos in plans and after Build (draft .md + issue:comment)
+alwaysApply: true
+---
+
+# Issue Plan & Build Closeout
+
+Applies when the task involves internal issues: `#N`, `issue #N`, `docs/issues/`, `sync:issues`, **Create Plan for issues**, or executing a plan with **Built**.
+
+## Plan creation (Plan mode / Create Plan)
+
+For **each** issue number in scope, the plan **must** end with a dedicated **Issue closeout** block. Do not submit a plan without it.
+
+Per issue `{N}`, include these todos (use the real issue number):
+
+1. `closeout-{N}-draft` — Write the **full** implementation summary to `.cursor/issue-comments/{N}.md` (same text as the chat summary; not a stub like `Zaimplementowano:`).
+2. `closeout-{N}-comment` — Run `npm run issue:comment -- --issue={N} --resolve --draft` (omit `--resolve` only if the issue is already `RESOLVED`).
+3. `closeout-{N}-verify` — Confirm CLI success in the final response (paste the `Added comment …` line or explain failure).
+
+Optional: `--fixed-in=…` when preview URL, deployment, or commit SHA is known.
+
+## Plan execution (Built / Agent mode)
+
+- Closeout todos are **blocking**. Do not mark implementation todos complete until code **and** closeout are done.
+- Order: sync (if needed) → implement → write draft `.md` → `issue:comment --draft` → verify.
+- Never use `--message="Zaimplementowano: …"`; use `--draft` after the file is written.
+- If `issue:comment` fails, stop claiming the issue is fixed; report the error and issue number.
+
+## Final response (mandatory feedback)
+
+When any issue was handled, end with an **Issue closeout** section so the user has explicit feedback:
+
+```markdown
+## Issue closeout
+
+| Issue | Draft | Comment CLI | Status |
+| --- | --- | --- | --- |
+| #37 | `.cursor/issue-comments/37.md` | OK — Added comment … | RESOLVED |
+```
+
+If a step failed, say which step and why. Do not omit this table.
+
+## Multi-issue plans
+
+One row per issue in the table. One draft file and one `issue:comment` run per issue. Do not batch multiple issues into a single comment.

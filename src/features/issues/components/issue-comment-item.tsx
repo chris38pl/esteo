@@ -208,7 +208,7 @@ export function IssueCommentItem({
                   disabled={isDeleting}
                   onClick={() => void handleDelete()}
                 >
-                  {t("admin.comments.delete")}
+                  {isDeleting ? t("admin.comments.deleting") : t("admin.comments.delete")}
                 </Button>
               </>
             ) : null}

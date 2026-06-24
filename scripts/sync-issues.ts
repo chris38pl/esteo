@@ -5,6 +5,7 @@ import { mkdir, rm } from "node:fs/promises";
 
 import { buildIssueFolderName } from "../src/features/issues/lib/slugify-issue-title";
 import { downloadUploadThingFile } from "./sync-issues/download-screenshot";
+import { ensureIssueCommentDraft } from "./sync-issues/ensure-issue-comment-draft";
 import {
   listOrphanIssueFolders,
   removeIssueFolder,
@@ -122,6 +123,7 @@ async function main() {
         issue,
         downloadFile: downloadUploadThingFile,
       });
+      await ensureIssueCommentDraft(issue.number);
     }
 
     const closedIssues = await listIssuesForFolderCleanup(prisma);

@@ -1,6 +1,10 @@
 import { z } from "zod";
 
 import { issueContextSchema } from "@/features/issues/lib/issue-context";
+import {
+  formatImplementationCommentValidationErrors,
+  validateImplementationComment,
+} from "@/features/issues/lib/issue-implementation-comment";
 import { issueCommentBodySchema } from "@/features/issues/schemas/issue-comment";
 
 const optionalText = z
@@ -49,12 +53,27 @@ export function toAdminIssueStatus(status: string): AdminIssueStatus {
   return "OPEN";
 }
 
-export const updateIssueStatusSchema = z.object({
-  number: z.number().int().positive(),
-  status: z.enum(ADMIN_ISSUE_STATUS_VALUES),
-  resolutionComment: issueCommentBodySchema.optional(),
-  fixedIn: z.string().trim().max(200).optional().or(z.literal("")),
-});
+export const updateIssueStatusSchema = z
+  .object({
+    number: z.number().int().positive(),
+    status: z.enum(ADMIN_ISSUE_STATUS_VALUES),
+    resolutionComment: issueCommentBodySchema.optional(),
+    fixedIn: z.string().trim().max(200).optional().or(z.literal("")),
+  })
+  .superRefine((data, ctx) => {
+    if (data.status !== "RESOLVED" || !data.resolutionComment) {
+      return;
+    }
+
+    const validation = validateImplementationComment(data.resolutionComment);
+    if (!validation.ok) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: formatImplementationCommentValidationErrors(validation.errors),
+        path: ["resolutionComment"],
+      });
+    }
+  });
 
 export const updateIssueDetailsSchema = z.object({
   number: z.number().int().positive(),

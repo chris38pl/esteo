@@ -118,7 +118,7 @@ Lokalny eksport issue ze staging (lub dev) do `docs/issues/` — do analizy w Cu
 | | Wiele issue | `npm run sync:issues -- --issue=123,124,130` | Jak wyżej, lista numerów | Kilka issue naraz bez pełnego sync. |
 | | Dev DB zamiast staging | `npm run sync:issues -- --local` | `Syncing issues from default DATABASE_URL…` | Gdy testujesz issue tracker lokalnie (`ENABLE_ISSUE_TRACKER=true`). |
 | | Dev DB + jedno issue | `npm run sync:issues -- --local --issue=5` | Jak wyżej | Kombinacja flag. |
-| `issue:comment` | Dodaje trwały komentarz do issue; z `--resolve` ustawia `RESOLVED` | `npm run issue:comment -- --issue=123 --resolve --message="Zaimplementowano: ... Testy: ..."` | `Added comment ...` + `Issue #123 marked RESOLVED.` | Obowiązkowy krok po poprawce issue przez Cursora. Domyślny aktor to `Cursor AI`; opcjonalnie podaj `ISSUE_COMMENT_AUTHOR_EMAIL` albo `--author-email`. |
+| `issue:comment` | Dodaje trwały komentarz do issue; z `--resolve` ustawia `RESOLVED` | `npm run issue:comment -- --issue=123 --resolve --draft` | `Added comment ...` + `Issue #123 marked RESOLVED.` | Obowiązkowy krok po poprawce issue przez Cursora. Najpierw zapisz pełne podsumowanie w `.cursor/issue-comments/123.md`. Stub `Zaimplementowano:` jest odrzucany przy `--resolve`. Domyślny aktor to `Cursor AI`. |
 
 **Struktura folderów:**
 
@@ -148,7 +148,9 @@ Format katalogu: `{number}-{folderSlug}/` — `folderSlug` immutable (ustawiany 
 2. (Opcjonalnie) Admin → Copy Cursor Prompt — analiza bez sync
 3. `npm run sync:issues -- --issue=123` — szybki sync jednego issue
 4. Otwórz `docs/issues/123-…/` w Cursorze — `issue.md` + screenshoty + własne `notes.md`
-5. Po poprawce: `npm run issue:comment -- --issue=123 --resolve --message="Zaimplementowano: ... Testy: ..."`
+5. Po poprawce: zapisz podsumowanie w `.cursor/issue-comments/123.md`, potem `npm run issue:comment -- --issue=123 --resolve --draft`
+
+**Create Plan + Built (Cursor):** reguły `.cursor/rules/issue-plan-closeout.mdc` wymuszają w planie todo closeout per issue oraz tabelę „Issue closeout” w odpowiedzi po Built (draft + CLI + status).
 
 Alternatywa: admin → **Copy Cursor Prompt** / **Copy Issue URL** — bez `sync:issues`.
 

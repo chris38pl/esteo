@@ -1,6 +1,13 @@
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 
 import { PrismaClient } from "@prisma/client";
+
+import {
+  buildIssueCommentDraftRelativePath,
+  formatImplementationCommentValidationErrors,
+  validateImplementationComment,
+} from "../src/features/issues/lib/issue-implementation-comment";
+import { buildIssueCommentDraftPath } from "./lib/issue-comment-draft-path";
 
 const ISSUE_COMMENT_BODY_MAX_LENGTH = 4000;
 
@@ -8,13 +15,15 @@ type ParsedArgs = {
   issueNumber?: number;
   message?: string;
   messageFile?: string;
+  useDraft: boolean;
   authorEmail?: string;
   resolve: boolean;
   fixedIn?: string;
+  lenient: boolean;
 };
 
 function parseArgs(argv: string[]): ParsedArgs {
-  const parsed: ParsedArgs = { resolve: false };
+  const parsed: ParsedArgs = { resolve: false, useDraft: false, lenient: false };
 
   for (const arg of argv) {
     if (arg.startsWith("--issue=")) {
@@ -42,6 +51,16 @@ function parseArgs(argv: string[]): ParsedArgs {
       continue;
     }
 
+    if (arg === "--draft") {
+      parsed.useDraft = true;
+      continue;
+    }
+
+    if (arg === "--lenient") {
+      parsed.lenient = true;
+      continue;
+    }
+
     if (arg.startsWith("--fixed-in=")) {
       parsed.fixedIn = arg.slice("--fixed-in=".length);
     }
@@ -50,7 +69,34 @@ function parseArgs(argv: string[]): ParsedArgs {
   return parsed;
 }
 
+async function fileExists(filePath: string): Promise<boolean> {
+  try {
+    await access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function resolveMessage(args: ParsedArgs): Promise<string> {
+  if (args.useDraft) {
+    if (!args.issueNumber) {
+      throw new Error("--draft requires --issue=N.");
+    }
+
+    const draftPath = buildIssueCommentDraftPath(args.issueNumber);
+    if (!(await fileExists(draftPath))) {
+      throw new Error(
+        [
+          `Draft file not found: ${buildIssueCommentDraftRelativePath(args.issueNumber)}`,
+          "Write your full implementation summary there first (same text as in chat), then rerun with --draft.",
+        ].join("\n"),
+      );
+    }
+
+    return readFile(draftPath, "utf8");
+  }
+
   if (args.messageFile) {
     return readFile(args.messageFile, "utf8");
   }
@@ -62,15 +108,21 @@ function printUsage(): void {
   console.error(
     [
       "Usage:",
-      '  npm run issue:comment -- --issue=123 --message="Zaimplementowano: ..."',
-      '  npm run issue:comment -- --issue=123 --resolve --message-file=resolution.md',
+      "  npm run issue:comment -- --issue=123 --resolve --draft",
+      "  npm run issue:comment -- --issue=123 --resolve --message-file=path/to/summary.md",
+      "",
+      "Workflow (Cursor):",
+      "  1. Save full summary to .cursor/issue-comments/123.md",
+      "  2. npm run issue:comment -- --issue=123 --resolve --draft",
       "",
       "Options:",
       "  --issue=N                 Issue number.",
-      "  --message=TEXT            Comment body.",
+      "  --draft                   Read .cursor/issue-comments/{N}.md (preferred for agents).",
       "  --message-file=PATH       Read comment body from a file.",
-      "  --resolve                 Also set issue status to RESOLVED.",
+      "  --message=TEXT            Comment body (short text only; prefer --draft on Windows).",
+      "  --resolve                 Also set issue status to RESOLVED (requires substantive summary).",
       "  --fixed-in=TEXT           Optional Issue.fixedIn value.",
+      "  --lenient                 Skip anti-stub validation (manual use only).",
       "  --author-email=EMAIL      Optional real user author. Defaults to ISSUE_COMMENT_AUTHOR_EMAIL.",
       "                            Without an author email, the actor is Cursor AI.",
       "  --local                   Use local DATABASE_URL instead of staging (handled by wrapper).",
@@ -87,14 +139,35 @@ async function main() {
     throw new Error("Missing or invalid --issue.");
   }
 
+  if (!args.useDraft && !args.messageFile && !args.message) {
+    printUsage();
+    throw new Error("Missing --draft, --message-file, or --message.");
+  }
+
   const body = (await resolveMessage(args)).trim();
   if (!body) {
     printUsage();
-    throw new Error("Missing --message or --message-file.");
+    throw new Error("Comment body is empty.");
   }
 
   if (body.length > ISSUE_COMMENT_BODY_MAX_LENGTH) {
     throw new Error(`Comment exceeds ${ISSUE_COMMENT_BODY_MAX_LENGTH} characters.`);
+  }
+
+  if (args.resolve && !args.lenient) {
+    const validation = validateImplementationComment(body);
+    if (!validation.ok) {
+      throw new Error(
+        [
+          formatImplementationCommentValidationErrors(validation.errors),
+          "",
+          "Write the full implementation summary to:",
+          `  ${buildIssueCommentDraftRelativePath(issueNumber)}`,
+          "Then run:",
+          `  npm run issue:comment -- --issue=${issueNumber} --resolve --draft`,
+        ].join("\n"),
+      );
+    }
   }
 
   const authorEmail =
