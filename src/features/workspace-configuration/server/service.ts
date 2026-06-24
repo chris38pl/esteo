@@ -1,4 +1,4 @@
-import type { Prisma, User } from "@prisma/client";
+import type { Prisma, User, WorkspaceIndustry, WorkspaceRule } from "@prisma/client";
 import { Prisma as PrismaNamespace } from "@prisma/client";
 
 import { prisma } from "@/db/client";
@@ -36,6 +36,39 @@ const priceListInclude = {
     orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
   },
 } satisfies Prisma.PriceListInclude;
+
+const configurationWorkspaceInclude = {
+  settings: true,
+  estimateTemplates: {
+    where: { deletedAt: null },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    include: templateInclude,
+  },
+  priceLists: {
+    where: { deletedAt: null },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    include: priceListInclude,
+  },
+} satisfies Prisma.WorkspaceInclude;
+
+export type WorkspaceConfigurationPageData = {
+  workspace: {
+    id: string;
+    slug: string;
+    industry: WorkspaceIndustry;
+    industryOtherText: string | null;
+  };
+  companyDescription: string;
+  aiInstructions: string;
+  branding: Prisma.JsonValue | null;
+  access: ConfigurationAccess;
+  rules: WorkspaceRule[];
+  defaultEstimateTemplateId: string | null;
+  defaultPriceListId: string | null;
+  templates: SerializedTemplate[];
+  priceLists: SerializedPriceList[];
+  systemTemplate: ReturnType<typeof getSystemEstimateTemplateForIndustry>;
+};
 
 export type EstimateTemplateWithItems = Prisma.EstimateTemplateGetPayload<{
   include: typeof templateInclude;
@@ -226,25 +259,16 @@ export async function getEstimateTemplateForEditor(
   };
 }
 
-export async function getWorkspaceConfigurationPageData(user: User, workspaceId: string) {
+export async function getWorkspaceConfigurationPageData(
+  user: User,
+  workspaceId: string,
+): Promise<WorkspaceConfigurationPageData | null> {
   await requireRole(user, workspaceId, "OWNER");
 
   const [workspace, access, rules] = await Promise.all([
     prisma.workspace.findFirst({
       where: { id: workspaceId, deletedAt: null },
-      include: {
-        settings: true,
-        estimateTemplates: {
-          where: { deletedAt: null },
-          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-          include: templateInclude,
-        },
-        priceLists: {
-          where: { deletedAt: null },
-          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-          include: priceListInclude,
-        },
-      },
+      include: configurationWorkspaceInclude,
     }),
     getConfigurationAccess(workspaceId),
     prisma.workspaceRule.findMany({
@@ -257,12 +281,22 @@ export async function getWorkspaceConfigurationPageData(user: User, workspaceId:
     return null;
   }
 
+  const settings = workspace.settings;
+
   return {
-    workspace,
+    workspace: {
+      id: workspace.id,
+      slug: workspace.slug,
+      industry: workspace.industry,
+      industryOtherText: workspace.industryOtherText,
+    },
+    companyDescription: settings?.companyDescription ?? "",
+    aiInstructions: settings?.aiInstructions ?? "",
+    branding: settings?.branding ?? null,
     access,
     rules,
-    defaultEstimateTemplateId: workspace.settings?.defaultEstimateTemplateId ?? null,
-    defaultPriceListId: workspace.settings?.defaultPriceListId ?? null,
+    defaultEstimateTemplateId: settings?.defaultEstimateTemplateId ?? null,
+    defaultPriceListId: settings?.defaultPriceListId ?? null,
     templates: workspace.estimateTemplates.map(serializeTemplate),
     priceLists: workspace.priceLists.map(serializePriceList),
     systemTemplate: getSystemEstimateTemplateForIndustry(workspace.industry),

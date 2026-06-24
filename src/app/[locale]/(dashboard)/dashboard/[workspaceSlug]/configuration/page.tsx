@@ -34,9 +34,7 @@ export default async function WorkspaceConfigurationPage({
     redirect(dashboardEstimatesHref(resolvedLocale, resolved.canonicalSlug));
   }
 
-  const brandingResult = workspaceBrandingSchema.safeParse(
-    data.workspace.settings?.branding ?? {},
-  );
+  const brandingResult = workspaceBrandingSchema.safeParse(data.branding ?? {});
   const initialBranding = brandingResult.success ? brandingResult.data : null;
 
   return (
@@ -46,9 +44,9 @@ export default async function WorkspaceConfigurationPage({
         workspaceSlug={data.workspace.slug}
         workspaceIndustry={data.workspace.industry}
         industryOtherText={data.workspace.industryOtherText ?? ""}
-        companyDescription={data.workspace.settings?.companyDescription ?? ""}
+        companyDescription={data.companyDescription}
         rules={data.rules}
-        initialAiInstructions={data.workspace.settings?.aiInstructions ?? ""}
+        initialAiInstructions={data.aiInstructions}
         initialBranding={initialBranding}
         locale={resolvedLocale}
         templates={data.templates}
