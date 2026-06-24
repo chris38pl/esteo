@@ -2,9 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Pin, PinOff } from "lucide-react";
+import { Loader2, Pin, PinOff } from "lucide-react";
 import { useTransition } from "react";
 
+import { appToast } from "@/components/ui/app-toast";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { togglePinEstimateAction } from "@/features/estimates/server/pinned-actions";
 import type { Locale } from "@/lib/locale";
@@ -42,12 +43,19 @@ export function EstimateHeaderPinMenuItem({
             pin: !isPinned,
           });
           if (result.success) {
+            appToast.success(
+              t(isPinned ? "header.actions.unpinSuccess" : "header.actions.pinSuccess"),
+            );
             router.refresh();
+          } else if (result.error) {
+            appToast.error(result.error);
           }
         });
       }}
     >
-      {isPinned ? (
+      {pending ? (
+        <Loader2 className="size-4 animate-spin" />
+      ) : isPinned ? (
         <>
           <PinOff className="size-4" />
           {t("header.actions.unpinFromMenu")}

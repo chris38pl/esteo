@@ -17,7 +17,7 @@ import {
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { toast } from "sonner";
+import { appToast } from "@/components/ui/app-toast";
 
 import { Button } from "@/components/ui/button";
 import { BillingHandoffBanner } from "@/features/billing/components/billing-handoff-banner";
@@ -282,7 +282,7 @@ export function WorkspaceSubscriptionManagePanel({
     }
 
     if (result.data.kind === "downgrade_scheduled") {
-      toast.success(
+      appToast.success(
         tPlans("downgradeScheduled", {
           plan: tHero(`planName.${result.data.targetPlan}`),
           date: formatLongDate(result.data.effectiveAt),
@@ -292,7 +292,7 @@ export function WorkspaceSubscriptionManagePanel({
     }
 
     if (result.data.kind === "updated") {
-      toast.success(tPlans("upgradeSuccess", { plan: tHero(`planName.${result.data.plan}`) }));
+      appToast.success(tPlans("upgradeSuccess", { plan: tHero(`planName.${result.data.plan}`) }));
       return true;
     }
 
@@ -337,7 +337,7 @@ export function WorkspaceSubscriptionManagePanel({
         if (ok && addonDirty) {
           const addonsOk = await applyAddonChanges();
           if (addonsOk) {
-            toast.success(t("saveSuccess"));
+            appToast.success(t("saveSuccess"));
             window.location.reload();
           }
         } else if (ok) {
@@ -376,7 +376,7 @@ export function WorkspaceSubscriptionManagePanel({
         }
         const ok = await applyAddonChanges();
         if (ok) {
-          toast.success(t("saveSuccess"));
+          appToast.success(t("saveSuccess"));
           window.location.reload();
         }
       }
@@ -403,7 +403,7 @@ export function WorkspaceSubscriptionManagePanel({
             return;
           }
         }
-        toast.success(t("saveSuccess"));
+        appToast.success(t("saveSuccess"));
         window.location.reload();
         return;
       }
@@ -411,7 +411,7 @@ export function WorkspaceSubscriptionManagePanel({
       if (previewMode === "addons") {
         const ok = await applyAddonChanges();
         if (ok) {
-          toast.success(t("saveSuccess"));
+          appToast.success(t("saveSuccess"));
           window.location.reload();
         }
       }

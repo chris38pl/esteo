@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl";
 import { RequestStatusBadge } from "@/features/estimate-requests/components/request-status-badge";
 import { RequestListRowActions } from "@/features/estimate-requests/components/request-list-row-actions";
 import type { WorkspaceRequestListItem } from "@/features/estimate-requests/server/workspace-requests";
+import type { GenerationConfigurationOptions } from "@/features/workspace-configuration/server/service";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +19,7 @@ interface RequestListRowProps {
   canCreateEstimate: boolean;
   estimateLimitReached: boolean;
   billingHref: string | null;
+  generationConfiguration: GenerationConfigurationOptions;
   locale: Locale;
   layout?: "table" | "list";
 }
@@ -113,6 +115,7 @@ export function RequestListRow({
   canCreateEstimate,
   estimateLimitReached,
   billingHref,
+  generationConfiguration,
   locale,
   layout = "table",
 }: RequestListRowProps) {
@@ -224,6 +227,7 @@ export function RequestListRow({
             canCreateEstimate={canCreateEstimate}
             estimateLimitReached={estimateLimitReached}
             billingHref={billingHref}
+            generationConfiguration={generationConfiguration}
             className="shrink-0"
           />
         </div>
@@ -330,6 +334,7 @@ export function RequestListRow({
           canCreateEstimate={canCreateEstimate}
           estimateLimitReached={estimateLimitReached}
           billingHref={billingHref}
+          generationConfiguration={generationConfiguration}
         />
       </td>
     </tr>

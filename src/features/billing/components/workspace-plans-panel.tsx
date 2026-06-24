@@ -6,7 +6,7 @@ import { ArrowLeft, Check, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { toast } from "sonner";
+import { appToast } from "@/components/ui/app-toast";
 
 import { Button } from "@/components/ui/button";
 import { BillingHandoffBanner } from "@/features/billing/components/billing-handoff-banner";
@@ -162,7 +162,7 @@ export function WorkspacePlansPanel({
     }
 
     if (result.data.kind === "downgrade_scheduled") {
-      toast.success(
+      appToast.success(
         t("downgradeScheduled", {
           plan: tHero(`planName.${result.data.targetPlan}`),
           date: formatLongDate(result.data.effectiveAt),
@@ -173,7 +173,7 @@ export function WorkspacePlansPanel({
     }
 
     if (result.data.kind === "updated") {
-      toast.success(t("upgradeSuccess", { plan: tHero(`planName.${result.data.plan}`) }));
+      appToast.success(t("upgradeSuccess", { plan: tHero(`planName.${result.data.plan}`) }));
       window.location.reload();
       return;
     }

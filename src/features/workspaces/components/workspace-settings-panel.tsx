@@ -11,7 +11,6 @@ import {
   Handshake,
   LayoutDashboard,
   MoreHorizontal,
-  ScrollText,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -31,10 +30,9 @@ import {
 import { WorkspaceSettingsCompanyTab } from "@/features/workspaces/components/workspace-settings-company-tab";
 import { WorkspaceSettingsForm } from "@/features/workspaces/components/workspace-settings-form";
 import { WorkspaceSettingsDeleteSection } from "@/features/workspaces/components/workspace-settings-delete-section";
-import { WorkspaceAiSetupSection } from "@/features/workspaces/components/workspace-ai-setup-section";
+import { WorkspaceAiSetupCardCompact } from "@/features/workspaces/components/workspace-ai-setup-card-compact";
 import { WorkspaceSettingsManagementCard } from "@/features/workspaces/components/workspace-settings-management-card";
 import { WorkspaceSettingsReferralTab } from "@/features/workspaces/components/workspace-settings-referral-tab";
-import { WorkspaceSettingsRulesTab } from "@/features/workspaces/components/workspace-settings-rules-tab";
 import { WorkspaceSettingsUsersTab } from "@/features/workspaces/components/workspace-settings-users-tab";
 import type { WorkspaceReferralClaimView } from "@/features/referrals/server/get-workspace-referral-claim-view";
 import type {
@@ -45,8 +43,13 @@ import type { WorkspaceDeleteEligibility } from "@/features/workspaces/lib/works
 import type { AvatarPreset } from "@/components/avatars/user-avatar";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
+import {
+  AI_SETUP_FOCUS_PARAM,
+  isAiSetupFocusField,
+} from "@/features/workspaces/lib/ai-setup-focus";
+import { useAiSetupFieldFocus } from "@/features/workspaces/hooks/use-ai-setup-field-focus";
 
-type SettingsTab = "general" | "company" | "users" | "referral" | "rules";
+type SettingsTab = "general" | "company" | "users" | "referral";
 
 type MemberRow = {
   id: string;
@@ -68,24 +71,22 @@ type InvitationRow = {
   invitedAt: string;
 };
 
-const TABS: SettingsTab[] = ["general", "company", "users", "referral", "rules"];
+const TABS: SettingsTab[] = ["general", "company", "users", "referral"];
 
-const MOBILE_PRIMARY_TABS: SettingsTab[] = ["general", "company", "rules"];
+const MOBILE_PRIMARY_TABS: SettingsTab[] = ["general", "company"];
 
 const TAB_ICONS: Record<SettingsTab, LucideIcon> = {
   general: LayoutDashboard,
   company: Briefcase,
   users: Users,
   referral: Handshake,
-  rules: ScrollText,
 };
 
 function parseTab(value: string | null): SettingsTab {
   if (
     value === "company" ||
     value === "users" ||
-    value === "referral" ||
-    value === "rules"
+    value === "referral"
   ) {
     return value;
   }
@@ -95,6 +96,13 @@ function parseTab(value: string | null): SettingsTab {
 function resolveActiveTab(value: string | null, isOwner: boolean): SettingsTab {
   const raw = parseTab(value);
   return raw === "referral" && !isOwner ? "general" : raw;
+}
+
+function resolveTabForFocus(focus: string | null): SettingsTab | null {
+  if (focus === "businessType" || focus === "companyDescription") {
+    return "general";
+  }
+  return null;
 }
 
 function getVisibleTabs(isOwner: boolean): SettingsTab[] {
@@ -284,7 +292,6 @@ export function WorkspaceSettingsPanel({
   members,
   invitations,
   rules,
-  initialAiInstructions,
   initialBranding,
   canInviteMembers,
   locale,
@@ -309,7 +316,6 @@ export function WorkspaceSettingsPanel({
   members: MemberRow[];
   invitations: InvitationRow[];
   rules: WorkspaceRule[];
-  initialAiInstructions: string;
   initialBranding: WorkspaceBranding | null;
   canInviteMembers: boolean;
   locale: Locale;
@@ -324,16 +330,21 @@ export function WorkspaceSettingsPanel({
   const t = useTranslations("workspaces.settings");
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState<SettingsTab>(() =>
-    resolveActiveTab(searchParams.get("tab"), isOwner),
-  );
+  const focusParam = searchParams.get(AI_SETUP_FOCUS_PARAM);
+  const [activeTab, setActiveTab] = useState<SettingsTab>(() => {
+    const focusTab = isAiSetupFocusField(focusParam) ? resolveTabForFocus(focusParam) : null;
+    return focusTab ?? resolveActiveTab(searchParams.get("tab"), isOwner);
+  });
   const [isTabPending, startTabTransition] = useTransition();
   const [appearanceTheme, setAppearanceTheme] = useState(initialAppearanceTheme);
   const [themePickerDisabled, setThemePickerDisabled] = useState(false);
 
+  useAiSetupFieldFocus();
+
   useEffect(() => {
-    setActiveTab(resolveActiveTab(searchParams.get("tab"), isOwner));
-  }, [searchParams, isOwner]);
+    const focusTab = isAiSetupFocusField(focusParam) ? resolveTabForFocus(focusParam) : null;
+    setActiveTab(focusTab ?? resolveActiveTab(searchParams.get("tab"), isOwner));
+  }, [focusParam, searchParams, isOwner]);
 
   useEffect(() => {
     function handlePopState() {
@@ -382,9 +393,7 @@ export function WorkspaceSettingsPanel({
         ? t("tabs.companyDescription")
         : activeTab === "users"
           ? t("tabs.usersDescription")
-          : activeTab === "referral"
-            ? t("tabs.referralDescription")
-            : t("tabs.rulesDescription");
+          : t("tabs.referralDescription");
 
   return (
     <>
@@ -395,6 +404,16 @@ export function WorkspaceSettingsPanel({
           <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
           <p className="text-sm text-muted-foreground">{tabDescription}</p>
         </div>
+
+        <WorkspaceAiSetupCardCompact
+          workspaceIndustry={workspaceIndustry}
+          industryOtherText={initialIndustryOtherText}
+          companyDescription={initialCompanyDescription}
+          initialBranding={initialBranding}
+          rules={rules}
+          locale={locale}
+          workspaceSlug={workspaceSlug}
+        />
 
         <WorkspaceSettingsTabList
           activeTab={activeTab}
@@ -409,6 +428,8 @@ export function WorkspaceSettingsPanel({
           <>
             <WorkspaceSettingsForm
               workspaceId={workspaceId}
+              workspaceIndustry={workspaceIndustry}
+              industryOtherText={initialIndustryOtherText}
               initialName={initialName}
               initialCompanyDescription={initialCompanyDescription}
               initialLogoUrl={initialBranding?.logoUrl ?? null}
@@ -416,15 +437,6 @@ export function WorkspaceSettingsPanel({
               onAppearanceThemeChange={setAppearanceTheme}
               onPendingChange={setThemePickerDisabled}
               themePickerDisabled={themePickerDisabled}
-              locale={locale}
-            />
-            <WorkspaceAiSetupSection
-              workspaceId={workspaceId}
-              workspaceIndustry={workspaceIndustry}
-              initialIndustryOtherText={initialIndustryOtherText}
-              companyDescription={initialCompanyDescription}
-              initialBranding={initialBranding}
-              rules={rules}
               locale={locale}
             />
             {isOwner ? (
@@ -479,17 +491,6 @@ export function WorkspaceSettingsPanel({
             workspaceSlug={workspaceSlug}
             locale={locale}
             referralClaim={referralClaim}
-          />
-        ) : null}
-
-        {activeTab === "rules" ? (
-          <WorkspaceSettingsRulesTab
-            workspaceId={workspaceId}
-            workspaceIndustry={workspaceIndustry}
-            rules={rules}
-            initialAiInstructions={initialAiInstructions}
-            initialBranding={initialBranding}
-            locale={locale}
           />
         ) : null}
         </div>

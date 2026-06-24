@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -42,6 +42,7 @@ export function NotificationInvitationActions({
   const tInvites = useTranslations("workspaces.invitations");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [pendingAction, setPendingAction] = useState<"accept" | "decline" | null>(null);
 
   const invitationPayload = parseNotificationInvitationPayload(item.payload);
 
@@ -70,44 +71,38 @@ export function NotificationInvitationActions({
       | { success: true; data: unknown }
       | { success: false; error: string; code?: string }
     >,
+    actionKind: "accept" | "decline",
   ) {
+    setPendingAction(actionKind);
     startTransition(async () => {
       const result = await action();
 
       if (!result.success) {
         handleError(result);
+        setPendingAction(null);
         return;
       }
 
       onActionComplete?.(item.id);
       router.refresh();
+      setPendingAction(null);
 
       if (!("closed" in (result.data as object))) {
-        appToast.success(tInvites("actionAccepted"));
+        appToast.success(
+          actionKind === "accept"
+            ? tInvites("actionAccepted")
+            : tInvites("actionDeclined"),
+        );
       }
     });
   }
 
   function handleAccept() {
-    runAction(() => acceptReceivedInvitationAction(invitationId, locale));
+    runAction(() => acceptReceivedInvitationAction(invitationId, locale), "accept");
   }
 
   function handleDecline() {
-    startTransition(async () => {
-      const result = await declineReceivedInvitationAction(invitationId, locale);
-
-      if (!result.success) {
-        handleError(result as { success: false; error: string; code?: string });
-        return;
-      }
-
-      onActionComplete?.(item.id);
-      router.refresh();
-
-      if (!("closed" in (result.data as object))) {
-        appToast.success(tInvites("actionDeclined"));
-      }
-    });
+    runAction(() => declineReceivedInvitationAction(invitationId, locale), "decline");
   }
 
   return (
@@ -121,9 +116,11 @@ export function NotificationInvitationActions({
           disabled={isPending}
           onClick={handleAccept}
         >
-          {t(
-            resolveNotificationActionLabelKey(item.primaryActionLabelKey) as "actions.acceptInvite",
-          )}
+          {pendingAction === "accept"
+            ? tInvites("accepting")
+            : t(
+                resolveNotificationActionLabelKey(item.primaryActionLabelKey) as "actions.acceptInvite",
+              )}
         </Button>
       ) : null}
       {item.secondaryActionLabelKey ? (
@@ -135,11 +132,13 @@ export function NotificationInvitationActions({
           disabled={isPending}
           onClick={handleDecline}
         >
-          {t(
-            resolveNotificationActionLabelKey(
-              item.secondaryActionLabelKey,
-            ) as "actions.declineInvite",
-          )}
+          {pendingAction === "decline"
+            ? tInvites("declining")
+            : t(
+                resolveNotificationActionLabelKey(
+                  item.secondaryActionLabelKey,
+                ) as "actions.declineInvite",
+              )}
         </Button>
       ) : null}
     </div>

@@ -5,8 +5,10 @@
     "estimateRequestPage": "Strona wyceny",
     "estimates": "Wyceny",
     "payments": "Płatności",
+    "configuration": "Konfiguracja AI",
     "settings": "Ustawienia",
     "settingsOwnerOnly": "Tylko właściciel przestrzeni może zmieniać ustawienia",
+    "configurationOwnerOnly": "Tylko właściciel przestrzeni może zmieniać konfigurację",
     "comingSoon": "Wkrótce"
   },
   "tooltips": {

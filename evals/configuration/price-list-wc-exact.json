@@ -1,0 +1,45 @@
+{
+  "id": "configuration-price-list-wc-exact",
+  "name": "Configuration — exact price list match",
+  "locale": "pl",
+  "category": "business",
+  "quick": true,
+  "critical": true,
+  "profileVersion": "PLUMBING_V1",
+  "workspace": {
+    "industry": "PLUMBING",
+    "companyDescription": "Firma hydrauliczna realizująca montaże armatury.",
+    "template": {
+      "name": "Montaż armatury",
+      "sections": [
+        {
+          "title": "Hydraulika",
+          "items": [{ "name": "Montaż WC", "unit": "szt" }]
+        }
+      ]
+    },
+    "priceList": {
+      "name": "Standard 2026",
+      "currency": "PLN",
+      "items": [{ "name": "Montaż WC", "unit": "szt", "unitPrice": "400.00" }]
+    },
+    "rules": [],
+    "systemRules": { "rounding": true, "units": true }
+  },
+  "request": {
+    "project": {
+      "description": "Proszę o wycenę montażu jednego WC w łazience.",
+      "preferredStartDate": "asap"
+    },
+    "address": { "city": "Warszawa" }
+  },
+  "expectations": {
+    "mustHave": [{ "term": "Montaż WC", "scope": "any_item" }],
+    "configuration": {
+      "expectedPrices": [{ "term": "Montaż WC", "unit": "szt", "unitPrice": "400.00" }]
+    },
+    "coverageTerms": ["WC"],
+    "leakageDomain": "services",
+    "minLineItems": 1
+  }
+}

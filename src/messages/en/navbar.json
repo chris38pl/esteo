@@ -28,7 +28,12 @@
     "billingPlans": "Plans",
     "billingAddons": "Add-ons",
     "billingManage": "Subscription",
-    "tips": "Tips"
+    "tips": "Tips",
+    "configuration": "Configuration",
+    "configurationTemplates": "Estimate templates",
+    "configurationPriceLists": "Price lists",
+    "configurationRules": "Rules",
+    "configurationNewTemplate": "New template"
   },
   "notifications": {
     "label": "Notifications",

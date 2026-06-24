@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 
+import { appToast } from "@/components/ui/app-toast";
 import { CompanyProfileFieldLabel } from "@/features/workspaces/components/company-profile-field-label";
 import {
   COMPANY_ADDRESS_MAX_LENGTH,
@@ -64,13 +65,11 @@ export function WorkspaceSettingsCompanyTab({
   const [companyEmail, setCompanyEmail] = useState(initialCompanyEmail);
   const [companyPhone, setCompanyPhone] = useState(initialCompanyPhone);
   const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
-    setSaved(false);
 
     const parsed = updateWorkspaceCompanyProfileSchema.safeParse({
       companyAddress: companyAddress.trim() || null,
@@ -94,10 +93,11 @@ export function WorkspaceSettingsCompanyTab({
 
       if (!result.success) {
         setError(result.error);
+        appToast.error(result.error);
         return;
       }
 
-      setSaved(true);
+      appToast.success(t("saveSuccessToast"));
       router.refresh();
     });
   }
@@ -172,10 +172,6 @@ export function WorkspaceSettingsCompanyTab({
             <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
               {error}
             </p>
-          ) : null}
-
-          {saved ? (
-            <p className="text-sm text-muted-foreground">{t("saved")}</p>
           ) : null}
 
           <Button type="submit" className="w-full rounded-lg sm:w-auto" disabled={isPending}>

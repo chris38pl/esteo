@@ -5,7 +5,7 @@ import { ChevronRight, Coins, Puzzle, Users } from "lucide-react";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useTransition } from "react";
-import { toast } from "sonner";
+import { appToast } from "@/components/ui/app-toast";
 
 import type { WorkspaceBillingPageData } from "@/features/billing/billing-page-data";
 import {
@@ -88,7 +88,7 @@ function BillingSubscriptionImpactCard({
         return;
       }
       if (result.data.kind === "downgrade_canceled") {
-        toast.success(
+        appToast.success(
           tPlans("downgradeCanceled", { plan: tHero(`planName.${result.data.plan}`) }),
         );
         window.location.reload();

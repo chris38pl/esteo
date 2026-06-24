@@ -12,10 +12,18 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useTransition } from "react";
-import { toast } from "sonner";
+import { useState, useTransition } from "react";
+import { appToast } from "@/components/ui/app-toast";
 
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,18 +32,32 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { convertRequestToEstimateAction } from "@/features/estimate-requests/server/workspace-request-actions";
+import {
+  convertRequestToEstimateAction,
+  deleteLinkedEstimateFromRequestAction,
+} from "@/features/estimate-requests/server/workspace-request-actions";
+import type { GenerationConfigurationOptions } from "@/features/workspace-configuration/server/service";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
 const sectionLabelClassName =
   "px-2 py-1.5 text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground";
+const DEFAULT_OPTION = "__default";
+const NONE_OPTION = "__none";
 
 export function RequestListRowActions({
   requestId,
@@ -46,6 +68,7 @@ export function RequestListRowActions({
   canCreateEstimate,
   estimateLimitReached,
   billingHref,
+  generationConfiguration,
   align = "end",
   className,
 }: {
@@ -57,12 +80,17 @@ export function RequestListRowActions({
   canCreateEstimate: boolean;
   estimateLimitReached: boolean;
   billingHref: string | null;
+  generationConfiguration: GenerationConfigurationOptions;
   align?: "start" | "center" | "end";
   className?: string;
 }) {
   const t = useTranslations("requests.list.actions");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [isDeletingEstimate, setIsDeletingEstimate] = useState(false);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState(DEFAULT_OPTION);
+  const [selectedPriceList, setSelectedPriceList] = useState(DEFAULT_OPTION);
 
   const estimateHref = estimateId
     ? `/${locale}/dashboard/${workspaceSlug}/estimates/${estimateId}`
@@ -75,6 +103,16 @@ export function RequestListRowActions({
   const showDeleteEstimate = Boolean(estimateId);
   const showEstimateSection = showCreateEstimate || showViewEstimate || showDeleteEstimate;
 
+  function resolveSelectedId(value: string): string | null | undefined {
+    if (value === DEFAULT_OPTION) {
+      return undefined;
+    }
+    if (value === NONE_OPTION) {
+      return null;
+    }
+    return value;
+  }
+
   function handleCreateEstimate() {
     if (!canCreateEstimate || estimateId || isPending) {
       return;
@@ -86,14 +124,49 @@ export function RequestListRowActions({
         workspaceSlug,
         requestId,
         locale,
+        templateId: resolveSelectedId(selectedTemplate),
+        priceListId: resolveSelectedId(selectedPriceList),
       });
 
       if (!result.success) {
-        toast.error(result.error);
+        appToast.error(result.error);
         return;
       }
 
+      setCreateDialogOpen(false);
       router.push(`/${locale}/dashboard/${workspaceSlug}/estimates/${result.data.estimateId}`);
+      router.refresh();
+    });
+  }
+
+  function handleDeleteEstimate() {
+    if (!estimateId || isDeletingEstimate) {
+      return;
+    }
+
+    const confirmed = window.confirm(t("deleteEstimateConfirm"));
+    if (!confirmed) {
+      return;
+    }
+
+    startTransition(async () => {
+      setIsDeletingEstimate(true);
+      const result = await deleteLinkedEstimateFromRequestAction({
+        workspaceId,
+        workspaceSlug,
+        requestId,
+        estimateId,
+        locale,
+      });
+
+      if (!result.success) {
+        appToast.error(result.error);
+        setIsDeletingEstimate(false);
+        return;
+      }
+
+      appToast.success(t("deleteEstimateSuccess"));
+      setIsDeletingEstimate(false);
       router.refresh();
     });
   }
@@ -166,7 +239,9 @@ export function RequestListRowActions({
                   className="gap-2"
                   onSelect={(event) => {
                     event.preventDefault();
-                    handleCreateEstimate();
+                    setSelectedTemplate(DEFAULT_OPTION);
+                    setSelectedPriceList(DEFAULT_OPTION);
+                    setCreateDialogOpen(true);
                   }}
                 >
                   {isPending ? (
@@ -186,15 +261,96 @@ export function RequestListRowActions({
                 </DropdownMenuItem>
               ) : null}
               {showDeleteEstimate ? (
-                <DropdownMenuItem disabled variant="destructive" className="gap-2 opacity-50">
-                  <Trash2 className="size-4" />
-                  {t("deleteEstimate")}
+                <DropdownMenuItem
+                  variant="destructive"
+                  className="gap-2"
+                  disabled={isPending || isDeletingEstimate}
+                  onSelect={(event) => {
+                    event.preventDefault();
+                    handleDeleteEstimate();
+                  }}
+                >
+                  {isDeletingEstimate ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="size-4" />
+                  )}
+                  {isDeletingEstimate ? t("deleteEstimateDeleting") : t("deleteEstimate")}
                 </DropdownMenuItem>
               ) : null}
             </>
           ) : null}
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+        <DialogContent className="max-w-md rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>{t("createDialog.title")}</DialogTitle>
+            <DialogDescription>{t("createDialog.description")}</DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>{t("createDialog.templateLabel")}</Label>
+              <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={DEFAULT_OPTION}>
+                    {generationConfiguration.defaultTemplateId
+                      ? t("createDialog.defaultTemplate")
+                      : t("createDialog.noTemplate")}
+                  </SelectItem>
+                  <SelectItem value={NONE_OPTION}>{t("createDialog.noTemplate")}</SelectItem>
+                  {generationConfiguration.templates.map((template) => (
+                    <SelectItem key={template.id} value={template.id}>
+                      {template.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>{t("createDialog.priceListLabel")}</Label>
+              <Select value={selectedPriceList} onValueChange={setSelectedPriceList}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={DEFAULT_OPTION}>
+                    {generationConfiguration.defaultPriceListId
+                      ? t("createDialog.defaultPriceList")
+                      : t("createDialog.noPriceList")}
+                  </SelectItem>
+                  <SelectItem value={NONE_OPTION}>{t("createDialog.noPriceList")}</SelectItem>
+                  {generationConfiguration.priceLists.map((priceList) => (
+                    <SelectItem key={priceList.id} value={priceList.id}>
+                      {priceList.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={isPending}
+              onClick={() => setCreateDialogOpen(false)}
+            >
+              {t("createDialog.cancel")}
+            </Button>
+            <Button type="button" disabled={isPending || !canCreateEstimate} onClick={handleCreateEstimate}>
+              {isPending ? t("createDialog.creating") : t("createDialog.submit")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

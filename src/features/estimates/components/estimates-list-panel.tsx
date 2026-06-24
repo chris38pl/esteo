@@ -9,7 +9,6 @@ import { appToast } from "@/components/ui/app-toast";
 import { PaginationControls } from "@/components/shared/pagination-controls";
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import { Button } from "@/components/ui/button";
-import { EstimateNavigationOverlay } from "@/features/estimates/components/estimate-navigation-overlay";
 import { estimateEditorMaxWidthClass } from "@/features/estimates/lib/estimate-layout-config";
 import {
   EMPTY_ESTIMATE_LIST_DATE_RANGE,
@@ -91,7 +90,6 @@ export function EstimatesListPanel({
     useEstimatesListPreferences(workspaceSlug);
   const { visibleColumns, pageSize } = preferences;
   const [createOpen, setCreateOpen] = useState(false);
-  const [openingEstimateId, setOpeningEstimateId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [listFilter, setListFilter] = useState(EMPTY_ESTIMATE_LIST_FILTER);
   const [dateRange, setDateRange] = useState(EMPTY_ESTIMATE_LIST_DATE_RANGE);
@@ -229,12 +227,6 @@ export function EstimatesListPanel({
 
   return (
     <div className={cn("mx-auto min-w-0 w-full space-y-6", estimateEditorMaxWidthClass)}>
-      {openingEstimateId ? (
-        <EstimateNavigationOverlay
-          label={t("create.opening")}
-          hint={t("create.openingHint")}
-        />
-      ) : null}
       <EstimateEditorLayoutStyles />
 
       {activationProgress ? (
@@ -334,7 +326,6 @@ export function EstimatesListPanel({
         workspaceId={workspaceId}
         workspaceSlug={workspaceSlug}
         locale={locale}
-        onEstimateOpening={setOpeningEstimateId}
       />
     </div>
   );

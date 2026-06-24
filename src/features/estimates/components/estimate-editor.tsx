@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { toast } from "sonner";
+import { appToast } from "@/components/ui/app-toast";
 import {
   useEstimateAutosave,
 } from "@/features/estimates/hooks/use-estimate-autosave";
@@ -110,6 +110,10 @@ interface EstimateEditorProps {
   workspaceSlug: string;
   locale: Locale;
   rulesApplied?: boolean;
+  configurationSource?: {
+    templateName: string | null;
+    priceListName: string | null;
+  } | null;
   investmentPropertyType?: string | null;
   initialAiMessages?: AiMessageClient[];
   initialPendingEdit?: ProposeEditResult | null;
@@ -181,6 +185,7 @@ export function EstimateEditor({
   workspaceSlug,
   locale,
   rulesApplied = false,
+  configurationSource = null,
   investmentPropertyType = null,
   initialAiMessages = [],
   initialPendingEdit = null,
@@ -440,7 +445,7 @@ export function EstimateEditor({
       const gate = await onBeforePdfExport();
       if (!gate.proceed) {
         if (gate.reason === "unsaved") {
-          toast.error(t("editor.pdfExport.saveBeforeExport"));
+          appToast.error(t("editor.pdfExport.saveBeforeExport"));
         }
         return;
       }
@@ -609,7 +614,7 @@ export function EstimateEditor({
         ]);
         return sectionId;
       }
-      toast.error(t("editor.addSectionError"));
+      appToast.error(t("editor.addSectionError"));
       return undefined;
     } finally {
       setIsAddingSection(false);
@@ -739,7 +744,7 @@ export function EstimateEditor({
         );
         devTimeEnd("addItem.commit");
       } else {
-        toast.error(t("editor.addItemError"));
+        appToast.error(t("editor.addItemError"));
       }
       devTimeEnd("addItem.total");
     } finally {
@@ -796,13 +801,13 @@ export function EstimateEditor({
       devTimeEnd("persist.autosave");
 
       if (!result.success) {
-        toast.error(result.error);
+        appToast.error(result.error);
         devTimeEnd("persist.total");
         throw new Error(result.error);
       }
 
       if (result.data.conflict) {
-        toast.error(t("editor.conflictBanner"));
+        appToast.error(t("editor.conflictBanner"));
         devTimeEnd("persist.total");
         throw new Error("conflict");
       }
@@ -947,6 +952,20 @@ export function EstimateEditor({
       {isArchived ? (
         <div className="rounded-xl border border-border/70 bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
           {t("editor.archivedBanner")}
+        </div>
+      ) : null}
+      {configurationSource ? (
+        <div className="rounded-xl border border-border/70 bg-muted/30 px-4 py-3 text-sm">
+          <p className="font-medium text-foreground">{t("configurationSource.title")}</p>
+          <p className="mt-1 text-muted-foreground">
+            {t("configurationSource.template", {
+              name: configurationSource.templateName ?? t("configurationSource.none"),
+            })}
+            {" · "}
+            {t("configurationSource.priceList", {
+              name: configurationSource.priceListName ?? t("configurationSource.none"),
+            })}
+          </p>
         </div>
       ) : null}
       {!isArchived && !isContentEditable ? (

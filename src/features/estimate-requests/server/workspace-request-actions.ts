@@ -8,6 +8,7 @@ import {
   ConvertRequestToEstimateError,
   convertRequestToEstimate,
 } from "@/features/estimate-requests/server/convert-request-to-estimate";
+import { prisma } from "@/db/client";
 import type { Locale } from "@/lib/locale";
 import { requireAuth } from "@/server/auth/require-auth";
 import { EntitlementError, PermissionError } from "@/server/permissions/errors";
@@ -41,6 +42,8 @@ export async function convertRequestToEstimateAction(input: {
   workspaceSlug: string;
   requestId: string;
   locale: Locale;
+  templateId?: string | null;
+  priceListId?: string | null;
 }): Promise<ActionResult<{ estimateId: string }>> {
   try {
     const user = await requireAuth(input.locale);
@@ -52,6 +55,8 @@ export async function convertRequestToEstimateAction(input: {
       workspaceId: input.workspaceId,
       userId: user.id,
       locale: input.locale,
+      templateId: input.templateId,
+      priceListId: input.priceListId,
     });
 
     revalidatePath(`/${input.locale}/dashboard/${input.workspaceSlug}/requests`);
@@ -62,6 +67,55 @@ export async function convertRequestToEstimateAction(input: {
     revalidatePath(`/${input.locale}/dashboard/${input.workspaceSlug}/billing`);
 
     return { success: true, data: { estimateId: result.estimateId } };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function deleteLinkedEstimateFromRequestAction(input: {
+  workspaceId: string;
+  workspaceSlug: string;
+  requestId: string;
+  estimateId: string;
+  locale: Locale;
+}): Promise<ActionResult<void>> {
+  try {
+    const user = await requireAuth(input.locale);
+    await requireWorkspace(user, input.workspaceId);
+    await requireRole(user, input.workspaceId, "MEMBER");
+
+    const request = await prisma.estimateRequest.findFirst({
+      where: {
+        id: input.requestId,
+        workspaceId: input.workspaceId,
+        estimateId: input.estimateId,
+        deletedAt: null,
+      },
+      select: { id: true, estimateId: true },
+    });
+
+    if (!request?.estimateId) {
+      return { success: false, error: "Linked estimate not found." };
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.estimate.update({
+        where: { id: input.estimateId },
+        data: { deletedAt: new Date() },
+      });
+      await tx.estimateRequest.update({
+        where: { id: input.requestId },
+        data: { estimateId: null },
+      });
+    });
+
+    revalidatePath(`/${input.locale}/dashboard/${input.workspaceSlug}/requests`);
+    revalidatePath(
+      `/${input.locale}/dashboard/${input.workspaceSlug}/requests/${input.requestId}`,
+    );
+    revalidatePath(`/${input.locale}/dashboard/${input.workspaceSlug}/estimates`);
+
+    return { success: true, data: undefined };
   } catch (error) {
     return toActionError(error);
   }

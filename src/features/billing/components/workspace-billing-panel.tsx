@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { AlertTriangle, Lock } from "lucide-react";
+import { AlertTriangle, Lock, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { appToast } from "@/components/ui/app-toast";
 import { Button } from "@/components/ui/button";
 import { BillingCatalogPriceMismatchBanner } from "@/features/billing/components/billing-catalog-price-mismatch-banner";
 import { BillingHandoffBanner } from "@/features/billing/components/billing-handoff-banner";
@@ -86,13 +87,18 @@ export function WorkspaceBillingPanel({ workspaceId, workspaceSlug, locale, data
       | { success: true; data: { url: string } | { ok: true } }
       | { success: false; error: string }
     >,
+    options?: { successToast?: string },
   ) {
     setError(null);
     startTransition(async () => {
       const result = await action();
       if (!result.success) {
         setError(result.error);
+        appToast.error(result.error);
         return;
+      }
+      if (options?.successToast) {
+        appToast.success(options.successToast);
       }
       if ("url" in result.data) {
         window.location.href = result.data.url;
@@ -178,8 +184,16 @@ export function WorkspaceBillingPanel({ workspaceId, workspaceSlug, locale, data
           scheduledCancelNotice={scheduledCancelNotice}
           periodEndLabel={periodEndLabel}
           pending={pending}
-          onCancel={() => run(() => cancelWorkspaceSubscriptionAction(workspaceId))}
-          onResume={() => run(() => reactivateWorkspaceSubscriptionAction(workspaceId))}
+          onCancel={() =>
+            run(() => cancelWorkspaceSubscriptionAction(workspaceId), {
+              successToast: t("actions.cancelScheduledSuccess"),
+            })
+          }
+          onResume={() =>
+            run(() => reactivateWorkspaceSubscriptionAction(workspaceId), {
+              successToast: t("actions.resumeSuccess"),
+            })
+          }
           labels={{
             title: t("dangerZone.title"),
             description: t("dangerZone.description"),
@@ -230,6 +244,7 @@ function BillingDangerZone({
       onClick={onResume}
       disabled={pending}
     >
+      {pending ? <Loader2 className="size-4 animate-spin" /> : null}
       {labels.resumeSubscription}
     </Button>
   ) : showCancel ? (
@@ -238,10 +253,12 @@ function BillingDangerZone({
       className={cn(
         "h-11 w-full border-red-500/50 bg-background px-6 text-sm font-medium text-red-500 hover:bg-red-500/10 hover:text-red-400 md:w-full xl:w-auto",
         "dark:border-red-400/40 dark:text-red-400 dark:hover:bg-red-400/10",
+        pending && "gap-2",
       )}
       onClick={onCancel}
       disabled={pending}
     >
+      {pending ? <Loader2 className="size-4 animate-spin" /> : null}
       {labels.cancelAtPeriodEnd}
     </Button>
   ) : null;

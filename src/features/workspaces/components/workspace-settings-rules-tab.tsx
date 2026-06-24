@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 
+import { appToast } from "@/components/ui/app-toast";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { WorkspaceEstimateSectionsPanel } from "@/features/workspaces/components/workspace-estimate-sections-panel";
@@ -128,9 +129,11 @@ export function WorkspaceSettingsRulesTab({
 
       if (!result.success) {
         setError(mapRuleError(result.error, tErrors));
+        appToast.error(mapRuleError(result.error, tErrors));
         return;
       }
 
+      appToast.success(t("saveSuccessToast"));
       router.refresh();
     });
   }
@@ -152,9 +155,11 @@ export function WorkspaceSettingsRulesTab({
 
       if (!result.success) {
         setError(mapRuleError(result.error, tErrors));
+        appToast.error(mapRuleError(result.error, tErrors));
         return;
       }
 
+      appToast.success(t("saveSuccessToast"));
       router.refresh();
     });
   }
@@ -228,10 +233,12 @@ export function WorkspaceSettingsRulesTab({
 
         if (!result.success) {
           setError(mapRuleError(result.error, tErrors));
+          appToast.error(mapRuleError(result.error, tErrors));
           return;
         }
 
         setEditorOpen(false);
+        appToast.success(t("dialog.createSuccess"));
         router.refresh();
       });
       return;
@@ -254,11 +261,13 @@ export function WorkspaceSettingsRulesTab({
 
       if (!result.success) {
         setError(mapRuleError(result.error, tErrors));
+        appToast.error(mapRuleError(result.error, tErrors));
         return;
       }
 
       setEditorOpen(false);
       setEditingRule(null);
+      appToast.success(t("dialog.saveSuccess"));
       router.refresh();
     });
   }
@@ -358,13 +367,17 @@ export function WorkspaceSettingsRulesTab({
           </div>
         </aside>
 
-        <section className="rounded-2xl border border-border/50 bg-card p-5 shadow-sm dark:shadow-none md:p-6">
+        <section
+          id="workspace-estimate-rules-section"
+          className="rounded-2xl border border-border/50 bg-card p-5 shadow-sm dark:shadow-none md:p-6"
+        >
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="space-y-1">
               <h2 className="text-lg font-semibold tracking-tight">{t("estimateTitle")}</h2>
               <p className="text-sm text-muted-foreground">{t("estimateDescription")}</p>
             </div>
             <Button
+              id="workspace-estimate-rules-add"
               type="button"
               className="rounded-full bg-violet-600 px-5 text-white hover:bg-violet-700 dark:bg-primary dark:hover:bg-primary/90"
               disabled={isPending || !canAddRule}

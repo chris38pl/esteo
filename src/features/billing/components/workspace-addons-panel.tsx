@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { ArrowLeft, Loader2, Minus, Plus } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { toast } from "sonner";
+import { appToast } from "@/components/ui/app-toast";
 
 import { Button } from "@/components/ui/button";
 import type { WorkspaceBillingAddonsPageData } from "@/features/billing/billing-addons-page-data";
@@ -140,7 +140,7 @@ export function WorkspaceAddonsPanel({
 
       const ok = await applyAddonChanges();
       if (ok) {
-        toast.success(t("saveSuccess"));
+        appToast.success(t("saveSuccess"));
         window.location.reload();
       }
     });
@@ -156,7 +156,7 @@ export function WorkspaceAddonsPanel({
       setCreditDialogOpen(false);
       const ok = await applyAddonChanges();
       if (ok) {
-        toast.success(t("saveSuccess"));
+        appToast.success(t("saveSuccess"));
         window.location.reload();
       }
     });

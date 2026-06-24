@@ -102,6 +102,7 @@
     "placeholder": "Referrer email or code",
     "windowHint": "You can do this within 30 days of creating your company or before your first plan payment.",
     "submit": "Apply",
+    "claiming": "Applying…",
     "success": "Referral code applied.",
     "claimed": {
       "title": "Your referral",

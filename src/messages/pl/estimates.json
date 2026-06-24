@@ -648,7 +648,9 @@
       "sendToClient": "Wyślij do klienta",
       "savePdf": "Zapisz jako PDF",
       "rename": "Zmień nazwę",
-      "generateAiDraft": "Wygeneruj kosztorys AI"
+      "generateAiDraft": "Wygeneruj kosztorys AI",
+      "pinSuccess": "Wycena przypięta",
+      "unpinSuccess": "Wycena odpięta"
     },
     "rename": {
       "title": "Zmień nazwę wyceny",
@@ -659,6 +661,7 @@
       "save": "Zapisz",
       "cancel": "Anuluj",
       "saving": "Zapisywanie…",
+      "success": "Nazwa wyceny zmieniona",
       "errors": {
         "invalidTitle": "Nieprawidłowa nazwa wyceny.",
         "invalidInput": "Nie udało się zapisać nazwy. Odśwież stronę i spróbuj ponownie."
@@ -704,7 +707,10 @@
     "rejectSubmit": "Odrzucona",
     "reopenSubmit": "Przywróć",
     "cancel": "Anuluj",
-    "submitting": "Zapisywanie…"
+    "submitting": "Zapisywanie…",
+    "accepted": "Wycena oznaczona jako zaakceptowana",
+    "rejected": "Wycena oznaczona jako odrzucona",
+    "reopened": "Wycena ponownie otwarta do statusu Wysłana"
   },
   "autosave": {
     "saving": "Zapisywanie…",
@@ -756,6 +762,12 @@
   "rules": {
     "applied": "Reguły zastosowane",
     "tooltip": "Reguły są stosowane przy generowaniu AI. Kliknij, aby zarządzać regułami."
+  },
+  "configurationSource": {
+    "title": "Wygenerowano na podstawie",
+    "template": "Szablon: {name}",
+    "priceList": "Cennik: {name}",
+    "none": "Brak"
   },
   "versions": {
     "createNewVersion": "Utwórz nową wersję",

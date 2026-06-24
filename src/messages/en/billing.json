@@ -57,7 +57,9 @@
       "upgradeToBusiness": "Upgrade to BUSINESS",
       "manageBilling": "Manage billing",
       "resumeSubscription": "Resume subscription",
-      "cancelAtPeriodEnd": "Cancel at period end"
+      "cancelAtPeriodEnd": "Cancel at period end",
+      "cancelScheduledSuccess": "Subscription cancellation scheduled",
+      "resumeSuccess": "Subscription resumed"
     },
     "memberUsage": {
       "title": "Usage by member",

@@ -1070,5 +1070,7 @@ export async function getWorkspacePromptContext(
     aiInstructions: context.aiInstructions,
     estimateSections: context.estimateSections,
     rules: context.rules,
+    templatePromptBlock: context.templatePromptBlock,
+    priceListPromptBlock: context.priceListPromptBlock,
   });
 }

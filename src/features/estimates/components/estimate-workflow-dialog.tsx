@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import { appToast } from "@/components/ui/app-toast";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -124,9 +125,17 @@ export function EstimateWorkflowDialog({
 
       if (!result.success) {
         setError(result.error);
+        appToast.error(result.error);
         return;
       }
 
+      const successKey =
+        action === "accept"
+          ? "workflow.accepted"
+          : action === "reject"
+            ? "workflow.rejected"
+            : "workflow.reopened";
+      appToast.success(t(successKey));
       onOpenChange(false);
       router.refresh();
     });

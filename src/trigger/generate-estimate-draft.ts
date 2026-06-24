@@ -27,6 +27,8 @@ interface GenerateEstimateDraftPayload {
   versionId: string;
   workspaceId: string;
   locale: string;
+  templateId?: string | null;
+  priceListId?: string | null;
   uploadSource?: AttachmentUploadSource;
   uploadedById?: string | null;
 }
@@ -232,7 +234,10 @@ export const generateEstimateDraftTask = task({
 
     try {
       logger.info("Loading estimate generation context", { estimateRequestId, workspaceId });
-      const context = await loadEstimateGenerationContext(workspaceId, locale);
+      const context = await loadEstimateGenerationContext(workspaceId, locale, {
+        templateId: payload.templateId,
+        priceListId: payload.priceListId,
+      });
 
       if (!context) {
         throw new Error(`Workspace not found: ${workspaceId}`);
@@ -338,6 +343,7 @@ export const generateEstimateDraftTask = task({
               profileVersion: getIndustryProfileVersion(context.industry),
               sectionTitleValidation: sectionTitleValidationMeta,
               promptSectionCount: context.estimateSections.length,
+              configurationSnapshot: context.configurationSnapshot,
             },
           },
         });
@@ -351,6 +357,7 @@ export const generateEstimateDraftTask = task({
               profileVersion: getIndustryProfileVersion(context.industry),
               sectionCount: draftOutput.sections.length,
               sectionTitleValidation: sectionTitleValidationMeta,
+              configurationSnapshot: context.configurationSnapshot,
             },
           },
         });

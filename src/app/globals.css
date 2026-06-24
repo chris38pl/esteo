@@ -412,6 +412,47 @@ button:not(:disabled),
   cursor: pointer;
 }
 
+/* AI setup — one-shot field focus highlight */
+[data-ai-setup-field],
+.ai-setup-focus-active {
+  position: relative;
+  border-radius: 1rem;
+  transition: transform 0.25s ease;
+}
+
+.ai-setup-focus-active {
+  z-index: 2;
+}
+
+.ai-setup-focus-active::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 1rem;
+  pointer-events: none;
+  z-index: -1;
+  background: color-mix(in oklab, var(--primary) 5%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--primary) 16%, transparent),
+    0 0 14px color-mix(in oklab, var(--primary) 10%, transparent);
+  animation: voice-apply-glow 1.8s ease-in-out infinite;
+}
+
+.ai-setup-focus-active input,
+.ai-setup-focus-active textarea,
+.ai-setup-focus-active select,
+.ai-setup-focus-active button {
+  border-color: color-mix(in oklab, var(--primary) 32%, var(--border));
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 8%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-setup-focus-active::before {
+    animation: none;
+    opacity: 0.8;
+  }
+}
+
 /* Voice intake — animated form fill */
 [data-voice-field] {
   position: relative;

@@ -102,6 +102,7 @@
     "placeholder": "E-mail lub kod polecającego",
     "windowHint": "Można to zrobić w ciągu 30 dni od założenia firmy lub przed pierwszą płatnością za plan.",
     "submit": "Przypisz",
+    "claiming": "Przypisywanie…",
     "success": "Kod polecający został przypisany.",
     "claimed": {
       "title": "Twoje polecenie",

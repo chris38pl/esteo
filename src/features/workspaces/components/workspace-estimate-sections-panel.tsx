@@ -535,7 +535,10 @@ export function WorkspaceEstimateSectionsPanel({
   const editingSection = editingIndex !== null ? sections[editingIndex] : null;
 
   return (
-    <section className="rounded-2xl border border-border/50 bg-card p-4 shadow-sm dark:shadow-none sm:p-5 md:p-6">
+    <section
+      id="workspace-estimate-sections-panel"
+      className="rounded-2xl border border-border/50 bg-card p-4 shadow-sm dark:shadow-none sm:p-5 md:p-6"
+    >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1">
           <h2 className="text-lg font-semibold tracking-tight">{t("title")}</h2>

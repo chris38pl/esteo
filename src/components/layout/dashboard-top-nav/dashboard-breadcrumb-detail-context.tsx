@@ -19,9 +19,12 @@ type DashboardBreadcrumbDetailContextValue = {
 const DashboardBreadcrumbDetailContext =
   createContext<DashboardBreadcrumbDetailContextValue | null>(null);
 
-/** True when pathname is a detail route that supplies a fourth breadcrumb segment. */
+/** True when pathname is a detail route that supplies a dynamic breadcrumb segment. */
 function isBreadcrumbDetailPath(pathname: string): boolean {
-  return /\/(estimates|requests)\/[^/]+$/.test(pathname);
+  return (
+    /\/(estimates|requests)\/[^/]+$/.test(pathname) ||
+    /\/configuration\/templates\/(?:new|[^/]+)$/.test(pathname)
+  );
 }
 
 export function DashboardBreadcrumbDetailProvider({ children }: { children: ReactNode }) {

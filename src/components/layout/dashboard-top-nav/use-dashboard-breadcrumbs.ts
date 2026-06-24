@@ -86,6 +86,49 @@ function parsePaymentsRoute(
   return parseWorkspaceSectionRoute(pathname, locale, workspaceSlug, "payments");
 }
 
+type ConfigurationTab = "rules" | "templates" | "priceLists";
+
+type ConfigurationRoute =
+  | { kind: "root" }
+  | { kind: "templateNew" }
+  | { kind: "templateDetail"; id: string };
+
+function parseConfigurationRoute(
+  pathname: string,
+  locale: Locale,
+  workspaceSlug: string | null,
+): ConfigurationRoute | null {
+  if (!workspaceSlug) {
+    return null;
+  }
+
+  const base = `/${locale}/dashboard/${workspaceSlug}/configuration`;
+  if (pathname === base) {
+    return { kind: "root" };
+  }
+
+  if (pathname === `${base}/templates/new`) {
+    return { kind: "templateNew" };
+  }
+
+  if (pathname.startsWith(`${base}/templates/`)) {
+    const suffix = pathname.slice(`${base}/templates/`.length);
+    const id = suffix.split("/")[0];
+    if (id && id !== "new") {
+      return { kind: "templateDetail", id };
+    }
+  }
+
+  return null;
+}
+
+function parseConfigurationTab(tab: string | null): ConfigurationTab {
+  if (tab === "templates" || tab === "priceLists") {
+    return tab;
+  }
+  return "rules";
+}
+
 function parseAdminIssuesRoute(
   pathname: string,
   locale: Locale,
@@ -204,6 +247,8 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
   const estimatesRoute = parseEstimatesRoute(pathname, locale, workspaceSlug);
   const requestsRoute = parseRequestsRoute(pathname, locale, workspaceSlug);
   const paymentsRoute = parsePaymentsRoute(pathname, locale, workspaceSlug);
+  const configurationRoute = parseConfigurationRoute(pathname, locale, workspaceSlug);
+  const configurationTab = parseConfigurationTab(searchParams?.get("tab") ?? null);
   const adminIssuesRoute = parseAdminIssuesRoute(pathname, locale);
   const adminOpsCasesRoute = parseAdminOpsCasesRoute(pathname, locale);
   const qaIssuesRoute = parseQaIssuesRoute(pathname, locale);
@@ -319,6 +364,45 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
     crumbs.push({
       label: t("payments"),
     });
+
+    return crumbs;
+  }
+
+  if (configurationRoute && workspaceSlug) {
+    const configurationHref = `/${locale}/dashboard/${workspaceSlug}/configuration`;
+    const templatesHref = `${configurationHref}?tab=templates`;
+
+    const isTemplateRoute =
+      configurationRoute.kind === "templateNew" ||
+      configurationRoute.kind === "templateDetail";
+
+    crumbs.push({
+      label: t("configuration"),
+      href: configurationRoute.kind === "root" && configurationTab === "rules" ? undefined : configurationHref,
+    });
+
+    if (isTemplateRoute) {
+      crumbs.push({
+        label: t("configurationTemplates"),
+        href: templatesHref,
+      });
+    } else if (configurationTab === "templates") {
+      crumbs.push({ label: t("configurationTemplates") });
+      return crumbs;
+    } else if (configurationTab === "priceLists") {
+      crumbs.push({ label: t("configurationPriceLists") });
+      return crumbs;
+    }
+
+    if (configurationRoute.kind === "templateNew") {
+      crumbs.push({
+        label: detailLabel?.trim() || t("configurationNewTemplate"),
+      });
+    } else if (configurationRoute.kind === "templateDetail") {
+      crumbs.push({
+        label: detailLabel?.trim() || configurationRoute.id,
+      });
+    }
 
     return crumbs;
   }

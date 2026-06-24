@@ -706,7 +706,7 @@ export function PartnerProgramPanel({
               autoCapitalize="none"
             />
             <Button type="button" onClick={handleClaimSubmit} disabled={pending || !claimInput.trim()}>
-              {t("claim.submit")}
+              {pending ? t("claim.claiming") : t("claim.submit")}
             </Button>
           </div>
           {claimSuccess ? (

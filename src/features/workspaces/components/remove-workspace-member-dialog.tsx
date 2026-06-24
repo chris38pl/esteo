@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 
+import { appToast } from "@/components/ui/app-toast";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -51,9 +52,11 @@ export function RemoveWorkspaceMemberDialog({
 
       if (!result.success) {
         setError(result.error);
+        appToast.error(result.error);
         return;
       }
 
+      appToast.success(t("memberRemovedSuccess", { name: memberName }));
       handleOpenChange(false);
       router.refresh();
     });

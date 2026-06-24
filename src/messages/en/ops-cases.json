@@ -58,7 +58,9 @@
         "ignore": "Mark ignored",
         "resolvedSuccess": "Case #{number} marked as resolved.",
         "ignoredSuccess": "Case #{number} marked as ignored.",
-        "updateFailed": "Could not update case status."
+        "updateFailed": "Could not update case status.",
+        "copied": "Copied to clipboard",
+        "copyFailed": "Could not copy to clipboard"
       }
     },
     "type": {

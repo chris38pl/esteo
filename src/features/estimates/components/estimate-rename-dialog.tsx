@@ -4,6 +4,7 @@ import { useEffect, useState, useTransition, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
+import { appToast } from "@/components/ui/app-toast";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -101,12 +102,14 @@ export function EstimateRenameDialog({
       });
 
       if (result.success) {
+        appToast.success(t("header.rename.success"));
         onOpenChange(false);
         router.refresh();
         return;
       }
 
       setError(result.error || t("editor.titleSaveError"));
+      appToast.error(result.error || t("editor.titleSaveError"));
     });
   }
 

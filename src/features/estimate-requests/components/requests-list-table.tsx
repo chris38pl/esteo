@@ -9,6 +9,7 @@ import {
   requestListRequestColumnClassName,
 } from "@/features/estimate-requests/components/request-list-row";
 import type { WorkspaceRequestListItem } from "@/features/estimate-requests/server/workspace-requests";
+import type { GenerationConfigurationOptions } from "@/features/workspace-configuration/server/service";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -19,6 +20,7 @@ interface RequestsListTableProps {
   canCreateEstimate: boolean;
   estimateLimitReached: boolean;
   billingHref: string | null;
+  generationConfiguration: GenerationConfigurationOptions;
   locale: Locale;
   footer?: ReactNode;
 }
@@ -33,6 +35,7 @@ export function RequestsListTable({
   canCreateEstimate,
   estimateLimitReached,
   billingHref,
+  generationConfiguration,
   locale,
   footer,
 }: RequestsListTableProps) {
@@ -50,6 +53,7 @@ export function RequestsListTable({
             canCreateEstimate={canCreateEstimate}
             estimateLimitReached={estimateLimitReached}
             billingHref={billingHref}
+            generationConfiguration={generationConfiguration}
             locale={locale}
             layout="list"
           />
@@ -104,6 +108,7 @@ export function RequestsListTable({
                 canCreateEstimate={canCreateEstimate}
                 estimateLimitReached={estimateLimitReached}
                 billingHref={billingHref}
+                generationConfiguration={generationConfiguration}
                 locale={locale}
                 layout="table"
               />

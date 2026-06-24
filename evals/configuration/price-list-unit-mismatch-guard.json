@@ -1,0 +1,43 @@
+{
+  "id": "configuration-price-list-unit-mismatch-guard",
+  "name": "Configuration — unit mismatch guard",
+  "locale": "pl",
+  "category": "business",
+  "quick": true,
+  "critical": true,
+  "profileVersion": "CONSTRUCTION_V1",
+  "workspace": {
+    "industry": "CONSTRUCTION",
+    "companyDescription": "Firma remontowa wykonująca prace wykończeniowe.",
+    "priceList": {
+      "name": "Standard 2026",
+      "currency": "PLN",
+      "items": [{ "name": "Malowanie", "unit": "m²", "unitPrice": "18.00" }]
+    },
+    "rules": [
+      {
+        "title": "Rozliczanie godzinowe",
+        "content": "Jeśli klient prosi o rozliczenie godzinowe, używaj jednostki roboczogodzina/rbh zamiast m²."
+      }
+    ],
+    "systemRules": { "rounding": true, "units": true }
+  },
+  "request": {
+    "project": {
+      "description": "Proszę o wycenę pracy malarza na 8 roboczogodzin. Klient chce rozliczenie godzinowe, bez metrażu.",
+      "preferredStartDate": "asap"
+    },
+    "address": { "city": "Gdańsk" }
+  },
+  "expectations": {
+    "mustHave": [{ "term": "malowanie", "scope": "any_item" }],
+    "configuration": {
+      "mustNotUsePrices": [
+        { "term": "Malowanie", "sourceUnit": "m²", "unitPrice": "18.00" }
+      ]
+    },
+    "coverageTerms": ["malowanie"],
+    "leakageDomain": "services",
+    "minLineItems": 1
+  }
+}

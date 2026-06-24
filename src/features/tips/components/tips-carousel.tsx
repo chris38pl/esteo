@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { toast } from "sonner";
+import { appToast } from "@/components/ui/app-toast";
 
 import { TipCard } from "@/features/tips/components/tip-card";
 import {
@@ -156,7 +156,7 @@ export function TipsCarousel({
     }
     const result = onPinToggle(tipId);
     if (result === "max_reached") {
-      toast.message(t("pin.maxReached"));
+      appToast.info(t("pin.maxReached"));
     }
   }
 

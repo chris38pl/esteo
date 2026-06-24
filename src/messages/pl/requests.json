@@ -33,7 +33,23 @@
       "viewRequest": "Wyświetl",
       "viewEstimate": "Wyświetl wycenę",
       "deleteEstimate": "Usuń wycenę",
+      "deleteEstimateConfirm": "Czy na pewno usunąć wycenę? Zapytanie pozostanie. Będziesz mógł wygenerować nową wycenę na bazie innego szablonu lub cennika.",
+      "deleteEstimateSuccess": "Wycena została usunięta. Zapytanie pozostało na liście.",
+      "deleteEstimateDeleting": "Usuwanie…",
       "createEstimate": "Utwórz wycenę",
+      "createDialog": {
+        "title": "Utwórz wycenę",
+        "description": "Wybierz szablon i cennik użyte do wygenerowania tej wyceny.",
+        "templateLabel": "Szablon",
+        "priceListLabel": "Cennik",
+        "defaultTemplate": "Domyślny szablon",
+        "defaultPriceList": "Domyślny cennik",
+        "noTemplate": "Brak szablonu",
+        "noPriceList": "Brak cennika",
+        "cancel": "Anuluj",
+        "submit": "Generuj wycenę",
+        "creating": "Generowanie…"
+      },
       "limitTooltip": "Przekroczono miesięczny limit wycen w Twoim planie.",
       "limitTooltipLink": "Przejdź do płatności"
     },

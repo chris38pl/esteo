@@ -1,16 +1,23 @@
 "use client";
 
-import { WorkspaceAppearanceTheme } from "@prisma/client";
+import { WorkspaceAppearanceTheme, type WorkspaceIndustry } from "@prisma/client";
 import { Info } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 
+import { appToast } from "@/components/ui/app-toast";
 import { CompanyDescriptionField } from "@/features/workspaces/components/company-description-field";
+import { isServiceWorkspace } from "@/features/workspaces/lib/industries";
 import { WorkspaceLogoField } from "@/features/workspaces/components/workspace-logo-field";
 import { WorkspaceThemePicker } from "@/features/workspaces/components/workspace-theme-picker";
-import { updateWorkspaceProfileAction } from "@/features/workspaces/server/actions";
+import {
+  updateWorkspaceBusinessTypeAction,
+  updateWorkspaceProfileAction,
+} from "@/features/workspaces/server/actions";
 import { updateWorkspaceProfileSchema } from "@/features/workspaces/schemas/update-workspace-profile";
+import { updateWorkspaceBusinessTypeSchema } from "@/features/workspaces/schemas/business-type";
+import { BUSINESS_TYPE_MAX_LENGTH } from "@/features/workspaces/schemas/business-type";
 import type { Locale } from "@/lib/locale";
 import { WorkspaceSettingsCard } from "@/features/workspaces/components/workspace-settings-card";
 import { Button } from "@/components/ui/button";
@@ -25,6 +32,8 @@ import {
 
 export function WorkspaceSettingsForm({
   workspaceId,
+  workspaceIndustry,
+  industryOtherText,
   initialName,
   initialCompanyDescription,
   initialLogoUrl,
@@ -35,6 +44,8 @@ export function WorkspaceSettingsForm({
   locale,
 }: {
   workspaceId: string;
+  workspaceIndustry: WorkspaceIndustry;
+  industryOtherText: string;
   initialName: string;
   initialCompanyDescription: string;
   initialLogoUrl: string | null;
@@ -46,13 +57,20 @@ export function WorkspaceSettingsForm({
 }) {
   const t = useTranslations("workspaces.settings");
   const tForm = useTranslations("workspaces.createForm");
+  const tAiSetup = useTranslations("workspaces.settings.aiSetup");
+  const tIndustries = useTranslations("workspaces.industries");
   const tErrors = useTranslations("workspaces.errors");
   const router = useRouter();
   const [name, setName] = useState(initialName);
+  const [businessType, setBusinessType] = useState(industryOtherText);
   const [companyDescription, setCompanyDescription] = useState(initialCompanyDescription);
   const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
   const [isPending, startTransition] = useTransition();
+
+  const industryDisplay =
+    isServiceWorkspace(workspaceIndustry) && industryOtherText.trim()
+      ? `${tIndustries("OTHER")} — ${industryOtherText.trim()}`
+      : tIndustries(workspaceIndustry);
 
   useEffect(() => {
     onPendingChange?.(isPending);
@@ -61,7 +79,6 @@ export function WorkspaceSettingsForm({
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
-    setSaved(false);
 
     const parsed = updateWorkspaceProfileSchema.safeParse({
       name,
@@ -83,10 +100,39 @@ export function WorkspaceSettingsForm({
 
       if (!result.success) {
         setError(result.error);
+        appToast.error(result.error);
         return;
       }
 
-      setSaved(true);
+      if (isServiceWorkspace(workspaceIndustry)) {
+        const businessTypeParsed = updateWorkspaceBusinessTypeSchema.safeParse({
+          industryOtherText: businessType,
+        });
+
+        if (!businessTypeParsed.success) {
+          const businessTypeError =
+            businessTypeParsed.error.issues[0]?.message ?? tAiSetup("errors.generic");
+          setError(businessTypeError);
+          appToast.error(businessTypeError);
+          return;
+        }
+
+        if (businessTypeParsed.data.industryOtherText !== industryOtherText.trim()) {
+          const businessTypeResult = await updateWorkspaceBusinessTypeAction(
+            workspaceId,
+            businessTypeParsed.data,
+            locale,
+          );
+
+          if (!businessTypeResult.success) {
+            setError(businessTypeResult.error);
+            appToast.error(businessTypeResult.error);
+            return;
+          }
+        }
+      }
+
+      appToast.success(t("saveSuccessToast"));
       router.refresh();
     });
   }
@@ -111,13 +157,58 @@ export function WorkspaceSettingsForm({
                 <p className="text-sm text-muted-foreground">{t("basicInfo.nameHint")}</p>
               </div>
 
-              <CompanyDescriptionField
-                id="workspace-settings-company-description"
-                value={companyDescription}
-                onChange={setCompanyDescription}
-                disabled={isPending}
-                variant="create"
-              />
+              <div className="space-y-2">
+                <Label htmlFor="workspace-settings-industry">{tForm("industryLabel")}</Label>
+                <Input
+                  id="workspace-settings-industry"
+                  value={tIndustries("OTHER")}
+                  readOnly
+                  tabIndex={-1}
+                  className="h-11 rounded-xl bg-muted/40 text-foreground"
+                  aria-readonly="true"
+                />
+                <p className="text-sm text-muted-foreground">{t("basicInfo.industryHint")}</p>
+              </div>
+
+              {isServiceWorkspace(workspaceIndustry) ? (
+                <div className="space-y-2" data-ai-setup-field="businessType">
+                  <Label htmlFor="workspace-business-type">{tAiSetup("businessTypeLabel")}</Label>
+                  <Input
+                    id="workspace-business-type"
+                    value={businessType}
+                    onChange={(event) => setBusinessType(event.target.value)}
+                    placeholder={tAiSetup("businessTypePlaceholder")}
+                    maxLength={BUSINESS_TYPE_MAX_LENGTH}
+                    required
+                    disabled={isPending}
+                    className="h-11 rounded-xl"
+                  />
+                  <p className="text-sm text-muted-foreground">{tAiSetup("businessTypeHint")}</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Label htmlFor="workspace-settings-industry-display">{tForm("industryLabel")}</Label>
+                  <Input
+                    id="workspace-settings-industry-display"
+                    value={industryDisplay}
+                    readOnly
+                    tabIndex={-1}
+                    className="h-11 rounded-xl bg-muted/40 text-foreground"
+                    aria-readonly="true"
+                  />
+                  <p className="text-sm text-muted-foreground">{t("basicInfo.industryHint")}</p>
+                </div>
+              )}
+
+              <div data-ai-setup-field="companyDescription">
+                <CompanyDescriptionField
+                  id="workspace-settings-company-description"
+                  value={companyDescription}
+                  onChange={setCompanyDescription}
+                  disabled={isPending}
+                  variant="create"
+                />
+              </div>
 
               <div className="space-y-4">
                 <div className="flex items-center gap-1.5">
@@ -162,10 +253,6 @@ export function WorkspaceSettingsForm({
             <p className="mt-6 rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
               {error}
             </p>
-          ) : null}
-
-          {saved ? (
-            <p className="mt-4 text-sm text-muted-foreground">{t("saved")}</p>
           ) : null}
 
           <div className="mt-6">

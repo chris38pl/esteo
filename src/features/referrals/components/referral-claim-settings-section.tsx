@@ -142,7 +142,7 @@ export function ReferralClaimSettingsSection({
               }}
               disabled={pending || !value.trim()}
             >
-              {t("submit")}
+              {pending ? t("claiming") : t("submit")}
             </Button>
           </div>
           {error ? <p className="text-sm text-destructive">{error}</p> : null}

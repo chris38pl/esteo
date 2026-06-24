@@ -3,7 +3,7 @@
 import { Lightbulb, MessageSquarePlus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { toast } from "sonner";
+import { appToast } from "@/components/ui/app-toast";
 
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,7 @@ export function TipsListPanel({ locale, workspaceSlug }: TipsListPanelProps) {
   function handlePinToggle(tipId: (typeof TIPS_CATALOG)[number]["id"]) {
     const result = togglePin(tipId);
     if (result === "max_reached") {
-      toast.message(t("pin.maxReached"));
+      appToast.info(t("pin.maxReached"));
     }
   }
 

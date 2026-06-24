@@ -97,6 +97,8 @@ export type ScenarioResult = {
   leakageScore: number;
   leakagePassed: boolean;
   leakageTerms: string[];
+  configurationScore: number;
+  configurationPassed: boolean;
   length: LengthMetrics;
   cost: ScenarioCost;
   promptMeta: PromptMeta;

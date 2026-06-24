@@ -26,7 +26,7 @@ import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 
 /** Bump when prompt blocks, role, or output rules change (eval harness tracks this). */
-export const ESTIMATE_PROMPT_VERSION = "1.3.1";
+export const ESTIMATE_PROMPT_VERSION = "1.4.0";
 
 export interface EstimateDraftPromptInput {
   projectBrief: string;
@@ -54,6 +54,8 @@ export function buildEstimateDraftPrompt(input: EstimateDraftPromptInput): strin
       formatEstimateStructureBlock(estimateSections),
       formatSectionRulesBlock(estimateSections),
       formatBusinessTypeBlock(input.context.industryOtherText),
+      input.context.templatePromptBlock,
+      input.context.priceListPromptBlock,
       `## Project Brief\n${input.projectBrief.trim()}`,
       formatEstimationPrinciplesBlock(servicePrinciples),
       formatServiceEstimateCompletenessBlock(lang),
@@ -74,6 +76,8 @@ export function buildEstimateDraftPrompt(input: EstimateDraftPromptInput): strin
     formatEstimationPrinciplesBlock(profile.estimationPrinciples),
     formatCompanyContextBlock(input.context.companyDescription),
     formatGeneralAiInstructionsBlock(input.context.aiInstructions),
+    input.context.templatePromptBlock,
+    input.context.priceListPromptBlock,
     `## Project Brief\n${input.projectBrief.trim()}`,
     formatScopeChecklistBlock(profile.scopeChecklist),
     formatScopeExpansionRulesBlock(profile.scopeExpansionRules),

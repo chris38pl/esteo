@@ -57,7 +57,9 @@
       "upgradeToBusiness": "Przejdź na BUSINESS",
       "manageBilling": "Zarządzaj płatnościami",
       "resumeSubscription": "Wznów subskrypcję",
-      "cancelAtPeriodEnd": "Anuluj na koniec okresu"
+      "cancelAtPeriodEnd": "Anuluj na koniec okresu",
+      "cancelScheduledSuccess": "Anulowanie subskrypcji zaplanowane",
+      "resumeSuccess": "Subskrypcja wznowiona"
     },
     "memberUsage": {
       "title": "Wykorzystanie wg członków",

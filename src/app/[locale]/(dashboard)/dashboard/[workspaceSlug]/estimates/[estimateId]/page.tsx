@@ -58,6 +58,39 @@ import {
 import { loadEstimateVersionWorkflow } from "@/features/estimates/server/load-estimate-version-workflow";
 import type { EstimateVersionWorkflowClient } from "@/features/estimates/lib/serialize-estimate-version-workflow";
 
+function readConfigurationSource(aiMetadata: unknown): {
+  templateName: string | null;
+  priceListName: string | null;
+} | null {
+  if (!aiMetadata || typeof aiMetadata !== "object") {
+    return null;
+  }
+
+  const metadata = aiMetadata as Record<string, unknown>;
+  const snapshot = metadata.configurationSnapshot;
+  if (!snapshot || typeof snapshot !== "object") {
+    return null;
+  }
+
+  const snapshotRecord = snapshot as Record<string, unknown>;
+  const template = snapshotRecord.template;
+  const priceList = snapshotRecord.priceList;
+  const templateName =
+    template && typeof template === "object" && typeof (template as Record<string, unknown>).name === "string"
+      ? ((template as Record<string, string>).name ?? null)
+      : null;
+  const priceListName =
+    priceList && typeof priceList === "object" && typeof (priceList as Record<string, unknown>).name === "string"
+      ? ((priceList as Record<string, string>).name ?? null)
+      : null;
+
+  if (!templateName && !priceListName) {
+    return null;
+  }
+
+  return { templateName, priceListName };
+}
+
 export default async function EstimateEditorPage({
   params,
   searchParams,
@@ -99,6 +132,7 @@ export default async function EstimateEditorPage({
     : null;
 
   const serializedTree = rawVersionTree ? serializeVersionWithTree(rawVersionTree) : null;
+  const configurationSource = readConfigurationSource(estimate.aiMetadata);
   const sectionCount = serializedTree?.sections.length ?? 0;
   const requestStatus = estimate.estimateRequest?.status ?? "none";
   const editorKey = `${activeVersionId ?? "none"}-${sectionCount}-${requestStatus}`;
@@ -229,6 +263,7 @@ export default async function EstimateEditorPage({
         workspaceSlug={workspaceSlug}
         locale={resolvedLocale}
         rulesApplied={rulesApplied}
+        configurationSource={configurationSource}
         investmentPropertyType={investmentPropertyType}
         initialAiMessages={initialAiMessages}
         initialPendingEdit={initialPendingEdit}

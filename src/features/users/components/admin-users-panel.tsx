@@ -6,7 +6,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import type { LucideIcon } from "lucide-react";
-import { toast } from "sonner";
+import { appToast } from "@/components/ui/app-toast";
 
 import { UserAvatar } from "@/components/avatars/user-avatar";
 import { isAvatarPreset } from "@/lib/avatars/user-avatar-presets";
@@ -288,7 +288,7 @@ export function AdminUsersPanel({
       const result = await adminSetUserPlatformRoleAction(userId, role, locale);
 
       if (!result.success) {
-        toast.error(result.error);
+        appToast.error(result.error);
         return;
       }
 
@@ -298,7 +298,7 @@ export function AdminUsersPanel({
           row.id === userId ? { ...row, platformRole: result.data.platformRole } : row,
         ),
       }));
-      toast.success(role === "QA_TESTER" ? t("actions.qaRoleGranted") : t("actions.qaRoleRemoved"));
+      appToast.success(role === "QA_TESTER" ? t("actions.qaRoleGranted") : t("actions.qaRoleRemoved"));
       router.refresh();
     });
   }

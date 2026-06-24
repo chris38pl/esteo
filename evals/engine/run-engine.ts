@@ -34,6 +34,7 @@ import {
 } from "@evals/engine/report";
 import type { EvalScenario } from "@evals/engine/schemas/scenario";
 import { scoreCoverage } from "@evals/engine/scorers/coverage-scorer";
+import { scoreConfiguration } from "@evals/engine/scorers/configuration-scorer";
 import { scoreDomainLeakage } from "@evals/engine/scorers/domain-leakage-scorer";
 import { measureLength } from "@evals/engine/scorers/length-benchmark";
 import { scoreRules } from "@evals/engine/scorers/rule-scorer";
@@ -119,6 +120,9 @@ async function runScenarioOnce(
   const coverageScore = schemaScore.passed
     ? scoreCoverage(generation.object, scenario.expectations.coverageTerms)
     : { matched: 0, total: scenario.expectations.coverageTerms.length, percent: 0, matchedTerms: [], missedTerms: scenario.expectations.coverageTerms };
+  const configurationScore = schemaScore.passed
+    ? scoreConfiguration(generation.object, scenario.expectations)
+    : { score: 0, passed: false, checks: [] };
 
   const lengthMetrics = measureLength(
     generation.object,
@@ -174,7 +178,10 @@ async function runScenarioOnce(
   if (!profileVersionInPrompt) {
     failReasons.push(`profileVersion missing from prompt: ${expectedProfileVersion}`);
   }
-  const passedWithProfile = passed && profileVersionInPrompt;
+  if (!configurationScore.passed) {
+    failReasons.push("configuration expectations failed");
+  }
+  const passedWithProfile = passed && profileVersionInPrompt && configurationScore.passed;
 
   const genCost = estimateCostUsd(
     generation.model,
@@ -211,6 +218,8 @@ async function runScenarioOnce(
     leakageScore: leakageScore.score,
     leakagePassed: leakageScore.passed,
     leakageTerms: leakageScore.detectedTerms,
+    configurationScore: configurationScore.score,
+    configurationPassed: configurationScore.passed,
     length: lengthMetrics,
     cost,
     promptMeta,
@@ -230,6 +239,7 @@ async function runScenarioOnce(
     schemaScore,
     ruleScore,
     coverageScore,
+    configurationScore,
     leakageScore,
     lengthMetrics,
     cost,

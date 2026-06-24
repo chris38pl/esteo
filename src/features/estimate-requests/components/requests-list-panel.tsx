@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { PaginationControls } from "@/components/shared/pagination-controls";
@@ -20,6 +20,7 @@ import {
 } from "@/features/estimate-requests/lib/requests-list-filter";
 import type { WorkspaceRequestListItem } from "@/features/estimate-requests/server/workspace-requests";
 import type { CreateEstimateGate } from "@/features/estimates/lib/create-estimate-gate";
+import type { GenerationConfigurationOptions } from "@/features/workspace-configuration/server/service";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +30,7 @@ interface RequestsListPanelProps {
   workspaceId: string;
   createEstimateGate: CreateEstimateGate;
   billingHref: string | null;
+  generationConfiguration: GenerationConfigurationOptions;
   locale: Locale;
 }
 
@@ -40,6 +42,7 @@ export function RequestsListPanel({
   workspaceId,
   createEstimateGate,
   billingHref,
+  generationConfiguration,
   locale,
 }: RequestsListPanelProps) {
   const t = useTranslations("requests");
@@ -79,18 +82,13 @@ export function RequestsListPanel({
     safePage * pageSize,
   );
 
-  useEffect(() => {
-    setPage(1);
-  }, [searchQuery, listFilter, dateRange]);
-
-  useEffect(() => {
-    if (page !== safePage) {
-      setPage(safePage);
-    }
-  }, [page, safePage]);
-
   const hasRequests = requests.length > 0;
   const hasFilteredResults = filteredRequests.length > 0;
+
+  function handleSearchQueryChange(value: string) {
+    setSearchQuery(value);
+    setPage(1);
+  }
 
   return (
     <div className={cn("mx-auto min-w-0 w-full space-y-6", estimateEditorMaxWidthClass)}>
@@ -107,12 +105,18 @@ export function RequestsListPanel({
         <RequestsListToolbar
           locale={locale}
           searchQuery={searchQuery}
-          onSearchQueryChange={setSearchQuery}
+          onSearchQueryChange={handleSearchQueryChange}
           filterActive={filterActive}
           onOpenFilter={() => setFilterSheetOpen(true)}
-          onClearFilter={() => setListFilter(EMPTY_REQUEST_LIST_FILTER)}
+          onClearFilter={() => {
+            setListFilter(EMPTY_REQUEST_LIST_FILTER);
+            setPage(1);
+          }}
           dateRange={dateRange}
-          onDateRangeChange={setDateRange}
+          onDateRangeChange={(range) => {
+            setDateRange(range);
+            setPage(1);
+          }}
         />
 
         {!hasRequests ? (
@@ -133,6 +137,7 @@ export function RequestsListPanel({
             canCreateEstimate={canCreateEstimate}
             estimateLimitReached={estimateLimitReached}
             billingHref={billingHref}
+            generationConfiguration={generationConfiguration}
             locale={locale}
             footer={
               <PaginationControls
@@ -158,7 +163,10 @@ export function RequestsListPanel({
         searchQuery={searchQuery}
         appliedDateRange={dateRange}
         appliedFilter={listFilter}
-        onApply={setListFilter}
+        onApply={(filter) => {
+          setListFilter(filter);
+          setPage(1);
+        }}
       />
     </div>
   );

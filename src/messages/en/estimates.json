@@ -648,7 +648,9 @@
       "sendToClient": "Send to client",
       "savePdf": "Save as PDF",
       "rename": "Rename",
-      "generateAiDraft": "Generate AI cost estimate"
+      "generateAiDraft": "Generate AI cost estimate",
+      "pinSuccess": "Estimate pinned",
+      "unpinSuccess": "Estimate unpinned"
     },
     "rename": {
       "title": "Rename estimate",
@@ -659,6 +661,7 @@
       "save": "Save",
       "cancel": "Cancel",
       "saving": "Saving…",
+      "success": "Estimate renamed",
       "errors": {
         "invalidTitle": "Invalid estimate name.",
         "invalidInput": "Could not save the name. Refresh the page and try again."
@@ -704,7 +707,10 @@
     "rejectSubmit": "Rejected",
     "reopenSubmit": "Reopen",
     "cancel": "Cancel",
-    "submitting": "Saving…"
+    "submitting": "Saving…",
+    "accepted": "Estimate marked as accepted",
+    "rejected": "Estimate marked as rejected",
+    "reopened": "Estimate reopened to sent"
   },
   "autosave": {
     "saving": "Saving…",
@@ -756,6 +762,12 @@
   "rules": {
     "applied": "Rules applied",
     "tooltip": "Rules are applied to AI generation. Click to manage rules."
+  },
+  "configurationSource": {
+    "title": "Generated from",
+    "template": "Template: {name}",
+    "priceList": "Price list: {name}",
+    "none": "None"
   },
   "versions": {
     "createNewVersion": "Create new version",

@@ -74,7 +74,6 @@ export default async function WorkspaceSettingsPage({
         initialCompanyTaxId={workspace.settings?.companyTaxId ?? ""}
         initialCompanyEmail={workspace.settings?.companyEmail ?? ""}
         initialCompanyPhone={workspace.settings?.companyPhone ?? ""}
-        initialAiInstructions={workspace.settings?.aiInstructions ?? ""}
         initialBranding={initialBranding}
         members={members.map((member) => ({
           id: member.id,

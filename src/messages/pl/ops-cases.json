@@ -58,7 +58,9 @@
         "ignore": "Oznacz jako zignorowany",
         "resolvedSuccess": "Case #{number} oznaczony jako rozwiązany.",
         "ignoredSuccess": "Case #{number} oznaczony jako zignorowany.",
-        "updateFailed": "Nie udało się zaktualizować statusu case'a."
+        "updateFailed": "Nie udało się zaktualizować statusu case'a.",
+        "copied": "Skopiowano do schowka",
+        "copyFailed": "Nie udało się skopiować"
       }
     },
     "type": {

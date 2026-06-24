@@ -5,7 +5,7 @@ import { BookOpen, Copy } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState, useTransition, type ReactNode } from "react";
-import { toast } from "sonner";
+import { appToast } from "@/components/ui/app-toast";
 
 import { Button } from "@/components/ui/button";
 import { OpsCaseSeverityBadge } from "@/features/ops-cases/components/ops-case-severity-badge";
@@ -85,9 +85,9 @@ export function AdminOpsCaseDetailPanel({
   async function copyText(value: string) {
     try {
       await navigator.clipboard.writeText(value);
-      toast.success("Copied");
+      appToast.success(t("detail.actions.copied"));
     } catch {
-      toast.error("Copy failed");
+      appToast.error(t("detail.actions.copyFailed"));
     }
   }
 
@@ -103,11 +103,11 @@ export function AdminOpsCaseDetailPanel({
       );
 
       if (!result.success) {
-        toast.error(result.error || t("detail.actions.updateFailed"));
+        appToast.error(result.error || t("detail.actions.updateFailed"));
         return;
       }
 
-      toast.success(
+      appToast.success(
         status === "RESOLVED"
           ? t("detail.actions.resolvedSuccess", { number: opsCase.number })
           : t("detail.actions.ignoredSuccess", { number: opsCase.number }),

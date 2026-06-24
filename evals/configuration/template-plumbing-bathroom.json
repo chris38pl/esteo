@@ -1,0 +1,46 @@
+{
+  "id": "configuration-template-plumbing-bathroom",
+  "name": "Configuration — plumbing template items",
+  "locale": "pl",
+  "category": "business",
+  "quick": true,
+  "critical": true,
+  "profileVersion": "PLUMBING_V1",
+  "workspace": {
+    "industry": "PLUMBING",
+    "companyDescription": "Firma hydrauliczna realizująca remonty łazienek i montaże armatury.",
+    "template": {
+      "name": "Remont łazienki",
+      "sections": [
+        {
+          "title": "Hydraulika",
+          "items": [
+            { "name": "Montaż WC", "unit": "szt" },
+            { "name": "Montaż umywalki", "unit": "szt" }
+          ]
+        }
+      ]
+    },
+    "rules": [],
+    "systemRules": { "rounding": true, "units": true }
+  },
+  "request": {
+    "project": {
+      "description": "Remont małej łazienki. Do wykonania montaż WC podwieszanego oraz montaż umywalki z baterią.",
+      "preferredStartDate": "1_3_months"
+    },
+    "address": { "city": "Kraków" }
+  },
+  "expectations": {
+    "mustHave": [
+      { "term": "WC", "scope": "any_item" },
+      { "term": "umywalk", "scope": "any_item" }
+    ],
+    "configuration": {
+      "expectedTemplateItems": [{ "term": "Montaż WC" }, { "term": "Montaż umywalki" }]
+    },
+    "coverageTerms": ["WC", "umywalk"],
+    "leakageDomain": "services",
+    "minLineItems": 2
+  }
+}

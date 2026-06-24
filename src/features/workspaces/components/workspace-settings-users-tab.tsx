@@ -431,9 +431,11 @@ export function WorkspaceSettingsUsersTab({
 
       if (!result.success) {
         setError(result.error);
+        appToast.error(result.error);
         return;
       }
 
+      appToast.success(t("inviteRevoked"));
       router.refresh();
     });
   }

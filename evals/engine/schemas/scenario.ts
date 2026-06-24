@@ -29,6 +29,39 @@ export const workspaceRuleFixtureSchema = z.object({
   content: z.string().min(1),
 });
 
+export const templateItemFixtureSchema = z.object({
+  name: z.string().min(1),
+  unit: z.string().optional(),
+  guidance: z.string().optional(),
+});
+
+export const templateSectionFixtureSchema = z.object({
+  title: z.string().min(1),
+  guidance: z.string().optional(),
+  items: z.array(templateItemFixtureSchema).default([]),
+});
+
+export const templateFixtureSchema = z.object({
+  id: z.string().default("eval-template"),
+  name: z.string().min(1),
+  sections: z.array(templateSectionFixtureSchema).default([]),
+});
+
+export const priceListItemFixtureSchema = z.object({
+  name: z.string().min(1),
+  unit: z.string().min(1),
+  unitPrice: z.string().min(1),
+  vatRate: z.string().optional(),
+  note: z.string().optional(),
+});
+
+export const priceListFixtureSchema = z.object({
+  id: z.string().default("eval-price-list"),
+  name: z.string().min(1),
+  currency: z.string().default("PLN"),
+  items: z.array(priceListItemFixtureSchema).default([]),
+});
+
 export const systemRulesFixtureSchema = z.object({
   rounding: z.boolean().optional(),
   units: z.boolean().optional(),
@@ -48,6 +81,8 @@ export const workspaceFixtureSchema = z.object({
   companyDescription: z.string().default(""),
   aiInstructions: z.string().optional(),
   estimateSections: z.array(workspaceEstimateSectionFixtureSchema).optional(),
+  template: templateFixtureSchema.nullable().optional(),
+  priceList: priceListFixtureSchema.nullable().optional(),
   rules: z.array(workspaceRuleFixtureSchema).default([]),
   systemRules: systemRulesFixtureSchema.optional(),
 });
@@ -87,6 +122,28 @@ export const judgeExpectationsSchema = z.object({
   minReferenceSimilarity: z.number().min(0).max(10).default(7),
 });
 
+export const expectedTemplateItemSchema = z.object({
+  term: z.string().min(1),
+});
+
+export const expectedPriceSchema = z.object({
+  term: z.string().min(1),
+  unit: z.string().min(1),
+  unitPrice: z.string().min(1),
+});
+
+export const forbiddenPriceSchema = z.object({
+  term: z.string().min(1),
+  sourceUnit: z.string().min(1),
+  unitPrice: z.string().min(1),
+});
+
+export const configurationExpectationsSchema = z.object({
+  expectedTemplateItems: z.array(expectedTemplateItemSchema).default([]),
+  expectedPrices: z.array(expectedPriceSchema).default([]),
+  mustNotUsePrices: z.array(forbiddenPriceSchema).default([]),
+});
+
 export const expectationsSchema = z.object({
   mustHave: z.array(termExpectationSchema).default([]),
   mustNotHave: z.array(termExpectationSchema).default([]),
@@ -97,6 +154,7 @@ export const expectationsSchema = z.object({
   maxLeakageTerms: z.number().int().min(0).default(0),
   minLineItems: z.number().int().min(0).default(1),
   maxLineItems: z.number().int().min(1).default(100),
+  configuration: configurationExpectationsSchema.optional(),
   judge: judgeExpectationsSchema.optional(),
 });
 

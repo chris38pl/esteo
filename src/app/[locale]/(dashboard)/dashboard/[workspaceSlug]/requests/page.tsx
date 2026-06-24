@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { RequestsListPanel } from "@/features/estimate-requests/components/requests-list-panel";
 import { listWorkspaceEstimateRequests } from "@/features/estimate-requests/server/workspace-requests";
+import { getGenerationConfigurationOptions } from "@/features/workspace-configuration/server/service";
 import { dashboardBillingHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
@@ -30,9 +31,10 @@ export default async function WorkspaceRequestsPage({
     redirect(`/${resolvedLocale}/dashboard`);
   }
 
-  const [requests, entitlements] = await Promise.all([
+  const [requests, entitlements, generationConfiguration] = await Promise.all([
     listWorkspaceEstimateRequests(resolved.workspace.id, resolvedLocale),
     getWorkspaceEntitlements(resolved.workspace.id),
+    getGenerationConfigurationOptions(resolved.workspace.id),
   ]);
 
   const processingGate = deriveEstimateProcessingGate(entitlements);
@@ -52,6 +54,7 @@ export default async function WorkspaceRequestsPage({
       workspaceId={resolved.workspace.id}
       createEstimateGate={createEstimateGate}
       billingHref={billingHref}
+      generationConfiguration={generationConfiguration}
       locale={resolvedLocale}
     />
   );

@@ -5,6 +5,7 @@ import {
   FileText,
   LayoutDashboard,
   Settings,
+  SlidersHorizontal,
   Wallet,
 } from "lucide-react";
 
@@ -17,6 +18,7 @@ export type NavItemKey =
   | "estimateRequestPage"
   | "estimates"
   | "payments"
+  | "configuration"
   | "settings";
 
 export type SidebarNavItem = {
@@ -75,6 +77,15 @@ export const navItems: SidebarNavItem[] = [
         ? `/${locale}/dashboard/${workspaceSlug}/payments`
         : `/${locale}/dashboard`,
     labelKey: "nav.payments",
+  },
+  {
+    key: "configuration",
+    icon: SlidersHorizontal,
+    href: (locale, workspaceSlug) =>
+      workspaceSlug
+        ? `/${locale}/dashboard/${workspaceSlug}/configuration`
+        : `/${locale}/dashboard`,
+    labelKey: "nav.configuration",
   },
   {
     key: "settings",

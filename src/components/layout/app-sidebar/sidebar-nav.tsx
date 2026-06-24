@@ -68,12 +68,15 @@ export function SidebarNav({
             const isDashboardComingSoon = item.key === "dashboard" && !isPlatformAdmin;
             const disabled =
               item.disabled === true ||
-              (item.key === "settings" && !canAccessWorkspaceSettings) ||
+              ((item.key === "settings" || item.key === "configuration") &&
+                !canAccessWorkspaceSettings) ||
               isDashboardComingSoon;
             const badge = isDashboardComingSoon ? t("nav.comingSoon") : item.badge;
             const tooltipLabel =
               disabled && item.key === "settings"
                 ? `${label} — ${t("nav.settingsOwnerOnly")}`
+                : disabled && item.key === "configuration"
+                  ? `${label} — ${t("nav.configurationOwnerOnly")}`
                 : disabled && item.key === "dashboard"
                   ? `${label} — ${t("nav.comingSoon")}`
                   : label;

@@ -39,7 +39,7 @@ export function EstimateRulesIndicator({
       className={cn("estimate-rules-indicator", estimateOutlineButtonClassName)}
     >
       <Link
-        href={`/${locale}/dashboard/${workspaceSlug}/settings?tab=rules`}
+        href={`/${locale}/dashboard/${workspaceSlug}/configuration?tab=rules`}
         className="inline-flex items-center justify-center gap-2"
         aria-label={!isLabelVisible ? t("rules.applied") : undefined}
       >
