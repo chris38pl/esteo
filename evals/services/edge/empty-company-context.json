@@ -31,12 +31,16 @@
       "koordynacja",
       "harmonogram"
     ],
-    "requiredSections": [
-      "Zakres",
-      "Usługi"
-    ],
+    "requiredSections": [],
     "forbiddenSections": [
-      "Łazienka"
+      "Zakres",
+      "Uwagi",
+      "Opis",
+      "Oferta",
+      "Kosztorys",
+      "Wycena",
+      "Łazienka",
+      "Prace rozbiórkowe"
     ],
     "leakageDomain": "construction",
     "maxLeakageTerms": 0,

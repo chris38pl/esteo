@@ -1,0 +1,7 @@
+{
+  "scenarioIds": [
+    "assistant-price-list-consistency",
+    "assistant-template-consistency",
+    "assistant-no-snapshot-fallback"
+  ]
+}

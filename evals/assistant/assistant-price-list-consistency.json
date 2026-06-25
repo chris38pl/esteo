@@ -1,0 +1,57 @@
+{
+  "id": "assistant-price-list-consistency",
+  "name": "Assistant — price list consistency on addition",
+  "locale": "pl",
+  "quick": true,
+  "critical": true,
+  "workspace": {
+    "industry": "CONSTRUCTION",
+    "companyDescription": "Firma remontowa.",
+    "subscriptionPlan": "PRO",
+    "template": {
+      "name": "Malowanie",
+      "sections": [{ "title": "Malowanie", "items": [{ "name": "Malowanie ścian", "unit": "m²" }] }]
+    },
+    "priceList": {
+      "name": "Standard 2026",
+      "currency": "PLN",
+      "items": [{ "name": "Malowanie", "unit": "m²", "unitPrice": "18.00" }]
+    },
+    "rules": [],
+    "systemRules": { "rounding": true, "units": true }
+  },
+  "configurationSnapshot": {
+    "priceList": {
+      "name": "Standard 2026",
+      "currency": "PLN",
+      "items": [{ "name": "Malowanie", "unit": "m²", "unitPrice": "18.00" }]
+    }
+  },
+  "estimateSnapshot": {
+    "marginPercent": 0,
+    "sections": [
+      {
+        "id": "sec-1",
+        "title": "Malowanie",
+        "sortOrder": 0,
+        "items": [
+          {
+            "id": "item-1",
+            "name": "Malowanie ścian",
+            "unit": "m²",
+            "quantity": 60,
+            "unitPrice": 18,
+            "vatRate": 0.23,
+            "sortOrder": 0
+          }
+        ]
+      }
+    ]
+  },
+  "userMessage": "Dodaj malowanie sufitu",
+  "expectations": {
+    "addedItemsMustMatchPrice": [{ "term": "sufit", "unit": "m²", "unitPrice": "18.00" }],
+    "targetSection": "Malowanie",
+    "promptMustContain": ["18.00", "Price List"]
+  }
+}

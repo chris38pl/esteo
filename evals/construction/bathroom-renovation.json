@@ -1,0 +1,40 @@
+{
+  "id": "construction-bathroom-renovation",
+  "name": "Construction — bathroom renovation 6 m²",
+  "locale": "pl",
+  "category": "business",
+  "quick": true,
+  "critical": true,
+  "profileVersion": "CONSTRUCTION_V1",
+  "workspace": {
+    "industry": "CONSTRUCTION",
+    "companyDescription": "Firma remontowa specjalizująca się w kompleksowych remontach łazienek.",
+    "rules": [],
+    "systemRules": { "rounding": true, "units": true }
+  },
+  "request": {
+    "project": {
+      "description": "Kompleksowy remont łazienki 6 m² w bloku z lat 80. Wymiana płytek na podłodze i ścianach, nowa armatura (umywalka, WC, brodzik), oświetlenie LED. Kraków.",
+      "preferredStartDate": "1_3_months"
+    },
+    "address": { "city": "Kraków" }
+  },
+  "expectations": {
+    "mustHave": [
+      { "term": "płytk", "scope": "any_item" },
+      { "term": "łazienk", "scope": "any_section" }
+    ],
+    "mustNotHave": [{ "term": "kuchni", "scope": "any_section" }],
+    "coverageTerms": ["płytk", "łazienk", "armatur"],
+    "requiredSections": ["Prace rozbiórkowe", "Łazienka"],
+    "leakageDomain": "services",
+    "maxLeakageTerms": 0,
+    "minLineItems": 6,
+    "maxLineItems": 40,
+    "judge": {
+      "focus": ["Kompleksowy remont łazienki — fazy budowlane, nie usługi ogólne"],
+      "minScore": 7,
+      "minContextAlignment": 7
+    }
+  }
+}

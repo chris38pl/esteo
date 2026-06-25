@@ -10,40 +10,6 @@
     "industryOtherText": "Szkoła językowa",
     "companyDescription": "Kursy języka angielskiego B2B i indywidualne. Materiały w cenie.",
     "aiInstructions": "",
-    "estimateSections": [
-      {
-        "key": "scope",
-        "titlePl": "Zakres",
-        "titleEn": "Scope",
-        "rulePl": "Opcjonalnie 1–2 krótkie pozycje podsumowujące zakres i wyłączenia (unitPrice może być 0). Wszystkie wyceniane usługi umieszczaj jako osobne pozycje w sekcji Usługi (jednostka, ilość, cena).",
-        "ruleEn": "Optionally 1–2 short line items summarizing scope and exclusions (unitPrice may be 0). Put all priced services as separate line items in the Services section (unit, quantity, price).",
-        "active": true
-      },
-      {
-        "key": "services",
-        "titlePl": "Usługi",
-        "titleEn": "Services",
-        "rulePl": "Główne usługi z jednostkami (h, szt., pakiet) i realistycznym nakładem.",
-        "ruleEn": "Core services with units (h, pcs, package) and realistic allowances.",
-        "active": true
-      },
-      {
-        "key": "add_ons",
-        "titlePl": "Opcje dodatkowe",
-        "titleEn": "Add-ons",
-        "rulePl": "Opcjonalne rozszerzenia poza zakresem podstawowym.",
-        "ruleEn": "Optional extensions beyond the base scope.",
-        "active": true
-      },
-      {
-        "key": "notes",
-        "titlePl": "Uwagi",
-        "titleEn": "Notes",
-        "rulePl": "Warunki, wyłączenia i koszty poza głównym zakresem. Przy wyłączeniach nie powtarzaj nazwy wykluczonej usługi w tytule pozycji.",
-        "ruleEn": "Terms, exclusions, and additional costs. Do not repeat excluded service names in line item titles.",
-        "active": true
-      }
-    ],
     "rules": [],
     "systemRules": {
       "rounding": true,
@@ -95,11 +61,14 @@
       "angielski",
       "materiały"
     ],
-    "requiredSections": [
-      "Zakres",
-      "Usługi"
-    ],
+    "requiredSections": [],
     "forbiddenSections": [
+      "Zakres",
+      "Uwagi",
+      "Opis",
+      "Oferta",
+      "Kosztorys",
+      "Wycena",
       "Łazienka",
       "Prace rozbiórkowe"
     ],

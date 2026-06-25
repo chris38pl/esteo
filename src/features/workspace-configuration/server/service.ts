@@ -155,6 +155,24 @@ export function serializeTemplateListItem(template: EstimateTemplateWithItems): 
   };
 }
 
+export type SerializedPriceListListItem = {
+  id: string;
+  name: string;
+  currency: string;
+  itemCount: number;
+  updatedAt: string;
+};
+
+export function serializePriceListListItem(priceList: PriceListWithItems): SerializedPriceListListItem {
+  return {
+    id: priceList.id,
+    name: priceList.name,
+    currency: priceList.currency,
+    itemCount: priceList.items.length,
+    updatedAt: priceList.updatedAt.toISOString(),
+  };
+}
+
 export type GenerationConfigurationOption = {
   id: string;
   name: string;
@@ -233,6 +251,48 @@ export async function getEstimateTemplateWorkspaceData(
     defaultTemplateId: workspace.settings?.defaultEstimateTemplateId ?? null,
     access,
     template: currentRecord ? serializeTemplate(currentRecord) : null,
+  };
+}
+
+export async function getPriceListWorkspaceData(
+  user: User,
+  workspaceId: string,
+  priceListId?: string,
+) {
+  await requireRole(user, workspaceId, "OWNER");
+
+  const [workspace, access] = await Promise.all([
+    prisma.workspace.findFirst({
+      where: { id: workspaceId, deletedAt: null },
+      include: {
+        settings: true,
+        priceLists: {
+          where: { deletedAt: null },
+          orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
+          include: priceListInclude,
+        },
+      },
+    }),
+    getConfigurationAccess(workspaceId),
+  ]);
+
+  if (!workspace) {
+    throw new WorkspaceError("Workspace nie został znaleziony.");
+  }
+
+  const currentRecord = priceListId
+    ? workspace.priceLists.find((priceList) => priceList.id === priceListId)
+    : null;
+
+  if (priceListId && !currentRecord) {
+    throw new WorkspaceError("Cennik nie został znaleziony.");
+  }
+
+  return {
+    priceLists: workspace.priceLists.map(serializePriceListListItem),
+    defaultPriceListId: workspace.settings?.defaultPriceListId ?? null,
+    access,
+    priceList: currentRecord ? serializePriceList(currentRecord) : null,
   };
 }
 

@@ -9,7 +9,11 @@ import { parseEstimateSystemRuleState } from "@/features/workspaces/lib/parse-es
 import {
   parseEstimateSectionsFromBranding,
   resolveEstimateSectionsForPrompt,
+  resolveSectionStructureMode,
 } from "@/features/workspaces/lib/resolve-estimate-sections";
+import type { SectionStructureMode } from "@/features/workspaces/lib/section-structure-mode";
+import { buildPromptBlocksFromConfigurationSnapshot } from "@/features/workspaces/lib/configuration-snapshot";
+import type { EstimateConfigurationSnapshot } from "@/features/workspaces/lib/configuration-snapshot";
 import {
   formatEstimateTemplateBlock,
   formatPriceListBlock,
@@ -41,44 +45,20 @@ export type EstimateGenerationContext = {
   aiInstructions: string | null;
   estimateSections: EstimatePromptSection[];
   allowedSections: Array<{ key: string; title: string }>;
+  sectionStructureMode: SectionStructureMode;
   rules: Array<{ title: string; content: string }>;
   templatePromptBlock?: string;
   priceListPromptBlock?: string;
   configurationSnapshot?: EstimateConfigurationSnapshot;
 };
 
-export type EstimateConfigurationSnapshot = {
-  template?: {
-    id: string;
-    name: string;
-    sections: Array<{
-      title: string;
-      guidance: string | null;
-      items: Array<{
-        name: string;
-        unit: string | null;
-        guidance: string | null;
-      }>;
-    }>;
-  } | null;
-  priceList?: {
-    id: string;
-    name: string;
-    currency: string;
-    items: Array<{
-      name: string;
-      unit: string;
-      unitPrice: string;
-      vatRate: string | null;
-      note: string | null;
-    }>;
-  } | null;
-};
+export type { EstimateConfigurationSnapshot } from "@/features/workspaces/lib/configuration-snapshot";
 
 export function estimateAiRulesApplied(context: EstimateGenerationContext): boolean {
   return Boolean(
     context.aiInstructions?.trim() ||
       context.companyDescription?.trim() ||
+      context.sectionStructureMode !== "ai_dynamic" ||
       context.estimateSections.length > 0 ||
       context.rules.length > 0 ||
       context.templatePromptBlock?.trim() ||
@@ -92,6 +72,7 @@ export async function loadEstimateGenerationContext(
   options: {
     templateId?: string | null;
     priceListId?: string | null;
+    configurationSnapshot?: EstimateConfigurationSnapshot;
   } = {},
 ): Promise<EstimateGenerationContext | null> {
   const workspaceLocale = appLocaleToWorkspaceLocale(locale);
@@ -126,6 +107,49 @@ export async function loadEstimateGenerationContext(
     (entitlements.plan === "PRO" || entitlements.plan === "BUSINESS") &&
     (entitlements.effectiveStatus === "ACTIVE" ||
       entitlements.effectiveStatus === "PAST_DUE");
+
+  const persistedSections = parseEstimateSectionsFromBranding(settings?.branding);
+  const sectionStructureMode = resolveSectionStructureMode(
+    workspace.industry,
+    persistedSections,
+  );
+  const brandingSections = resolveEstimateSectionsForPrompt(
+    workspace.industry,
+    persistedSections,
+    locale,
+  );
+
+  if (options.configurationSnapshot !== undefined) {
+    const snapshot = options.configurationSnapshot;
+    const promptBlocks = buildPromptBlocksFromConfigurationSnapshot(snapshot);
+    const estimateSections = snapshot.template
+      ? snapshot.template.sections.map((section, index) => ({
+          key: `snapshot-template:${index}`,
+          title: section.title,
+          rule: section.guidance ?? "",
+        }))
+      : brandingSections.map((section) => ({
+          key: section.key,
+          title: section.title,
+          rule: section.rule,
+        }));
+
+    return {
+      industry: workspace.industry,
+      industryOtherText: workspace.industryOtherText ?? null,
+      locale,
+      companyDescription: settings?.companyDescription ?? null,
+      aiInstructions: settings?.aiInstructions ?? null,
+      estimateSections,
+      allowedSections: estimateSections.map((s) => ({ key: s.key, title: s.title })),
+      sectionStructureMode,
+      rules: [...activeSystemRules, ...userEstimateRules],
+      templatePromptBlock: promptBlocks.templatePromptBlock,
+      priceListPromptBlock: promptBlocks.priceListPromptBlock,
+      configurationSnapshot: snapshot,
+    };
+  }
+
   const selectedTemplateId =
     options.templateId === undefined
       ? (settings?.defaultEstimateTemplateId ?? null)
@@ -169,7 +193,6 @@ export async function loadEstimateGenerationContext(
       ])
     : [null, null];
 
-  const persistedSections = parseEstimateSectionsFromBranding(settings?.branding);
   const resolvedSections = template
     ? template.sections.map((section) => ({
         key: `template:${section.id}`,
@@ -187,6 +210,10 @@ export async function loadEstimateGenerationContext(
     title: section.title,
     rule: section.rule,
   }));
+
+  const resolvedStructureMode = template
+    ? ("workspace_override" as const)
+    : sectionStructureMode;
 
   const templateForPrompt: PromptTemplateBlock | null = template
     ? {
@@ -257,6 +284,7 @@ export async function loadEstimateGenerationContext(
     aiInstructions: settings?.aiInstructions ?? null,
     estimateSections,
     allowedSections: estimateSections.map((s) => ({ key: s.key, title: s.title })),
+    sectionStructureMode: resolvedStructureMode,
     rules: [...activeSystemRules, ...userEstimateRules],
     templatePromptBlock: formatEstimateTemplateBlock(templateForPrompt),
     priceListPromptBlock: formatPriceListBlock(priceListForPrompt),

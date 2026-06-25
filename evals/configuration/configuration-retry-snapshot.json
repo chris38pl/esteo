@@ -1,0 +1,71 @@
+{
+  "id": "configuration-retry-snapshot",
+  "name": "Configuration — retry uses stored snapshot",
+  "locale": "pl",
+  "category": "business",
+  "quick": true,
+  "critical": true,
+  "profileVersion": "CONSTRUCTION_V1",
+  "workspace": {
+    "industry": "CONSTRUCTION",
+    "companyDescription": "Firma remontowa.",
+    "subscriptionPlan": "PRO",
+    "subscriptionStatus": "ACTIVE",
+    "template": {
+      "id": "template-b",
+      "name": "Hydraulika B",
+      "sections": [
+        {
+          "title": "Hydraulika",
+          "items": [{ "name": "Montaż WC", "unit": "szt." }]
+        }
+      ]
+    },
+    "priceList": {
+      "id": "price-list-b",
+      "name": "Cennik B",
+      "currency": "PLN",
+      "items": [{ "name": "Montaż WC", "unit": "szt.", "unitPrice": "450.00" }]
+    },
+    "rules": [],
+    "systemRules": { "rounding": true, "units": true }
+  },
+  "configurationSnapshot": {
+    "template": {
+      "id": "template-a",
+      "name": "Malowanie A",
+      "sections": [
+        {
+          "title": "Ściany i sufity",
+          "items": [{ "name": "Malowanie ścian", "unit": "m²" }]
+        }
+      ]
+    },
+    "priceList": {
+      "id": "price-list-a",
+      "name": "Cennik A",
+      "currency": "PLN",
+      "items": [{ "name": "Malowanie", "unit": "m²", "unitPrice": "18.00" }]
+    }
+  },
+  "request": {
+    "project": {
+      "description": "Malowanie ścian w mieszkaniu około 60 m².",
+      "preferredStartDate": "1_3_months"
+    },
+    "address": { "city": "Poznań" }
+  },
+  "expectations": {
+    "mustHave": [{ "term": "malowan", "scope": "any_item" }],
+    "configuration": {
+      "expectedPrices": [{ "term": "Malowanie", "unit": "m²", "unitPrice": "18.00" }]
+    },
+    "configurationLifecycle": {
+      "promptMustContain": ["Malowanie A", "Cennik A", "18.00"],
+      "promptMustNotContain": ["Hydraulika B", "Cennik B", "450.00"]
+    },
+    "coverageTerms": ["malowan"],
+    "leakageDomain": "services",
+    "minLineItems": 1
+  }
+}

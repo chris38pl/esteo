@@ -35,11 +35,16 @@
       "szkolen",
       "BHP"
     ],
-    "requiredSections": [
-      "Usługi"
-    ],
+    "requiredSections": [],
     "forbiddenSections": [
-      "Łazienka"
+      "Zakres",
+      "Uwagi",
+      "Opis",
+      "Oferta",
+      "Kosztorys",
+      "Wycena",
+      "Łazienka",
+      "Prace rozbiórkowe"
     ],
     "leakageDomain": "construction",
     "maxLeakageTerms": 1,

@@ -23,6 +23,7 @@ import type {
 import { simulateAgentPatch } from "@/features/estimates/lib/simulate-agent-patch";
 import { validateAgentPatch } from "@/features/estimates/lib/validate-agent-patch";
 import { loadEstimateGenerationContext } from "@/features/workspaces/lib/load-estimate-generation-context";
+import { resolveStoredConfigurationSnapshot } from "@/features/workspaces/lib/configuration-snapshot";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 import {
@@ -389,7 +390,29 @@ export async function proposeEdit(input: {
   }
 
   const locale: Locale = isLocale(input.locale) ? input.locale : "pl";
-  const context = await loadEstimateGenerationContext(input.workspaceId, locale);
+
+  const estimateRecord = await prisma.estimate.findFirst({
+    where: {
+      workspaceId: input.workspaceId,
+      deletedAt: null,
+      versions: { some: { id: input.versionId } },
+    },
+    select: {
+      aiMetadata: true,
+      estimateRequest: { select: { aiMetadata: true } },
+    },
+  });
+
+  const configurationSnapshot = estimateRecord
+    ? resolveStoredConfigurationSnapshot(
+        estimateRecord.aiMetadata,
+        estimateRecord.estimateRequest?.aiMetadata,
+      )
+    : undefined;
+
+  const context = await loadEstimateGenerationContext(input.workspaceId, locale, {
+    ...(configurationSnapshot !== undefined ? { configurationSnapshot } : {}),
+  });
 
   if (!context) {
     throw new Error("WORKSPACE_NOT_FOUND");

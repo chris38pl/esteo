@@ -3,36 +3,16 @@ import { fuzzySectionMatch, normalizeEvalText, polishTermMatch } from "@evals/en
 import type { Expectations } from "@evals/engine/schemas/scenario";
 import type { RuleScoreResult } from "@evals/engine/types";
 
-const PRICED_SECTION_TITLES = new Set([
-  "uslugi",
-  "services",
-  "opcje dodatkowe",
-  "add-ons",
-  "addons",
-]);
-
 function collectItemNames(output: EstimateDraftOutput): string[] {
   return output.sections.flatMap((s) => s.items.map((i) => i.name));
 }
 
 function collectMustNotSearchItemNames(output: EstimateDraftOutput): string[] {
-  const names: string[] = [];
-  for (const section of output.sections) {
-    const title = normalizeEvalText(section.title.trim());
-    if (!PRICED_SECTION_TITLES.has(title)) {
-      continue;
-    }
-    for (const item of section.items) {
-      names.push(item.name);
-    }
-  }
-  return names;
+  return output.sections.flatMap((s) => s.items.map((i) => i.name));
 }
 
 function collectMustNotSearchSectionTitles(output: EstimateDraftOutput): string[] {
-  return output.sections
-    .filter((s) => PRICED_SECTION_TITLES.has(normalizeEvalText(s.title.trim())))
-    .map((s) => s.title);
+  return output.sections.map((s) => s.title);
 }
 
 export function scoreRules(
@@ -112,6 +92,20 @@ export function scoreRules(
   }
   const forbiddenSectionsRatio = forbiddenSectionsPass ? 1 : 0;
 
+  let minimumDistinctSectionsPass = true;
+  if (expectations.minimumDistinctSections != null) {
+    const distinctSectionCount = new Set(
+      sectionTitles.map((title) => normalizeEvalText(title.trim())).filter(Boolean),
+    ).size;
+    minimumDistinctSectionsPass =
+      distinctSectionCount >= expectations.minimumDistinctSections;
+    checks.push({
+      id: `minimumDistinctSections:${expectations.minimumDistinctSections}`,
+      passed: minimumDistinctSectionsPass,
+      detail: `${distinctSectionCount} (expected ≥ ${expectations.minimumDistinctSections})`,
+    });
+  }
+
   const lineItemCount = itemNames.length;
   const countOk =
     lineItemCount >= expectations.minLineItems &&
@@ -134,6 +128,7 @@ export function scoreRules(
   const hardPassed =
     mustNotPass &&
     forbiddenSectionsPass &&
+    minimumDistinctSectionsPass &&
     (expectations.mustHave.length === 0 || mustHaveScore === expectations.mustHave.length) &&
     (expectations.requiredSections.length === 0 ||
       requiredSectionsScore === expectations.requiredSections.length);

@@ -7,6 +7,7 @@ import {
   resolveEstimateSectionRule,
   resolveEstimateSectionTitle,
 } from "@/features/workspaces/lib/resolve-estimate-sections";
+import { hasIndustrySectionDefaults } from "@/features/workspaces/config/industry-estimate-sections";
 import { isServiceWorkspace } from "@/features/workspaces/lib/industries";
 import type { Locale } from "@/lib/locale";
 
@@ -92,9 +93,18 @@ export function hasCustomEstimateSections(
   industry: WorkspaceIndustry,
   persisted: WorkspaceEstimateSection[] | null | undefined,
 ): boolean {
-  if (!persisted?.length) {
+  if (persisted == null) {
     return false;
   }
+
+  if (!hasIndustrySectionDefaults(industry)) {
+    return persisted.length > 0;
+  }
+
+  if (!persisted.length) {
+    return false;
+  }
+
   const defaults = industryDefaultsToWorkspaceSections(industry);
   return !sectionsEqual(persisted, defaults);
 }

@@ -9,13 +9,14 @@ import {
   List,
   MoreHorizontal,
   Plus,
+  Sparkles,
   Star,
   StarOff,
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { appToast } from "@/components/ui/app-toast";
 
@@ -41,6 +42,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { SystemEstimateTemplate } from "@/features/estimate-templates/config/system-templates";
+import {
+  GenerateTemplateAiDialog,
+} from "@/features/estimate-templates/components/generate-template-ai-dialog";
+import { ImportTemplateFromEstimateDialog } from "@/features/estimate-templates/components/import-template-from-estimate-dialog";
+import { TemplateActionCard } from "@/features/estimate-templates/components/template-action-card";
+import { TEMPLATE_AI_OPEN_QUERY_PARAM } from "@/features/estimate-templates/lib/template-ai-storage";
+import { useEstimateMobileLayout } from "@/features/estimates/hooks/use-estimate-mobile-layout";
 import { countTemplateItems } from "@/features/estimate-templates/lib/template-display";
 import {
   deleteEstimateTemplateAction,
@@ -397,29 +405,34 @@ function CreateTemplateCard({
 }) {
   const t = useTranslations("workspaces.configuration.templates.list");
 
-  const content = (
-    <div
-      className={cn(
-        "flex h-full min-h-[280px] flex-col items-center justify-center rounded-2xl border border-dashed border-border/80 bg-background/20 p-6 text-center transition-colors dark:bg-muted/10",
-        disabled ? "opacity-60" : "hover:border-primary/50 hover:bg-background/40 dark:hover:bg-muted/20",
-      )}
-    >
-      <span className="flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-        <Plus className="size-6" />
-      </span>
-      <p className="mt-4 text-sm font-semibold text-foreground">{t("createFromScratch")}</p>
-      <p className="mt-1 max-w-[14rem] text-xs text-muted-foreground">{t("createFromScratchHint")}</p>
-    </div>
+  return (
+    <TemplateActionCard
+      icon={Plus}
+      title={t("createFromScratch")}
+      hint={t("createFromScratchHint")}
+      href={disabled ? undefined : href}
+      disabled={disabled}
+    />
   );
+}
 
-  if (disabled) {
-    return content;
-  }
+function GenerateTemplateAiCard({
+  disabled,
+  onClick,
+}: {
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  const t = useTranslations("workspaces.configuration.templates.list");
 
   return (
-    <Link href={href} className="block h-full">
-      {content}
-    </Link>
+    <TemplateActionCard
+      icon={Sparkles}
+      title={t("generateWithAi")}
+      hint={t("generateWithAiHint")}
+      disabled={disabled}
+      onClick={disabled ? undefined : onClick}
+    />
   );
 }
 
@@ -430,6 +443,7 @@ export function EstimateTemplatesListTab({
   templates,
   defaultTemplateId,
   systemTemplate,
+  showSystemTemplate,
   access,
 }: {
   workspaceId: string;
@@ -438,16 +452,32 @@ export function EstimateTemplatesListTab({
   templates: SerializedTemplate[];
   defaultTemplateId: string | null;
   systemTemplate: SystemEstimateTemplate;
+  showSystemTemplate: boolean;
   access: ConfigurationAccess;
 }) {
   const t = useTranslations("workspaces.configuration.templates");
   const tList = useTranslations("workspaces.configuration.templates.list");
+  const tAi = useTranslations("workspaces.configuration.templates.ai");
   const tToast = useTranslations("workspaces.configuration.templates.toast");
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isMobile = useEstimateMobileLayout();
   const [isPending, startTransition] = useTransition();
   const [sort, setSort] = useState<TemplateSort>("newest");
   const [view, setView] = useState<TemplateView>("grid");
+  const [aiDialogOpen, setAiDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const canEdit = access.canEditPremiumConfiguration;
+
+  useEffect(() => {
+    if (searchParams.get(TEMPLATE_AI_OPEN_QUERY_PARAM) === "1" && canEdit) {
+      setAiDialogOpen(true);
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete(TEMPLATE_AI_OPEN_QUERY_PARAM);
+      const query = params.toString();
+      router.replace(query.length > 0 ? `?${query}` : "?tab=templates");
+    }
+  }, [canEdit, router, searchParams]);
 
   const newTemplateHref = `/${locale}/dashboard/${workspaceSlug}/configuration/templates/new`;
   const copySystemHref = `${newTemplateHref}?copy=system`;
@@ -522,23 +552,24 @@ export function EstimateTemplatesListTab({
             </div>
 
             <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-nowrap sm:items-center sm:justify-end">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="inline-flex w-full sm:w-auto">
-                      <Button
-                        variant="outline"
-                        className="h-10 w-full shrink-0 justify-center gap-2 whitespace-nowrap px-4 sm:w-auto"
-                        disabled
-                      >
-                        <FileInput className="size-4 shrink-0" />
-                        {tList("importFromEstimate")}
-                      </Button>
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>{tList("importFromEstimateSoon")}</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Button
+                variant="outline"
+                className="h-10 w-full shrink-0 justify-center gap-2 whitespace-nowrap px-4 sm:w-auto"
+                disabled={!canEdit}
+                onClick={() => setImportDialogOpen(true)}
+              >
+                <FileInput className="size-4 shrink-0" />
+                {tList("importFromEstimate")}
+              </Button>
+              <Button
+                variant="outline"
+                className="h-10 w-full shrink-0 justify-center gap-2 whitespace-nowrap px-4 sm:w-auto"
+                disabled={!canEdit}
+                onClick={() => setAiDialogOpen(true)}
+              >
+                <Sparkles className="size-4 shrink-0" />
+                {tAi("dialogTitle")}
+              </Button>
               <Button
                 className="h-10 w-full shrink-0 justify-center gap-2 whitespace-nowrap px-4 sm:w-auto"
                 disabled={!canEdit}
@@ -617,6 +648,10 @@ export function EstimateTemplatesListTab({
                 />
               ))}
               <CreateTemplateCard href={newTemplateHref} disabled={!canEdit} />
+              <GenerateTemplateAiCard
+                disabled={!canEdit}
+                onClick={() => setAiDialogOpen(true)}
+              />
             </div>
           ) : (
             <div className="space-y-3">
@@ -635,44 +670,71 @@ export function EstimateTemplatesListTab({
                 />
               ))}
               {canEdit ? (
-                <Button variant="outline" className="w-full gap-2" asChild>
-                  <Link href={newTemplateHref}>
-                    <Plus className="size-4" />
-                    {tList("createFromScratch")}
-                  </Link>
-                </Button>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <Button variant="outline" className="w-full flex-1 gap-2" asChild>
+                    <Link href={newTemplateHref}>
+                      <Plus className="size-4" />
+                      {tList("createFromScratch")}
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full flex-1 gap-2"
+                    onClick={() => setAiDialogOpen(true)}
+                  >
+                    <Sparkles className="size-4" />
+                    {tList("generateWithAi")}
+                  </Button>
+                </div>
               ) : null}
             </div>
           )}
         </div>
       </section>
 
-      <section className="flex flex-col gap-4 rounded-2xl border border-border/60 bg-card p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6">
-        <div className="flex min-w-0 items-start gap-3">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border/60 bg-muted/30">
-            <Lightbulb className="size-5 text-primary" />
+      {showSystemTemplate ? (
+        <section className="flex flex-col gap-4 rounded-2xl border border-border/60 bg-card p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="flex min-w-0 items-start gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border/60 bg-muted/30">
+              <Lightbulb className="size-5 text-primary" />
+            </div>
+            <div className="min-w-0 space-y-1">
+              <p className="font-medium text-foreground">
+                {tList("bannerTitle")}{" "}
+                <span className="font-semibold text-primary">{systemTemplate.name}</span>
+              </p>
+              <p className="text-sm text-muted-foreground">{tList("bannerDescriptionShort")}</p>
+            </div>
           </div>
-          <div className="min-w-0 space-y-1">
-            <p className="font-medium text-foreground">
-              {tList("bannerTitle")}{" "}
-              <span className="font-semibold text-primary">{systemTemplate.name}</span>
-            </p>
-            <p className="text-sm text-muted-foreground">{tList("bannerDescriptionShort")}</p>
-          </div>
-        </div>
-        <Button
-          variant="outline"
-          className="h-10 shrink-0 border-primary/30 text-primary hover:bg-primary/10"
-          disabled={!canEdit}
-          asChild={canEdit}
-        >
-          {canEdit ? (
-            <Link href={copySystemHref}>{tList("bannerCta")}</Link>
-          ) : (
-            <span>{tList("bannerCta")}</span>
-          )}
-        </Button>
-      </section>
+          <Button
+            variant="outline"
+            className="h-10 shrink-0 border-primary/30 text-primary hover:bg-primary/10"
+            disabled={!canEdit}
+            asChild={canEdit}
+          >
+            {canEdit ? (
+              <Link href={copySystemHref}>{tList("bannerCta")}</Link>
+            ) : (
+              <span>{tList("bannerCta")}</span>
+            )}
+          </Button>
+        </section>
+      ) : null}
+
+      <GenerateTemplateAiDialog
+        open={aiDialogOpen}
+        onOpenChange={setAiDialogOpen}
+        workspaceSlug={workspaceSlug}
+        locale={locale}
+        isMobile={isMobile}
+      />
+      <ImportTemplateFromEstimateDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        workspaceId={workspaceId}
+        workspaceSlug={workspaceSlug}
+        locale={locale}
+      />
     </div>
   );
 }

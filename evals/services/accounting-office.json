@@ -8,42 +8,8 @@
   "workspace": {
     "industry": "OTHER",
     "industryOtherText": "Biuro rachunkowe",
-    "companyDescription": "Biuro rachunkowe obsługujące JDG i małe spółki. Prowadzimy KPiR i pełną księgowość. Nie świadczymy doradztwa prawnego.",
-    "aiInstructions": "",
-    "estimateSections": [
-      {
-        "key": "scope",
-        "titlePl": "Zakres",
-        "titleEn": "Scope",
-        "rulePl": "Opcjonalnie 1–2 krótkie pozycje podsumowujące zakres i wyłączenia (unitPrice może być 0). Wszystkie wyceniane usługi umieszczaj jako osobne pozycje w sekcji Usługi (jednostka, ilość, cena).",
-        "ruleEn": "Optionally 1–2 short line items summarizing scope and exclusions (unitPrice may be 0). Put all priced services as separate line items in the Services section (unit, quantity, price).",
-        "active": true
-      },
-      {
-        "key": "services",
-        "titlePl": "Usługi",
-        "titleEn": "Services",
-        "rulePl": "Główne usługi z jednostkami (h, szt., pakiet) i realistycznym nakładem.",
-        "ruleEn": "Core services with units (h, pcs, package) and realistic allowances.",
-        "active": true
-      },
-      {
-        "key": "add_ons",
-        "titlePl": "Opcje dodatkowe",
-        "titleEn": "Add-ons",
-        "rulePl": "Opcjonalne rozszerzenia poza zakresem podstawowym.",
-        "ruleEn": "Optional extensions beyond the base scope.",
-        "active": true
-      },
-      {
-        "key": "notes",
-        "titlePl": "Uwagi",
-        "titleEn": "Notes",
-        "rulePl": "Warunki, wyłączenia i koszty poza głównym zakresem. Przy wyłączeniach nie powtarzaj nazwy wykluczonej usługi w tytule pozycji.",
-        "ruleEn": "Terms, exclusions, and additional costs. Do not repeat excluded service names in line item titles.",
-        "active": true
-      }
-    ],
+    "companyDescription": "Biuro rachunkowe obsługujące JDG i małe spółki. Prowadzimy KPiR, księgowanie faktur i rozliczenia ZUS. Oferujemy krótkie konsultacje księgowe. Nie świadczymy doradztwa prawnego.",
+    "aiInstructions": "Wyceniaj comiesięczną obsługę jako pozycje z jednostką «miesiąc» i quantity 1. Uwzględnij obsługę faktur kosztowych.",
     "rules": [],
     "systemRules": {
       "rounding": true,
@@ -68,24 +34,32 @@
   "referenceEstimate": {
     "sections": [
       {
-        "title": "Usługi",
+        "title": "Obsługa księgowa",
         "sortOrder": 0,
         "items": [
           {
             "name": "Prowadzenie KPiR",
-            "unit": "mies.",
-            "quantity": 12,
-            "unitPrice": 400,
+            "unit": "miesiąc",
+            "quantity": 1,
+            "unitPrice": 500,
             "vatRate": 0.23,
             "sortOrder": 0
           },
           {
             "name": "Rozliczenia ZUS",
-            "unit": "mies.",
-            "quantity": 12,
+            "unit": "miesiąc",
+            "quantity": 1,
             "unitPrice": 150,
             "vatRate": 0.23,
             "sortOrder": 1
+          },
+          {
+            "name": "Księgowanie faktur kosztowych",
+            "unit": "miesiąc",
+            "quantity": 1,
+            "unitPrice": 200,
+            "vatRate": 0.23,
+            "sortOrder": 2
           }
         ]
       }
@@ -123,17 +97,20 @@
       "faktur",
       "księgow"
     ],
-    "requiredSections": [
-      "Zakres",
-      "Usługi"
-    ],
+    "requiredSections": [],
     "forbiddenSections": [
+      "Zakres",
+      "Uwagi",
+      "Opis",
+      "Oferta",
+      "Kosztorys",
+      "Wycena",
       "Łazienka",
       "Prace rozbiórkowe"
     ],
     "leakageDomain": "construction",
     "maxLeakageTerms": 0,
-    "minLineItems": 4,
+    "minLineItems": 3,
     "maxLineItems": 35,
     "judge": {
       "focus": [

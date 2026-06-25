@@ -214,7 +214,48 @@
         "metadataNameLabel": "Nazwa szablonu",
         "metadataDescriptionLabel": "Opis",
         "metadataSave": "Zapisz",
-        "metadataCancel": "Anuluj"
+        "metadataCancel": "Anuluj",
+        "saveTemplate": "Zapisz szablon",
+        "unsavedAiDraft": "Oczekuje na zapis"
+      },
+      "ai": {
+        "dialogTitle": "Generuj szablon z AI",
+        "dialogDescription": "Opisz strukturę szablonu — możesz wkleić listę lub nagrać dyktando. AI zaproponuje sekcje i pozycje dopasowane do Twojej firmy.",
+        "outlineLabel": "Opis struktury",
+        "outlinePlaceholder": "Np.:\n1. Konsultacje\n- Spotkanie wstępne\n- Analiza potrzeb\n2. Realizacja\n- ...",
+        "outlineHint": "Minimum 20 znaków. Możesz wkleić numerowaną listę lub dyktować przyciskiem mikrofonu.",
+        "modeLabel": "Tryb generowania",
+        "modeEnhance": "Ulepsz strukturę",
+        "modeEnhanceHint": "Zachowaj Twój zarys i uzupełnij brakujące sekcje typowe dla branży.",
+        "modeFaithful": "Wierne odwzorowanie",
+        "modeFaithfulHint": "Trzymaj się podanego tekstu z minimalnymi zmianami.",
+        "submit": "Generuj szablon",
+        "generating": "AI układa strukturę szablonu…",
+        "generationError": "Nie udało się wygenerować szablonu.",
+        "retry": "Spróbuj ponownie",
+        "retryPending": "Ponawianie…",
+        "promptMissing": "Nie znaleziono opisu szablonu. Wróć i spróbuj ponownie.",
+        "backToGenerate": "Wróć do generowania",
+        "promptTooShort": "Opis jest za krótki — dodaj więcej szczegółów."
+      },
+      "import": {
+        "dialogTitle": "Importuj z wyceny",
+        "dialogDescription": "Wybierz wycenę, z której skopiujesz strukturę sekcji i pozycji do nowego szablonu.",
+        "templateName": "Nazwa szablonu",
+        "templateNamePlaceholder": "Nazwa szablonu",
+        "templateDescription": "Opis szablonu",
+        "templateDescriptionPlaceholder": "Opis (opcjonalnie)",
+        "searchHeading": "Wyszukaj wycenę",
+        "searchPlaceholder": "Numer wyceny, klient, inwestycja…",
+        "columnNumber": "Numer wyceny",
+        "columnInvestment": "Inwestycja",
+        "columnClient": "Klient",
+        "columnTitle": "Nazwa wyceny",
+        "createTemplate": "Utwórz szablon",
+        "loadingEstimates": "Ładowanie wycen…",
+        "noEstimates": "Brak wycen w tym workspace.",
+        "noSearchResults": "Brak wyników dla podanego wyszukiwania.",
+        "emptyStructure": "Ta wycena nie ma pozycji do importu."
       },
       "list": {
         "proBadge": "PRO",
@@ -233,6 +274,8 @@
         "activeDefault": "Aktywny",
         "createFromScratch": "Utwórz szablon od zera",
         "createFromScratchHint": "Stwórz własną strukturę krok po kroku.",
+        "generateWithAi": "Generuj z AI",
+        "generateWithAiHint": "Wklej lub nagraj listę sekcji — AI ułoży szablon.",
         "systemExample": "Przykładowy szablon branżowy",
         "importFromEstimate": "Importuj z wyceny",
         "importFromEstimateSoon": "Wkrótce",
@@ -287,7 +330,8 @@
         "defaultSet": "Domyślny szablon zaktualizowany",
         "defaultCleared": "Domyślny szablon wyczyszczony",
         "deleted": "Szablon usunięty",
-        "metadataSaved": "Szczegóły szablonu zapisane"
+        "metadataSaved": "Szczegóły szablonu zapisane",
+        "importSuccess": "Szablon utworzony z wyceny"
       }
     },
     "priceLists": {
@@ -301,6 +345,40 @@
       "clearDefault": "Wyczyść domyślny cennik",
       "edit": "Edytuj",
       "delete": "Usuń",
+      "editor": {
+        "pageTitle": "Cennik",
+        "backToList": "Wróć do listy cenników",
+        "namePlaceholder": "Nazwa cennika",
+        "defaultName": "Nowy cennik",
+        "currencyPlaceholder": "PLN",
+        "itemNamePlaceholder": "Nazwa usługi",
+        "unitPlaceholder": "Jednostka",
+        "unitPricePlaceholder": "Cena",
+        "vatRatePlaceholder": "VAT",
+        "notePlaceholder": "Notatka",
+        "autosaveIdle": "Autozapis",
+        "saving": "Zapisywanie…",
+        "saved": "Zapisano",
+        "saveError": "Błąd zapisu",
+        "metadataTitle": "Edytuj cennik",
+        "metadataDescription": "Zmień nazwę i walutę cennika widoczne na liście.",
+        "metadataNameLabel": "Nazwa cennika",
+        "metadataCurrencyLabel": "Waluta",
+        "metadataSave": "Zapisz",
+        "metadataCancel": "Anuluj"
+      },
+      "workspace": {
+        "sidebarHint": "Wybierz cennik, aby zobaczyć jego pozycje.",
+        "sidebarStats": "{items, plural, one {# pozycja} few {# pozycje} many {# pozycji} other {# pozycji}} • {currency}",
+        "sidebarMenuLabel": "Akcje cennika {name}",
+        "detailMenuLabel": "Więcej akcji",
+        "kpiItems": "Pozycje",
+        "kpiCurrency": "Waluta",
+        "kpiUpdated": "Zaktualizowano",
+        "structureTitle": "Pozycje cennika",
+        "noCurrency": "Brak waluty",
+        "defaultNotice": "Ten cennik zostanie użyty domyślnie przy generowaniu nowych wycen. Możesz wybrać inny cennik w trakcie tworzenia wyceny."
+      },
       "dialog": {
         "createTitle": "Nowy cennik",
         "editTitle": "Edytuj cennik",
@@ -324,7 +402,8 @@
         "updated": "Cennik zaktualizowany",
         "deleted": "Cennik usunięty",
         "defaultSet": "Domyślny cennik zaktualizowany",
-        "defaultCleared": "Domyślny cennik wyczyszczony"
+        "defaultCleared": "Domyślny cennik wyczyszczony",
+        "metadataSaved": "Szczegóły cennika zapisane"
       }
     }
   },
@@ -419,7 +498,7 @@
         "complete": "Dodaj lub uzupełnij",
         "addRule": "Dodaj reguł",
         "addDescription": "Dodaj opis",
-        "addRules": "Dodanie reguł",
+        "addRules": "Dodaj reguły",
         "customize": "Dostosuj"
       },
       "errors": {
@@ -547,6 +626,9 @@
         "title": "Sekcje kosztorysu",
         "description": "Domyślna struktura sekcji dla branży {industry}. Aktywne sekcje i reguły trafiają do promptu AI.",
         "descriptionCustomized": "Twoja struktura sekcji kosztorysu (bazuje na szablonie dla branży {industry}). Aktywne sekcje i reguły trafiają do promptu AI.",
+        "descriptionOtherDynamic": "Branża Inna nie ma stałej listy sekcji. AI zaproponuje strukturę sekcji handlowych dopasowaną do Twojej usługi. Możesz dodać własne sekcje, aby narzucić strukturę.",
+        "emptyStateAiDynamic": "AI zaproponuje sekcje handlowe przy generowaniu kosztorysu. Dodaj własne sekcje, jeśli chcesz narzucić stałą strukturę.",
+        "emptyStateNoSections": "Brak skonfigurowanych sekcji. Dodaj sekcję lub przywróć domyślne.",
         "addSection": "Dodaj sekcję",
         "resetDefaults": "Przywróć domyślne",
         "save": "Zapisz sekcje",

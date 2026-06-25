@@ -2,6 +2,7 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { loadBaselineSnapshot } from "@evals/engine/baseline/baseline";
+import { formatGateSummaryLines } from "@evals/engine/composite-score";
 import type { RunSummary } from "@evals/engine/types";
 
 const REFERENCE_SCENARIO_IDS = [
@@ -75,7 +76,7 @@ function formatScenarioTable(
   for (const row of rows) {
     const deltaStr = row.delta > 0 ? `+${row.delta}` : String(row.delta);
     lines.push(
-      `| ${row.id} | ${row.before} | ${row.after} | ${deltaStr} | ${row.schemaBefore ? "✓" : "✗"}→${row.schemaAfter ? "✓" : "✗"} | ${row.passBefore ? "PASS" : "FAIL"}→${row.passAfter ? "PASS" : "FAIL"} |`,
+      `| ${row.id} | ${row.before} | ${row.after} | ${deltaStr} | ${row.schemaBefore ? "✓" : "✗"}→${row.schemaAfter ? "✓" : "✗"} | ${row.passBefore ? "OK" : "FAIL"}→${row.passAfter ? "OK" : "FAIL"} |`,
     );
   }
 
@@ -113,8 +114,11 @@ export function writeComparisonReport(
       delta: beforeScenario ? afterScore - beforeScore : afterScore,
       schemaBefore: beforeScenario?.schemaPassed ?? false,
       schemaAfter: afterScenario.schemaPassed,
-      passBefore: beforeScenario?.passed ?? false,
-      passAfter: afterScenario.passed,
+      passBefore:
+        beforeScenario?.classification != null
+          ? beforeScenario.classification !== "FAIL"
+          : (beforeScenario?.correctnessPassed ?? beforeScenario?.passed ?? false),
+      passAfter: afterScenario.classification !== "FAIL",
       coverageDelta: beforeScenario
         ? afterScenario.coveragePercent - beforeScenario.coveragePercent
         : null,
@@ -217,7 +221,29 @@ export function writeComparisonReport(
     "",
     "## Aggregates",
     "",
-    `- Passed: ${previous ? `${previous.summary.passed}/${previous.summary.passed + previous.summary.failed}` : "—"} → ${current.passed}/${current.passed + current.failed}`,
+    ...formatGateSummaryLines({
+      total: current.passed + current.passedWithLowRefSim + current.failed,
+      correctnessPassed: current.correctnessPassed,
+      passed: current.passed,
+      passedWithLowRefSim: current.passedWithLowRefSim,
+      failed: current.failed,
+      qualityKpis: current.qualityKpis,
+    }).map((line) => (line.startsWith("──") ? `### ${line.replace(/──/g, "").trim()}` : line.startsWith("PASS") || line.startsWith("FAIL") || line.startsWith("Average") || line.startsWith("Golden") ? `- ${line}` : line)),
+    "",
+    previous
+      ? [
+          "### Baseline comparison",
+          `- Correctness gate: ${previous.summary.correctnessPassed ?? previous.summary.passed}/${(previous.summary.passed ?? 0) + (previous.summary.passedWithLowRefSim ?? 0) + (previous.summary.failed ?? 0)} → ${current.correctnessPassed}/${current.passed + current.passedWithLowRefSim + current.failed}`,
+          `- PASS (quality warning): ${previous.summary.passedWithLowRefSim ?? 0} → ${current.passedWithLowRefSim}`,
+          previous.summary.qualityKpis?.averageReferenceSimilarity != null &&
+          current.qualityKpis?.averageReferenceSimilarity != null
+            ? `- Average RefSim: ${previous.summary.qualityKpis.averageReferenceSimilarity} → ${current.qualityKpis.averageReferenceSimilarity}`
+            : null,
+        ]
+          .filter(Boolean)
+          .join("\n")
+      : "",
+    "",
     `- Business avg: ${previous?.summary.businessAverageScore ?? "—"} → ${current.businessAverageScore}`,
     `- Generic avg: ${previous?.summary.genericAverageScore ?? "—"} → ${current.genericAverageScore}`,
     `- Edge avg: ${previous?.summary.edgeAverageScore ?? "—"} → ${current.edgeAverageScore}`,

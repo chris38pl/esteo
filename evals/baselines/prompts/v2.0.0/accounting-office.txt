@@ -1,0 +1,74 @@
+## Response locale
+User interface locale: Polish (pl). All section titles and line item names must match this locale.
+
+## Company Context
+Biuro rachunkowe obsługujące JDG i małe spółki. Prowadzimy KPiR, księgowanie faktur i rozliczenia ZUS. Oferujemy krótkie konsultacje księgowe. Nie świadczymy doradztwa prawnego.
+
+## Workspace Rules
+Wyceniaj comiesięczną obsługę jako pozycje z jednostką «miesiąc» i quantity 1. Uwzględnij obsługę faktur kosztowych.
+
+## Zaokrąglanie cen
+Zaokrąglaj ceny jednostkowe do pełnych kwot, chyba że pozycja wymaga groszy.
+
+## Jednostki miary
+Zawsze podawaj jednostki miary (m², m, szt., kpl., h) przy ilościach w pozycjach kosztorysu.
+
+## Estimate Structure
+Ta branża nie ma predefiniowanej listy sekcji. Zaproponuj najbardziej naturalną strukturę **sekcji handlowych** (Commercial Sections) dla Business Type i briefu.
+Twórz wyłącznie sekcje handlowe z pozycjami handlowymi.
+Gdy brief naturalnie dzieli się na fazy (np. diagnostyka → naprawa → części), użyj osobnych wąskich sekcji.
+Gdy usługa jest jednolita (np. przygotowanie treści na stronę WWW), jedna sekcja handlowa jest w porządku.
+Nie wymyślaj sekcji wyłącznie po to, aby zwiększyć ich liczbę.
+Jeśli sekcja nie miałaby pozycji handlowych, pomiń ją całkowicie.
+
+## Nazewnictwo sekcji handlowych
+Tytuły sekcji opisują **grupę prac lub usług**, nie dokument.
+Dobre przykłady: Diagnostyka, Naprawa, Pakiet podstawowy, Usługi pielęgnacyjne, Materiały, Przygotowanie treści, Części zamienne.
+Unikaj: Oferta, Kosztorys, Wycena, Realizacja, Usługi (zbyt ogólne), Zakres, Uwagi, Opis, Prace główne.
+
+## Business Type
+Biuro rachunkowe
+
+## Project Brief
+Opis projektu: Jednoosobowa działalność gastronomiczna, 40 faktur miesięcznie, KPiR, potrzebuję comiesięcznej obsługi księgowej i rozliczeń ZUS.
+Klient
+- Imię i nazwisko: Anna Kowalska
+- E-mail: anna@example.com
+- Telefon: +48 500 100 200
+Preferowany termin startu: 3_6_months
+Lokalizacja usługi: Kraków, woj. małopolskie
+
+## Estimation Principles
+- Każda pozycja z uzasadnioną jednostką i ilością.
+- Ceny netto PLN; vatRate według reguł workspace.
+- Rozdziel usługi główne od opcji dodatkowych zgodnie ze strukturą sekcji.
+- Rozbij zakres na pozycje kosztorysowe; nie zamieniaj briefu w jedno pole opisowe.
+- Nie zakładaj usług ani kosztów, które nie wynikają z briefu, Company Context, Workspace Rules lub standardowej praktyki branżowej.
+
+## Estimate Completeness
+Kosztorys powinien być rozsądnie kompletny względem opisanego projektu.
+Uwzględnij wszystkie prace uzasadnione zakresem i standardem branżowym dla tego typu usług.
+Wnioskuj typowe prace, które kosztorysant uwzględniłby z doświadczenia — klient nie musi wymieniać każdego zadania.
+Gdy brief podaje wolumen dokumentów (np. liczba faktur miesięcznie), odzwierciedl to w pozycjach księgowych lub skali usługi.
+Gdy brief dotyczy cateringu lub wymagań menu (np. udział menu wegetariańskiego), uwzględnij przygotowanie menu jako wycenioną pozycję lub element zakresu.
+Preferuj kilka uzasadnionych pozycji nad jednym ogólnym opisem.
+Nie wymyślaj prac spoza branży lub zakresu projektu.
+Nie twórz sztucznych pozycji wyłącznie po to, aby zwiększyć liczbę wierszy.
+
+## Output Rules
+- Zwróć wyłącznie structured JSON (sekcje z title i items).
+- Wynik to wyceniony kosztorys, nie streszczenie projektu.
+- Zwróć wyłącznie **Sekcje handlowe** (Commercial Sections) z pozycjami handlowymi.
+- Sekcja handlowa może zawierać pozycje o cenie 0 zł lub ujemnej, jeśli mają znaczenie handlowe (np. transport wliczony, rabat).
+- Nie używaj sekcji handlowych do przechowywania informacji opisowych (podsumowanie zakresu, warunki, wyłączenia). Brief klienta jest poza kosztorysem.
+- Nie twórz sekcji narracyjnych: Zakres, Uwagi, Opis.
+- Każda pozycja to jedna usługa/zadanie handlowe z quantity, unit i unitPrice — nie akapit powtarzający brief.
+- Zaproponuj własne tytuły sekcji handlowych — brak stałej listy sekcji.
+- Stosuj Workspace Rules przy rozbiciu pozycji.
+- quantity ≥ 1.
+- Odpowiedź po polsku (nazwy pozycji i sekcji).
+- vatRate jako ułamek dziesiętny (np. 0.23 dla 23% VAT).
+- unit: null gdy brak jednostki.
+- suggestedMarginPercent: null gdy nie sugerujesz marży globalnej.
+- sortOrder od 0 w każdej sekcji.
+- Bez prozy poza polami schematu.

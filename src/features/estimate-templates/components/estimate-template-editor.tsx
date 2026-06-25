@@ -34,8 +34,16 @@ import {
 } from "@/features/estimate-templates/lib/template-editor-draft";
 import {
   createEstimateTemplateAction,
+  generateTemplateFromPromptAction,
   updateEstimateTemplateAction,
 } from "@/features/workspace-configuration/server/actions";
+import { TemplateGeneratingSkeleton } from "@/features/estimate-templates/components/template-generating-skeleton";
+import { templatesListHrefWithAiOpen } from "@/features/estimate-templates/components/generate-template-ai-dialog";
+import type { TemplateGenerationMode } from "@/ai/prompts/template-generation";
+import {
+  clearTemplateAiSession,
+  readTemplateAiSession,
+} from "@/features/estimate-templates/lib/template-ai-storage";
 import type {
   ConfigurationAccess,
   SerializedTemplateListItem,
@@ -54,6 +62,8 @@ interface EstimateTemplateEditorProps {
   workspaceSlug: string;
   locale: Locale;
   access: ConfigurationAccess;
+  showSystemTemplate: boolean;
+  initialSource?: "ai" | null;
 }
 
 export function EstimateTemplateEditor({
@@ -66,15 +76,27 @@ export function EstimateTemplateEditor({
   workspaceSlug,
   locale,
   access,
+  showSystemTemplate,
+  initialSource = null,
 }: EstimateTemplateEditorProps) {
   const tWorkspace = useTranslations("workspaces.configuration.templates.workspace");
+  const tAi = useTranslations("workspaces.configuration.templates.ai");
   const router = useRouter();
   const readOnly = !access.canEditPremiumConfiguration;
   const [draft, setDraft] = useState<TemplateEditorDraft>(initialDraft);
   const [currentTemplateId, setCurrentTemplateId] = useState<string | null>(templateId);
   const [updatedAt, setUpdatedAt] = useState<string | null>(initialUpdatedAt);
   const [addingItemSectionIds, setAddingItemSectionIds] = useState<string[]>([]);
+  const [pendingAiSave, setPendingAiSave] = useState(false);
+  const [aiSkeletonState, setAiSkeletonState] = useState<
+    "idle" | "generating" | "error" | "prompt-missing"
+  >(initialSource === "ai" ? "generating" : "idle");
+  const [aiErrorMessage, setAiErrorMessage] = useState<string | null>(null);
+  const [isAiRetryPending, setIsAiRetryPending] = useState(false);
+  const [isSavingTemplate, setIsSavingTemplate] = useState(false);
   const draftRef = useRef(initialDraft);
+  const aiPromptRef = useRef<{ prompt: string; mode: TemplateGenerationMode } | null>(null);
+  const aiGenerationStartedRef = useRef(false);
 
   useEffect(() => {
     draftRef.current = draft;
@@ -124,22 +146,100 @@ export function EstimateTemplateEditor({
   }, [currentTemplateId, locale, router, workspaceId, workspaceSlug]);
 
   const { status, scheduleSave, saveNow } = useTemplateAutosave({
-    enabled: !readOnly,
+    enabled: !readOnly && !pendingAiSave,
     canSave: isTemplateDraftSavable(draft),
     onSave: persistDraft,
   });
 
+  const runAiGeneration = useCallback(
+    async (prompt: string, mode: TemplateGenerationMode) => {
+      setAiSkeletonState("generating");
+      setAiErrorMessage(null);
+
+      const result = await generateTemplateFromPromptAction(
+        {
+          workspaceId,
+          userOutline: prompt,
+          generationMode: mode,
+        },
+        locale,
+      );
+
+      if (!result.success) {
+        setAiSkeletonState("error");
+        setAiErrorMessage(result.error);
+        return;
+      }
+
+      setDraft(result.data);
+      setPendingAiSave(true);
+      setAiSkeletonState("idle");
+      router.replace(`/${locale}/dashboard/${workspaceSlug}/configuration/templates/new`);
+    },
+    [locale, router, workspaceId, workspaceSlug],
+  );
+
+  useEffect(() => {
+    if (initialSource !== "ai" || aiGenerationStartedRef.current) {
+      return;
+    }
+    aiGenerationStartedRef.current = true;
+
+    const session = readTemplateAiSession();
+    if (!session) {
+      setAiSkeletonState("prompt-missing");
+      return;
+    }
+
+    clearTemplateAiSession();
+    aiPromptRef.current = session;
+    void runAiGeneration(session.prompt, session.mode);
+  }, [initialSource, runAiGeneration]);
+
   const touchDraft = useCallback(
     (next: TemplateEditorDraft) => {
       setDraft(next);
-      scheduleSave();
+      if (!pendingAiSave) {
+        scheduleSave();
+      }
     },
-    [scheduleSave],
+    [pendingAiSave, scheduleSave],
   );
 
+  const handleBackToGenerate = useCallback(() => {
+    router.push(templatesListHrefWithAiOpen(locale, workspaceSlug));
+  }, [locale, router, workspaceSlug]);
+
+  const handleAiRetry = useCallback(() => {
+    const session = aiPromptRef.current;
+    if (!session) {
+      setAiSkeletonState("prompt-missing");
+      return;
+    }
+    setIsAiRetryPending(true);
+    void runAiGeneration(session.prompt, session.mode).finally(() => {
+      setIsAiRetryPending(false);
+    });
+  }, [runAiGeneration]);
+
+  const handleSaveTemplate = useCallback(async () => {
+    if (!pendingAiSave || readOnly) {
+      return;
+    }
+    setIsSavingTemplate(true);
+    const success = await persistDraft();
+    setIsSavingTemplate(false);
+    if (success) {
+      setPendingAiSave(false);
+    }
+  }, [pendingAiSave, persistDraft, readOnly]);
+
   const handleBlur = useCallback(async () => {
+    if (pendingAiSave) {
+      return;
+    }
     await saveNow();
-  }, [saveNow]);
+  }, [pendingAiSave, saveNow]);
 
   const handleAddSection = useCallback(async () => {
     if (draft.sections.length >= ESTIMATE_TEMPLATE_MAX_SECTIONS) {
@@ -262,11 +362,14 @@ export function EstimateTemplateEditor({
   const handleMetadataSave = useCallback(
     async (payload: { name: string; description: string }) => {
       touchDraft({ ...draft, name: payload.name, description: payload.description });
-      await saveNow();
+      if (!pendingAiSave) {
+        await saveNow();
+      }
     },
-    [draft, saveNow, touchDraft],
+    [draft, pendingAiSave, saveNow, touchDraft],
   );
 
+  const isAiBlocking = aiSkeletonState !== "idle";
   const breadcrumbLabel = draft.name.trim() || null;
 
   return (
@@ -285,6 +388,7 @@ export function EstimateTemplateEditor({
                 workspaceSlug={workspaceSlug}
                 locale={locale}
                 access={access}
+                showSystemTemplate={showSystemTemplate}
               />
             </div>
 
@@ -296,7 +400,10 @@ export function EstimateTemplateEditor({
                   isDefault={isDefault}
                   isNew={!currentTemplateId}
                   autosaveStatus={status}
-                  readOnly={readOnly}
+                  pendingAiSave={pendingAiSave}
+                  onSaveTemplate={handleSaveTemplate}
+                  isSavingTemplate={isSavingTemplate}
+                  readOnly={readOnly || isAiBlocking}
                   locale={locale}
                   workspaceId={workspaceId}
                   workspaceSlug={workspaceSlug}
@@ -305,30 +412,49 @@ export function EstimateTemplateEditor({
                   sectionCount={countDraftSections(draft.sections)}
                   itemCount={countDraftItems(draft.sections)}
                   onMetadataSave={handleMetadataSave}
+                  isKpiLoading={isAiBlocking}
                 />
 
                 <div className="space-y-3">
                   <h3 className="text-sm font-semibold text-foreground">{tWorkspace("structureTitle")}</h3>
                   <div className={cn(estimateEditorTabShellClass, estimateEditorTabShellNarrowClass)}>
                     <div className="min-w-0 overflow-hidden rounded-lg border bg-card/95 shadow-sm">
-                      <fieldset disabled={readOnly} className="min-w-0 border-0 p-0 disabled:opacity-80">
-                        <TemplateItemsView
-                          sections={draft.sections}
-                          advancedMode={advancedMode}
-                          onAdvancedModeChange={setAdvancedMode}
-                          onAddSection={handleAddSection}
-                          addingItemSectionIds={addingItemSectionIds}
-                          autosaveStatus={status}
-                          onUpdateSection={handleUpdateSection}
-                          onDeleteSection={handleDeleteSection}
-                          onAddItem={handleAddItem}
-                          onUpdateItem={handleUpdateItem}
-                          onDeleteItem={handleDeleteItem}
-                          onReorderItems={handleReorderItems}
-                          onBlur={handleBlur}
-                          defaultSectionsExpanded={true}
-                        />
-                      </fieldset>
+                      {isAiBlocking ? (
+                        <div className="p-5 md:p-6">
+                          <TemplateGeneratingSkeleton
+                            state={
+                              aiSkeletonState === "generating"
+                                ? "generating"
+                                : aiSkeletonState === "prompt-missing"
+                                  ? "prompt-missing"
+                                  : "error"
+                            }
+                            errorMessage={aiErrorMessage ?? tAi("generationError")}
+                            isRetryPending={isAiRetryPending}
+                            onRetry={aiSkeletonState === "error" ? handleAiRetry : undefined}
+                            onBackToGenerate={handleBackToGenerate}
+                          />
+                        </div>
+                      ) : (
+                        <fieldset disabled={readOnly} className="min-w-0 border-0 p-0 disabled:opacity-80">
+                          <TemplateItemsView
+                            sections={draft.sections}
+                            advancedMode={advancedMode}
+                            onAdvancedModeChange={setAdvancedMode}
+                            onAddSection={handleAddSection}
+                            addingItemSectionIds={addingItemSectionIds}
+                            autosaveStatus={status}
+                            onUpdateSection={handleUpdateSection}
+                            onDeleteSection={handleDeleteSection}
+                            onAddItem={handleAddItem}
+                            onUpdateItem={handleUpdateItem}
+                            onDeleteItem={handleDeleteItem}
+                            onReorderItems={handleReorderItems}
+                            onBlur={handleBlur}
+                            defaultSectionsExpanded={true}
+                          />
+                        </fieldset>
+                      )}
                     </div>
                   </div>
                 </div>

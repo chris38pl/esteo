@@ -8,42 +8,8 @@
   "workspace": {
     "industry": "OTHER",
     "industryOtherText": "Organizacja wesel i koordynacja wydarzeń",
-    "companyDescription": "Studio planowania wesel premium. Koordynujemy harmonogram, dostawców i dzień ślubu. Nie świadczymy cateringu, transportu ani fotografii.",
+    "companyDescription": "Studio planowania wesel premium. Koordynujemy harmonogram, dostawców, dekorację sali z podwykonawcami i dzień ślubu. Nie świadczymy cateringu, transportu ani fotografii.",
     "aiInstructions": "Wydziel konsultację wstępną i koordynację dnia ślubu jako osobne pozycje. Ceny w pakietach godzinowych.",
-    "estimateSections": [
-      {
-        "key": "scope",
-        "titlePl": "Zakres",
-        "titleEn": "Scope",
-        "rulePl": "Opcjonalnie 1–2 krótkie pozycje podsumowujące zakres i wyłączenia (unitPrice może być 0). Wszystkie wyceniane usługi umieszczaj jako osobne pozycje w sekcji Usługi (jednostka, ilość, cena).",
-        "ruleEn": "Optionally 1–2 short line items summarizing scope and exclusions (unitPrice may be 0). Put all priced services as separate line items in the Services section (unit, quantity, price).",
-        "active": true
-      },
-      {
-        "key": "services",
-        "titlePl": "Usługi",
-        "titleEn": "Services",
-        "rulePl": "Główne usługi z jednostkami (h, szt., pakiet) i realistycznym nakładem.",
-        "ruleEn": "Core services with units (h, pcs, package) and realistic allowances.",
-        "active": true
-      },
-      {
-        "key": "add_ons",
-        "titlePl": "Opcje dodatkowe",
-        "titleEn": "Add-ons",
-        "rulePl": "Opcjonalne rozszerzenia poza zakresem podstawowym.",
-        "ruleEn": "Optional extensions beyond the base scope.",
-        "active": true
-      },
-      {
-        "key": "notes",
-        "titlePl": "Uwagi",
-        "titleEn": "Notes",
-        "rulePl": "Warunki, wyłączenia i koszty poza głównym zakresem. Przy wyłączeniach nie powtarzaj nazwy wykluczonej usługi w tytule pozycji.",
-        "ruleEn": "Terms, exclusions, and additional costs. Do not repeat excluded service names in line item titles.",
-        "active": true
-      }
-    ],
     "rules": [
       {
         "title": "Wyłączenia",
@@ -73,44 +39,72 @@
   "referenceEstimate": {
     "sections": [
       {
-        "title": "Zakres",
+        "title": "Konsultacja wstępna",
         "sortOrder": 0,
         "items": [
           {
-            "name": "Konsultacja wstępna i planowanie",
+            "name": "Spotkanie konsultacyjne",
             "unit": "h",
-            "quantity": 4,
+            "quantity": 2,
             "unitPrice": 200,
+            "vatRate": 0.23,
+            "sortOrder": 0
+          }
+        ]
+      },
+      {
+        "title": "Koordynacja dnia ślubu",
+        "sortOrder": 1,
+        "items": [
+          {
+            "name": "Koordynacja dnia ślubu",
+            "unit": "h",
+            "quantity": 10,
+            "unitPrice": 150,
+            "vatRate": 0.23,
+            "sortOrder": 0
+          }
+        ]
+      },
+      {
+        "title": "Harmonogram i spotkania z podwykonawcami",
+        "sortOrder": 2,
+        "items": [
+          {
+            "name": "Przygotowanie harmonogramu",
+            "unit": "szt.",
+            "quantity": 1,
+            "unitPrice": 500,
             "vatRate": 0.23,
             "sortOrder": 0
           },
           {
-            "name": "Przygotowanie harmonogramu wesela",
-            "unit": "pakiet",
-            "quantity": 1,
-            "unitPrice": 800,
+            "name": "Spotkania z podwykonawcami",
+            "unit": "h",
+            "quantity": 5,
+            "unitPrice": 100,
             "vatRate": 0.23,
             "sortOrder": 1
           }
         ]
       },
       {
-        "title": "Usługi",
-        "sortOrder": 1,
+        "title": "Dekoracja sali",
+        "sortOrder": 3,
         "items": [
           {
-            "name": "Koordynacja dnia ślubu",
-            "unit": "h",
-            "quantity": 12,
-            "unitPrice": 250,
+            "name": "Projekt dekoracji",
+            "unit": "szt.",
+            "quantity": 1,
+            "unitPrice": 800,
             "vatRate": 0.23,
             "sortOrder": 0
           },
           {
-            "name": "Spotkania z dostawcami",
+            "name": "Koordynacja dekoracji",
             "unit": "h",
-            "quantity": 6,
-            "unitPrice": 200,
+            "quantity": 8,
+            "unitPrice": 120,
             "vatRate": 0.23,
             "sortOrder": 1
           }
@@ -154,11 +148,14 @@
       "harmonogram",
       "podwykonawc"
     ],
-    "requiredSections": [
-      "Zakres",
-      "Usługi"
-    ],
+    "requiredSections": [],
     "forbiddenSections": [
+      "Zakres",
+      "Uwagi",
+      "Opis",
+      "Oferta",
+      "Kosztorys",
+      "Wycena",
       "Łazienka",
       "Prace rozbiórkowe"
     ],

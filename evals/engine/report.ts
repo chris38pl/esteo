@@ -1,3 +1,7 @@
+import {
+  formatGateSummaryLines,
+  formatPassClassification,
+} from "@evals/engine/composite-score";
 import type { BaselineSnapshot } from "@evals/engine/baseline/baseline";
 import {
   CRITICAL_REGRESSION_THRESHOLD,
@@ -86,12 +90,24 @@ export function printEvalReport(summary: RunSummary): void {
   console.log(
     `Cost: $${summary.cost.estimatedCostUsd.toFixed(2)} (${summary.cost.promptTokens} prompt + ${summary.cost.completionTokens} completion tokens)`,
   );
-  console.log(`Passed: ${summary.passed}/${summary.passed + summary.failed}`);
+
+  const total = summary.passed + summary.passedWithLowRefSim + summary.failed;
+  console.log("");
+  for (const line of formatGateSummaryLines({
+    total,
+    correctnessPassed: summary.correctnessPassed,
+    passed: summary.passed,
+    passedWithLowRefSim: summary.passedWithLowRefSim,
+    failed: summary.failed,
+    qualityKpis: summary.qualityKpis,
+  })) {
+    console.log(line);
+  }
 }
 
 function printScenarioLine(s: ScenarioResult, mode: RunSummary["evalMode"]): void {
   const star = s.critical ? " ★" : "";
-  const status = s.passed ? "[PASS]" : "[FAIL]";
+  const status = formatPassClassification(s.classification);
   const coverage =
     s.coverageTotal > 0 ? `coverage: ${s.coverageMatched}/${s.coverageTotal}` : "";
   const leakage = `leakage: ${s.leakageScore}/10`;
@@ -213,6 +229,49 @@ export function printCompareReport(
     }
   }
 
+  const total = current.passed + current.passedWithLowRefSim + current.failed;
+  const baseTotal =
+    (baseline.summary.passed ?? 0) +
+    (baseline.summary.passedWithLowRefSim ?? 0) +
+    (baseline.summary.failed ?? 0);
+
+  console.log("\n── Correctness Gate ──");
+  console.log(
+    `Baseline: ${baseline.summary.correctnessPassed ?? baseline.summary.passed}/${baseTotal || total}  →  Current: ${current.correctnessPassed}/${total}`,
+  );
+
+  console.log("\n── Quality ──");
+  const padDelta = (label: string, before: number, after: number) => {
+    console.log(`${label.padEnd(28, ".")}${before} → ${after}`);
+  };
+  padDelta("PASS", baseline.summary.passed ?? 0, current.passed);
+  padDelta("PASS (quality warning)", baseline.summary.passedWithLowRefSim ?? 0, current.passedWithLowRefSim);
+  padDelta("FAIL", baseline.summary.failed ?? 0, current.failed);
+
+  if (current.qualityKpis && baseline.summary.qualityKpis) {
+    console.log("\n── Quality KPIs ──");
+    const b = baseline.summary.qualityKpis;
+    const c = current.qualityKpis;
+    if (b.averageReferenceSimilarity !== null && c.averageReferenceSimilarity !== null) {
+      const delta = c.averageReferenceSimilarity - b.averageReferenceSimilarity;
+      console.log(
+        `Average RefSim:  ${b.averageReferenceSimilarity} → ${c.averageReferenceSimilarity}  (${delta >= 0 ? "+" : ""}${delta.toFixed(1)})`,
+      );
+    }
+    if (b.averageJudgeScore !== null && c.averageJudgeScore !== null) {
+      const delta = c.averageJudgeScore - b.averageJudgeScore;
+      console.log(
+        `Average Judge:   ${b.averageJudgeScore} → ${c.averageJudgeScore}  (${delta >= 0 ? "+" : ""}${delta.toFixed(1)})`,
+      );
+    }
+    if (b.goldenAverageReferenceSimilarity !== null && c.goldenAverageReferenceSimilarity !== null) {
+      const delta = c.goldenAverageReferenceSimilarity - b.goldenAverageReferenceSimilarity;
+      console.log(
+        `Golden RefSim:   ${b.goldenAverageReferenceSimilarity} → ${c.goldenAverageReferenceSimilarity}  (${delta >= 0 ? "+" : ""}${delta.toFixed(1)})`,
+      );
+    }
+  }
+
   const exitCode = hasCritical || hasGoldenCritical || current.failed > 0 ? 1 : 0;
   return { exitCode };
 }
@@ -273,6 +332,17 @@ export function buildRunSummary(
   const promptHash = hashSource?.promptMeta.promptHash ?? "";
   const promptHashSource = hashSource?.id ?? "";
 
+  const refSimScores = all
+    .map((s) => s.referenceSimilarityScore)
+    .filter((v): v is number => v !== null);
+  const judgeScores = all.map((s) => s.judgeScore).filter((v): v is number => v !== null);
+  const contextScores = all
+    .map((s) => s.contextAlignmentScore)
+    .filter((v): v is number => v !== null);
+  const goldenRefSim = golden
+    .map((s) => s.referenceSimilarityScore)
+    .filter((v): v is number => v !== null);
+
   return {
     runId: meta.runId,
     evalMode: meta.evalMode,
@@ -307,8 +377,22 @@ export function buildRunSummary(
               .filter((v): v is number => v !== null),
           ) || null
         : null,
-    passed: all.filter((s) => s.passed).length,
-    failed: all.filter((s) => !s.passed).length,
+    passed: all.filter((s) => s.classification === "PASS").length,
+    passedWithLowRefSim: all.filter((s) => s.classification === "PASS_WITH_LOW_REFSIM").length,
+    failed: all.filter((s) => s.classification === "FAIL").length,
+    correctnessPassed: all.filter((s) => s.correctnessPassed).length,
+    qualityKpis:
+      meta.evalMode === "full"
+        ? {
+            averageReferenceSimilarity:
+              refSimScores.length > 0 ? avg(refSimScores) : null,
+            averageJudgeScore: judgeScores.length > 0 ? avg(judgeScores) : null,
+            averageContextAlignment:
+              contextScores.length > 0 ? avg(contextScores) : null,
+            goldenAverageReferenceSimilarity:
+              goldenRefSim.length > 0 ? avg(goldenRefSim) : null,
+          }
+        : null,
     cost: {
       promptTokens,
       completionTokens,
@@ -330,4 +414,36 @@ export function buildRunSummary(
     },
     scenarios,
   };
+}
+
+export function buildGateSummaryMarkdown(summary: RunSummary): string {
+  const total = summary.passed + summary.passedWithLowRefSim + summary.failed;
+  const body = formatGateSummaryLines({
+    total,
+    correctnessPassed: summary.correctnessPassed,
+    passed: summary.passed,
+    passedWithLowRefSim: summary.passedWithLowRefSim,
+    failed: summary.failed,
+    qualityKpis: summary.qualityKpis,
+  });
+
+  return [
+    "# Eval Gate Summary",
+    "",
+    `Run: \`${summary.runId}\` | Prompt: v${summary.promptVersion}`,
+    "",
+    ...body.map((line) => {
+      if (line.startsWith("──")) {
+        return `## ${line.replace(/──/g, "").trim()}`;
+      }
+      if (line === "") {
+        return "";
+      }
+      if (line.includes(".") && !line.startsWith("Average") && !line.startsWith("Golden")) {
+        return `- ${line}`;
+      }
+      return line;
+    }),
+    "",
+  ].join("\n");
 }

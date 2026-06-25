@@ -214,7 +214,48 @@
         "metadataNameLabel": "Template name",
         "metadataDescriptionLabel": "Description",
         "metadataSave": "Save",
-        "metadataCancel": "Cancel"
+        "metadataCancel": "Cancel",
+        "saveTemplate": "Save template",
+        "unsavedAiDraft": "Pending save"
+      },
+      "ai": {
+        "dialogTitle": "Generate template with AI",
+        "dialogDescription": "Describe the template structure — paste a list or dictate. AI will propose sections and items aligned with your company.",
+        "outlineLabel": "Structure outline",
+        "outlinePlaceholder": "E.g.:\n1. Consultation\n- Initial meeting\n- Needs analysis\n2. Delivery\n- ...",
+        "outlineHint": "At least 20 characters. Paste a numbered list or use the microphone button.",
+        "modeLabel": "Generation mode",
+        "modeEnhance": "Enhance structure",
+        "modeEnhanceHint": "Keep your outline and add missing sections typical for your industry.",
+        "modeFaithful": "Faithful reproduction",
+        "modeFaithfulHint": "Stay close to the provided text with minimal changes.",
+        "submit": "Generate template",
+        "generating": "AI is building the template structure…",
+        "generationError": "Could not generate the template.",
+        "retry": "Try again",
+        "retryPending": "Retrying…",
+        "promptMissing": "Template outline not found. Go back and try again.",
+        "backToGenerate": "Back to generation",
+        "promptTooShort": "Outline is too short — add more detail."
+      },
+      "import": {
+        "dialogTitle": "Import from estimate",
+        "dialogDescription": "Pick an estimate to copy its section and line-item structure into a new template.",
+        "templateName": "Template name",
+        "templateNamePlaceholder": "Template name",
+        "templateDescription": "Template description",
+        "templateDescriptionPlaceholder": "Description (optional)",
+        "searchHeading": "Search estimates",
+        "searchPlaceholder": "Estimate number, client, investment…",
+        "columnNumber": "Estimate number",
+        "columnInvestment": "Investment",
+        "columnClient": "Client",
+        "columnTitle": "Estimate name",
+        "createTemplate": "Create template",
+        "loadingEstimates": "Loading estimates…",
+        "noEstimates": "No estimates in this workspace.",
+        "noSearchResults": "No results for your search.",
+        "emptyStructure": "This estimate has no items to import."
       },
       "list": {
         "proBadge": "PRO",
@@ -233,6 +274,8 @@
         "activeDefault": "Active",
         "createFromScratch": "Create template from scratch",
         "createFromScratchHint": "Build your own structure step by step.",
+        "generateWithAi": "Generate with AI",
+        "generateWithAiHint": "Paste or dictate a section list — AI will shape the template.",
         "systemExample": "Industry example template",
         "importFromEstimate": "Import from estimate",
         "importFromEstimateSoon": "Coming soon",
@@ -287,7 +330,8 @@
         "defaultSet": "Default template updated",
         "defaultCleared": "Default template cleared",
         "deleted": "Template deleted",
-        "metadataSaved": "Template details saved"
+        "metadataSaved": "Template details saved",
+        "importSuccess": "Template created from estimate"
       }
     },
     "priceLists": {
@@ -301,6 +345,40 @@
       "clearDefault": "Clear default price list",
       "edit": "Edit",
       "delete": "Delete",
+      "editor": {
+        "pageTitle": "Price list",
+        "backToList": "Back to price lists",
+        "namePlaceholder": "Price list name",
+        "defaultName": "New price list",
+        "currencyPlaceholder": "USD",
+        "itemNamePlaceholder": "Service name",
+        "unitPlaceholder": "Unit",
+        "unitPricePlaceholder": "Price",
+        "vatRatePlaceholder": "VAT",
+        "notePlaceholder": "Note",
+        "autosaveIdle": "Autosave",
+        "saving": "Saving…",
+        "saved": "Saved",
+        "saveError": "Save failed",
+        "metadataTitle": "Edit price list",
+        "metadataDescription": "Change the price list name and currency shown on the list.",
+        "metadataNameLabel": "Price list name",
+        "metadataCurrencyLabel": "Currency",
+        "metadataSave": "Save",
+        "metadataCancel": "Cancel"
+      },
+      "workspace": {
+        "sidebarHint": "Select a price list to view its items.",
+        "sidebarStats": "{items, plural, one {# item} other {# items}} • {currency}",
+        "sidebarMenuLabel": "Price list actions for {name}",
+        "detailMenuLabel": "More actions",
+        "kpiItems": "Items",
+        "kpiCurrency": "Currency",
+        "kpiUpdated": "Updated",
+        "structureTitle": "Price list items",
+        "noCurrency": "No currency",
+        "defaultNotice": "This price list will be used by default when generating new estimates. You can choose a different price list while creating an estimate."
+      },
       "dialog": {
         "createTitle": "New price list",
         "editTitle": "Edit price list",
@@ -324,7 +402,8 @@
         "updated": "Price list updated",
         "deleted": "Price list deleted",
         "defaultSet": "Default price list updated",
-        "defaultCleared": "Default price list cleared"
+        "defaultCleared": "Default price list cleared",
+        "metadataSaved": "Price list details saved"
       }
     }
   },
@@ -547,6 +626,9 @@
         "title": "Estimate sections",
         "description": "Default section structure for {industry}. Active sections and rules are included in the AI prompt.",
         "descriptionCustomized": "Your estimate section structure (based on the {industry} template). Active sections and rules are included in the AI prompt.",
+        "descriptionOtherDynamic": "The Other industry has no fixed section list. AI will propose commercial sections tailored to your service. Add your own sections to enforce a structure.",
+        "emptyStateAiDynamic": "AI will propose commercial sections when generating estimates. Add your own sections if you want a fixed structure.",
+        "emptyStateNoSections": "No sections configured. Add a section or reset to defaults.",
         "addSection": "Add section",
         "resetDefaults": "Reset to defaults",
         "save": "Save sections",

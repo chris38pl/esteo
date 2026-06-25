@@ -2,6 +2,8 @@ import { execSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
+import { WorkspaceIndustry } from "@prisma/client";
+
 import { ESTIMATE_PROMPT_VERSION } from "@/ai/prompts/estimate-draft";
 import { writeScenarioArtifacts } from "@evals/engine/artifacts";
 import {
@@ -16,7 +18,7 @@ import {
   saveBaseline,
 } from "@evals/engine/baseline/baseline";
 import { formatPromptDiff } from "@evals/engine/baseline/prompt-diff";
-import { computeOverallScore, determinePassed } from "@evals/engine/composite-score";
+import { computeOverallScore, determinePassed, formatPassClassification } from "@evals/engine/composite-score";
 import { writeComparisonReport } from "@evals/engine/comparison-report";
 import { writeCoverageRootCauseReport } from "@evals/engine/coverage-analysis";
 import { writeEvaluatorFalsePositivesReport } from "@evals/engine/evaluator-audit";
@@ -28,6 +30,7 @@ import { runLlmJudge } from "@evals/engine/judge/llm-judge";
 import { filterScenarios, loadEvalScenarios, loadServicesScenarios } from "@evals/engine/load-scenarios";
 import { getIndustryProfileVersion } from "@/ai/config/industry-ai-profiles";
 import {
+  buildGateSummaryMarkdown,
   buildRunSummary,
   printCompareReport,
   printEvalReport,
@@ -35,6 +38,7 @@ import {
 import type { EvalScenario } from "@evals/engine/schemas/scenario";
 import { scoreCoverage } from "@evals/engine/scorers/coverage-scorer";
 import { scoreConfiguration } from "@evals/engine/scorers/configuration-scorer";
+import { scoreConfigurationLifecycle } from "@evals/engine/scorers/configuration-lifecycle-scorer";
 import { scoreDomainLeakage } from "@evals/engine/scorers/domain-leakage-scorer";
 import { measureLength } from "@evals/engine/scorers/length-benchmark";
 import { scoreRules } from "@evals/engine/scorers/rule-scorer";
@@ -74,7 +78,7 @@ function formatRunId(date: Date): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}-${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}`;
 }
 
-async function runScenarioOnce(
+export async function runScenarioOnce(
   scenario: EvalScenario,
   evalMode: EvalMode,
 ): Promise<{
@@ -95,7 +99,10 @@ async function runScenarioOnce(
   const complexity = measurePromptComplexity(generation.prompt);
   const expectedProfileVersion =
     scenario.profileVersion ?? getIndustryProfileVersion(context.industry);
-  const profileVersionInPrompt = generation.prompt.includes(expectedProfileVersion);
+  const profileVersionInPrompt =
+    context.industry === WorkspaceIndustry.OTHER
+      ? true
+      : generation.prompt.includes(expectedProfileVersion);
   const promptMeta = {
     promptVersion: ESTIMATE_PROMPT_VERSION,
     profileVersion: expectedProfileVersion,
@@ -123,6 +130,11 @@ async function runScenarioOnce(
   const configurationScore = schemaScore.passed
     ? scoreConfiguration(generation.object, scenario.expectations)
     : { score: 0, passed: false, checks: [] };
+
+  const lifecycleScore = scoreConfigurationLifecycle(
+    generation.prompt,
+    scenario.expectations,
+  );
 
   const lengthMetrics = measureLength(
     generation.object,
@@ -158,7 +170,12 @@ async function runScenarioOnce(
   const fastScore = ruleScore.score;
   const judgeConfig = scenario.expectations.judge;
 
-  const { passed, failReasons } = determinePassed(evalMode, {
+  const {
+    classification,
+    failReasons,
+    correctnessFailReasons,
+    qualityFailReasons,
+  } = determinePassed(evalMode, {
     schemaPassed: schemaScore.passed,
     leakagePassed: leakageScore.passed,
     rulePassed: ruleScore.passed,
@@ -177,11 +194,27 @@ async function runScenarioOnce(
 
   if (!profileVersionInPrompt) {
     failReasons.push(`profileVersion missing from prompt: ${expectedProfileVersion}`);
+    correctnessFailReasons.push(`profileVersion missing from prompt: ${expectedProfileVersion}`);
   }
   if (!configurationScore.passed) {
     failReasons.push("configuration expectations failed");
+    correctnessFailReasons.push("configuration expectations failed");
   }
-  const passedWithProfile = passed && profileVersionInPrompt && configurationScore.passed;
+  if (!lifecycleScore.passed) {
+    failReasons.push("configuration lifecycle expectations failed");
+    correctnessFailReasons.push("configuration lifecycle expectations failed");
+  }
+  const classificationAfterInfra: typeof classification =
+    correctnessFailReasons.length > 0
+      ? "FAIL"
+      : qualityFailReasons.length > 0
+        ? "PASS_WITH_LOW_REFSIM"
+        : "PASS";
+  const passedWithProfile =
+    classificationAfterInfra !== "FAIL" &&
+    profileVersionInPrompt &&
+    configurationScore.passed &&
+    lifecycleScore.passed;
 
   const genCost = estimateCostUsd(
     generation.model,
@@ -223,8 +256,12 @@ async function runScenarioOnce(
     length: lengthMetrics,
     cost,
     promptMeta,
-    passed: passedWithProfile,
+    classification: classificationAfterInfra,
+    passed: classificationAfterInfra === "PASS",
+    correctnessPassed: passedWithProfile,
     failReasons,
+    correctnessFailReasons,
+    qualityFailReasons,
     generatedEstimate: generation.object,
   };
 
@@ -240,6 +277,7 @@ async function runScenarioOnce(
     ruleScore,
     coverageScore,
     configurationScore,
+    lifecycleScore,
     leakageScore,
     lengthMetrics,
     cost,
@@ -247,8 +285,12 @@ async function runScenarioOnce(
     finalScore: {
       fastScore,
       overallScore,
-      passed: passedWithProfile,
+      classification: classificationAfterInfra,
+      passed: classificationAfterInfra === "PASS",
+      correctnessPassed: passedWithProfile,
       failReasons,
+      correctnessFailReasons,
+      qualityFailReasons,
     },
   };
 
@@ -407,7 +449,7 @@ export async function runEvalEngine(options: RunEngineOptions): Promise<number> 
     const r = scenarioResults[scenario.id];
     const scoreLabel = evalMode === "fast" ? `fast=${r.fastScore}` : `overall=${r.overallScore}`;
     console.log(
-      `  ${scoreLabel} coverage=${r.coverageMatched}/${r.coverageTotal} ${r.passed ? "PASS" : "FAIL"}`,
+      `  ${scoreLabel} coverage=${r.coverageMatched}/${r.coverageTotal} ${formatPassClassification(r.classification)}`,
     );
   }
 
@@ -421,6 +463,7 @@ export async function runEvalEngine(options: RunEngineOptions): Promise<number> 
   });
 
   writeFileSync(join(resultsDir, "summary.json"), JSON.stringify(summary, null, 2), "utf8");
+  writeFileSync(join(resultsDir, "gate-summary.md"), buildGateSummaryMarkdown(summary), "utf8");
 
   if (evalMode === "full" && scenarios.length > 1) {
     writeComparisonReport(options.repoRoot, resultsDir, summary);
@@ -445,6 +488,9 @@ export async function runEvalEngine(options: RunEngineOptions): Promise<number> 
 
   printEvalReport(summary);
   console.log(`\nResults: evals/results/${runId}/`);
+  if (evalMode === "full") {
+    console.log(`Gate summary: evals/results/${runId}/gate-summary.md`);
+  }
   if (evalMode === "full" && scenarios.length > 1) {
     console.log(`Comparison: evals/results/${runId}/comparison-report.md`);
   }

@@ -68,11 +68,20 @@ export const systemRulesFixtureSchema = z.object({
   assumptions: z.boolean().optional(),
 });
 
+export const subscriptionPlanFixtureSchema = z.enum(["FREE", "PRO", "BUSINESS"]);
+export const subscriptionStatusFixtureSchema = z.enum([
+  "ACTIVE",
+  "PAST_DUE",
+  "CANCELED",
+  "INCOMPLETE",
+]);
+
 export const evalWorkspaceIndustrySchema = z.enum([
   "OTHER",
   "CONSTRUCTION",
   "CARPENTRY",
   "ELECTRICAL",
+  "PLUMBING",
 ]);
 
 export const workspaceFixtureSchema = z.object({
@@ -83,6 +92,8 @@ export const workspaceFixtureSchema = z.object({
   estimateSections: z.array(workspaceEstimateSectionFixtureSchema).optional(),
   template: templateFixtureSchema.nullable().optional(),
   priceList: priceListFixtureSchema.nullable().optional(),
+  subscriptionPlan: subscriptionPlanFixtureSchema.default("PRO"),
+  subscriptionStatus: subscriptionStatusFixtureSchema.default("ACTIVE"),
   rules: z.array(workspaceRuleFixtureSchema).default([]),
   systemRules: systemRulesFixtureSchema.optional(),
 });
@@ -144,17 +155,31 @@ export const configurationExpectationsSchema = z.object({
   mustNotUsePrices: z.array(forbiddenPriceSchema).default([]),
 });
 
+export const configurationLifecycleExpectationsSchema = z.object({
+  promptMustContain: z.array(z.string()).default([]),
+  promptMustNotContain: z.array(z.string()).default([]),
+  templateInPrompt: z.boolean().optional(),
+  priceListInPrompt: z.boolean().optional(),
+});
+
+export const configurationSnapshotFixtureSchema = z.object({
+  template: templateFixtureSchema.nullable().optional(),
+  priceList: priceListFixtureSchema.nullable().optional(),
+});
+
 export const expectationsSchema = z.object({
   mustHave: z.array(termExpectationSchema).default([]),
   mustNotHave: z.array(termExpectationSchema).default([]),
   coverageTerms: z.array(z.string()).default([]),
   requiredSections: z.array(z.string()).default([]),
   forbiddenSections: z.array(z.string()).default([]),
+  minimumDistinctSections: z.number().int().min(1).optional(),
   leakageDomain: z.enum(["construction", "services"]).default("construction"),
   maxLeakageTerms: z.number().int().min(0).default(0),
   minLineItems: z.number().int().min(0).default(1),
   maxLineItems: z.number().int().min(1).default(100),
   configuration: configurationExpectationsSchema.optional(),
+  configurationLifecycle: configurationLifecycleExpectationsSchema.optional(),
   judge: judgeExpectationsSchema.optional(),
 });
 
@@ -174,8 +199,51 @@ export const evalScenarioSchema = z.object({
   request: requestFixtureSchema,
   voiceIntake: voiceIntakeFixtureSchema.nullable().optional(),
   referenceEstimate: referenceEstimateSchema.optional(),
+  /** Stored snapshot (retry / assistant) — overrides live workspace template/price list in prompt. */
+  configurationSnapshot: configurationSnapshotFixtureSchema.optional(),
   expectations: expectationsSchema,
 });
 
 export type EvalScenario = z.infer<typeof evalScenarioSchema>;
 export type Expectations = z.infer<typeof expectationsSchema>;
+
+const estimateSnapshotItemSchema = z.object({
+  id: z.string().default("item-1"),
+  name: z.string().min(1),
+  unit: z.string().nullable().optional(),
+  quantity: z.number().min(0).default(1),
+  unitPrice: z.number().min(0),
+  vatRate: z.number().min(0).max(1).default(0.23),
+  sortOrder: z.number().int().min(0).default(0),
+});
+
+const estimateSnapshotSectionSchema = z.object({
+  id: z.string().default("section-1"),
+  title: z.string().min(1),
+  sortOrder: z.number().int().min(0).default(0),
+  items: z.array(estimateSnapshotItemSchema).default([]),
+});
+
+export const assistantExpectationsSchema = z.object({
+  addedItemsMustMatchPrice: z.array(expectedPriceSchema).default([]),
+  targetSection: z.string().optional(),
+  promptMustContain: z.array(z.string()).default([]),
+});
+
+export const assistantScenarioSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  locale: localeSchema.default("pl"),
+  quick: z.boolean().default(false),
+  critical: z.boolean().default(false),
+  workspace: workspaceFixtureSchema,
+  configurationSnapshot: configurationSnapshotFixtureSchema.optional(),
+  estimateSnapshot: z.object({
+    marginPercent: z.number().default(0),
+    sections: z.array(estimateSnapshotSectionSchema).min(1),
+  }),
+  userMessage: z.string().min(1),
+  expectations: assistantExpectationsSchema,
+});
+
+export type AssistantScenario = z.infer<typeof assistantScenarioSchema>;

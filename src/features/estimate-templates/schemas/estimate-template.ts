@@ -4,8 +4,6 @@ import {
   ESTIMATE_TEMPLATE_DESCRIPTION_MAX_LENGTH,
   ESTIMATE_TEMPLATE_GUIDANCE_MAX_LENGTH,
   ESTIMATE_TEMPLATE_ITEM_NAME_MAX_LENGTH,
-  ESTIMATE_TEMPLATE_MAX_ITEMS_PER_SECTION,
-  ESTIMATE_TEMPLATE_MAX_SECTIONS,
   ESTIMATE_TEMPLATE_NAME_MAX_LENGTH,
   ESTIMATE_TEMPLATE_SECTION_TITLE_MAX_LENGTH,
 } from "@/features/estimate-templates/lib/template-limits";
@@ -35,7 +33,6 @@ export const estimateTemplateSectionInputSchema = z.object({
   sortOrder: z.number().int().min(0).optional(),
   items: z
     .array(estimateTemplateItemInputSchema)
-    .max(ESTIMATE_TEMPLATE_MAX_ITEMS_PER_SECTION)
     .default([]),
 });
 
@@ -47,10 +44,7 @@ export const estimateTemplateInputSchema = z.object({
     .max(ESTIMATE_TEMPLATE_DESCRIPTION_MAX_LENGTH)
     .optional()
     .nullable(),
-  sections: z
-    .array(estimateTemplateSectionInputSchema)
-    .min(1)
-    .max(ESTIMATE_TEMPLATE_MAX_SECTIONS),
+  sections: z.array(estimateTemplateSectionInputSchema).min(1),
 });
 
 export type EstimateTemplateInput = z.infer<typeof estimateTemplateInputSchema>;

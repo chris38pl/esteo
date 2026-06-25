@@ -2,11 +2,19 @@ import type { WorkspaceIndustry } from "@prisma/client";
 
 import {
   getIndustryEstimateSectionTemplate,
+  hasIndustrySectionDefaults,
   type IndustryEstimateSectionDefinition,
 } from "@/features/workspaces/config/industry-estimate-sections";
+import {
+  resolveSectionStructureMode,
+  type SectionStructureMode,
+} from "@/features/workspaces/lib/section-structure-mode";
 import type { WorkspaceEstimateSection } from "@/features/workspaces/schemas/estimate-sections";
 import { workspaceBrandingSchema } from "@/features/workspaces/schemas/branding";
 import type { Locale } from "@/lib/locale";
+
+export type { SectionStructureMode } from "@/features/workspaces/lib/section-structure-mode";
+export { resolveSectionStructureMode } from "@/features/workspaces/lib/section-structure-mode";
 
 export type ResolvedEstimateSection = {
   key: string;
@@ -26,9 +34,11 @@ function pickLocalized(
 export function industryDefaultsToWorkspaceSections(
   industry: WorkspaceIndustry,
 ): WorkspaceEstimateSection[] {
-  return getIndustryEstimateSectionTemplate(industry).map((definition) =>
-    definitionToWorkspaceSection(definition),
-  );
+  const template = getIndustryEstimateSectionTemplate(industry);
+  if (!template) {
+    return [];
+  }
+  return template.map((definition) => definitionToWorkspaceSection(definition));
 }
 
 export function definitionToWorkspaceSection(
@@ -59,19 +69,25 @@ export function resolveEstimateSectionRule(
   return rule?.trim() ?? "";
 }
 
+export function resolveWorkspaceEstimateSections(
+  industry: WorkspaceIndustry,
+  persisted: WorkspaceEstimateSection[] | null | undefined,
+): WorkspaceEstimateSection[] {
+  if (persisted != null) {
+    return persisted;
+  }
+  return industryDefaultsToWorkspaceSections(industry);
+}
+
 export function resolveEstimateSectionsForUi(
   industry: WorkspaceIndustry,
   persisted: WorkspaceEstimateSection[] | null | undefined,
   locale: Locale,
 ): ResolvedEstimateSection[] {
-  const sections =
-    persisted && persisted.length > 0
-      ? persisted
-      : industryDefaultsToWorkspaceSections(industry);
+  const sections = resolveWorkspaceEstimateSections(industry, persisted);
 
-  const templateKeys = new Set(
-    getIndustryEstimateSectionTemplate(industry).map((definition) => definition.key),
-  );
+  const template = getIndustryEstimateSectionTemplate(industry);
+  const templateKeys = new Set(template?.map((definition) => definition.key) ?? []);
 
   return sections.map((section) => ({
     key: section.key,
@@ -86,7 +102,7 @@ export function parseEstimateSectionsFromBranding(
   branding: unknown,
 ): WorkspaceEstimateSection[] | null {
   const parsed = workspaceBrandingSchema.safeParse(branding ?? {});
-  if (!parsed.success || !parsed.data.estimateSections?.length) {
+  if (!parsed.success || parsed.data.estimateSections === undefined) {
     return null;
   }
 
@@ -102,7 +118,19 @@ export function resolveEstimateSectionsForPrompt(
   persisted: WorkspaceEstimateSection[] | null | undefined,
   locale: Locale,
 ): ResolvedEstimateSection[] {
+  const mode = resolveSectionStructureMode(industry, persisted);
+  if (mode === "ai_dynamic") {
+    return [];
+  }
+
   return resolveEstimateSectionsForUi(industry, persisted, locale).filter(
     (section) => section.active,
   );
+}
+
+export function isAiDynamicSectionStructure(
+  industry: WorkspaceIndustry,
+  persisted: WorkspaceEstimateSection[] | null | undefined,
+): boolean {
+  return resolveSectionStructureMode(industry, persisted) === "ai_dynamic";
 }

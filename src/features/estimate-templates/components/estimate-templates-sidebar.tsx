@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { appToast } from "@/components/ui/app-toast";
 
@@ -22,12 +22,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { ImportTemplateFromEstimateDialog } from "@/features/estimate-templates/components/import-template-from-estimate-dialog";
 import {
   deleteEstimateTemplateAction,
   setDefaultEstimateTemplateAction,
@@ -220,6 +215,7 @@ export function EstimateTemplatesSidebar({
   workspaceSlug,
   locale,
   access,
+  showSystemTemplate,
 }: {
   templates: SerializedTemplateListItem[];
   activeTemplateId: string | null;
@@ -228,12 +224,14 @@ export function EstimateTemplatesSidebar({
   workspaceSlug: string;
   locale: Locale;
   access: ConfigurationAccess;
+  showSystemTemplate: boolean;
 }) {
   const t = useTranslations("workspaces.configuration.templates");
   const tEditor = useTranslations("workspaces.configuration.templates.editor");
   const tList = useTranslations("workspaces.configuration.templates.list");
   const tWorkspace = useTranslations("workspaces.configuration.templates.workspace");
   const canEdit = access.canEditPremiumConfiguration;
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   const newTemplateHref = `/${locale}/dashboard/${workspaceSlug}/configuration/templates/new`;
   const copySystemHref = `${newTemplateHref}?copy=system`;
@@ -264,32 +262,30 @@ export function EstimateTemplatesSidebar({
               </>
             )}
           </Button>
-          <Button variant="outline" className={sidebarButtonClass} disabled={!canEdit} asChild={canEdit}>
-            {canEdit ? (
-              <Link href={copySystemHref}>
-                <Lightbulb className="size-4" />
-                {tList("systemExample")}
-              </Link>
-            ) : (
-              <>
-                <Lightbulb className="size-4" />
-                {tList("systemExample")}
-              </>
-            )}
+          {showSystemTemplate ? (
+            <Button variant="outline" className={sidebarButtonClass} disabled={!canEdit} asChild={canEdit}>
+              {canEdit ? (
+                <Link href={copySystemHref}>
+                  <Lightbulb className="size-4" />
+                  {tList("systemExample")}
+                </Link>
+              ) : (
+                <>
+                  <Lightbulb className="size-4" />
+                  {tList("systemExample")}
+                </>
+              )}
+            </Button>
+          ) : null}
+          <Button
+            variant="outline"
+            className={sidebarButtonClass}
+            disabled={!canEdit}
+            onClick={() => setImportDialogOpen(true)}
+          >
+            <FileInput className="size-4" />
+            {tList("importFromEstimate")}
           </Button>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="block w-full">
-                  <Button variant="outline" className={sidebarButtonClass} disabled>
-                    <FileInput className="size-4" />
-                    {tList("importFromEstimate")}
-                  </Button>
-                </span>
-              </TooltipTrigger>
-              <TooltipContent>{tList("importFromEstimateSoon")}</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
         </div>
       </div>
 
@@ -321,6 +317,14 @@ export function EstimateTemplatesSidebar({
           {tEditor("backToList")}
         </Link>
       </div>
+
+      <ImportTemplateFromEstimateDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        workspaceId={workspaceId}
+        workspaceSlug={workspaceSlug}
+        locale={locale}
+      />
     </div>
   );
 }

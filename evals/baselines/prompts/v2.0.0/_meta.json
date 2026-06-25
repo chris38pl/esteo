@@ -1,0 +1,11 @@
+{
+  "promptVersion": "2.0.0",
+  "gitSha": "c7989e6",
+  "createdAt": "2026-06-25T15:30:41.777Z",
+  "scenarios": [
+    "accounting-office",
+    "it-consulting",
+    "marketing-agency",
+    "wedding-planner"
+  ]
+}

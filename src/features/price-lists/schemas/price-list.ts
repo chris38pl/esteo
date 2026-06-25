@@ -14,12 +14,17 @@ const decimalStringSchema = z
   .trim()
   .regex(/^\d+(\.\d{1,4})?$/);
 
+const optionalDecimalStringSchema = z.preprocess(
+  (value) => (value === "" || value === undefined ? null : value),
+  decimalStringSchema.nullable().optional(),
+);
+
 export const priceListItemInputSchema = z.object({
   id: z.string().optional(),
   name: z.string().trim().min(1).max(PRICE_LIST_ITEM_NAME_MAX_LENGTH),
   unit: z.string().trim().min(1).max(PRICE_LIST_UNIT_MAX_LENGTH),
   unitPrice: decimalStringSchema,
-  vatRate: decimalStringSchema.optional().nullable(),
+  vatRate: optionalDecimalStringSchema,
   note: z.string().trim().max(PRICE_LIST_NOTE_MAX_LENGTH).optional().nullable(),
   sortOrder: z.number().int().min(0).optional(),
 });

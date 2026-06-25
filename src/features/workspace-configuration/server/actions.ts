@@ -1,8 +1,18 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-
 import { estimateTemplateInputSchema } from "@/features/estimate-templates/schemas/estimate-template";
+import {
+  generateTemplateFromPrompt,
+  TemplateGenerationError,
+} from "@/features/estimate-templates/server/generate-template-from-prompt";
+import type { TemplateGenerationMode } from "@/ai/prompts/template-generation";
+import { EstimateImportEmptyStructureError } from "@/features/estimate-templates/lib/estimate-to-template-draft";
+import {
+  importTemplateFromEstimate,
+  listEstimatesForTemplateImport,
+} from "@/features/estimate-templates/server/import-template-from-estimate";
+import type { EstimateImportListItem } from "@/features/estimate-templates/types/estimate-import";
 import { priceListInputSchema } from "@/features/price-lists/schemas/price-list";
 import {
   createEstimateTemplate,
@@ -55,6 +65,18 @@ function revalidateTemplateEditor(
   revalidatePath(`/${locale}/dashboard/${workspaceSlug}/configuration/templates/new`);
   if (templateId) {
     revalidatePath(`/${locale}/dashboard/${workspaceSlug}/configuration/templates/${templateId}`);
+  }
+}
+
+function revalidatePriceListEditor(
+  locale: Locale,
+  workspaceSlug: string,
+  priceListId?: string,
+) {
+  revalidateConfiguration(locale, workspaceSlug);
+  revalidatePath(`/${locale}/dashboard/${workspaceSlug}/configuration/price-lists/new`);
+  if (priceListId) {
+    revalidatePath(`/${locale}/dashboard/${workspaceSlug}/configuration/price-lists/${priceListId}`);
   }
 }
 
@@ -156,7 +178,7 @@ export async function createPriceListAction(
     const user = await requireAuth(locale);
     const parsed = priceListInputSchema.parse(input.priceList);
     const priceList = await createPriceList(user, input.workspaceId, parsed);
-    revalidateConfiguration(locale, input.workspaceSlug);
+    revalidatePriceListEditor(locale, input.workspaceSlug, priceList.id);
     return { success: true as const, data: serializePriceList(priceList) };
   } catch (error) {
     return toActionError(error);
@@ -181,7 +203,7 @@ export async function updatePriceListAction(
       input.priceListId,
       parsed,
     );
-    revalidateConfiguration(locale, input.workspaceSlug);
+    revalidatePriceListEditor(locale, input.workspaceSlug, input.priceListId);
     return { success: true as const, data: serializePriceList(priceList) };
   } catch (error) {
     return toActionError(error);
@@ -220,6 +242,90 @@ export async function setDefaultPriceListAction(
     revalidateConfiguration(locale, input.workspaceSlug);
     return { success: true, data: undefined };
   } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function generateTemplateFromPromptAction(
+  input: {
+    workspaceId: string;
+    userOutline: string;
+    generationMode: TemplateGenerationMode;
+  },
+  locale: Locale = "pl",
+): Promise<
+  ActionResult<{
+    name: string;
+    description: string;
+    sections: Array<{
+      id: string;
+      title: string;
+      guidance: string;
+      sortOrder: number;
+      items: Array<{
+        id: string;
+        name: string;
+        unit: string;
+        sortOrder: number;
+      }>;
+    }>;
+  }>
+> {
+  try {
+    const user = await requireAuth(locale);
+    const draft = await generateTemplateFromPrompt({
+      user,
+      workspaceId: input.workspaceId,
+      userOutline: input.userOutline,
+      generationMode: input.generationMode,
+      locale,
+    });
+    return { success: true, data: draft };
+  } catch (error) {
+    if (error instanceof TemplateGenerationError) {
+      return { success: false, error: error.message, code: error.code };
+    }
+    return toActionError(error);
+  }
+}
+
+export async function listEstimatesForTemplateImportAction(
+  input: { workspaceId: string },
+  locale: Locale = "pl",
+): Promise<ActionResult<EstimateImportListItem[]>> {
+  try {
+    await requireAuth(locale);
+    const estimates = await listEstimatesForTemplateImport(input.workspaceId, locale);
+    return { success: true, data: estimates };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function importTemplateFromEstimateAction(
+  input: {
+    workspaceId: string;
+    workspaceSlug: string;
+    estimateId: string;
+    name: string;
+    description?: string;
+  },
+  locale: Locale = "pl",
+): Promise<ActionResult<{ templateId: string }>> {
+  try {
+    const user = await requireAuth(locale);
+    const result = await importTemplateFromEstimate(user, {
+      workspaceId: input.workspaceId,
+      estimateId: input.estimateId,
+      name: input.name,
+      description: input.description,
+    });
+    revalidateTemplateEditor(locale, input.workspaceSlug, result.templateId);
+    return { success: true, data: result };
+  } catch (error) {
+    if (error instanceof EstimateImportEmptyStructureError) {
+      return { success: false, error: error.message, code: "EMPTY_STRUCTURE" };
+    }
     return toActionError(error);
   }
 }

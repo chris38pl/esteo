@@ -1,0 +1,52 @@
+{
+  "id": "configuration-downgrade-free",
+  "name": "Configuration — FREE plan excludes premium config from prompt",
+  "locale": "pl",
+  "category": "business",
+  "quick": true,
+  "critical": true,
+  "profileVersion": "CONSTRUCTION_V1",
+  "workspace": {
+    "industry": "CONSTRUCTION",
+    "companyDescription": "Firma remontowa po downgrade z PRO na FREE.",
+    "subscriptionPlan": "FREE",
+    "subscriptionStatus": "ACTIVE",
+    "template": {
+      "id": "template-stored",
+      "name": "Szablon PRO (w DB)",
+      "sections": [
+        {
+          "title": "Wykończenie",
+          "items": [{ "name": "Malowanie", "unit": "m²" }]
+        }
+      ]
+    },
+    "priceList": {
+      "id": "price-list-stored",
+      "name": "Cennik PRO (w DB)",
+      "currency": "PLN",
+      "items": [{ "name": "Malowanie", "unit": "m²", "unitPrice": "18.00" }]
+    },
+    "rules": [],
+    "systemRules": { "rounding": true, "units": true }
+  },
+  "request": {
+    "project": {
+      "description": "Odświeżenie salonu 25 m² — malowanie ścian i sufitu.",
+      "preferredStartDate": "1_3_months"
+    },
+    "address": { "city": "Gdańsk" }
+  },
+  "expectations": {
+    "mustHave": [{ "term": "malowan", "scope": "any_item" }],
+    "configurationLifecycle": {
+      "templateInPrompt": false,
+      "priceListInPrompt": false,
+      "promptMustNotContain": ["Cennik PRO", "Szablon PRO"]
+    },
+    "coverageTerms": ["malowan"],
+    "leakageDomain": "services",
+    "minLineItems": 2,
+    "maxLineItems": 30
+  }
+}

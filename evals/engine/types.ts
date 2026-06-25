@@ -3,6 +3,9 @@ import type { ScenarioCategory } from "@evals/engine/schemas/scenario";
 
 export type EvalMode = "fast" | "full";
 
+/** Release gate vs quality signal — see composite-score.determinePassed */
+export type EvalPassClassification = "PASS" | "PASS_WITH_LOW_REFSIM" | "FAIL";
+
 export type TokenUsage = {
   promptTokens: number;
   completionTokens: number;
@@ -102,8 +105,14 @@ export type ScenarioResult = {
   length: LengthMetrics;
   cost: ScenarioCost;
   promptMeta: PromptMeta;
+  classification: EvalPassClassification;
+  /** Strict pass (classification === PASS). */
   passed: boolean;
+  /** Release gate — correctness without referenceSimilarity block. */
+  correctnessPassed: boolean;
   failReasons: string[];
+  correctnessFailReasons: string[];
+  qualityFailReasons: string[];
   generatedEstimate: EstimateDraftOutput | null;
 };
 
@@ -131,7 +140,15 @@ export type RunSummary = {
   goldenAverageScore: number | null;
   goldenAverageContextAlignment: number | null;
   passed: number;
+  passedWithLowRefSim: number;
   failed: number;
+  correctnessPassed: number;
+  qualityKpis: {
+    averageReferenceSimilarity: number | null;
+    averageJudgeScore: number | null;
+    averageContextAlignment: number | null;
+    goldenAverageReferenceSimilarity: number | null;
+  } | null;
   cost: {
     promptTokens: number;
     completionTokens: number;

@@ -1,0 +1,49 @@
+{
+  "id": "assistant-no-snapshot-fallback",
+  "name": "Assistant — live workspace context without snapshot",
+  "locale": "pl",
+  "quick": true,
+  "critical": true,
+  "workspace": {
+    "industry": "CONSTRUCTION",
+    "companyDescription": "Firma remontowa.",
+    "subscriptionPlan": "PRO",
+    "template": {
+      "name": "Wykończenie",
+      "sections": [{ "title": "Malowanie", "items": [{ "name": "Malowanie ścian", "unit": "m²" }] }]
+    },
+    "priceList": {
+      "name": "Cennik roboczy 2026",
+      "currency": "PLN",
+      "items": [{ "name": "Szpachlowanie", "unit": "m²", "unitPrice": "22.00" }]
+    },
+    "rules": [],
+    "systemRules": { "rounding": true, "units": true }
+  },
+  "estimateSnapshot": {
+    "marginPercent": 0,
+    "sections": [
+      {
+        "id": "sec-1",
+        "title": "Malowanie",
+        "sortOrder": 0,
+        "items": [
+          {
+            "id": "item-1",
+            "name": "Malowanie ścian",
+            "unit": "m²",
+            "quantity": 40,
+            "unitPrice": 18,
+            "vatRate": 0.23,
+            "sortOrder": 0
+          }
+        ]
+      }
+    ]
+  },
+  "userMessage": "Dodaj szpachlowanie ścian około 40 m²",
+  "expectations": {
+    "addedItemsMustMatchPrice": [{ "term": "szpachl", "unit": "m²", "unitPrice": "22.00" }],
+    "promptMustContain": ["Cennik roboczy 2026", "22.00"]
+  }
+}

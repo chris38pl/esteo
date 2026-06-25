@@ -110,17 +110,32 @@ export function formatServiceEstimateCompletenessBlock(locale: "pl" | "en"): str
   ].join("\n");
 }
 
-export function formatServiceOutputRulesBlock(locale: "pl" | "en"): string {
+export function formatServiceOutputRulesBlock(
+  locale: "pl" | "en",
+  options?: { dynamicStructure?: boolean },
+): string {
+  const dynamic = options?.dynamicStructure ?? false;
+
   if (locale === "en") {
     return [
       "## Output Rules",
       "- Return only structured JSON (sections with title and items).",
       "- Output is a priced estimate, not a project summary.",
-      "- Each line item is one billable service/task with quantity, unit, and unitPrice — not a paragraph restating the brief.",
-      "- Return all applicable sections from Estimate Structure; put priced work in Services.",
-      "- Follow Workspace Rules for item breakdown (e.g. separate consultation vs day-of coordination).",
-      "- quantity must be at least 1; use unitPrice 0 only for explicit scope-summary rows in Scope.",
-      "- section.title: use titles from Estimate Structure when possible.",
+      "- Return only **Commercial Sections** (sections with commercial line items).",
+      "- A Commercial Section may include items at 0 or negative unitPrice when commercially meaningful (e.g. included transport, promotional discount).",
+      "- Do not use Commercial Sections to store narrative information (scope summaries, terms, exclusions). The Project Brief is outside the estimate.",
+      "- Do not create narrative section titles: Scope, Notes, Description.",
+      "- Each line item is one commercial service/task with quantity, unit, and unitPrice — not a paragraph restating the brief.",
+      ...(dynamic
+        ? [
+            "- Propose your own Commercial Section titles — there is no fixed section list.",
+          ]
+        : [
+            "- Return all applicable sections from Estimate Structure.",
+            "- section.title: use titles from Estimate Structure when possible.",
+          ]),
+      "- Follow Workspace Rules for item breakdown.",
+      "- quantity must be at least 1.",
       "- Respond in English.",
       "- Set vatRate as a decimal fraction (e.g. 0.23 for 23% VAT).",
       "- Set unit to null when the line item has no unit of measure.",
@@ -134,17 +149,69 @@ export function formatServiceOutputRulesBlock(locale: "pl" | "en"): string {
     "## Output Rules",
     "- Zwróć wyłącznie structured JSON (sekcje z title i items).",
     "- Wynik to wyceniony kosztorys, nie streszczenie projektu.",
-    "- Każda pozycja to jedna wyceniana usługa/zadanie z quantity, unit i unitPrice — nie akapit powtarzający brief.",
-    "- Zwróć wszystkie sekcje z Estimate Structure, które mają zastosowanie; wyceniane usługi umieszczaj w Usługi.",
-    "- Stosuj Workspace Rules przy rozbiciu pozycji (np. osobno konsultacja i koordynacja dnia ślubu).",
-    "- quantity ≥ 1; unitPrice 0 tylko dla jawnego podsumowania zakresu w Zakres.",
-    "- section.title: używaj tytułów z Estimate Structure, gdy to możliwe.",
+    "- Zwróć wyłącznie **Sekcje handlowe** (Commercial Sections) z pozycjami handlowymi.",
+    "- Sekcja handlowa może zawierać pozycje o cenie 0 zł lub ujemnej, jeśli mają znaczenie handlowe (np. transport wliczony, rabat).",
+    "- Nie używaj sekcji handlowych do przechowywania informacji opisowych (podsumowanie zakresu, warunki, wyłączenia). Brief klienta jest poza kosztorysem.",
+    "- Nie twórz sekcji narracyjnych: Zakres, Uwagi, Opis.",
+    "- Każda pozycja to jedna usługa/zadanie handlowe z quantity, unit i unitPrice — nie akapit powtarzający brief.",
+    ...(dynamic
+      ? [
+          "- Zaproponuj własne tytuły sekcji handlowych — brak stałej listy sekcji.",
+        ]
+      : [
+          "- Zwróć wszystkie sekcje z Estimate Structure, które mają zastosowanie.",
+          "- section.title: używaj tytułów z Estimate Structure, gdy to możliwe.",
+        ]),
+    "- Stosuj Workspace Rules przy rozbiciu pozycji.",
+    "- quantity ≥ 1.",
     "- Odpowiedź po polsku (nazwy pozycji i sekcji).",
     "- vatRate jako ułamek dziesiętny (np. 0.23 dla 23% VAT).",
     "- unit: null gdy brak jednostki.",
     "- suggestedMarginPercent: null gdy nie sugerujesz marży globalnej.",
     "- sortOrder od 0 w każdej sekcji.",
     "- Bez prozy poza polami schematu.",
+  ].join("\n");
+}
+
+export function formatDynamicEstimateStructureBlock(locale: "pl" | "en"): string {
+  if (locale === "en") {
+    return [
+      "## Estimate Structure",
+      "This industry has no predefined section list. Propose the most natural **Commercial Section** structure for the Business Type and Project Brief.",
+      "Create only Commercial Sections with commercial line items.",
+      "When the brief naturally splits into phases (e.g. diagnostics → repair → parts), use separate narrow sections.",
+      "When the service is uniform (e.g. content preparation for a website), a single Commercial Section is fine.",
+      "Do not invent sections only to increase section count.",
+      "If a section would have no commercial line items, omit it entirely.",
+    ].join("\n");
+  }
+
+  return [
+    "## Estimate Structure",
+    "Ta branża nie ma predefiniowanej listy sekcji. Zaproponuj najbardziej naturalną strukturę **sekcji handlowych** (Commercial Sections) dla Business Type i briefu.",
+    "Twórz wyłącznie sekcje handlowe z pozycjami handlowymi.",
+    "Gdy brief naturalnie dzieli się na fazy (np. diagnostyka → naprawa → części), użyj osobnych wąskich sekcji.",
+    "Gdy usługa jest jednolita (np. przygotowanie treści na stronę WWW), jedna sekcja handlowa jest w porządku.",
+    "Nie wymyślaj sekcji wyłącznie po to, aby zwiększyć ich liczbę.",
+    "Jeśli sekcja nie miałaby pozycji handlowych, pomiń ją całkowicie.",
+  ].join("\n");
+}
+
+export function formatDynamicSectionNamingRulesBlock(locale: "pl" | "en"): string {
+  if (locale === "en") {
+    return [
+      "## Commercial Section Naming",
+      "Section titles must describe a **group of work or services**, not the document.",
+      "Good examples: Diagnostics, Repair, Basic package, Grooming services, Materials, Content preparation, Spare parts.",
+      "Avoid: Offer, Estimate, Quote, Realization, Services (too generic), Scope, Notes, Description, Main works.",
+    ].join("\n");
+  }
+
+  return [
+    "## Nazewnictwo sekcji handlowych",
+    "Tytuły sekcji opisują **grupę prac lub usług**, nie dokument.",
+    "Dobre przykłady: Diagnostyka, Naprawa, Pakiet podstawowy, Usługi pielęgnacyjne, Materiały, Przygotowanie treści, Części zamienne.",
+    "Unikaj: Oferta, Kosztorys, Wycena, Realizacja, Usługi (zbyt ogólne), Zakres, Uwagi, Opis, Prace główne.",
   ].join("\n");
 }
 

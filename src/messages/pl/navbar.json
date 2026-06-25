@@ -33,7 +33,8 @@
     "configurationTemplates": "Szablony wycen",
     "configurationPriceLists": "Cenniki",
     "configurationRules": "Reguły",
-    "configurationNewTemplate": "Nowy szablon"
+    "configurationNewTemplate": "Nowy szablon",
+    "configurationNewPriceList": "Nowy cennik"
   },
   "notifications": {
     "label": "Powiadomienia",

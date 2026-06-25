@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { evalScenarioSchema, type EvalScenario } from "@evals/engine/schemas/scenario";
+import { evalScenarioSchema, assistantScenarioSchema, type EvalScenario } from "@evals/engine/schemas/scenario";
 
 export function getServicesFixturesDir(repoRoot: string): string {
   return join(repoRoot, "evals", "services");
@@ -41,6 +41,19 @@ export function loadEvalScenarios(repoRoot: string, suite: string): EvalScenario
 
 export function loadServicesScenarios(repoRoot: string): EvalScenario[] {
   return loadEvalScenarios(repoRoot, "services");
+}
+
+export function loadAssistantScenarios(repoRoot: string) {
+  const dir = getEvalFixturesDir(repoRoot, "assistant");
+  const files = collectJsonFiles(dir);
+  const scenarios = [];
+
+  for (const file of files) {
+    const raw = JSON.parse(readFileSync(file, "utf8"));
+    scenarios.push(assistantScenarioSchema.parse(raw));
+  }
+
+  return scenarios.sort((a, b) => a.id.localeCompare(b.id));
 }
 
 export function filterScenarios(

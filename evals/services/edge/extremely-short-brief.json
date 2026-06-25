@@ -19,10 +19,17 @@
     "coverageTerms": [
       "wesel"
     ],
-    "requiredSections": [
-      "Usługi"
+    "requiredSections": [],
+    "forbiddenSections": [
+      "Zakres",
+      "Uwagi",
+      "Opis",
+      "Oferta",
+      "Kosztorys",
+      "Wycena",
+      "Łazienka",
+      "Prace rozbiórkowe"
     ],
-    "forbiddenSections": [],
     "leakageDomain": "construction",
     "maxLeakageTerms": 1,
     "minLineItems": 3,

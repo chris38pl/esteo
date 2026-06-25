@@ -73,6 +73,7 @@ import { EstimateOverduePaymentsBanner } from "./estimate-overdue-payments-banne
 import { EstimateEditorLayoutStyles } from "./estimate-editor-layout-styles";
 import { EstimateGeneratingSkeleton } from "./estimate-generating-skeleton";
 import { EstimateAiDraftRecoveryBanner } from "./estimate-ai-draft-recovery-banner";
+import { EstimateConfigurationSourceBanner } from "./estimate-configuration-source-banner";
 import {
   EstimateEditorTabs,
   type EstimateEditorTabId,
@@ -954,20 +955,6 @@ export function EstimateEditor({
           {t("editor.archivedBanner")}
         </div>
       ) : null}
-      {configurationSource ? (
-        <div className="rounded-xl border border-border/70 bg-muted/30 px-4 py-3 text-sm">
-          <p className="font-medium text-foreground">{t("configurationSource.title")}</p>
-          <p className="mt-1 text-muted-foreground">
-            {t("configurationSource.template", {
-              name: configurationSource.templateName ?? t("configurationSource.none"),
-            })}
-            {" · "}
-            {t("configurationSource.priceList", {
-              name: configurationSource.priceListName ?? t("configurationSource.none"),
-            })}
-          </p>
-        </div>
-      ) : null}
       {!isArchived && !isContentEditable ? (
         <EstimateReadOnlyVersionBanner workflow={versionWorkflow} />
       ) : null}
@@ -1206,6 +1193,14 @@ export function EstimateEditor({
                     onToggleTopPanel={toggleTopPanel}
                     onMobilePositionSheetOpenChange={setMobilePositionSheetOpen}
                   />
+                  {configurationSource ? (
+                    <div className="mx-4 mt-4 mb-4">
+                      <EstimateConfigurationSourceBanner
+                        templateName={configurationSource.templateName}
+                        priceListName={configurationSource.priceListName}
+                      />
+                    </div>
+                  ) : null}
                 </fieldset>
               ) : (
                 <div className="px-4 py-16 text-center text-sm text-muted-foreground">

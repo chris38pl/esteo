@@ -1,0 +1,60 @@
+{
+  "id": "assistant-template-consistency",
+  "name": "Assistant — template section consistency",
+  "locale": "pl",
+  "quick": true,
+  "critical": true,
+  "workspace": {
+    "industry": "CONSTRUCTION",
+    "companyDescription": "Firma hydrauliczna.",
+    "subscriptionPlan": "PRO",
+    "template": {
+      "name": "Łazienka",
+      "sections": [
+        {
+          "title": "Hydraulika",
+          "items": [{ "name": "Montaż umywalki", "unit": "szt." }]
+        }
+      ]
+    },
+    "rules": [],
+    "systemRules": { "rounding": true, "units": true }
+  },
+  "configurationSnapshot": {
+    "template": {
+      "name": "Łazienka",
+      "sections": [
+        {
+          "title": "Hydraulika",
+          "items": [{ "name": "Montaż umywalki", "unit": "szt." }]
+        }
+      ]
+    }
+  },
+  "estimateSnapshot": {
+    "marginPercent": 0,
+    "sections": [
+      {
+        "id": "sec-h",
+        "title": "Hydraulika",
+        "sortOrder": 0,
+        "items": [
+          {
+            "id": "item-1",
+            "name": "Montaż umywalki",
+            "unit": "szt.",
+            "quantity": 1,
+            "unitPrice": 350,
+            "vatRate": 0.23,
+            "sortOrder": 0
+          }
+        ]
+      }
+    ]
+  },
+  "userMessage": "Dodaj montaż bidetu",
+  "expectations": {
+    "targetSection": "Hydraulika",
+    "promptMustContain": ["Hydraulika", "Estimate Template"]
+  }
+}

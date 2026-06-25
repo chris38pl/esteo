@@ -544,10 +544,15 @@ export function writeEvaluatorFalsePositivesReport(
   const realCount = classCounts.prompt_gap ?? 0;
   const judgeCount = classCounts.judge_threshold ?? 0;
 
+  const gateTotal = summary.passed + summary.passedWithLowRefSim + summary.failed;
   lines.push(
     "## Executive summary",
     "",
-    `- Passed: **${summary.passed}/${summary.passed + summary.failed}**`,
+    `- Correctness gate: **${summary.correctnessPassed}/${gateTotal}**`,
+    `- Quality PASS: **${summary.passed}** | PASS (quality warning): **${summary.passedWithLowRefSim}** | FAIL: **${summary.failed}**`,
+    summary.qualityKpis?.averageReferenceSimilarity != null
+      ? `- Average RefSim (KPI): **${summary.qualityKpis.averageReferenceSimilarity}**`
+      : "",
     `- Likely eval artifacts (fixture / matcher / mustNot): **${artifactCount}** scenario classifications`,
     `- Likely real prompt gaps: **${realCount}**`,
     `- Judge threshold only: **${judgeCount}**`,

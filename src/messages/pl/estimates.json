@@ -767,7 +767,8 @@
     "title": "Wygenerowano na podstawie",
     "template": "Szablon: {name}",
     "priceList": "Cennik: {name}",
-    "none": "Brak"
+    "none": "Brak",
+    "dismiss": "Ukryj informację o źródle"
   },
   "versions": {
     "createNewVersion": "Utwórz nową wersję",

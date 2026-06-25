@@ -1,15 +1,21 @@
-# Construction eval suite (future)
+# Construction eval suite
 
-Use the shared engine in `evals/engine/` with fixtures in this directory.
+Regression scenarios for **CONSTRUCTION_V1** — general renovation (not trade-specific carpentry/electrical).
 
-- Set `leakageDomain: "services"` in expectations (detect service terms in construction estimates).
-- Run via `npm run eval:construction` once implemented.
+## Scenarios
 
-Trade suites already available:
+| ID | Purpose |
+|----|---------|
+| `construction-bathroom-renovation` | Full bathroom remodel 6 m² — industry section phases |
+| `construction-apartment-painting` | Apartment painting — finishing works, no demolition |
+| `construction-demolition-work` | Demolition-only scope |
 
-- **Carpentry:** `npm run eval:carpentry` — see [`evals/carpentry/README.md`](../carpentry/README.md)
-- **Electrical:** `npm run eval:electrical` — see [`evals/electrical/README.md`](../electrical/README.md)
+## Run
 
-Same engine: Schema, Rules, Leakage, Length, Judge, Baseline, Compare.
+```bash
+npm run eval:construction:quick
+npm run eval:construction
+npm run eval:construction -- --id=construction-bathroom-renovation
+```
 
-Docs: [`docs/architecture/ai-eval-harness.md`](../../docs/architecture/ai-eval-harness.md#extension-construction-eval).
+Shared engine: `evals/engine/`. `leakageDomain: services` in fixtures.

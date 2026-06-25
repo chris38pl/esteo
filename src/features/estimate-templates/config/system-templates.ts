@@ -1,6 +1,7 @@
 import type { WorkspaceIndustry } from "@prisma/client";
 
 import type { EstimateTemplateInput } from "@/features/estimate-templates/schemas/estimate-template";
+import { isServiceWorkspace } from "@/features/workspaces/lib/industries";
 
 export type SystemEstimateTemplate = EstimateTemplateInput & {
   key: string;
@@ -117,23 +118,22 @@ export const SYSTEM_ESTIMATE_TEMPLATES: SystemEstimateTemplate[] = [
     key: "services-basic",
     industry: "OTHER",
     name: "Usługi standardowe",
-    description: "Uniwersalny szablon dla prostych usług.",
+    description: "Uniwersalny szablon dla prostych usług — sekcje definiuje AI lub workspace.",
     sections: [
       {
-        title: "Usługi",
+        title: "Realizacja usługi",
         items: [
           { name: "Realizacja usługi", unit: "kpl" },
           { name: "Przygotowanie i koordynacja", unit: "kpl" },
         ],
       },
-      {
-        title: "Uwagi",
-        guidance: "Dodaj założenia i elementy do potwierdzenia, jeśli opis klienta jest niepełny.",
-        items: [],
-      },
     ],
   },
 ];
+
+export function hasSystemEstimateTemplateForIndustry(industry: WorkspaceIndustry): boolean {
+  return !isServiceWorkspace(industry);
+}
 
 export function getSystemEstimateTemplateForIndustry(
   industry: WorkspaceIndustry,

@@ -1,0 +1,4171 @@
+{
+  "version": 1,
+  "createdAt": "2026-06-25T15:30:41.777Z",
+  "gitSha": "c7989e6",
+  "promptVersion": "2.0.0",
+  "evalMode": "full",
+  "summary": {
+    "runId": "2026-06-25-173041",
+    "evalMode": "full",
+    "promptVersion": "2.0.0",
+    "promptHash": "sha256:50ceec7725593490c5c739d79fe0682a143fea2e983a489b8a472e434cedd056",
+    "promptHashSource": "wedding-planner",
+    "promptHashes": {
+      "accounting-office": "sha256:9f2dda7a7e1fa9d80668728e2cd9932824b5612b6264c7a2d516233945995257",
+      "architect": "sha256:a22d432b3ee4a1f4c65ea8810c3d190cb6673f05a1deffdeac39558849e1d371",
+      "business-consultant": "sha256:8d9cefe99a710598180e38ca569a212de8981dfb2d0311c3aa48109becb22fad",
+      "catering-company": "sha256:c21bcfa3fb80032b99c6f237d3aedba08c8491c1fdeca815057aeb6b3361e6a9",
+      "cleaning-company": "sha256:c8d3d21fb1ba86a026bc3a3317b9291d240e4aa3e7440bb293889cf74faaf808",
+      "copywriter": "sha256:13b0680f07c5d7ade7f33aabb94de0c6beeabd4e58a3b7887de0c2f47245ca55",
+      "edge-contradicting-rules": "sha256:0f9ef9e5eccd5ffde1af4d4aaa1bf7ec9bd9ab562967d6f6bed2d84f8b662e94",
+      "edge-empty-company-context": "sha256:c61f20f351f6ed4b345b5e6d441676a0e7bae9188d12a8c9e63a543407c9b5a4",
+      "edge-extremely-long-brief": "sha256:c6520eacea59a9c10b4d4a283d351791c053b0683ff0c22e62371908098f7e93",
+      "edge-extremely-short-brief": "sha256:925eec3a8552d27e82b2995482eb90debb721140be32ac0e81a25fcfebe7dcf3",
+      "event-dj": "sha256:2b9cbddfacc62f283d275b4e2bcfe20a715126a4af5f02175e3800826a18fc89",
+      "generic-bardzo-dlug-opis": "sha256:41ccc921d1dde0401a4472466e34cd4f49cef8a0fe58a945e17b5d13832bd580",
+      "generic-bardzo-krotki-opis": "sha256:cfa780407c9ce6784e622aab1b18b4a86efce4de368065956bb81af4e478f790",
+      "generic-konsulting": "sha256:f1a288a1ad073709ab8ea7455163165cea398acd8c7ab47b0449ebed6d5df006",
+      "generic-niejednoznaczny-opis": "sha256:4ebcfee7dfed636d5ed131644dd182ab6b44330a09df41e1d27fda6f9772872f",
+      "generic-organizacja-eventu": "sha256:f011dbaa282e16459a009296b8f518074ad86b3176a783a51c269bb49eef8f87",
+      "generic-remont-mieszkania": "sha256:8d328916c8d159fec0ad857e01630a103f6c082099b5e09b9b7fd57baf3f181b",
+      "generic-szkolenia": "sha256:2d623196dd4f54150b3a59a0c6bfd1ce1891c23cc4a5d93cd1386c0eef735b8a",
+      "generic-uslugi": "sha256:1d3ffedc7b955bece610a97c369ed688ad63c048397ed12880688916626520c2",
+      "generic-uslugi-kreatywne": "sha256:99a8c5bca4e276e4409c1056850461eb26871759cece85cfdeea3000410cf884",
+      "graphic-designer": "sha256:182ad36240a0f21324b017112db69b043f81401f23a6f671e9a526e420a91583",
+      "interior-designer": "sha256:52400cb1f71472136e20804546333ef2b9570f98c9c583936c4e90f5d664e769",
+      "it-consulting": "sha256:e9942200505a87710d4d4ba8b1d421f43819d83c7724710fa62cb5632615733d",
+      "language-school": "sha256:cbae31ad45108a7ad86c34be85f24c5ca6dd655321ca9bab43fa3445c81b8f01",
+      "law-firm": "sha256:16f607a31a8fecb80139a53c1fb1ffe6a0f0f7ae01ea607133a9d74e5f7b6959",
+      "marketing-agency": "sha256:a8b473506be9d40d87d29ceeb0743d9bbce9d675871ddef1d36ea4cd9113d06f",
+      "personal-trainer": "sha256:91a78d3f9930ac5592d83fd0a0157280947fb8c4d0517347292882368a94577e",
+      "real-estate-agent": "sha256:3be17df4b620c5b1f835a97003ea4706fd4153e6793e6c9bef49d060266cbf2e",
+      "recruitment-agency": "sha256:2b366069af2f3248be8ba0be9d08814f457642e5b1feaa934e01f2b47579d3a9",
+      "seo-agency": "sha256:a8c0054ef2c1b230903098ecf57b787d65a4a3a148c1b1fc69f9b6ead64a3264",
+      "social-media-agency": "sha256:815699abe2f7ee1e390884f7b60830c68fabff000c7089fdb2a3845625e7d0ff",
+      "stress-overconfigured": "sha256:b0df2eb3d232b8476446bf16c80cc3ea873c0848ece4e8857f03c06cbc3756d7",
+      "stress-toxic-workspace": "sha256:0d9a009fb76a20165276357717cc52461a07bfdc9a5d9a044468f83e6c6ed1ad",
+      "wedding-photographer": "sha256:fed20dcc475034811c04a3957d0b932666ddc7d22532102b7f8180432cd1e5ca",
+      "wedding-planner": "sha256:50ceec7725593490c5c739d79fe0682a143fea2e983a489b8a472e434cedd056"
+    },
+    "gitSha": "c7989e6",
+    "startedAt": "2026-06-25T15:30:41.777Z",
+    "durationMs": 203930,
+    "businessAverageScore": 7.8,
+    "businessAverageContextAlignment": 8.8,
+    "businessAverageCoverage": 93.3,
+    "edgeAverageScore": 8.4,
+    "edgeAverageContextAlignment": 8,
+    "edgeAverageCoverage": 100,
+    "genericAverageScore": 8,
+    "genericAverageContextAlignment": 8,
+    "genericAverageCoverage": 96.3,
+    "goldenAverageScore": 8.6,
+    "goldenAverageContextAlignment": 8.5,
+    "passed": 18,
+    "passedWithLowRefSim": 1,
+    "failed": 16,
+    "correctnessPassed": 19,
+    "qualityKpis": {
+      "averageReferenceSimilarity": 7.6,
+      "averageJudgeScore": 7.9,
+      "averageContextAlignment": 8.4,
+      "goldenAverageReferenceSimilarity": 8.3
+    },
+    "cost": {
+      "promptTokens": 47892,
+      "completionTokens": 8708,
+      "judgeTokens": 35861,
+      "totalTokens": 92461,
+      "estimatedCostUsd": 0.21
+    },
+    "promptComplexity": {
+      "avgWords": 561,
+      "avgCharacters": 4030,
+      "avgSections": 10.4,
+      "maxWords": 862,
+      "maxWordsScenario": "edge-extremely-long-brief"
+    },
+    "lengthBenchmark": {
+      "avgLineItems": 5.2,
+      "avgSectionCount": 2.7,
+      "avgOutputTokens": 249
+    },
+    "scenarios": {
+      "accounting-office": {
+        "id": "accounting-office",
+        "name": "Accounting Office",
+        "category": "business",
+        "critical": true,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 10,
+        "overallScore": 8.6,
+        "ruleScore": 10,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 4,
+        "coverageTotal": 4,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 2,
+          "lineItemCount": 3,
+          "outputTokens": 170,
+          "avgItemsPerSection": 1.5
+        },
+        "cost": {
+          "promptTokens": 1452,
+          "completionTokens": 170,
+          "totalTokens": 1622,
+          "judgePromptTokens": 1079,
+          "judgeCompletionTokens": 138,
+          "estimatedCostUsd": 0.0055
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:9f2dda7a7e1fa9d80668728e2cd9932824b5612b6264c7a2d516233945995257",
+          "promptCharacters": 4228,
+          "promptWords": 588,
+          "promptSections": 12
+        },
+        "classification": "PASS",
+        "passed": true,
+        "correctnessPassed": true,
+        "failReasons": [],
+        "correctnessFailReasons": [],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Obsługa księgowa",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Prowadzenie KPiR",
+                  "unit": "miesiąc",
+                  "quantity": 1,
+                  "unitPrice": 500,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Księgowanie faktur kosztowych (40 faktur)",
+                  "unit": "miesiąc",
+                  "quantity": 1,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Rozliczenia ZUS",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Miesięczne rozliczenie ZUS",
+                  "unit": "miesiąc",
+                  "quantity": 1,
+                  "unitPrice": 150,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "architect": {
+        "id": "architect",
+        "name": "Architect",
+        "category": "business",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 7.5,
+        "overallScore": 5,
+        "ruleScore": 7.5,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 3,
+        "coverageTotal": 3,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 2,
+          "lineItemCount": 4,
+          "outputTokens": 188,
+          "avgItemsPerSection": 2
+        },
+        "cost": {
+          "promptTokens": 1352,
+          "completionTokens": 188,
+          "totalTokens": 1540,
+          "judgePromptTokens": 789,
+          "judgeCompletionTokens": 87,
+          "estimatedCostUsd": 0.0055
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:a22d432b3ee4a1f4c65ea8810c3d190cb6673f05a1deffdeac39558849e1d371",
+          "promptCharacters": 3926,
+          "promptWords": 551,
+          "promptSections": 11
+        },
+        "classification": "FAIL",
+        "passed": false,
+        "correctnessPassed": false,
+        "failReasons": [
+          "rules",
+          "overallScore"
+        ],
+        "correctnessFailReasons": [
+          "rules",
+          "overallScore"
+        ],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Projekt budowlany",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Koncepcja architektoniczna",
+                  "unit": "m²",
+                  "quantity": 140,
+                  "unitPrice": 50,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Projekt budowlany",
+                  "unit": "m²",
+                  "quantity": 140,
+                  "unitPrice": 100,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                },
+                {
+                  "name": "Projekt wykonawczy",
+                  "unit": "m²",
+                  "quantity": 140,
+                  "unitPrice": 80,
+                  "vatRate": 0.23,
+                  "sortOrder": 2
+                }
+              ]
+            },
+            {
+              "title": "Nadzór autorski",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Nadzór autorski na budowie",
+                  "unit": "h",
+                  "quantity": 50,
+                  "unitPrice": 150,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "business-consultant": {
+        "id": "business-consultant",
+        "name": "Business Consultant",
+        "category": "business",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 10,
+        "overallScore": 8.6,
+        "ruleScore": 10,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 3,
+        "coverageTotal": 3,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 2,
+          "lineItemCount": 4,
+          "outputTokens": 202,
+          "avgItemsPerSection": 2
+        },
+        "cost": {
+          "promptTokens": 1354,
+          "completionTokens": 202,
+          "totalTokens": 1556,
+          "judgePromptTokens": 804,
+          "judgeCompletionTokens": 75,
+          "estimatedCostUsd": 0.0056
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:8d9cefe99a710598180e38ca569a212de8981dfb2d0311c3aa48109becb22fad",
+          "promptCharacters": 3951,
+          "promptWords": 554,
+          "promptSections": 11
+        },
+        "classification": "PASS",
+        "passed": true,
+        "correctnessPassed": true,
+        "failReasons": [],
+        "correctnessFailReasons": [],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Warsztaty strategiczne",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Przygotowanie materiałów warsztatowych",
+                  "unit": "kpl.",
+                  "quantity": 1,
+                  "unitPrice": 1500,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Prowadzenie warsztatów (2 dni)",
+                  "unit": "h",
+                  "quantity": 16,
+                  "unitPrice": 500,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Analiza procesów sprzedaży",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Zbieranie danych i analiza wstępna",
+                  "unit": "h",
+                  "quantity": 20,
+                  "unitPrice": 300,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Raport z rekomendacjami",
+                  "unit": "kpl.",
+                  "quantity": 1,
+                  "unitPrice": 2000,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "catering-company": {
+        "id": "catering-company",
+        "name": "Catering Company",
+        "category": "business",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 6.5,
+        "overallScore": 7.6,
+        "ruleScore": 6.5,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 0,
+        "coverageMatched": 0,
+        "coverageTotal": 3,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 4,
+          "lineItemCount": 7,
+          "outputTokens": 319,
+          "avgItemsPerSection": 1.8
+        },
+        "cost": {
+          "promptTokens": 1356,
+          "completionTokens": 319,
+          "totalTokens": 1675,
+          "judgePromptTokens": 1013,
+          "judgeCompletionTokens": 116,
+          "estimatedCostUsd": 0.0068
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:c21bcfa3fb80032b99c6f237d3aedba08c8491c1fdeca815057aeb6b3361e6a9",
+          "promptCharacters": 3954,
+          "promptWords": 559,
+          "promptSections": 11
+        },
+        "classification": "FAIL",
+        "passed": false,
+        "correctnessPassed": false,
+        "failReasons": [
+          "rules"
+        ],
+        "correctnessFailReasons": [
+          "rules"
+        ],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Przerwa kawowa",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Kawa i herbata",
+                  "unit": "szt.",
+                  "quantity": 150,
+                  "unitPrice": 10,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Ciastka i przekąski",
+                  "unit": "szt.",
+                  "quantity": 150,
+                  "unitPrice": 8,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Lunch",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Danie główne (mięsne)",
+                  "unit": "szt.",
+                  "quantity": 105,
+                  "unitPrice": 30,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Danie główne (wegetariańskie)",
+                  "unit": "szt.",
+                  "quantity": 45,
+                  "unitPrice": 28,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                },
+                {
+                  "name": "Deser",
+                  "unit": "szt.",
+                  "quantity": 150,
+                  "unitPrice": 12,
+                  "vatRate": 0.23,
+                  "sortOrder": 2
+                }
+              ]
+            },
+            {
+              "title": "Obsługa kelnerska",
+              "sortOrder": 2,
+              "items": [
+                {
+                  "name": "Kelnerzy",
+                  "unit": "h",
+                  "quantity": 10,
+                  "unitPrice": 50,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            },
+            {
+              "title": "Transport i logistyka",
+              "sortOrder": 3,
+              "items": [
+                {
+                  "name": "Transport",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "cleaning-company": {
+        "id": "cleaning-company",
+        "name": "Cleaning Company",
+        "category": "business",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 7.8,
+        "overallScore": 7.9,
+        "ruleScore": 7.8,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 4,
+        "coverageTotal": 4,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 2,
+          "lineItemCount": 3,
+          "outputTokens": 157,
+          "avgItemsPerSection": 1.5
+        },
+        "cost": {
+          "promptTokens": 1357,
+          "completionTokens": 157,
+          "totalTokens": 1514,
+          "judgePromptTokens": 741,
+          "judgeCompletionTokens": 94,
+          "estimatedCostUsd": 0.0052
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:c8d3d21fb1ba86a026bc3a3317b9291d240e4aa3e7440bb293889cf74faaf808",
+          "promptCharacters": 3932,
+          "promptWords": 557,
+          "promptSections": 11
+        },
+        "classification": "FAIL",
+        "passed": false,
+        "correctnessPassed": false,
+        "failReasons": [
+          "rules",
+          "lineItemCount"
+        ],
+        "correctnessFailReasons": [
+          "rules",
+          "lineItemCount"
+        ],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Sprzątanie regularne",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Sprzątanie biura",
+                  "unit": "m²",
+                  "quantity": 350,
+                  "unitPrice": 5,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Sprzątanie 3 razy w tygodniu",
+                  "unit": "tydzień",
+                  "quantity": 4,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Mycie okien",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Mycie okien raz w miesiącu",
+                  "unit": "m²",
+                  "quantity": 50,
+                  "unitPrice": 10,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "copywriter": {
+        "id": "copywriter",
+        "name": "Copywriter",
+        "category": "business",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 7.7,
+        "overallScore": 7.9,
+        "ruleScore": 7.7,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 66.7,
+        "coverageMatched": 2,
+        "coverageTotal": 3,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 3,
+          "lineItemCount": 4,
+          "outputTokens": 238,
+          "avgItemsPerSection": 1.3
+        },
+        "cost": {
+          "promptTokens": 1356,
+          "completionTokens": 238,
+          "totalTokens": 1594,
+          "judgePromptTokens": 854,
+          "judgeCompletionTokens": 82,
+          "estimatedCostUsd": 0.006
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:13b0680f07c5d7ade7f33aabb94de0c6beeabd4e58a3b7887de0c2f47245ca55",
+          "promptCharacters": 3946,
+          "promptWords": 559,
+          "promptSections": 11
+        },
+        "classification": "FAIL",
+        "passed": false,
+        "correctnessPassed": false,
+        "failReasons": [
+          "rules"
+        ],
+        "correctnessFailReasons": [
+          "rules"
+        ],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Przygotowanie treści na stronę główną",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Konsultacja wstępna",
+                  "unit": "h",
+                  "quantity": 2,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Opracowanie treści na stronę główną",
+                  "unit": "szt.",
+                  "quantity": 1,
+                  "unitPrice": 1500,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Przygotowanie treści na podstrony",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Opracowanie treści na podstrony (8)",
+                  "unit": "szt.",
+                  "quantity": 8,
+                  "unitPrice": 800,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            },
+            {
+              "title": "Przygotowanie artykułów blogowych",
+              "sortOrder": 2,
+              "items": [
+                {
+                  "name": "Opracowanie artykułów blogowych (4)",
+                  "unit": "szt.",
+                  "quantity": 4,
+                  "unitPrice": 600,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "edge-contradicting-rules": {
+        "id": "edge-contradicting-rules",
+        "name": "Contradicting Rules",
+        "category": "edge",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 10,
+        "overallScore": 6.5,
+        "ruleScore": 10,
+        "judgeScore": 5,
+        "contextAlignmentScore": 4,
+        "referenceSimilarityScore": 0,
+        "coveragePercent": 100,
+        "coverageMatched": 1,
+        "coverageTotal": 1,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 3,
+          "lineItemCount": 7,
+          "outputTokens": 314,
+          "avgItemsPerSection": 2.3
+        },
+        "cost": {
+          "promptTokens": 1242,
+          "completionTokens": 314,
+          "totalTokens": 1556,
+          "judgePromptTokens": 846,
+          "judgeCompletionTokens": 122,
+          "estimatedCostUsd": 0.0064
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:0f9ef9e5eccd5ffde1af4d4aaa1bf7ec9bd9ab562967d6f6bed2d84f8b662e94",
+          "promptCharacters": 3636,
+          "promptWords": 512,
+          "promptSections": 11
+        },
+        "classification": "FAIL",
+        "passed": false,
+        "correctnessPassed": false,
+        "failReasons": [
+          "contextAlignment",
+          "referenceSimilarity"
+        ],
+        "correctnessFailReasons": [
+          "contextAlignment"
+        ],
+        "qualityFailReasons": [
+          "referenceSimilarity"
+        ],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Koordynacja wesela",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Planowanie harmonogramu",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 1500,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Koordynacja dnia wesela",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 2000,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                },
+                {
+                  "name": "Zarządzanie dostawcami",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 1000,
+                  "vatRate": 0.23,
+                  "sortOrder": 2
+                }
+              ]
+            },
+            {
+              "title": "Dekoracje i aranżacja",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Dekoracja sali weselnej",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 3000,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Aranżacja kwiatowa",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 1500,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Muzyka i rozrywka",
+              "sortOrder": 2,
+              "items": [
+                {
+                  "name": "DJ na wesele",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 2500,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Zespół muzyczny",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 4000,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "edge-empty-company-context": {
+        "id": "edge-empty-company-context",
+        "name": "Empty Company Context",
+        "category": "edge",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 10,
+        "overallScore": 8.6,
+        "ruleScore": 10,
+        "judgeScore": 8,
+        "contextAlignmentScore": 8,
+        "referenceSimilarityScore": 7,
+        "coveragePercent": 100,
+        "coverageMatched": 2,
+        "coverageTotal": 2,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 2,
+          "lineItemCount": 5,
+          "outputTokens": 232,
+          "avgItemsPerSection": 2.5
+        },
+        "cost": {
+          "promptTokens": 1192,
+          "completionTokens": 232,
+          "totalTokens": 1424,
+          "judgePromptTokens": 676,
+          "judgeCompletionTokens": 84,
+          "estimatedCostUsd": 0.0055
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:c61f20f351f6ed4b345b5e6d441676a0e7bae9188d12a8c9e63a543407c9b5a4",
+          "promptCharacters": 3469,
+          "promptWords": 488,
+          "promptSections": 8
+        },
+        "classification": "PASS",
+        "passed": true,
+        "correctnessPassed": true,
+        "failReasons": [],
+        "correctnessFailReasons": [],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Koordynacja dnia ślubu",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Planowanie harmonogramu",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 1500,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Koordynacja dostawców",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 1000,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                },
+                {
+                  "name": "Zarządzanie przebiegiem dnia",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 2000,
+                  "vatRate": 0.23,
+                  "sortOrder": 2
+                }
+              ]
+            },
+            {
+              "title": "Usługi dodatkowe",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Dodatkowy koordynator",
+                  "unit": "osoba",
+                  "quantity": 1,
+                  "unitPrice": 800,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Przygotowanie planu awaryjnego",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 500,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "edge-extremely-long-brief": {
+        "id": "edge-extremely-long-brief",
+        "name": "Extremely Long Brief",
+        "category": "edge",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 10,
+        "overallScore": 8.6,
+        "ruleScore": 10,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 3,
+        "coverageTotal": 3,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 5,
+          "lineItemCount": 11,
+          "outputTokens": 476,
+          "avgItemsPerSection": 2.2
+        },
+        "cost": {
+          "promptTokens": 2306,
+          "completionTokens": 476,
+          "totalTokens": 2782,
+          "judgePromptTokens": 2198,
+          "judgeCompletionTokens": 128,
+          "estimatedCostUsd": 0.0109
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:c6520eacea59a9c10b4d4a283d351791c053b0683ff0c22e62371908098f7e93",
+          "promptCharacters": 6830,
+          "promptWords": 862,
+          "promptSections": 9
+        },
+        "classification": "PASS",
+        "passed": true,
+        "correctnessPassed": true,
+        "failReasons": [],
+        "correctnessFailReasons": [],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Koordynacja i Planowanie",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Koordynacja kościoła",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 500,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Koordynacja sali weselnej",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 700,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                },
+                {
+                  "name": "Harmonogram minutowy",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 300,
+                  "vatRate": 0.23,
+                  "sortOrder": 2
+                }
+              ]
+            },
+            {
+              "title": "Dekoracje i Wystrój",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Dekoracja kościoła",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 1000,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Dekoracja sali weselnej",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 1500,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Usługi Muzyczne",
+              "sortOrder": 2,
+              "items": [
+                {
+                  "name": "Zespół muzyczny",
+                  "unit": "godzina",
+                  "quantity": 5,
+                  "unitPrice": 400,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "DJ",
+                  "unit": "godzina",
+                  "quantity": 5,
+                  "unitPrice": 300,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Fotografia i Wideo",
+              "sortOrder": 3,
+              "items": [
+                {
+                  "name": "Fotograf",
+                  "unit": "dzień",
+                  "quantity": 1,
+                  "unitPrice": 2000,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Kamerzysta",
+                  "unit": "dzień",
+                  "quantity": 1,
+                  "unitPrice": 2500,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Transport",
+              "sortOrder": 4,
+              "items": [
+                {
+                  "name": "Transport dla gości",
+                  "unit": "godzina",
+                  "quantity": 4,
+                  "unitPrice": 150,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Transport dla pary młodej",
+                  "unit": "godzina",
+                  "quantity": 3,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "edge-extremely-short-brief": {
+        "id": "edge-extremely-short-brief",
+        "name": "Extremely Short Brief",
+        "category": "edge",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 10,
+        "overallScore": 9.3,
+        "ruleScore": 10,
+        "judgeScore": 9,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 1,
+        "coverageTotal": 1,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 5,
+          "lineItemCount": 10,
+          "outputTokens": 458,
+          "avgItemsPerSection": 2
+        },
+        "cost": {
+          "promptTokens": 1181,
+          "completionTokens": 458,
+          "totalTokens": 1639,
+          "judgePromptTokens": 1028,
+          "judgeCompletionTokens": 85,
+          "estimatedCostUsd": 0.0077
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:925eec3a8552d27e82b2995482eb90debb721140be32ac0e81a25fcfebe7dcf3",
+          "promptCharacters": 3445,
+          "promptWords": 483,
+          "promptSections": 9
+        },
+        "classification": "PASS",
+        "passed": true,
+        "correctnessPassed": true,
+        "failReasons": [],
+        "correctnessFailReasons": [],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Planowanie i Koordynacja",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Konsultacje wstępne",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 500,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Koordynacja dnia ślubu",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 2000,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Dekoracje i Wystrój",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Dekoracja sali weselnej",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 3000,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Dekoracja kościoła/urzędu",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 1500,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Catering",
+              "sortOrder": 2,
+              "items": [
+                {
+                  "name": "Menu weselne (na osobę)",
+                  "unit": "osoba",
+                  "quantity": 100,
+                  "unitPrice": 150,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Napoje i alkohol (na osobę)",
+                  "unit": "osoba",
+                  "quantity": 100,
+                  "unitPrice": 50,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Muzyka i Rozrywka",
+              "sortOrder": 3,
+              "items": [
+                {
+                  "name": "Zespół muzyczny/DJ",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 4000,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Animator dla dzieci",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 800,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Fotografia i Wideo",
+              "sortOrder": 4,
+              "items": [
+                {
+                  "name": "Fotograf",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 2500,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Kamerzysta",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 3000,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "event-dj": {
+        "id": "event-dj",
+        "name": "Event DJ",
+        "category": "business",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 8.8,
+        "overallScore": 4,
+        "ruleScore": 8.8,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 4,
+        "coverageTotal": 4,
+        "leakageScore": 8,
+        "leakagePassed": false,
+        "leakageTerms": [
+          "parkiet"
+        ],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 3,
+          "lineItemCount": 6,
+          "outputTokens": 296,
+          "avgItemsPerSection": 2
+        },
+        "cost": {
+          "promptTokens": 1360,
+          "completionTokens": 296,
+          "totalTokens": 1656,
+          "judgePromptTokens": 959,
+          "judgeCompletionTokens": 89,
+          "estimatedCostUsd": 0.0066
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:2b9cbddfacc62f283d275b4e2bcfe20a715126a4af5f02175e3800826a18fc89",
+          "promptCharacters": 3940,
+          "promptWords": 557,
+          "promptSections": 11
+        },
+        "classification": "FAIL",
+        "passed": false,
+        "correctnessPassed": false,
+        "failReasons": [
+          "leakage",
+          "rules",
+          "overallScore"
+        ],
+        "correctnessFailReasons": [
+          "leakage",
+          "rules",
+          "overallScore"
+        ],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Usługi DJ i wodzireja",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Oprawa muzyczna (6 godzin)",
+                  "unit": "h",
+                  "quantity": 6,
+                  "unitPrice": 500,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Prowadzenie wesela jako wodzirej",
+                  "unit": "h",
+                  "quantity": 6,
+                  "unitPrice": 300,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Nagłośnienie i oświetlenie",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Wynajem sprzętu nagłośnieniowego",
+                  "unit": "kpl.",
+                  "quantity": 1,
+                  "unitPrice": 800,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Wynajem oświetlenia parkietu",
+                  "unit": "kpl.",
+                  "quantity": 1,
+                  "unitPrice": 600,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Transport i montaż",
+              "sortOrder": 2,
+              "items": [
+                {
+                  "name": "Transport sprzętu do Krakowa",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Montaż i demontaż sprzętu",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 300,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "generic-bardzo-dlug-opis": {
+        "id": "generic-bardzo-dlug-opis",
+        "name": "Generic: Bardzo długi opis",
+        "category": "generic",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 9,
+        "overallScore": 8.3,
+        "ruleScore": 9,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 3,
+        "coverageTotal": 3,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 2,
+          "lineItemCount": 2,
+          "outputTokens": 128,
+          "avgItemsPerSection": 1
+        },
+        "cost": {
+          "promptTokens": 1802,
+          "completionTokens": 128,
+          "totalTokens": 1930,
+          "judgePromptTokens": 1119,
+          "judgeCompletionTokens": 76,
+          "estimatedCostUsd": 0.006
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:41ccc921d1dde0401a4472466e34cd4f49cef8a0fe58a945e17b5d13832bd580",
+          "promptCharacters": 6119,
+          "promptWords": 792,
+          "promptSections": 8
+        },
+        "classification": "FAIL",
+        "passed": false,
+        "correctnessPassed": false,
+        "failReasons": [
+          "lineItemCount"
+        ],
+        "correctnessFailReasons": [
+          "lineItemCount"
+        ],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Warsztat wprowadzający",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Warsztat wprowadzający (1 dzień)",
+                  "unit": "dzień",
+                  "quantity": 1,
+                  "unitPrice": 1500,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            },
+            {
+              "title": "Abonament konsultingowy",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Miesięczny abonament konsultingowy",
+                  "unit": "miesiąc",
+                  "quantity": 1,
+                  "unitPrice": 3000,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "generic-bardzo-krotki-opis": {
+        "id": "generic-bardzo-krotki-opis",
+        "name": "Generic: Bardzo krótki opis",
+        "category": "generic",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 10,
+        "overallScore": 8.6,
+        "ruleScore": 10,
+        "judgeScore": 8,
+        "contextAlignmentScore": 8,
+        "referenceSimilarityScore": 7,
+        "coveragePercent": 100,
+        "coverageMatched": 1,
+        "coverageTotal": 1,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 2,
+          "lineItemCount": 4,
+          "outputTokens": 184,
+          "avgItemsPerSection": 2
+        },
+        "cost": {
+          "promptTokens": 1166,
+          "completionTokens": 184,
+          "totalTokens": 1350,
+          "judgePromptTokens": 581,
+          "judgeCompletionTokens": 83,
+          "estimatedCostUsd": 0.0049
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:cfa780407c9ce6784e622aab1b18b4a86efce4de368065956bb81af4e478f790",
+          "promptCharacters": 3379,
+          "promptWords": 476,
+          "promptSections": 8
+        },
+        "classification": "PASS",
+        "passed": true,
+        "correctnessPassed": true,
+        "failReasons": [],
+        "correctnessFailReasons": [],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Usługi podstawowe",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Konsultacja wstępna",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Analiza potrzeb klienta",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 500,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Usługi dodatkowe",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Raport końcowy",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 300,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Wsparcie posprzedażowe",
+                  "unit": "godzina",
+                  "quantity": 5,
+                  "unitPrice": 100,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "generic-konsulting": {
+        "id": "generic-konsulting",
+        "name": "Generic: Konsulting",
+        "category": "generic",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 10,
+        "overallScore": 8.6,
+        "ruleScore": 10,
+        "judgeScore": 8,
+        "contextAlignmentScore": 7,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 2,
+        "coverageTotal": 2,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 2,
+          "lineItemCount": 6,
+          "outputTokens": 264,
+          "avgItemsPerSection": 3
+        },
+        "cost": {
+          "promptTokens": 1189,
+          "completionTokens": 264,
+          "totalTokens": 1453,
+          "judgePromptTokens": 727,
+          "judgeCompletionTokens": 78,
+          "estimatedCostUsd": 0.0058
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:f1a288a1ad073709ab8ea7455163165cea398acd8c7ab47b0449ebed6d5df006",
+          "promptCharacters": 3454,
+          "promptWords": 486,
+          "promptSections": 8
+        },
+        "classification": "PASS",
+        "passed": true,
+        "correctnessPassed": true,
+        "failReasons": [],
+        "correctnessFailReasons": [],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Audyt procesów sprzedaży",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Przygotowanie do audytu",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 1000,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Przeprowadzenie audytu",
+                  "unit": "dzień",
+                  "quantity": 2,
+                  "unitPrice": 1500,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                },
+                {
+                  "name": "Raport z audytu",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 500,
+                  "vatRate": 0.23,
+                  "sortOrder": 2
+                }
+              ]
+            },
+            {
+              "title": "Warsztaty strategiczne",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Przygotowanie materiałów warsztatowych",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 800,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Prowadzenie warsztatów",
+                  "unit": "dzień",
+                  "quantity": 2,
+                  "unitPrice": 2000,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                },
+                {
+                  "name": "Podsumowanie i raport z warsztatów",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 600,
+                  "vatRate": 0.23,
+                  "sortOrder": 2
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "generic-niejednoznaczny-opis": {
+        "id": "generic-niejednoznaczny-opis",
+        "name": "Generic: Niejednoznaczny opis",
+        "category": "generic",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 10,
+        "overallScore": 8.6,
+        "ruleScore": 10,
+        "judgeScore": 8,
+        "contextAlignmentScore": 8,
+        "referenceSimilarityScore": 7,
+        "coveragePercent": 100,
+        "coverageMatched": 1,
+        "coverageTotal": 1,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 3,
+          "lineItemCount": 4,
+          "outputTokens": 203,
+          "avgItemsPerSection": 1.3
+        },
+        "cost": {
+          "promptTokens": 1200,
+          "completionTokens": 203,
+          "totalTokens": 1403,
+          "judgePromptTokens": 649,
+          "judgeCompletionTokens": 97,
+          "estimatedCostUsd": 0.0052
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:4ebcfee7dfed636d5ed131644dd182ab6b44330a09df41e1d27fda6f9772872f",
+          "promptCharacters": 3477,
+          "promptWords": 491,
+          "promptSections": 8
+        },
+        "classification": "PASS",
+        "passed": true,
+        "correctnessPassed": true,
+        "failReasons": [],
+        "correctnessFailReasons": [],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Konsultacja wstępna",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Spotkanie wstępne",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 0,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            },
+            {
+              "title": "Usługi doradcze",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Analiza potrzeb klienta",
+                  "unit": "godzina",
+                  "quantity": 5,
+                  "unitPrice": 150,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Opracowanie strategii",
+                  "unit": "godzina",
+                  "quantity": 10,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Opcje dodatkowe",
+              "sortOrder": 2,
+              "items": [
+                {
+                  "name": "Dodatkowe konsultacje",
+                  "unit": "godzina",
+                  "quantity": 5,
+                  "unitPrice": 150,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "generic-organizacja-eventu": {
+        "id": "generic-organizacja-eventu",
+        "name": "Generic: Organizacja eventu",
+        "category": "generic",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 8.3,
+        "overallScore": 8.1,
+        "ruleScore": 8.3,
+        "judgeScore": 8,
+        "contextAlignmentScore": 7,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 3,
+        "coverageTotal": 3,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 3,
+          "lineItemCount": 9,
+          "outputTokens": 412,
+          "avgItemsPerSection": 3
+        },
+        "cost": {
+          "promptTokens": 1197,
+          "completionTokens": 412,
+          "totalTokens": 1609,
+          "judgePromptTokens": 956,
+          "judgeCompletionTokens": 107,
+          "estimatedCostUsd": 0.0073
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:f011dbaa282e16459a009296b8f518074ad86b3176a783a51c269bb49eef8f87",
+          "promptCharacters": 3499,
+          "promptWords": 491,
+          "promptSections": 8
+        },
+        "classification": "FAIL",
+        "passed": false,
+        "correctnessPassed": false,
+        "failReasons": [
+          "rules"
+        ],
+        "correctnessFailReasons": [
+          "rules"
+        ],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Koordynacja merytoryczna",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Przygotowanie programu konferencji",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 5000,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Zaproszenie prelegentów",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 3000,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                },
+                {
+                  "name": "Organizacja paneli dyskusyjnych",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 2000,
+                  "vatRate": 0.23,
+                  "sortOrder": 2
+                }
+              ]
+            },
+            {
+              "title": "Koordynacja logistyczna",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Rezerwacja sali konferencyjnej",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 8000,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Obsługa techniczna (nagłośnienie, oświetlenie)",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 4000,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                },
+                {
+                  "name": "Rejestracja uczestników",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 1500,
+                  "vatRate": 0.23,
+                  "sortOrder": 2
+                },
+                {
+                  "name": "Materiały konferencyjne (identyfikatory, programy)",
+                  "unit": null,
+                  "quantity": 150,
+                  "unitPrice": 20,
+                  "vatRate": 0.23,
+                  "sortOrder": 3
+                }
+              ]
+            },
+            {
+              "title": "Opcje dodatkowe",
+              "sortOrder": 2,
+              "items": [
+                {
+                  "name": "Tłumaczenie symultaniczne",
+                  "unit": "godzina",
+                  "quantity": 8,
+                  "unitPrice": 250,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Transport dla prelegentów",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 1000,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "generic-remont-mieszkania": {
+        "id": "generic-remont-mieszkania",
+        "name": "Generic: Remont mieszkania",
+        "category": "generic",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 7.5,
+        "overallScore": 4,
+        "ruleScore": 7.5,
+        "judgeScore": 8,
+        "contextAlignmentScore": 7,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 3,
+        "coverageTotal": 3,
+        "leakageScore": 4,
+        "leakagePassed": false,
+        "leakageTerms": [
+          "malowanie",
+          "malowanie ścian",
+          "farba"
+        ],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 3,
+          "lineItemCount": 6,
+          "outputTokens": 306,
+          "avgItemsPerSection": 2
+        },
+        "cost": {
+          "promptTokens": 1213,
+          "completionTokens": 306,
+          "totalTokens": 1519,
+          "judgePromptTokens": 810,
+          "judgeCompletionTokens": 101,
+          "estimatedCostUsd": 0.0063
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:8d328916c8d159fec0ad857e01630a103f6c082099b5e09b9b7fd57baf3f181b",
+          "promptCharacters": 3502,
+          "promptWords": 494,
+          "promptSections": 8
+        },
+        "classification": "FAIL",
+        "passed": false,
+        "correctnessPassed": false,
+        "failReasons": [
+          "leakage",
+          "rules",
+          "overallScore"
+        ],
+        "correctnessFailReasons": [
+          "leakage",
+          "rules",
+          "overallScore"
+        ],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Malowanie ścian i sufitów",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Przygotowanie powierzchni do malowania",
+                  "unit": "m²",
+                  "quantity": 68,
+                  "unitPrice": 10,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Malowanie ścian i sufitów",
+                  "unit": "m²",
+                  "quantity": 68,
+                  "unitPrice": 20,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Wymiana podłóg",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Demontaż starej podłogi",
+                  "unit": "m²",
+                  "quantity": 40,
+                  "unitPrice": 15,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Montaż nowych paneli podłogowych",
+                  "unit": "m²",
+                  "quantity": 40,
+                  "unitPrice": 30,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Odświeżenie łazienki",
+              "sortOrder": 2,
+              "items": [
+                {
+                  "name": "Czyszczenie i odświeżenie fug",
+                  "unit": "m²",
+                  "quantity": 10,
+                  "unitPrice": 25,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Malowanie płytek specjalną farbą",
+                  "unit": "m²",
+                  "quantity": 10,
+                  "unitPrice": 35,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "generic-szkolenia": {
+        "id": "generic-szkolenia",
+        "name": "Generic: Szkolenia",
+        "category": "generic",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 10,
+        "overallScore": 8.6,
+        "ruleScore": 10,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 2,
+        "coverageTotal": 2,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 3,
+          "lineItemCount": 3,
+          "outputTokens": 181,
+          "avgItemsPerSection": 1
+        },
+        "cost": {
+          "promptTokens": 1190,
+          "completionTokens": 181,
+          "totalTokens": 1371,
+          "judgePromptTokens": 596,
+          "judgeCompletionTokens": 77,
+          "estimatedCostUsd": 0.0049
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:2d623196dd4f54150b3a59a0c6bfd1ce1891c23cc4a5d93cd1386c0eef735b8a",
+          "promptCharacters": 3462,
+          "promptWords": 488,
+          "promptSections": 8
+        },
+        "classification": "PASS",
+        "passed": true,
+        "correctnessPassed": true,
+        "failReasons": [],
+        "correctnessFailReasons": [],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Szkolenie BHP",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Przeprowadzenie szkolenia BHP",
+                  "unit": "godzina",
+                  "quantity": 6,
+                  "unitPrice": 150,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            },
+            {
+              "title": "Szkolenie z pierwszej pomocy",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Przeprowadzenie szkolenia z pierwszej pomocy",
+                  "unit": "godzina",
+                  "quantity": 6,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            },
+            {
+              "title": "Materiały szkoleniowe",
+              "sortOrder": 2,
+              "items": [
+                {
+                  "name": "Materiały szkoleniowe dla uczestników",
+                  "unit": "komplet",
+                  "quantity": 35,
+                  "unitPrice": 20,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "generic-uslugi": {
+        "id": "generic-uslugi",
+        "name": "Generic: Usługi",
+        "category": "generic",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 10,
+        "overallScore": 8.6,
+        "ruleScore": 10,
+        "judgeScore": 8,
+        "contextAlignmentScore": 8,
+        "referenceSimilarityScore": 7,
+        "coveragePercent": 100,
+        "coverageMatched": 1,
+        "coverageTotal": 1,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 3,
+          "lineItemCount": 4,
+          "outputTokens": 205,
+          "avgItemsPerSection": 1.3
+        },
+        "cost": {
+          "promptTokens": 1184,
+          "completionTokens": 205,
+          "totalTokens": 1389,
+          "judgePromptTokens": 636,
+          "judgeCompletionTokens": 101,
+          "estimatedCostUsd": 0.0052
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:1d3ffedc7b955bece610a97c369ed688ad63c048397ed12880688916626520c2",
+          "promptCharacters": 3440,
+          "promptWords": 485,
+          "promptSections": 8
+        },
+        "classification": "PASS",
+        "passed": true,
+        "correctnessPassed": true,
+        "failReasons": [],
+        "correctnessFailReasons": [],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Konsultacje wstępne",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Spotkanie konsultacyjne",
+                  "unit": "godzina",
+                  "quantity": 2,
+                  "unitPrice": 150,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            },
+            {
+              "title": "Usługi doradcze",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Analiza potrzeb biznesowych",
+                  "unit": "projekt",
+                  "quantity": 1,
+                  "unitPrice": 1000,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Opracowanie strategii rozwoju",
+                  "unit": "projekt",
+                  "quantity": 1,
+                  "unitPrice": 2000,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Opcje dodatkowe",
+              "sortOrder": 2,
+              "items": [
+                {
+                  "name": "Szkolenie dla zespołu",
+                  "unit": "godzina",
+                  "quantity": 5,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "generic-uslugi-kreatywne": {
+        "id": "generic-uslugi-kreatywne",
+        "name": "Generic: Usługi kreatywne",
+        "category": "generic",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 10,
+        "overallScore": 8.6,
+        "ruleScore": 10,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 66.7,
+        "coverageMatched": 2,
+        "coverageTotal": 3,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 3,
+          "lineItemCount": 6,
+          "outputTokens": 280,
+          "avgItemsPerSection": 2
+        },
+        "cost": {
+          "promptTokens": 1186,
+          "completionTokens": 280,
+          "totalTokens": 1466,
+          "judgePromptTokens": 748,
+          "judgeCompletionTokens": 93,
+          "estimatedCostUsd": 0.006
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:99a8c5bca4e276e4409c1056850461eb26871759cece85cfdeea3000410cf884",
+          "promptCharacters": 3452,
+          "promptWords": 486,
+          "promptSections": 8
+        },
+        "classification": "PASS",
+        "passed": true,
+        "correctnessPassed": true,
+        "failReasons": [],
+        "correctnessFailReasons": [],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Projektowanie logo",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Koncepcja logo",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 1500,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Runda poprawek (2x)",
+                  "unit": null,
+                  "quantity": 2,
+                  "unitPrice": 250,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Projektowanie wizytówki",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Koncepcja wizytówki",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 800,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Runda poprawek (2x)",
+                  "unit": null,
+                  "quantity": 2,
+                  "unitPrice": 150,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Projektowanie szablonu prezentacji",
+              "sortOrder": 2,
+              "items": [
+                {
+                  "name": "Koncepcja szablonu",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 1200,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Runda poprawek (2x)",
+                  "unit": null,
+                  "quantity": 2,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "graphic-designer": {
+        "id": "graphic-designer",
+        "name": "Graphic Designer",
+        "category": "business",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 7.7,
+        "overallScore": 7.9,
+        "ruleScore": 7.7,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 1,
+        "coverageTotal": 1,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 2,
+          "lineItemCount": 5,
+          "outputTokens": 216,
+          "avgItemsPerSection": 2.5
+        },
+        "cost": {
+          "promptTokens": 1348,
+          "completionTokens": 216,
+          "totalTokens": 1564,
+          "judgePromptTokens": 834,
+          "judgeCompletionTokens": 95,
+          "estimatedCostUsd": 0.0057
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:182ad36240a0f21324b017112db69b043f81401f23a6f671e9a526e420a91583",
+          "promptCharacters": 3948,
+          "promptWords": 554,
+          "promptSections": 11
+        },
+        "classification": "FAIL",
+        "passed": false,
+        "correctnessPassed": false,
+        "failReasons": [
+          "rules"
+        ],
+        "correctnessFailReasons": [
+          "rules"
+        ],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Projektowanie logo",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Koncepcja logo",
+                  "unit": "szt.",
+                  "quantity": 1,
+                  "unitPrice": 1500,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Runda poprawek (2x)",
+                  "unit": "szt.",
+                  "quantity": 2,
+                  "unitPrice": 300,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Materiały firmowe",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Projekt wizytówki",
+                  "unit": "szt.",
+                  "quantity": 1,
+                  "unitPrice": 500,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Projekt papieru firmowego",
+                  "unit": "szt.",
+                  "quantity": 1,
+                  "unitPrice": 400,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                },
+                {
+                  "name": "Projekt koperty",
+                  "unit": "szt.",
+                  "quantity": 1,
+                  "unitPrice": 300,
+                  "vatRate": 0.23,
+                  "sortOrder": 2
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "interior-designer": {
+        "id": "interior-designer",
+        "name": "Interior Designer",
+        "category": "business",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 10,
+        "overallScore": 8.6,
+        "ruleScore": 10,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 4,
+        "coverageTotal": 4,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 3,
+          "lineItemCount": 4,
+          "outputTokens": 214,
+          "avgItemsPerSection": 1.3
+        },
+        "cost": {
+          "promptTokens": 1357,
+          "completionTokens": 214,
+          "totalTokens": 1571,
+          "judgePromptTokens": 833,
+          "judgeCompletionTokens": 92,
+          "estimatedCostUsd": 0.0057
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:52400cb1f71472136e20804546333ef2b9570f98c9c583936c4e90f5d664e769",
+          "promptCharacters": 3960,
+          "promptWords": 556,
+          "promptSections": 11
+        },
+        "classification": "PASS",
+        "passed": true,
+        "correctnessPassed": true,
+        "failReasons": [],
+        "correctnessFailReasons": [],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Projekt koncepcyjny",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Konsultacja wstępna",
+                  "unit": "h",
+                  "quantity": 2,
+                  "unitPrice": 150,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Opracowanie koncepcji projektowej",
+                  "unit": "m²",
+                  "quantity": 65,
+                  "unitPrice": 100,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Wizualizacje 3D",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Przygotowanie wizualizacji 3D",
+                  "unit": "szt.",
+                  "quantity": 5,
+                  "unitPrice": 300,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            },
+            {
+              "title": "Lista materiałów",
+              "sortOrder": 2,
+              "items": [
+                {
+                  "name": "Sporządzenie listy materiałów",
+                  "unit": "kpl.",
+                  "quantity": 1,
+                  "unitPrice": 500,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "it-consulting": {
+        "id": "it-consulting",
+        "name": "IT Consulting",
+        "category": "business",
+        "critical": true,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 10,
+        "overallScore": 8.6,
+        "ruleScore": 10,
+        "judgeScore": 8,
+        "contextAlignmentScore": 8,
+        "referenceSimilarityScore": 9,
+        "coveragePercent": 100,
+        "coverageMatched": 3,
+        "coverageTotal": 3,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 2,
+          "lineItemCount": 5,
+          "outputTokens": 234,
+          "avgItemsPerSection": 2.5
+        },
+        "cost": {
+          "promptTokens": 1392,
+          "completionTokens": 234,
+          "totalTokens": 1626,
+          "judgePromptTokens": 1275,
+          "judgeCompletionTokens": 106,
+          "estimatedCostUsd": 0.0061
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:e9942200505a87710d4d4ba8b1d421f43819d83c7724710fa62cb5632615733d",
+          "promptCharacters": 4082,
+          "promptWords": 574,
+          "promptSections": 12
+        },
+        "classification": "PASS",
+        "passed": true,
+        "correctnessPassed": true,
+        "failReasons": [],
+        "correctnessFailReasons": [],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Audyt architektury systemu ERP",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Przegląd dokumentacji systemu",
+                  "unit": "h",
+                  "quantity": 20,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Analiza obecnej architektury",
+                  "unit": "h",
+                  "quantity": 30,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                },
+                {
+                  "name": "Raport z rekomendacjami",
+                  "unit": "kpl.",
+                  "quantity": 1,
+                  "unitPrice": 1500,
+                  "vatRate": 0.23,
+                  "sortOrder": 2
+                }
+              ]
+            },
+            {
+              "title": "Warsztaty z zespołem IT",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Przygotowanie materiałów szkoleniowych",
+                  "unit": "h",
+                  "quantity": 10,
+                  "unitPrice": 150,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Przeprowadzenie warsztatów",
+                  "unit": "h",
+                  "quantity": 16,
+                  "unitPrice": 250,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "language-school": {
+        "id": "language-school",
+        "name": "Language School",
+        "category": "business",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 6.7,
+        "overallScore": 7.6,
+        "ruleScore": 6.7,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 3,
+        "coverageTotal": 3,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 2,
+          "lineItemCount": 3,
+          "outputTokens": 154,
+          "avgItemsPerSection": 1.5
+        },
+        "cost": {
+          "promptTokens": 1365,
+          "completionTokens": 154,
+          "totalTokens": 1519,
+          "judgePromptTokens": 745,
+          "judgeCompletionTokens": 81,
+          "estimatedCostUsd": 0.0052
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:cbae31ad45108a7ad86c34be85f24c5ca6dd655321ca9bab43fa3445c81b8f01",
+          "promptCharacters": 3938,
+          "promptWords": 557,
+          "promptSections": 11
+        },
+        "classification": "FAIL",
+        "passed": false,
+        "correctnessPassed": false,
+        "failReasons": [
+          "rules",
+          "lineItemCount"
+        ],
+        "correctnessFailReasons": [
+          "rules",
+          "lineItemCount"
+        ],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Kurs języka angielskiego",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Zajęcia grupowe (8 osób)",
+                  "unit": "h",
+                  "quantity": 64,
+                  "unitPrice": 150,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Materiały dydaktyczne",
+                  "unit": "kpl.",
+                  "quantity": 8,
+                  "unitPrice": 0,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Opcje dodatkowe",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Indywidualne konsultacje",
+                  "unit": "h",
+                  "quantity": 8,
+                  "unitPrice": 100,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "law-firm": {
+        "id": "law-firm",
+        "name": "Law Firm",
+        "category": "business",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 10,
+        "overallScore": 8.6,
+        "ruleScore": 10,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 3,
+        "coverageTotal": 3,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 2,
+          "lineItemCount": 4,
+          "outputTokens": 194,
+          "avgItemsPerSection": 2
+        },
+        "cost": {
+          "promptTokens": 1373,
+          "completionTokens": 194,
+          "totalTokens": 1567,
+          "judgePromptTokens": 816,
+          "judgeCompletionTokens": 102,
+          "estimatedCostUsd": 0.0056
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:16f607a31a8fecb80139a53c1fb1ffe6a0f0f7ae01ea607133a9d74e5f7b6959",
+          "promptCharacters": 4004,
+          "promptWords": 566,
+          "promptSections": 11
+        },
+        "classification": "PASS",
+        "passed": true,
+        "correctnessPassed": true,
+        "failReasons": [],
+        "correctnessFailReasons": [],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Przygotowanie umowy najmu",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Analiza wymagań klienta",
+                  "unit": "h",
+                  "quantity": 5,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Przygotowanie projektu umowy",
+                  "unit": "h",
+                  "quantity": 10,
+                  "unitPrice": 250,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Negocjacje umowy",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Negocjacje z wynajmującym",
+                  "unit": "h",
+                  "quantity": 8,
+                  "unitPrice": 300,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Konsultacje z klientem",
+                  "unit": "h",
+                  "quantity": 4,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "marketing-agency": {
+        "id": "marketing-agency",
+        "name": "Marketing Agency",
+        "category": "business",
+        "critical": true,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 10,
+        "overallScore": 9.3,
+        "ruleScore": 10,
+        "judgeScore": 9,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 10,
+        "coveragePercent": 100,
+        "coverageMatched": 3,
+        "coverageTotal": 3,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 3,
+          "lineItemCount": 6,
+          "outputTokens": 290,
+          "avgItemsPerSection": 2
+        },
+        "cost": {
+          "promptTokens": 1378,
+          "completionTokens": 290,
+          "totalTokens": 1668,
+          "judgePromptTokens": 1452,
+          "judgeCompletionTokens": 55,
+          "estimatedCostUsd": 0.0066
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:a8b473506be9d40d87d29ceeb0743d9bbce9d675871ddef1d36ea4cd9113d06f",
+          "promptCharacters": 4048,
+          "promptWords": 568,
+          "promptSections": 11
+        },
+        "classification": "PASS",
+        "passed": true,
+        "correctnessPassed": true,
+        "failReasons": [],
+        "correctnessFailReasons": [],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Strategia Kampanii",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Opracowanie strategii marketingowej",
+                  "unit": "kpl.",
+                  "quantity": 1,
+                  "unitPrice": 5000,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Analiza rynku i konkurencji",
+                  "unit": "kpl.",
+                  "quantity": 1,
+                  "unitPrice": 3000,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Kreacja Kampanii",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Projektowanie materiałów reklamowych",
+                  "unit": "kpl.",
+                  "quantity": 1,
+                  "unitPrice": 4000,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Tworzenie treści reklamowych",
+                  "unit": "kpl.",
+                  "quantity": 1,
+                  "unitPrice": 3500,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Zarządzanie Kampanią",
+              "sortOrder": 2,
+              "items": [
+                {
+                  "name": "Koordynacja działań kampanii",
+                  "unit": "miesiąc",
+                  "quantity": 3,
+                  "unitPrice": 2000,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Raportowanie i analiza wyników",
+                  "unit": "miesiąc",
+                  "quantity": 3,
+                  "unitPrice": 1500,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "personal-trainer": {
+        "id": "personal-trainer",
+        "name": "Personal Trainer",
+        "category": "business",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 9,
+        "overallScore": 7.6,
+        "ruleScore": 9,
+        "judgeScore": 7,
+        "contextAlignmentScore": 6,
+        "referenceSimilarityScore": 7,
+        "coveragePercent": 100,
+        "coverageMatched": 3,
+        "coverageTotal": 3,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 2,
+          "lineItemCount": 2,
+          "outputTokens": 117,
+          "avgItemsPerSection": 1
+        },
+        "cost": {
+          "promptTokens": 1356,
+          "completionTokens": 117,
+          "totalTokens": 1473,
+          "judgePromptTokens": 678,
+          "judgeCompletionTokens": 94,
+          "estimatedCostUsd": 0.0048
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:91a78d3f9930ac5592d83fd0a0157280947fb8c4d0517347292882368a94577e",
+          "promptCharacters": 3948,
+          "promptWords": 556,
+          "promptSections": 11
+        },
+        "classification": "FAIL",
+        "passed": false,
+        "correctnessPassed": false,
+        "failReasons": [
+          "lineItemCount",
+          "contextAlignment"
+        ],
+        "correctnessFailReasons": [
+          "lineItemCount",
+          "contextAlignment"
+        ],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Trening personalny",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Sesja treningowa",
+                  "unit": "h",
+                  "quantity": 24,
+                  "unitPrice": 100,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            },
+            {
+              "title": "Plan ćwiczeń domowych",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Indywidualny plan ćwiczeń",
+                  "unit": "kpl.",
+                  "quantity": 1,
+                  "unitPrice": 300,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "real-estate-agent": {
+        "id": "real-estate-agent",
+        "name": "Real Estate Agent",
+        "category": "business",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 7.7,
+        "overallScore": 7.9,
+        "ruleScore": 7.7,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 4,
+        "coverageTotal": 4,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 3,
+          "lineItemCount": 6,
+          "outputTokens": 285,
+          "avgItemsPerSection": 2
+        },
+        "cost": {
+          "promptTokens": 1353,
+          "completionTokens": 285,
+          "totalTokens": 1638,
+          "judgePromptTokens": 943,
+          "judgeCompletionTokens": 83,
+          "estimatedCostUsd": 0.0064
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:3be17df4b620c5b1f835a97003ea4706fd4153e6793e6c9bef49d060266cbf2e",
+          "promptCharacters": 3948,
+          "promptWords": 555,
+          "promptSections": 11
+        },
+        "classification": "FAIL",
+        "passed": false,
+        "correctnessPassed": false,
+        "failReasons": [
+          "rules"
+        ],
+        "correctnessFailReasons": [
+          "rules"
+        ],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Pakiet Marketingowy",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Przygotowanie ogłoszenia",
+                  "unit": "szt.",
+                  "quantity": 1,
+                  "unitPrice": 500,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Promocja w mediach społecznościowych",
+                  "unit": "szt.",
+                  "quantity": 1,
+                  "unitPrice": 300,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                },
+                {
+                  "name": "Reklama na portalach nieruchomości",
+                  "unit": "szt.",
+                  "quantity": 1,
+                  "unitPrice": 400,
+                  "vatRate": 0.23,
+                  "sortOrder": 2
+                }
+              ]
+            },
+            {
+              "title": "Sesja Zdjęciowa",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Profesjonalna sesja zdjęciowa",
+                  "unit": "szt.",
+                  "quantity": 1,
+                  "unitPrice": 600,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Obróbka zdjęć",
+                  "unit": "szt.",
+                  "quantity": 1,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Prowizja Success Fee",
+              "sortOrder": 2,
+              "items": [
+                {
+                  "name": "Prowizja od sprzedaży",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 0,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "recruitment-agency": {
+        "id": "recruitment-agency",
+        "name": "Recruitment Agency",
+        "category": "business",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 6.5,
+        "overallScore": 7.6,
+        "ruleScore": 6.5,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 2,
+        "coverageTotal": 2,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 4,
+          "lineItemCount": 8,
+          "outputTokens": 373,
+          "avgItemsPerSection": 2
+        },
+        "cost": {
+          "promptTokens": 1343,
+          "completionTokens": 373,
+          "totalTokens": 1716,
+          "judgePromptTokens": 1079,
+          "judgeCompletionTokens": 89,
+          "estimatedCostUsd": 0.0073
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:2b366069af2f3248be8ba0be9d08814f457642e5b1feaa934e01f2b47579d3a9",
+          "promptCharacters": 3923,
+          "promptWords": 553,
+          "promptSections": 11
+        },
+        "classification": "FAIL",
+        "passed": false,
+        "correctnessPassed": false,
+        "failReasons": [
+          "rules"
+        ],
+        "correctnessFailReasons": [
+          "rules"
+        ],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Przygotowanie procesu rekrutacyjnego",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Analiza wymagań klienta",
+                  "unit": "h",
+                  "quantity": 5,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Przygotowanie ogłoszenia o pracę",
+                  "unit": "szt.",
+                  "quantity": 1,
+                  "unitPrice": 150,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Selekcja kandydatów",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Przegląd aplikacji",
+                  "unit": "szt.",
+                  "quantity": 50,
+                  "unitPrice": 10,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Wstępne rozmowy kwalifikacyjne",
+                  "unit": "h",
+                  "quantity": 10,
+                  "unitPrice": 150,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Prezentacja kandydatów",
+              "sortOrder": 2,
+              "items": [
+                {
+                  "name": "Przygotowanie raportów kandydatów",
+                  "unit": "szt.",
+                  "quantity": 5,
+                  "unitPrice": 100,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Spotkania z klientem",
+                  "unit": "h",
+                  "quantity": 5,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Finalizacja procesu",
+              "sortOrder": 3,
+              "items": [
+                {
+                  "name": "Negocjacje ofertowe",
+                  "unit": "h",
+                  "quantity": 3,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Wsparcie w onboardingu",
+                  "unit": "h",
+                  "quantity": 5,
+                  "unitPrice": 150,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "seo-agency": {
+        "id": "seo-agency",
+        "name": "SEO Agency",
+        "category": "business",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 10,
+        "overallScore": 8.6,
+        "ruleScore": 10,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 3,
+        "coverageTotal": 3,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 3,
+          "lineItemCount": 8,
+          "outputTokens": 341,
+          "avgItemsPerSection": 2.7
+        },
+        "cost": {
+          "promptTokens": 1347,
+          "completionTokens": 341,
+          "totalTokens": 1688,
+          "judgePromptTokens": 1038,
+          "judgeCompletionTokens": 98,
+          "estimatedCostUsd": 0.007
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:a8c0054ef2c1b230903098ecf57b787d65a4a3a148c1b1fc69f9b6ead64a3264",
+          "promptCharacters": 3940,
+          "promptWords": 557,
+          "promptSections": 11
+        },
+        "classification": "PASS",
+        "passed": true,
+        "correctnessPassed": true,
+        "failReasons": [],
+        "correctnessFailReasons": [],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Audyt SEO",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Analiza techniczna strony",
+                  "unit": "h",
+                  "quantity": 10,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Analiza słów kluczowych",
+                  "unit": "h",
+                  "quantity": 8,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                },
+                {
+                  "name": "Raport z audytu SEO",
+                  "unit": "szt.",
+                  "quantity": 1,
+                  "unitPrice": 500,
+                  "vatRate": 0.23,
+                  "sortOrder": 2
+                }
+              ]
+            },
+            {
+              "title": "Optymalizacja On-Page",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Optymalizacja meta tagów",
+                  "unit": "szt.",
+                  "quantity": 5000,
+                  "unitPrice": 1,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Poprawa struktury URL",
+                  "unit": "h",
+                  "quantity": 15,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                },
+                {
+                  "name": "Optymalizacja treści",
+                  "unit": "h",
+                  "quantity": 20,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 2
+                }
+              ]
+            },
+            {
+              "title": "Plan Contentu",
+              "sortOrder": 2,
+              "items": [
+                {
+                  "name": "Opracowanie strategii contentowej",
+                  "unit": "h",
+                  "quantity": 10,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Plan publikacji na 6 miesięcy",
+                  "unit": "szt.",
+                  "quantity": 1,
+                  "unitPrice": 1000,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "social-media-agency": {
+        "id": "social-media-agency",
+        "name": "Social Media Agency",
+        "category": "business",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 7.8,
+        "overallScore": 7.9,
+        "ruleScore": 7.8,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 4,
+        "coverageTotal": 4,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 1,
+          "lineItemCount": 3,
+          "outputTokens": 139,
+          "avgItemsPerSection": 3
+        },
+        "cost": {
+          "promptTokens": 1348,
+          "completionTokens": 139,
+          "totalTokens": 1487,
+          "judgePromptTokens": 701,
+          "judgeCompletionTokens": 75,
+          "estimatedCostUsd": 0.005
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:815699abe2f7ee1e390884f7b60830c68fabff000c7089fdb2a3845625e7d0ff",
+          "promptCharacters": 3967,
+          "promptWords": 557,
+          "promptSections": 11
+        },
+        "classification": "FAIL",
+        "passed": false,
+        "correctnessPassed": false,
+        "failReasons": [
+          "rules",
+          "lineItemCount"
+        ],
+        "correctnessFailReasons": [
+          "rules",
+          "lineItemCount"
+        ],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Obsługa mediów społecznościowych",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Tworzenie postów na LinkedIn",
+                  "unit": "szt.",
+                  "quantity": 6,
+                  "unitPrice": 150,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Tworzenie postów na Instagram",
+                  "unit": "szt.",
+                  "quantity": 6,
+                  "unitPrice": 150,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                },
+                {
+                  "name": "Community management",
+                  "unit": "miesiąc",
+                  "quantity": 1,
+                  "unitPrice": 500,
+                  "vatRate": 0.23,
+                  "sortOrder": 2
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "stress-overconfigured": {
+        "id": "stress-overconfigured",
+        "name": "Overconfigured Workspace",
+        "category": "stress",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 10,
+        "overallScore": 8.6,
+        "ruleScore": 10,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 3,
+        "coverageTotal": 3,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 2,
+          "lineItemCount": 4,
+          "outputTokens": 180,
+          "avgItemsPerSection": 2
+        },
+        "cost": {
+          "promptTokens": 2012,
+          "completionTokens": 180,
+          "totalTokens": 2192,
+          "judgePromptTokens": 1181,
+          "judgeCompletionTokens": 83,
+          "estimatedCostUsd": 0.007
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:b0df2eb3d232b8476446bf16c80cc3ea873c0848ece4e8857f03c06cbc3756d7",
+          "promptCharacters": 6363,
+          "promptWords": 829,
+          "promptSections": 20
+        },
+        "classification": "PASS",
+        "passed": true,
+        "correctnessPassed": true,
+        "failReasons": [],
+        "correctnessFailReasons": [],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Sekcja 1",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Strategia kampanii",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 20000,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Kreacja reklamowa",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 30000,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                },
+                {
+                  "name": "Raportowanie wyników",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 10000,
+                  "vatRate": 0.23,
+                  "sortOrder": 2
+                }
+              ]
+            },
+            {
+              "title": "Sekcja 2",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Zakup mediów",
+                  "unit": "PLN",
+                  "quantity": 1,
+                  "unitPrice": 500000,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "stress-toxic-workspace": {
+        "id": "stress-toxic-workspace",
+        "name": "Toxic Workspace",
+        "category": "stress",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 10,
+        "overallScore": 8.6,
+        "ruleScore": 10,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 7,
+        "coveragePercent": 100,
+        "coverageMatched": 2,
+        "coverageTotal": 2,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 2,
+          "lineItemCount": 5,
+          "outputTokens": 234,
+          "avgItemsPerSection": 2.5
+        },
+        "cost": {
+          "promptTokens": 1238,
+          "completionTokens": 234,
+          "totalTokens": 1472,
+          "judgePromptTokens": 713,
+          "judgeCompletionTokens": 69,
+          "estimatedCostUsd": 0.0055
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:0d9a009fb76a20165276357717cc52461a07bfdc9a5d9a044468f83e6c6ed1ad",
+          "promptCharacters": 3625,
+          "promptWords": 510,
+          "promptSections": 11
+        },
+        "classification": "PASS",
+        "passed": true,
+        "correctnessPassed": true,
+        "failReasons": [],
+        "correctnessFailReasons": [],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Koordynacja wesela",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Planowanie harmonogramu",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 1500,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Koordynacja dnia wesela",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 2000,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                },
+                {
+                  "name": "Zarządzanie dostawcami",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 1000,
+                  "vatRate": 0.23,
+                  "sortOrder": 2
+                }
+              ]
+            },
+            {
+              "title": "Dodatkowe usługi",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Dekoracja sali",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 1200,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Obsługa techniczna (nagłośnienie, oświetlenie)",
+                  "unit": null,
+                  "quantity": 1,
+                  "unitPrice": 800,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "wedding-photographer": {
+        "id": "wedding-photographer",
+        "name": "Wedding Photographer",
+        "category": "business",
+        "critical": false,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 8.8,
+        "overallScore": 8.2,
+        "ruleScore": 8.8,
+        "judgeScore": 8,
+        "contextAlignmentScore": 9,
+        "referenceSimilarityScore": 8,
+        "coveragePercent": 100,
+        "coverageMatched": 4,
+        "coverageTotal": 4,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 3,
+          "lineItemCount": 5,
+          "outputTokens": 242,
+          "avgItemsPerSection": 1.7
+        },
+        "cost": {
+          "promptTokens": 1360,
+          "completionTokens": 242,
+          "totalTokens": 1602,
+          "judgePromptTokens": 886,
+          "judgeCompletionTokens": 106,
+          "estimatedCostUsd": 0.006
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:fed20dcc475034811c04a3957d0b932666ddc7d22532102b7f8180432cd1e5ca",
+          "promptCharacters": 3942,
+          "promptWords": 558,
+          "promptSections": 11
+        },
+        "classification": "FAIL",
+        "passed": false,
+        "correctnessPassed": false,
+        "failReasons": [
+          "rules"
+        ],
+        "correctnessFailReasons": [
+          "rules"
+        ],
+        "qualityFailReasons": [],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Reportaż ślubny",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Fotografowanie ceremonii ślubnej",
+                  "unit": "h",
+                  "quantity": 2,
+                  "unitPrice": 500,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Fotografowanie przyjęcia weselnego",
+                  "unit": "h",
+                  "quantity": 6,
+                  "unitPrice": 500,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Sesja plenerowa",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Sesja plenerowa w Tatrach",
+                  "unit": "h",
+                  "quantity": 3,
+                  "unitPrice": 600,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            },
+            {
+              "title": "Materiały końcowe",
+              "sortOrder": 2,
+              "items": [
+                {
+                  "name": "Album fotograficzny 30x30",
+                  "unit": "szt.",
+                  "quantity": 1,
+                  "unitPrice": 300,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Galeria online",
+                  "unit": "null",
+                  "quantity": 1,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      },
+      "wedding-planner": {
+        "id": "wedding-planner",
+        "name": "Wedding Planner",
+        "category": "business",
+        "critical": true,
+        "evalMode": "full",
+        "schemaPassed": true,
+        "fastScore": 10,
+        "overallScore": 7.9,
+        "ruleScore": 10,
+        "judgeScore": 7,
+        "contextAlignmentScore": 8,
+        "referenceSimilarityScore": 6,
+        "coveragePercent": 100,
+        "coverageMatched": 4,
+        "coverageTotal": 4,
+        "leakageScore": 10,
+        "leakagePassed": true,
+        "leakageTerms": [],
+        "configurationScore": 10,
+        "configurationPassed": true,
+        "length": {
+          "sectionCount": 3,
+          "lineItemCount": 6,
+          "outputTokens": 282,
+          "avgItemsPerSection": 2
+        },
+        "cost": {
+          "promptTokens": 1487,
+          "completionTokens": 282,
+          "totalTokens": 1769,
+          "judgePromptTokens": 1567,
+          "judgeCompletionTokens": 170,
+          "estimatedCostUsd": 0.0068
+        },
+        "promptMeta": {
+          "promptVersion": "2.0.0",
+          "profileVersion": "SERVICES_V1",
+          "profileVersionInPrompt": true,
+          "promptHash": "sha256:50ceec7725593490c5c739d79fe0682a143fea2e983a489b8a472e434cedd056",
+          "promptCharacters": 4373,
+          "promptWords": 613,
+          "promptSections": 13
+        },
+        "classification": "PASS_WITH_LOW_REFSIM",
+        "passed": false,
+        "correctnessPassed": true,
+        "failReasons": [
+          "referenceSimilarity"
+        ],
+        "correctnessFailReasons": [],
+        "qualityFailReasons": [
+          "referenceSimilarity"
+        ],
+        "generatedEstimate": {
+          "sections": [
+            {
+              "title": "Konsultacje i Planowanie",
+              "sortOrder": 0,
+              "items": [
+                {
+                  "name": "Konsultacja wstępna",
+                  "unit": "h",
+                  "quantity": 2,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Planowanie harmonogramu",
+                  "unit": "h",
+                  "quantity": 10,
+                  "unitPrice": 150,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                },
+                {
+                  "name": "Spotkania z podwykonawcami",
+                  "unit": "h",
+                  "quantity": 8,
+                  "unitPrice": 150,
+                  "vatRate": 0.23,
+                  "sortOrder": 2
+                }
+              ]
+            },
+            {
+              "title": "Dekoracja i Przygotowanie Sali",
+              "sortOrder": 1,
+              "items": [
+                {
+                  "name": "Projekt dekoracji",
+                  "unit": "kpl.",
+                  "quantity": 1,
+                  "unitPrice": 1000,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                },
+                {
+                  "name": "Koordynacja dekoracji",
+                  "unit": "h",
+                  "quantity": 5,
+                  "unitPrice": 150,
+                  "vatRate": 0.23,
+                  "sortOrder": 1
+                }
+              ]
+            },
+            {
+              "title": "Koordynacja Dnia Ślubu",
+              "sortOrder": 2,
+              "items": [
+                {
+                  "name": "Koordynacja dnia ślubu",
+                  "unit": "h",
+                  "quantity": 12,
+                  "unitPrice": 200,
+                  "vatRate": 0.23,
+                  "sortOrder": 0
+                }
+              ]
+            }
+          ],
+          "suggestedMarginPercent": null
+        }
+      }
+    }
+  }
+}

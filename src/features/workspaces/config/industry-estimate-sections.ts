@@ -12,7 +12,7 @@ export type IndustryEstimateSectionDefinition = {
 };
 
 export const INDUSTRY_ESTIMATE_SECTION_TEMPLATES: Record<
-  WorkspaceIndustry,
+  Exclude<WorkspaceIndustry, "OTHER">,
   IndustryEstimateSectionDefinition[]
 > = {
   [WorkspaceIndustry.CONSTRUCTION]: [
@@ -199,44 +199,17 @@ export const INDUSTRY_ESTIMATE_SECTION_TEMPLATES: Record<
       },
     },
   ],
-  [WorkspaceIndustry.OTHER]: [
-    {
-      key: "scope",
-      title: { pl: "Zakres", en: "Scope" },
-      defaultRule: {
-        pl: "Opcjonalnie 1–2 krótkie pozycje podsumowujące zakres i wyłączenia (unitPrice może być 0). Wszystkie wyceniane usługi umieszczaj jako osobne pozycje w sekcji Usługi (jednostka, ilość, cena).",
-        en: "Optionally 1–2 short line items summarizing scope and exclusions (unitPrice may be 0). Put all priced services as separate line items in the Services section (unit, quantity, price).",
-      },
-    },
-    {
-      key: "services",
-      title: { pl: "Usługi", en: "Services" },
-      defaultRule: {
-        pl: "Główne usługi z jednostkami (h, szt., pakiet) i realistycznym nakładem.",
-        en: "Core services with units (h, pcs, package) and realistic allowances.",
-      },
-    },
-    {
-      key: "add_ons",
-      title: { pl: "Opcje dodatkowe", en: "Add-ons" },
-      defaultRule: {
-        pl: "Opcjonalne rozszerzenia, upgrade'y i pakiety poza zakresem podstawowym.",
-        en: "Optional extensions, upgrades, and packages beyond the base scope.",
-      },
-    },
-    {
-      key: "notes",
-      title: { pl: "Uwagi", en: "Notes" },
-      defaultRule: {
-        pl: "Warunki, wyłączenia, rezerwa lub koszty dodatkowe poza głównym zakresem. Przy wyłączeniach nie powtarzaj nazwy wykluczonej usługi w tytule pozycji (np. „Wyłączone z wyceny” zamiast „Catering wyłączony”).",
-        en: "Terms, exclusions, contingency, or additional costs outside the main scope. When noting exclusions, do not repeat the excluded service name in the line item title (e.g. \"Excluded from estimate\" instead of \"Catering excluded\").",
-      },
-    },
-  ],
 };
+
+export function hasIndustrySectionDefaults(industry: WorkspaceIndustry): boolean {
+  return industry !== WorkspaceIndustry.OTHER;
+}
 
 export function getIndustryEstimateSectionTemplate(
   industry: WorkspaceIndustry,
-): IndustryEstimateSectionDefinition[] {
+): IndustryEstimateSectionDefinition[] | null {
+  if (industry === WorkspaceIndustry.OTHER) {
+    return null;
+  }
   return INDUSTRY_ESTIMATE_SECTION_TEMPLATES[industry];
 }

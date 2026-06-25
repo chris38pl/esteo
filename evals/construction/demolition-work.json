@@ -1,0 +1,40 @@
+{
+  "id": "construction-demolition-work",
+  "name": "Construction — demolition work",
+  "locale": "pl",
+  "category": "business",
+  "quick": true,
+  "critical": false,
+  "profileVersion": "CONSTRUCTION_V1",
+  "workspace": {
+    "industry": "CONSTRUCTION",
+    "companyDescription": "Firma remontowa — prace rozbiórkowe i przygotowawcze.",
+    "rules": [],
+    "systemRules": { "rounding": true, "units": true }
+  },
+  "request": {
+    "project": {
+      "description": "Prace rozbiórkowe pod remont mieszkania 52 m²: demontaż starych płytek w łazience i kuchni, skuwanie tapet, wywóz gruzu. Poznań.",
+      "preferredStartDate": "asap"
+    },
+    "address": { "city": "Poznań" }
+  },
+  "expectations": {
+    "mustHave": [
+      { "term": "demont", "scope": "any_item" },
+      { "term": "gruz", "scope": "any_item" }
+    ],
+    "mustNotHave": [{ "term": "malowan", "scope": "any_section" }],
+    "coverageTerms": ["rozbiórk", "demont", "utylizac"],
+    "requiredSections": ["Prace rozbiórkowe"],
+    "leakageDomain": "services",
+    "maxLeakageTerms": 0,
+    "minLineItems": 4,
+    "maxLineItems": 20,
+    "judge": {
+      "focus": ["Wyłącznie prace rozbiórkowe i utylizacja"],
+      "minScore": 7,
+      "minContextAlignment": 7
+    }
+  }
+}

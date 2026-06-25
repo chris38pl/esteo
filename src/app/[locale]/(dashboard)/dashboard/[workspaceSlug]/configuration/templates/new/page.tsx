@@ -1,7 +1,10 @@
 import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 
-import { getSystemEstimateTemplateForIndustry } from "@/features/estimate-templates/config/system-templates";
+import {
+  getSystemEstimateTemplateForIndustry,
+  hasSystemEstimateTemplateForIndustry,
+} from "@/features/estimate-templates/config/system-templates";
 import { EstimateTemplateEditor } from "@/features/estimate-templates/components/estimate-template-editor";
 import {
   emptyTemplateDraft,
@@ -23,10 +26,10 @@ export default async function NewEstimateTemplatePage({
   searchParams,
 }: {
   params: Promise<{ locale: string; workspaceSlug: string }>;
-  searchParams: Promise<{ copy?: string }>;
+  searchParams: Promise<{ copy?: string; source?: string }>;
 }) {
   const { locale, workspaceSlug } = await params;
-  const { copy } = await searchParams;
+  const { copy, source } = await searchParams;
   const resolvedLocale: Locale = isLocale(locale) ? locale : "pl";
 
   setRequestLocale(resolvedLocale);
@@ -56,12 +59,18 @@ export default async function NewEstimateTemplatePage({
     redirect(dashboardEstimatesHref(resolvedLocale, resolved.canonicalSlug));
   }
 
+  const showSystemTemplate = hasSystemEstimateTemplateForIndustry(
+    configuration.workspace.industry,
+  );
+
   const initialDraft =
-    copy === "system"
-      ? templateToEditorDraft(
-          getSystemEstimateTemplateForIndustry(configuration.workspace.industry),
-        )
-      : emptyTemplateDraft();
+    source === "ai"
+      ? emptyTemplateDraft()
+      : copy === "system" && showSystemTemplate
+        ? templateToEditorDraft(
+            getSystemEstimateTemplateForIndustry(configuration.workspace.industry),
+          )
+        : emptyTemplateDraft();
 
   return (
     <EstimateTemplateEditor
@@ -73,6 +82,8 @@ export default async function NewEstimateTemplatePage({
         workspaceSlug={resolved.canonicalSlug}
         locale={resolvedLocale}
         access={workspaceData.access}
+        showSystemTemplate={showSystemTemplate}
+        initialSource={source === "ai" ? "ai" : null}
     />
   );
 }

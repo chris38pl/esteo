@@ -767,7 +767,8 @@
     "title": "Generated from",
     "template": "Template: {name}",
     "priceList": "Price list: {name}",
-    "none": "None"
+    "none": "None",
+    "dismiss": "Hide source info"
   },
   "versions": {
     "createNewVersion": "Create new version",

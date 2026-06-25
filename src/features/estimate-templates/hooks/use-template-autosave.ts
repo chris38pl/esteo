@@ -11,10 +11,13 @@ const DEBOUNCE_MS = 1500;
 export function useTemplateAutosave({
   enabled,
   canSave,
+  getCanSave,
   onSave,
 }: {
   enabled: boolean;
   canSave: boolean;
+  /** When provided, evaluated at save time instead of the render-time `canSave` flag. */
+  getCanSave?: () => boolean;
   onSave: () => Promise<boolean>;
 }) {
   const [status, setStatus] = useState<TemplateAutoSaveStatus>("idle");
@@ -29,8 +32,10 @@ export function useTemplateAutosave({
     }
   }, []);
 
+  const isSavable = useCallback(() => getCanSave?.() ?? canSave, [canSave, getCanSave]);
+
   const persist = useCallback(async () => {
-    if (!enabled || !canSave || persistInFlightRef.current) {
+    if (!enabled || !isSavable() || persistInFlightRef.current) {
       pendingRef.current = !persistInFlightRef.current;
       return;
     }
@@ -38,7 +43,7 @@ export function useTemplateAutosave({
     persistInFlightRef.current = true;
     setStatus("saving");
 
-    const success = await onSave();
+    const success = await onSave().catch(() => false);
 
     persistInFlightRef.current = false;
 
@@ -50,16 +55,16 @@ export function useTemplateAutosave({
 
     setStatus("error");
     return undefined;
-  }, [canSave, enabled, onSave]);
+  }, [enabled, isSavable, onSave]);
 
   const scheduleSave = useCallback(() => {
-    if (!enabled || !canSave) return;
+    if (!enabled) return;
     clearDebounce();
     debounceTimerRef.current = setTimeout(() => {
       debounceTimerRef.current = null;
       void persist();
     }, DEBOUNCE_MS);
-  }, [canSave, clearDebounce, enabled, persist]);
+  }, [clearDebounce, enabled, persist]);
 
   const saveNow = useCallback(async () => {
     clearDebounce();

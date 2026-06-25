@@ -4,6 +4,7 @@ import { setRequestLocale } from "next-intl/server";
 import { SyncDashboardBreadcrumbDetail } from "@/components/layout/dashboard-top-nav/sync-dashboard-breadcrumb-detail";
 import { EstimateTemplateEditor } from "@/features/estimate-templates/components/estimate-template-editor";
 import { templateToEditorDraft } from "@/features/estimate-templates/lib/template-editor-draft";
+import { hasSystemEstimateTemplateForIndustry } from "@/features/estimate-templates/config/system-templates";
 import { getEstimateTemplateWorkspaceData } from "@/features/workspace-configuration/server/service";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
@@ -59,6 +60,7 @@ export default async function EditEstimateTemplatePage({
         workspaceSlug={resolved.canonicalSlug}
         locale={resolvedLocale}
         access={data.access}
+        showSystemTemplate={hasSystemEstimateTemplateForIndustry(resolved.workspace.industry)}
       />
     </>
   );

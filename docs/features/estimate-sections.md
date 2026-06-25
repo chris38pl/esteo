@@ -2,21 +2,34 @@
 
 Esteo organizes generated estimates into **ordered sections** (work phases). This feature provides:
 
-- **Default section templates per industry** (Construction, Electrical, Carpentry, Plumbing, Other)
+- **Default section templates per dedicated industry** (Construction, Electrical, Carpentry, Plumbing)
+- **Dynamic structure for Other (services)** — no industry defaults; AI proposes **Commercial Sections**
 - **Workspace overrides** so each workspace can tailor sections to its workflow
 - **Prompt injection** so AI generation follows the configured structure consistently
 
+## Commercial Section (Sekcja handlowa)
+
+A **Commercial Section** contains commercial line items that contribute to the estimate value. Items may have `unitPrice` of 0 or negative when commercially meaningful (included transport, promotional discount).
+
+**Do not** use Commercial Sections for narrative content (scope summaries, terms, exclusions). The client brief lives outside the estimate table.
+
+**Narrative section titles to avoid:** Zakres, Uwagi, Opis, Oferta, Kosztorys, generic Usługi.
+
+## Other industry (OTHER v2)
+
+`WorkspaceIndustry.OTHER` has `hasIndustrySectionDefaults = false`. With no workspace override, `sectionStructureMode` is `ai_dynamic` and AI proposes section titles per business type and brief.
+
+See [other-industry-evolution.md](./other-industry-evolution.md) for the product playbook (incubator → dedicated `*_V1` profiles).
+
 ## Where defaults live
 
-Default templates are hardcoded in:
+Default templates for dedicated industries:
 
-- `src/features/workspaces/config/industry-estimate-sections.ts`
+- [`src/features/workspaces/config/industry-estimate-sections.ts`](../src/features/workspaces/config/industry-estimate-sections.ts)
 
-Each section definition includes:
+Legacy OTHER defaults (pre-v2) are frozen in:
 
-- a stable `key`
-- PL/EN titles
-- a short default section rule (used as AI guidance)
+- [`src/features/workspaces/lib/migrate-legacy-other-sections.ts`](../src/features/workspaces/lib/migrate-legacy-other-sections.ts)
 
 ## Workspace overrides (settings UI)
 
@@ -24,47 +37,35 @@ Route:
 
 - `/[locale]/dashboard/workspaces/settings?tab=rules`
 
-Under the **Rules** tab (below “Rules for: Creating cost estimates”), the user can manage **Estimate sections**:
+Under the **Rules** tab, users can manage **Estimate sections**:
 
-- **Reorder** sections: drag & drop on desktop (table), move up / down on mobile (cards)
-- **Rename** a section (edited in the current UI locale; the other locale keeps its previous value)
-- **Toggle active** (inactive sections are omitted from prompts)
-- **Add / delete** custom sections
-- **Reset to defaults** (clears workspace override and reverts to industry template)
+- **Other (no defaults):** empty state — AI proposes structure; user may add sections for a fixed override
+- **Dedicated industries:** industry template sections by default
+- Reorder, rename, toggle active, add/delete, reset to defaults
 
-Persistence:
+Persistence: `WorkspaceSettings.branding.estimateSections`
 
-- Overrides are stored in `WorkspaceSettings.branding.estimateSections`
+Migration for workspaces with saved legacy OTHER template:
+
+```bash
+npx tsx scripts/migrate-other-v2-sections.ts --dry-run
+npx tsx scripts/migrate-other-v2-sections.ts
+```
 
 ## How it affects AI prompts
 
-`getWorkspacePromptContext()` assembles workspace-specific prompt context and injects two blocks derived from the active section list:
+`getWorkspacePromptContext()` / `buildEstimateDraftPrompt()` use `sectionStructureMode`:
 
-- `## Estimate structure` — the ordered list of section titles (omit irrelevant sections)
-- `## Section-specific rules` — per-section rule bodies when present
+| Mode | Prompt |
+|------|--------|
+| `ai_dynamic` | Dynamic structure + Commercial Section naming rules |
+| `industry_defaults` | `## Estimate Structure` from industry template |
+| `workspace_override` | `## Estimate Structure` from saved workspace sections |
 
-This sits alongside:
+## Admin transparency
 
-- `## Company context` (`WorkspaceSettings.companyDescription`)
-- `## Workspace rules` (`WorkspaceSettings.aiInstructions`)
-- global estimate rules (workspace estimate rules + system defaults)
-
-## Admin transparency (read-only)
-
-Platform admins can preview the shipped templates here:
-
-- `/[locale]/dashboard/admin/industry-fields`
-
-The panel is read-only and exists to make the shipped defaults transparent.
+- `/[locale]/dashboard/admin/industry-fields` — section templates (Other shows “no defaults”)
 
 ## Estimates feature
 
-Section templates and rules feed **both**:
-
-1. **Draft generation** — background job after an estimate request is submitted ([`estimate-ai.md`](../architecture/estimate-ai.md)).
-2. **Agentic edit** — AI assistant in the estimate view/edit screen ([`estimates.md`](estimates.md)).
-
-Industry-specific role, scope checklist, and **scope expansion** rules live separately in [`industry-ai-profiles.md`](industry-ai-profiles.md).
-
-On the estimate editor, a **rules applied** indicator is shown when active rules or sections affect prompts. Clicking it opens workspace settings → Rules tab (`?tab=rules`).
-
+Section templates feed draft generation and the estimate agent. Industry-specific profiles apply to construction trades; services use `SERVICE_ESTIMATION_PRINCIPLES` and Commercial Section rules.

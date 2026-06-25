@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { INDUSTRY_ESTIMATE_SECTION_TEMPLATES } from "@/features/workspaces/config/industry-estimate-sections";
+import { getIndustryEstimateSectionTemplate } from "@/features/workspaces/config/industry-estimate-sections";
 import { FIELD_CATALOG_INDUSTRIES } from "@/features/workspaces/lib/industries";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
@@ -34,7 +34,7 @@ export function IndustryEstimateSectionsAdminPanel({
   const tIndustries = useTranslations("admin.industryFields.industries");
   const [industry, setIndustry] = useState(initialIndustry);
 
-  const sections = INDUSTRY_ESTIMATE_SECTION_TEMPLATES[industry];
+  const sections = getIndustryEstimateSectionTemplate(industry);
 
   return (
     <div className="space-y-4 rounded-xl border border-border/60 bg-muted/20 p-5">
@@ -63,38 +63,44 @@ export function IndustryEstimateSectionsAdminPanel({
         </select>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-border/50 bg-card">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-12">#</TableHead>
-              <TableHead>{t("table.key")}</TableHead>
-              <TableHead>{t("table.titlePl")}</TableHead>
-              <TableHead>{t("table.titleEn")}</TableHead>
-              <TableHead className="min-w-[220px]">{t("table.rulePl")}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sections.map((section, index) => (
-              <TableRow key={section.key}>
-                <TableCell className="tabular-nums text-muted-foreground">
-                  {index + 1}
-                </TableCell>
-                <TableCell>
-                  <Badge variant="outline" className="font-mono text-xs">
-                    {section.key}
-                  </Badge>
-                </TableCell>
-                <TableCell>{section.title.pl}</TableCell>
-                <TableCell>{section.title.en}</TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {section.defaultRule.pl}
-                </TableCell>
+      {sections ? (
+        <div className="overflow-x-auto rounded-lg border border-border/50 bg-card">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-12">#</TableHead>
+                <TableHead>{t("table.key")}</TableHead>
+                <TableHead>{t("table.titlePl")}</TableHead>
+                <TableHead>{t("table.titleEn")}</TableHead>
+                <TableHead className="min-w-[220px]">{t("table.rulePl")}</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            </TableHeader>
+            <TableBody>
+              {sections.map((section, index) => (
+                <TableRow key={section.key}>
+                  <TableCell className="tabular-nums text-muted-foreground">
+                    {index + 1}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="font-mono text-xs">
+                      {section.key}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{section.title.pl}</TableCell>
+                  <TableCell>{section.title.en}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {section.defaultRule.pl}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      ) : (
+        <p className="rounded-lg border border-dashed border-border/60 bg-card px-4 py-6 text-sm text-muted-foreground">
+          {t("otherNoDefaults")}
+        </p>
+      )}
     </div>
   );
 }

@@ -5,39 +5,15 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const servicesDir = join(__dirname, "..", "services");
 
-const DEFAULT_SECTIONS = [
-  {
-    key: "scope",
-    titlePl: "Zakres",
-    titleEn: "Scope",
-    rulePl: "Opcjonalnie 1–2 krótkie pozycje podsumowujące zakres i wyłączenia (unitPrice może być 0). Wszystkie wyceniane usługi umieszczaj jako osobne pozycje w sekcji Usługi (jednostka, ilość, cena).",
-    ruleEn: "Optionally 1–2 short line items summarizing scope and exclusions (unitPrice may be 0). Put all priced services as separate line items in the Services section (unit, quantity, price).",
-    active: true,
-  },
-  {
-    key: "services",
-    titlePl: "Usługi",
-    titleEn: "Services",
-    rulePl: "Główne usługi z jednostkami (h, szt., pakiet) i realistycznym nakładem.",
-    ruleEn: "Core services with units (h, pcs, package) and realistic allowances.",
-    active: true,
-  },
-  {
-    key: "add_ons",
-    titlePl: "Opcje dodatkowe",
-    titleEn: "Add-ons",
-    rulePl: "Opcjonalne rozszerzenia poza zakresem podstawowym.",
-    ruleEn: "Optional extensions beyond the base scope.",
-    active: true,
-  },
-  {
-    key: "notes",
-    titlePl: "Uwagi",
-    titleEn: "Notes",
-    rulePl: "Warunki, wyłączenia i koszty poza głównym zakresem. Przy wyłączeniach nie powtarzaj nazwy wykluczonej usługi w tytule pozycji.",
-    ruleEn: "Terms, exclusions, and additional costs. Do not repeat excluded service names in line item titles.",
-    active: true,
-  },
+const OTHER_V2_FORBIDDEN_SECTIONS = [
+  "Zakres",
+  "Uwagi",
+  "Opis",
+  "Oferta",
+  "Kosztorys",
+  "Wycena",
+  "Łazienka",
+  "Prace rozbiórkowe",
 ];
 
 type ScenarioDef = {
@@ -54,16 +30,30 @@ function businessScenario(
     aiInstructions?: string;
     rules?: Array<{ title: string; content: string }>;
     description: string;
-    mustHave: string[];
+    mustHave?: Array<string | { term: string; scope?: "any_item" | "any_section" | "section_title" }>;
     mustNotHave?: string[];
     coverageTerms: string[];
     critical?: boolean;
     quick?: boolean;
     referenceEstimate?: Record<string, unknown>;
     voiceIntake?: { transcript: string; locale: string } | null;
-    estimateSections?: typeof DEFAULT_SECTIONS;
+    estimateSections?: Array<Record<string, unknown>>;
+    minimumDistinctSections?: number;
+    minLineItems?: number;
   },
 ): ScenarioDef {
+  const workspace: Record<string, unknown> = {
+    industry: "OTHER",
+    industryOtherText: opts.industryOtherText,
+    companyDescription: opts.companyDescription,
+    aiInstructions: opts.aiInstructions ?? "",
+    rules: opts.rules ?? [],
+    systemRules: { rounding: true, units: true },
+  };
+  if (opts.estimateSections) {
+    workspace.estimateSections = opts.estimateSections;
+  }
+
   return {
     file: `${id}.json`,
     data: {
@@ -73,15 +63,7 @@ function businessScenario(
       category: "business",
       quick: opts.quick ?? false,
       critical: opts.critical ?? false,
-      workspace: {
-        industry: "OTHER",
-        industryOtherText: opts.industryOtherText,
-        companyDescription: opts.companyDescription,
-        aiInstructions: opts.aiInstructions ?? "",
-        estimateSections: opts.estimateSections ?? DEFAULT_SECTIONS,
-        rules: opts.rules ?? [],
-        systemRules: { rounding: true, units: true },
-      },
+      workspace,
       request: {
         customer: {
           fullName: "Anna Kowalska",
@@ -97,14 +79,21 @@ function businessScenario(
       voiceIntake: opts.voiceIntake ?? null,
       referenceEstimate: opts.referenceEstimate,
       expectations: {
-        mustHave: opts.mustHave.map((term) => ({ term, scope: "any_item" })),
+        mustHave: opts.mustHave.map((entry) =>
+          typeof entry === "string"
+            ? { term: entry, scope: "any_item" as const }
+            : { term: entry.term, scope: entry.scope ?? ("any_item" as const) },
+        ),
         mustNotHave: (opts.mustNotHave ?? []).map((term) => ({ term, scope: "any_item" })),
         coverageTerms: opts.coverageTerms,
-        requiredSections: ["Zakres", "Usługi"],
-        forbiddenSections: ["Łazienka", "Prace rozbiórkowe"],
+        requiredSections: [],
+        forbiddenSections: OTHER_V2_FORBIDDEN_SECTIONS,
+        ...(opts.minimumDistinctSections != null
+          ? { minimumDistinctSections: opts.minimumDistinctSections }
+          : {}),
         leakageDomain: "construction",
         maxLeakageTerms: 0,
-        minLineItems: 4,
+        minLineItems: opts.minLineItems ?? 4,
         maxLineItems: 35,
         judge: {
           focus: [
@@ -159,8 +148,8 @@ function genericScenario(
         mustHave: (opts.mustHave ?? []).map((term) => ({ term, scope: "any_item" })),
         mustNotHave: baseMustNot.map((term) => ({ term, scope: "any_item" })),
         coverageTerms: opts.coverageTerms ?? [],
-        requiredSections: ["Usługi"],
-        forbiddenSections: ["Łazienka"],
+        requiredSections: [],
+        forbiddenSections: OTHER_V2_FORBIDDEN_SECTIONS,
         leakageDomain: "construction",
         maxLeakageTerms: opts.maxLeakageTerms ?? 1,
         minLineItems: opts.minLineItems ?? 3,
@@ -238,7 +227,7 @@ const scenarios: ScenarioDef[] = [
   businessScenario("wedding-planner", "Wedding Planner", {
     industryOtherText: "Organizacja wesel i koordynacja wydarzeń",
     companyDescription:
-      "Studio planowania wesel premium. Koordynujemy harmonogram, dostawców i dzień ślubu. Nie świadczymy cateringu, transportu ani fotografii.",
+      "Studio planowania wesel premium. Koordynujemy harmonogram, dostawców, dekorację sali z podwykonawcami i dzień ślubu. Nie świadczymy cateringu, transportu ani fotografii.",
     aiInstructions:
       "Wydziel konsultację wstępną i koordynację dnia ślubu jako osobne pozycje. Ceny w pakietach godzinowych.",
     rules: [
@@ -258,19 +247,33 @@ const scenarios: ScenarioDef[] = [
     referenceEstimate: {
       sections: [
         {
-          title: "Zakres",
+          title: "Konsultacja wstępna",
           sortOrder: 0,
           items: [
-            { name: "Konsultacja wstępna i planowanie", unit: "h", quantity: 4, unitPrice: 200, vatRate: 0.23, sortOrder: 0 },
-            { name: "Przygotowanie harmonogramu wesela", unit: "pakiet", quantity: 1, unitPrice: 800, vatRate: 0.23, sortOrder: 1 },
+            { name: "Spotkanie konsultacyjne", unit: "h", quantity: 2, unitPrice: 200, vatRate: 0.23, sortOrder: 0 },
           ],
         },
         {
-          title: "Usługi",
+          title: "Koordynacja dnia ślubu",
           sortOrder: 1,
           items: [
-            { name: "Koordynacja dnia ślubu", unit: "h", quantity: 12, unitPrice: 250, vatRate: 0.23, sortOrder: 0 },
-            { name: "Spotkania z dostawcami", unit: "h", quantity: 6, unitPrice: 200, vatRate: 0.23, sortOrder: 1 },
+            { name: "Koordynacja dnia ślubu", unit: "h", quantity: 10, unitPrice: 150, vatRate: 0.23, sortOrder: 0 },
+          ],
+        },
+        {
+          title: "Harmonogram i spotkania z podwykonawcami",
+          sortOrder: 2,
+          items: [
+            { name: "Przygotowanie harmonogramu", unit: "szt.", quantity: 1, unitPrice: 500, vatRate: 0.23, sortOrder: 0 },
+            { name: "Spotkania z podwykonawcami", unit: "h", quantity: 5, unitPrice: 100, vatRate: 0.23, sortOrder: 1 },
+          ],
+        },
+        {
+          title: "Dekoracja sali",
+          sortOrder: 3,
+          items: [
+            { name: "Projekt dekoracji", unit: "szt.", quantity: 1, unitPrice: 800, vatRate: 0.23, sortOrder: 0 },
+            { name: "Koordynacja dekoracji", unit: "h", quantity: 8, unitPrice: 120, vatRate: 0.23, sortOrder: 1 },
           ],
         },
       ],
@@ -280,7 +283,9 @@ const scenarios: ScenarioDef[] = [
   businessScenario("accounting-office", "Accounting Office", {
     industryOtherText: "Biuro rachunkowe",
     companyDescription:
-      "Biuro rachunkowe obsługujące JDG i małe spółki. Prowadzimy KPiR i pełną księgowość. Nie świadczymy doradztwa prawnego.",
+      "Biuro rachunkowe obsługujące JDG i małe spółki. Prowadzimy KPiR, księgowanie faktur i rozliczenia ZUS. Oferujemy krótkie konsultacje księgowe. Nie świadczymy doradztwa prawnego.",
+    aiInstructions:
+      "Wyceniaj comiesięczną obsługę jako pozycje z jednostką «miesiąc» i quantity 1. Uwzględnij obsługę faktur kosztowych.",
     description:
       "Jednoosobowa działalność gastronomiczna, 40 faktur miesięcznie, KPiR, potrzebuję comiesięcznej obsługi księgowej i rozliczeń ZUS.",
     mustHave: ["księgow", "KPiR", "ZUS"],
@@ -288,14 +293,16 @@ const scenarios: ScenarioDef[] = [
     coverageTerms: ["KPiR", "ZUS", "faktur", "księgow"],
     critical: true,
     quick: true,
+    minLineItems: 3,
     referenceEstimate: {
       sections: [
         {
-          title: "Usługi",
+          title: "Obsługa księgowa",
           sortOrder: 0,
           items: [
-            { name: "Prowadzenie KPiR", unit: "mies.", quantity: 12, unitPrice: 400, vatRate: 0.23, sortOrder: 0 },
-            { name: "Rozliczenia ZUS", unit: "mies.", quantity: 12, unitPrice: 150, vatRate: 0.23, sortOrder: 1 },
+            { name: "Prowadzenie KPiR", unit: "miesiąc", quantity: 1, unitPrice: 500, vatRate: 0.23, sortOrder: 0 },
+            { name: "Rozliczenia ZUS", unit: "miesiąc", quantity: 1, unitPrice: 150, vatRate: 0.23, sortOrder: 1 },
+            { name: "Księgowanie faktur kosztowych", unit: "miesiąc", quantity: 1, unitPrice: 200, vatRate: 0.23, sortOrder: 2 },
           ],
         },
       ],
@@ -318,18 +325,34 @@ const scenarios: ScenarioDef[] = [
       "Agencja marketingowa B2B — strategia, content, kampanie. Nie produkujemy oprogramowania ani nie wykonujemy remontów biur.",
     description:
       "Kampania wprowadzenia nowego produktu SaaS na rynek polski, 3 miesiące, budżet mediowy po stronie klienta, potrzebuję strategii i kreacji.",
-    mustHave: ["strateg", "kampan"],
+    mustHave: ["strateg", { term: "kampan", scope: "any_section" }],
     mustNotHave: ["programowanie", "remont"],
     coverageTerms: ["strategia", "kampania", "kreacja"],
     critical: true,
     referenceEstimate: {
       sections: [
         {
-          title: "Usługi",
+          title: "Strategia Kampanii",
           sortOrder: 0,
           items: [
-            { name: "Strategia wprowadzenia produktu", unit: "pakiet", quantity: 1, unitPrice: 12000, vatRate: 0.23, sortOrder: 0 },
-            { name: "Kreacja kampanii", unit: "pakiet", quantity: 1, unitPrice: 8000, vatRate: 0.23, sortOrder: 1 },
+            { name: "Opracowanie strategii marketingowej", unit: "kpl.", quantity: 1, unitPrice: 5000, vatRate: 0.23, sortOrder: 0 },
+            { name: "Analiza rynku i konkurencji", unit: "kpl.", quantity: 1, unitPrice: 3000, vatRate: 0.23, sortOrder: 1 },
+          ],
+        },
+        {
+          title: "Kreacja Kampanii",
+          sortOrder: 1,
+          items: [
+            { name: "Projektowanie graficzne materiałów promocyjnych", unit: "kpl.", quantity: 1, unitPrice: 4000, vatRate: 0.23, sortOrder: 0 },
+            { name: "Tworzenie treści reklamowych", unit: "kpl.", quantity: 1, unitPrice: 3500, vatRate: 0.23, sortOrder: 1 },
+          ],
+        },
+        {
+          title: "Zarządzanie Kampanią",
+          sortOrder: 2,
+          items: [
+            { name: "Koordynacja działań marketingowych", unit: "miesiąc", quantity: 3, unitPrice: 2000, vatRate: 0.23, sortOrder: 0 },
+            { name: "Raportowanie i analiza wyników", unit: "miesiąc", quantity: 3, unitPrice: 1500, vatRate: 0.23, sortOrder: 1 },
           ],
         },
       ],
@@ -343,19 +366,29 @@ const scenarios: ScenarioDef[] = [
     aiInstructions: "Nie wyceniaj programowania ani wdrożenia — tylko doradztwo i dokumentacja.",
     description:
       "Audyt architektury systemu ERP przed migracją do chmury, 80 użytkowników, warsztaty z zespołem IT klienta.",
-    mustHave: ["audyt", "architektur", "warsztat"],
+    mustHave: [{ term: "audyt", scope: "any_section" }, "architektur", "warsztat"],
     mustNotHave: ["programowanie", "wdrożenie", "kod"],
     coverageTerms: ["audyt", "architektura", "warsztat"],
     critical: true,
     quick: true,
+    minimumDistinctSections: 2,
     referenceEstimate: {
       sections: [
         {
-          title: "Usługi",
+          title: "Audyt architektury systemu ERP",
           sortOrder: 0,
           items: [
-            { name: "Audyt architektury systemu", unit: "pakiet", quantity: 1, unitPrice: 15000, vatRate: 0.23, sortOrder: 0 },
-            { name: "Warsztaty z zespołem IT", unit: "h", quantity: 16, unitPrice: 350, vatRate: 0.23, sortOrder: 1 },
+            { name: "Przegląd dokumentacji systemu", unit: "h", quantity: 20, unitPrice: 200, vatRate: 0.23, sortOrder: 0 },
+            { name: "Analiza obecnej architektury", unit: "h", quantity: 30, unitPrice: 200, vatRate: 0.23, sortOrder: 1 },
+            { name: "Raport z rekomendacjami", unit: "szt.", quantity: 1, unitPrice: 1000, vatRate: 0.23, sortOrder: 2 },
+          ],
+        },
+        {
+          title: "Warsztaty z zespołem IT",
+          sortOrder: 1,
+          items: [
+            { name: "Przygotowanie materiałów szkoleniowych", unit: "h", quantity: 10, unitPrice: 150, vatRate: 0.23, sortOrder: 0 },
+            { name: "Przeprowadzenie warsztatów", unit: "h", quantity: 16, unitPrice: 250, vatRate: 0.23, sortOrder: 1 },
           ],
         },
       ],
@@ -513,8 +546,8 @@ const edgeAndStress: ScenarioDef[] = [
         mustHave: [{ term: "koordynac", scope: "any_item" }],
         mustNotHave: [{ term: "catering", scope: "any_item" }],
         coverageTerms: ["koordynacja", "harmonogram"],
-        requiredSections: ["Zakres", "Usługi"],
-        forbiddenSections: ["Łazienka"],
+        requiredSections: [],
+        forbiddenSections: OTHER_V2_FORBIDDEN_SECTIONS,
         leakageDomain: "construction",
         maxLeakageTerms: 0,
         minLineItems: 3,
@@ -549,8 +582,8 @@ const edgeAndStress: ScenarioDef[] = [
         mustHave: [{ term: "koordynac", scope: "any_item" }],
         mustNotHave: [{ term: "catering", scope: "any_item" }],
         coverageTerms: ["koordynacja"],
-        requiredSections: ["Usługi"],
-        forbiddenSections: [],
+        requiredSections: [],
+        forbiddenSections: OTHER_V2_FORBIDDEN_SECTIONS,
         leakageDomain: "construction",
         maxLeakageTerms: 0,
         minLineItems: 3,
@@ -578,8 +611,8 @@ const edgeAndStress: ScenarioDef[] = [
         mustHave: [],
         mustNotHave: [],
         coverageTerms: ["wesel"],
-        requiredSections: ["Usługi"],
-        forbiddenSections: [],
+        requiredSections: [],
+        forbiddenSections: OTHER_V2_FORBIDDEN_SECTIONS,
         leakageDomain: "construction",
         maxLeakageTerms: 1,
         minLineItems: 3,
@@ -612,8 +645,8 @@ const edgeAndStress: ScenarioDef[] = [
         ],
         mustNotHave: [{ term: "catering", scope: "any_item" }],
         coverageTerms: ["koordynacja", "harmonogram", "kościół"],
-        requiredSections: ["Usługi"],
-        forbiddenSections: [],
+        requiredSections: [],
+        forbiddenSections: OTHER_V2_FORBIDDEN_SECTIONS,
         leakageDomain: "construction",
         maxLeakageTerms: 0,
         minLineItems: 4,
@@ -657,7 +690,7 @@ const edgeAndStress: ScenarioDef[] = [
         mustNotHave: [{ term: "remont", scope: "any_item" }],
         coverageTerms: ["strategia", "kampania", "kreacja"],
         requiredSections: [],
-        forbiddenSections: ["Łazienka"],
+        forbiddenSections: OTHER_V2_FORBIDDEN_SECTIONS,
         leakageDomain: "construction",
         maxLeakageTerms: 0,
         minLineItems: 4,
@@ -692,8 +725,8 @@ const edgeAndStress: ScenarioDef[] = [
         mustHave: [{ term: "koordynac", scope: "any_item" }],
         mustNotHave: [{ term: "catering", scope: "any_item" }],
         coverageTerms: ["koordynacja", "harmonogram"],
-        requiredSections: ["Usługi"],
-        forbiddenSections: [],
+        requiredSections: [],
+        forbiddenSections: OTHER_V2_FORBIDDEN_SECTIONS,
         leakageDomain: "construction",
         maxLeakageTerms: 0,
         minLineItems: 3,

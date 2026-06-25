@@ -1,5 +1,7 @@
 import { resolveIndustryAiProfileForPrompt } from "@/ai/config/industry-ai-profiles";
 import {
+  formatDynamicEstimateStructureBlock,
+  formatDynamicSectionNamingRulesBlock,
   formatEstimateCompletenessBlock,
   formatEstimationPrinciplesBlock,
   formatIndustryRoleBlock,
@@ -26,7 +28,7 @@ import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 
 /** Bump when prompt blocks, role, or output rules change (eval harness tracks this). */
-export const ESTIMATE_PROMPT_VERSION = "1.4.0";
+export const ESTIMATE_PROMPT_VERSION = "2.0.0";
 
 export interface EstimateDraftPromptInput {
   projectBrief: string;
@@ -44,6 +46,8 @@ export function buildEstimateDraftPrompt(input: EstimateDraftPromptInput): strin
     rule: s.rule,
   }));
 
+  const isDynamicStructure = input.context.sectionStructureMode === "ai_dynamic";
+
   if (isServiceWorkspace(input.context.industry)) {
     const servicePrinciples = SERVICE_ESTIMATION_PRINCIPLES[locale];
     const blocks = [
@@ -51,15 +55,18 @@ export function buildEstimateDraftPrompt(input: EstimateDraftPromptInput): strin
       formatCompanyContextBlock(input.context.companyDescription),
       formatGeneralAiInstructionsBlock(input.context.aiInstructions),
       buildWorkspacePromptFromRules(input.context.rules),
-      formatEstimateStructureBlock(estimateSections),
-      formatSectionRulesBlock(estimateSections),
+      isDynamicStructure
+        ? formatDynamicEstimateStructureBlock(lang)
+        : formatEstimateStructureBlock(estimateSections),
+      isDynamicStructure ? null : formatSectionRulesBlock(estimateSections),
+      isDynamicStructure ? formatDynamicSectionNamingRulesBlock(lang) : null,
       formatBusinessTypeBlock(input.context.industryOtherText),
       input.context.templatePromptBlock,
       input.context.priceListPromptBlock,
       `## Project Brief\n${input.projectBrief.trim()}`,
       formatEstimationPrinciplesBlock(servicePrinciples),
       formatServiceEstimateCompletenessBlock(lang),
-      formatServiceOutputRulesBlock(lang),
+      formatServiceOutputRulesBlock(lang, { dynamicStructure: isDynamicStructure }),
     ];
 
     return blocks.filter(Boolean).join("\n\n");

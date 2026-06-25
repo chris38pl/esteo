@@ -31,6 +31,9 @@ interface EstimateTemplateDetailHeaderProps {
   isDefault: boolean;
   isNew: boolean;
   autosaveStatus: TemplateAutoSaveStatus;
+  pendingAiSave?: boolean;
+  onSaveTemplate?: () => void | Promise<void>;
+  isSavingTemplate?: boolean;
   readOnly: boolean;
   locale: Locale;
   workspaceId: string;
@@ -40,10 +43,38 @@ interface EstimateTemplateDetailHeaderProps {
   sectionCount: number;
   itemCount: number;
   onMetadataSave: (payload: { name: string; description: string }) => void | Promise<void>;
+  isKpiLoading?: boolean;
 }
 
 const templateControlButtonClass = "h-10 rounded-md px-4";
 const kpiCellClass = "flex items-center gap-5 py-4 pr-4 pl-6";
+const kpiValueClass = "min-h-8 text-2xl font-semibold tabular-nums leading-8";
+const kpiUpdatedValueClass = "min-h-8 text-lg font-semibold tabular-nums leading-8";
+
+function TemplateKpiSkeletonCell() {
+  return (
+    <div className={kpiCellClass} aria-hidden>
+      <div className="size-5 shrink-0 animate-pulse rounded-md bg-foreground/10 dark:bg-muted" />
+      <div className="min-w-0 flex-1 space-y-2">
+        <div className="h-3 w-16 animate-pulse rounded bg-foreground/10 dark:bg-muted" />
+        <div className="h-8 w-12 animate-pulse rounded bg-foreground/10 dark:bg-muted/60" />
+      </div>
+    </div>
+  );
+}
+
+function TemplateMetadataSkeleton() {
+  return (
+    <div className="min-w-0 flex-1" aria-hidden>
+      <div className="min-h-8">
+        <div className="h-8 w-56 max-w-full animate-pulse rounded bg-foreground/10 dark:bg-muted" />
+      </div>
+      <div className="mt-2 min-h-5">
+        <div className="h-4 w-72 max-w-full animate-pulse rounded bg-foreground/10 dark:bg-muted/60" />
+      </div>
+    </div>
+  );
+}
 
 function statusBadgeClass(status: TemplateAutoSaveStatus): string {
   switch (status) {
@@ -64,6 +95,9 @@ export function EstimateTemplateDetailHeader({
   isDefault,
   isNew,
   autosaveStatus,
+  pendingAiSave = false,
+  onSaveTemplate,
+  isSavingTemplate = false,
   readOnly,
   locale,
   workspaceId,
@@ -73,6 +107,7 @@ export function EstimateTemplateDetailHeader({
   sectionCount,
   itemCount,
   onMetadataSave,
+  isKpiLoading = false,
 }: EstimateTemplateDetailHeaderProps) {
   const t = useTranslations("workspaces.configuration.templates");
   const tEditor = useTranslations("workspaces.configuration.templates.editor");
@@ -81,8 +116,9 @@ export function EstimateTemplateDetailHeader({
   const router = useRouter();
   const [metadataOpen, setMetadataOpen] = useState(false);
 
-  const statusLabel =
-    autosaveStatus === "saving"
+  const statusLabel = pendingAiSave
+    ? tEditor("unsavedAiDraft")
+    : autosaveStatus === "saving"
       ? tEditor("saving")
       : autosaveStatus === "saved"
         ? tEditor("saved")
@@ -106,14 +142,27 @@ export function EstimateTemplateDetailHeader({
     <Badge
       variant="outline"
       className={cn(
-        "inline-flex h-10 shrink-0 items-center gap-1.5 rounded-md border-border/60 px-3 text-xs font-medium",
+        "inline-flex h-10 shrink-0 items-center gap-1.5 rounded-md border-border/60 px-3 text-sm font-medium",
         statusBadgeClass(autosaveStatus),
       )}
     >
-      {autosaveStatus === "saving" ? <Loader2 className="size-3 shrink-0 animate-spin" /> : null}
+      {autosaveStatus === "saving" ? <Loader2 className="size-4 shrink-0 animate-spin" /> : null}
       <span className="whitespace-nowrap">{statusLabel}</span>
     </Badge>
   );
+
+  const saveTemplateButton =
+    pendingAiSave && onSaveTemplate ? (
+      <Button
+        type="button"
+        className={cn(templateControlButtonClass, "gap-2")}
+        disabled={readOnly || isSavingTemplate}
+        onClick={() => void onSaveTemplate()}
+      >
+        {isSavingTemplate ? <Loader2 className="size-4 animate-spin" /> : null}
+        {tEditor("saveTemplate")}
+      </Button>
+    ) : null;
 
   const editButton = (
     <Button
@@ -209,29 +258,34 @@ export function EstimateTemplateDetailHeader({
     <>
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0 flex-1">
-            <div className="flex min-w-0 flex-wrap items-center gap-2">
-              <h1 className="truncate text-2xl font-semibold tracking-tight text-foreground">
-                {name.trim() || tEditor("namePlaceholder")}
-              </h1>
-              {isDefault ? (
-                <Badge
-                  className={cn(
-                    "inline-flex h-10 items-center rounded-md px-3 text-[10px] font-semibold uppercase tracking-wide",
-                    templateDefaultBadgeColors,
-                  )}
-                >
-                  {t("defaultBadge")}
-                </Badge>
-              ) : null}
+          {isKpiLoading ? (
+            <TemplateMetadataSkeleton />
+          ) : (
+            <div className="min-w-0 flex-1">
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
+                <h1 className="min-h-8 truncate text-2xl font-semibold leading-8 tracking-tight text-foreground">
+                  {name.trim() || tEditor("namePlaceholder")}
+                </h1>
+                {isDefault ? (
+                  <Badge
+                    className={cn(
+                      "inline-flex h-10 items-center rounded-md px-3 text-[10px] font-semibold uppercase tracking-wide",
+                      templateDefaultBadgeColors,
+                    )}
+                  >
+                    {t("defaultBadge")}
+                  </Badge>
+                ) : null}
+              </div>
+              <p className="mt-2 min-h-5 text-sm leading-relaxed text-muted-foreground">
+                {description.trim() || tWorkspace("noDescription")}
+              </p>
             </div>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              {description.trim() || tWorkspace("noDescription")}
-            </p>
-          </div>
+          )}
 
           <div className="hidden shrink-0 items-center gap-2 sm:flex">
             {autosaveBadge}
+            {saveTemplateButton}
             {editButton}
             {menuButton}
           </div>
@@ -240,6 +294,7 @@ export function EstimateTemplateDetailHeader({
         <div className="flex items-center justify-between gap-2 sm:hidden">
           {autosaveBadge}
           <div className="flex shrink-0 items-center gap-2">
+            {saveTemplateButton}
             {editButton}
             {menuButton}
           </div>
@@ -247,27 +302,37 @@ export function EstimateTemplateDetailHeader({
 
         <div className="mt-6 mb-6 overflow-hidden rounded-lg border border-border/70">
           <div className="grid divide-y divide-border/60 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-            <div className={kpiCellClass}>
-              <Layers className="size-5 shrink-0 text-primary" />
-              <div>
-                <p className="text-xs text-muted-foreground">{tWorkspace("kpiSections")}</p>
-                <p className="text-2xl font-semibold tabular-nums">{sectionCount}</p>
-              </div>
-            </div>
-            <div className={kpiCellClass}>
-              <LayoutGrid className="size-5 shrink-0 text-primary" />
-              <div>
-                <p className="text-xs text-muted-foreground">{tWorkspace("kpiItems")}</p>
-                <p className="text-2xl font-semibold tabular-nums">{itemCount}</p>
-              </div>
-            </div>
-            <div className={kpiCellClass}>
-              <Clock className="size-5 shrink-0 text-primary" />
-              <div>
-                <p className="text-xs text-muted-foreground">{tWorkspace("kpiUpdated")}</p>
-                <p className="text-lg font-semibold tabular-nums">{formattedUpdatedAt ?? "—"}</p>
-              </div>
-            </div>
+            {isKpiLoading ? (
+              <>
+                <TemplateKpiSkeletonCell />
+                <TemplateKpiSkeletonCell />
+                <TemplateKpiSkeletonCell />
+              </>
+            ) : (
+              <>
+                <div className={kpiCellClass}>
+                  <Layers className="size-5 shrink-0 text-primary" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">{tWorkspace("kpiSections")}</p>
+                    <p className={kpiValueClass}>{sectionCount}</p>
+                  </div>
+                </div>
+                <div className={kpiCellClass}>
+                  <LayoutGrid className="size-5 shrink-0 text-primary" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">{tWorkspace("kpiItems")}</p>
+                    <p className={kpiValueClass}>{itemCount}</p>
+                  </div>
+                </div>
+                <div className={kpiCellClass}>
+                  <Clock className="size-5 shrink-0 text-primary" />
+                  <div>
+                    <p className="text-xs text-muted-foreground">{tWorkspace("kpiUpdated")}</p>
+                    <p className={kpiUpdatedValueClass}>{formattedUpdatedAt ?? "—"}</p>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

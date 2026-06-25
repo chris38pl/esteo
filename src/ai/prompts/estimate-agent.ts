@@ -12,6 +12,8 @@ import {
   formatRecommendedStrategyBlock,
 } from "@/ai/lib/format-estimate-agent-prompt-blocks";
 import {
+  formatDynamicEstimateStructureBlock,
+  formatDynamicSectionNamingRulesBlock,
   formatEstimationPrinciplesBlock,
   formatIndustryRoleBlock,
   formatScopeExpansionRulesBlock,
@@ -51,13 +53,18 @@ function buildServicesAgentContextBlock(context: EstimateGenerationContext): str
     title: s.title,
     rule: s.rule,
   }));
+  const lang = context.locale === "en" ? "en" : "pl";
+  const isDynamicStructure = context.sectionStructureMode === "ai_dynamic";
 
   return [
     formatCompanyContextBlock(context.companyDescription),
     formatGeneralAiInstructionsBlock(context.aiInstructions),
     buildWorkspacePromptFromRules(context.rules),
-    formatEstimateStructureBlock(estimateSections),
-    formatSectionRulesBlock(estimateSections),
+    isDynamicStructure
+      ? formatDynamicEstimateStructureBlock(lang)
+      : formatEstimateStructureBlock(estimateSections),
+    isDynamicStructure ? null : formatSectionRulesBlock(estimateSections),
+    isDynamicStructure ? formatDynamicSectionNamingRulesBlock(lang) : null,
     formatBusinessTypeBlock(context.industryOtherText),
   ]
     .filter(Boolean)
@@ -93,6 +100,8 @@ export function buildEstimateAgentPrompt(input: EstimateAgentPromptInput): strin
     `## Response locale\nUser interface locale: ${locale === "pl" ? "Polish (pl)" : "English (en)"}. All reasoning and labels must match this locale.`,
     industryBlock,
     contextBlock,
+    input.context.templatePromptBlock,
+    input.context.priceListPromptBlock,
     formatFinancialSnapshotBlock(input.agentContext),
     formatEditIntentBlock(input.guidance.intent),
     formatFinancialTargetBlock(input.guidance),

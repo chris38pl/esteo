@@ -1,4 +1,4 @@
-import { AttachmentUploadSource } from "@prisma/client";
+import { WorkspaceIndustry, AttachmentUploadSource } from "@prisma/client";
 import { task, logger } from "@trigger.dev/sdk";
 
 import { prisma } from "@/db/client";
@@ -16,6 +16,11 @@ import {
   promoteRequestAttachmentsToEstimate,
 } from "@/features/attachments/server/promote-request-attachments";
 import { loadEstimateGenerationContext } from "@/features/workspaces/lib/load-estimate-generation-context";
+import type { EstimateConfigurationSnapshot } from "@/features/workspaces/lib/configuration-snapshot";
+import {
+  buildOtherEstimateGenerationAnalyticsPayload,
+  trackOtherEstimateGeneration,
+} from "@/features/workspaces/lib/other-estimate-generation-analytics";
 import { notifyEstimateRequestOutcome } from "@/features/notifications/server/notification-emit-helpers";
 import { fireNotification } from "@/features/notifications/server/notification-workspace-context";
 import type { Locale } from "@/lib/locale";
@@ -29,6 +34,7 @@ interface GenerateEstimateDraftPayload {
   locale: string;
   templateId?: string | null;
   priceListId?: string | null;
+  configurationSnapshot?: EstimateConfigurationSnapshot;
   uploadSource?: AttachmentUploadSource;
   uploadedById?: string | null;
 }
@@ -237,6 +243,9 @@ export const generateEstimateDraftTask = task({
       const context = await loadEstimateGenerationContext(workspaceId, locale, {
         templateId: payload.templateId,
         priceListId: payload.priceListId,
+        ...(payload.configurationSnapshot !== undefined
+          ? { configurationSnapshot: payload.configurationSnapshot }
+          : {}),
       });
 
       if (!context) {
@@ -270,6 +279,7 @@ export const generateEstimateDraftTask = task({
       const titleValidation = validateGeneratedSectionTitles({
         generatedSections: draftOutput.sections,
         allowedSections: context.allowedSections,
+        dynamicSectionStructure: context.sectionStructureMode === "ai_dynamic",
       });
 
       if (!titleValidation.ok) {
@@ -285,10 +295,24 @@ export const generateEstimateDraftTask = task({
         });
       }
 
+      if (context.industry === WorkspaceIndustry.OTHER) {
+        trackOtherEstimateGeneration(
+          buildOtherEstimateGenerationAnalyticsPayload({
+            workspaceId,
+            estimateRequestId,
+            industryOtherText: context.industryOtherText,
+            sectionStructureMode: context.sectionStructureMode,
+            generatedSectionTitles: titleValidation.generatedTitles,
+            titleValidationWarnings: titleValidation.warnings,
+          }),
+        );
+      }
+
       logger.info("AI draft generated", {
         sectionCount: draftOutput.sections.length,
         suggestedMargin: draftOutput.suggestedMarginPercent,
         titleWarningCount: titleValidation.warnings.length,
+        sectionStructureMode: context.sectionStructureMode,
       });
 
       const sectionTitleValidationMeta = {
@@ -343,6 +367,7 @@ export const generateEstimateDraftTask = task({
               profileVersion: getIndustryProfileVersion(context.industry),
               sectionTitleValidation: sectionTitleValidationMeta,
               promptSectionCount: context.estimateSections.length,
+              sectionStructureMode: context.sectionStructureMode,
               configurationSnapshot: context.configurationSnapshot,
             },
           },

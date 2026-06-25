@@ -24,13 +24,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { WorkspaceEstimateSectionEditorDialog } from "@/features/workspaces/components/workspace-estimate-section-editor-dialog";
+import { hasIndustrySectionDefaults } from "@/features/workspaces/config/industry-estimate-sections";
 import {
   createCustomSectionKey,
   industryDefaultsToWorkspaceSections,
+  isAiDynamicSectionStructure,
   parseEstimateSectionsFromBranding,
   resolveEstimateSectionRule,
   resolveEstimateSectionTitle,
+  resolveWorkspaceEstimateSections,
 } from "@/features/workspaces/lib/resolve-estimate-sections";
+import { isServiceWorkspace } from "@/features/workspaces/lib/industries";
 import { WORKSPACE_ESTIMATE_SECTIONS_MAX_COUNT } from "@/features/workspaces/lib/workspace-section-limits";
 import type { WorkspaceBranding } from "@/features/workspaces/schemas/branding";
 import type { WorkspaceEstimateSection } from "@/features/workspaces/schemas/estimate-sections";
@@ -348,7 +352,7 @@ export function WorkspaceEstimateSectionsPanel({
   const router = useRouter();
   const [sections, setSections] = useState<WorkspaceEstimateSection[]>(() => {
     const persisted = parseEstimateSectionsFromBranding(initialBranding);
-    return persisted ?? industryDefaultsToWorkspaceSections(industry);
+    return resolveWorkspaceEstimateSections(industry, persisted);
   });
   const [error, setError] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -360,8 +364,15 @@ export function WorkspaceEstimateSectionsPanel({
 
   useEffect(() => {
     const persisted = parseEstimateSectionsFromBranding(initialBranding);
-    setSections(persisted ?? industryDefaultsToWorkspaceSections(industry));
+    setSections(resolveWorkspaceEstimateSections(industry, persisted));
   }, [initialBranding, industry]);
+
+  const persistedSections = useMemo(
+    () => parseEstimateSectionsFromBranding(initialBranding),
+    [initialBranding],
+  );
+
+  const isAiDynamic = isAiDynamicSectionStructure(industry, persistedSections);
 
   const defaultSectionKeys = useMemo(
     () =>
@@ -371,10 +382,7 @@ export function WorkspaceEstimateSectionsPanel({
     [industry],
   );
 
-  const hasCustomSections = useMemo(
-    () => parseEstimateSectionsFromBranding(initialBranding) !== null,
-    [initialBranding],
-  );
+  const hasCustomSections = persistedSections !== null;
 
   const displayRows = useMemo<SectionDisplayRow[]>(
     () =>
@@ -390,7 +398,13 @@ export function WorkspaceEstimateSectionsPanel({
   );
 
   const canAdd = sections.length < WORKSPACE_ESTIMATE_SECTIONS_MAX_COUNT;
-  const canRemove = sections.length > 1;
+  const canRemove = sections.length > 1 || (sections.length === 1 && hasIndustrySectionDefaults(industry));
+
+  const descriptionText = isAiDynamic && !hasCustomSections
+    ? t("descriptionOtherDynamic")
+    : hasCustomSections
+      ? t("descriptionCustomized", { industry: tIndustries(industry) })
+      : t("description", { industry: tIndustries(industry) });
 
   function clearDragState() {
     setDraggedIndex(null);
@@ -543,11 +557,7 @@ export function WorkspaceEstimateSectionsPanel({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1">
           <h2 className="text-lg font-semibold tracking-tight">{t("title")}</h2>
-          <p className="text-sm text-muted-foreground">
-            {t(hasCustomSections ? "descriptionCustomized" : "description", {
-              industry: tIndustries(industry),
-            })}
-          </p>
+          <p className="text-sm text-muted-foreground">{descriptionText}</p>
         </div>
         <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:justify-end sm:gap-2">
           <Button
@@ -570,7 +580,12 @@ export function WorkspaceEstimateSectionsPanel({
         </div>
       </div>
 
-      <TooltipProvider delayDuration={300}>
+      {displayRows.length === 0 ? (
+        <p className="mt-6 rounded-xl border border-dashed border-border/60 bg-muted/20 px-4 py-6 text-sm text-muted-foreground">
+          {isServiceWorkspace(industry) ? t("emptyStateAiDynamic") : t("emptyStateNoSections")}
+        </p>
+      ) : (
+        <TooltipProvider delayDuration={300}>
         <div className="mt-6 space-y-3 md:hidden">
           {displayRows.map((row) => (
             <EstimateSectionMobileCard
@@ -682,6 +697,7 @@ export function WorkspaceEstimateSectionsPanel({
           </Table>
         </div>
       </TooltipProvider>
+      )}
 
       <p className="mt-4 text-center text-xs text-muted-foreground">
         {t("sectionsLimitFooter", {

@@ -383,6 +383,7 @@
     "configPath": "Źródło: src/features/workspaces/config/industry-estimate-sections.ts",
     "industryLabel": "Branża",
     "otherIndustry": "Inna (ogólna)",
+    "otherNoDefaults": "Branża Inna nie definiuje domyślnych sekcji. AI projektuje strukturę sekcji handlowych dynamicznie (OTHER v2).",
     "table": {
       "key": "Klucz",
       "titlePl": "Tytuł (PL)",

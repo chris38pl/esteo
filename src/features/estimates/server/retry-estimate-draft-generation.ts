@@ -3,6 +3,7 @@ import { tasks } from "@trigger.dev/sdk";
 import { prisma } from "@/db/client";
 import { computeEstimateDraftRecoveryFlags } from "@/features/estimates/lib/estimate-generation-stale";
 import { assertVersionEditable } from "@/features/estimates/server/repository";
+import { resolveStoredConfigurationSnapshot } from "@/features/workspaces/lib/configuration-snapshot";
 import type { Locale } from "@/lib/locale";
 import type { generateEstimateDraftTask } from "@/trigger/generate-estimate-draft";
 
@@ -15,7 +16,9 @@ export async function retryEstimateDraftGeneration(input: {
 }): Promise<void> {
   const estimate = await prisma.estimate.findFirst({
     where: { id: input.estimateId, workspaceId: input.workspaceId, deletedAt: null },
-    include: {
+    select: {
+      id: true,
+      aiMetadata: true,
       estimateRequest: {
         select: { id: true, status: true, aiMetadata: true, updatedAt: true },
       },
@@ -71,11 +74,17 @@ export async function retryEstimateDraftGeneration(input: {
     },
   });
 
+  const configurationSnapshot = resolveStoredConfigurationSnapshot(
+    estimate.aiMetadata,
+    estimate.estimateRequest.aiMetadata,
+  );
+
   await tasks.trigger<typeof generateEstimateDraftTask>("generate-estimate-draft", {
     estimateRequestId: estimate.estimateRequest.id,
     estimateId: estimate.id,
     versionId: estimate.latestVersion.id,
     workspaceId: input.workspaceId,
     locale: input.locale,
+    ...(configurationSnapshot !== undefined ? { configurationSnapshot } : {}),
   });
 }

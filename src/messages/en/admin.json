@@ -383,6 +383,7 @@
     "configPath": "Source: src/features/workspaces/config/industry-estimate-sections.ts",
     "industryLabel": "Industry",
     "otherIndustry": "Other (generic)",
+    "otherNoDefaults": "The Other industry defines no default sections. AI proposes commercial section structure dynamically (OTHER v2).",
     "table": {
       "key": "Key",
       "titlePl": "Title (PL)",

@@ -3,6 +3,8 @@
     "configuration-template-plumbing-bathroom",
     "configuration-price-list-wc-exact",
     "configuration-price-list-painting-semantic",
-    "configuration-price-list-unit-mismatch-guard"
+    "configuration-price-list-unit-mismatch-guard",
+    "configuration-retry-snapshot",
+    "configuration-downgrade-free"
   ]
 }

@@ -91,7 +91,9 @@ type ConfigurationTab = "rules" | "templates" | "priceLists";
 type ConfigurationRoute =
   | { kind: "root" }
   | { kind: "templateNew" }
-  | { kind: "templateDetail"; id: string };
+  | { kind: "templateDetail"; id: string }
+  | { kind: "priceListNew" }
+  | { kind: "priceListDetail"; id: string };
 
 function parseConfigurationRoute(
   pathname: string,
@@ -116,6 +118,18 @@ function parseConfigurationRoute(
     const id = suffix.split("/")[0];
     if (id && id !== "new") {
       return { kind: "templateDetail", id };
+    }
+  }
+
+  if (pathname === `${base}/price-lists/new`) {
+    return { kind: "priceListNew" };
+  }
+
+  if (pathname.startsWith(`${base}/price-lists/`)) {
+    const suffix = pathname.slice(`${base}/price-lists/`.length);
+    const id = suffix.split("/")[0];
+    if (id && id !== "new") {
+      return { kind: "priceListDetail", id };
     }
   }
 
@@ -371,10 +385,14 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
   if (configurationRoute && workspaceSlug) {
     const configurationHref = `/${locale}/dashboard/${workspaceSlug}/configuration`;
     const templatesHref = `${configurationHref}?tab=templates`;
+    const priceListsHref = `${configurationHref}?tab=priceLists`;
 
     const isTemplateRoute =
       configurationRoute.kind === "templateNew" ||
       configurationRoute.kind === "templateDetail";
+    const isPriceListRoute =
+      configurationRoute.kind === "priceListNew" ||
+      configurationRoute.kind === "priceListDetail";
 
     crumbs.push({
       label: t("configuration"),
@@ -385,6 +403,11 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
       crumbs.push({
         label: t("configurationTemplates"),
         href: templatesHref,
+      });
+    } else if (isPriceListRoute) {
+      crumbs.push({
+        label: t("configurationPriceLists"),
+        href: priceListsHref,
       });
     } else if (configurationTab === "templates") {
       crumbs.push({ label: t("configurationTemplates") });
@@ -399,6 +422,14 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
         label: detailLabel?.trim() || t("configurationNewTemplate"),
       });
     } else if (configurationRoute.kind === "templateDetail") {
+      crumbs.push({
+        label: detailLabel?.trim() || configurationRoute.id,
+      });
+    } else if (configurationRoute.kind === "priceListNew") {
+      crumbs.push({
+        label: detailLabel?.trim() || t("configurationNewPriceList"),
+      });
+    } else if (configurationRoute.kind === "priceListDetail") {
       crumbs.push({
         label: detailLabel?.trim() || configurationRoute.id,
       });

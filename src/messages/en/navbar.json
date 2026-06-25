@@ -33,7 +33,8 @@
     "configurationTemplates": "Estimate templates",
     "configurationPriceLists": "Price lists",
     "configurationRules": "Rules",
-    "configurationNewTemplate": "New template"
+    "configurationNewTemplate": "New template",
+    "configurationNewPriceList": "New price list"
   },
   "notifications": {
     "label": "Notifications",
