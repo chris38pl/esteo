@@ -166,7 +166,6 @@ export function buildEstimatePdfHtml(
           validUntil: "Ważna do",
           provider: "DANE USŁUGODAWCY",
           client: "DANE KLIENTA",
-          investment: "INWESTYCJA",
           summary: "PODSUMOWANIE WYCENY",
           net: "Wartość netto",
           vat: "VAT",
@@ -210,7 +209,6 @@ export function buildEstimatePdfHtml(
           validUntil: "Valid until",
           provider: "SERVICE PROVIDER",
           client: "CLIENT",
-          investment: "INVESTMENT",
           summary: "ESTIMATE SUMMARY",
           net: "Net value",
           vat: "VAT",
@@ -388,7 +386,7 @@ export function buildEstimatePdfHtml(
     <section class="info-grid">
       ${infoBlock(labels.provider, pdfInfoProviderIcon(), providerLines)}
       ${infoBlock(labels.client, pdfInfoClientIcon(), clientLines)}
-      ${infoBlock(labels.investment, pdfInfoInvestmentIcon(), investmentLines)}
+      ${infoBlock(model.locationSectionLabel, pdfInfoInvestmentIcon(), investmentLines)}
     </section>
 
     <section class="summary-box">

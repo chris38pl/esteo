@@ -93,6 +93,7 @@ export async function loadEstimatePdfGenerationContext(input: {
     estimateId: estimate.id,
     customerData: estimate.estimateRequest?.customerData,
     requestAddress: estimate.estimateRequest?.address,
+    workspaceIndustry: workspace.industry,
     propertyTypeLabel:
       typeof rawPropertyType === "string" && rawPropertyType.length > 0
         ? getIndustryOptionLabel("property_type", rawPropertyType, input.locale, "label")

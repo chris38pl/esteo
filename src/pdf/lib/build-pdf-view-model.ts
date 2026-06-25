@@ -1,8 +1,9 @@
-import type { SubscriptionPlan } from "@prisma/client";
+import type { SubscriptionPlan, WorkspaceIndustry } from "@prisma/client";
 
 import { calculateEstimate, calculateLineItem } from "@/features/estimates/lib/calculate-estimate";
 import { buildEstimatePdfViewerTitle } from "@/features/estimates/lib/estimate-pdf-filename";
 import { buildWorkspaceCompanyProfileExport } from "@/features/workspaces/lib/company-profile-for-export";
+import { isServiceWorkspace } from "@/features/workspaces/lib/industries";
 import type { Locale } from "@/lib/locale";
 import { buildPdfIssueDates } from "@/pdf/lib/format-pdf-dates";
 import { formatPdfCurrency, formatPdfQuantity } from "@/pdf/lib/format-pdf-currency";
@@ -51,6 +52,7 @@ export type EstimatePdfViewModel = {
     phone: string | null;
     propertySize: string | null;
   };
+  locationSectionLabel: string;
   investment: {
     propertyType: string | null;
     addressStreet: string | null;
@@ -79,7 +81,42 @@ type AddressData = {
   city?: string;
   postalCode?: string;
   voivodeship?: string;
+  serviceLocation?: string;
 };
+
+function buildLocationSectionLabel(
+  locale: Locale,
+  workspaceIndustry: WorkspaceIndustry,
+): string {
+  const isServices = isServiceWorkspace(workspaceIndustry);
+
+  if (locale === "pl") {
+    return isServices ? "MIEJSCE REALIZACJI USŁUGI" : "INWESTYCJA";
+  }
+
+  return isServices ? "SERVICE LOCATION" : "INVESTMENT";
+}
+
+function buildInvestmentSection(
+  workspaceIndustry: WorkspaceIndustry,
+  address: AddressData | null,
+  propertyTypeLabel: string | null,
+): EstimatePdfViewModel["investment"] {
+  if (isServiceWorkspace(workspaceIndustry)) {
+    const serviceLocation = address?.serviceLocation?.trim() || null;
+
+    return {
+      propertyType: null,
+      addressStreet: serviceLocation,
+      addressCityLine: null,
+    };
+  }
+
+  return {
+    propertyType: propertyTypeLabel,
+    ...formatInvestmentAddress(address),
+  };
+}
 
 function formatAddress(address: AddressData | null | undefined): string | null {
   if (!address) {
@@ -156,6 +193,7 @@ export function buildEstimatePdfViewModel(input: {
   requestAddress: unknown;
   propertyTypeLabel: string | null;
   floorArea: number | null;
+  workspaceIndustry: WorkspaceIndustry;
   workspace: {
     name: string;
     settings: {
@@ -284,10 +322,12 @@ export function buildEstimatePdfViewModel(input: {
             : `${formatPdfQuantity(input.floorArea, locale)} m²`
           : null,
     },
-    investment: {
-      propertyType: input.propertyTypeLabel,
-      ...formatInvestmentAddress(address),
-    },
+    locationSectionLabel: buildLocationSectionLabel(locale, input.workspaceIndustry),
+    investment: buildInvestmentSection(
+      input.workspaceIndustry,
+      address,
+      input.propertyTypeLabel,
+    ),
     totals: {
       net: formatPdfCurrency(calc.totalNet, input.currency, locale),
       vat: formatPdfCurrency(calc.totalVat, input.currency, locale),

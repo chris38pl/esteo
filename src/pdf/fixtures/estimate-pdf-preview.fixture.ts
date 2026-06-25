@@ -1,3 +1,5 @@
+import { WorkspaceIndustry } from "@prisma/client";
+
 import { buildEstimatePdfViewModel, type EstimatePdfViewModel } from "@/pdf/lib/build-pdf-view-model";
 import type { Locale } from "@/lib/locale";
 
@@ -438,6 +440,7 @@ export function createEstimatePdfPreviewFixture(
     },
     propertyTypeLabel: locale === "pl" ? "Mieszkanie" : "Apartment",
     floorArea: 70,
+    workspaceIndustry: WorkspaceIndustry.CONSTRUCTION,
     workspace: {
       name: locale === "pl" ? "PHU Remonty" : "Renovation Co.",
       settings: {
