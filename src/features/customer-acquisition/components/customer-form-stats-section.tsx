@@ -1,7 +1,9 @@
 "use client";
 
+import { BarChart3 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { CustomerFormSectionShell } from "@/features/customer-acquisition/components/customer-form-section-shell";
 import type { CustomerAcquisitionStats } from "@/features/customer-acquisition/server/get-customer-acquisition-stats";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
@@ -43,17 +45,16 @@ export function CustomerFormStatsSection({ stats, loading, locale }: Props) {
   const conversion = stats?.conversionRate ?? "—";
 
   return (
-    <section className="rounded-xl border border-border/60 p-4">
-      <p className="text-sm font-medium text-foreground">{t("stats.title")}</p>
+    <CustomerFormSectionShell icon={BarChart3} title={t("stats.title")}>
       {loading ? (
-        <p className="mt-4 text-sm text-muted-foreground">{t("stats.loading")}</p>
+        <p className="text-sm text-muted-foreground">{t("stats.loading")}</p>
       ) : (
-        <div className="mt-4 flex divide-x divide-border/60">
+        <div className="flex divide-x divide-border/60">
           <StatItem label={t("stats.visits")} value={visits} />
           <StatItem label={t("stats.submissions")} value={submissions} />
           <StatItem label={t("stats.conversion")} value={conversion} />
         </div>
       )}
-    </section>
+    </CustomerFormSectionShell>
   );
 }
