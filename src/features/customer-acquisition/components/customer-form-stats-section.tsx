@@ -28,11 +28,20 @@ function StatItem({
   className?: string;
 }) {
   return (
-    <div className={cn("min-w-0 flex-1 px-4 py-1 text-center first:pl-0 last:pr-0", className)}>
+    <div className={cn("min-w-0 flex-1 px-4 py-4 text-center first:pl-0 last:pr-0 sm:py-5", className)}>
       <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-foreground">
+      <p className="mt-2.5 text-2xl font-semibold tabular-nums tracking-tight text-foreground">
         {value}
       </p>
+    </div>
+  );
+}
+
+function StatItemSkeleton({ className }: { className?: string }) {
+  return (
+    <div className={cn("min-w-0 flex-1 px-4 py-4 text-center first:pl-0 last:pr-0 sm:py-5", className)}>
+      <div className="mx-auto h-3 w-20 max-w-full animate-pulse rounded bg-foreground/10 dark:bg-muted" />
+      <div className="mx-auto mt-3 h-8 w-12 max-w-full animate-pulse rounded bg-foreground/10 dark:bg-muted/60" />
     </div>
   );
 }
@@ -47,7 +56,12 @@ export function CustomerFormStatsSection({ stats, loading, locale }: Props) {
   return (
     <CustomerFormSectionShell icon={BarChart3} title={t("stats.title")}>
       {loading ? (
-        <p className="text-sm text-muted-foreground">{t("stats.loading")}</p>
+        <div className="flex divide-x divide-border/60" aria-busy="true" role="status">
+          <span className="sr-only">{t("stats.loading")}</span>
+          <StatItemSkeleton />
+          <StatItemSkeleton />
+          <StatItemSkeleton />
+        </div>
       ) : (
         <div className="flex divide-x divide-border/60">
           <StatItem label={t("stats.visits")} value={visits} />

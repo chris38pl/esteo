@@ -3,13 +3,6 @@
     "title": "Client form",
     "description": "Share the online form with your clients"
   },
-  "link": {
-    "label": "Your form link",
-    "copy": "Copy link",
-    "copied": "Copied",
-    "open": "Open page",
-    "copyFallback": "Copy your form link:"
-  },
   "qr": {
     "label": "QR Code",
     "download": "Download"

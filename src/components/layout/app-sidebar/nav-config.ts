@@ -128,7 +128,7 @@ const settingsItem: SidebarNavItem = {
 export const sidebarNavSections: SidebarNavSection[] = [
   {
     id: "overview",
-    items: [dashboardItem],
+    items: [dashboardItem, customerAcquisitionItem],
   },
   {
     id: "work",
@@ -139,11 +139,6 @@ export const sidebarNavSections: SidebarNavSection[] = [
     id: "ai",
     dividerBefore: true,
     items: [aiRulesItem, templatesItem],
-  },
-  {
-    id: "growth",
-    dividerBefore: true,
-    items: [customerAcquisitionItem],
   },
   {
     id: "owner",

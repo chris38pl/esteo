@@ -10,9 +10,9 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { CustomerFormLinkSection } from "@/features/customer-acquisition/components/customer-form-link-section";
 import { CustomerFormQrSection } from "@/features/customer-acquisition/components/customer-form-qr-section";
 import { CustomerFormStatsSection } from "@/features/customer-acquisition/components/customer-form-stats-section";
+import { EstimateRequestFormHeroCard } from "@/features/estimate-requests/components/estimate-request-form-hero-card";
 import {
   getCustomerAcquisitionStatsAction,
   type CustomerAcquisitionStats,
@@ -44,14 +44,32 @@ export function CustomerAcquisitionDialog({
       return;
     }
 
-    startTransition(async () => {
-      const result = await getCustomerAcquisitionStatsAction({ workspaceId, locale });
-      if (result.success) {
-        setStats(result.data);
-      } else {
-        setStats(null);
+    function fetchStats() {
+      startTransition(async () => {
+        const result = await getCustomerAcquisitionStatsAction({ workspaceId: workspaceId!, locale });
+        if (result.success) {
+          setStats(result.data);
+        } else {
+          setStats(null);
+        }
+      });
+    }
+
+    fetchStats();
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === "visible") {
+        fetchStats();
       }
-    });
+    }
+
+    window.addEventListener("focus", fetchStats);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener("focus", fetchStats);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [open, workspaceId, locale]);
 
   useEffect(() => {
@@ -71,7 +89,7 @@ export function CustomerAcquisitionDialog({
         className={cn(
           "inset-0 top-0 left-0 flex h-dvh max-h-dvh w-full max-w-none translate-x-0 translate-y-0 flex-col gap-5 overflow-y-auto rounded-none border-0 bg-card p-4 text-card-foreground shadow-none",
           "pt-[max(1rem,env(safe-area-inset-top))] pb-[max(1rem,env(safe-area-inset-bottom))]",
-          "sm:inset-auto sm:top-[50%] sm:left-[50%] sm:h-auto sm:max-h-[90vh] sm:w-full sm:max-w-xl sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-xl sm:border sm:border-border/60 sm:p-6 sm:shadow-sm",
+          "sm:inset-auto sm:top-[50%] sm:left-[50%] sm:h-auto sm:max-h-[90vh] sm:w-full sm:max-w-2xl sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-xl sm:border sm:border-border/60 sm:p-6 sm:shadow-sm",
         )}
       >
         <div className="flex items-center gap-3 pr-8">
@@ -84,8 +102,13 @@ export function CustomerAcquisitionDialog({
           </div>
         </div>
 
+        <EstimateRequestFormHeroCard
+          workspaceSlug={workspaceSlug}
+          locale={locale}
+          className="w-full"
+        />
+
         <div className="space-y-4">
-          <CustomerFormLinkSection locale={locale} workspaceSlug={workspaceSlug} />
           <CustomerFormQrSection locale={locale} workspaceSlug={workspaceSlug} />
           <CustomerFormStatsSection stats={stats} loading={pending} locale={locale} />
         </div>
