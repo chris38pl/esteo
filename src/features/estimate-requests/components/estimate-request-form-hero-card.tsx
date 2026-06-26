@@ -78,6 +78,12 @@ function FormHeroStyles() {
   position: relative;
   z-index: 10;
 }
+@media (max-width: 639px) {
+  .estimates-list-hero-card--dialog .estimates-list-hero-body {
+    position: static;
+    z-index: auto;
+  }
+}
 .estimates-list-hero-content {
   max-width: min(68%, 26rem);
 }
@@ -378,8 +384,10 @@ export function EstimateRequestFormHeroCard({
       <article
         className={cn(
           "estimates-list-hero-card estimates-list-hero-card--form",
-          "surface-card relative isolate min-h-[11.5rem] overflow-hidden border-emerald-200/40 md:min-h-[12.5rem] dark:border-emerald-900/30",
-          variant === "dialog" && "max-sm:min-h-0 max-sm:overflow-visible",
+          "surface-card relative isolate overflow-hidden border-emerald-200/40 dark:border-emerald-900/30",
+          variant === "dialog"
+            ? "estimates-list-hero-card--dialog max-sm:min-h-0"
+            : "min-h-[11.5rem] md:min-h-[12.5rem]",
           className,
         )}
       >
@@ -394,32 +402,33 @@ export function EstimateRequestFormHeroCard({
         </div>
         <div
           className={cn(
-            "estimates-list-hero-body flex min-h-[11.5rem] flex-col justify-between gap-5 p-6 md:min-h-[12.5rem] md:p-8",
-            variant === "dialog" && "max-sm:min-h-0 max-sm:gap-4 max-sm:p-4",
+            "estimates-list-hero-body flex flex-col p-6 md:p-8",
+            variant === "dialog"
+              ? "gap-4 max-sm:p-4"
+              : "min-h-[11.5rem] justify-between gap-5 md:min-h-[12.5rem]",
           )}
         >
-          <div className="flex flex-1 flex-col justify-between gap-5 max-sm:gap-4">
-            <div
-              className={cn(
-                "estimates-list-hero-content",
-                variant === "dialog" && "max-sm:max-w-none",
-              )}
-            >
-              <HeroCardCopy
-                eyebrow={t("list.hero.form.eyebrow")}
-                title={t("list.hero.form.title")}
-                descriptionLine1={t("list.hero.form.descriptionLine1")}
-                descriptionLine2={t("list.hero.form.descriptionLine2")}
-                eyebrowClassName="text-emerald-700 dark:text-emerald-500"
-              />
-            </div>
+          <div
+            className={cn(
+              "estimates-list-hero-content",
+              variant === "dialog" && "max-sm:max-w-none",
+            )}
+          >
+            <HeroCardCopy
+              eyebrow={t("list.hero.form.eyebrow")}
+              title={t("list.hero.form.title")}
+              descriptionLine1={t("list.hero.form.descriptionLine1")}
+              descriptionLine2={t("list.hero.form.descriptionLine2")}
+              eyebrowClassName="text-emerald-700 dark:text-emerald-500"
+            />
+          </div>
 
-            <div
-              className={cn(
-                "flex w-full flex-col items-start gap-4 md:flex-row md:items-center md:justify-between",
-                variant === "dialog" && "max-sm:gap-3",
-              )}
-            >
+          <div
+            className={cn(
+              "flex w-full flex-col items-start gap-4 md:flex-row md:items-center md:justify-between",
+              variant === "dialog" && "max-sm:gap-3",
+            )}
+          >
                   <Button
                     asChild
                     className={cn(
@@ -491,8 +500,7 @@ export function EstimateRequestFormHeroCard({
                       </DropdownMenu>
                     </div>
                 </div>
-              </div>
-            </div>
+          </div>
         </div>
       </article>
     </TooltipProvider>

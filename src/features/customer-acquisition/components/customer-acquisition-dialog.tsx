@@ -106,7 +106,7 @@ export function CustomerAcquisitionDialog({
           workspaceSlug={workspaceSlug}
           locale={locale}
           variant="dialog"
-          className="w-full"
+          className="w-full shrink-0"
         />
 
         <div className="space-y-4">
