@@ -27,6 +27,7 @@ import {
   ESTIMATE_TEMPLATE_DESCRIPTION_MAX_LENGTH,
   ESTIMATE_TEMPLATE_NAME_MAX_LENGTH,
 } from "@/features/estimate-templates/lib/template-limits";
+import { TEMPLATE_CURRENCY_LENGTH } from "@/features/estimate-templates/lib/template-pricing";
 import {
   Sheet,
   SheetContent,
@@ -42,6 +43,7 @@ export function EstimateTemplateMetadataDialog({
   onOpenChange,
   initialName,
   initialDescription,
+  initialCurrency,
   readOnly,
   onSave,
 }: {
@@ -49,8 +51,9 @@ export function EstimateTemplateMetadataDialog({
   onOpenChange: (open: boolean) => void;
   initialName: string;
   initialDescription: string;
+  initialCurrency: string;
   readOnly: boolean;
-  onSave: (payload: { name: string; description: string }) => void | Promise<void>;
+  onSave: (payload: { name: string; description: string; currency: string }) => void | Promise<void>;
 }) {
   const t = useTranslations("workspaces.configuration.templates.editor");
   const tToast = useTranslations("workspaces.configuration.templates.toast");
@@ -59,22 +62,26 @@ export function EstimateTemplateMetadataDialog({
   const keyboardInset = useMobileKeyboardViewportInset(open && isMobile);
   const [name, setName] = useState(initialName);
   const [description, setDescription] = useState(initialDescription);
+  const [currency, setCurrency] = useState(initialCurrency);
   const [pending, setPending] = useState(false);
 
   useEffect(() => {
     if (open) {
       setName(initialName);
       setDescription(initialDescription);
+      setCurrency(initialCurrency);
     }
-  }, [initialDescription, initialName, open]);
+  }, [initialCurrency, initialDescription, initialName, open]);
 
   const trimmedName = name.trim();
+  const trimmedCurrency = currency.trim().toUpperCase();
   const canSave =
     !readOnly &&
     !pending &&
     trimmedName.length > 0 &&
     name.length <= ESTIMATE_TEMPLATE_NAME_MAX_LENGTH &&
-    description.length <= ESTIMATE_TEMPLATE_DESCRIPTION_MAX_LENGTH;
+    description.length <= ESTIMATE_TEMPLATE_DESCRIPTION_MAX_LENGTH &&
+    trimmedCurrency.length === TEMPLATE_CURRENCY_LENGTH;
 
   const handleOpenChange = createMobileDismissGuardedOpenChange(
     ignoreOutsideDismissRef,
@@ -93,7 +100,11 @@ export function EstimateTemplateMetadataDialog({
 
     setPending(true);
     try {
-      await onSave({ name: trimmedName, description: description.trim() });
+      await onSave({
+        name: trimmedName,
+        description: description.trim(),
+        currency: trimmedCurrency,
+      });
       appToast.success(tToast("metadataSaved"));
       onOpenChange(false);
     } finally {
@@ -141,6 +152,23 @@ export function EstimateTemplateMetadataDialog({
             className="min-h-28 resize-none rounded-md py-2.5 pl-10"
           />
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <label htmlFor="template-metadata-currency" className="text-sm font-medium">
+          {t("metadataCurrencyLabel")}
+        </label>
+        <Input
+          id="template-metadata-currency"
+          value={currency}
+          disabled={readOnly || pending}
+          placeholder={t("metadataCurrencyPlaceholder")}
+          maxLength={TEMPLATE_CURRENCY_LENGTH}
+          onFocus={() => scrollFieldIntoView("template-metadata-currency")}
+          onChange={(event) => setCurrency(event.target.value.toUpperCase())}
+          className="h-11 rounded-md uppercase"
+        />
+        <p className="text-xs text-muted-foreground">{t("metadataCurrencyHint")}</p>
       </div>
     </>
   );

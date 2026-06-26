@@ -60,7 +60,6 @@ import type { EstimateVersionWorkflowClient } from "@/features/estimates/lib/ser
 
 function readConfigurationSource(aiMetadata: unknown): {
   templateName: string | null;
-  priceListName: string | null;
 } | null {
   if (!aiMetadata || typeof aiMetadata !== "object") {
     return null;
@@ -74,21 +73,16 @@ function readConfigurationSource(aiMetadata: unknown): {
 
   const snapshotRecord = snapshot as Record<string, unknown>;
   const template = snapshotRecord.template;
-  const priceList = snapshotRecord.priceList;
   const templateName =
     template && typeof template === "object" && typeof (template as Record<string, unknown>).name === "string"
       ? ((template as Record<string, string>).name ?? null)
       : null;
-  const priceListName =
-    priceList && typeof priceList === "object" && typeof (priceList as Record<string, unknown>).name === "string"
-      ? ((priceList as Record<string, string>).name ?? null)
-      : null;
 
-  if (!templateName && !priceListName) {
+  if (!templateName) {
     return null;
   }
 
-  return { templateName, priceListName };
+  return { templateName };
 }
 
 export default async function EstimateEditorPage({

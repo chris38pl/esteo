@@ -9,15 +9,22 @@ import type { TemplateItemDraft } from "@/features/estimate-templates/lib/templa
 interface TemplateMobilePositionCardProps {
   item: TemplateItemDraft;
   positionLabel: string;
+  currency: string;
   onOpen: () => void;
 }
 
 function TemplateMobilePositionCardComponent({
   item,
   positionLabel,
+  currency,
   onOpen,
 }: TemplateMobilePositionCardProps) {
   const t = useTranslations("workspaces.configuration.templates.editor");
+
+  const priceLabel =
+    item.unitPrice.trim().length > 0
+      ? `${item.unitPrice} ${currency}`
+      : t("unitPricePlaceholder");
 
   return (
     <div
@@ -40,8 +47,9 @@ function TemplateMobilePositionCardComponent({
               {item.name || t("itemNamePlaceholder")}
             </span>
           </span>
-          <span className="mt-0.5 block text-xs tabular-nums text-muted-foreground">
-            {item.unit || "—"}
+          <span className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs tabular-nums text-muted-foreground">
+            <span>{item.unit || "—"}</span>
+            <span>{priceLabel}</span>
           </span>
         </span>
       </button>

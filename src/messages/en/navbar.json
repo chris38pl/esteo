@@ -31,10 +31,8 @@
     "tips": "Tips",
     "configuration": "Configuration",
     "configurationTemplates": "Estimate templates",
-    "configurationPriceLists": "Price lists",
     "configurationRules": "Rules",
-    "configurationNewTemplate": "New template",
-    "configurationNewPriceList": "New price list"
+    "configurationNewTemplate": "New template"
   },
   "notifications": {
     "label": "Notifications",

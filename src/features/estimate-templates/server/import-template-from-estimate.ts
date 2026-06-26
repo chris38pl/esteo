@@ -116,6 +116,7 @@ export async function importTemplateFromEstimate(
     select: {
       id: true,
       latestVersionId: true,
+      currency: true,
     },
   });
 
@@ -132,6 +133,7 @@ export async function importTemplateFromEstimate(
   const draft = estimateVersionToTemplateDraft({
     name: parsed.name,
     description: parsed.description,
+    currency: estimate.currency,
     versionTree,
   });
 

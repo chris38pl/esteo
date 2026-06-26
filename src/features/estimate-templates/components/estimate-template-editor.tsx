@@ -7,9 +7,9 @@ import { appToast } from "@/components/ui/app-toast";
 
 import { SyncDashboardBreadcrumbDetail } from "@/components/layout/dashboard-top-nav/sync-dashboard-breadcrumb-detail";
 import { EstimateEditorLayoutStyles } from "@/features/estimates/components/estimate-editor-layout-styles";
+import "@/features/estimates/styles/estimate-editor-layout.css";
 import {
   estimateEditorTabShellClass,
-  estimateEditorTabShellNarrowClass,
 } from "@/features/estimates/lib/estimate-layout-config";
 import {
   EstimateTemplateDefaultNotice,
@@ -26,12 +26,16 @@ import {
   ESTIMATE_TEMPLATE_MAX_ITEMS_PER_SECTION,
   ESTIMATE_TEMPLATE_MAX_SECTIONS,
 } from "@/features/estimate-templates/lib/template-limits";
+import { TemplateEstimateGenerationModeField } from "@/features/estimate-templates/components/template-estimate-generation-mode-field";
 import {
   buildTemplatePayload,
   createTemplateDraftId,
   isTemplateDraftSavable,
+  mergeTemplateDraftAfterSave,
   type TemplateEditorDraft,
+  type TemplateItemDraft,
 } from "@/features/estimate-templates/lib/template-editor-draft";
+import type { TemplateGenerationMode as EstimateAiGenerationMode } from "@/features/estimate-templates/lib/template-generation-mode";
 import {
   createEstimateTemplateAction,
   generateTemplateFromPromptAction,
@@ -105,10 +109,11 @@ export function EstimateTemplateEditor({
   const isDefault = Boolean(currentTemplateId && currentTemplateId === defaultTemplateId);
 
   const persistDraft = useCallback(async (): Promise<boolean> => {
-    const payload = buildTemplatePayload(draftRef.current);
     if (!isTemplateDraftSavable(draftRef.current)) {
-      return false;
+      return true;
     }
+
+    const payload = buildTemplatePayload(draftRef.current);
 
     if (currentTemplateId) {
       const result = await updateEstimateTemplateAction(
@@ -124,6 +129,7 @@ export function EstimateTemplateEditor({
         appToast.error(result.error);
         return false;
       }
+      setDraft((current) => mergeTemplateDraftAfterSave(current, result.data));
       setUpdatedAt(result.data.updatedAt);
       return true;
     }
@@ -138,6 +144,7 @@ export function EstimateTemplateEditor({
     }
 
     setCurrentTemplateId(result.data.id);
+    setDraft((current) => mergeTemplateDraftAfterSave(current, result.data));
     setUpdatedAt(result.data.updatedAt);
     router.replace(
       `/${locale}/dashboard/${workspaceSlug}/configuration/templates/${result.data.id}`,
@@ -148,6 +155,7 @@ export function EstimateTemplateEditor({
   const { status, scheduleSave, saveNow } = useTemplateAutosave({
     enabled: !readOnly && !pendingAiSave,
     canSave: isTemplateDraftSavable(draft),
+    getCanSave: () => isTemplateDraftSavable(draftRef.current),
     onSave: persistDraft,
   });
 
@@ -255,7 +263,7 @@ export function EstimateTemplateEditor({
           title: "",
           guidance: "",
           sortOrder: draft.sections.length,
-          items: [{ id: createTemplateDraftId(), name: "", unit: "", sortOrder: 0 }],
+          items: [{ id: createTemplateDraftId(), name: "", unit: "", unitPrice: "", vatRate: "", note: "", sortOrder: 0 }],
         },
       ],
     });
@@ -301,6 +309,9 @@ export function EstimateTemplateEditor({
                 id: createTemplateDraftId(),
                 name: "",
                 unit: "",
+                unitPrice: "",
+                vatRate: "",
+                note: "",
                 sortOrder: section.items.length,
               },
             ],
@@ -313,7 +324,7 @@ export function EstimateTemplateEditor({
   );
 
   const handleUpdateItem = useCallback(
-    (itemId: string, data: Partial<{ name: string; unit: string }>) => {
+    (itemId: string, data: Partial<TemplateItemDraft>) => {
       touchDraft({
         ...draft,
         sections: draft.sections.map((section) => ({
@@ -323,6 +334,13 @@ export function EstimateTemplateEditor({
           ),
         })),
       });
+    },
+    [draft, touchDraft],
+  );
+
+  const handleGenerationModeChange = useCallback(
+    (generationMode: EstimateAiGenerationMode) => {
+      touchDraft({ ...draft, generationMode });
     },
     [draft, touchDraft],
   );
@@ -360,8 +378,13 @@ export function EstimateTemplateEditor({
   );
 
   const handleMetadataSave = useCallback(
-    async (payload: { name: string; description: string }) => {
-      touchDraft({ ...draft, name: payload.name, description: payload.description });
+    async (payload: { name: string; description: string; currency: string }) => {
+      touchDraft({
+        ...draft,
+        name: payload.name,
+        description: payload.description,
+        currency: payload.currency,
+      });
       if (!pendingAiSave) {
         await saveNow();
       }
@@ -379,7 +402,7 @@ export function EstimateTemplateEditor({
       <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <section className="overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm">
           <div className="flex flex-col lg:flex-row lg:items-stretch">
-            <div className="flex min-h-0 flex-col border-b border-border/60 lg:w-[30%] lg:max-w-[30%] lg:shrink-0 lg:border-r lg:border-b-0">
+            <div className="flex min-h-0 flex-col border-b border-border/60 lg:w-1/4 lg:max-w-1/4 lg:shrink-0 lg:border-r lg:border-b-0">
               <EstimateTemplatesSidebar
                 templates={templates}
                 activeTemplateId={currentTemplateId}
@@ -392,11 +415,12 @@ export function EstimateTemplateEditor({
               />
             </div>
 
-            <div className="min-w-0 flex-1 lg:w-[70%]">
+            <div className="min-w-0 flex-1 lg:w-3/4">
               <div className="space-y-6 p-5 md:p-6 lg:p-8">
                 <EstimateTemplateDetailHeader
                   name={draft.name}
                   description={draft.description}
+                  currency={draft.currency}
                   isDefault={isDefault}
                   isNew={!currentTemplateId}
                   autosaveStatus={status}
@@ -415,9 +439,17 @@ export function EstimateTemplateEditor({
                   isKpiLoading={isAiBlocking}
                 />
 
+                {!isAiBlocking ? (
+                  <TemplateEstimateGenerationModeField
+                    value={draft.generationMode}
+                    onChange={handleGenerationModeChange}
+                    disabled={readOnly}
+                  />
+                ) : null}
+
                 <div className="space-y-3">
                   <h3 className="text-sm font-semibold text-foreground">{tWorkspace("structureTitle")}</h3>
-                  <div className={cn(estimateEditorTabShellClass, estimateEditorTabShellNarrowClass)}>
+                  <div className={estimateEditorTabShellClass}>
                     <div className="min-w-0 overflow-hidden rounded-lg border bg-card/95 shadow-sm">
                       {isAiBlocking ? (
                         <div className="p-5 md:p-6">
@@ -439,6 +471,7 @@ export function EstimateTemplateEditor({
                         <fieldset disabled={readOnly} className="min-w-0 border-0 p-0 disabled:opacity-80">
                           <TemplateItemsView
                             sections={draft.sections}
+                            currency={draft.currency}
                             advancedMode={advancedMode}
                             onAdvancedModeChange={setAdvancedMode}
                             onAddSection={handleAddSection}

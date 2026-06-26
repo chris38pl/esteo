@@ -2,7 +2,6 @@
 
 import type {
   InviteRole,
-  WorkspaceAppearanceTheme,
   WorkspaceIndustry,
   WorkspaceRule,
 } from "@prisma/client";
@@ -283,7 +282,6 @@ export function WorkspaceSettingsPanel({
   workspaceIndustry,
   initialIndustryOtherText,
   initialName,
-  initialAppearanceTheme,
   initialCompanyDescription,
   initialCompanyAddress,
   initialCompanyTaxId,
@@ -307,7 +305,6 @@ export function WorkspaceSettingsPanel({
   workspaceIndustry: WorkspaceIndustry;
   initialIndustryOtherText: string;
   initialName: string;
-  initialAppearanceTheme: WorkspaceAppearanceTheme;
   initialCompanyDescription: string;
   initialCompanyAddress: string;
   initialCompanyTaxId: string;
@@ -336,8 +333,6 @@ export function WorkspaceSettingsPanel({
     return focusTab ?? resolveActiveTab(searchParams.get("tab"), isOwner);
   });
   const [isTabPending, startTabTransition] = useTransition();
-  const [appearanceTheme, setAppearanceTheme] = useState(initialAppearanceTheme);
-  const [themePickerDisabled, setThemePickerDisabled] = useState(false);
 
   useAiSetupFieldFocus();
 
@@ -357,10 +352,6 @@ export function WorkspaceSettingsPanel({
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, [isOwner]);
-
-  useEffect(() => {
-    setAppearanceTheme(initialAppearanceTheme);
-  }, [initialAppearanceTheme]);
 
   const setTab = useCallback(
     (tab: SettingsTab) => {
@@ -433,10 +424,6 @@ export function WorkspaceSettingsPanel({
               initialName={initialName}
               initialCompanyDescription={initialCompanyDescription}
               initialLogoUrl={initialBranding?.logoUrl ?? null}
-              appearanceTheme={appearanceTheme}
-              onAppearanceThemeChange={setAppearanceTheme}
-              onPendingChange={setThemePickerDisabled}
-              themePickerDisabled={themePickerDisabled}
               locale={locale}
             />
             {isOwner ? (

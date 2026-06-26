@@ -23,8 +23,7 @@ const DashboardBreadcrumbDetailContext =
 function isBreadcrumbDetailPath(pathname: string): boolean {
   return (
     /\/(estimates|requests)\/[^/]+$/.test(pathname) ||
-    /\/configuration\/templates\/(?:new|[^/]+)$/.test(pathname) ||
-    /\/configuration\/price-lists\/(?:new|[^/]+)$/.test(pathname)
+    /\/configuration\/templates\/(?:new|[^/]+)$/.test(pathname)
   );
 }
 

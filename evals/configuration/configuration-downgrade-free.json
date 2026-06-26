@@ -14,18 +14,14 @@
     "template": {
       "id": "template-stored",
       "name": "Szablon PRO (w DB)",
+      "generationMode": "SMART",
+      "currency": "PLN",
       "sections": [
         {
           "title": "Wykończenie",
-          "items": [{ "name": "Malowanie", "unit": "m²" }]
+          "items": [{ "name": "Malowanie", "unit": "m²", "unitPrice": "18.00" }]
         }
       ]
-    },
-    "priceList": {
-      "id": "price-list-stored",
-      "name": "Cennik PRO (w DB)",
-      "currency": "PLN",
-      "items": [{ "name": "Malowanie", "unit": "m²", "unitPrice": "18.00" }]
     },
     "rules": [],
     "systemRules": { "rounding": true, "units": true }
@@ -42,7 +38,7 @@
     "configurationLifecycle": {
       "templateInPrompt": false,
       "priceListInPrompt": false,
-      "promptMustNotContain": ["Cennik PRO", "Szablon PRO"]
+      "promptMustNotContain": ["Szablon PRO", "18.00"]
     },
     "coverageTerms": ["malowan"],
     "leakageDomain": "services",

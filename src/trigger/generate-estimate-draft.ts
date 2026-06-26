@@ -33,7 +33,6 @@ interface GenerateEstimateDraftPayload {
   workspaceId: string;
   locale: string;
   templateId?: string | null;
-  priceListId?: string | null;
   configurationSnapshot?: EstimateConfigurationSnapshot;
   uploadSource?: AttachmentUploadSource;
   uploadedById?: string | null;
@@ -242,7 +241,6 @@ export const generateEstimateDraftTask = task({
       logger.info("Loading estimate generation context", { estimateRequestId, workspaceId });
       const context = await loadEstimateGenerationContext(workspaceId, locale, {
         templateId: payload.templateId,
-        priceListId: payload.priceListId,
         ...(payload.configurationSnapshot !== undefined
           ? { configurationSnapshot: payload.configurationSnapshot }
           : {}),

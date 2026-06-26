@@ -11,12 +11,10 @@ const dismissButtonClassName =
 
 interface EstimateConfigurationSourceBannerProps {
   templateName: string | null;
-  priceListName: string | null;
 }
 
 export function EstimateConfigurationSourceBanner({
   templateName,
-  priceListName,
 }: EstimateConfigurationSourceBannerProps) {
   const t = useTranslations("estimates");
   const [dismissed, setDismissed] = useState(false);
@@ -46,10 +44,6 @@ export function EstimateConfigurationSourceBanner({
             <p className="text-sm text-muted-foreground">
               {t("configurationSource.template", {
                 name: templateName ?? t("configurationSource.none"),
-              })}
-              {" · "}
-              {t("configurationSource.priceList", {
-                name: priceListName ?? t("configurationSource.none"),
               })}
             </p>
           </div>

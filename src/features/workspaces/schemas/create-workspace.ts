@@ -1,4 +1,4 @@
-import { SubscriptionPlan, WorkspaceAppearanceTheme, WorkspaceIndustry } from "@prisma/client";
+import { SubscriptionPlan, WorkspaceIndustry } from "@prisma/client";
 import { z } from "zod";
 
 import { isWorkspaceIndustryAvailableAtSignup } from "@/features/workspaces/lib/industries";
@@ -18,9 +18,6 @@ export const createWorkspaceSchema = z
       .min(3, "Business type must be at least 3 characters.")
       .max(120, "Business type must be at most 120 characters.")
       .optional(),
-    appearanceTheme: z
-      .nativeEnum(WorkspaceAppearanceTheme)
-      .default(WorkspaceAppearanceTheme.OCEAN_BREEZE),
     plan: z.nativeEnum(SubscriptionPlan).default(SubscriptionPlan.FREE),
     companyDescription: companyDescriptionSchema,
   })

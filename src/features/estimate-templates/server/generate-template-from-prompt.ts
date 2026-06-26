@@ -40,7 +40,7 @@ export async function generateTemplateFromPrompt(input: {
   const access = await getConfigurationAccess(input.workspaceId);
   if (!access.canEditPremiumConfiguration) {
     throw new EntitlementError(
-      "Szablony i cenniki są dostępne w planach Pro i Business.",
+      "Szablony są dostępne w planach Pro i Business.",
       access.reason ?? "FEATURE_DISABLED",
     );
   }

@@ -90,7 +90,6 @@ export function RequestListRowActions({
   const [isDeletingEstimate, setIsDeletingEstimate] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState(DEFAULT_OPTION);
-  const [selectedPriceList, setSelectedPriceList] = useState(DEFAULT_OPTION);
 
   const estimateHref = estimateId
     ? `/${locale}/dashboard/${workspaceSlug}/estimates/${estimateId}`
@@ -125,7 +124,6 @@ export function RequestListRowActions({
         requestId,
         locale,
         templateId: resolveSelectedId(selectedTemplate),
-        priceListId: resolveSelectedId(selectedPriceList),
       });
 
       if (!result.success) {
@@ -240,7 +238,6 @@ export function RequestListRowActions({
                   onSelect={(event) => {
                     event.preventDefault();
                     setSelectedTemplate(DEFAULT_OPTION);
-                    setSelectedPriceList(DEFAULT_OPTION);
                     setCreateDialogOpen(true);
                   }}
                 >
@@ -307,28 +304,6 @@ export function RequestListRowActions({
                   {generationConfiguration.templates.map((template) => (
                     <SelectItem key={template.id} value={template.id}>
                       {template.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t("createDialog.priceListLabel")}</Label>
-              <Select value={selectedPriceList} onValueChange={setSelectedPriceList}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value={DEFAULT_OPTION}>
-                    {generationConfiguration.defaultPriceListId
-                      ? t("createDialog.defaultPriceList")
-                      : t("createDialog.noPriceList")}
-                  </SelectItem>
-                  <SelectItem value={NONE_OPTION}>{t("createDialog.noPriceList")}</SelectItem>
-                  {generationConfiguration.priceLists.map((priceList) => (
-                    <SelectItem key={priceList.id} value={priceList.id}>
-                      {priceList.name}
                     </SelectItem>
                   ))}
                 </SelectContent>

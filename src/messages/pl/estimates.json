@@ -766,7 +766,6 @@
   "configurationSource": {
     "title": "Wygenerowano na podstawie",
     "template": "Szablon: {name}",
-    "priceList": "Cennik: {name}",
     "none": "Brak",
     "dismiss": "Ukryj informację o źródle"
   },

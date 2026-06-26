@@ -1,12 +1,7 @@
 "use client";
 
 import type { WorkspaceIndustry, WorkspaceRule } from "@prisma/client";
-import {
-  FileText,
-  ReceiptText,
-  ScrollText,
-  Settings2,
-} from "lucide-react";
+import { FileText, ScrollText, Settings2 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
@@ -23,19 +18,17 @@ import {
   type SystemEstimateTemplate,
 } from "@/features/estimate-templates/config/system-templates";
 import { EstimateTemplatesListTab } from "@/features/estimate-templates/components/estimate-templates-list-tab";
-import { PriceListsListTab } from "@/features/price-lists/components/price-lists-list-tab";
 import type {
   ConfigurationAccess,
-  SerializedPriceList,
   SerializedTemplate,
 } from "@/features/workspace-configuration/server/service";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
-type ConfigurationTab = "rules" | "templates" | "priceLists";
+type ConfigurationTab = "rules" | "templates";
 
 function parseTab(value: string | null): ConfigurationTab {
-  if (value === "templates" || value === "priceLists") {
+  if (value === "templates") {
     return value;
   }
   return "rules";
@@ -65,9 +58,7 @@ export function WorkspaceConfigurationPanel({
   initialBranding,
   locale,
   templates,
-  priceLists,
   defaultTemplateId,
-  defaultPriceListId,
   systemTemplate,
   access,
 }: {
@@ -81,9 +72,7 @@ export function WorkspaceConfigurationPanel({
   initialBranding: WorkspaceBranding | null;
   locale: Locale;
   templates: SerializedTemplate[];
-  priceLists: SerializedPriceList[];
   defaultTemplateId: string | null;
-  defaultPriceListId: string | null;
   systemTemplate: SystemEstimateTemplate;
   access: ConfigurationAccess;
 }) {
@@ -110,7 +99,6 @@ export function WorkspaceConfigurationPanel({
       [
         { id: "rules" as const, icon: ScrollText, label: t("tabs.rules") },
         { id: "templates" as const, icon: FileText, label: t("tabs.templates") },
-        { id: "priceLists" as const, icon: ReceiptText, label: t("tabs.priceLists") },
       ],
     [t],
   );
@@ -188,17 +176,6 @@ export function WorkspaceConfigurationPanel({
           defaultTemplateId={defaultTemplateId}
           systemTemplate={systemTemplate}
           showSystemTemplate={showSystemTemplate}
-          access={access}
-        />
-      ) : null}
-
-      {activeTab === "priceLists" ? (
-        <PriceListsListTab
-          workspaceId={workspaceId}
-          workspaceSlug={workspaceSlug}
-          locale={locale}
-          priceLists={priceLists}
-          defaultPriceListId={defaultPriceListId}
           access={access}
         />
       ) : null}

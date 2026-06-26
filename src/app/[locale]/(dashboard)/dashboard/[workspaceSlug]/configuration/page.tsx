@@ -50,9 +50,7 @@ export default async function WorkspaceConfigurationPage({
         initialBranding={initialBranding}
         locale={resolvedLocale}
         templates={data.templates}
-        priceLists={data.priceLists}
         defaultTemplateId={data.defaultEstimateTemplateId}
-        defaultPriceListId={data.defaultPriceListId}
         systemTemplate={data.systemTemplate}
         access={data.access}
       />

@@ -131,7 +131,7 @@ export function WorkspaceReadyBanner({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-xl p-5 md:p-6",
+        "relative overflow-hidden rounded-xl border border-border/60 p-5 shadow-sm md:p-6",
         "bg-gradient-to-br from-violet-50/90 to-violet-100/40",
         "dark:from-card dark:to-card",
       )}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowLeft, FileText, Hash, Trash2 } from "lucide-react";
+import { ArrowLeft, Coins, FileText, Percent, Tag, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -11,20 +11,27 @@ import {
   SheetFooter,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { estimatePrimaryButtonClassName } from "@/features/estimates/components/estimate-action-button-styles";
+import {
+  estimateOutlineButtonClassName,
+  estimatePrimaryButtonClassName,
+} from "@/features/estimates/components/estimate-action-button-styles";
 import type { TemplateItemDraft } from "@/features/estimate-templates/lib/template-editor-draft";
 import type { TemplateAutoSaveStatus } from "@/features/estimate-templates/hooks/use-template-autosave";
+import { normalizeTemplateDecimalInput } from "@/features/estimate-templates/lib/template-pricing";
 import { cn } from "@/lib/utils";
+
+type TemplateItemEditableFields = Pick<
+  TemplateItemDraft,
+  "name" | "unit" | "unitPrice" | "vatRate" | "note"
+>;
 
 interface TemplateMobilePositionSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   item: TemplateItemDraft | null;
   positionLabel: string;
-  onPersistItem: (
-    itemId: string,
-    data: Partial<Pick<TemplateItemDraft, "name" | "unit">>,
-  ) => void;
+  currency: string;
+  onPersistItem: (itemId: string, data: Partial<TemplateItemEditableFields>) => void;
   onDelete: () => void;
   onBlur: () => void | Promise<void>;
   autosaveStatus?: TemplateAutoSaveStatus;
@@ -34,6 +41,8 @@ const editRowClassName = "flex gap-3 py-2.5 pl-[22px] pr-[22px]";
 
 const fieldInputClassName =
   "estimate-mobile-position-field m-0 h-auto min-h-0 appearance-none border-none bg-transparent p-0 text-sm font-medium text-foreground shadow-none outline-none ring-0";
+
+const fieldValueClassName = "w-20 text-right tabular-nums";
 
 function EditRowIcon({ icon: Icon }: { icon: React.ElementType }) {
   return (
@@ -70,11 +79,30 @@ function NameEditRow({
   );
 }
 
+function ValueEditRow({
+  icon: Icon,
+  label,
+  children,
+}: {
+  icon: React.ElementType;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={cn(editRowClassName, "items-center")}>
+      <EditRowIcon icon={Icon} />
+      <p className="min-w-0 flex-1 text-sm text-muted-foreground">{label}</p>
+      <div className="flex shrink-0 items-center gap-1">{children}</div>
+    </div>
+  );
+}
+
 export function TemplateMobilePositionSheet({
   open,
   onOpenChange,
   item,
   positionLabel,
+  currency,
   onPersistItem,
   onDelete,
   onBlur,
@@ -83,86 +111,210 @@ export function TemplateMobilePositionSheet({
   const t = useTranslations("workspaces.configuration.templates.editor");
   const tEst = useTranslations("estimates");
   const [local, setLocal] = useState<TemplateItemDraft | null>(item);
+  const [isSaveInProgress, setIsSaveInProgress] = useState(false);
+  const [isDeleteInProgress, setIsDeleteInProgress] = useState(false);
 
   useEffect(() => {
-    setLocal(item);
-  }, [item]);
+    if (open && item) {
+      setLocal(item);
+    }
+  }, [open, item]);
+
+  useEffect(() => {
+    if (!open) {
+      setIsSaveInProgress(false);
+      setIsDeleteInProgress(false);
+    }
+  }, [open]);
+
+  const isBusy =
+    isSaveInProgress || isDeleteInProgress || autosaveStatus === "saving";
 
   if (!local) return null;
+
+  const handleCancel = () => {
+    if (isBusy) return;
+    setLocal(item);
+    onOpenChange(false);
+  };
+
+  const handleSave = async () => {
+    if (isBusy) return;
+    setIsSaveInProgress(true);
+    try {
+      await onBlur();
+      onOpenChange(false);
+    } finally {
+      setIsSaveInProgress(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (isBusy) return;
+    setIsDeleteInProgress(true);
+    try {
+      onDelete();
+      onOpenChange(false);
+    } finally {
+      setIsDeleteInProgress(false);
+    }
+  };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
-        side="bottom"
-        className="estimate-mobile-position-sheet flex h-[min(92dvh,720px)] flex-col gap-0 rounded-t-2xl p-0"
+        className="z-[80] inset-0 h-dvh max-h-dvh gap-0 rounded-none border-0 bg-card/95 p-0 shadow-none"
+        overlayClassName="z-[80]"
+        showCloseButton={false}
       >
-        <div className="flex items-center gap-2 border-b border-border/60 px-4 py-3">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="size-9 shrink-0 rounded-lg"
-            onClick={() => onOpenChange(false)}
-            aria-label={tEst("editor.mobile.cancel")}
-          >
-            <ArrowLeft className="size-4" />
-          </Button>
-          <SheetTitle className="min-w-0 flex-1 text-base font-semibold">
-            {positionLabel}
-          </SheetTitle>
-        </div>
-
-        <div className="min-h-0 flex-1 overflow-y-auto py-2">
-          <NameEditRow
-            label={t("columnName")}
-            value={local.name}
-            placeholder={t("itemNamePlaceholder")}
-            onChange={(name) => {
-              setLocal((prev) => (prev ? { ...prev, name } : prev));
-              onPersistItem(local.id, { name });
-            }}
-          />
-          <div className={cn(editRowClassName, "items-center")}>
-            <EditRowIcon icon={Hash} />
-            <p className="min-w-0 flex-1 text-sm text-muted-foreground">{t("columnUnit")}</p>
-            <input
-              value={local.unit}
-              onChange={(event) => {
-                const unit = event.target.value;
-                setLocal((prev) => (prev ? { ...prev, unit } : prev));
-                onPersistItem(local.id, { unit });
-              }}
-              onBlur={onBlur}
-              placeholder={t("unitPlaceholder")}
-              className={cn(fieldInputClassName, "w-24 text-right")}
-            />
+        <div className="flex min-h-0 flex-1 flex-col">
+          <div className="flex items-center justify-between gap-2 border-b border-border/40 px-2 py-2 pt-[max(0.5rem,env(safe-area-inset-top))]">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="size-9 shrink-0 text-muted-foreground"
+              onClick={handleCancel}
+              disabled={isBusy}
+              aria-label={tEst("editor.mobile.cancel")}
+            >
+              <ArrowLeft className="size-5" />
+            </Button>
+            <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-1">
+              <div className="flex min-w-0 items-center justify-center gap-2">
+                <SheetTitle className="truncate text-base font-semibold">
+                  {tEst("editor.mobile.editPosition")}
+                </SheetTitle>
+                <span className="estimate-mobile-position-icon shrink-0 rounded-md px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
+                  {positionLabel}
+                </span>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="size-9 shrink-0 text-muted-foreground"
+              onClick={handleCancel}
+              disabled={isBusy}
+              aria-label={tEst("editor.mobile.cancel")}
+            >
+              <X className="size-5" />
+            </Button>
           </div>
-        </div>
 
-        <SheetFooter className="border-t border-border/60 px-4 py-3 sm:flex-col">
-          <Button
-            type="button"
-            variant="destructive"
-            className="w-full"
-            onClick={() => {
-              onDelete();
-              onOpenChange(false);
-            }}
-          >
-            <Trash2 className="size-4" />
-            {tEst("editor.deleteItem")}
-          </Button>
-          <Button
-            type="button"
-            className={cn("w-full", estimatePrimaryButtonClassName)}
-            onClick={() => {
-              void onBlur();
-              onOpenChange(false);
-            }}
-          >
-            {autosaveStatus === "saving" ? tEst("editor.mobile.saving") : tEst("editor.mobile.save")}
-          </Button>
-        </SheetFooter>
+          <div className="flex-1 overflow-y-auto">
+            <div className="divide-y divide-border/40">
+              <NameEditRow
+                label={t("columnName")}
+                value={local.name}
+                placeholder={t("itemNamePlaceholder")}
+                onChange={(name) => {
+                  setLocal((prev) => (prev ? { ...prev, name } : prev));
+                  onPersistItem(local.id, { name });
+                }}
+              />
+
+              <ValueEditRow icon={Tag} label={t("columnUnit")}>
+                <input
+                  value={local.unit}
+                  onChange={(event) => {
+                    const unit = event.target.value;
+                    setLocal((prev) => (prev ? { ...prev, unit } : prev));
+                    onPersistItem(local.id, { unit });
+                  }}
+                  onBlur={onBlur}
+                  placeholder={t("unitPlaceholder")}
+                  className={cn(fieldInputClassName, fieldValueClassName)}
+                />
+              </ValueEditRow>
+
+              <ValueEditRow icon={Coins} label={t("columnUnitPrice")}>
+                <input
+                  value={local.unitPrice}
+                  inputMode="decimal"
+                  onChange={(event) => {
+                    const unitPrice = event.target.value;
+                    setLocal((prev) => (prev ? { ...prev, unitPrice } : prev));
+                    onPersistItem(local.id, { unitPrice });
+                  }}
+                  onBlur={() => {
+                    const normalized = normalizeTemplateDecimalInput(local.unitPrice);
+                    if (normalized !== local.unitPrice) {
+                      setLocal((prev) => (prev ? { ...prev, unitPrice: normalized } : prev));
+                      onPersistItem(local.id, { unitPrice: normalized });
+                    }
+                    void onBlur();
+                  }}
+                  placeholder={t("unitPricePlaceholder")}
+                  className={cn(fieldInputClassName, fieldValueClassName)}
+                />
+                <span className="text-xs font-medium tabular-nums text-muted-foreground">
+                  {currency}
+                </span>
+              </ValueEditRow>
+
+              <ValueEditRow icon={Percent} label={tEst("editor.mobile.vatPercent")}>
+                <input
+                  value={local.vatRate}
+                  inputMode="decimal"
+                  onChange={(event) => {
+                    const vatRate = event.target.value;
+                    setLocal((prev) => (prev ? { ...prev, vatRate } : prev));
+                    onPersistItem(local.id, { vatRate });
+                  }}
+                  onBlur={() => {
+                    const normalized = normalizeTemplateDecimalInput(local.vatRate);
+                    if (normalized !== local.vatRate) {
+                      setLocal((prev) => (prev ? { ...prev, vatRate: normalized } : prev));
+                      onPersistItem(local.id, { vatRate: normalized });
+                    }
+                    void onBlur();
+                  }}
+                  placeholder={t("vatRatePlaceholder")}
+                  className={cn(fieldInputClassName, fieldValueClassName)}
+                />
+              </ValueEditRow>
+            </div>
+          </div>
+
+          <SheetFooter className="flex-col gap-2 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
+            <Button
+              type="button"
+              variant="outline"
+              className={cn(
+                estimateOutlineButtonClassName,
+                "w-full border-destructive/40 text-destructive hover:bg-destructive/5 hover:text-destructive",
+              )}
+              onClick={handleDelete}
+              disabled={isBusy}
+            >
+              <Trash2 className="size-4" />
+              {isDeleteInProgress ? tEst("editor.mobile.removing") : tEst("editor.mobile.remove")}
+            </Button>
+            <div className="flex w-full gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                className={cn(estimateOutlineButtonClassName, "flex-1")}
+                onClick={handleCancel}
+                disabled={isBusy}
+              >
+                {tEst("editor.mobile.cancel")}
+              </Button>
+              <Button
+                type="button"
+                className={cn(estimatePrimaryButtonClassName, "flex-1")}
+                onClick={handleSave}
+                disabled={isBusy}
+              >
+                {isSaveInProgress || autosaveStatus === "saving"
+                  ? tEst("editor.mobile.saving")
+                  : tEst("editor.mobile.save")}
+              </Button>
+            </div>
+          </SheetFooter>
+        </div>
       </SheetContent>
     </Sheet>
   );

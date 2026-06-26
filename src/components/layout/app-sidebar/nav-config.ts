@@ -1,24 +1,26 @@
 import type { LucideIcon } from "lucide-react";
 import {
   BarChart3,
-  ClipboardList,
+  CreditCard,
   FileText,
   LayoutDashboard,
+  LayoutTemplate,
   Settings,
   SlidersHorizontal,
   Wallet,
 } from "lucide-react";
 
+import { dashboardBillingHref } from "@/lib/dashboard-routes";
 import type { Locale } from "@/lib/locale";
-import { getPublicEstimateRequestPath } from "@/features/estimate-requests/routes";
 
 export type NavItemKey =
   | "dashboard"
   | "requests"
-  | "estimateRequestPage"
   | "estimates"
   | "payments"
-  | "configuration"
+  | "aiRules"
+  | "templates"
+  | "subscription"
   | "settings";
 
 export type SidebarNavItem = {
@@ -34,67 +36,104 @@ export type SidebarNavItem = {
   disabled?: boolean;
 };
 
-export const navItems: SidebarNavItem[] = [
+export type SidebarNavSection = {
+  id: string;
+  dividerBefore?: boolean;
+  /** Render this section only for workspace owners. */
+  ownerOnly?: boolean;
+  items: SidebarNavItem[];
+};
+
+const dashboardItem: SidebarNavItem = {
+  key: "dashboard",
+  icon: LayoutDashboard,
+  href: (locale, workspaceSlug) =>
+    workspaceSlug ? `/${locale}/dashboard/${workspaceSlug}` : `/${locale}/dashboard`,
+  labelKey: "nav.dashboard",
+};
+
+const requestsItem: SidebarNavItem = {
+  key: "requests",
+  icon: FileText,
+  href: (locale, workspaceSlug) =>
+    workspaceSlug ? `/${locale}/dashboard/${workspaceSlug}/requests` : `/${locale}/dashboard`,
+  labelKey: "nav.requests",
+};
+
+const estimatesItem: SidebarNavItem = {
+  key: "estimates",
+  icon: BarChart3,
+  href: (locale, workspaceSlug) =>
+    workspaceSlug ? `/${locale}/dashboard/${workspaceSlug}/estimates` : `/${locale}/dashboard`,
+  labelKey: "nav.estimates",
+};
+
+const paymentsItem: SidebarNavItem = {
+  key: "payments",
+  icon: Wallet,
+  href: (locale, workspaceSlug) =>
+    workspaceSlug ? `/${locale}/dashboard/${workspaceSlug}/payments` : `/${locale}/dashboard`,
+  labelKey: "nav.payments",
+};
+
+const aiRulesItem: SidebarNavItem = {
+  key: "aiRules",
+  icon: SlidersHorizontal,
+  href: (locale, workspaceSlug) =>
+    workspaceSlug
+      ? `/${locale}/dashboard/${workspaceSlug}/configuration?tab=rules`
+      : `/${locale}/dashboard`,
+  labelKey: "nav.aiRules",
+};
+
+const templatesItem: SidebarNavItem = {
+  key: "templates",
+  icon: LayoutTemplate,
+  href: (locale, workspaceSlug) =>
+    workspaceSlug
+      ? `/${locale}/dashboard/${workspaceSlug}/configuration?tab=templates`
+      : `/${locale}/dashboard`,
+  labelKey: "nav.templates",
+};
+
+const subscriptionItem: SidebarNavItem = {
+  key: "subscription",
+  icon: CreditCard,
+  href: (locale, workspaceSlug) =>
+    workspaceSlug ? dashboardBillingHref(locale as Locale, workspaceSlug) : `/${locale}/dashboard`,
+  labelKey: "nav.subscription",
+};
+
+const settingsItem: SidebarNavItem = {
+  key: "settings",
+  icon: Settings,
+  href: (locale, workspaceSlug) =>
+    workspaceSlug ? `/${locale}/dashboard/${workspaceSlug}/settings` : `/${locale}/dashboard`,
+  labelKey: "nav.settings",
+};
+
+export const sidebarNavSections: SidebarNavSection[] = [
   {
-    key: "dashboard",
-    icon: LayoutDashboard,
-    href: (locale, workspaceSlug) =>
-      workspaceSlug ? `/${locale}/dashboard/${workspaceSlug}` : `/${locale}/dashboard`,
-    labelKey: "nav.dashboard",
+    id: "overview",
+    items: [dashboardItem],
   },
   {
-    key: "requests",
-    icon: FileText,
-    href: (locale, workspaceSlug) =>
-      workspaceSlug
-        ? `/${locale}/dashboard/${workspaceSlug}/requests`
-        : `/${locale}/dashboard`,
-    labelKey: "nav.requests",
+    id: "work",
+    dividerBefore: true,
+    items: [requestsItem, estimatesItem, paymentsItem],
   },
   {
-    key: "estimateRequestPage",
-    icon: ClipboardList,
-    href: (locale, workspaceSlug) =>
-      workspaceSlug
-        ? getPublicEstimateRequestPath(locale as Locale, workspaceSlug)
-        : `/${locale}/dashboard`,
-    labelKey: "nav.estimateRequestPage",
+    id: "ai",
+    dividerBefore: true,
+    items: [aiRulesItem, templatesItem],
   },
   {
-    key: "estimates",
-    icon: BarChart3,
-    href: (locale, workspaceSlug) =>
-      workspaceSlug
-        ? `/${locale}/dashboard/${workspaceSlug}/estimates`
-        : `/${locale}/dashboard`,
-    labelKey: "nav.estimates",
-  },
-  {
-    key: "payments",
-    icon: Wallet,
-    href: (locale, workspaceSlug) =>
-      workspaceSlug
-        ? `/${locale}/dashboard/${workspaceSlug}/payments`
-        : `/${locale}/dashboard`,
-    labelKey: "nav.payments",
-  },
-  {
-    key: "configuration",
-    icon: SlidersHorizontal,
-    href: (locale, workspaceSlug) =>
-      workspaceSlug
-        ? `/${locale}/dashboard/${workspaceSlug}/configuration`
-        : `/${locale}/dashboard`,
-    labelKey: "nav.configuration",
-  },
-  {
-    key: "settings",
-    icon: Settings,
-    href: (locale, workspaceSlug) =>
-      workspaceSlug
-        ? `/${locale}/dashboard/${workspaceSlug}/settings`
-        : `/${locale}/dashboard`,
-    labelKey: "nav.settings",
+    id: "owner",
+    dividerBefore: true,
+    ownerOnly: true,
+    items: [subscriptionItem, settingsItem],
   },
 ];
 
+/** @deprecated Use sidebarNavSections */
+export const navItems: SidebarNavItem[] = sidebarNavSections.flatMap((section) => section.items);

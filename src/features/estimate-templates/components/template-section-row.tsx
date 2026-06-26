@@ -79,7 +79,7 @@ export function TemplateSectionRow({
         <td className="w-14 px-2 py-2.5 align-middle text-xs font-semibold text-muted-foreground">
           {sectionNumber}
         </td>
-        <td colSpan={2} className="px-2 py-2.5 align-middle">
+        <td colSpan={4} className="max-w-0 px-2 py-2.5 align-middle">
           <Input
             value={localTitle}
             onChange={(event) => {
@@ -88,7 +88,7 @@ export function TemplateSectionRow({
             }}
             onBlur={onBlur}
             placeholder={t("sectionTitlePlaceholder")}
-            className={`${estimateFlatInputClassName} px-0 font-semibold`}
+            className={`${estimateFlatInputClassName} w-full min-w-0 px-0 font-semibold`}
           />
         </td>
         <td className="w-10 px-2 py-2.5 align-middle">
@@ -131,7 +131,7 @@ export function TemplateSectionRow({
         <tr className="bg-secondary/25 dark:bg-card/80">
           <td />
           <td />
-          <td colSpan={3} className="px-2 pb-3 pt-0">
+          <td colSpan={4} className="max-w-0 px-2 pb-3 pt-0">
             <p className="mb-1.5 text-xs font-medium text-muted-foreground">{t("sectionGuidance")}</p>
             <Textarea
               value={localGuidance}
@@ -144,6 +144,7 @@ export function TemplateSectionRow({
               className="min-h-20 resize-y text-sm"
             />
           </td>
+          <td />
         </tr>
       ) : null}
     </>

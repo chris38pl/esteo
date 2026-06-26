@@ -30,9 +30,25 @@ function nullableToString(value: string | null): string {
   return value?.trim() ?? "";
 }
 
+function formatImportedUnitPrice(value: number): string {
+  if (!Number.isFinite(value) || value <= 0) {
+    return "";
+  }
+  return value.toFixed(2);
+}
+
+function formatImportedVatRate(value: number): string {
+  if (!Number.isFinite(value) || value < 0) {
+    return "";
+  }
+  const normalized = Number.isInteger(value) ? String(value) : value.toFixed(2);
+  return normalized.replace(/\.?0+$/, "");
+}
+
 export function estimateVersionToTemplateDraft(input: {
   name: string;
   description?: string;
+  currency?: string;
   versionTree: VersionTreeClient;
 }): TemplateEditorDraft {
   const sections = input.versionTree.sections
@@ -48,6 +64,9 @@ export function estimateVersionToTemplateDraft(input: {
             id: createTemplateDraftId(),
             name,
             unit: truncate(nullableToString(item.unit), 24),
+            unitPrice: formatImportedUnitPrice(item.unitPrice),
+            vatRate: formatImportedVatRate(item.vatRate),
+            note: "",
             sortOrder: item.sortOrder ?? itemIndex,
           },
         ];
@@ -74,29 +93,41 @@ export function estimateVersionToTemplateDraft(input: {
       nullableToString(input.description ?? ""),
       ESTIMATE_TEMPLATE_DESCRIPTION_MAX_LENGTH,
     ),
+    generationMode: "SMART",
+    currency: (input.currency ?? "PLN").trim().toUpperCase().slice(0, 3) || "PLN",
     sections,
   };
 
-  const payload = {
-    name: draft.name,
-    description: draft.description || null,
-    sections: draft.sections.map((section, sectionIndex) => ({
-      title: section.title,
-      guidance: null,
-      sortOrder: sectionIndex,
-      items: section.items.map((item, itemIndex) => ({
-        name: item.name,
-        unit: item.unit || null,
-        guidance: null,
-        sortOrder: itemIndex,
-      })),
-    })),
-  };
-
+  const payload = buildTemplatePayloadFromDraft(draft);
   const parsed = estimateTemplateInputSchema.safeParse(payload);
   if (!parsed.success || parsed.data.sections.length === 0) {
     throw new EstimateImportEmptyStructureError();
   }
 
   return draft;
+}
+
+function buildTemplatePayloadFromDraft(draft: TemplateEditorDraft) {
+  return {
+    name: draft.name,
+    description: draft.description || null,
+    generationMode: draft.generationMode,
+    currency: draft.currency,
+    sections: draft.sections.map((section, sectionIndex) => ({
+      title: section.title,
+      guidance: null,
+      sortOrder: sectionIndex,
+      items: section.items
+        .filter((item) => item.name && item.unit && item.unitPrice)
+        .map((item, itemIndex) => ({
+          name: item.name,
+          unit: item.unit,
+          unitPrice: item.unitPrice,
+          vatRate: item.vatRate || null,
+          note: null,
+          guidance: null,
+          sortOrder: itemIndex,
+        })),
+    })),
+  };
 }

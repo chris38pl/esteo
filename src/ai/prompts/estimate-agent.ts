@@ -101,7 +101,6 @@ export function buildEstimateAgentPrompt(input: EstimateAgentPromptInput): strin
     industryBlock,
     contextBlock,
     input.context.templatePromptBlock,
-    input.context.priceListPromptBlock,
     formatFinancialSnapshotBlock(input.agentContext),
     formatEditIntentBlock(input.guidance.intent),
     formatFinancialTargetBlock(input.guidance),

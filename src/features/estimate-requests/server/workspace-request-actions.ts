@@ -43,7 +43,6 @@ export async function convertRequestToEstimateAction(input: {
   requestId: string;
   locale: Locale;
   templateId?: string | null;
-  priceListId?: string | null;
 }): Promise<ActionResult<{ estimateId: string }>> {
   try {
     const user = await requireAuth(input.locale);
@@ -56,7 +55,6 @@ export async function convertRequestToEstimateAction(input: {
       userId: user.id,
       locale: input.locale,
       templateId: input.templateId,
-      priceListId: input.priceListId,
     });
 
     revalidatePath(`/${input.locale}/dashboard/${input.workspaceSlug}/requests`);

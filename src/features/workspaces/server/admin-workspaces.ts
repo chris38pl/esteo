@@ -18,6 +18,7 @@ import {
   logAuditEvent,
   revokeAllPendingWorkspaceInvitations,
   softDeleteWorkspaceRecord,
+  updateWorkspaceAppearanceRecord,
   updateWorkspaceRecord,
 } from "@/features/workspaces/server/repository";
 import { isValidWorkspaceSlug, normalizeWorkspaceSlug } from "@/features/workspaces/lib/slug";
@@ -400,6 +401,35 @@ export async function adminUpdateWorkspace(
     entityId: workspaceId,
     action: "admin_updated",
     diff: { name, slug },
+  });
+
+  return updated;
+}
+
+export async function adminUpdateWorkspaceAppearance(
+  admin: User,
+  workspaceId: string,
+  appearanceTheme: WorkspaceAppearanceTheme,
+) {
+  assertPlatformAdminUser(admin);
+
+  const workspace = await prisma.workspace.findFirst({
+    where: { id: workspaceId, deletedAt: null },
+  });
+
+  if (!workspace) {
+    throw new WorkspaceError("Workspace not found.");
+  }
+
+  const updated = await updateWorkspaceAppearanceRecord(workspaceId, appearanceTheme);
+
+  await logAuditEvent({
+    actorUserId: admin.id,
+    workspaceId,
+    entityType: "Workspace",
+    entityId: workspaceId,
+    action: "admin_appearance_updated",
+    diff: { appearanceTheme },
   });
 
   return updated;

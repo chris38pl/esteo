@@ -1,6 +1,6 @@
 "use client";
 
-import { Maximize2, Minimize2, Percent, Settings, Upload } from "lucide-react";
+import { Maximize2, Minimize2, Percent, Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { DecimalInput } from "@/components/ui/decimal-input";
@@ -119,11 +119,6 @@ export function EstimateToolsMenu({
         ) : null}
 
         <DropdownMenuSeparator />
-
-        <DropdownMenuItem disabled className="gap-2" title={t("editor.toolbar.comingSoon")}>
-          <Upload className="size-4" />
-          {t("editor.toolbar.importPriceList")}
-        </DropdownMenuItem>
 
         {showTopPanelToggle && onToggleTopPanel ? (
           <>

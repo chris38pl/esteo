@@ -31,10 +31,8 @@
     "tips": "Porady",
     "configuration": "Konfiguracja",
     "configurationTemplates": "Szablony wycen",
-    "configurationPriceLists": "Cenniki",
     "configurationRules": "Reguły",
-    "configurationNewTemplate": "Nowy szablon",
-    "configurationNewPriceList": "Nowy cennik"
+    "configurationNewTemplate": "Nowy szablon"
   },
   "notifications": {
     "label": "Powiadomienia",

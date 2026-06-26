@@ -1,3 +1,5 @@
+import { randomInt } from "crypto";
+
 import { WorkspaceAppearanceTheme } from "@prisma/client";
 
 export type WorkspaceAppearanceConfig = {
@@ -53,4 +55,9 @@ export function getAppearanceConfig(
     return APPEARANCE_CONFIG[theme];
   }
   return APPEARANCE_CONFIG[WorkspaceAppearanceTheme.OCEAN_BREEZE];
+}
+
+export function pickRandomAppearanceTheme(): WorkspaceAppearanceTheme {
+  const index = randomInt(WORKSPACE_APPEARANCE_THEMES.length);
+  return WORKSPACE_APPEARANCE_THEMES[index]!;
 }

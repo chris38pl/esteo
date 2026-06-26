@@ -2,13 +2,15 @@
   "nav": {
     "dashboard": "Panel",
     "requests": "Zapytania",
-    "estimateRequestPage": "Strona wyceny",
     "estimates": "Wyceny",
-    "payments": "Płatności",
-    "configuration": "Konfiguracja AI",
+    "payments": "Należności",
+    "aiRules": "Reguły AI",
+    "templates": "Szablony wycen",
+    "subscription": "Subskrypcja",
     "settings": "Ustawienia",
     "settingsOwnerOnly": "Tylko właściciel przestrzeni może zmieniać ustawienia",
     "configurationOwnerOnly": "Tylko właściciel przestrzeni może zmieniać konfigurację",
+    "templatesUpgradeTooltip": "Ulepsz plan do Pro lub Business, aby korzystać ze szablonów wycen",
     "comingSoon": "Wkrótce"
   },
   "tooltips": {

@@ -13,7 +13,6 @@ import {
   ESTIMATE_TEMPLATE_NAME_MAX_LENGTH,
   ESTIMATE_TEMPLATE_SECTION_TITLE_MAX_LENGTH,
 } from "@/features/estimate-templates/lib/template-limits";
-import { estimateTemplateInputSchema } from "@/features/estimate-templates/schemas/estimate-template";
 
 function truncate(value: string, maxLength: number): string {
   const trimmed = value.trim();
@@ -53,6 +52,9 @@ export function normalizeTemplateGenerationOutput(
               id: createTemplateDraftId(),
               name,
               unit: truncate(nullableToString(item.unit), 24),
+              unitPrice: "",
+              vatRate: "",
+              note: "",
               sortOrder: item.sortOrder ?? itemIndex,
             },
           ];
@@ -82,29 +84,10 @@ export function normalizeTemplateGenerationOutput(
       nullableToString(output.description),
       ESTIMATE_TEMPLATE_DESCRIPTION_MAX_LENGTH,
     ),
+    generationMode: "SMART",
+    currency: "PLN",
     sections,
   };
-
-  const payload = {
-    name: draft.name,
-    description: draft.description || null,
-    sections: draft.sections.map((section, sectionIndex) => ({
-      title: section.title,
-      guidance: section.guidance || null,
-      sortOrder: sectionIndex,
-      items: section.items.map((item, itemIndex) => ({
-        name: item.name,
-        unit: item.unit || null,
-        guidance: null,
-        sortOrder: itemIndex,
-      })),
-    })),
-  };
-
-  const parsed = estimateTemplateInputSchema.safeParse(payload);
-  if (!parsed.success) {
-    throw new Error("AI returned an invalid template structure.");
-  }
 
   if (process.env.NODE_ENV === "development") {
     const rawItemCount = output.sections.reduce(

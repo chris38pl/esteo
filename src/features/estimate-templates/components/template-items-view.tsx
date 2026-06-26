@@ -13,8 +13,14 @@ import { TemplateItemsTable, type TemplateSectionData } from "./template-items-t
 import { TemplateItemsToolbar } from "./template-items-toolbar";
 import { TemplateMobileToolbar } from "./template-mobile-toolbar";
 
+type TemplateItemEditableFields = Pick<
+  TemplateItemDraft,
+  "name" | "unit" | "unitPrice" | "vatRate" | "note"
+>;
+
 interface TemplateItemsViewProps {
   sections: TemplateSectionData[];
+  currency: string;
   advancedMode: boolean;
   onAdvancedModeChange: (value: boolean) => void;
   onAddSection: () => void | Promise<string | undefined>;
@@ -27,10 +33,7 @@ interface TemplateItemsViewProps {
   ) => void;
   onDeleteSection: (sectionId: string) => void;
   onAddItem: (sectionId: string) => void;
-  onUpdateItem: (
-    itemId: string,
-    data: Partial<Pick<TemplateItemDraft, "name" | "unit">>,
-  ) => void;
+  onUpdateItem: (itemId: string, data: Partial<TemplateItemEditableFields>) => void;
   onDeleteItem: (itemId: string) => void;
   onReorderItems: (sectionId: string, fromIndex: number, toIndex: number) => void;
   onBlur: () => void | Promise<void>;
@@ -40,6 +43,7 @@ interface TemplateItemsViewProps {
 
 export function TemplateItemsView({
   sections,
+  currency,
   advancedMode,
   onAdvancedModeChange,
   onAddSection,
@@ -77,6 +81,7 @@ export function TemplateItemsView({
         />
         <TemplateItemsTable
           sections={sections}
+          currency={currency}
           advancedMode={advancedMode}
           onUpdateSection={onUpdateSection}
           onDeleteSection={onDeleteSection}
@@ -101,6 +106,7 @@ export function TemplateItemsView({
         />
         <TemplateItemsMobileList
           sections={sections}
+          currency={currency}
           advancedMode={advancedMode}
           onAddSection={onAddSection}
           isAddingSection={isAddingSection}

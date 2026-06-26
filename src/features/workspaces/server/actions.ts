@@ -1,6 +1,6 @@
 "use server";
 
-import type { InviteRole, WorkspaceAppearanceTheme, WorkspaceIndustry, WorkspaceLocale, WorkspaceRuleType } from "@prisma/client";
+import type { InviteRole, WorkspaceIndustry, WorkspaceLocale, WorkspaceRuleType } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 import { dashboardEstimatesHref } from "@/lib/dashboard-routes";
@@ -316,7 +316,6 @@ export async function updateWorkspaceProfileAction(
   workspaceId: string,
   input: {
     name: string;
-    appearanceTheme: WorkspaceAppearanceTheme;
     companyDescription?: string | null;
   },
   locale: Locale = "pl",

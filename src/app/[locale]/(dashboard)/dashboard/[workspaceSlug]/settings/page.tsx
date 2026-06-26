@@ -68,7 +68,6 @@ export default async function WorkspaceSettingsPage({
         workspaceIndustry={workspace.industry}
         initialIndustryOtherText={workspace.industryOtherText ?? ""}
         initialName={workspace.name}
-        initialAppearanceTheme={workspace.appearanceTheme}
         initialCompanyDescription={workspace.settings?.companyDescription ?? ""}
         initialCompanyAddress={workspace.settings?.companyAddress ?? ""}
         initialCompanyTaxId={workspace.settings?.companyTaxId ?? ""}

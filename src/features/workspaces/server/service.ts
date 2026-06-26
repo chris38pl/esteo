@@ -12,6 +12,7 @@ import { randomUUID } from "crypto";
 import { defaultPlanVersion } from "@/server/billing/plan-catalog";
 import { isUniqueConstraintError } from "@/lib/database/is-unique-constraint-error";
 import { countAccessibleWorkspaces } from "@/features/workspaces/server/accessible-workspaces";
+import { pickRandomAppearanceTheme } from "@/features/workspaces/lib/workspace-appearance";
 import { isValidWorkspaceSlug, normalizeWorkspaceSlug } from "@/features/workspaces/lib/slug";
 import { isServiceWorkspace } from "@/features/workspaces/lib/industries";
 import { isSlugAvailable, recordSlugAlias } from "@/features/workspaces/server/slug-availability";
@@ -123,7 +124,6 @@ export async function createWorkspace(
     plan?: SubscriptionPlan;
     industry: WorkspaceIndustry;
     industryOtherText?: string;
-    appearanceTheme?: WorkspaceAppearanceTheme;
     locale?: Locale;
     branding?: WorkspaceBranding;
     aiInstructions?: string;
@@ -179,7 +179,7 @@ export async function createWorkspace(
       industry: input.industry,
       industryOtherText: input.industryOtherText,
       defaultLocale: appLocaleToWorkspaceLocale(input.locale ?? "pl"),
-      appearanceTheme: input.appearanceTheme,
+      appearanceTheme: pickRandomAppearanceTheme(),
       branding,
       aiInstructions: input.aiInstructions,
       companyDescription,
@@ -593,7 +593,6 @@ export async function updateWorkspaceProfile(
   workspaceId: string,
   input: {
     name: string;
-    appearanceTheme: WorkspaceAppearanceTheme;
     companyDescription?: string | null;
   },
 ) {
@@ -607,7 +606,6 @@ export async function updateWorkspaceProfile(
       where: { id: workspaceId },
       data: {
         name,
-        appearanceTheme: input.appearanceTheme,
       },
       include: { settings: true },
     });
@@ -634,7 +632,6 @@ export async function updateWorkspaceProfile(
     action: "profile_updated",
     diff: {
       name,
-      appearanceTheme: input.appearanceTheme,
       companyDescription,
     },
   });
@@ -1071,6 +1068,5 @@ export async function getWorkspacePromptContext(
     estimateSections: context.estimateSections,
     rules: context.rules,
     templatePromptBlock: context.templatePromptBlock,
-    priceListPromptBlock: context.priceListPromptBlock,
   });
 }

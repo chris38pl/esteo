@@ -14,18 +14,14 @@
     "template": {
       "id": "template-b",
       "name": "Hydraulika B",
+      "generationMode": "SMART",
+      "currency": "PLN",
       "sections": [
         {
           "title": "Hydraulika",
-          "items": [{ "name": "Montaż WC", "unit": "szt." }]
+          "items": [{ "name": "Montaż WC", "unit": "szt.", "unitPrice": "450.00" }]
         }
       ]
-    },
-    "priceList": {
-      "id": "price-list-b",
-      "name": "Cennik B",
-      "currency": "PLN",
-      "items": [{ "name": "Montaż WC", "unit": "szt.", "unitPrice": "450.00" }]
     },
     "rules": [],
     "systemRules": { "rounding": true, "units": true }
@@ -34,18 +30,14 @@
     "template": {
       "id": "template-a",
       "name": "Malowanie A",
+      "generationMode": "SMART",
+      "currency": "PLN",
       "sections": [
         {
           "title": "Ściany i sufity",
-          "items": [{ "name": "Malowanie ścian", "unit": "m²" }]
+          "items": [{ "name": "Malowanie ścian", "unit": "m²", "unitPrice": "18.00" }]
         }
       ]
-    },
-    "priceList": {
-      "id": "price-list-a",
-      "name": "Cennik A",
-      "currency": "PLN",
-      "items": [{ "name": "Malowanie", "unit": "m²", "unitPrice": "18.00" }]
     }
   },
   "request": {
@@ -61,8 +53,10 @@
       "expectedPrices": [{ "term": "Malowanie", "unit": "m²", "unitPrice": "18.00" }]
     },
     "configurationLifecycle": {
-      "promptMustContain": ["Malowanie A", "Cennik A", "18.00"],
-      "promptMustNotContain": ["Hydraulika B", "Cennik B", "450.00"]
+      "promptMustContain": ["Malowanie A", "18.00"],
+      "promptMustNotContain": ["Hydraulika B", "450.00"],
+      "templateInPrompt": true,
+      "priceListInPrompt": false
     },
     "coverageTerms": ["malowan"],
     "leakageDomain": "services",

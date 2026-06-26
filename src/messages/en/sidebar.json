@@ -2,13 +2,15 @@
   "nav": {
     "dashboard": "Dashboard",
     "requests": "Requests",
-    "estimateRequestPage": "Estimate request page",
     "estimates": "Estimates",
-    "payments": "Payments",
-    "configuration": "AI configuration",
+    "payments": "Receivables",
+    "aiRules": "AI rules",
+    "templates": "Estimate templates",
+    "subscription": "Subscription",
     "settings": "Settings",
     "settingsOwnerOnly": "Only workspace owners can change settings",
     "configurationOwnerOnly": "Only workspace owners can change configuration",
+    "templatesUpgradeTooltip": "Upgrade to Pro or Business to use estimate templates",
     "comingSoon": "Coming soon"
   },
   "tooltips": {

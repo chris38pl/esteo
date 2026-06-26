@@ -2,7 +2,6 @@
 
 import type {
   SubscriptionPlan,
-  WorkspaceAppearanceTheme,
   WorkspaceIndustry,
 } from "@prisma/client";
 import { revalidatePath } from "next/cache";
@@ -60,7 +59,6 @@ type CreateWorkspaceActionInput = {
   name: string;
   industry: WorkspaceIndustry;
   industryOtherText?: string;
-  appearanceTheme?: WorkspaceAppearanceTheme;
   companyDescription?: string | null;
   plan?: SubscriptionPlan;
 };
@@ -112,7 +110,6 @@ async function createWorkspaceAndActivate(
       name: input.name,
       industry: input.industry,
       industryOtherText: input.industryOtherText,
-      appearanceTheme: input.appearanceTheme,
       companyDescription: input.companyDescription,
       plan,
       locale,

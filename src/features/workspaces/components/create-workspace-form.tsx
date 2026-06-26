@@ -4,11 +4,10 @@ import { Rocket } from "lucide-react";
 import Link from "next/link";
 import {
   SubscriptionPlan,
-  WorkspaceAppearanceTheme,
   WorkspaceIndustry,
 } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 
 import {
@@ -48,15 +47,11 @@ const PLAN_OPTIONS: SubscriptionPlan[] = [
 export function CreateWorkspaceForm({
   locale,
   mode = "onboarding",
-  appearanceTheme,
-  onPendingChange,
   freeSlotTaken = false,
   manageFreeWorkspaceSlug = null,
 }: {
   locale: Locale;
   mode?: CreateWorkspaceFormMode;
-  appearanceTheme: WorkspaceAppearanceTheme;
-  onPendingChange?: (pending: boolean) => void;
   freeSlotTaken?: boolean;
   manageFreeWorkspaceSlug?: string | null;
 }) {
@@ -78,10 +73,6 @@ export function CreateWorkspaceForm({
 
   const showOtherText = industry === WorkspaceIndustry.OTHER;
 
-  useEffect(() => {
-    onPendingChange?.(isPending);
-  }, [isPending, onPendingChange]);
-
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
@@ -100,7 +91,6 @@ export function CreateWorkspaceForm({
       name,
       industry,
       industryOtherText: showOtherText ? industryOtherText : undefined,
-      appearanceTheme,
       plan: showPlanPicker ? plan : SubscriptionPlan.FREE,
       companyDescription: companyDescription.trim() || undefined,
     });
@@ -120,7 +110,6 @@ export function CreateWorkspaceForm({
             name: parsed.data.name,
             industry: parsed.data.industry,
             industryOtherText: parsed.data.industryOtherText,
-            appearanceTheme: parsed.data.appearanceTheme,
             plan: parsed.data.plan,
             companyDescription: parsed.data.companyDescription,
           },

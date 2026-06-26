@@ -1,6 +1,6 @@
 {
   "id": "configuration-template-plumbing-bathroom",
-  "name": "Configuration — plumbing template items",
+  "name": "Configuration — plumbing template with prices",
   "locale": "pl",
   "category": "business",
   "quick": true,
@@ -11,12 +11,14 @@
     "companyDescription": "Firma hydrauliczna realizująca remonty łazienek i montaże armatury.",
     "template": {
       "name": "Remont łazienki",
+      "generationMode": "SMART",
+      "currency": "PLN",
       "sections": [
         {
           "title": "Hydraulika",
           "items": [
-            { "name": "Montaż WC", "unit": "szt" },
-            { "name": "Montaż umywalki", "unit": "szt" }
+            { "name": "Montaż WC", "unit": "szt", "unitPrice": "450" },
+            { "name": "Montaż umywalki", "unit": "szt", "unitPrice": "280" }
           ]
         }
       ]
@@ -37,7 +39,15 @@
       { "term": "umywalk", "scope": "any_item" }
     ],
     "configuration": {
-      "expectedTemplateItems": [{ "term": "Montaż WC" }, { "term": "Montaż umywalki" }]
+      "expectedTemplateItems": [{ "term": "Montaż WC" }, { "term": "Montaż umywalki" }],
+      "expectedPrices": [
+        { "term": "Montaż WC", "unit": "szt", "unitPrice": "450" },
+        { "term": "Montaż umywalki", "unit": "szt", "unitPrice": "280" }
+      ]
+    },
+    "configurationLifecycle": {
+      "templateInPrompt": true,
+      "priceListInPrompt": false
     },
     "coverageTerms": ["WC", "umywalk"],
     "leakageDomain": "services",

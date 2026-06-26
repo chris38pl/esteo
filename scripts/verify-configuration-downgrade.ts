@@ -9,76 +9,111 @@ function assert(condition: boolean, message: string): void {
   }
 }
 
-const downgradeScenario: EvalScenario = {
+const downgradeScenario = {
   id: "verify-downgrade",
   name: "verify-downgrade",
-  locale: "pl",
-  category: "business",
+  locale: "pl" as const,
+  category: "business" as const,
+  quick: false,
+  critical: false,
   workspace: {
-    industry: "CONSTRUCTION",
+    industry: "CONSTRUCTION" as const,
+    industryOtherText: "",
     companyDescription: "Test",
-    subscriptionPlan: "FREE",
-    subscriptionStatus: "ACTIVE",
+    subscriptionPlan: "FREE" as const,
+    subscriptionStatus: "ACTIVE" as const,
     template: {
+      id: "template-stored",
       name: "Stored Template",
-      sections: [{ title: "Sekcja", items: [{ name: "Pozycja" }] }],
-    },
-    priceList: {
-      name: "Stored Price List",
+      generationMode: "SMART" as const,
       currency: "PLN",
-      items: [{ name: "Pozycja", unit: "m²", unitPrice: "10.00" }],
+      sections: [
+        {
+          title: "Sekcja",
+          items: [{ name: "Pozycja", unit: "m²", unitPrice: "10.00" }],
+        },
+      ],
     },
     rules: [],
   },
   request: { project: { description: "Test brief" } },
   expectations: {
+    mustHave: [],
+    mustNotHave: [],
+    coverageTerms: [],
+    requiredSections: [],
+    forbiddenSections: [],
+    leakageDomain: "construction" as const,
+    maxLeakageTerms: 0,
+    minLineItems: 0,
+    maxLineItems: 100,
     configurationLifecycle: {
       templateInPrompt: false,
       priceListInPrompt: false,
+      promptMustContain: [],
+      promptMustNotContain: [],
     },
   },
-};
+} satisfies EvalScenario;
 
-const snapshotScenario: EvalScenario = {
+const snapshotScenario = {
   id: "verify-snapshot",
   name: "verify-snapshot",
-  locale: "pl",
-  category: "business",
+  locale: "pl" as const,
+  category: "business" as const,
+  quick: false,
+  critical: false,
   workspace: {
-    industry: "CONSTRUCTION",
+    industry: "CONSTRUCTION" as const,
+    industryOtherText: "",
     companyDescription: "Test",
-    subscriptionPlan: "FREE",
-    subscriptionStatus: "ACTIVE",
+    subscriptionPlan: "FREE" as const,
+    subscriptionStatus: "ACTIVE" as const,
     template: {
+      id: "template-live",
       name: "Live Template B",
-      sections: [{ title: "B", items: [{ name: "B item" }] }],
-    },
-    priceList: {
-      name: "Live Price B",
+      generationMode: "SMART" as const,
       currency: "PLN",
-      items: [{ name: "B price", unit: "szt.", unitPrice: "99.00" }],
+      sections: [
+        {
+          title: "B",
+          items: [{ name: "B item", unit: "szt.", unitPrice: "99.00" }],
+        },
+      ],
     },
     rules: [],
   },
   configurationSnapshot: {
     template: {
+      id: "template-snapshot",
       name: "Snapshot Template A",
-      sections: [{ title: "A", items: [{ name: "A item" }] }],
-    },
-    priceList: {
-      name: "Snapshot Price A",
+      generationMode: "SMART" as const,
       currency: "PLN",
-      items: [{ name: "A price", unit: "m²", unitPrice: "18.00" }],
+      sections: [
+        {
+          title: "A",
+          items: [{ name: "A item", unit: "m²", unitPrice: "18.00" }],
+        },
+      ],
     },
   },
   request: { project: { description: "Test brief" } },
   expectations: {
+    mustHave: [],
+    mustNotHave: [],
+    coverageTerms: [],
+    requiredSections: [],
+    forbiddenSections: [],
+    leakageDomain: "construction" as const,
+    maxLeakageTerms: 0,
+    minLineItems: 0,
+    maxLineItems: 100,
     configurationLifecycle: {
       promptMustContain: ["Snapshot Template A", "18.00"],
       promptMustNotContain: ["Live Template B", "99.00"],
     },
   },
-};
+} satisfies EvalScenario;
 
 for (const scenario of [downgradeScenario, snapshotScenario]) {
   const context = buildEvalGenerationContext(scenario);

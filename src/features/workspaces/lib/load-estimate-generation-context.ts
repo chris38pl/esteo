@@ -16,8 +16,6 @@ import { buildPromptBlocksFromConfigurationSnapshot } from "@/features/workspace
 import type { EstimateConfigurationSnapshot } from "@/features/workspaces/lib/configuration-snapshot";
 import {
   formatEstimateTemplateBlock,
-  formatPriceListBlock,
-  type PromptPriceListBlock,
   type PromptTemplateBlock,
 } from "@/features/workspaces/lib/prompt-context";
 import { workspaceBrandingSchema } from "@/features/workspaces/schemas/branding";
@@ -48,7 +46,6 @@ export type EstimateGenerationContext = {
   sectionStructureMode: SectionStructureMode;
   rules: Array<{ title: string; content: string }>;
   templatePromptBlock?: string;
-  priceListPromptBlock?: string;
   configurationSnapshot?: EstimateConfigurationSnapshot;
 };
 
@@ -61,8 +58,7 @@ export function estimateAiRulesApplied(context: EstimateGenerationContext): bool
       context.sectionStructureMode !== "ai_dynamic" ||
       context.estimateSections.length > 0 ||
       context.rules.length > 0 ||
-      context.templatePromptBlock?.trim() ||
-      context.priceListPromptBlock?.trim(),
+      context.templatePromptBlock?.trim(),
   );
 }
 
@@ -71,7 +67,6 @@ export async function loadEstimateGenerationContext(
   locale: Locale,
   options: {
     templateId?: string | null;
-    priceListId?: string | null;
     configurationSnapshot?: EstimateConfigurationSnapshot;
   } = {},
 ): Promise<EstimateGenerationContext | null> {
@@ -121,7 +116,7 @@ export async function loadEstimateGenerationContext(
 
   if (options.configurationSnapshot !== undefined) {
     const snapshot = options.configurationSnapshot;
-    const promptBlocks = buildPromptBlocksFromConfigurationSnapshot(snapshot);
+    const promptBlocks = buildPromptBlocksFromConfigurationSnapshot(snapshot, locale);
     const estimateSections = snapshot.template
       ? snapshot.template.sections.map((section, index) => ({
           key: `snapshot-template:${index}`,
@@ -145,7 +140,6 @@ export async function loadEstimateGenerationContext(
       sectionStructureMode,
       rules: [...activeSystemRules, ...userEstimateRules],
       templatePromptBlock: promptBlocks.templatePromptBlock,
-      priceListPromptBlock: promptBlocks.priceListPromptBlock,
       configurationSnapshot: snapshot,
     };
   }
@@ -154,44 +148,24 @@ export async function loadEstimateGenerationContext(
     options.templateId === undefined
       ? (settings?.defaultEstimateTemplateId ?? null)
       : options.templateId;
-  const selectedPriceListId =
-    options.priceListId === undefined
-      ? (settings?.defaultPriceListId ?? null)
-      : options.priceListId;
 
-  const [template, priceList] = canUsePremiumConfiguration
-    ? await Promise.all([
-        selectedTemplateId
-          ? prisma.estimateTemplate.findFirst({
-              where: { id: selectedTemplateId, workspaceId, deletedAt: null },
-              include: {
-                sections: {
-                  where: { deletedAt: null },
-                  orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-                  include: {
-                    items: {
-                      where: { deletedAt: null },
-                      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-                    },
-                  },
-                },
+  const template = canUsePremiumConfiguration && selectedTemplateId
+    ? await prisma.estimateTemplate.findFirst({
+        where: { id: selectedTemplateId, workspaceId, deletedAt: null },
+        include: {
+          sections: {
+            where: { deletedAt: null },
+            orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+            include: {
+              items: {
+                where: { deletedAt: null },
+                orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
               },
-            })
-          : Promise.resolve(null),
-        selectedPriceListId
-          ? prisma.priceList.findFirst({
-              where: { id: selectedPriceListId, workspaceId, deletedAt: null },
-              include: {
-                items: {
-                  where: { deletedAt: null },
-                  orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-                  take: 200,
-                },
-              },
-            })
-          : Promise.resolve(null),
-      ])
-    : [null, null];
+            },
+          },
+        },
+      })
+    : null;
 
   const resolvedSections = template
     ? template.sections.map((section) => ({
@@ -218,28 +192,19 @@ export async function loadEstimateGenerationContext(
   const templateForPrompt: PromptTemplateBlock | null = template
     ? {
         name: template.name,
+        currency: template.currency,
+        generationMode: template.generationMode,
         sections: template.sections.map((section) => ({
           title: section.title,
           guidance: section.guidance,
           items: section.items.map((item) => ({
             name: item.name,
             unit: item.unit,
+            unitPrice: item.unitPrice ? item.unitPrice.toFixed(2) : null,
+            vatRate: item.vatRate ? item.vatRate.toString() : null,
+            note: item.note,
             guidance: item.guidance,
           })),
-        })),
-      }
-    : null;
-
-  const priceListForPrompt: PromptPriceListBlock | null = priceList
-    ? {
-        name: priceList.name,
-        currency: priceList.currency,
-        items: priceList.items.map((item) => ({
-          name: item.name,
-          unit: item.unit,
-          unitPrice: item.unitPrice.toFixed(2),
-          vatRate: item.vatRate?.toString() ?? null,
-          note: item.note,
         })),
       }
     : null;
@@ -249,28 +214,19 @@ export async function loadEstimateGenerationContext(
       ? {
           id: template.id,
           name: template.name,
+          generationMode: template.generationMode,
+          currency: template.currency,
           sections: template.sections.map((section) => ({
             title: section.title,
             guidance: section.guidance,
             items: section.items.map((item) => ({
               name: item.name,
               unit: item.unit,
+              unitPrice: item.unitPrice ? item.unitPrice.toFixed(2) : null,
+              vatRate: item.vatRate ? item.vatRate.toString() : null,
+              note: item.note,
               guidance: item.guidance,
             })),
-          })),
-        }
-      : null,
-    priceList: priceList
-      ? {
-          id: priceList.id,
-          name: priceList.name,
-          currency: priceList.currency,
-          items: priceList.items.map((item) => ({
-            name: item.name,
-            unit: item.unit,
-            unitPrice: item.unitPrice.toFixed(2),
-            vatRate: item.vatRate?.toString() ?? null,
-            note: item.note,
           })),
         }
       : null,
@@ -286,8 +242,7 @@ export async function loadEstimateGenerationContext(
     allowedSections: estimateSections.map((s) => ({ key: s.key, title: s.title })),
     sectionStructureMode: resolvedStructureMode,
     rules: [...activeSystemRules, ...userEstimateRules],
-    templatePromptBlock: formatEstimateTemplateBlock(templateForPrompt),
-    priceListPromptBlock: formatPriceListBlock(priceListForPrompt),
+    templatePromptBlock: formatEstimateTemplateBlock(templateForPrompt, locale),
     configurationSnapshot,
   };
 }

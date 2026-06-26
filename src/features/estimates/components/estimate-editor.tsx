@@ -113,7 +113,6 @@ interface EstimateEditorProps {
   rulesApplied?: boolean;
   configurationSource?: {
     templateName: string | null;
-    priceListName: string | null;
   } | null;
   investmentPropertyType?: string | null;
   initialAiMessages?: AiMessageClient[];
@@ -1197,7 +1196,6 @@ export function EstimateEditor({
                     <div className="mx-4 mt-4 mb-4">
                       <EstimateConfigurationSourceBanner
                         templateName={configurationSource.templateName}
-                        priceListName={configurationSource.priceListName}
                       />
                     </div>
                   ) : null}

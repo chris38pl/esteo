@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 
-import { cn } from "@/lib/utils";
 import type {
   TemplateItemDraft,
   TemplateSectionDraft,
@@ -13,8 +12,14 @@ import { TemplateSectionRow } from "./template-section-row";
 
 export type TemplateSectionData = TemplateSectionDraft;
 
+type TemplateItemEditableFields = Pick<
+  TemplateItemDraft,
+  "name" | "unit" | "unitPrice" | "vatRate" | "note"
+>;
+
 interface TemplateItemsTableProps {
   sections: TemplateSectionData[];
+  currency: string;
   advancedMode: boolean;
   onUpdateSection: (
     sectionId: string,
@@ -23,10 +28,7 @@ interface TemplateItemsTableProps {
   onDeleteSection: (sectionId: string) => void;
   onAddItem: (sectionId: string) => void;
   addingItemSectionIds?: string[];
-  onUpdateItem: (
-    itemId: string,
-    data: Partial<Pick<TemplateItemDraft, "name" | "unit">>,
-  ) => void;
+  onUpdateItem: (itemId: string, data: Partial<TemplateItemEditableFields>) => void;
   onDeleteItem: (itemId: string) => void;
   onReorderItems: (sectionId: string, fromIndex: number, toIndex: number) => void;
   onBlur: () => void | Promise<void>;
@@ -42,6 +44,7 @@ type DragState = {
 
 export function TemplateItemsTable({
   sections,
+  currency,
   advancedMode,
   onUpdateSection,
   onDeleteSection,
@@ -121,18 +124,28 @@ export function TemplateItemsTable({
   }
 
   return (
-    <div className="min-w-0">
-      <div className="overflow-x-auto">
-        <table className={cn("w-full min-w-[640px] border-collapse text-sm")}>
-          <thead>
-            <tr className="border-b border-border/60 text-xs font-medium text-muted-foreground">
-              <th className="w-9 px-2 py-3" aria-hidden />
-              <th className="w-14 px-2 py-3 text-left">{t("columnNo")}</th>
-              <th className="min-w-[12rem] px-2 py-3 text-left">{t("columnName")}</th>
-              <th className="w-28 px-2 py-3 text-left">{t("columnUnit")}</th>
-              <th className="w-10 px-2 py-3" aria-hidden />
-            </tr>
-          </thead>
+    <div className="min-w-0 overflow-hidden">
+      <table className="w-full table-fixed border-collapse text-sm">
+        <colgroup>
+          <col className="w-9" />
+          <col className="w-12" />
+          <col />
+          <col className="w-[4.25rem]" />
+          <col className="w-[5.75rem]" />
+          <col className="w-[3.5rem]" />
+          <col className="w-10" />
+        </colgroup>
+        <thead>
+          <tr className="border-b border-border/60 text-xs font-medium text-muted-foreground">
+            <th className="px-2 py-3" aria-hidden />
+            <th className="px-2 py-3 text-left">{t("columnNo")}</th>
+            <th className="px-2 py-3 text-left">{t("columnName")}</th>
+            <th className="px-2 py-3 text-left">{t("columnUnit")}</th>
+            <th className="px-2 py-3 text-left">{t("columnUnitPrice")}</th>
+            <th className="px-2 py-3 text-left">{t("columnVat")}</th>
+            <th className="px-2 py-3" aria-hidden />
+          </tr>
+        </thead>
           <tbody>
             {sections.map((section, sectionIndex) => {
               const sectionNumber = sectionIndex + 1;
@@ -156,6 +169,7 @@ export function TemplateItemsTable({
                   onUpdateItem={onUpdateItem}
                   onDeleteItem={onDeleteItem}
                   onBlur={onBlur}
+                  currency={currency}
                   onDragStart={(itemIndex) =>
                     setDragState({ sectionId: section.id, itemIndex })
                   }
@@ -187,7 +201,6 @@ export function TemplateItemsTable({
             })}
           </tbody>
         </table>
-      </div>
     </div>
   );
 }
@@ -213,6 +226,7 @@ function SectionRows({
   onDragLeave,
   onDrop,
   onDragEnd,
+  currency,
 }: {
   section: TemplateSectionData;
   sectionNumber: number;
@@ -229,12 +243,10 @@ function SectionRows({
   onDeleteSection: (sectionId: string) => void;
   onAddItem: (sectionId: string) => void;
   isAddingItem?: boolean;
-  onUpdateItem: (
-    itemId: string,
-    data: Partial<Pick<TemplateItemDraft, "name" | "unit">>,
-  ) => void;
+  onUpdateItem: (itemId: string, data: Partial<TemplateItemEditableFields>) => void;
   onDeleteItem: (itemId: string) => void;
   onBlur: () => void | Promise<void>;
+  currency: string;
   onDragStart: (itemIndex: number) => void;
   onDragOver: (itemIndex: number) => void;
   onDragLeave: (itemIndex: number) => void;
@@ -264,6 +276,7 @@ function SectionRows({
               key={item.id}
               item={item}
               positionLabel={`${sectionNumber}.${index + 1}`}
+              currency={currency}
               onUpdate={onUpdateItem}
               onDelete={onDeleteItem}
               onBlur={onBlur}

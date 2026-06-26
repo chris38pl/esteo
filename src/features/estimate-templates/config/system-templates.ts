@@ -8,33 +8,39 @@ export type SystemEstimateTemplate = EstimateTemplateInput & {
   industry: WorkspaceIndustry;
 };
 
+const DEFAULT_TEMPLATE_META = {
+  generationMode: "SMART" as const,
+  currency: "PLN",
+};
+
 export const SYSTEM_ESTIMATE_TEMPLATES: SystemEstimateTemplate[] = [
   {
     key: "construction-renovation",
     industry: "CONSTRUCTION",
     name: "Remont mieszkania",
     description: "Przykładowa struktura dla remontów mieszkań i lokali.",
+    ...DEFAULT_TEMPLATE_META,
     sections: [
       {
         title: "Prace przygotowawcze",
         guidance: "Uwzględnij zabezpieczenie, demontaż i przygotowanie frontu robót, jeśli pasują do zakresu.",
         items: [
-          { name: "Zabezpieczenie pomieszczeń", unit: "kpl" },
-          { name: "Demontaż istniejących elementów", unit: "kpl" },
+          { name: "Zabezpieczenie pomieszczeń", unit: "kpl", unitPrice: "350" },
+          { name: "Demontaż istniejących elementów", unit: "kpl", unitPrice: "480" },
         ],
       },
       {
         title: "Ściany i sufity",
         items: [
-          { name: "Szpachlowanie", unit: "m²" },
-          { name: "Malowanie ścian i sufitów", unit: "m²" },
+          { name: "Szpachlowanie", unit: "m²", unitPrice: "45" },
+          { name: "Malowanie ścian i sufitów", unit: "m²", unitPrice: "28" },
         ],
       },
       {
         title: "Podłogi",
         items: [
-          { name: "Demontaż starej podłogi", unit: "m²" },
-          { name: "Montaż nowej podłogi", unit: "m²" },
+          { name: "Demontaż starej podłogi", unit: "m²", unitPrice: "35" },
+          { name: "Montaż nowej podłogi", unit: "m²", unitPrice: "95" },
         ],
       },
     ],
@@ -44,25 +50,26 @@ export const SYSTEM_ESTIMATE_TEMPLATES: SystemEstimateTemplate[] = [
     industry: "PLUMBING",
     name: "Remont łazienki",
     description: "Przykładowa struktura dla łazienek i prac hydraulicznych.",
+    ...DEFAULT_TEMPLATE_META,
     sections: [
       {
         title: "Demontaż",
         items: [
-          { name: "Demontaż armatury", unit: "kpl" },
-          { name: "Demontaż płytek", unit: "m²" },
+          { name: "Demontaż armatury", unit: "kpl", unitPrice: "320" },
+          { name: "Demontaż płytek", unit: "m²", unitPrice: "55" },
         ],
       },
       {
         title: "Hydraulika",
         items: [
-          { name: "Montaż WC", unit: "szt" },
-          { name: "Montaż umywalki", unit: "szt" },
-          { name: "Montaż baterii", unit: "szt" },
+          { name: "Montaż WC", unit: "szt", unitPrice: "450" },
+          { name: "Montaż umywalki", unit: "szt", unitPrice: "280" },
+          { name: "Montaż baterii", unit: "szt", unitPrice: "180" },
         ],
       },
       {
         title: "Wykończenie",
-        items: [{ name: "Układanie płytek", unit: "m²" }],
+        items: [{ name: "Układanie płytek", unit: "m²", unitPrice: "180" }],
       },
     ],
   },
@@ -71,19 +78,20 @@ export const SYSTEM_ESTIMATE_TEMPLATES: SystemEstimateTemplate[] = [
     industry: "ELECTRICAL",
     name: "Instalacja w mieszkaniu",
     description: "Przykładowa struktura dla prac elektrycznych w mieszkaniach.",
+    ...DEFAULT_TEMPLATE_META,
     sections: [
       {
         title: "Punkty elektryczne",
         items: [
-          { name: "Montaż gniazda", unit: "szt" },
-          { name: "Montaż punktu oświetleniowego", unit: "szt" },
+          { name: "Montaż gniazda", unit: "szt", unitPrice: "85" },
+          { name: "Montaż punktu oświetleniowego", unit: "szt", unitPrice: "120" },
         ],
       },
       {
         title: "Rozdzielnia i zabezpieczenia",
         items: [
-          { name: "Modernizacja rozdzielnicy", unit: "kpl" },
-          { name: "Pomiary elektryczne", unit: "kpl" },
+          { name: "Modernizacja rozdzielnicy", unit: "kpl", unitPrice: "1200" },
+          { name: "Pomiary elektryczne", unit: "kpl", unitPrice: "350" },
         ],
       },
     ],
@@ -93,24 +101,25 @@ export const SYSTEM_ESTIMATE_TEMPLATES: SystemEstimateTemplate[] = [
     industry: "CARPENTRY",
     name: "Zabudowa na wymiar",
     description: "Przykładowa struktura dla mebli i zabudów na wymiar.",
+    ...DEFAULT_TEMPLATE_META,
     sections: [
       {
         title: "Projekt i pomiar",
         items: [
-          { name: "Pomiar i konsultacja", unit: "kpl" },
-          { name: "Projekt techniczny", unit: "kpl" },
+          { name: "Pomiar i konsultacja", unit: "kpl", unitPrice: "250" },
+          { name: "Projekt techniczny", unit: "kpl", unitPrice: "600" },
         ],
       },
       {
         title: "Produkcja",
         items: [
-          { name: "Korpusy meblowe", unit: "m²" },
-          { name: "Fronty meblowe", unit: "m²" },
+          { name: "Korpusy meblowe", unit: "m²", unitPrice: "420" },
+          { name: "Fronty meblowe", unit: "m²", unitPrice: "380" },
         ],
       },
       {
         title: "Montaż",
-        items: [{ name: "Montaż zabudowy", unit: "kpl" }],
+        items: [{ name: "Montaż zabudowy", unit: "kpl", unitPrice: "900" }],
       },
     ],
   },
@@ -119,12 +128,13 @@ export const SYSTEM_ESTIMATE_TEMPLATES: SystemEstimateTemplate[] = [
     industry: "OTHER",
     name: "Usługi standardowe",
     description: "Uniwersalny szablon dla prostych usług — sekcje definiuje AI lub workspace.",
+    ...DEFAULT_TEMPLATE_META,
     sections: [
       {
         title: "Realizacja usługi",
         items: [
-          { name: "Realizacja usługi", unit: "kpl" },
-          { name: "Przygotowanie i koordynacja", unit: "kpl" },
+          { name: "Realizacja usługi", unit: "kpl", unitPrice: "500" },
+          { name: "Przygotowanie i koordynacja", unit: "kpl", unitPrice: "200" },
         ],
       },
     ],

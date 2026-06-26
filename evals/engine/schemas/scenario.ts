@@ -32,6 +32,9 @@ export const workspaceRuleFixtureSchema = z.object({
 export const templateItemFixtureSchema = z.object({
   name: z.string().min(1),
   unit: z.string().optional(),
+  unitPrice: z.string().optional(),
+  vatRate: z.string().optional(),
+  note: z.string().optional(),
   guidance: z.string().optional(),
 });
 
@@ -44,6 +47,8 @@ export const templateSectionFixtureSchema = z.object({
 export const templateFixtureSchema = z.object({
   id: z.string().default("eval-template"),
   name: z.string().min(1),
+  generationMode: z.enum(["CONSERVATIVE", "SMART"]).default("SMART"),
+  currency: z.string().default("PLN"),
   sections: z.array(templateSectionFixtureSchema).default([]),
 });
 

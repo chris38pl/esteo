@@ -41,7 +41,6 @@ export async function convertRequestToEstimate(input: {
   userId: string;
   locale: Locale;
   templateId?: string | null;
-  priceListId?: string | null;
 }): Promise<{ estimateId: string; versionId: string }> {
   await assertCanCreateEstimate(input.workspaceId);
 
@@ -160,7 +159,6 @@ export async function convertRequestToEstimate(input: {
     workspaceId: input.workspaceId,
     locale: input.locale,
     templateId: input.templateId,
-    priceListId: input.priceListId,
     uploadSource: "INTERNAL_REQUEST",
     uploadedById: input.userId,
   });

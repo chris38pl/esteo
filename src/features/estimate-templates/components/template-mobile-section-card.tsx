@@ -22,6 +22,7 @@ interface TemplateMobileSectionCardProps {
   title: string;
   guidance: string;
   items: TemplateItemDraft[];
+  currency: string;
   advancedMode: boolean;
   expanded: boolean;
   onToggleExpanded: () => void;
@@ -38,6 +39,7 @@ function TemplateMobileSectionCardComponent({
   sectionNumber,
   title,
   items,
+  currency,
   advancedMode,
   expanded,
   onToggleExpanded,
@@ -120,6 +122,7 @@ function TemplateMobileSectionCardComponent({
               key={item.id}
               item={item}
               positionLabel={`${sectionNumber}.${itemIndex + 1}`}
+              currency={currency}
               onOpen={() => onOpenItem(item.id)}
             />
           ))}

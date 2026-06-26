@@ -13,6 +13,7 @@ import { TemplateMobileSectionSheet } from "./template-mobile-section-sheet";
 
 interface TemplateItemsMobileListProps {
   sections: TemplateSectionData[];
+  currency: string;
   advancedMode: boolean;
   onAddSection: () => void | Promise<string | undefined>;
   isAddingSection?: boolean;
@@ -26,7 +27,9 @@ interface TemplateItemsMobileListProps {
   onAddItem: (sectionId: string) => void;
   onUpdateItem: (
     itemId: string,
-    data: Partial<Pick<TemplateItemDraft, "name" | "unit">>,
+    data: Partial<
+      Pick<TemplateItemDraft, "name" | "unit" | "unitPrice" | "vatRate" | "note">
+    >,
   ) => void;
   onDeleteItem: (itemId: string) => void;
   onBlur: () => void | Promise<void>;
@@ -41,6 +44,7 @@ type ActiveItemRef = {
 
 export function TemplateItemsMobileList({
   sections,
+  currency,
   advancedMode,
   onAddSection,
   isAddingSection = false,
@@ -99,6 +103,7 @@ export function TemplateItemsMobileList({
               title={section.title}
               guidance={section.guidance}
               items={section.items}
+              currency={currency}
               advancedMode={advancedMode}
               expanded={expandedSections[section.id] ?? false}
               canDeleteSection={sections.length > 1}
@@ -134,6 +139,7 @@ export function TemplateItemsMobileList({
         }}
         item={activeLineItem}
         positionLabel={activeItem?.positionLabel ?? ""}
+        currency={currency}
         onPersistItem={onUpdateItem}
         onDelete={() => {
           if (!activeItem) return;

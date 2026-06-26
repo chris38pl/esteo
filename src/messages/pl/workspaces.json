@@ -160,17 +160,16 @@
   "configuration": {
     "eyebrow": "Konfiguracja AI",
     "title": "Konfiguracja",
-    "description": "Zarządzaj regułami, szablonami wycen i cennikami używanymi podczas generowania wycen.",
+    "description": "Zarządzaj regułami i szablonami wycen używanymi podczas generowania wycen.",
     "tabs": {
       "rules": "Reguły",
-      "templates": "Szablony wycen",
-      "priceLists": "Cenniki"
+      "templates": "Szablony wycen"
     },
     "premium": {
       "freeTitle": "Funkcja dostępna w Pro i Business",
-      "freeDescription": "Szablony i cenniki są zachowane, ale edycja i użycie przy generowaniu wymagają płatnego planu.",
+      "freeDescription": "Szablony są zachowane, ale edycja i użycie przy generowaniu wymagają płatnego planu.",
       "readOnlyTitle": "Konfiguracja jest tylko do odczytu",
-      "readOnlyDescription": "Obecny stan przestrzeni blokuje edycję i użycie szablonów oraz cenników przy generowaniu."
+      "readOnlyDescription": "Obecny stan przestrzeni blokuje edycję i użycie szablonów przy generowaniu."
     },
     "templates": {
       "title": "Szablony wycen",
@@ -193,6 +192,11 @@
         "columnNo": "Lp.",
         "columnName": "Nazwa pozycji",
         "columnUnit": "Jednostka",
+        "columnUnitPrice": "Cena",
+        "columnVat": "VAT %",
+        "unitPricePlaceholder": "Cena",
+        "vatRatePlaceholder": "np. 23",
+        "defaultName": "Nowy szablon",
         "sectionTitlePlaceholder": "Nazwa sekcji",
         "itemNamePlaceholder": "Nazwa pozycji",
         "unitPlaceholder": "Jednostka",
@@ -213,10 +217,24 @@
         "metadataDescription": "Zmień nazwę i opis szablonu widoczne na liście.",
         "metadataNameLabel": "Nazwa szablonu",
         "metadataDescriptionLabel": "Opis",
+        "metadataCurrencyLabel": "Waluta",
+        "metadataCurrencyPlaceholder": "PLN",
+        "metadataCurrencyHint": "Trzyliterowy kod waluty używany przy pozycjach szablonu.",
         "metadataSave": "Zapisz",
         "metadataCancel": "Anuluj",
         "saveTemplate": "Zapisz szablon",
         "unsavedAiDraft": "Oczekuje na zapis"
+      },
+      "generationMode": {
+        "title": "Jak AI ma korzystać z tego szablonu?",
+        "description": "Wybierz sposób, w jaki AI wykorzysta ten szablon podczas generowania wycen.",
+        "standardEstimateTitle": "Standardowa wycena",
+        "standardEstimateHint": "AI potraktuje ten szablon jako gotową wycenę. Zachowa większość pozycji i usunie tylko te, które nie pasują do zakresu prac.",
+        "standardEstimateAudience": "Polecane dla firm posiadających standardowe kosztorysy.",
+        "smartSelectionTitle": "Inteligentny dobór",
+        "smartSelectionHint": "AI potraktuje szablon jako bazę usług. Dobierze tylko pozycje pasujące do projektu oraz doda brakujące.",
+        "smartSelectionAudience": "Polecane dla większości użytkowników.",
+        "recommendedBadge": "Polecane"
       },
       "ai": {
         "dialogTitle": "Generuj szablon z AI",
@@ -333,83 +351,11 @@
         "metadataSaved": "Szczegóły szablonu zapisane",
         "importSuccess": "Szablon utworzony z wyceny"
       }
-    },
-    "priceLists": {
-      "title": "Cenniki",
-      "description": "Zdefiniuj własne ceny usług wykorzystywane przez AI podczas generowania wycen.",
-      "create": "Utwórz cennik",
-      "empty": "Nie masz jeszcze cennika. Możesz utworzyć go teraz albo generować wyceny bez cennika.",
-      "defaultBadge": "Domyślny",
-      "itemCount": "{count, plural, one {# pozycja} few {# pozycje} many {# pozycji} other {# pozycji}} • {currency}",
-      "setDefault": "Ustaw domyślny",
-      "clearDefault": "Wyczyść domyślny cennik",
-      "edit": "Edytuj",
-      "delete": "Usuń",
-      "editor": {
-        "pageTitle": "Cennik",
-        "backToList": "Wróć do listy cenników",
-        "namePlaceholder": "Nazwa cennika",
-        "defaultName": "Nowy cennik",
-        "currencyPlaceholder": "PLN",
-        "itemNamePlaceholder": "Nazwa usługi",
-        "unitPlaceholder": "Jednostka",
-        "unitPricePlaceholder": "Cena",
-        "vatRatePlaceholder": "VAT",
-        "notePlaceholder": "Notatka",
-        "autosaveIdle": "Autozapis",
-        "saving": "Zapisywanie…",
-        "saved": "Zapisano",
-        "saveError": "Błąd zapisu",
-        "metadataTitle": "Edytuj cennik",
-        "metadataDescription": "Zmień nazwę i walutę cennika widoczne na liście.",
-        "metadataNameLabel": "Nazwa cennika",
-        "metadataCurrencyLabel": "Waluta",
-        "metadataSave": "Zapisz",
-        "metadataCancel": "Anuluj"
-      },
-      "workspace": {
-        "sidebarHint": "Wybierz cennik, aby zobaczyć jego pozycje.",
-        "sidebarStats": "{items, plural, one {# pozycja} few {# pozycje} many {# pozycji} other {# pozycji}} • {currency}",
-        "sidebarMenuLabel": "Akcje cennika {name}",
-        "detailMenuLabel": "Więcej akcji",
-        "kpiItems": "Pozycje",
-        "kpiCurrency": "Waluta",
-        "kpiUpdated": "Zaktualizowano",
-        "structureTitle": "Pozycje cennika",
-        "noCurrency": "Brak waluty",
-        "defaultNotice": "Ten cennik zostanie użyty domyślnie przy generowaniu nowych wycen. Możesz wybrać inny cennik w trakcie tworzenia wyceny."
-      },
-      "dialog": {
-        "createTitle": "Nowy cennik",
-        "editTitle": "Edytuj cennik",
-        "description": "Dodaj usługi, jednostki i ceny. AI użyje ceny tylko przy wysokiej pewności dopasowania nazwy i jednostki.",
-        "name": "Nazwa",
-        "currency": "Waluta",
-        "items": "Pozycje cennika",
-        "addItem": "Dodaj pozycję",
-        "itemName": "Nazwa usługi",
-        "unit": "Jednostka",
-        "unitPrice": "Cena",
-        "vatRate": "VAT",
-        "note": "Notatka",
-        "removeItem": "Usuń pozycję",
-        "cancel": "Anuluj",
-        "save": "Zapisz",
-        "saving": "Zapisywanie…"
-      },
-      "toast": {
-        "created": "Cennik utworzony",
-        "updated": "Cennik zaktualizowany",
-        "deleted": "Cennik usunięty",
-        "defaultSet": "Domyślny cennik zaktualizowany",
-        "defaultCleared": "Domyślny cennik wyczyszczony",
-        "metadataSaved": "Szczegóły cennika zapisane"
-      }
     }
   },
   "settings": {
     "title": "Ustawienia przestrzeni",
-    "description": "Zmień nazwę, motyw wyglądu i krótki opis firmy. Te informacje są widoczne w aplikacji i używane przez AI przy wycenach oraz odpowiedziach.",
+    "description": "Zmień nazwę i krótki opis firmy. Te informacje są widoczne w aplikacji i używane przez AI przy wycenach oraz odpowiedziach.",
     "tabLoading": "Ładowanie zakładki…",
     "nameLabel": "Nazwa przestrzeni",
     "appearanceLabel": "Motyw wyglądu",

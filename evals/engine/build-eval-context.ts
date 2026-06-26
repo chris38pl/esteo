@@ -16,10 +16,7 @@ import {
 } from "@/features/workspaces/lib/resolve-estimate-sections";
 import type { SectionStructureMode } from "@/features/workspaces/lib/section-structure-mode";
 import type { EstimateGenerationContext } from "@/features/workspaces/lib/load-estimate-generation-context";
-import {
-  formatEstimateTemplateBlock,
-  formatPriceListBlock,
-} from "@/features/workspaces/lib/prompt-context";
+import { formatEstimateTemplateBlock } from "@/features/workspaces/lib/prompt-context";
 import type { WorkspaceEstimateSection } from "@/features/workspaces/schemas/estimate-sections";
 import type { EvalLocale, EvalScenario } from "@evals/engine/schemas/scenario";
 
@@ -50,41 +47,36 @@ function canUsePremiumConfiguration(workspace: EvalScenario["workspace"]): boole
   );
 }
 
+function mapTemplateFixtureToSnapshot(
+  template: NonNullable<EvalScenario["workspace"]["template"]>,
+): NonNullable<EstimateConfigurationSnapshot["template"]> {
+  return {
+    id: template.id,
+    name: template.name,
+    generationMode: template.generationMode ?? "SMART",
+    currency: template.currency ?? "PLN",
+    sections: template.sections.map((section) => ({
+      title: section.title,
+      guidance: section.guidance ?? null,
+      items: section.items.map((item) => ({
+        name: item.name,
+        unit: item.unit ?? null,
+        unitPrice: item.unitPrice ?? null,
+        vatRate: item.vatRate ?? null,
+        note: item.note ?? null,
+        guidance: item.guidance ?? null,
+      })),
+    })),
+  };
+}
+
 function fixtureToConfigurationSnapshot(
   scenario: EvalScenario,
 ): EstimateConfigurationSnapshot | null {
   if (scenario.configurationSnapshot) {
     const snap = scenario.configurationSnapshot;
     return {
-      template: snap.template
-        ? {
-            id: snap.template.id,
-            name: snap.template.name,
-            sections: snap.template.sections.map((section) => ({
-              title: section.title,
-              guidance: section.guidance ?? null,
-              items: section.items.map((item) => ({
-                name: item.name,
-                unit: item.unit ?? null,
-                guidance: item.guidance ?? null,
-              })),
-            })),
-          }
-        : null,
-      priceList: snap.priceList
-        ? {
-            id: snap.priceList.id,
-            name: snap.priceList.name,
-            currency: snap.priceList.currency,
-            items: snap.priceList.items.map((item) => ({
-              name: item.name,
-              unit: item.unit,
-              unitPrice: item.unitPrice,
-              vatRate: item.vatRate ?? null,
-              note: item.note ?? null,
-            })),
-          }
-        : null,
+      template: snap.template ? mapTemplateFixtureToSnapshot(snap.template) : null,
     };
   }
 
@@ -92,41 +84,13 @@ function fixtureToConfigurationSnapshot(
     return null;
   }
 
-  const { template, priceList } = scenario.workspace;
-  if (!template && !priceList) {
+  const { template } = scenario.workspace;
+  if (!template) {
     return null;
   }
 
   return {
-    template: template
-      ? {
-          id: template.id,
-          name: template.name,
-          sections: template.sections.map((section) => ({
-            title: section.title,
-            guidance: section.guidance ?? null,
-            items: section.items.map((item) => ({
-              name: item.name,
-              unit: item.unit ?? null,
-              guidance: item.guidance ?? null,
-            })),
-          })),
-        }
-      : null,
-    priceList: priceList
-      ? {
-          id: priceList.id,
-          name: priceList.name,
-          currency: priceList.currency,
-          items: priceList.items.map((item) => ({
-            name: item.name,
-            unit: item.unit,
-            unitPrice: item.unitPrice,
-            vatRate: item.vatRate ?? null,
-            note: item.note ?? null,
-          })),
-        }
-      : null,
+    template: mapTemplateFixtureToSnapshot(template),
   };
 }
 
@@ -140,7 +104,6 @@ export type EvalContextSnapshot = {
   sectionStructureMode: SectionStructureMode;
   rules: Array<{ title: string; content: string }>;
   templatePromptBlock?: string;
-  priceListPromptBlock?: string;
   projectBrief: string;
   subscriptionPlan: EvalScenario["workspace"]["subscriptionPlan"];
   usesStoredSnapshot: boolean;
@@ -177,10 +140,9 @@ export function buildEvalGenerationContext(
     : null;
 
   const storedSnapshot = fixtureToConfigurationSnapshot(scenario);
-  const usesStoredSnapshot = scenario.configurationSnapshot !== undefined;
 
   if (storedSnapshot) {
-    const promptBlocks = buildPromptBlocksFromConfigurationSnapshot(storedSnapshot);
+    const promptBlocks = buildPromptBlocksFromConfigurationSnapshot(storedSnapshot, locale);
     const estimateSections = storedSnapshot.template
       ? storedSnapshot.template.sections.map((section, index) => ({
           key: `snapshot-template:${index}`,
@@ -213,7 +175,6 @@ export function buildEvalGenerationContext(
         ...userRules,
       ],
       templatePromptBlock: promptBlocks.templatePromptBlock,
-      priceListPromptBlock: promptBlocks.priceListPromptBlock,
       configurationSnapshot: storedSnapshot,
     };
   }
@@ -236,6 +197,30 @@ export function buildEvalGenerationContext(
     rule: section.rule,
   }));
 
+  const liveSnapshot = fixtureToConfigurationSnapshot(scenario);
+  const templatePromptBlock = liveSnapshot?.template
+    ? formatEstimateTemplateBlock(
+        {
+          name: liveSnapshot.template.name,
+          currency: liveSnapshot.template.currency,
+          generationMode: liveSnapshot.template.generationMode,
+          sections: liveSnapshot.template.sections.map((section) => ({
+            title: section.title,
+            guidance: section.guidance,
+            items: section.items.map((item) => ({
+              name: item.name,
+              unit: item.unit,
+              unitPrice: item.unitPrice,
+              vatRate: item.vatRate,
+              note: item.note,
+              guidance: item.guidance,
+            })),
+          })),
+        },
+        locale,
+      )
+    : "";
+
   return {
     industry,
     industryOtherText: scenario.workspace.industryOtherText?.trim() || null,
@@ -249,12 +234,8 @@ export function buildEvalGenerationContext(
       ...activeSystemRules.map((r) => ({ title: r.title, content: r.content })),
       ...userRules,
     ],
-    templatePromptBlock: "",
-    priceListPromptBlock: "",
-    configurationSnapshot: {
-      template: null,
-      priceList: null,
-    },
+    templatePromptBlock,
+    configurationSnapshot: liveSnapshot ?? { template: null },
   };
 }
 
@@ -273,7 +254,6 @@ export function buildContextSnapshot(
     sectionStructureMode: context.sectionStructureMode,
     rules: context.rules,
     templatePromptBlock: context.templatePromptBlock,
-    priceListPromptBlock: context.priceListPromptBlock,
     projectBrief,
     subscriptionPlan: scenario.workspace.subscriptionPlan ?? "PRO",
     usesStoredSnapshot: scenario.configurationSnapshot !== undefined,

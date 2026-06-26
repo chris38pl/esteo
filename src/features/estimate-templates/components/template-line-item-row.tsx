@@ -18,11 +18,18 @@ import {
   estimateLineItemRowClassName,
 } from "@/features/estimates/components/estimate-table-input-styles";
 import type { TemplateItemDraft } from "@/features/estimate-templates/lib/template-editor-draft";
+import { normalizeTemplateDecimalInput } from "@/features/estimate-templates/lib/template-pricing";
+
+type TemplateItemEditableFields = Pick<
+  TemplateItemDraft,
+  "name" | "unit" | "unitPrice" | "vatRate" | "note"
+>;
 
 interface TemplateLineItemRowProps {
   item: TemplateItemDraft;
   positionLabel: string;
-  onUpdate: (id: string, data: Partial<Pick<TemplateItemDraft, "name" | "unit">>) => void;
+  currency: string;
+  onUpdate: (id: string, data: Partial<TemplateItemEditableFields>) => void;
   onDelete: (id: string) => void;
   onBlur: () => void | Promise<void>;
   isDragging?: boolean;
@@ -37,6 +44,7 @@ interface TemplateLineItemRowProps {
 export function TemplateLineItemRow({
   item,
   positionLabel,
+  currency,
   onUpdate,
   onDelete,
   onBlur,
@@ -93,7 +101,7 @@ export function TemplateLineItemRow({
       <td className={`${cellClass} w-14 text-xs tabular-nums text-muted-foreground`}>
         {positionLabel}
       </td>
-      <td className={cellClass}>
+      <td className={`${cellClass} max-w-0`}>
         <Input
           value={local.name}
           onChange={(event) => {
@@ -103,10 +111,10 @@ export function TemplateLineItemRow({
           }}
           onBlur={onBlur}
           placeholder={t("itemNamePlaceholder")}
-          className={estimateLineItemFlatInputClassName}
+          className={cn(estimateLineItemFlatInputClassName, "w-full min-w-0")}
         />
       </td>
-      <td className={`${cellClass} w-28`}>
+      <td className={`${cellClass} max-w-0`}>
         <Input
           value={local.unit}
           onChange={(event) => {
@@ -116,7 +124,54 @@ export function TemplateLineItemRow({
           }}
           onBlur={onBlur}
           placeholder={t("unitPlaceholder")}
-          className={estimateLineItemFlatInputClassName}
+          className={cn(estimateLineItemFlatInputClassName, "w-full min-w-0 px-0.5")}
+        />
+      </td>
+      <td className={`${cellClass} max-w-0`}>
+        <div className="relative min-w-0">
+          <Input
+            value={local.unitPrice}
+            inputMode="decimal"
+            onChange={(event) => {
+              const unitPrice = event.target.value;
+              setLocal((prev) => ({ ...prev, unitPrice }));
+              onUpdate(item.id, { unitPrice });
+            }}
+            onBlur={() => {
+              const normalized = normalizeTemplateDecimalInput(local.unitPrice);
+              if (normalized !== local.unitPrice) {
+                setLocal((prev) => ({ ...prev, unitPrice: normalized }));
+                onUpdate(item.id, { unitPrice: normalized });
+              }
+              void onBlur();
+            }}
+            placeholder={t("unitPricePlaceholder")}
+            className={cn(estimateLineItemFlatInputClassName, "w-full min-w-0 pr-8")}
+          />
+          <span className="pointer-events-none absolute inset-y-0 right-0.5 flex items-center text-[10px] font-medium text-muted-foreground">
+            {currency}
+          </span>
+        </div>
+      </td>
+      <td className={`${cellClass} max-w-0`}>
+        <Input
+          value={local.vatRate}
+          inputMode="decimal"
+          onChange={(event) => {
+            const vatRate = event.target.value;
+            setLocal((prev) => ({ ...prev, vatRate }));
+            onUpdate(item.id, { vatRate });
+          }}
+          onBlur={() => {
+            const normalized = normalizeTemplateDecimalInput(local.vatRate);
+            if (normalized !== local.vatRate) {
+              setLocal((prev) => ({ ...prev, vatRate: normalized }));
+              onUpdate(item.id, { vatRate: normalized });
+            }
+            void onBlur();
+          }}
+          placeholder={t("vatRatePlaceholder")}
+          className={cn(estimateLineItemFlatInputClassName, "w-full min-w-0 px-0.5")}
         />
       </td>
       <td className={`${cellClass} w-10`}>

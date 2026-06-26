@@ -1,6 +1,6 @@
 {
-  "id": "assistant-price-list-consistency",
-  "name": "Assistant — price list consistency on addition",
+  "id": "assistant-template-price-consistency",
+  "name": "Assistant — template price consistency on addition",
   "locale": "pl",
   "quick": true,
   "critical": true,
@@ -10,21 +10,35 @@
     "subscriptionPlan": "PRO",
     "template": {
       "name": "Malowanie",
-      "sections": [{ "title": "Malowanie", "items": [{ "name": "Malowanie ścian", "unit": "m²" }] }]
-    },
-    "priceList": {
-      "name": "Standard 2026",
+      "generationMode": "SMART",
       "currency": "PLN",
-      "items": [{ "name": "Malowanie", "unit": "m²", "unitPrice": "18.00" }]
+      "sections": [
+        {
+          "title": "Malowanie",
+          "items": [
+            { "name": "Malowanie ścian", "unit": "m²", "unitPrice": "18.00" },
+            { "name": "Malowanie sufitu", "unit": "m²", "unitPrice": "18.00" }
+          ]
+        }
+      ]
     },
     "rules": [],
     "systemRules": { "rounding": true, "units": true }
   },
   "configurationSnapshot": {
-    "priceList": {
-      "name": "Standard 2026",
+    "template": {
+      "name": "Malowanie",
+      "generationMode": "SMART",
       "currency": "PLN",
-      "items": [{ "name": "Malowanie", "unit": "m²", "unitPrice": "18.00" }]
+      "sections": [
+        {
+          "title": "Malowanie",
+          "items": [
+            { "name": "Malowanie ścian", "unit": "m²", "unitPrice": "18.00" },
+            { "name": "Malowanie sufitu", "unit": "m²", "unitPrice": "18.00" }
+          ]
+        }
+      ]
     }
   },
   "estimateSnapshot": {
@@ -52,6 +66,6 @@
   "expectations": {
     "addedItemsMustMatchPrice": [{ "term": "sufit", "unit": "m²", "unitPrice": "18.00" }],
     "targetSection": "Malowanie",
-    "promptMustContain": ["18.00", "Price List"]
+    "promptMustContain": ["18.00", "Estimate Template"]
   }
 }

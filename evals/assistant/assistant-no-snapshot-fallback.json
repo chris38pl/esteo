@@ -10,12 +10,17 @@
     "subscriptionPlan": "PRO",
     "template": {
       "name": "Wykończenie",
-      "sections": [{ "title": "Malowanie", "items": [{ "name": "Malowanie ścian", "unit": "m²" }] }]
-    },
-    "priceList": {
-      "name": "Cennik roboczy 2026",
+      "generationMode": "SMART",
       "currency": "PLN",
-      "items": [{ "name": "Szpachlowanie", "unit": "m²", "unitPrice": "22.00" }]
+      "sections": [
+        {
+          "title": "Malowanie",
+          "items": [
+            { "name": "Malowanie ścian", "unit": "m²", "unitPrice": "18.00" },
+            { "name": "Szpachlowanie", "unit": "m²", "unitPrice": "22.00" }
+          ]
+        }
+      ]
     },
     "rules": [],
     "systemRules": { "rounding": true, "units": true }
@@ -44,6 +49,6 @@
   "userMessage": "Dodaj szpachlowanie ścian około 40 m²",
   "expectations": {
     "addedItemsMustMatchPrice": [{ "term": "szpachl", "unit": "m²", "unitPrice": "22.00" }],
-    "promptMustContain": ["Cennik roboczy 2026", "22.00"]
+    "promptMustContain": ["Wykończenie", "22.00"]
   }
 }

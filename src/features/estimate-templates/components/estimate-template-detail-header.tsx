@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 interface EstimateTemplateDetailHeaderProps {
   name: string;
   description: string;
+  currency: string;
   isDefault: boolean;
   isNew: boolean;
   autosaveStatus: TemplateAutoSaveStatus;
@@ -42,7 +43,11 @@ interface EstimateTemplateDetailHeaderProps {
   updatedAt: string | null;
   sectionCount: number;
   itemCount: number;
-  onMetadataSave: (payload: { name: string; description: string }) => void | Promise<void>;
+  onMetadataSave: (payload: {
+    name: string;
+    description: string;
+    currency: string;
+  }) => void | Promise<void>;
   isKpiLoading?: boolean;
 }
 
@@ -92,6 +97,7 @@ function statusBadgeClass(status: TemplateAutoSaveStatus): string {
 export function EstimateTemplateDetailHeader({
   name,
   description,
+  currency,
   isDefault,
   isNew,
   autosaveStatus,
@@ -134,7 +140,11 @@ export function EstimateTemplateDetailHeader({
       year: "numeric",
     });
 
-  async function handleMetadataSave(payload: { name: string; description: string }) {
+  async function handleMetadataSave(payload: {
+    name: string;
+    description: string;
+    currency: string;
+  }) {
     await onMetadataSave(payload);
   }
 
@@ -342,6 +352,7 @@ export function EstimateTemplateDetailHeader({
         onOpenChange={setMetadataOpen}
         initialName={name}
         initialDescription={description}
+        initialCurrency={currency}
         readOnly={readOnly}
         onSave={handleMetadataSave}
       />

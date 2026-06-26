@@ -1,16 +1,14 @@
 "use client";
 
-import { WorkspaceAppearanceTheme, type WorkspaceIndustry } from "@prisma/client";
-import { Info } from "lucide-react";
+import { type WorkspaceIndustry } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 
 import { appToast } from "@/components/ui/app-toast";
 import { CompanyDescriptionField } from "@/features/workspaces/components/company-description-field";
 import { isServiceWorkspace } from "@/features/workspaces/lib/industries";
 import { WorkspaceLogoField } from "@/features/workspaces/components/workspace-logo-field";
-import { WorkspaceThemePicker } from "@/features/workspaces/components/workspace-theme-picker";
 import {
   updateWorkspaceBusinessTypeAction,
   updateWorkspaceProfileAction,
@@ -23,12 +21,6 @@ import { WorkspaceSettingsCard } from "@/features/workspaces/components/workspac
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 export function WorkspaceSettingsForm({
   workspaceId,
@@ -37,10 +29,6 @@ export function WorkspaceSettingsForm({
   initialName,
   initialCompanyDescription,
   initialLogoUrl,
-  appearanceTheme,
-  onAppearanceThemeChange,
-  onPendingChange,
-  themePickerDisabled = false,
   locale,
 }: {
   workspaceId: string;
@@ -49,10 +37,6 @@ export function WorkspaceSettingsForm({
   initialName: string;
   initialCompanyDescription: string;
   initialLogoUrl: string | null;
-  appearanceTheme: WorkspaceAppearanceTheme;
-  onAppearanceThemeChange: (theme: WorkspaceAppearanceTheme) => void;
-  onPendingChange?: (pending: boolean) => void;
-  themePickerDisabled?: boolean;
   locale: Locale;
 }) {
   const t = useTranslations("workspaces.settings");
@@ -72,17 +56,12 @@ export function WorkspaceSettingsForm({
       ? `${tIndustries("OTHER")} — ${industryOtherText.trim()}`
       : tIndustries(workspaceIndustry);
 
-  useEffect(() => {
-    onPendingChange?.(isPending);
-  }, [isPending, onPendingChange]);
-
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
 
     const parsed = updateWorkspaceProfileSchema.safeParse({
       name,
-      appearanceTheme,
       companyDescription: companyDescription.trim() || null,
     });
 
@@ -207,34 +186,6 @@ export function WorkspaceSettingsForm({
                   onChange={setCompanyDescription}
                   disabled={isPending}
                   variant="create"
-                />
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center gap-1.5">
-                  <Label>{t("appearanceLabel")}</Label>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          type="button"
-                          className="inline-flex text-muted-foreground transition-colors hover:text-foreground"
-                          aria-label={t("basicInfo.accentHint")}
-                        >
-                          <Info className="size-3.5" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-xs">
-                        {t("basicInfo.accentHint")}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-                <WorkspaceThemePicker
-                  value={appearanceTheme}
-                  onChange={onAppearanceThemeChange}
-                  disabled={isPending || themePickerDisabled}
-                  variant="header"
                 />
               </div>
             </div>

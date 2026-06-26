@@ -2,35 +2,27 @@ import { z } from "zod";
 
 import {
   formatEstimateTemplateBlock,
-  formatPriceListBlock,
-  type PromptPriceListBlock,
   type PromptTemplateBlock,
-} from "@/features/workspaces/lib/prompt-context";
+} from "@/features/estimate-templates/lib/template-prompt-block";
+import { TEMPLATE_GENERATION_MODES } from "@/features/estimate-templates/lib/template-generation-mode";
 
 export type EstimateConfigurationSnapshot = {
   template?: {
     id: string;
     name: string;
+    generationMode: (typeof TEMPLATE_GENERATION_MODES)[number];
+    currency: string;
     sections: Array<{
       title: string;
       guidance: string | null;
       items: Array<{
         name: string;
         unit: string | null;
+        unitPrice: string | null;
+        vatRate: string | null;
+        note: string | null;
         guidance: string | null;
       }>;
-    }>;
-  } | null;
-  priceList?: {
-    id: string;
-    name: string;
-    currency: string;
-    items: Array<{
-      name: string;
-      unit: string;
-      unitPrice: string;
-      vatRate: string | null;
-      note: string | null;
     }>;
   } | null;
 };
@@ -40,6 +32,8 @@ const configurationSnapshotSchema = z.object({
     .object({
       id: z.string(),
       name: z.string(),
+      generationMode: z.enum(TEMPLATE_GENERATION_MODES).optional().default("SMART"),
+      currency: z.string().optional().default("PLN"),
       sections: z.array(
         z.object({
           title: z.string(),
@@ -48,26 +42,12 @@ const configurationSnapshotSchema = z.object({
             z.object({
               name: z.string(),
               unit: z.string().nullable(),
+              unitPrice: z.string().nullable().optional(),
+              vatRate: z.string().nullable().optional(),
+              note: z.string().nullable().optional(),
               guidance: z.string().nullable(),
             }),
           ),
-        }),
-      ),
-    })
-    .nullable()
-    .optional(),
-  priceList: z
-    .object({
-      id: z.string(),
-      name: z.string(),
-      currency: z.string(),
-      items: z.array(
-        z.object({
-          name: z.string(),
-          unit: z.string(),
-          unitPrice: z.string(),
-          vatRate: z.string().nullable(),
-          note: z.string().nullable(),
         }),
       ),
     })
@@ -92,7 +72,7 @@ export function parseConfigurationSnapshotFromAiMetadata(
     return null;
   }
 
-  return parsed.data;
+  return parsed.data as EstimateConfigurationSnapshot;
 }
 
 export function resolveStoredConfigurationSnapshot(
@@ -110,45 +90,33 @@ export function resolveStoredConfigurationSnapshot(
 
 export function buildPromptBlocksFromConfigurationSnapshot(
   snapshot: EstimateConfigurationSnapshot,
+  locale: "pl" | "en" = "pl",
 ): {
   templateForPrompt: PromptTemplateBlock | null;
-  priceListForPrompt: PromptPriceListBlock | null;
   templatePromptBlock: string;
-  priceListPromptBlock: string;
 } {
   const templateForPrompt: PromptTemplateBlock | null = snapshot.template
     ? {
         name: snapshot.template.name,
+        currency: snapshot.template.currency,
+        generationMode: snapshot.template.generationMode,
         sections: snapshot.template.sections.map((section) => ({
           title: section.title,
           guidance: section.guidance,
           items: section.items.map((item) => ({
             name: item.name,
             unit: item.unit,
+            unitPrice: item.unitPrice,
+            vatRate: item.vatRate,
+            note: item.note,
             guidance: item.guidance,
           })),
         })),
       }
     : null;
 
-  const priceListForPrompt: PromptPriceListBlock | null = snapshot.priceList
-    ? {
-        name: snapshot.priceList.name,
-        currency: snapshot.priceList.currency,
-        items: snapshot.priceList.items.map((item) => ({
-          name: item.name,
-          unit: item.unit,
-          unitPrice: item.unitPrice,
-          vatRate: item.vatRate,
-          note: item.note,
-        })),
-      }
-    : null;
-
   return {
     templateForPrompt,
-    priceListForPrompt,
-    templatePromptBlock: formatEstimateTemplateBlock(templateForPrompt),
-    priceListPromptBlock: formatPriceListBlock(priceListForPrompt),
+    templatePromptBlock: formatEstimateTemplateBlock(templateForPrompt, locale),
   };
 }

@@ -4,7 +4,6 @@ import { Prisma as PrismaNamespace } from "@prisma/client";
 import { prisma } from "@/db/client";
 import { getSystemEstimateTemplateForIndustry } from "@/features/estimate-templates/config/system-templates";
 import type { EstimateTemplateInput } from "@/features/estimate-templates/schemas/estimate-template";
-import type { PriceListInput } from "@/features/price-lists/schemas/price-list";
 import { logAuditEvent } from "@/features/workspaces/server/repository";
 import { getWorkspaceEntitlements } from "@/server/billing/entitlement-service";
 import { EntitlementError, WorkspaceError } from "@/server/permissions/errors";
@@ -30,24 +29,12 @@ const templateInclude = {
   },
 } satisfies Prisma.EstimateTemplateInclude;
 
-const priceListInclude = {
-  items: {
-    where: { deletedAt: null },
-    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-  },
-} satisfies Prisma.PriceListInclude;
-
 const configurationWorkspaceInclude = {
   settings: true,
   estimateTemplates: {
     where: { deletedAt: null },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
     include: templateInclude,
-  },
-  priceLists: {
-    where: { deletedAt: null },
-    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-    include: priceListInclude,
   },
 } satisfies Prisma.WorkspaceInclude;
 
@@ -64,9 +51,7 @@ export type WorkspaceConfigurationPageData = {
   access: ConfigurationAccess;
   rules: WorkspaceRule[];
   defaultEstimateTemplateId: string | null;
-  defaultPriceListId: string | null;
   templates: SerializedTemplate[];
-  priceLists: SerializedPriceList[];
   systemTemplate: ReturnType<typeof getSystemEstimateTemplateForIndustry>;
 };
 
@@ -74,11 +59,7 @@ export type EstimateTemplateWithItems = Prisma.EstimateTemplateGetPayload<{
   include: typeof templateInclude;
 }>;
 
-export type PriceListWithItems = Prisma.PriceListGetPayload<{
-  include: typeof priceListInclude;
-}>;
-
-export function serializePriceListItemDecimal(value: PrismaNamespace.Decimal): string {
+export function serializeTemplateItemDecimal(value: PrismaNamespace.Decimal): string {
   return value.toFixed(2);
 }
 
@@ -91,6 +72,8 @@ export function serializeTemplate(template: EstimateTemplateWithItems) {
     id: template.id,
     name: template.name,
     description: template.description,
+    generationMode: template.generationMode,
+    currency: template.currency,
     sortOrder: template.sortOrder,
     createdAt: template.createdAt.toISOString(),
     updatedAt: template.updatedAt.toISOString(),
@@ -103,6 +86,9 @@ export function serializeTemplate(template: EstimateTemplateWithItems) {
         id: item.id,
         name: item.name,
         unit: item.unit,
+        unitPrice: item.unitPrice ? serializeTemplateItemDecimal(item.unitPrice) : null,
+        vatRate: serializeNullableDecimal(item.vatRate),
+        note: item.note,
         guidance: item.guidance,
         sortOrder: item.sortOrder,
       })),
@@ -110,30 +96,9 @@ export function serializeTemplate(template: EstimateTemplateWithItems) {
   };
 }
 
-export function serializePriceList(priceList: PriceListWithItems) {
-  return {
-    id: priceList.id,
-    name: priceList.name,
-    currency: priceList.currency,
-    sortOrder: priceList.sortOrder,
-    createdAt: priceList.createdAt.toISOString(),
-    updatedAt: priceList.updatedAt.toISOString(),
-    items: priceList.items.map((item) => ({
-      id: item.id,
-      name: item.name,
-      unit: item.unit,
-      unitPrice: serializePriceListItemDecimal(item.unitPrice),
-      vatRate: serializeNullableDecimal(item.vatRate),
-      note: item.note,
-      sortOrder: item.sortOrder,
-    })),
-  };
-}
-
 export type SerializedTemplate = ReturnType<typeof serializeTemplate>;
 export type SerializedTemplateSection = SerializedTemplate["sections"][number];
 export type SerializedTemplateItem = SerializedTemplateSection["items"][number];
-export type SerializedPriceList = ReturnType<typeof serializePriceList>;
 
 export type SerializedTemplateListItem = {
   id: string;
@@ -155,24 +120,6 @@ export function serializeTemplateListItem(template: EstimateTemplateWithItems): 
   };
 }
 
-export type SerializedPriceListListItem = {
-  id: string;
-  name: string;
-  currency: string;
-  itemCount: number;
-  updatedAt: string;
-};
-
-export function serializePriceListListItem(priceList: PriceListWithItems): SerializedPriceListListItem {
-  return {
-    id: priceList.id,
-    name: priceList.name,
-    currency: priceList.currency,
-    itemCount: priceList.items.length,
-    updatedAt: priceList.updatedAt.toISOString(),
-  };
-}
-
 export type GenerationConfigurationOption = {
   id: string;
   name: string;
@@ -181,9 +128,7 @@ export type GenerationConfigurationOption = {
 export type GenerationConfigurationOptions = {
   canUsePremiumConfiguration: boolean;
   defaultTemplateId: string | null;
-  defaultPriceListId: string | null;
   templates: GenerationConfigurationOption[];
-  priceLists: GenerationConfigurationOption[];
 };
 
 export async function getConfigurationAccess(
@@ -206,7 +151,7 @@ async function assertCanEditPremiumConfiguration(workspaceId: string): Promise<v
   const access = await getConfigurationAccess(workspaceId);
   if (!access.canEditPremiumConfiguration) {
     throw new EntitlementError(
-      "Szablony i cenniki są dostępne w planach Pro i Business.",
+      "Szablony są dostępne w planach Pro i Business.",
       access.reason ?? "FEATURE_DISABLED",
     );
   }
@@ -251,48 +196,6 @@ export async function getEstimateTemplateWorkspaceData(
     defaultTemplateId: workspace.settings?.defaultEstimateTemplateId ?? null,
     access,
     template: currentRecord ? serializeTemplate(currentRecord) : null,
-  };
-}
-
-export async function getPriceListWorkspaceData(
-  user: User,
-  workspaceId: string,
-  priceListId?: string,
-) {
-  await requireRole(user, workspaceId, "OWNER");
-
-  const [workspace, access] = await Promise.all([
-    prisma.workspace.findFirst({
-      where: { id: workspaceId, deletedAt: null },
-      include: {
-        settings: true,
-        priceLists: {
-          where: { deletedAt: null },
-          orderBy: [{ updatedAt: "desc" }, { createdAt: "desc" }],
-          include: priceListInclude,
-        },
-      },
-    }),
-    getConfigurationAccess(workspaceId),
-  ]);
-
-  if (!workspace) {
-    throw new WorkspaceError("Workspace nie został znaleziony.");
-  }
-
-  const currentRecord = priceListId
-    ? workspace.priceLists.find((priceList) => priceList.id === priceListId)
-    : null;
-
-  if (priceListId && !currentRecord) {
-    throw new WorkspaceError("Cennik nie został znaleziony.");
-  }
-
-  return {
-    priceLists: workspace.priceLists.map(serializePriceListListItem),
-    defaultPriceListId: workspace.settings?.defaultPriceListId ?? null,
-    access,
-    priceList: currentRecord ? serializePriceList(currentRecord) : null,
   };
 }
 
@@ -358,9 +261,7 @@ export async function getWorkspaceConfigurationPageData(
     access,
     rules,
     defaultEstimateTemplateId: settings?.defaultEstimateTemplateId ?? null,
-    defaultPriceListId: settings?.defaultPriceListId ?? null,
     templates: workspace.estimateTemplates.map(serializeTemplate),
-    priceLists: workspace.priceLists.map(serializePriceList),
     systemTemplate: getSystemEstimateTemplateForIndustry(workspace.industry),
   };
 }
@@ -374,9 +275,7 @@ export async function getGenerationConfigurationOptions(
     return {
       canUsePremiumConfiguration: false,
       defaultTemplateId: null,
-      defaultPriceListId: null,
       templates: [],
-      priceLists: [],
     };
   }
 
@@ -389,20 +288,13 @@ export async function getGenerationConfigurationOptions(
         orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
         select: { id: true, name: true },
       },
-      priceLists: {
-        where: { deletedAt: null },
-        orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-        select: { id: true, name: true },
-      },
     },
   });
 
   return {
     canUsePremiumConfiguration: true,
     defaultTemplateId: workspace?.settings?.defaultEstimateTemplateId ?? null,
-    defaultPriceListId: workspace?.settings?.defaultPriceListId ?? null,
     templates: workspace?.estimateTemplates ?? [],
-    priceLists: workspace?.priceLists ?? [],
   };
 }
 
@@ -430,6 +322,8 @@ export async function createEstimateTemplate(
         workspaceId,
         name: input.name,
         description: input.description || null,
+        generationMode: input.generationMode,
+        currency: input.currency,
         sortOrder: count,
         sections: {
           create: input.sections.map((section, sectionIndex) => ({
@@ -439,7 +333,10 @@ export async function createEstimateTemplate(
             items: {
               create: section.items.map((item, itemIndex) => ({
                 name: item.name,
-                unit: item.unit || null,
+                unit: item.unit,
+                unitPrice: item.unitPrice,
+                vatRate: item.vatRate || null,
+                note: item.note || null,
                 guidance: item.guidance || null,
                 sortOrder: item.sortOrder ?? itemIndex,
               })),
@@ -488,6 +385,8 @@ export async function updateEstimateTemplate(
       data: {
         name: input.name,
         description: input.description || null,
+        generationMode: input.generationMode,
+        currency: input.currency,
         sections: {
           create: input.sections.map((section, sectionIndex) => ({
             title: section.title,
@@ -496,7 +395,10 @@ export async function updateEstimateTemplate(
             items: {
               create: section.items.map((item, itemIndex) => ({
                 name: item.name,
-                unit: item.unit || null,
+                unit: item.unit,
+                unitPrice: item.unitPrice,
+                vatRate: item.vatRate || null,
+                note: item.note || null,
                 guidance: item.guidance || null,
                 sortOrder: item.sortOrder ?? itemIndex,
               })),
@@ -582,162 +484,6 @@ export async function setDefaultEstimateTemplate(
     entityId: settings.id,
     action: "default_estimate_template_updated",
     diff: { defaultEstimateTemplateId: templateId },
-  });
-
-  return settings;
-}
-
-export async function createPriceList(user: User, workspaceId: string, input: PriceListInput) {
-  await requireRole(user, workspaceId, "OWNER");
-  await assertCanEditPremiumConfiguration(workspaceId);
-
-  const priceList = await prisma.$transaction(async (tx) => {
-    await ensureWorkspaceSettings(workspaceId, tx);
-    const count = await tx.priceList.count({ where: { workspaceId, deletedAt: null } });
-    return tx.priceList.create({
-      data: {
-        workspaceId,
-        name: input.name,
-        currency: input.currency,
-        sortOrder: count,
-        items: {
-          create: input.items.map((item, index) => ({
-            name: item.name,
-            unit: item.unit,
-            unitPrice: item.unitPrice,
-            vatRate: item.vatRate || null,
-            note: item.note || null,
-            sortOrder: item.sortOrder ?? index,
-          })),
-        },
-      },
-      include: priceListInclude,
-    });
-  });
-
-  await logAuditEvent({
-    actorUserId: user.id,
-    workspaceId,
-    entityType: "PriceList",
-    entityId: priceList.id,
-    action: "created",
-  });
-
-  return priceList;
-}
-
-export async function updatePriceList(
-  user: User,
-  workspaceId: string,
-  priceListId: string,
-  input: PriceListInput,
-) {
-  await requireRole(user, workspaceId, "OWNER");
-  await assertCanEditPremiumConfiguration(workspaceId);
-
-  const existing = await prisma.priceList.findFirst({
-    where: { id: priceListId, workspaceId, deletedAt: null },
-  });
-  if (!existing) {
-    throw new WorkspaceError("Price list not found.");
-  }
-
-  const priceList = await prisma.$transaction(async (tx) => {
-    await tx.priceListItem.deleteMany({ where: { priceListId } });
-    return tx.priceList.update({
-      where: { id: priceListId },
-      data: {
-        name: input.name,
-        currency: input.currency,
-        items: {
-          create: input.items.map((item, index) => ({
-            name: item.name,
-            unit: item.unit,
-            unitPrice: item.unitPrice,
-            vatRate: item.vatRate || null,
-            note: item.note || null,
-            sortOrder: item.sortOrder ?? index,
-          })),
-        },
-      },
-      include: priceListInclude,
-    });
-  });
-
-  await logAuditEvent({
-    actorUserId: user.id,
-    workspaceId,
-    entityType: "PriceList",
-    entityId: priceListId,
-    action: "updated",
-  });
-
-  return priceList;
-}
-
-export async function deletePriceList(user: User, workspaceId: string, priceListId: string) {
-  await requireRole(user, workspaceId, "OWNER");
-  await assertCanEditPremiumConfiguration(workspaceId);
-
-  const existing = await prisma.priceList.findFirst({
-    where: { id: priceListId, workspaceId, deletedAt: null },
-  });
-  if (!existing) {
-    throw new WorkspaceError("Price list not found.");
-  }
-
-  const deleted = await prisma.$transaction(async (tx) => {
-    await tx.workspaceSettings.updateMany({
-      where: { workspaceId, defaultPriceListId: priceListId },
-      data: { defaultPriceListId: null },
-    });
-    return tx.priceList.update({
-      where: { id: priceListId },
-      data: { deletedAt: new Date() },
-    });
-  });
-
-  await logAuditEvent({
-    actorUserId: user.id,
-    workspaceId,
-    entityType: "PriceList",
-    entityId: priceListId,
-    action: "deleted",
-  });
-
-  return deleted;
-}
-
-export async function setDefaultPriceList(
-  user: User,
-  workspaceId: string,
-  priceListId: string | null,
-) {
-  await requireRole(user, workspaceId, "OWNER");
-  await assertCanEditPremiumConfiguration(workspaceId);
-
-  if (priceListId) {
-    const existing = await prisma.priceList.findFirst({
-      where: { id: priceListId, workspaceId, deletedAt: null },
-    });
-    if (!existing) {
-      throw new WorkspaceError("Price list not found.");
-    }
-  }
-
-  const settings = await prisma.workspaceSettings.upsert({
-    where: { workspaceId },
-    create: { workspaceId, defaultPriceListId: priceListId },
-    update: { defaultPriceListId: priceListId },
-  });
-
-  await logAuditEvent({
-    actorUserId: user.id,
-    workspaceId,
-    entityType: "WorkspaceSettings",
-    entityId: settings.id,
-    action: "default_price_list_updated",
-    diff: { defaultPriceListId: priceListId },
   });
 
   return settings;

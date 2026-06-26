@@ -1,6 +1,6 @@
 "use server";
 
-import type { SubscriptionPlan } from "@prisma/client";
+import type { SubscriptionPlan, WorkspaceAppearanceTheme } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 import {
@@ -9,6 +9,7 @@ import {
   adminInviteToWorkspace,
   adminSetWorkspacePlan,
   adminUpdateWorkspace,
+  adminUpdateWorkspaceAppearance,
   listAdminWorkspacesPaginated,
 } from "@/features/workspaces/server/admin-workspaces";
 import type { WorkspaceBillingReport } from "@/server/billing/dev-toolkit/report";
@@ -31,6 +32,7 @@ function toActionError(error: unknown): ActionResult<never> {
 
 function revalidateAdminWorkspaces(locale: Locale) {
   revalidatePath(`/${locale}/dashboard/admin/workspaces`);
+  revalidatePath(`/${locale}/dashboard`);
 }
 
 export async function listAdminWorkspacesAction(locale: Locale = "pl") {
@@ -96,6 +98,25 @@ export async function adminGetWorkspaceBillingReportAction(
     const admin = await assertPlatformAdminAccess(locale);
     const report = await adminGetWorkspaceBillingReport(admin, workspaceSlug);
     return { success: true, data: report };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+export async function adminUpdateWorkspaceAppearanceAction(
+  workspaceId: string,
+  appearanceTheme: WorkspaceAppearanceTheme,
+  locale: Locale = "pl",
+) {
+  try {
+    const admin = await assertPlatformAdminAccess(locale);
+    const workspace = await adminUpdateWorkspaceAppearance(
+      admin,
+      workspaceId,
+      appearanceTheme,
+    );
+    revalidateAdminWorkspaces(locale);
+    return { success: true as const, data: workspace };
   } catch (error) {
     return toActionError(error);
   }

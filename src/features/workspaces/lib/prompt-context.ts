@@ -58,30 +58,10 @@ export type PromptEstimateSection = {
   rule?: string;
 };
 
-export type PromptTemplateBlock = {
-  name: string;
-  sections: Array<{
-    title: string;
-    guidance?: string | null;
-    items: Array<{
-      name: string;
-      unit?: string | null;
-      guidance?: string | null;
-    }>;
-  }>;
-};
-
-export type PromptPriceListBlock = {
-  name: string;
-  currency: string;
-  items: Array<{
-    name: string;
-    unit: string;
-    unitPrice: string;
-    vatRate?: string | null;
-    note?: string | null;
-  }>;
-};
+export {
+  formatEstimateTemplateBlock,
+  type PromptTemplateBlock,
+} from "@/features/estimate-templates/lib/template-prompt-block";
 
 export function formatEstimateStructureBlock(
   sections: PromptEstimateSection[],
@@ -120,68 +100,12 @@ export function formatSectionRulesBlock(
   return ["## Section-Specific Rules", ...blocks].join("\n\n");
 }
 
-export function formatEstimateTemplateBlock(template: PromptTemplateBlock | null): string {
-  if (!template || template.sections.length === 0) {
-    return "";
-  }
-
-  const lines: string[] = [
-    "## Estimate Template",
-    `Template name: ${template.name}`,
-    "Use this template as the preferred estimate structure for this project.",
-    "Prefer using template items whenever they fit the project scope.",
-    "Remove items that are clearly outside the project scope.",
-    "Add missing items when necessary.",
-    "Do not create empty sections.",
-  ];
-
-  template.sections.forEach((section, sectionIndex) => {
-    lines.push(`${sectionIndex + 1}. ${section.title}`);
-    if (section.guidance?.trim()) {
-      lines.push(`   Guidance: ${section.guidance.trim()}`);
-    }
-    section.items.forEach((item) => {
-      const unit = item.unit?.trim() ? ` [unit: ${item.unit.trim()}]` : "";
-      const guidance = item.guidance?.trim() ? ` — ${item.guidance.trim()}` : "";
-      lines.push(`   - ${item.name}${unit}${guidance}`);
-    });
-  });
-
-  return lines.join("\n");
-}
-
-export function formatPriceListBlock(priceList: PromptPriceListBlock | null): string {
-  if (!priceList || priceList.items.length === 0) {
-    return "";
-  }
-
-  const lines: string[] = [
-    "## Price List",
-    `Price list name: ${priceList.name}`,
-    `Currency: ${priceList.currency}`,
-    "Use a price list price only when both the service name and billing unit match with high confidence.",
-    "Semantic name variants are allowed, for example 'Malowanie' and 'Malowanie ścian'.",
-    "Equivalent units such as 'm²' and 'm2' may be treated as the same unit.",
-    "Do not use a price list price when the unit differs, for example 'm²' vs 'roboczogodzina' or 'rbh'.",
-    "If you are not confident about the match, estimate the price normally instead of forcing the price list value.",
-  ];
-
-  priceList.items.forEach((item) => {
-    const vat = item.vatRate ? `, vatRate: ${item.vatRate}` : "";
-    const note = item.note?.trim() ? `, note: ${item.note.trim()}` : "";
-    lines.push(`- ${item.name} | unit: ${item.unit} | unitPrice: ${item.unitPrice}${vat}${note}`);
-  });
-
-  return lines.join("\n");
-}
-
 export function buildWorkspacePromptContext(input: {
   companyDescription?: string | null;
   aiInstructions?: string | null;
   estimateSections?: PromptEstimateSection[];
   rules: Array<{ title: string; content: string }>;
   templatePromptBlock?: string;
-  priceListPromptBlock?: string;
 }): string {
   const companyBlock = formatCompanyContextBlock(input.companyDescription);
   const generalRulesBlock = formatGeneralAiInstructionsBlock(input.aiInstructions);
@@ -195,7 +119,6 @@ export function buildWorkspacePromptContext(input: {
     structureBlock,
     sectionRulesBlock,
     input.templatePromptBlock,
-    input.priceListPromptBlock,
     rulesBlock,
   ]
     .filter(Boolean)

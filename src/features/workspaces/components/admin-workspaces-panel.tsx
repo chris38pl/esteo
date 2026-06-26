@@ -1,6 +1,6 @@
 "use client";
 
-import { WorkspaceIndustry, type SubscriptionPlan } from "@prisma/client";
+import { WorkspaceAppearanceTheme, WorkspaceIndustry, type SubscriptionPlan } from "@prisma/client";
 import { FileStack, GitBranch, Loader2, MoreHorizontal, Search } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
@@ -10,6 +10,7 @@ import type { LucideIcon } from "lucide-react";
 
 import { WorkspaceMemberStack } from "@/components/layout/app-sidebar/workspace-member-stack";
 import { PaginationControls } from "@/components/shared/pagination-controls";
+import { appToast } from "@/components/ui/app-toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatBytes } from "@/features/attachments/lib/format-bytes";
@@ -27,11 +28,18 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ThemedWorkspaceIcon } from "@/features/workspaces/components/themed-workspace-icon";
+import {
+  getAppearanceConfig,
+  WORKSPACE_APPEARANCE_THEMES,
+} from "@/features/workspaces/lib/workspace-appearance";
 import { WorkspaceBillingReportPanel } from "@/features/workspaces/components/workspace-billing-report-panel";
 import type { AdminWorkspaceRow } from "@/features/workspaces/server/admin-workspaces";
 import {
@@ -40,6 +48,7 @@ import {
   adminInviteToWorkspaceAction,
   adminSetWorkspacePlanAction,
   adminUpdateWorkspaceAction,
+  adminUpdateWorkspaceAppearanceAction,
 } from "@/features/workspaces/server/admin-actions";
 import type { WorkspaceBillingReport } from "@/server/billing/dev-toolkit/report";
 import type { Locale } from "@/lib/locale";
@@ -201,14 +210,17 @@ function WorkspaceActionsMenu({
   workspace,
   onOpenDialog,
   onSetPlan,
+  onSetAppearance,
   isPending,
 }: {
   workspace: AdminWorkspaceRow;
   onOpenDialog: (mode: DialogMode, workspace: AdminWorkspaceRow) => void;
   onSetPlan: (workspaceId: string, plan: SubscriptionPlan) => void;
+  onSetAppearance: (workspaceId: string, theme: WorkspaceAppearanceTheme) => void;
   isPending: boolean;
 }) {
   const t = useTranslations("admin.workspaces");
+  const tAppearance = useTranslations("workspaces.appearance");
 
   return (
     <DropdownMenu modal={false}>
@@ -246,6 +258,32 @@ function WorkspaceActionsMenu({
             {workspace.plan === plan ? ` (${t("actions.currentPlan")})` : ""}
           </DropdownMenuItem>
         ))}
+        <DropdownMenuSeparator />
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>{t("actions.setAppearance")}</DropdownMenuSubTrigger>
+          <DropdownMenuSubContent className="w-52">
+            {WORKSPACE_APPEARANCE_THEMES.map((theme) => {
+              const config = getAppearanceConfig(theme);
+              const isCurrent = workspace.appearanceTheme === theme;
+
+              return (
+                <DropdownMenuItem
+                  key={theme}
+                  disabled={isPending || isCurrent}
+                  onSelect={() => onSetAppearance(workspace.id, theme)}
+                >
+                  <span
+                    className="mr-2 inline-block size-2.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: config.dotColor }}
+                    aria-hidden
+                  />
+                  {tAppearance(`themes.${theme}`)}
+                  {isCurrent ? ` (${t("actions.currentAppearance")})` : ""}
+                </DropdownMenuItem>
+              );
+            })}
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           variant="destructive"
@@ -292,11 +330,13 @@ function AdminWorkspaceListRow({
   workspace,
   onOpenDialog,
   onSetPlan,
+  onSetAppearance,
   isPending,
 }: {
   workspace: AdminWorkspaceRow;
   onOpenDialog: (mode: DialogMode, workspace: AdminWorkspaceRow) => void;
   onSetPlan: (workspaceId: string, plan: SubscriptionPlan) => void;
+  onSetAppearance: (workspaceId: string, theme: WorkspaceAppearanceTheme) => void;
   isPending: boolean;
 }) {
   const t = useTranslations("admin.workspaces");
@@ -363,6 +403,7 @@ function AdminWorkspaceListRow({
         workspace={workspace}
         onOpenDialog={onOpenDialog}
         onSetPlan={onSetPlan}
+        onSetAppearance={onSetAppearance}
         isPending={isPending}
       />
     </div>
@@ -373,11 +414,13 @@ function AdminWorkspaceBillingListRow({
   workspace,
   onOpenDialog,
   onSetPlan,
+  onSetAppearance,
   isPending,
 }: {
   workspace: AdminWorkspaceRow;
   onOpenDialog: (mode: DialogMode, workspace: AdminWorkspaceRow) => void;
   onSetPlan: (workspaceId: string, plan: SubscriptionPlan) => void;
+  onSetAppearance: (workspaceId: string, theme: WorkspaceAppearanceTheme) => void;
   isPending: boolean;
 }) {
   const t = useTranslations("admin.workspaces");
@@ -433,6 +476,7 @@ function AdminWorkspaceBillingListRow({
         workspace={workspace}
         onOpenDialog={onOpenDialog}
         onSetPlan={onSetPlan}
+        onSetAppearance={onSetAppearance}
         isPending={isPending}
       />
     </div>
@@ -647,6 +691,32 @@ export function AdminWorkspacesPanel({
     });
   }
 
+  function handleSetAppearance(workspaceId: string, appearanceTheme: WorkspaceAppearanceTheme) {
+    setError(null);
+    startTransition(async () => {
+      const result = await adminUpdateWorkspaceAppearanceAction(
+        workspaceId,
+        appearanceTheme,
+        locale,
+      );
+
+      if (!result.success) {
+        setError(result.error);
+        appToast.error(result.error);
+        return;
+      }
+
+      setData((current) => ({
+        ...current,
+        items: current.items.map((row) =>
+          row.id === workspaceId ? { ...row, appearanceTheme } : row,
+        ),
+      }));
+      appToast.success(t("actions.appearanceUpdated"));
+      router.refresh();
+    });
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -717,6 +787,7 @@ export function AdminWorkspacesPanel({
                     workspace={workspace}
                     onOpenDialog={openDialog}
                     onSetPlan={handleSetPlan}
+                    onSetAppearance={handleSetAppearance}
                     isPending={isPending}
                   />
                 ) : (
@@ -725,6 +796,7 @@ export function AdminWorkspacesPanel({
                     workspace={workspace}
                     onOpenDialog={openDialog}
                     onSetPlan={handleSetPlan}
+                    onSetAppearance={handleSetAppearance}
                     isPending={isPending}
                   />
                 ),

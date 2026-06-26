@@ -1,9 +1,7 @@
 {
   "scenarioIds": [
     "configuration-template-plumbing-bathroom",
-    "configuration-price-list-wc-exact",
-    "configuration-price-list-painting-semantic",
-    "configuration-price-list-unit-mismatch-guard",
+    "configuration-template-wc-exact",
     "configuration-retry-snapshot",
     "configuration-downgrade-free"
   ]
