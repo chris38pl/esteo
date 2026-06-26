@@ -1,17 +1,28 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { ActivationTipsBanner } from "@/features/activation/components/activation-tips-banner";
 import { WorkspaceReadyBanner } from "@/features/activation/components/workspace-ready-banner";
 import { CompanyProfileCompletionModal } from "@/features/activation/components/company-profile-completion-modal";
 import type { ActivationPreviewItemId } from "@/features/activation/lib/activation-preview-catalog";
-import { AppToast } from "@/components/ui/app-toast";
+import { AppToast, type AppToastProps } from "@/components/ui/app-toast";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
 const noop = () => {};
+
+function PreviewAppToast(props: AppToastProps) {
+  const [dismissed, setDismissed] = useState(false);
+
+  if (dismissed) {
+    return null;
+  }
+
+  return <AppToast {...props} onDismiss={() => setDismissed(true)} />;
+}
 
 function PreviewFrame({
   children,
@@ -114,7 +125,7 @@ export function ActivationPreviewRenderer({
     case "form_link_toast":
       return (
         <PreviewFrame align="toast-top">
-          <AppToast
+          <PreviewAppToast
             variant="action"
             title={tFormBadge("afterCopyTitle")}
             description={tFormBadge("afterCopyDescription")}
@@ -126,7 +137,7 @@ export function ActivationPreviewRenderer({
     case "form_copy_simple_toast":
       return (
         <PreviewFrame align="toast-top">
-          <AppToast
+          <PreviewAppToast
             variant="success"
             title={tEstimates("list.hero.form.copied")}
             progressDurationMs={5000}
@@ -146,7 +157,7 @@ export function ActivationPreviewRenderer({
         <PreviewFrame align="toast-bottom">
           <div className="w-full max-w-sm space-y-2">
             <AsyncToastPositionHint />
-            <AppToast
+            <PreviewAppToast
               variant="loading"
               title={tEstimates("send.progress.generatingPdf")}
               description={tEstimates("send.progress.hint")}
@@ -161,7 +172,7 @@ export function ActivationPreviewRenderer({
         <PreviewFrame align="toast-bottom">
           <div className="w-full max-w-sm space-y-2">
             <AsyncToastPositionHint />
-            <AppToast
+            <PreviewAppToast
               variant="success"
               title={tEstimates("send.success")}
               progressDurationMs={5000}
@@ -175,7 +186,7 @@ export function ActivationPreviewRenderer({
         <PreviewFrame align="toast-bottom">
           <div className="w-full max-w-sm space-y-2">
             <AsyncToastPositionHint />
-            <AppToast
+            <PreviewAppToast
               variant="error"
               title={tEstimates("send.error")}
               progressDurationMs={8000}
@@ -210,7 +221,7 @@ export function ActivationPreviewRenderer({
         <PreviewFrame align="toast-bottom">
           <div className="w-full max-w-sm space-y-2">
             <AsyncToastPositionHint />
-            <AppToast
+            <PreviewAppToast
               variant="loading"
               title={tEstimates("editor.pdfExport.generating")}
               description={tEstimates("editor.pdfExport.generatingHint")}
@@ -225,7 +236,7 @@ export function ActivationPreviewRenderer({
         <PreviewFrame align="toast-bottom">
           <div className="w-full max-w-sm space-y-2">
             <AsyncToastPositionHint />
-            <AppToast
+            <PreviewAppToast
               variant="error"
               title={tEstimates("editor.pdfExport.failed")}
               progressDurationMs={8000}
@@ -239,7 +250,7 @@ export function ActivationPreviewRenderer({
         <PreviewFrame align="toast-bottom">
           <div className="w-full max-w-sm space-y-2">
             <AsyncToastPositionHint />
-            <AppToast
+            <PreviewAppToast
               variant="info"
               title={tEstimates("editor.pdfExport.popupBlocked")}
               progressDurationMs={5000}

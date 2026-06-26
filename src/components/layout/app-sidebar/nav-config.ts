@@ -7,6 +7,7 @@ import {
   LayoutTemplate,
   Settings,
   SlidersHorizontal,
+  UserPlus,
   Wallet,
 } from "lucide-react";
 
@@ -20,6 +21,7 @@ export type NavItemKey =
   | "payments"
   | "aiRules"
   | "templates"
+  | "customerAcquisition"
   | "subscription"
   | "settings";
 
@@ -34,6 +36,8 @@ export type SidebarNavItem = {
   labelKey: `nav.${NavItemKey}`;
   badge?: string;
   disabled?: boolean;
+  /** Opens an in-app dialog instead of navigating. */
+  opensModal?: boolean;
 };
 
 export type SidebarNavSection = {
@@ -96,6 +100,15 @@ const templatesItem: SidebarNavItem = {
   labelKey: "nav.templates",
 };
 
+const customerAcquisitionItem: SidebarNavItem = {
+  key: "customerAcquisition",
+  icon: UserPlus,
+  href: (locale, workspaceSlug) =>
+    workspaceSlug ? `/${locale}/dashboard/${workspaceSlug}` : `/${locale}/dashboard`,
+  labelKey: "nav.customerAcquisition",
+  opensModal: true,
+};
+
 const subscriptionItem: SidebarNavItem = {
   key: "subscription",
   icon: CreditCard,
@@ -126,6 +139,11 @@ export const sidebarNavSections: SidebarNavSection[] = [
     id: "ai",
     dividerBefore: true,
     items: [aiRulesItem, templatesItem],
+  },
+  {
+    id: "growth",
+    dividerBefore: true,
+    items: [customerAcquisitionItem],
   },
   {
     id: "owner",

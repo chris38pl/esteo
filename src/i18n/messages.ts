@@ -4,6 +4,7 @@ import enActivation from "@/messages/en/activation.json";
 import enAdmin from "@/messages/en/admin.json";
 import enAuth from "@/messages/en/auth.json";
 import enBilling from "@/messages/en/billing.json";
+import enCustomerAcquisition from "@/messages/en/customerAcquisition.json";
 import enCommon from "@/messages/en/common.json";
 import enDashboard from "@/messages/en/dashboard.json";
 import enEstimateRequests from "@/messages/en/estimateRequests.json";
@@ -27,6 +28,7 @@ import plActivation from "@/messages/pl/activation.json";
 import plAdmin from "@/messages/pl/admin.json";
 import plAuth from "@/messages/pl/auth.json";
 import plBilling from "@/messages/pl/billing.json";
+import plCustomerAcquisition from "@/messages/pl/customerAcquisition.json";
 import plCommon from "@/messages/pl/common.json";
 import plDashboard from "@/messages/pl/dashboard.json";
 import plEstimateRequests from "@/messages/pl/estimateRequests.json";
@@ -53,6 +55,7 @@ export const namespaces = [
   "admin",
   "auth",
   "billing",
+  "customerAcquisition",
   "dashboard",
   "estimateRequests",
   "estimates",
@@ -90,6 +93,7 @@ type MessagesByNamespace = {
   admin: typeof enAdmin;
   auth: typeof enAuth;
   billing: typeof enBilling;
+  customerAcquisition: typeof enCustomerAcquisition;
   dashboard: typeof enDashboard;
   estimateRequests: typeof enEstimateRequests;
   estimates: typeof enEstimates;
@@ -122,6 +126,7 @@ function forLocale(locale: Locale): Messages {
         admin: plAdmin,
         auth: plAuth,
         billing: plBilling,
+        customerAcquisition: plCustomerAcquisition,
         dashboard: plDashboard,
         estimateRequests: plEstimateRequests,
         estimates: plEstimates,
@@ -147,6 +152,7 @@ function forLocale(locale: Locale): Messages {
         admin: enAdmin,
         auth: enAuth,
         billing: enBilling,
+        customerAcquisition: enCustomerAcquisition,
         dashboard: enDashboard,
         estimateRequests: enEstimateRequests,
         estimates: enEstimates,

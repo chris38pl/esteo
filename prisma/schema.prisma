@@ -690,6 +690,8 @@ model Workspace {
   appearanceTheme             WorkspaceAppearanceTheme    @default(OCEAN_BREEZE)
   attachmentStorageUsedBytes  BigInt                      @default(0)
   attachmentStorageLimitBytes BigInt                      @default(262144000)
+  /// Anonymous public estimate-request form page views (excludes workspace member previews).
+  publicFormVisitCount        Int                         @default(0)
   /// True when this is the owner's single active FREE workspace. Backed by a partial unique index.
   isActiveFree                Boolean                     @default(false)
   provisioningStatus          WorkspaceProvisioningStatus @default(ACTIVE)

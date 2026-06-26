@@ -63,7 +63,7 @@ export function showAppToast(options: ShowAppToastOptions): string | number {
   const duration = options.duration ?? DEFAULT_DURATION_MS;
 
   return toast.custom((toastId) => renderAppToastContent(toastId, options), {
-    id: options.id,
+    ...(options.id != null ? { id: options.id } : {}),
     duration: duration === Infinity ? Infinity : duration,
     position: options.position ?? "top-center",
     unstyled: true,

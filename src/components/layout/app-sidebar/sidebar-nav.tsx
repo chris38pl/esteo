@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 
-import { cn } from "@/lib/utils";
-import type { Locale } from "@/lib/locale";
-import { dashboardUpgradeHref } from "@/lib/dashboard-routes";
+import { CustomerAcquisitionDialog } from "@/features/customer-acquisition/components/customer-acquisition-dialog";
 import { resolveBillingPlanCode } from "@/features/billing/billing-sidebar-state";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { dashboardUpgradeHref } from "@/lib/dashboard-routes";
+import type { Locale } from "@/lib/locale";
+import { cn } from "@/lib/utils";
 import { sidebarNavSections } from "./nav-config";
 import type { NavItemKey } from "./nav-config";
 import { SidebarDivider } from "./sidebar-divider";
@@ -35,6 +37,10 @@ function isNavItemActive(
 
   if (key === "dashboard") {
     return pathname === workspaceDashboardPath;
+  }
+
+  if (key === "customerAcquisition") {
+    return false;
   }
 
   if (key === "aiRules" && workspaceSlug) {
@@ -68,6 +74,13 @@ function isNavItemActive(
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+const navLinkClassName = {
+  collapsed:
+    "sidebar-nav-link mx-auto flex size-8 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35",
+  expanded:
+    "sidebar-nav-link flex min-w-0 max-w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] leading-tight transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35",
+};
+
 export function SidebarNav({
   locale,
   collapsedOverride,
@@ -84,11 +97,19 @@ export function SidebarNav({
   const { inDrawer } = useSidebarLayout();
   const { activeWorkspace, isPlatformAdmin, billingSidebarState } = useWorkspaceContext();
   const workspaceSlug = activeWorkspace?.slug ?? null;
+  const workspaceId = activeWorkspace?.id ?? null;
   const isOwner = activeWorkspace?.isOwner === true;
   const planCode = resolveBillingPlanCode(billingSidebarState);
   const isFreePlan = planCode === "FREE";
   const templatesUpgradeHref =
     isOwner && workspaceSlug ? dashboardUpgradeHref(locale as Locale, workspaceSlug) : null;
+  const [customerAcquisitionOpen, setCustomerAcquisitionOpen] = useState(false);
+
+  function openModalForItem(key: NavItemKey) {
+    if (key === "customerAcquisition") {
+      setCustomerAcquisitionOpen(true);
+    }
+  }
 
   return (
     <TooltipProvider>
@@ -120,12 +141,14 @@ export function SidebarNav({
                   const isConfigurationItem = item.key === "aiRules" || item.key === "templates";
                   const isTemplatesFreeLocked = item.key === "templates" && isFreePlan;
                   const isOwnerLocked = isConfigurationItem && !isOwner;
+                  const isModalItem = item.opensModal === true;
 
                   const disabled =
                     item.disabled === true ||
                     isDashboardComingSoon ||
                     isOwnerLocked ||
-                    (item.key === "settings" && !isOwner);
+                    (item.key === "settings" && !isOwner) ||
+                    (isModalItem && !workspaceSlug);
 
                   const href =
                     isTemplatesFreeLocked && templatesUpgradeHref
@@ -151,21 +174,56 @@ export function SidebarNav({
                   }
 
                   const row = collapsed ? (
-                    <Link
-                      href={href}
-                      aria-current={active ? "page" : undefined}
-                      aria-disabled={disabled || undefined}
-                      tabIndex={disabled ? -1 : 0}
-                      data-active={active ? "true" : "false"}
+                    isModalItem ? (
+                      <button
+                        type="button"
+                        aria-label={label}
+                        disabled={disabled}
+                        className={cn(
+                          navLinkClassName.collapsed,
+                          isVisuallyMuted && "opacity-45",
+                          disabled && "pointer-events-none",
+                        )}
+                        onClick={() => openModalForItem(item.key)}
+                      >
+                        <item.icon className="size-3.5" strokeWidth={1.75} />
+                      </button>
+                    ) : (
+                      <Link
+                        href={href}
+                        aria-current={active ? "page" : undefined}
+                        aria-disabled={disabled || undefined}
+                        tabIndex={disabled ? -1 : 0}
+                        data-active={active ? "true" : "false"}
+                        className={cn(
+                          navLinkClassName.collapsed,
+                          isVisuallyMuted && "opacity-45",
+                          disabled && "pointer-events-none",
+                        )}
+                      >
+                        <item.icon className="size-3.5" strokeWidth={1.75} />
+                      </Link>
+                    )
+                  ) : isModalItem ? (
+                    <button
+                      type="button"
+                      disabled={disabled}
                       className={cn(
-                        "sidebar-nav-link mx-auto flex size-8 items-center justify-center rounded-lg transition-colors",
+                        navLinkClassName.expanded,
+                        "w-full",
                         isVisuallyMuted && "opacity-45",
                         disabled && "pointer-events-none",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35",
                       )}
+                      onClick={() => openModalForItem(item.key)}
                     >
-                      <item.icon className="size-3.5" strokeWidth={1.75} />
-                    </Link>
+                      <item.icon className="size-3.5 shrink-0 opacity-80" strokeWidth={1.75} />
+                      <span className="min-w-0 flex-1 truncate text-left">{label}</span>
+                      {badge ? (
+                        <span className="shrink-0 rounded border border-sidebar-search-border bg-[var(--sidebar-search)] px-1 py-px text-[9px] font-medium text-[var(--sidebar-section)]">
+                          {badge}
+                        </span>
+                      ) : null}
+                    </button>
                   ) : (
                     <Link
                       href={href}
@@ -174,10 +232,9 @@ export function SidebarNav({
                       tabIndex={disabled ? -1 : 0}
                       data-active={active ? "true" : "false"}
                       className={cn(
-                        "sidebar-nav-link flex min-w-0 max-w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] leading-tight transition-colors",
+                        navLinkClassName.expanded,
                         isVisuallyMuted && "opacity-45",
                         disabled && "pointer-events-none",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35",
                       )}
                     >
                       <item.icon className="size-3.5 shrink-0 opacity-80" strokeWidth={1.75} />
@@ -208,6 +265,14 @@ export function SidebarNav({
           );
         })}
       </nav>
+
+      <CustomerAcquisitionDialog
+        open={customerAcquisitionOpen}
+        onOpenChange={setCustomerAcquisitionOpen}
+        locale={locale as Locale}
+        workspaceId={workspaceId}
+        workspaceSlug={workspaceSlug}
+      />
     </TooltipProvider>
   );
 }

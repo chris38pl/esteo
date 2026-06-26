@@ -5,6 +5,7 @@ import { setRequestLocale } from "next-intl/server";
 import { EstimateRequestPageBackground } from "@/features/estimate-requests/components/estimate-request-page-background";
 import { PublicEstimateRequestClient } from "@/features/estimate-requests/components/public-estimate-request-client";
 import { PublicEstimateHeader } from "@/features/estimate-requests/components/public-estimate-header";
+import { incrementPublicFormVisit } from "@/features/customer-acquisition/server/increment-public-form-visit";
 import { getPublicEstimateRequestPath } from "@/features/estimate-requests/routes";
 import { getPublicEstimateRequestPageData } from "@/features/estimate-requests/server/public-service";
 import { viewerHasWorkspaceAccess } from "@/features/workspaces/server/workspace-access";
@@ -70,6 +71,16 @@ export default async function PublicEstimateRequestPage({ params }: { params: Pa
   } catch (error) {
     if (!(error instanceof DatabaseUnavailableError)) {
       throw error;
+    }
+  }
+
+  if (!memberHeader) {
+    try {
+      await incrementPublicFormVisit(pageData.workspace.id);
+    } catch (error) {
+      if (!(error instanceof DatabaseUnavailableError)) {
+        throw error;
+      }
     }
   }
 

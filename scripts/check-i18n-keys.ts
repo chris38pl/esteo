@@ -42,6 +42,7 @@ const namespaces = [
   "admin",
   "auth",
   "billing",
+  "customerAcquisition",
   "dashboard",
   "estimateRequests",
   "estimates",

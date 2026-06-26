@@ -1,0 +1,24 @@
+{
+  "dialog": {
+    "title": "Formularz klienta",
+    "description": "Udostępnij klientom formularz online"
+  },
+  "link": {
+    "label": "Twój link do formularza",
+    "copy": "Kopiuj link",
+    "copied": "Skopiowano",
+    "open": "Otwórz stronę",
+    "copyFallback": "Skopiuj link do formularza:"
+  },
+  "qr": {
+    "label": "QR Code",
+    "download": "Pobierz"
+  },
+  "stats": {
+    "title": "Statystyki",
+    "visits": "Odwiedziny",
+    "submissions": "Wysłane formularze",
+    "conversion": "Konwersja",
+    "loading": "Ładowanie statystyk…"
+  }
+}
