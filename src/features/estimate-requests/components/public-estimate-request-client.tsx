@@ -79,7 +79,7 @@ export function PublicEstimateRequestClient({
           ))}
         </div>
 
-        <div className="mt-8 w-full max-w-md lg:mt-72">
+        <div className="mt-8 w-full lg:mt-72">
           <VoiceIntakeController
             locale={locale}
             industry={pageData.workspace.industry}
