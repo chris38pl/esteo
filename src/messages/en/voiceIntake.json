@@ -170,6 +170,19 @@
       }
     },
     "services": {
+      "trigger": {
+        "label": "Tell us about your service or need",
+        "hint": "AI will fill the form from your voice description"
+      },
+      "recording": {
+        "initialTitleLine1": "Tell us about your",
+        "initialTitleHighlight": "service or need",
+        "initialSubtitle": "Say everything you know about the service — we'll take care of the rest.",
+        "maxDuration": "You have 3 minutes to describe the service or need…"
+      },
+      "portal": {
+        "ariaLabel": "Voice assistant — tell us about your service or need"
+      },
       "speakFreely": "You can describe the service, scope, location, preferred timeline, and contact details.",
       "missingFriendly": {
         "propertyType": "Property type",

@@ -1,8 +1,9 @@
 "use client";
 
 import { Mic } from "lucide-react";
-import { useTranslations } from "next-intl";
 
+import { useVoiceIndustryUiCopy } from "@/features/voice-intake/hooks/use-voice-industry-ui-copy";
+import type { WorkspaceIndustry } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -11,14 +12,16 @@ export function VoiceIntakeFooterBar({
   disabled,
   className,
   floating = false,
+  industry,
 }: {
   onClick: () => void;
   disabled?: boolean;
   className?: string;
   /** Elevated card over hero imagery — same bar shape as the create-estimate modal footer. */
   floating?: boolean;
+  industry: WorkspaceIndustry;
 }) {
-  const t = useTranslations("voiceIntake.trigger");
+  const copy = useVoiceIndustryUiCopy(industry);
 
   return (
     <div
@@ -31,8 +34,8 @@ export function VoiceIntakeFooterBar({
       )}
     >
       <div className="min-w-0">
-        <p className="text-sm font-semibold text-foreground">{t("label")}</p>
-        <p className="mt-0.5 text-xs text-muted-foreground">{t("hint")}</p>
+        <p className="text-sm font-semibold text-foreground">{copy.triggerLabel}</p>
+        <p className="mt-0.5 text-xs text-muted-foreground">{copy.triggerHint}</p>
       </div>
       <Button
         type="button"
@@ -42,7 +45,7 @@ export function VoiceIntakeFooterBar({
         className="h-10 shrink-0 cursor-pointer rounded-xl border-primary/30 bg-background px-4"
       >
         <Mic className="size-4 text-primary" />
-        {t("label")}
+        {copy.triggerLabel}
       </Button>
     </div>
   );

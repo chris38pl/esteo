@@ -38,6 +38,8 @@ interface EstimateRequestFormHeroCardProps {
   workspaceSlug: string;
   locale: Locale;
   className?: string;
+  /** Stacked mobile layout for narrow surfaces (e.g. customer acquisition dialog). */
+  variant?: "default" | "dialog";
   onCopyFormLink?: () => void;
   onFormLinkShared?: () => void;
 }
@@ -309,6 +311,7 @@ export function EstimateRequestFormHeroCard({
   workspaceSlug,
   locale,
   className,
+  variant = "default",
   onCopyFormLink,
   onFormLinkShared,
 }: EstimateRequestFormHeroCardProps) {
@@ -376,17 +379,32 @@ export function EstimateRequestFormHeroCard({
         className={cn(
           "estimates-list-hero-card estimates-list-hero-card--form",
           "surface-card relative isolate min-h-[11.5rem] overflow-hidden border-emerald-200/40 md:min-h-[12.5rem] dark:border-emerald-900/30",
+          variant === "dialog" && "max-sm:min-h-0 max-sm:overflow-visible",
           className,
         )}
       >
-        <HeroCardArtwork
-          lightSrc={ESTIMATES_LIST_HERO_IMAGES.form.light}
-          darkSrc={ESTIMATES_LIST_HERO_IMAGES.form.dark}
-        />
-        <HeroCardTextScrim />
-        <div className="estimates-list-hero-body flex min-h-[11.5rem] flex-col justify-between gap-5 p-6 md:min-h-[12.5rem] md:p-8">
-          <div className="flex flex-1 flex-col justify-between gap-5">
-            <div className="estimates-list-hero-content">
+        <div className={cn(variant === "dialog" && "max-sm:hidden")}>
+          <HeroCardArtwork
+            lightSrc={ESTIMATES_LIST_HERO_IMAGES.form.light}
+            darkSrc={ESTIMATES_LIST_HERO_IMAGES.form.dark}
+          />
+        </div>
+        <div className={cn(variant === "dialog" && "max-sm:hidden")}>
+          <HeroCardTextScrim />
+        </div>
+        <div
+          className={cn(
+            "estimates-list-hero-body flex min-h-[11.5rem] flex-col justify-between gap-5 p-6 md:min-h-[12.5rem] md:p-8",
+            variant === "dialog" && "max-sm:min-h-0 max-sm:gap-4 max-sm:p-4",
+          )}
+        >
+          <div className="flex flex-1 flex-col justify-between gap-5 max-sm:gap-4">
+            <div
+              className={cn(
+                "estimates-list-hero-content",
+                variant === "dialog" && "max-sm:max-w-none",
+              )}
+            >
               <HeroCardCopy
                 eyebrow={t("list.hero.form.eyebrow")}
                 title={t("list.hero.form.title")}
@@ -396,8 +414,19 @@ export function EstimateRequestFormHeroCard({
               />
             </div>
 
-            <div className="flex w-full flex-col items-start gap-4 md:flex-row md:items-center md:justify-between">
-                  <Button asChild className={estimateHeroFormButtonClassName}>
+            <div
+              className={cn(
+                "flex w-full flex-col items-start gap-4 md:flex-row md:items-center md:justify-between",
+                variant === "dialog" && "max-sm:gap-3",
+              )}
+            >
+                  <Button
+                    asChild
+                    className={cn(
+                      estimateHeroFormButtonClassName,
+                      variant === "dialog" && "max-sm:w-full max-sm:justify-center",
+                    )}
+                  >
                     <Link href={publicPath} target="_blank" rel="noopener noreferrer">
                       {t("list.hero.form.cta")}
                       <ExternalLink className="size-4" />

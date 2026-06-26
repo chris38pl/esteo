@@ -48,12 +48,12 @@ function VoiceIntakePreviewStage({
 }) {
   switch (phase) {
     case "trigger":
-      return <VoiceIntakeTrigger onClick={noop} />;
+      return <VoiceIntakeTrigger onClick={noop} industry={WorkspaceIndustry.CONSTRUCTION} />;
     case "footer_trigger":
       return (
         <div className="w-full max-w-md space-y-4">
-          <VoiceIntakeFooterBar onClick={noop} />
-          <VoiceIntakeFooterBar onClick={noop} floating />
+          <VoiceIntakeFooterBar onClick={noop} industry={WorkspaceIndustry.CONSTRUCTION} />
+          <VoiceIntakeFooterBar onClick={noop} floating industry={WorkspaceIndustry.OTHER} />
         </div>
       );
     case "recording_initial":

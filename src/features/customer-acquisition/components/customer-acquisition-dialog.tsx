@@ -105,6 +105,7 @@ export function CustomerAcquisitionDialog({
         <EstimateRequestFormHeroCard
           workspaceSlug={workspaceSlug}
           locale={locale}
+          variant="dialog"
           className="w-full"
         />
 

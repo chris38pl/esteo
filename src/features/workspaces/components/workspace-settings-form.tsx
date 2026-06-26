@@ -140,7 +140,7 @@ export function WorkspaceSettingsForm({
                 <Label htmlFor="workspace-settings-industry">{tForm("industryLabel")}</Label>
                 <Input
                   id="workspace-settings-industry"
-                  value={tIndustries("OTHER")}
+                  value={industryDisplay}
                   readOnly
                   tabIndex={-1}
                   className="h-11 rounded-xl bg-muted/40 text-foreground"
@@ -164,20 +164,7 @@ export function WorkspaceSettingsForm({
                   />
                   <p className="text-sm text-muted-foreground">{tAiSetup("businessTypeHint")}</p>
                 </div>
-              ) : (
-                <div className="space-y-2">
-                  <Label htmlFor="workspace-settings-industry-display">{tForm("industryLabel")}</Label>
-                  <Input
-                    id="workspace-settings-industry-display"
-                    value={industryDisplay}
-                    readOnly
-                    tabIndex={-1}
-                    className="h-11 rounded-xl bg-muted/40 text-foreground"
-                    aria-readonly="true"
-                  />
-                  <p className="text-sm text-muted-foreground">{t("basicInfo.industryHint")}</p>
-                </div>
-              )}
+              ) : null}
 
               <div data-ai-setup-field="companyDescription">
                 <CompanyDescriptionField

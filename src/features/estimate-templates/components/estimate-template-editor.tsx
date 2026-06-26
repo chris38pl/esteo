@@ -399,7 +399,7 @@ export function EstimateTemplateEditor({
     <>
       <SyncDashboardBreadcrumbDetail label={breadcrumbLabel} />
       <EstimateEditorLayoutStyles />
-      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl">
         <section className="overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm">
           <div className="flex flex-col lg:flex-row lg:items-stretch">
             <div className="flex min-h-0 flex-col border-b border-border/60 lg:w-1/4 lg:max-w-1/4 lg:shrink-0 lg:border-r lg:border-b-0">
@@ -416,7 +416,7 @@ export function EstimateTemplateEditor({
             </div>
 
             <div className="min-w-0 flex-1 lg:w-3/4">
-              <div className="space-y-6 p-5 md:p-6 lg:p-8">
+              <div className="space-y-6 p-3 sm:p-5 md:p-6 lg:p-8">
                 <EstimateTemplateDetailHeader
                   name={draft.name}
                   description={draft.description}
@@ -452,7 +452,7 @@ export function EstimateTemplateEditor({
                   <div className={estimateEditorTabShellClass}>
                     <div className="min-w-0 overflow-hidden rounded-lg border bg-card/95 shadow-sm">
                       {isAiBlocking ? (
-                        <div className="p-5 md:p-6">
+                        <div className="p-3 sm:p-5 md:p-6">
                           <TemplateGeneratingSkeleton
                             state={
                               aiSkeletonState === "generating"

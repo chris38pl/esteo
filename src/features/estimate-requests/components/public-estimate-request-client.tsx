@@ -92,7 +92,12 @@ export function PublicEstimateRequestClient({
             onMetadataReady={formState.voiceCallbacks.onMetadataReady}
             onAppliedValuesReady={formState.voiceCallbacks.onAppliedValuesReady}
             renderTrigger={({ onClick, disabled }) => (
-              <VoiceIntakeFooterBar floating onClick={onClick} disabled={disabled} />
+              <VoiceIntakeFooterBar
+                floating
+                onClick={onClick}
+                disabled={disabled}
+                industry={pageData.workspace.industry}
+              />
             )}
           />
         </div>

@@ -539,7 +539,7 @@ export function EstimateTemplatesListTab({
       {!canEdit ? <PremiumReadOnlyNotice reason={access.reason} /> : null}
 
       <section className="overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm">
-        <div className="space-y-6 p-5 md:p-6 lg:p-8">
+        <div className="space-y-6 p-3 sm:p-5 md:p-6 lg:p-8">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between lg:gap-8">
             <div className="min-w-0 space-y-2">
               <div className="flex flex-wrap items-center gap-2">

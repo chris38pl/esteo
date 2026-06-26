@@ -8,6 +8,7 @@ import { VoiceRecordingStopButton } from "@/features/voice-intake/components/voi
 import { VoiceRecordingVisualizer } from "@/features/voice-intake/components/voice-recording-visualizer";
 import { useMediaRecorder } from "@/features/voice-intake/hooks/use-media-recorder";
 import { useVoiceIndustryTranslations } from "@/features/voice-intake/hooks/use-voice-industry-translations";
+import { useVoiceIndustryUiCopy } from "@/features/voice-intake/hooks/use-voice-industry-ui-copy";
 import {
   VOICE_INTAKE_MAX_INITIAL_MS,
   VOICE_INTAKE_MIN_RECORDING_MS,
@@ -33,6 +34,7 @@ export function VoiceInitialRecordingStage({
 }) {
   const t = useTranslations("voiceIntake.recording");
   const tIndustry = useVoiceIndustryTranslations(industry);
+  const copy = useVoiceIndustryUiCopy(industry);
   const isPreview = preview !== undefined;
 
   const recorder = useMediaRecorder({
@@ -87,12 +89,12 @@ export function VoiceInitialRecordingStage({
     <div className={voiceRecordingStageShellClassName}>
       <div className="text-center">
         <h2 className="text-xl font-bold leading-tight tracking-tight text-foreground sm:text-2xl">
-          {t("initialTitleLine1")}
+          {copy.initialTitleLine1}
           <br />
-          <span className="text-primary">{t("initialTitleHighlight")}</span>
+          <span className="text-primary">{copy.initialTitleHighlight}</span>
         </h2>
         <p className="mt-4 text-xs leading-relaxed text-muted-foreground sm:mt-[21px] sm:text-sm">
-          {t("initialSubtitle")}
+          {copy.initialSubtitle}
         </p>
       </div>
 
@@ -106,7 +108,7 @@ export function VoiceInitialRecordingStage({
 
       <div className="relative z-10 -mt-5 flex flex-col items-center">
         <VoiceRecordingStopButton onClick={() => void handleStop()} />
-        <p className="mt-9 text-center text-sm text-muted-foreground">{t("maxDuration")}</p>
+        <p className="mt-9 text-center text-sm text-muted-foreground">{copy.maxDuration}</p>
       </div>
 
       <p className="mt-6 text-center text-xs leading-relaxed text-foreground sm:text-sm">

@@ -281,7 +281,7 @@ export function VoiceIntakeController({
       {renderTrigger ? (
         renderTrigger(triggerProps)
       ) : (
-        <VoiceIntakeTrigger onClick={triggerProps.onClick} disabled={triggerProps.disabled} />
+        <VoiceIntakeTrigger onClick={triggerProps.onClick} disabled={triggerProps.disabled} industry={industry} />
       )}
 
       {children}

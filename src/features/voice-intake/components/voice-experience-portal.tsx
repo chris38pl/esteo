@@ -10,6 +10,7 @@ import { VoiceErrorStage } from "@/features/voice-intake/components/voice-error-
 import { VoiceRecordingStage } from "@/features/voice-intake/components/voice-recording-stage";
 import { VoiceSummaryStage } from "@/features/voice-intake/components/voice-summary-stage";
 import type { useVoiceIntake } from "@/features/voice-intake/hooks/use-voice-intake";
+import { useVoiceIndustryUiCopy } from "@/features/voice-intake/hooks/use-voice-industry-ui-copy";
 import { voicePortalScrollClassName } from "@/features/voice-intake/lib/voice-portal-scroll";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
@@ -29,6 +30,7 @@ export function VoiceExperiencePortal({
   onApply: () => void;
 }) {
   const t = useTranslations("voiceIntake");
+  const copy = useVoiceIndustryUiCopy(industry);
 
   useEffect(() => {
     if (!voice.open) return;
@@ -77,7 +79,7 @@ export function VoiceExperiencePortal({
     <div
       role="dialog"
       aria-modal="true"
-      aria-label={t("portal.ariaLabel")}
+      aria-label={copy.portalAriaLabel}
       className="fixed inset-0 z-[100] isolate flex flex-col overflow-hidden pointer-events-auto"
       style={{ height: "100dvh" }}
     >

@@ -306,7 +306,12 @@ export function CreateEstimateModal({
                   voiceAppliedValuesRef.current = values;
                 }}
                 renderTrigger={({ onClick, disabled }) => (
-                  <VoiceIntakeFooterBar onClick={onClick} disabled={disabled} className="w-full" />
+                  <VoiceIntakeFooterBar
+                    onClick={onClick}
+                    disabled={disabled}
+                    className="w-full"
+                    industry={formData.workspace.industry}
+                  />
                 )}
               />
             </div>

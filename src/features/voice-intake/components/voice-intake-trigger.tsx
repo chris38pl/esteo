@@ -1,25 +1,28 @@
 "use client";
 
 import { Mic } from "lucide-react";
-import { useTranslations } from "next-intl";
 
+import { useVoiceIndustryUiCopy } from "@/features/voice-intake/hooks/use-voice-industry-ui-copy";
+import type { WorkspaceIndustry } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 
 export function VoiceIntakeTrigger({
   onClick,
   disabled,
+  industry,
 }: {
   onClick: () => void;
   disabled?: boolean;
+  industry: WorkspaceIndustry;
 }) {
-  const t = useTranslations("voiceIntake.trigger");
+  const copy = useVoiceIndustryUiCopy(industry);
 
   return (
     <div className="rounded-xl border border-primary/20 bg-primary/5 p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm font-semibold text-foreground">{t("label")}</p>
-          <p className="mt-1 text-xs text-muted-foreground">{t("hint")}</p>
+          <p className="text-sm font-semibold text-foreground">{copy.triggerLabel}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{copy.triggerHint}</p>
         </div>
         <Button
           type="button"
@@ -29,7 +32,7 @@ export function VoiceIntakeTrigger({
           className="h-11 shrink-0 cursor-pointer rounded-xl border-primary/30 bg-background"
         >
           <Mic className="size-4 text-primary" />
-          {t("label")}
+          {copy.triggerLabel}
         </Button>
       </div>
     </div>

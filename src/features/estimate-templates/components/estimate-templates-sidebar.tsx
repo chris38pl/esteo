@@ -239,7 +239,7 @@ export function EstimateTemplatesSidebar({
 
   return (
     <div className="flex min-h-full flex-1 flex-col">
-      <div className="space-y-4 p-5 lg:p-6">
+      <div className="space-y-4 p-3 sm:p-5 lg:p-6">
         <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="text-lg font-semibold tracking-tight">{t("title")}</h2>
@@ -289,7 +289,7 @@ export function EstimateTemplatesSidebar({
         </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5 lg:px-6 lg:pb-6">
+      <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-3 sm:px-5 sm:pb-5 lg:px-6 lg:pb-6">
         <div className="overflow-hidden rounded-lg border border-border/70">
           {templates.map((template, index) => (
             <SidebarTemplateItem
@@ -308,7 +308,7 @@ export function EstimateTemplatesSidebar({
         </div>
       </div>
 
-      <div className="mt-auto border-t border-border/60 px-5 py-4 lg:px-6">
+      <div className="mt-auto border-t border-border/60 px-3 py-3 sm:px-5 sm:py-4 lg:px-6">
         <Link
           href={templatesListHref}
           className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"

@@ -170,6 +170,19 @@
       }
     },
     "services": {
+      "trigger": {
+        "label": "Opowiedz o usłudze lub potrzebie",
+        "hint": "AI wypełni formularz na podstawie Twojej wypowiedzi"
+      },
+      "recording": {
+        "initialTitleLine1": "Opowiedz o swojej",
+        "initialTitleHighlight": "usłudze lub potrzebie",
+        "initialSubtitle": "Powiedz wszystko, co wiesz o usłudze — zajmiemy się resztą.",
+        "maxDuration": "Masz 3 minuty na opis usługi lub potrzeby…"
+      },
+      "portal": {
+        "ariaLabel": "Asystent głosowy — opowiedz o usłudze lub potrzebie"
+      },
       "speakFreely": "Możesz opisać usługę, zakres, miejsce realizacji, preferowany termin oraz dane kontaktowe.",
       "missingFriendly": {
         "propertyType": "Typ nieruchomości",
