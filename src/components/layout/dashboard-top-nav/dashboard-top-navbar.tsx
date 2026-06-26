@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Menu } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import type { Locale } from "@/lib/locale";
@@ -44,6 +45,12 @@ export function DashboardTopNavbar({
   notificationCounts: NotificationCounts;
 }) {
   const t = useTranslations("sidebar");
+  const pathname = usePathname();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     document.documentElement.dataset.dashboardNav = "";
@@ -61,7 +68,7 @@ export function DashboardTopNavbar({
       )}
     >
       <div className="flex min-w-0 flex-1 items-center gap-2.5">
-        <Dialog>
+        <Dialog open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
           <DialogTrigger asChild>
             <Button
               type="button"

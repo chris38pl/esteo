@@ -137,18 +137,24 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
           type="button"
           aria-label={showBadge ? badgeLabel : t("openMenu")}
           className={cn(
-            "relative flex h-9 max-w-[min(240px,42vw)] shrink-0 items-center gap-2 rounded-lg",
-            "border border-border/60 bg-card/40 px-1.5 transition",
+            "relative flex shrink-0 items-center rounded-lg border border-border/60 bg-card/40 transition",
             "hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35",
-            "sm:max-w-[min(280px,36vw)]",
+            "size-9 justify-center gap-0 p-0 max-sm:max-w-none",
+            "sm:h-9 sm:w-auto sm:max-w-[min(280px,36vw)] sm:justify-start sm:gap-2 sm:px-1.5",
           )}
         >
-          <span className="relative shrink-0">
+          <span className="relative shrink-0 leading-none">
+            <UserAvatar
+              imageUrl={currentUser.avatarUrl}
+              avatarPreset={currentUser.avatarPreset}
+              size={26}
+              className="ring-0 sm:hidden"
+            />
             <UserAvatar
               imageUrl={currentUser.avatarUrl}
               avatarPreset={currentUser.avatarPreset}
               size={30}
-              className="ring-0"
+              className="hidden ring-0 sm:block"
             />
             {showBadge ? (
               <span
@@ -199,44 +205,10 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
             <div className="px-4 pt-2 pb-1">
               <MenuSectionLabel>{t("activeWorkspace")}</MenuSectionLabel>
 
-              <div className="mt-1 md:hidden">
-                <div className="flex items-center gap-2.5 rounded-lg px-1 py-2">
-                  <WorkspaceAvatar
-                    name={activeWorkspace.name}
-                    logoUrl={activeWorkspace.logoUrl}
-                    size={36}
-                    className="rounded-lg ring-0"
-                  />
-                  <span className="min-w-0 flex-1 truncate text-left text-sm font-semibold text-foreground">
-                    {activeWorkspace.name}
-                  </span>
-                </div>
-                <div className="max-h-48 space-y-0.5 overflow-y-auto rounded-lg border border-border/60 bg-muted/20 p-1">
-                  {workspaces.map((workspace) => (
-                    <DropdownMenuItem
-                      key={workspace.id}
-                      className="gap-2.5 text-sm"
-                      onSelect={() => switchWorkspace(workspace.slug)}
-                    >
-                      <WorkspaceAvatar
-                        name={workspace.name}
-                        logoUrl={workspace.logoUrl}
-                        size={24}
-                        className="rounded-md ring-0"
-                      />
-                      <span className="min-w-0 flex-1 truncate">{workspace.name}</span>
-                      {workspace.id === activeWorkspace.id ? (
-                        <Check className="size-4 shrink-0 text-primary" strokeWidth={2} />
-                      ) : null}
-                    </DropdownMenuItem>
-                  ))}
-                </div>
-              </div>
-
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger
                   className={cn(
-                    "mt-1 hidden h-auto w-full rounded-lg px-1 py-0.5 md:flex",
+                    "mt-1 flex h-auto w-full rounded-lg px-1 py-0.5",
                     "focus:bg-accent/40 data-[state=open]:bg-accent/40",
                     "[&>svg:last-child]:hidden",
                   )}
@@ -252,7 +224,7 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
                   </span>
                   <ChevronRight className="size-4 shrink-0 text-muted-foreground" strokeWidth={2} />
                 </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent className="w-56 rounded-lg">
+                <DropdownMenuSubContent className="w-[min(14rem,calc(100vw-2rem))] rounded-lg sm:w-56">
                   {workspaces.map((workspace) => (
                     <DropdownMenuItem
                       key={workspace.id}

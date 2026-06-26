@@ -24,11 +24,11 @@ import {
 } from "@/features/referrals/lib/referral-analytics";
 import { buildReferralLink, buildReferralShareMessage } from "@/features/referrals/lib/referral-share-templates";
 import { REFERRAL_INVITE_HERO_IMAGES } from "@/features/referrals/lib/referral-hero-images";
-import type { ReferralPayoutStatusKey } from "@/features/referrals/lib/referral-payout-status";
 import { expectedRewardForPlan } from "@/features/referrals/server/referral-rewards-catalog";
 import { formatBillingMonthlyPrice } from "@/features/billing/lib/format-billing-amount";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
+import { ReferralInvitationListRow } from "@/features/referrals/components/referral-invitation-list-row";
 
 type PageData = NonNullable<
   Awaited<ReturnType<typeof import("@/features/referrals/server/get-partner-program-page-data").getPartnerProgramPageData>>
@@ -44,7 +44,6 @@ type Props = {
 };
 
 const MAX_VISIBLE_INVITATIONS = 6;
-const INVITATION_ROW_HEIGHT_REM = 3.25;
 
 function ReferralGiftGlow() {
   return (
@@ -274,42 +273,6 @@ function StatCard({ label, value }: { label: string; value: string }) {
   );
 }
 
-const referredPlanBadgeStyles: Record<
-  Extract<SubscriptionPlan, "PRO" | "BUSINESS">,
-  string
-> = {
-  PRO: "border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400",
-  BUSINESS: "border-violet-500/30 bg-violet-500/10 text-violet-600 dark:text-violet-400",
-};
-
-function ReferredPlanBadge({ plan }: { plan: Extract<SubscriptionPlan, "PRO" | "BUSINESS"> }) {
-  return (
-    <span
-      className={cn(
-        "inline-flex shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
-        referredPlanBadgeStyles[plan],
-      )}
-    >
-      {plan}
-    </span>
-  );
-}
-
-function payoutStatusBadgeStyle(
-  payoutStatusKey: ReferralPayoutStatusKey,
-): "active" | "processing" | "pending" | "inactive" {
-  if (payoutStatusKey === "bonus_granted") {
-    return "active";
-  }
-  if (payoutStatusKey === "inactive") {
-    return "inactive";
-  }
-  if (payoutStatusKey === "processing_bonus") {
-    return "processing";
-  }
-  return "pending";
-}
-
 const planAccent: Record<
   SubscriptionPlan,
   { planText: string; iconWrap: string; icon: string; button: string }
@@ -380,28 +343,6 @@ export function PartnerProgramPanel({
     }).format(new Date(iso));
   }
 
-  function renderBonus(
-    rewardCents: number,
-    expectedRewardCents: number | null,
-    payoutStatusKey: ReferralPayoutStatusKey,
-  ) {
-    if (rewardCents > 0) {
-      return <span>{formatAmount(rewardCents)}</span>;
-    }
-    if (payoutStatusKey === "inactive") {
-      return <span className="text-muted-foreground">{formatAmount(0)}</span>;
-    }
-    if (expectedRewardCents != null && expectedRewardCents > 0) {
-      return (
-        <span className="text-muted-foreground">
-          {formatAmount(expectedRewardCents)}{" "}
-          <span className="text-xs font-normal">{t("bonus.projectedSuffix")}</span>
-        </span>
-      );
-    }
-    return "—";
-  }
-
   async function handleInviteShare() {
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
@@ -447,13 +388,6 @@ export function PartnerProgramPanel({
       }
     });
   }
-
-  const badgeStyles = {
-    active: "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-    processing: "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400",
-    pending: "border-border/60 bg-muted/40 text-muted-foreground",
-    inactive: "border-border/60 bg-muted/20 text-muted-foreground/80",
-  };
 
   return (
     <div className="space-y-8">
@@ -601,61 +535,51 @@ export function PartnerProgramPanel({
         ) : (
           <div
             ref={invitationsRef}
-            className="sidebar-scroll overflow-y-auto"
-            style={{ maxHeight: `${MAX_VISIBLE_INVITATIONS * INVITATION_ROW_HEIGHT_REM}rem` }}
+            className="sidebar-scroll overflow-y-auto max-h-[min(28rem,70vh)] md:max-h-[19.5rem]"
           >
-            <table className="min-w-full text-sm">
-              <thead className="sticky top-0 z-10 border-b border-border/60 bg-card text-left">
-                <tr>
-                  <th className="px-6 py-3 font-medium text-muted-foreground sm:px-8">
-                    {t("invitations.columns.email")}
-                  </th>
-                  <th className="px-4 py-3 font-medium text-muted-foreground">
-                    {t("invitations.columns.status")}
-                  </th>
-                  <th className="hidden px-4 py-3 font-medium text-muted-foreground sm:table-cell">
-                    {t("invitations.columns.joined")}
-                  </th>
-                  <th className="px-6 py-3 text-right font-medium text-muted-foreground sm:px-8">
-                    {t("invitations.columns.bonus")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {referrals.map((row) => {
-                  const badgeKey = payoutStatusBadgeStyle(row.payoutStatusKey);
+            <div className="space-y-3 p-3 md:hidden">
+              {referrals.map((row) => (
+                <ReferralInvitationListRow
+                  key={row.id}
+                  row={row}
+                  layout="list"
+                  formatDate={formatDate}
+                  formatAmount={formatAmount}
+                />
+              ))}
+            </div>
 
-                  return (
-                    <tr key={row.id} className="border-b border-border/40 last:border-0">
-                      <td className="px-6 py-3.5 sm:px-8">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="min-w-0 truncate">{row.referredEmail}</span>
-                          {row.referredPlan === "PRO" || row.referredPlan === "BUSINESS" ? (
-                            <ReferredPlanBadge plan={row.referredPlan} />
-                          ) : null}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <span
-                          className={cn(
-                            "inline-flex rounded-full border px-2.5 py-0.5 text-xs font-medium",
-                            badgeStyles[badgeKey],
-                          )}
-                        >
-                          {t(`payoutStatus.${row.payoutStatusKey}`)}
-                        </span>
-                      </td>
-                      <td className="hidden px-4 py-3.5 text-muted-foreground sm:table-cell">
-                        {formatDate(row.claimedAt)}
-                      </td>
-                      <td className="px-6 py-3.5 text-right font-medium sm:px-8">
-                        {renderBonus(row.rewardCents, row.expectedRewardCents, row.payoutStatusKey)}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <div className="hidden overflow-x-auto md:block">
+              <table className="min-w-full text-sm">
+                <thead className="sticky top-0 z-10 border-b border-border/60 bg-card text-left">
+                  <tr>
+                    <th className="px-6 py-3 font-medium text-muted-foreground sm:px-8">
+                      {t("invitations.columns.email")}
+                    </th>
+                    <th className="px-4 py-3 font-medium text-muted-foreground">
+                      {t("invitations.columns.status")}
+                    </th>
+                    <th className="px-4 py-3 font-medium text-muted-foreground">
+                      {t("invitations.columns.joined")}
+                    </th>
+                    <th className="px-6 py-3 text-right font-medium text-muted-foreground sm:px-8">
+                      {t("invitations.columns.bonus")}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {referrals.map((row) => (
+                    <ReferralInvitationListRow
+                      key={row.id}
+                      row={row}
+                      layout="table"
+                      formatDate={formatDate}
+                      formatAmount={formatAmount}
+                    />
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </section>

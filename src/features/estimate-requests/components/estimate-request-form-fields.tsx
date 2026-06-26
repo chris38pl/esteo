@@ -10,6 +10,7 @@ import { AttachmentDropzone } from "@/features/estimate-requests/components/atta
 import type { PublicAttachmentAvailability } from "@/features/attachments/lib/attachment-availability";
 import type { StagingAttachmentItem } from "@/features/attachments/lib/staging-attachment-client";
 import { IndustryFieldInput } from "@/features/estimate-requests/components/industry-field-input";
+import { EstimateRequestDescriptionField } from "@/features/estimate-requests/components/estimate-request-description-field";
 import { parseFieldSelectConfig } from "@/features/industry-fields/lib/field-select-config";
 import { VOIVODESHIP_KEYS, getVoivodeshipLabel } from "@/features/estimate-requests/config/voivodeships";
 import { START_DATE_KEYS, getStartDateLabel } from "@/features/estimate-requests/config/start-dates";
@@ -371,27 +372,14 @@ export function EstimateRequestFormFields({
       </div>
       ) : null}
 
-      <div className="space-y-2" data-voice-field="project.description">
-        <Label htmlFor="estimate-description" className={estimateRequestLabelClassName}>
-          {formLabel(labelKeys.description)}
-          <span className="text-primary">*</span>
-        </Label>
-        <textarea
-          id="estimate-description"
-          value={project.description}
-          onChange={(event) =>
-            onProjectChange({ ...project, description: event.target.value })
-          }
-          required
-          minLength={20}
-          maxLength={4000}
-          disabled={disabled}
+      <div className="space-y-2">
+        <EstimateRequestDescriptionField
+          locale={locale}
+          label={formLabel(labelKeys.description)}
           placeholder={formLabel(labelKeys.descriptionPlaceholder)}
-          className={cn(
-            "min-h-28 w-full resize-y rounded-xl border border-input bg-background/80 px-3 py-3 text-sm text-foreground shadow-xs outline-none dark:bg-input/30",
-            "placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
-            "disabled:cursor-not-allowed disabled:opacity-50",
-          )}
+          project={project}
+          onProjectChange={onProjectChange}
+          disabled={disabled}
         />
         {showTitle ? (
           <p className="text-xs text-muted-foreground">{tCreate("descriptionHint")}</p>
