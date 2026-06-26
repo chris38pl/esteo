@@ -44,11 +44,22 @@ export function NavbarNotificationsButton({
   const tNavbar = useTranslations("navbar.notifications");
   const mdUp = useMdUp();
   const [open, setOpen] = useState(false);
+  const [panelSession, setPanelSession] = useState(0);
   const [counts, setCounts] = useState(initialCounts);
 
   useEffect(() => {
-    setCounts(initialCounts);
-  }, [initialCounts]);
+    if (!open) {
+      setCounts(initialCounts);
+    }
+  }, [initialCounts, open]);
+
+  function handleOpenChange(nextOpen: boolean) {
+    if (nextOpen) {
+      setCounts(initialCounts);
+      setPanelSession((value) => value + 1);
+    }
+    setOpen(nextOpen);
+  }
 
   const badgeCount = counts.unread;
   const badgeLabel = badgeCount > 99 ? "99+" : String(badgeCount);
@@ -83,6 +94,7 @@ export function NavbarNotificationsButton({
 
   const panel = (
     <NotificationsPanelContent
+      key={panelSession}
       locale={locale}
       initialCounts={counts}
       onCountsChange={setCounts}
@@ -91,7 +103,7 @@ export function NavbarNotificationsButton({
 
   if (mdUp) {
     return (
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild>{triggerButton}</PopoverTrigger>
         <PopoverContent align="end" className="z-[90] w-[400px] p-0">
           {open ? panel : null}
@@ -101,7 +113,7 @@ export function NavbarNotificationsButton({
   }
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetTrigger asChild>{triggerButton}</SheetTrigger>
       <SheetContent
         side="bottom"

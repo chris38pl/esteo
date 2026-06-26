@@ -4,7 +4,10 @@ import { Prisma } from "@prisma/client";
 import type { NotificationType } from "@prisma/client";
 
 import { prisma } from "@/db/client";
-import { getNotificationListSinceDate } from "@/features/notifications/lib/notification-constants";
+import {
+  getNotificationListSinceDate,
+  NOTIFICATION_PANEL_PAGE_SIZE,
+} from "@/features/notifications/lib/notification-constants";
 import type { NotificationCounts, NotificationListItem } from "@/features/notifications/lib/notification-types";
 
 const listSelect = {
@@ -114,7 +117,7 @@ export async function listNotificationsForUser(input: {
   cursor?: string;
 }): Promise<{ items: NotificationListItem[]; nextCursor: string | null }> {
   const since = getNotificationListSinceDate();
-  const limit = input.limit ?? 20;
+  const limit = input.limit ?? NOTIFICATION_PANEL_PAGE_SIZE;
 
   const where: Prisma.UserNotificationWhereInput = {
     ...listWhereBase(input.userId, since),
@@ -160,11 +163,21 @@ export async function markNotificationReadForUser(
   userId: string,
   notificationId: string,
 ): Promise<boolean> {
-  const result = await prisma.userNotification.updateMany({
-    where: { id: notificationId, userId, readAt: null },
+  const existing = await prisma.userNotification.findFirst({
+    where: { id: notificationId, userId },
+    select: { id: true, readAt: true },
+  });
+
+  if (!existing || existing.readAt !== null) {
+    return false;
+  }
+
+  await prisma.userNotification.update({
+    where: { id: notificationId },
     data: { readAt: new Date() },
   });
-  return result.count > 0;
+
+  return true;
 }
 
 export async function resolveNotificationsByDedupeKeys(input: {
