@@ -14,6 +14,7 @@
     "build:vercel": "node scripts/vercel-build.mjs",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "i18n": "npm run i18n:check && node --experimental-strip-types scripts/check-hardcoded-ui.ts",
     "i18n:check": "node --experimental-strip-types scripts/check-i18n-keys.ts",
     "prisma:validate": "prisma validate",
