@@ -28,6 +28,7 @@ type PageLabelKey =
   | "adminStorageExplorer"
   | "adminIndustryFields"
   | "adminEstimateRequests"
+  | "adminEstimates"
   | "adminEstimateRequestDetail";
 
 const USER_LEVEL_PAGES = new Set<PageLabelKey>(["account", "billing"]);
@@ -226,6 +227,7 @@ function resolvePageLabelKey(
   if (pathname === `${base}/admin/storage`) return "adminStorageExplorer";
   if (pathname === `${base}/admin/industry-fields`) return "adminIndustryFields";
   if (pathname === `${base}/admin/estimate-requests`) return "adminEstimateRequests";
+  if (pathname === `${base}/admin/estimates`) return "adminEstimates";
   if (pathname.startsWith(`${base}/admin/estimate-requests/`)) return "adminEstimateRequestDetail";
 
   return null;

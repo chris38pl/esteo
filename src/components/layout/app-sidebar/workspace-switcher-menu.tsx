@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BarChart3, Check, LogOut, Plus, Settings, Sparkles, Users } from "lucide-react";
+import { BarChart3, Check, LogOut, Plus, Search, Settings, Sparkles, Users } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { resolveBillingPlanCode } from "@/features/billing/billing-sidebar-state";
 import { LeaveWorkspaceDialog } from "@/features/workspaces/components/leave-workspace-dialog";
+import { AdminWorkspaceBrowserDialog } from "@/features/workspaces/admin-browser/components/admin-workspace-browser-dialog";
 import { dashboardBillingHref } from "@/lib/dashboard-routes";
 import { cn } from "@/lib/utils";
 
@@ -34,10 +35,12 @@ export function WorkspaceSwitcherMenuContent({
     activeWorkspace,
     billingSidebarState,
     canCreateAdditionalWorkspace,
+    isPlatformAdmin,
     locale,
     switchWorkspace,
   } = useWorkspaceContext();
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+  const [adminBrowserOpen, setAdminBrowserOpen] = useState(false);
 
   const planLabel = tBilling(`planName.${resolveBillingPlanCode(billingSidebarState)}`);
   const billingHref =
@@ -84,6 +87,15 @@ export function WorkspaceSwitcherMenuContent({
           </span>
         </DropdownMenuItem>
       )}
+      {isPlatformAdmin ? (
+        <DropdownMenuItem
+          className="gap-2 text-xs"
+          onSelect={() => setAdminBrowserOpen(true)}
+        >
+          <Search className="size-3.5 text-muted-foreground" />
+          {t("account.browseWorkspaces")}
+        </DropdownMenuItem>
+      ) : null}
       <DropdownMenuSeparator className="bg-[color:var(--sidebar-divider)]" />
 
       <DropdownMenuLabel className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
@@ -181,6 +193,12 @@ export function WorkspaceSwitcherMenuContent({
         workspaceId={activeWorkspace.id}
         workspaceName={activeWorkspace.name}
         locale={locale}
+      />
+    ) : null}
+    {isPlatformAdmin ? (
+      <AdminWorkspaceBrowserDialog
+        open={adminBrowserOpen}
+        onOpenChange={setAdminBrowserOpen}
       />
     ) : null}
     </>

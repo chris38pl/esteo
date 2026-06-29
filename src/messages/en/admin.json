@@ -380,6 +380,26 @@
       "attachmentCount": "{count, plural, =0 {None} one {# file} other {# files}}"
     }
   },
+  "estimates": {
+    "title": "Estimates",
+    "subtitle": "Browse all estimates across the platform.",
+    "searchPlaceholder": "Search by title, inquiry, or workspace…",
+    "empty": "No estimates match your filters.",
+    "workspaceFilter": {
+      "label": "Workspace",
+      "all": "All workspaces",
+      "searchPlaceholder": "Search workspaces…",
+      "empty": "No matching workspaces."
+    },
+    "columns": {
+      "workspace": "Workspace",
+      "owner": "Owner"
+    },
+    "exportFilePrefix": "estimates-admin",
+    "filter": {
+      "allStatuses": "All statuses"
+    }
+  },
   "estimateSections": {
     "title": "Estimate section templates (read-only)",
     "subtitle": "Default estimate sections and rules shipped per industry. Workspaces can override these under workspace settings → Rules.",

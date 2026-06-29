@@ -48,6 +48,7 @@
       "industryFields": "Pola branżowe",
       "workspaces": "Przestrzenie",
       "estimateRequests": "Zapytania",
+      "estimates": "Wyceny",
       "pdfPreview": "Podgląd PDF",
       "storageExplorer": "Eksplorator plików",
       "voiceIntakePreview": "Podgląd voice",
@@ -78,6 +79,7 @@
   "account": {
     "workspaces": "Przestrzenie",
     "createWorkspace": "Utwórz przestrzeń",
+    "browseWorkspaces": "Przeglądaj przestrzenie",
     "yourPlan": "Twój plan",
     "workspaceUsage": "Wykorzystanie przestrzeni",
     "workspaceSettings": "Ustawienia przestrzeni",

@@ -21,6 +21,7 @@
     "adminStorageExplorer": "Storage explorer",
     "adminIndustryFields": "Industry fields",
     "adminEstimateRequests": "Estimate Requests",
+    "adminEstimates": "Estimates",
     "adminEstimateRequestDetail": "Request detail",
     "adminIssues": "Issue Tracker",
     "adminOpsCases": "Ops queue",

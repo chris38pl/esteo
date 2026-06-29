@@ -1,0 +1,16 @@
+{
+  "title": "Przeglądaj przestrzenie",
+  "description": "Wyszukaj przestrzeń po nazwie, slugu albo właścicielu.",
+  "placeholder": "Szukaj przestrzeni lub właściciela...",
+  "clearInput": "Wyczyść pole wyszukiwania",
+  "removeSearch": "Usuń wyszukiwanie",
+  "noResults": "Nie znaleziono przestrzeni",
+  "loading": "Wyszukiwanie przestrzeni...",
+  "results": "Wyniki",
+  "recentSearches": "Ostatnie wyszukiwania",
+  "recentWorkspaces": "Ostatnio otwierane",
+  "clear": "Wyczyść",
+  "empty": {
+    "hint": "Wyszukaj dowolną przestrzeń po nazwie, slugu lub danych założyciela, aby wejść do niej jako admin."
+  }
+}

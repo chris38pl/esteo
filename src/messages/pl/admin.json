@@ -380,6 +380,26 @@
       "attachmentCount": "{count, plural, =0 {Brak} one {# plik} few {# pliki} many {# plik\u00f3w} other {# pliku}}"
     }
   },
+  "estimates": {
+    "title": "Wyceny",
+    "subtitle": "Przeglądaj wszystkie wyceny z całej platformy.",
+    "searchPlaceholder": "Szukaj po tytule, zapytaniu lub przestrzeni…",
+    "empty": "Brak wycen pasujących do filtrów.",
+    "workspaceFilter": {
+      "label": "Przestrzeń",
+      "all": "Wszystkie przestrzenie",
+      "searchPlaceholder": "Szukaj przestrzeni…",
+      "empty": "Brak pasujących przestrzeni."
+    },
+    "columns": {
+      "workspace": "Przestrzeń",
+      "owner": "Założyciel"
+    },
+    "exportFilePrefix": "wyceny-admin",
+    "filter": {
+      "allStatuses": "Wszystkie statusy"
+    }
+  },
   "estimateSections": {
     "title": "Szablony sekcji kosztorysu (tylko podgląd)",
     "subtitle": "Domyślne sekcje i reguły per branża. Przestrzenie mogą je nadpisać w ustawieniach → Reguły.",
