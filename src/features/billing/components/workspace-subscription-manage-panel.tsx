@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { BillingHandoffBanner } from "@/features/billing/components/billing-handoff-banner";
 import { BillingChangePreviewDialog } from "@/features/billing/components/billing-change-preview-dialog";
 import { BillingCreditConfirmDialog } from "@/features/billing/components/billing-credit-confirm-dialog";
+import { BillingUatTestCardHelper } from "@/features/billing/components/billing-uat-test-card-helper";
 import type { WorkspaceBillingManagePageData } from "@/features/billing/billing-manage-page-data";
 import type { BillingChangePreview } from "@/features/billing/billing-page-data";
 import type { BillingOwnershipState } from "@/features/billing/lib/billing-permissions-logic";
@@ -68,6 +69,7 @@ type Props = {
   canPurchaseSubscription: boolean;
   billingOwnershipState: BillingOwnershipState;
   currentPeriodEnd: Date | null;
+  showUatTestCardHelper: boolean;
 };
 
 const planAccent: Record<
@@ -119,6 +121,7 @@ export function WorkspaceSubscriptionManagePanel({
   canPurchaseSubscription,
   billingOwnershipState,
   currentPeriodEnd,
+  showUatTestCardHelper,
 }: Props) {
   const t = useTranslations("billing.workspace.manage");
   const tPlans = useTranslations("billing.workspace.plans");
@@ -715,6 +718,7 @@ export function WorkspaceSubscriptionManagePanel({
         onConfirm={handleConfirmPreview}
         onRecalculate={handleRecalculatePreview}
       />
+      {showUatTestCardHelper ? <BillingUatTestCardHelper /> : null}
     </div>
   );
 }

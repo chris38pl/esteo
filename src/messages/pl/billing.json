@@ -359,7 +359,31 @@
         "proOnly": "Pakiety miejsc są dostępne tylko w planie Business."
       },
       "decrease": "Zmniejsz",
-      "increase": "Zwiększ"
+      "increase": "Zwiększ",
+      "uatTestCard": {
+        "panelLabel": "Karta testowa UAT",
+        "title": "Tryb testowy (UAT)",
+        "subtitle": "Skorzystaj z testowej karty, która zawsze działa.",
+        "close": "Zamknij kartę testową",
+        "show": "Pokaż kartę testową",
+        "hide": "Ukryj kartę testową",
+        "cardLabel": "Esteo Test Card",
+        "cardBrand": "Karta testowa",
+        "expiryLabel": "Ważna do",
+        "cvcLabel": "CVC",
+        "nameLabel": "Posiadacz karty",
+        "copyButton": "Kopiuj dane karty",
+        "copiedButton": "Skopiowano",
+        "copySuccess": "Dane karty skopiowane.",
+        "copyError": "Nie udało się skopiować danych karty.",
+        "footnote": "Ta karta działa wyłącznie w trybie testowym. Nie używaj jej w produkcji.",
+        "copyPayload": {
+          "number": "Numer karty",
+          "expiry": "Data ważności",
+          "cvc": "CVC",
+          "name": "Posiadacz karty"
+        }
+      }
     }
   }
 }

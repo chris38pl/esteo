@@ -27,6 +27,8 @@ export default async function WorkspaceBillingManagePage({
   }
 
   const data = await getWorkspaceBillingManagePageData(resolved.workspace.id);
+  const showUatTestCardHelper =
+    process.env.VERCEL_ENV === "preview" || process.env.NODE_ENV === "development";
 
   return (
     <div className="mx-auto flex min-w-0 w-full max-w-[1400px] flex-1 flex-col pb-8">
@@ -41,6 +43,7 @@ export default async function WorkspaceBillingManagePage({
           canPurchaseSubscription={resolved.permissions.canPurchaseSubscription}
           billingOwnershipState={resolved.permissions.billingOwnershipState}
           currentPeriodEnd={data.currentPeriodEnd}
+          showUatTestCardHelper={showUatTestCardHelper}
         />
       </Suspense>
     </div>
