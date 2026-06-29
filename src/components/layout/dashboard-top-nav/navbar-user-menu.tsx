@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useState } from "react";
 import {
   Check,
   CheckCircle2,
@@ -100,6 +101,31 @@ function AccountMenuRow({
   );
 }
 
+function WorkspaceMenuItem({
+  workspace,
+  activeWorkspaceId,
+  onSelect,
+}: {
+  workspace: { id: string; name: string; slug: string; logoUrl?: string | null };
+  activeWorkspaceId: string;
+  onSelect: () => void;
+}) {
+  return (
+    <DropdownMenuItem className="gap-2.5 text-sm" onSelect={onSelect}>
+      <WorkspaceAvatar
+        name={workspace.name}
+        logoUrl={workspace.logoUrl}
+        size={24}
+        className="rounded-md ring-0"
+      />
+      <span className="min-w-0 flex-1 truncate">{workspace.name}</span>
+      {workspace.id === activeWorkspaceId ? (
+        <Check className="size-4 shrink-0 text-primary" strokeWidth={2} />
+      ) : null}
+    </DropdownMenuItem>
+  );
+}
+
 export function NavbarUserMenu({ locale }: { locale: Locale }) {
   const t = useTranslations("navbar.userMenu");
   const tInvitations = useTranslations("workspaces.invitations");
@@ -129,6 +155,7 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
   const requestCount = activeWorkspaceStats?.requestCount ?? 0;
   const estimateCount = activeWorkspaceStats?.estimateCount ?? 0;
   const storagePercent = activeWorkspace?.storageUsedPercent ?? 0;
+  const [mobileWorkspaceOpen, setMobileWorkspaceOpen] = useState(false);
 
   return (
     <DropdownMenu modal={false}>
@@ -205,10 +232,53 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
             <div className="px-4 pt-2 pb-1">
               <MenuSectionLabel>{t("activeWorkspace")}</MenuSectionLabel>
 
+              <div className="mt-1 md:hidden">
+                <button
+                  type="button"
+                  className={cn(
+                    "flex h-auto w-full items-center gap-2.5 rounded-lg px-1 py-2 text-left transition-colors",
+                    "hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/35",
+                    mobileWorkspaceOpen && "bg-accent/40",
+                  )}
+                  aria-expanded={mobileWorkspaceOpen}
+                  onClick={() => setMobileWorkspaceOpen((open) => !open)}
+                >
+                  <WorkspaceAvatar
+                    name={activeWorkspace.name}
+                    logoUrl={activeWorkspace.logoUrl}
+                    size={36}
+                    className="rounded-lg ring-0"
+                  />
+                  <span className="min-w-0 flex-1 truncate text-sm font-semibold text-foreground">
+                    {activeWorkspace.name}
+                  </span>
+                  <ChevronDown
+                    className={cn(
+                      "size-4 shrink-0 text-muted-foreground transition-transform",
+                      mobileWorkspaceOpen && "rotate-180",
+                    )}
+                    strokeWidth={2}
+                    aria-hidden
+                  />
+                </button>
+                {mobileWorkspaceOpen ? (
+                  <div className="mt-1 max-h-48 space-y-0.5 overflow-y-auto rounded-lg border border-border/60 bg-muted/20 p-1">
+                    {workspaces.map((workspace) => (
+                      <WorkspaceMenuItem
+                        key={workspace.id}
+                        workspace={workspace}
+                        activeWorkspaceId={activeWorkspace.id}
+                        onSelect={() => switchWorkspace(workspace.slug)}
+                      />
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger
                   className={cn(
-                    "mt-1 flex h-auto w-full rounded-lg px-1 py-0.5",
+                    "mt-1 hidden h-auto w-full rounded-lg px-1 py-0.5 md:flex",
                     "focus:bg-accent/40 data-[state=open]:bg-accent/40",
                     "[&>svg:last-child]:hidden",
                   )}
@@ -224,24 +294,14 @@ export function NavbarUserMenu({ locale }: { locale: Locale }) {
                   </span>
                   <ChevronRight className="size-4 shrink-0 text-muted-foreground" strokeWidth={2} />
                 </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent className="w-[min(14rem,calc(100vw-2rem))] rounded-lg sm:w-56">
+                <DropdownMenuSubContent className="w-56 rounded-lg">
                   {workspaces.map((workspace) => (
-                    <DropdownMenuItem
+                    <WorkspaceMenuItem
                       key={workspace.id}
-                      className="gap-2.5 text-sm"
+                      workspace={workspace}
+                      activeWorkspaceId={activeWorkspace.id}
                       onSelect={() => switchWorkspace(workspace.slug)}
-                    >
-                      <WorkspaceAvatar
-                        name={workspace.name}
-                        logoUrl={workspace.logoUrl}
-                        size={24}
-                        className="rounded-md ring-0"
-                      />
-                      <span className="min-w-0 flex-1 truncate">{workspace.name}</span>
-                      {workspace.id === activeWorkspace.id ? (
-                        <Check className="size-4 shrink-0 text-primary" strokeWidth={2} />
-                      ) : null}
-                    </DropdownMenuItem>
+                    />
                   ))}
                 </DropdownMenuSubContent>
               </DropdownMenuSub>

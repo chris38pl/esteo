@@ -29,6 +29,7 @@ interface EstimateItemsToolbarProps {
   filterActive: boolean;
   onOpenFilter: () => void;
   onClearFilter: () => void;
+  readOnly?: boolean;
 }
 
 export function EstimateItemsToolbar({
@@ -47,25 +48,28 @@ export function EstimateItemsToolbar({
   filterActive,
   onOpenFilter,
   onClearFilter,
+  readOnly = false,
 }: EstimateItemsToolbarProps) {
   const t = useTranslations("estimates");
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 px-4 py-3">
       <div className="flex flex-wrap items-center gap-2">
-        <Button
-          size="sm"
-          className={estimatePrimaryButtonClassName}
-          onClick={onAddSection}
-          disabled={isAddingSection}
-        >
-          {isAddingSection ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <Plus className="size-4" />
-          )}
-          {isAddingSection ? t("editor.addingSection") : t("editor.addSection")}
-        </Button>
+        {!readOnly ? (
+          <Button
+            size="sm"
+            className={estimatePrimaryButtonClassName}
+            onClick={onAddSection}
+            disabled={isAddingSection}
+          >
+            {isAddingSection ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Plus className="size-4" />
+            )}
+            {isAddingSection ? t("editor.addingSection") : t("editor.addSection")}
+          </Button>
+        ) : null}
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
@@ -90,15 +94,17 @@ export function EstimateItemsToolbar({
           onClear={onClearFilter}
           className="size-9"
         />
-        <EstimateToolsMenu
-          advancedMode={advancedMode}
-          onAdvancedModeChange={onAdvancedModeChange}
-          marginPercent={marginPercent}
-          onMarginChange={onMarginChange}
-          onMarginBlur={onMarginBlur}
-          showTopPanelToggle={false}
-          triggerButtonClassName="size-9"
-        />
+        {!readOnly ? (
+          <EstimateToolsMenu
+            advancedMode={advancedMode}
+            onAdvancedModeChange={onAdvancedModeChange}
+            marginPercent={marginPercent}
+            onMarginChange={onMarginChange}
+            onMarginBlur={onMarginBlur}
+            showTopPanelToggle={false}
+            triggerButtonClassName="size-9"
+          />
+        ) : null}
       </div>
     </div>
   );

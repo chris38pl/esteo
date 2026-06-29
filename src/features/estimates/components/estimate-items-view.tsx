@@ -53,6 +53,7 @@ interface EstimateItemsViewProps {
   topPanelHidden: boolean;
   onToggleTopPanel: () => void;
   onMobilePositionSheetOpenChange?: (open: boolean) => void;
+  readOnly?: boolean;
 }
 
 export function EstimateItemsView({
@@ -84,6 +85,7 @@ export function EstimateItemsView({
   topPanelHidden,
   onToggleTopPanel,
   onMobilePositionSheetOpenChange,
+  readOnly = false,
 }: EstimateItemsViewProps) {
   const [tableFilter, setTableFilter] = useState<EstimateItemsFilterState>(
     EMPTY_ESTIMATE_ITEMS_FILTER,
@@ -118,6 +120,7 @@ export function EstimateItemsView({
           onMarginBlur={onMarginBlur}
           onAddSection={handleDesktopAddSection}
           isAddingSection={isAddingSection}
+          readOnly={readOnly}
           showAiPanel={showAiPanel}
           onToggleAiPanel={onToggleAiPanel}
           aiUsesSideLayout={aiUsesSideLayout}
@@ -131,6 +134,7 @@ export function EstimateItemsView({
           sections={sections}
           currency={currency}
           advancedMode={advancedMode}
+          readOnly={readOnly}
           onUpdateSection={onUpdateSection}
           onDeleteSection={onDeleteSection}
           onAddItem={onAddItem}
@@ -154,6 +158,7 @@ export function EstimateItemsView({
           marginPercent={marginPercent}
           onMarginChange={onMarginChange}
           onMarginBlur={onMarginBlur}
+          readOnly={readOnly}
           topPanelHidden={topPanelHidden}
           onToggleTopPanel={onToggleTopPanel}
           tableSearchQuery={tableSearchQuery}
@@ -169,6 +174,7 @@ export function EstimateItemsView({
           marginPercent={marginPercent}
           tableSearchQuery={tableSearchQuery}
           tableFilter={tableFilter}
+          readOnly={readOnly}
           onAddSection={onAddSection}
           isAddingSection={isAddingSection}
           addingItemSectionIds={addingItemSectionIds}

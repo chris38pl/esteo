@@ -523,7 +523,17 @@
           },
           "attach_investment_photos": {
             "title": "Załącz zdjęcia inwestycji",
-            "description": "Więcej kontekstu = większa pewność wyceny."
+            "description": "Więcej kontekstu = większa pewność wyceny.",
+            "byIndustry": {
+              "construction": {
+                "title": "Załącz zdjęcia inwestycji",
+                "description": "Więcej kontekstu = większa pewność wyceny."
+              },
+              "services": {
+                "title": "Załącz zdjęcia lub dokumenty",
+                "description": "Więcej kontekstu ułatwi ocenę zakresu prac."
+              }
+            }
           },
           "generate_pdf": {
             "title": "Wygeneruj PDF dla klienta",

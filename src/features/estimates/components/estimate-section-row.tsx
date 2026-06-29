@@ -36,6 +36,7 @@ interface EstimateSectionRowProps {
   onBlur: () => void | Promise<void>;
   currency?: string;
   titleColSpan: number;
+  readOnly?: boolean;
 }
 
 function formatCurrency(value: number, currency: string): string {
@@ -61,6 +62,7 @@ export function EstimateSectionRow({
   onBlur,
   currency = "PLN",
   titleColSpan,
+  readOnly = false,
 }: EstimateSectionRowProps) {
   const t = useTranslations("estimates");
   const [localTitle, setLocalTitle] = useState(title);
@@ -100,6 +102,7 @@ export function EstimateSectionRow({
             onUpdateSection(id, e.target.value);
           }}
           onBlur={onBlur}
+          disabled={readOnly}
           className={`${estimateFlatInputClassName} px-0 font-semibold`}
         />
       </td>
@@ -113,38 +116,40 @@ export function EstimateSectionRow({
         {formatCurrency(sectionCalc.totalGross, currency)}
       </td>
       <td className="w-10 px-2 py-2.5 align-middle">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              className="size-8 rounded-md text-muted-foreground"
-            >
-              <MoreHorizontal className="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => onAddItem(id)}
-              disabled={isAddingItem}
-              className="gap-2"
-            >
-              {isAddingItem ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Plus className="size-4" />
-              )}
-              {isAddingItem ? t("editor.addingItem") : t("editor.addItem")}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onDeleteSection(id)}
-              className="gap-2 text-destructive"
-            >
-              <Trash2 className="size-4" />
-              {t("editor.deleteSection")}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {!readOnly ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="size-8 rounded-md text-muted-foreground"
+              >
+                <MoreHorizontal className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => onAddItem(id)}
+                disabled={isAddingItem}
+                className="gap-2"
+              >
+                {isAddingItem ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Plus className="size-4" />
+                )}
+                {isAddingItem ? t("editor.addingItem") : t("editor.addItem")}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onDeleteSection(id)}
+                className="gap-2 text-destructive"
+              >
+                <Trash2 className="size-4" />
+                {t("editor.deleteSection")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null}
       </td>
     </tr>
   );

@@ -38,6 +38,7 @@ interface EstimateItemsTableProps {
   tableFilter?: EstimateItemsFilterState;
   scrollToSectionId?: string | null;
   onScrollToSectionHandled?: () => void;
+  readOnly?: boolean;
 }
 
 type DragState = {
@@ -61,6 +62,7 @@ export function EstimateItemsTable({
   tableFilter,
   scrollToSectionId = null,
   onScrollToSectionHandled,
+  readOnly = false,
 }: EstimateItemsTableProps) {
   const t = useTranslations("estimates");
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(
@@ -239,6 +241,7 @@ export function EstimateItemsTable({
                     clearDrag();
                   }}
                   onDragEnd={clearDrag}
+                  readOnly={readOnly}
                 />
               );
             })}
@@ -272,6 +275,7 @@ function SectionRows({
   onDragLeave,
   onDrop,
   onDragEnd,
+  readOnly = false,
 }: {
   section: SectionData;
   sectionNumber: number;
@@ -298,6 +302,7 @@ function SectionRows({
   onDragLeave: (itemIndex: number) => void;
   onDrop: (itemIndex: number) => void;
   onDragEnd: () => void;
+  readOnly?: boolean;
 }) {
   const visibleItemEntries = section.items
     .map((item, index) => ({ item, index }))
@@ -328,6 +333,7 @@ function SectionRows({
             ? ESTIMATE_TABLE_TITLE_COLSPAN.advanced
             : ESTIMATE_TABLE_TITLE_COLSPAN.basic
         }
+        readOnly={readOnly}
       />
       {expanded
         ? visibleItemEntries.map(({ item, index }) => (
@@ -336,6 +342,7 @@ function SectionRows({
               item={item}
               positionLabel={`${sectionNumber}.${index + 1}`}
               advancedMode={advancedMode}
+              readOnly={readOnly}
               onUpdate={onUpdateItem}
               onDelete={onDeleteItem}
               onBlur={onBlur}
