@@ -359,7 +359,31 @@
         "proOnly": "Seat packs are available on the Business plan only."
       },
       "decrease": "Decrease",
-      "increase": "Increase"
+      "increase": "Increase",
+      "uatTestCard": {
+        "panelLabel": "UAT test card",
+        "title": "Test mode (UAT)",
+        "subtitle": "Use a test card that always works.",
+        "close": "Close test card",
+        "show": "Show test card",
+        "hide": "Hide test card",
+        "cardLabel": "Esteo Test Card",
+        "cardBrand": "Test card",
+        "expiryLabel": "Valid thru",
+        "cvcLabel": "CVC",
+        "nameLabel": "Cardholder",
+        "copyButton": "Copy card data",
+        "copiedButton": "Copied",
+        "copySuccess": "Card data copied.",
+        "copyError": "Could not copy card data.",
+        "footnote": "This card works only in test mode. Do not use it in production.",
+        "copyPayload": {
+          "number": "Card number",
+          "expiry": "Expiry date",
+          "cvc": "CVC",
+          "name": "Cardholder"
+        }
+      }
     }
   }
 }
