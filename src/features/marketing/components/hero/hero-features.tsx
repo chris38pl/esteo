@@ -1,16 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { FileText, Sparkles, Table2, Wallet, type LucideIcon } from "lucide-react";
 
 import type { HeroFeature } from "@/features/marketing/components/hero/hero-content";
 import { cn } from "@/lib/utils";
 
-const featureIconSrc = [
-  "/images/marketing/hero-features/ai.png",
-  "/images/marketing/hero-features/control.png",
-  "/images/marketing/hero-features/pdf.png",
-  "/images/marketing/hero-features/payments.png",
-] as const;
+const featureIcons: LucideIcon[] = [Sparkles, Table2, FileText, Wallet];
 
 const iconGridVariants = {
   hidden: {},
@@ -35,6 +31,20 @@ const iconVariants = {
   },
 };
 
+function HeroFeatureIcon({ Icon }: { Icon: LucideIcon }) {
+  return (
+    <span
+      className={cn(
+        "grid size-12 shrink-0 place-items-center rounded-full sm:size-14",
+        "bg-[radial-gradient(circle_at_50%_32%,rgba(59,130,246,0.32),rgba(30,64,175,0.12)_58%,rgba(15,23,42,0.28)_100%)]",
+        "shadow-[0_0_18px_-14px_rgba(59,130,246,0.38)]",
+      )}
+    >
+      <Icon className="size-5 text-primary sm:size-6" strokeWidth={1.5} aria-hidden />
+    </span>
+  );
+}
+
 export function HeroFeatures({ features }: { features: HeroFeature[] }) {
   return (
     <div
@@ -52,7 +62,7 @@ export function HeroFeatures({ features }: { features: HeroFeature[] }) {
         variants={iconGridVariants}
       >
         {features.map((feature, index) => {
-          const iconSrc = featureIconSrc[index] ?? featureIconSrc[0];
+          const Icon = featureIcons[index] ?? Sparkles;
 
           return (
             <article
@@ -67,16 +77,8 @@ export function HeroFeatures({ features }: { features: HeroFeature[] }) {
                 ],
               )}
             >
-              <motion.div variants={iconVariants} className="size-12 shrink-0 sm:size-14">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={iconSrc}
-                  alt=""
-                  width={56}
-                  height={56}
-                  className="size-full rounded-[0.7rem] object-cover"
-                  draggable={false}
-                />
+              <motion.div variants={iconVariants}>
+                <HeroFeatureIcon Icon={Icon} />
               </motion.div>
               <div className="min-w-0 space-y-2.5 py-0.5">
                 <h2 className="text-sm font-semibold leading-snug tracking-tight text-foreground sm:text-[15px]">

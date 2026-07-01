@@ -40,13 +40,16 @@ export function HeroPhoneAssistantModal({
   open,
   phase,
   assistant,
+  layout = "sheet",
 }: {
   open: boolean;
   phase: number;
   assistant: HeroAnimationContent["assistant"];
+  layout?: "sheet" | "corner";
 }) {
   const reducedMotion = useReducedMotion();
   const messagesRef = useRef<HTMLDivElement>(null);
+  const isCorner = layout === "corner";
 
   const showUser = phase >= HERO_PHONE_PHASE.ASSISTANT_INPUT_TYPING;
   const showThinking = phase === HERO_PHONE_PHASE.ASSISTANT_THINKING;
@@ -70,32 +73,64 @@ export function HeroPhoneAssistantModal({
     <AnimatePresence>
       {open ? (
         <>
-          <motion.div
-            key="hero-assistant-modal-scrim"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: reducedMotion ? 0 : 0.22 }}
-            className="absolute inset-0 z-[80] bg-black/45"
-            aria-hidden
-          />
+          {!isCorner ? (
+            <motion.div
+              key="hero-assistant-modal-scrim"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: reducedMotion ? 0 : 0.22 }}
+              className="absolute inset-0 z-[80] bg-black/45"
+              aria-hidden
+            />
+          ) : null}
           <motion.div
             key="hero-assistant-modal-panel"
-            initial={{ y: reducedMotion ? 0 : "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: reducedMotion ? 0 : "100%" }}
+            initial={
+              isCorner
+                ? reducedMotion
+                  ? false
+                  : { opacity: 0, y: 14, scale: 0.97 }
+                : { y: reducedMotion ? 0 : "100%" }
+            }
+            animate={
+              isCorner
+                ? { opacity: 1, y: 0, scale: 1 }
+                : { y: 0 }
+            }
+            exit={
+              isCorner
+                ? reducedMotion
+                  ? undefined
+                  : { opacity: 0, y: 10, scale: 0.98 }
+                : { y: reducedMotion ? 0 : "100%" }
+            }
             transition={
               reducedMotion
                 ? { duration: 0 }
-                : { duration: 0.38, ease: [0.32, 0.72, 0, 1] }
+                : isCorner
+                  ? { duration: 0.32, ease: [0.22, 1, 0.36, 1] }
+                  : { duration: 0.38, ease: [0.32, 0.72, 0, 1] }
             }
-            className="hero-phone-assistant-modal absolute inset-x-0 bottom-0 z-[90] flex max-h-[74%] min-h-[58%] flex-col overflow-hidden rounded-t-2xl border-t border-white/10 bg-[#07101f]/98 shadow-[0_-16px_48px_rgba(0,0,0,0.45)] backdrop-blur-xl"
+            className={
+              isCorner
+                ? "hero-phone-assistant-modal absolute right-3 bottom-3 z-[90] flex w-[min(calc(100%-1.5rem),272px)] max-h-[min(72%,320px)] min-h-[220px] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#07101f]/98 shadow-[0_16px_48px_rgba(0,0,0,0.42)] backdrop-blur-xl"
+                : "hero-phone-assistant-modal absolute inset-x-0 bottom-0 z-[90] flex max-h-[74%] min-h-[58%] flex-col overflow-hidden rounded-t-2xl border-t border-white/10 bg-[#07101f]/98 shadow-[0_-16px_48px_rgba(0,0,0,0.45)] backdrop-blur-xl"
+            }
           >
-            <div className="flex justify-center pt-2">
-              <span className="h-1 w-8 rounded-full bg-white/20" aria-hidden />
-            </div>
+            {!isCorner ? (
+              <div className="flex justify-center pt-2">
+                <span className="h-1 w-8 rounded-full bg-white/20" aria-hidden />
+              </div>
+            ) : null}
 
-            <div className="flex items-center justify-between gap-2 border-b border-white/8 px-3 pb-2.5 pt-1">
+            <div
+              className={
+                isCorner
+                  ? "flex items-center justify-between gap-2 border-b border-white/8 px-3 py-2.5"
+                  : "flex items-center justify-between gap-2 border-b border-white/8 px-3 pb-2.5 pt-1"
+              }
+            >
               <div className="flex min-w-0 items-center gap-2">
                 <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-ai text-ai-foreground">
                   <Sparkles className="size-3.5" />

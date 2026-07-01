@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 type MarketingSectionProps = {
   children: ReactNode;
   className?: string;
+  id?: string;
   variant?: "default" | "muted" | "card";
 };
 
@@ -17,10 +18,11 @@ const variantClassName: Record<NonNullable<MarketingSectionProps["variant"]>, st
 export function MarketingSection({
   children,
   className,
+  id,
   variant = "default",
 }: MarketingSectionProps) {
   return (
-    <section className={cn("py-14 sm:py-20", variantClassName[variant], className)}>
+    <section id={id} className={cn("py-14 sm:py-20", variantClassName[variant], className)}>
       {children}
     </section>
   );

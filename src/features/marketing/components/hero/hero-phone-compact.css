@@ -76,45 +76,12 @@
   height: 0.65rem;
 }
 
-.hero-phone-app-surface .hero-phone-toast {
-  border-radius: 0.75rem;
-}
-
 .hero-phone-app-surface .hero-phone-toast.hero-phone-toast-floating {
   box-shadow:
     0 16px 40px rgba(0, 0, 0, 0.38),
     0 4px 12px rgba(0, 0, 0, 0.22),
     0 0 0 1px hsl(var(--border) / 0.45);
   backdrop-filter: blur(10px);
-}
-
-.hero-phone-app-surface .hero-phone-toast > div:first-child {
-  gap: 0.55rem;
-  padding: 0.55rem 0.65rem 0.6rem;
-}
-
-.hero-phone-app-surface .hero-phone-toast > div:first-child > div:first-child {
-  width: 1.5rem;
-  height: 1.5rem;
-  margin-top: 0;
-}
-
-.hero-phone-app-surface .hero-phone-toast > div:first-child > div:first-child svg {
-  width: 0.8rem;
-  height: 0.8rem;
-}
-
-.hero-phone-app-surface .hero-phone-toast .text-sm {
-  font-size: 10px;
-  line-height: 1.35;
-}
-
-.hero-phone-app-surface .hero-phone-toast .min-w-0.flex-1 {
-  padding-right: 0.25rem;
-}
-
-.hero-phone-app-surface .hero-phone-toast button[aria-label="Close"] {
-  display: none;
 }
 
 .hero-phone-app-surface section.rounded-xl > .flex.items-center {

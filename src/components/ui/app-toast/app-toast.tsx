@@ -20,6 +20,8 @@ export type AppToastProps = {
   progressDurationMs?: number;
   onDismiss?: () => void;
   className?: string;
+  size?: "default" | "compact";
+  hideDismiss?: boolean;
 };
 
 export function AppToast({
@@ -32,43 +34,55 @@ export function AppToast({
   progressDurationMs,
   onDismiss,
   className,
+  size = "default",
+  hideDismiss = false,
 }: AppToastProps) {
   const config = APP_TOAST_VARIANTS[variant];
   const Icon = config.icon;
   const hasActions = Boolean(primaryAction || secondaryAction);
+  const isCompact = size === "compact";
   const shouldShowProgress =
     showProgress && progressDurationMs != null && progressDurationMs > 0 && progressDurationMs !== Infinity;
 
   return (
     <div
       className={cn(
-        "relative w-full overflow-hidden rounded-xl border bg-popover text-popover-foreground shadow-lg pointer-events-auto",
+        "relative w-full overflow-hidden border bg-popover text-popover-foreground shadow-lg pointer-events-auto",
         "ring-1 ring-black/5 dark:ring-white/5",
+        isCompact ? "rounded-lg" : "rounded-xl",
         config.borderClassName,
         className,
       )}
       role="status"
       aria-live="polite"
     >
-      <button
-        type="button"
-        onClick={onDismiss}
-        className="absolute right-2 top-2 z-10 inline-flex min-h-11 min-w-11 touch-manipulation items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
-        aria-label="Close"
-      >
-        <X className="size-4" aria-hidden />
-      </button>
+      {!hideDismiss ? (
+        <button
+          type="button"
+          onClick={onDismiss}
+          className={cn(
+            "absolute z-10 inline-flex touch-manipulation items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground",
+            isCompact
+              ? "right-1 top-1 min-h-7 min-w-7"
+              : "right-2 top-2 min-h-11 min-w-11",
+          )}
+          aria-label="Close"
+        >
+          <X className={cn(isCompact ? "size-3" : "size-4")} aria-hidden />
+        </button>
+      ) : null}
 
-      <div className={cn("flex gap-3.5 p-4", hasActions && "pb-3.5")}>
+      <div className={cn("flex", isCompact ? "gap-2 p-2" : "gap-3.5 p-4", hasActions && (isCompact ? "pb-2" : "pb-3.5"))}>
         <div
           className={cn(
-            "mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-full",
+            "shrink-0 items-center justify-center rounded-full flex",
+            isCompact ? "size-6" : "mt-0.5 size-10",
             config.iconWrapClassName,
           )}
         >
           <Icon
             className={cn(
-              "size-5",
+              isCompact ? "size-3" : "size-5",
               config.iconClassName,
               config.spinIcon && "animate-spin",
             )}
@@ -76,25 +90,40 @@ export function AppToast({
           />
         </div>
 
-        <div className="min-w-0 flex-1 pr-10">
-          <p className="text-sm font-semibold leading-snug text-foreground">{title}</p>
+        <div className={cn("min-w-0 flex-1", isCompact ? "pr-1" : "pr-10")}>
+          <p
+            className={cn(
+              "font-semibold leading-snug text-foreground",
+              isCompact ? "text-[10px]" : "text-sm",
+            )}
+          >
+            {title}
+          </p>
           {description ? (
-            <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{description}</p>
+            <p
+              className={cn(
+                "leading-relaxed text-muted-foreground",
+                isCompact ? "mt-1 text-[10px]" : "mt-1.5 text-sm",
+              )}
+            >
+              {description}
+            </p>
           ) : null}
 
           {hasActions ? (
-            <div className="mt-4 flex flex-wrap items-center gap-2.5">
+            <div className={cn("flex flex-wrap items-center", isCompact ? "mt-2 gap-2" : "mt-4 gap-2.5")}>
               {primaryAction ? (
                 <button
                   type="button"
                   onClick={primaryAction.onClick}
                   className={cn(
-                    "inline-flex h-9 items-center gap-1.5 rounded-lg px-3.5 text-sm font-medium transition-colors",
+                    "inline-flex items-center gap-1.5 rounded-lg font-medium transition-colors",
+                    isCompact ? "h-7 px-2.5 text-xs" : "h-9 px-3.5 text-sm",
                     config.primaryButtonClassName,
                   )}
                 >
                   {primaryAction.label}
-                  <ChevronRight className="size-4 shrink-0 opacity-90" aria-hidden />
+                  <ChevronRight className={cn("shrink-0 opacity-90", isCompact ? "size-3" : "size-4")} aria-hidden />
                 </button>
               ) : null}
               {secondaryAction ? (
@@ -102,7 +131,8 @@ export function AppToast({
                   type="button"
                   onClick={secondaryAction.onClick}
                   className={cn(
-                    "inline-flex h-9 items-center rounded-lg px-1 text-sm font-medium transition-colors",
+                    "inline-flex items-center rounded-lg font-medium transition-colors",
+                    isCompact ? "h-7 px-1 text-xs" : "h-9 px-1 text-sm",
                     config.secondaryActionClassName,
                   )}
                 >
@@ -115,7 +145,12 @@ export function AppToast({
       </div>
 
       {shouldShowProgress ? (
-        <div className="absolute bottom-0 left-0 h-[3px] w-[28%] overflow-hidden rounded-full">
+        <div
+          className={cn(
+            "absolute bottom-0 left-0 w-[28%] overflow-hidden rounded-full",
+            isCompact ? "h-[2px]" : "h-[3px]",
+          )}
+        >
           <div
             className={cn("h-full w-full origin-left app-toast-progress", config.accentClassName)}
             style={{ animationDuration: `${progressDurationMs}ms` }}

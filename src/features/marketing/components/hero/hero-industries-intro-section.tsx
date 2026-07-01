@@ -39,7 +39,7 @@ export function HeroIndustriesIntro({ locale }: { locale: Locale }) {
       <div className="relative mx-auto max-w-2xl text-center">
         <h2
           id="hero-industries-intro"
-          className="text-[2rem] font-semibold leading-[1.1] tracking-[-0.03em] sm:text-4xl sm:leading-[1.08] lg:text-5xl lg:leading-[1.06]"
+          className="text-[38px] font-semibold leading-[1.1] tracking-[-0.03em]"
         >
           <span className="block text-foreground">{copy.line1}</span>
           <span className="block sm:whitespace-nowrap">

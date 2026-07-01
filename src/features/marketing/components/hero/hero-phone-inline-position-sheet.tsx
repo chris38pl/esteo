@@ -109,6 +109,7 @@ function AnimatedSheetFields({
   editing,
   saving,
   reducedMotion,
+  surface = "phone",
 }: {
   item: LineItemData;
   itemName: string;
@@ -117,8 +118,13 @@ function AnimatedSheetFields({
   editing: boolean;
   saving: boolean;
   reducedMotion: boolean;
+  surface?: "phone" | "workflow";
 }) {
   const t = useTranslations("estimates");
+  const isWorkflow = surface === "workflow";
+  const labelClassName = isWorkflow ? "text-xs text-muted-foreground" : "text-[11px] text-muted-foreground";
+  const valueClassName = isWorkflow ? "text-sm font-medium" : "text-[11px] font-medium";
+  const rowClassName = isWorkflow ? "flex gap-3 py-2.5 pl-3 pr-3" : editRowClassName;
   const [nameTypingEnabled, setNameTypingEnabled] = useState(false);
   const [priceTypingEnabled, setPriceTypingEnabled] = useState(false);
 
@@ -190,15 +196,16 @@ function AnimatedSheetFields({
 
   return (
     <>
-      <div className={cn(editRowClassName, "items-start")}>
+      <div className={cn(rowClassName, "items-start")}>
         <EditRowIcon icon={FileText} />
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] text-muted-foreground">{t("editor.columns.name")}</p>
+          <p className={labelClassName}>{t("editor.columns.name")}</p>
           <motion.p
             initial={false}
             animate={{ scale: 1 }}
             className={cn(
-              "mt-0.5 text-[11px] font-medium",
+              "mt-0.5",
+              valueClassName,
               nameHighlighted ? "text-primary" : "text-foreground",
             )}
           >
@@ -208,20 +215,21 @@ function AnimatedSheetFields({
         </div>
       </div>
 
-      <div className={cn(editRowClassName, "items-center")}>
+      <div className={cn(rowClassName, "items-center")}>
         <EditRowIcon icon={Hash} />
-        <p className="min-w-0 flex-1 text-[11px] text-muted-foreground">{t("editor.columns.qty")}</p>
-        <p className="text-[11px] font-semibold tabular-nums text-foreground">{displayQuantity}</p>
+        <p className={cn("min-w-0 flex-1", labelClassName)}>{t("editor.columns.qty")}</p>
+        <p className={cn(valueClassName, "font-semibold tabular-nums text-foreground")}>{displayQuantity}</p>
       </div>
 
-      <div className={cn(editRowClassName, "items-center")}>
+      <div className={cn(rowClassName, "items-center")}>
         <EditRowIcon icon={Coins} />
-        <p className="min-w-0 flex-1 text-[11px] text-muted-foreground">{t("editor.columns.unitPrice")}</p>
+        <p className={cn("min-w-0 flex-1", labelClassName)}>{t("editor.columns.unitPrice")}</p>
         <motion.p
           initial={false}
           animate={{ scale: 1 }}
           className={cn(
-            "text-[11px] font-semibold tabular-nums",
+            valueClassName,
+            "font-semibold tabular-nums",
             priceHighlighted ? "text-primary" : "text-foreground",
           )}
         >
@@ -230,14 +238,19 @@ function AnimatedSheetFields({
         </motion.p>
       </div>
 
-      <div className={cn(editRowClassName, "items-center")}>
+      <div className={cn(rowClassName, "items-center")}>
         <EditRowIcon icon={Percent} />
-        <p className="min-w-0 flex-1 text-[11px] text-muted-foreground">{t("editor.mobile.vatPercent")}</p>
-        <p className="text-[11px] font-semibold tabular-nums">{item.vatRate}%</p>
+        <p className={cn("min-w-0 flex-1", labelClassName)}>{t("editor.mobile.vatPercent")}</p>
+        <p className={cn(valueClassName, "font-semibold tabular-nums")}>{item.vatRate}%</p>
       </div>
 
-      <div className="mx-2 mt-2.5 space-y-1 rounded-lg border border-border/60 bg-muted/15 px-2.5 py-2.5">
-        <div className="flex items-center justify-between text-[11px]">
+      <div
+        className={cn(
+          "space-y-1 rounded-lg border border-border/60 bg-muted/15 px-3 py-3",
+          isWorkflow ? "mx-3 mt-3" : "mx-2 mt-2.5 px-2.5 py-2.5",
+        )}
+      >
+        <div className={cn("flex items-center justify-between", isWorkflow ? "text-sm" : "text-[11px]")}>
           <span className="text-muted-foreground">{t("editor.columns.gross")}</span>
           <span className="font-semibold tabular-nums text-primary">
             {formatHeroPhoneCurrency(calc.grossValue)}
@@ -248,6 +261,12 @@ function AnimatedSheetFields({
   );
 }
 
+const workflowOutlineButtonClassName =
+  "h-11 min-h-11 flex-1 rounded-sm border-blue-200 bg-background px-4 text-sm font-medium text-blue-600 shadow-xs dark:border-input dark:bg-card dark:text-foreground";
+
+const workflowPrimaryButtonClassName =
+  "h-11 min-h-11 flex-1 rounded-sm bg-blue-600 px-4 text-sm font-medium text-white shadow-xs dark:bg-primary dark:text-primary-foreground";
+
 export function HeroPhoneInlinePositionSheet({
   open,
   item,
@@ -257,6 +276,7 @@ export function HeroPhoneInlinePositionSheet({
   itemName,
   editing,
   saving,
+  surface = "phone",
 }: {
   open: boolean;
   item: LineItemData | null;
@@ -266,10 +286,14 @@ export function HeroPhoneInlinePositionSheet({
   itemName: string;
   editing: boolean;
   saving: boolean;
+  surface?: "phone" | "workflow";
 }) {
   const t = useTranslations("estimates");
   const reducedMotion = useReducedMotion();
   const isVisible = open && item !== null;
+  const isWorkflow = surface === "workflow";
+
+  const bleedClassName = isWorkflow ? "-inset-4 sm:-inset-5 lg:-inset-6" : "inset-0";
 
   return (
     <AnimatePresence>
@@ -281,7 +305,7 @@ export function HeroPhoneInlinePositionSheet({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: reducedMotion ? 0 : 0.22, ease: "easeOut" }}
-            className="absolute inset-0 z-[39] bg-black/40"
+            className={cn("absolute z-[39] bg-black/40", bleedClassName)}
             aria-hidden
           />
           <motion.div
@@ -300,9 +324,19 @@ export function HeroPhoneInlinePositionSheet({
                 transition: sheetPanelExitTransition(reducedMotion),
               },
             }}
-            className="hero-phone-position-sheet absolute inset-0 z-40 flex flex-col bg-card shadow-[0_-12px_40px_rgba(0,0,0,0.22)] will-change-transform"
+            className={cn(
+              "hero-phone-position-sheet absolute z-40 flex flex-col will-change-transform",
+              isWorkflow
+                ? cn(bleedClassName, "rounded-none bg-background")
+                : "inset-0 bg-card shadow-[0_-12px_40px_rgba(0,0,0,0.22)]",
+            )}
           >
-            <div className="flex items-center justify-between gap-1 border-b border-border/40 px-3.5 pb-1.5 pt-2.5">
+            <div
+              className={cn(
+                "flex items-center justify-between gap-1 border-b border-border/40",
+                isWorkflow ? "px-4 pb-2 pt-3" : "px-3.5 pb-1.5 pt-2.5",
+              )}
+            >
               <Button type="button" variant="ghost" size="icon-xs" className="shrink-0">
                 <ArrowLeft className="size-3.5" />
               </Button>
@@ -315,7 +349,7 @@ export function HeroPhoneInlinePositionSheet({
               </Button>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto pt-2.5">
+            <div className={cn("min-h-0 flex-1 overflow-y-auto", isWorkflow ? "pt-3" : "pt-2.5")}>
               <AnimatedSheetFields
                 item={item}
                 itemName={itemName}
@@ -324,31 +358,45 @@ export function HeroPhoneInlinePositionSheet({
                 editing={editing}
                 saving={saving}
                 reducedMotion={Boolean(reducedMotion)}
+                surface={surface}
               />
             </div>
 
-            <div className="flex gap-1.5 border-t border-border/40 p-2">
+            <div
+              className={cn(
+                "flex gap-2 border-t border-border/40",
+                isWorkflow ? "p-4" : "gap-1.5 p-2",
+              )}
+            >
               <Button
                 type="button"
                 variant="outline"
-                size="sm"
-                className={cn(
-                  estimateOutlineButtonClassName,
-                  heroPhoneOutlineButtonClassName,
-                  "hero-phone-position-sheet-btn flex-1",
-                )}
+                size={isWorkflow ? "default" : "sm"}
+                className={
+                  isWorkflow
+                    ? workflowOutlineButtonClassName
+                    : cn(
+                        estimateOutlineButtonClassName,
+                        heroPhoneOutlineButtonClassName,
+                        "hero-phone-position-sheet-btn flex-1",
+                      )
+                }
               >
                 {t("editor.mobile.cancel")}
               </Button>
               <Button
                 type="button"
-                size="sm"
-                className={cn(
-                  estimatePrimaryButtonClassName,
-                  heroPhonePrimaryButtonClassName,
-                  "hero-phone-position-sheet-btn flex-1",
-                  saving && "ring-2 ring-primary/30",
-                )}
+                size={isWorkflow ? "default" : "sm"}
+                className={
+                  isWorkflow
+                    ? cn(workflowPrimaryButtonClassName, saving && "ring-2 ring-primary/30")
+                    : cn(
+                        estimatePrimaryButtonClassName,
+                        heroPhonePrimaryButtonClassName,
+                        "hero-phone-position-sheet-btn flex-1",
+                        saving && "ring-2 ring-primary/30",
+                      )
+                }
               >
                 {saving ? t("editor.mobile.saving") : t("editor.mobile.save")}
               </Button>

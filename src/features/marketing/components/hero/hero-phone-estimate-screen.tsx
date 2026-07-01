@@ -302,7 +302,7 @@ export function HeroPhoneEstimateScreen({
         </div>
       </div>
 
-      <div className="hero-phone-estimate-sticky-bar z-20 grid shrink-0 grid-cols-2 gap-2 border-t border-border/40 bg-card px-[15px] pt-2 pb-[10px]">
+      <div className="hero-phone-estimate-sticky-bar z-20 grid shrink-0 -translate-y-[7px] grid-cols-2 gap-2 border-t border-border/40 bg-card px-[15px] pt-2 pb-[10px]">
         <div className="flex min-w-0 flex-col justify-center">
           <p className="text-[11px] text-muted-foreground">{t("summary.gross")}</p>
           <p className="truncate text-[14px] font-bold text-primary">
@@ -362,6 +362,8 @@ export function HeroPhoneEstimateScreen({
               description={undefined}
               showProgress={toastVariant === "loading"}
               progressDurationMs={toastVariant === "loading" ? 3400 : undefined}
+              size="compact"
+              hideDismiss
               className="hero-phone-toast hero-phone-toast-floating"
             />
           </motion.div>
