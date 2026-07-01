@@ -2,13 +2,14 @@ export function formatEstimateCurrency(
   value: number,
   currency: string,
   locale: string,
-  options?: { compact?: boolean },
+  options?: { compact?: boolean; fractionDigits?: number },
 ): string {
+  const fractionDigits = options?.fractionDigits ?? 2;
   return new Intl.NumberFormat(locale === "pl" ? "pl-PL" : "en-US", {
     style: "currency",
     currency,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
     ...(options?.compact ? { notation: "compact" as const } : {}),
   }).format(value);
 }

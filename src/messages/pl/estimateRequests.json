@@ -35,7 +35,7 @@
       "fullName": "Imię i nazwisko",
       "email": "E-mail",
       "phone": "Numer kontaktowy",
-      "streetAddress": "Dane adresowe inwestycji",
+      "streetAddress": "Dane adresowe",
       "city": "Miasto",
       "postalCode": "Kod pocztowy",
       "voivodeship": "Województwo",

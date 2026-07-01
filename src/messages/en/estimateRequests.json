@@ -35,7 +35,7 @@
       "fullName": "Full name",
       "email": "Email",
       "phone": "Phone number",
-      "streetAddress": "Investment address",
+      "streetAddress": "Address details",
       "city": "City",
       "postalCode": "Postal code",
       "voivodeship": "Voivodeship",

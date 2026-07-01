@@ -1,0 +1,306 @@
+/* Compact dark UI inside the marketing phone screen cutout (~210px wide). */
+
+.hero-phone-app-surface {
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.hero-phone-app-surface [data-slot="button"] {
+  height: 1.375rem !important;
+  min-height: 1.375rem !important;
+  padding-inline: 0.45rem !important;
+  font-size: 9px !important;
+  gap: 0.2rem !important;
+  border-radius: 0.375rem !important;
+}
+
+.hero-phone-app-surface [data-slot="button"] svg:not([class*="size-"]) {
+  width: 0.65rem;
+  height: 0.65rem;
+}
+
+.hero-phone-app-surface [data-slot="button"][data-size="icon"],
+.hero-phone-app-surface [data-slot="button"][data-size="icon-sm"],
+.hero-phone-app-surface [data-slot="button"][data-size="icon-xs"] {
+  width: 1.375rem !important;
+  height: 1.375rem !important;
+  min-height: 1.375rem !important;
+  padding: 0 !important;
+}
+
+.hero-phone-app-surface .text-base {
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.hero-phone-app-surface .text-sm {
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.hero-phone-app-surface .text-xs {
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.hero-phone-app-surface .text-\[10px\] {
+  font-size: 8px;
+}
+
+.hero-phone-app-surface .text-\[11px\] {
+  font-size: 9px;
+}
+
+.hero-phone-app-surface .size-4 {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.hero-phone-app-surface .size-8 {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+.hero-phone-app-surface .size-10 {
+  width: 1.625rem;
+  height: 1.625rem;
+}
+
+.hero-phone-app-surface .estimate-mobile-position-icon {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+
+.hero-phone-app-surface .estimate-mobile-position-icon svg {
+  width: 0.65rem;
+  height: 0.65rem;
+}
+
+.hero-phone-app-surface .hero-phone-toast {
+  border-radius: 0.75rem;
+}
+
+.hero-phone-app-surface .hero-phone-toast.hero-phone-toast-floating {
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.38),
+    0 4px 12px rgba(0, 0, 0, 0.22),
+    0 0 0 1px hsl(var(--border) / 0.45);
+  backdrop-filter: blur(10px);
+}
+
+.hero-phone-app-surface .hero-phone-toast > div:first-child {
+  gap: 0.55rem;
+  padding: 0.55rem 0.65rem 0.6rem;
+}
+
+.hero-phone-app-surface .hero-phone-toast > div:first-child > div:first-child {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 0;
+}
+
+.hero-phone-app-surface .hero-phone-toast > div:first-child > div:first-child svg {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.hero-phone-app-surface .hero-phone-toast .text-sm {
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.hero-phone-app-surface .hero-phone-toast .min-w-0.flex-1 {
+  padding-right: 0.25rem;
+}
+
+.hero-phone-app-surface .hero-phone-toast button[aria-label="Close"] {
+  display: none;
+}
+
+.hero-phone-app-surface section.rounded-xl > .flex.items-center {
+  padding: 0.35rem 0.5rem;
+  gap: 0.25rem;
+}
+
+.hero-phone-app-surface section.rounded-xl button.flex.w-full {
+  padding: 0.35rem 0.5rem;
+  gap: 0.35rem;
+}
+
+.hero-phone-app-surface section.rounded-xl .w-7 {
+  width: 1.125rem;
+}
+
+.hero-phone-app-surface section.rounded-xl .rounded-xl {
+  border-radius: 0.5rem;
+}
+
+.hero-phone-app-surface .min-h-16 {
+  min-height: 3.75rem;
+}
+
+/* Estimate view — readable marketing mock aligned with hero reference */
+.hero-phone-app-surface .hero-phone-estimate {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.hero-phone-app-surface .hero-phone-summary-card,
+.hero-phone-app-surface .hero-phone-sections-card {
+  box-shadow: inset 0 0 0 1px hsl(var(--border) / 0.05);
+}
+
+.hero-phone-app-surface .hero-phone-estimate [data-slot="button"].hero-phone-send-btn {
+  height: 1.75rem !important;
+  min-height: 1.75rem !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  padding-inline: 0.65rem !important;
+  font-size: 11px !important;
+  gap: 0.35rem !important;
+  border-radius: 0.4rem !important;
+}
+
+.hero-phone-app-surface .hero-phone-estimate [data-slot="button"].hero-phone-send-btn svg {
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
+/* Request form — readable text; global compact rules shrink arbitrary text-[Npx] */
+.hero-phone-app-surface .hero-phone-request {
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.hero-phone-app-surface .hero-phone-request .text-\[9px\] {
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.hero-phone-app-surface .hero-phone-request .text-\[10px\] {
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.hero-phone-app-surface .hero-phone-request .text-\[12px\] {
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.hero-phone-app-surface .hero-phone-request .text-\[8px\] {
+  font-size: 8px;
+}
+
+.hero-phone-app-surface .hero-phone-request .text-\[11px\] {
+  font-size: 10px;
+}
+
+.hero-phone-app-surface .hero-phone-request .text-\[13px\] {
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.hero-phone-app-surface .hero-phone-request [data-slot="button"].hero-phone-request-submit {
+  height: 2rem !important;
+  min-height: 2rem !important;
+  padding-inline: 0.75rem !important;
+  font-size: 10px !important;
+  gap: 0.35rem !important;
+  border-radius: 0.5rem !important;
+}
+
+.hero-phone-app-surface .hero-phone-request [data-slot="button"].hero-phone-request-submit svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.hero-phone-app-surface .hero-phone-estimate .hero-phone-status-badge {
+  height: 1.75rem !important;
+  min-height: 1.75rem !important;
+  min-width: 3.75rem !important;
+  padding-inline: 0.65rem !important;
+  font-size: 10px !important;
+  line-height: 1.2 !important;
+}
+
+.hero-phone-app-surface .hero-phone-estimate .hero-phone-status-more-btn {
+  width: 1.75rem !important;
+  height: 1.75rem !important;
+  min-width: 1.75rem !important;
+  min-height: 1.75rem !important;
+}
+
+.hero-phone-app-surface .hero-phone-estimate .hero-phone-status-more-btn svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.hero-phone-app-surface .hero-phone-estimate .hero-phone-more-menu {
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+/* Generating skeleton — readable status + larger placeholders */
+.hero-phone-app-surface .hero-phone-generating {
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.hero-phone-app-surface .hero-phone-generating .text-\[11px\] {
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+/* Position edit sheet — slightly larger touch targets in phone cutout */
+.hero-phone-app-surface .hero-phone-position-sheet .estimate-mobile-position-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.hero-phone-app-surface .hero-phone-position-sheet .estimate-mobile-position-icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.hero-phone-app-surface .hero-phone-position-sheet [data-slot="button"].hero-phone-position-sheet-btn {
+  height: 2rem !important;
+  min-height: 2rem !important;
+  padding-inline: 0.65rem !important;
+  font-size: 10px !important;
+  border-radius: 0.5rem !important;
+}
+
+.hero-phone-app-surface .hero-phone-position-sheet .text-\[11px\] {
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.hero-phone-app-surface .hero-phone-position-sheet .text-\[10px\] {
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+/* AI assistant — thin dark scrollbar in chat messages */
+.hero-assistant-messages-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.32) transparent;
+}
+
+.hero-assistant-messages-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.hero-assistant-messages-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.hero-assistant-messages-scroll::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.28);
+  border-radius: 999px;
+}
+
+.hero-assistant-messages-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.45);
+}
+
