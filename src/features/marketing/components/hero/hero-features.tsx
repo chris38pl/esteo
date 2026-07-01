@@ -30,7 +30,7 @@ const iconVariants = {
     scale: 1,
     transition: {
       duration: 0.52,
-      ease: [0.22, 1, 0.36, 1],
+      ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
     },
   },
 };
@@ -38,7 +38,6 @@ const iconVariants = {
 export function HeroFeatures({ features }: { features: HeroFeature[] }) {
   return (
     <div
-      id="workflow"
       className={cn(
         "relative z-30 overflow-hidden bg-card/95 shadow-md backdrop-blur-md",
         "-mx-5 w-[calc(100%+2.5rem)] rounded-none border-x-0 border-y border-border/50",
