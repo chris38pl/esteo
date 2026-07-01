@@ -229,23 +229,25 @@ export function FeaturesCarousel({ content }: { content: FeaturesContent }) {
       return;
     }
 
+    const viewportEl = viewport;
+
     function measureStep() {
-      const viewportWidth = viewport.offsetWidth;
+      const viewportWidth = viewportEl.offsetWidth;
 
       if (isMobileStack) {
-        viewport.style.setProperty("--feature-slide-width", `${viewportWidth}px`);
+        viewportEl.style.setProperty("--feature-slide-width", `${viewportWidth}px`);
         setStepPx(viewportWidth);
         return;
       }
 
       const cardWidth = (viewportWidth - (visibleCount - 1) * CARD_GAP_PX) / visibleCount;
-      viewport.style.setProperty("--feature-card-width", `${cardWidth}px`);
+      viewportEl.style.setProperty("--feature-card-width", `${cardWidth}px`);
       setStepPx(cardWidth + CARD_GAP_PX);
     }
 
     measureStep();
     const observer = new ResizeObserver(measureStep);
-    observer.observe(viewport);
+    observer.observe(viewportEl);
 
     return () => observer.disconnect();
   }, [isMobileStack, visibleCount, content.features.length]);

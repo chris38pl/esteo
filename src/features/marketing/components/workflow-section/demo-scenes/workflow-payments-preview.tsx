@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 
 import { buildPaymentScheduleFromPreset } from "@/features/estimates/lib/payment-schedule-presets";
@@ -89,7 +89,6 @@ export function WorkflowPaymentsPreview({
   reducedMotion: boolean | null;
 }) {
   const t = useTranslations("estimates.editor.payments");
-  const intlLocale = useLocale();
   const currency = "PLN" as const;
   const grossTotal = useMemo(
     () => getWorkflowDemoGrossTotal(marketingLocale),
@@ -115,8 +114,8 @@ export function WorkflowPaymentsPreview({
     [grossTotal, installments],
   );
 
-  const formatLocale = intlLocale === "pl" ? "pl-PL" : "en-US";
-  const formatMoney = (value: number) => formatCurrency(value, formatLocale, currency);
+  const dateFormatLocale = marketingLocale === "pl" ? "pl-PL" : "en-US";
+  const formatMoney = (value: number) => formatCurrency(value, marketingLocale, currency);
 
   return (
     <motion.div
@@ -204,7 +203,7 @@ export function WorkflowPaymentsPreview({
                 <span className="tabular-nums text-foreground">{formatMoney(installment.amount)}</span>
                 <span className="text-muted-foreground">
                   {installment.dueDate
-                    ? new Date(installment.dueDate).toLocaleDateString(formatLocale)
+                    ? new Date(installment.dueDate).toLocaleDateString(dateFormatLocale)
                     : t("noDueDate")}
                 </span>
                 <div className="flex items-center gap-1.5">
