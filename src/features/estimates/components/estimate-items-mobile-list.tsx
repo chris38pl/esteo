@@ -35,6 +35,7 @@ interface EstimateItemsMobileListProps {
   onDuplicateItem: (sectionId: string, itemId: string) => void | Promise<void>;
   onBlur: () => void | Promise<void>;
   onPositionSheetOpenChange?: (open: boolean) => void;
+  readOnly?: boolean;
 }
 
 type ActiveItemRef = {
@@ -63,10 +64,11 @@ export function EstimateItemsMobileList({
   onDuplicateItem,
   onBlur,
   onPositionSheetOpenChange,
+  readOnly = false,
 }: EstimateItemsMobileListProps) {
   const t = useTranslations("estimates");
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(sections.map((s) => [s.id, false])),
+    Object.fromEntries(sections.map((s) => [s.id, readOnly])),
   );
   const [activeItem, setActiveItem] = useState<ActiveItemRef | null>(null);
   const [renameSectionId, setRenameSectionId] = useState<string | null>(null);
@@ -94,6 +96,20 @@ export function EstimateItemsMobileList({
   const openItem = (sectionId: string, itemId: string, positionLabel: string) => {
     setActiveItem({ sectionId, itemId, positionLabel });
   };
+
+  useEffect(() => {
+    setExpandedSections((prev) => {
+      const next = { ...prev };
+      let changed = false;
+      for (const section of sections) {
+        if (!(section.id in next)) {
+          next[section.id] = readOnly;
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [readOnly, sections]);
 
   useEffect(() => {
     onPositionSheetOpenChange?.(activeItem !== null);
@@ -124,6 +140,7 @@ export function EstimateItemsMobileList({
               onAddItem={() => onAddItem(section.id)}
               isAddingItem={addingItemSectionIds.includes(section.id)}
               onDeleteSection={() => onDeleteSection(section.id)}
+              readOnly={readOnly}
               onOpenItem={(itemId) =>
                 openItem(
                   section.id,
@@ -134,14 +151,16 @@ export function EstimateItemsMobileList({
             />
           ))
         )}
-        <EstimateMobileAddRow
-          variant="section"
-          label={t("editor.addSection")}
-          pendingLabel={t("editor.addingSection")}
-          onClick={onAddSection}
-          isPending={isAddingSection}
-          disabled={isAddingSection}
-        />
+        {!readOnly ? (
+          <EstimateMobileAddRow
+            variant="section"
+            label={t("editor.addSection")}
+            pendingLabel={t("editor.addingSection")}
+            onClick={onAddSection}
+            isPending={isAddingSection}
+            disabled={isAddingSection}
+          />
+        ) : null}
       </div>
 
       <EstimateMobilePositionSheet
@@ -165,18 +184,21 @@ export function EstimateItemsMobileList({
         }}
         onBlur={onBlur}
         autosaveStatus={autosaveStatus}
+        readOnly={readOnly}
       />
 
-      <EstimateMobileSectionSheet
-        open={renameSectionId !== null}
-        onOpenChange={(open) => {
-          if (!open) setRenameSectionId(null);
-        }}
-        mode="rename"
-        section={renameSection}
-        onRename={onUpdateSection}
-        onBlur={onBlur}
-      />
+      {!readOnly ? (
+        <EstimateMobileSectionSheet
+          open={renameSectionId !== null}
+          onOpenChange={(open) => {
+            if (!open) setRenameSectionId(null);
+          }}
+          mode="rename"
+          section={renameSection}
+          onRename={onUpdateSection}
+          onBlur={onBlur}
+        />
+      ) : null}
     </>
   );
 }

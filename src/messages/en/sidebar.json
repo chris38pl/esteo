@@ -48,6 +48,7 @@
       "industryFields": "Industry fields",
       "workspaces": "Workspaces",
       "estimateRequests": "Estimate Requests",
+      "estimates": "Estimates",
       "pdfPreview": "PDF preview",
       "storageExplorer": "Storage explorer",
       "voiceIntakePreview": "Voice preview",
@@ -78,6 +79,7 @@
   "account": {
     "workspaces": "Workspaces",
     "createWorkspace": "Create workspace",
+    "browseWorkspaces": "Browse workspaces",
     "yourPlan": "Your plan",
     "workspaceUsage": "Workspace usage",
     "workspaceSettings": "Workspace settings",

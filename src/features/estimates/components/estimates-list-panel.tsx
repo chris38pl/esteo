@@ -222,7 +222,7 @@ export function EstimatesListPanel({
       (status) => t(`status.${status}`),
     );
 
-    downloadEstimatesListCsv(csv, workspaceSlug);
+    downloadEstimatesListCsv(csv, `wyceny-${workspaceSlug}`);
   }, [filteredEstimates, locale, t, workspaceSlug]);
 
   return (

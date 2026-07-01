@@ -22,6 +22,7 @@ import enNotifications from "@/messages/en/notifications.json";
 import enSidebar from "@/messages/en/sidebar.json";
 import enStyleguide from "@/messages/en/styleguide.json";
 import enVoiceIntake from "@/messages/en/voiceIntake.json";
+import enWorkspaceAdminBrowser from "@/messages/en/workspaceAdminBrowser.json";
 import enWorkspaces from "@/messages/en/workspaces.json";
 import enWorkspaceUsage from "@/messages/en/workspaceUsage.json";
 import plActivation from "@/messages/pl/activation.json";
@@ -46,6 +47,7 @@ import plNotifications from "@/messages/pl/notifications.json";
 import plSidebar from "@/messages/pl/sidebar.json";
 import plStyleguide from "@/messages/pl/styleguide.json";
 import plVoiceIntake from "@/messages/pl/voiceIntake.json";
+import plWorkspaceAdminBrowser from "@/messages/pl/workspaceAdminBrowser.json";
 import plWorkspaces from "@/messages/pl/workspaces.json";
 import plWorkspaceUsage from "@/messages/pl/workspaceUsage.json";
 
@@ -71,6 +73,7 @@ export const namespaces = [
   "sidebar",
   "styleguide",
   "voiceIntake",
+  "workspaceAdminBrowser",
   "workspaceUsage",
   "workspaces",
 ] as const;
@@ -82,6 +85,7 @@ export type Namespace =
   | "admin.workspaces"
   | "admin.industryFields"
   | "admin.estimateRequests"
+  | "admin.estimates"
   | "admin.pdfPreview"
   | "admin.voiceIntakePreview"
   | "admin.activationPreview"
@@ -110,6 +114,7 @@ type MessagesByNamespace = {
   sidebar: typeof enSidebar;
   styleguide: typeof enStyleguide;
   voiceIntake: typeof enVoiceIntake;
+  workspaceAdminBrowser: typeof enWorkspaceAdminBrowser;
   workspaceUsage: typeof enWorkspaceUsage;
   workspaces: typeof enWorkspaces;
 };
@@ -143,6 +148,7 @@ function forLocale(locale: Locale): Messages {
         sidebar: plSidebar,
         styleguide: plStyleguide,
         voiceIntake: plVoiceIntake,
+        workspaceAdminBrowser: plWorkspaceAdminBrowser,
         workspaceUsage: plWorkspaceUsage,
         workspaces: plWorkspaces,
       }
@@ -169,6 +175,7 @@ function forLocale(locale: Locale): Messages {
         sidebar: enSidebar,
         styleguide: enStyleguide,
         voiceIntake: enVoiceIntake,
+        workspaceAdminBrowser: enWorkspaceAdminBrowser,
         workspaceUsage: enWorkspaceUsage,
         workspaces: enWorkspaces,
       };

@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  BarChart3,
   BookOpen,
   Bug,
   Building2,
@@ -18,6 +19,7 @@ export type AdminNavItemKey =
   | "accountInspector"
   | "activationPreview"
   | "estimateRequests"
+  | "estimates"
   | "industryFields"
   | "pdfPreview"
   | "storageExplorer"
@@ -53,6 +55,12 @@ export const adminNavItems: AdminNavItem[] = [
     icon: ClipboardList,
     href: (locale) => `/${locale}/dashboard/admin/estimate-requests`,
     labelKey: "admin.nav.estimateRequests",
+  },
+  {
+    key: "estimates",
+    icon: BarChart3,
+    href: (locale) => `/${locale}/dashboard/admin/estimates`,
+    labelKey: "admin.nav.estimates",
   },
   {
     key: "accountInspector",

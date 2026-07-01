@@ -279,6 +279,7 @@ export default async function EstimateEditorPage({
         workspaceCompanyProfile={workspaceCompanyProfile}
         workspaceLogoUrl={workspaceCompanyProfileExport.logoUrl}
         versionWorkflow={versionWorkflow}
+        workspaceIndustry={resolved.workspace.industry}
       />
     </>
   );

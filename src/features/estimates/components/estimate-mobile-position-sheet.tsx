@@ -52,6 +52,7 @@ interface EstimateMobilePositionSheetProps {
   onDelete: () => void | Promise<void>;
   onBlur: () => void | Promise<void>;
   autosaveStatus?: AutoSaveStatus;
+  readOnly?: boolean;
 }
 
 const editRowClassName = "flex gap-3 py-2.5 pl-[22px] pr-[22px]";
@@ -74,11 +75,13 @@ function NameEditRow({
   value,
   placeholder,
   onChange,
+  disabled = false,
 }: {
   label: string;
   value: string;
   placeholder: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
 }) {
   return (
     <div className={cn(editRowClassName, "items-start")}>
@@ -89,6 +92,7 @@ function NameEditRow({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
+          disabled={disabled}
           className={cn(fieldInputClassName, "mt-0.5 w-full")}
         />
       </div>
@@ -127,6 +131,7 @@ export function EstimateMobilePositionSheet({
   onDelete,
   onBlur,
   autosaveStatus = "idle",
+  readOnly = false,
 }: EstimateMobilePositionSheetProps) {
   const t = useTranslations("estimates");
   const locale = useLocale();
@@ -173,6 +178,7 @@ export function EstimateMobilePositionSheet({
   const margin = calc.netValue - costBasis;
 
   const patch = (partial: Partial<LineItemData>) => {
+    if (readOnly) return;
     setDraft((prev) => {
       if (!prev) return prev;
       const next = { ...prev, ...partial };
@@ -296,6 +302,7 @@ export function EstimateMobilePositionSheet({
             value={effectiveDraft.name}
             placeholder={t("editor.itemNamePlaceholder")}
             onChange={(name) => patch({ name })}
+            disabled={readOnly}
           />
 
           <ValueEditRow icon={Tag} label={t("editor.columns.unit")}>
@@ -303,6 +310,7 @@ export function EstimateMobilePositionSheet({
               value={effectiveDraft.unit ?? ""}
               onChange={(e) => patch({ unit: e.target.value || null })}
               placeholder={t("editor.unitPlaceholder")}
+              disabled={readOnly}
               className={cn(fieldInputClassName, fieldValueClassName)}
             />
           </ValueEditRow>
@@ -315,6 +323,7 @@ export function EstimateMobilePositionSheet({
               onBlurCommit={() =>
                 patch({ quantity: roundEstimateDecimal(effectiveDraft.quantity) })
               }
+              disabled={readOnly}
               className={cn(fieldInputClassName, fieldValueClassName)}
             />
           </ValueEditRow>
@@ -328,6 +337,7 @@ export function EstimateMobilePositionSheet({
                 onBlurCommit={() =>
                   patch({ baseUnitPrice: roundEstimateDecimal(effectiveDraft.baseUnitPrice) })
                 }
+                disabled={readOnly}
                 className={cn(fieldInputClassName, fieldValueClassName)}
               />
             </ValueEditRow>
@@ -346,6 +356,7 @@ export function EstimateMobilePositionSheet({
                 onBlurCommit={() =>
                   patch({ unitPrice: roundEstimateDecimal(effectiveDraft.unitPrice) })
                 }
+                disabled={readOnly}
                 className={cn(fieldInputClassName, fieldValueClassName)}
               />
             )}
@@ -356,6 +367,7 @@ export function EstimateMobilePositionSheet({
               value={effectiveDraft.vatRate}
               onValueChange={(vatRate) => patch({ vatRate })}
               emptyZero={false}
+              disabled={readOnly}
               className={cn(fieldInputClassName, fieldValueClassName)}
             />
           </ValueEditRow>
@@ -398,54 +410,56 @@ export function EstimateMobilePositionSheet({
           </div>
         </div>
 
-        <SheetFooter className="flex-col gap-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <div className="flex w-full gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              className={cn(estimateOutlineButtonClassName, "flex-1")}
-              onClick={handleDuplicate}
-              disabled={isBusy}
-            >
-              <Copy className="size-4" />
-              {isDuplicateInProgress
-                ? t("editor.mobile.duplicating")
-                : t("editor.mobile.duplicate")}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className={cn(
-                estimateOutlineButtonClassName,
-                "flex-1 border-destructive/40 text-destructive hover:bg-destructive/5 hover:text-destructive",
-              )}
-              onClick={handleDelete}
-              disabled={isBusy}
-            >
-              <Trash2 className="size-4" />
-              {isDeleteInProgress ? t("editor.mobile.removing") : t("editor.mobile.remove")}
-            </Button>
-          </div>
-          <div className="flex w-full gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              className={cn(estimateOutlineButtonClassName, "flex-1")}
-              onClick={handleCancel}
-              disabled={isBusy}
-            >
-              {t("editor.mobile.cancel")}
-            </Button>
-            <Button
-              type="button"
-              className={cn(estimatePrimaryButtonClassName, "flex-1")}
-              onClick={handleSave}
-              disabled={isBusy}
-            >
-              {isSaveInProgress ? t("editor.mobile.saving") : t("editor.mobile.save")}
-            </Button>
-          </div>
-        </SheetFooter>
+        {!readOnly ? (
+          <SheetFooter className="flex-col gap-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <div className="flex w-full gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                className={cn(estimateOutlineButtonClassName, "flex-1")}
+                onClick={handleDuplicate}
+                disabled={isBusy}
+              >
+                <Copy className="size-4" />
+                {isDuplicateInProgress
+                  ? t("editor.mobile.duplicating")
+                  : t("editor.mobile.duplicate")}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className={cn(
+                  estimateOutlineButtonClassName,
+                  "flex-1 border-destructive/40 text-destructive hover:bg-destructive/5 hover:text-destructive",
+                )}
+                onClick={handleDelete}
+                disabled={isBusy}
+              >
+                <Trash2 className="size-4" />
+                {isDeleteInProgress ? t("editor.mobile.removing") : t("editor.mobile.remove")}
+              </Button>
+            </div>
+            <div className="flex w-full gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                className={cn(estimateOutlineButtonClassName, "flex-1")}
+                onClick={handleCancel}
+                disabled={isBusy}
+              >
+                {t("editor.mobile.cancel")}
+              </Button>
+              <Button
+                type="button"
+                className={cn(estimatePrimaryButtonClassName, "flex-1")}
+                onClick={handleSave}
+                disabled={isBusy}
+              >
+                {isSaveInProgress ? t("editor.mobile.saving") : t("editor.mobile.save")}
+              </Button>
+            </div>
+          </SheetFooter>
+        ) : null}
         </div>
       </SheetContent>
     </Sheet>

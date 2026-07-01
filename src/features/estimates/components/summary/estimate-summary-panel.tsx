@@ -8,6 +8,7 @@ import type { PaymentInstallmentClient } from "@/features/estimates/lib/serializ
 import type { Currency } from "@/i18n/formatters";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
+import type { WorkspaceIndustry } from "@prisma/client";
 
 import { EstimateSummaryAiCard } from "./estimate-summary-ai-card";
 import { EstimateSummaryBriefCard } from "./estimate-summary-brief-card";
@@ -29,6 +30,7 @@ interface EstimateSummaryPanelProps {
   customerTotalGross: number;
   installments: PaymentInstallmentClient[];
   attachments: EstimateAttachmentClient[];
+  workspaceIndustry: WorkspaceIndustry;
   onOpenTab?: (tab: EstimateEditorTabId) => void;
   onExportPdf?: () => void;
 }
@@ -44,6 +46,7 @@ export function EstimateSummaryPanel({
   customerTotalGross,
   installments,
   attachments,
+  workspaceIndustry,
   onOpenTab,
   onExportPdf,
 }: EstimateSummaryPanelProps) {
@@ -94,6 +97,7 @@ export function EstimateSummaryPanel({
           <EstimateSummaryRecommendationsCard
             installments={installments}
             attachments={attachments}
+            workspaceIndustry={workspaceIndustry}
             onOpenTab={onOpenTab}
             onExportPdf={onExportPdf}
             wide={!showVersionChanges}

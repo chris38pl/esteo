@@ -13,7 +13,9 @@ import {
   type SummaryRecommendationId,
 } from "@/features/estimates/lib/estimate-summary-recommendations-config";
 import type { PaymentInstallmentClient } from "@/features/estimates/lib/serialize-payment-installments";
+import { getIndustryExperienceSegment } from "@/features/estimate-requests/config/industry-experience-config";
 import { cn } from "@/lib/utils";
+import type { WorkspaceIndustry } from "@prisma/client";
 
 import { EstimateSummaryCardShell } from "./estimate-summary-card-shell";
 import { EstimateSummarySectionHeader } from "./estimate-summary-section-header";
@@ -25,14 +27,17 @@ interface EstimateSummaryRecommendationsCardProps {
   onExportPdf?: () => void;
   /** Wider card layout — split recommendation items into two columns */
   wide?: boolean;
+  workspaceIndustry: WorkspaceIndustry;
 }
 
 function RecommendationRow({
   id,
   onSelect,
+  workspaceIndustry,
 }: {
   id: SummaryRecommendationId;
   onSelect?: () => void;
+  workspaceIndustry: WorkspaceIndustry;
 }) {
   const t = useTranslations("estimates");
   const definition = getSummaryRecommendationDefinition(id);
@@ -43,6 +48,19 @@ function RecommendationRow({
 
   const Icon = definition.icon;
   const interactive = Boolean(onSelect);
+  const segment = getIndustryExperienceSegment(workspaceIndustry);
+  const title =
+    id === SUMMARY_RECOMMENDATION_IDS.attach_investment_photos
+      ? segment === "services"
+        ? t("editor.summary.recommendations.items.attach_investment_photos.byIndustry.services.title")
+        : t("editor.summary.recommendations.items.attach_investment_photos.byIndustry.construction.title")
+      : t(`editor.summary.recommendations.items.${id}.title`);
+  const description =
+    id === SUMMARY_RECOMMENDATION_IDS.attach_investment_photos
+      ? segment === "services"
+        ? t("editor.summary.recommendations.items.attach_investment_photos.byIndustry.services.description")
+        : t("editor.summary.recommendations.items.attach_investment_photos.byIndustry.construction.description")
+      : t(`editor.summary.recommendations.items.${id}.description`);
 
   return (
     <button
@@ -59,11 +77,9 @@ function RecommendationRow({
         <Icon className="size-4" />
       </span>
       <span className="min-w-0">
-        <span className="block text-sm font-semibold text-foreground">
-          {t(`editor.summary.recommendations.items.${id}.title`)}
-        </span>
+        <span className="block text-sm font-semibold text-foreground">{title}</span>
         <span className="mt-0.5 block text-xs leading-relaxed text-muted-foreground">
-          {t(`editor.summary.recommendations.items.${id}.description`)}
+          {description}
         </span>
       </span>
     </button>
@@ -76,6 +92,7 @@ export function EstimateSummaryRecommendationsCard({
   onOpenTab,
   onExportPdf,
   wide = false,
+  workspaceIndustry,
 }: EstimateSummaryRecommendationsCardProps) {
   const t = useTranslations("estimates");
 
@@ -120,7 +137,14 @@ export function EstimateSummaryRecommendationsCard({
                 ? () => onOpenTab(definition.targetTab!)
                 : undefined;
 
-          return <RecommendationRow key={id} id={id} onSelect={handleSelect} />;
+          return (
+            <RecommendationRow
+              key={id}
+              id={id}
+              onSelect={handleSelect}
+              workspaceIndustry={workspaceIndustry}
+            />
+          );
         })}
       </div>
     </EstimateSummaryCardShell>

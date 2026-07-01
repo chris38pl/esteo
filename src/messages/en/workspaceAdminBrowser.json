@@ -1,0 +1,16 @@
+{
+  "title": "Browse workspaces",
+  "description": "Search for a workspace by name, slug, or owner.",
+  "placeholder": "Search workspace or owner...",
+  "clearInput": "Clear search input",
+  "removeSearch": "Remove search",
+  "noResults": "No workspaces found",
+  "loading": "Searching workspaces...",
+  "results": "Results",
+  "recentSearches": "Recent searches",
+  "recentWorkspaces": "Recently opened",
+  "clear": "Clear",
+  "empty": {
+    "hint": "Search any workspace by name, slug, or founder details to enter it as an admin."
+  }
+}

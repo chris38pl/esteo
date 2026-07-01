@@ -149,6 +149,36 @@ export type ResolvedWorkspaceBySlug = {
  */
 export const resolveWorkspaceBySlug = cache(
   async (slug: string, userId: string): Promise<ResolvedWorkspaceBySlug | null> => {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { platformRole: true },
+    });
+
+    if (user?.platformRole === "PLATFORM_ADMIN") {
+      const workspace = await prisma.workspace.findFirst({
+        where: { slug, deletedAt: null },
+      });
+
+      if (workspace) {
+        return { workspace, canonicalSlug: workspace.slug, matchedViaAlias: false };
+      }
+
+      const alias = await prisma.workspaceSlugAlias.findUnique({
+        where: { slug },
+        include: { workspace: true },
+      });
+
+      if (!alias || alias.workspace.deletedAt) {
+        return null;
+      }
+
+      return {
+        workspace: alias.workspace,
+        canonicalSlug: alias.workspace.slug,
+        matchedViaAlias: true,
+      };
+    }
+
     const accessible = await getAccessibleWorkspaces(userId);
 
     // 1. Direct slug match among accessible workspaces

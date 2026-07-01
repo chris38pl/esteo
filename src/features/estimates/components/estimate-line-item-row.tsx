@@ -47,6 +47,7 @@ interface EstimateLineItemRowProps {
   onDragLeaveRow: () => void;
   onDropOnRow: () => void;
   searchQuery?: string;
+  readOnly?: boolean;
 }
 
 function formatCurrency(value: number): string {
@@ -71,6 +72,7 @@ export function EstimateLineItemRow({
   onDragLeaveRow,
   onDropOnRow,
   searchQuery = "",
+  readOnly = false,
 }: EstimateLineItemRowProps) {
   const t = useTranslations("estimates");
   const [local, setLocal] = useState<LineItemData>(item);
@@ -121,16 +123,18 @@ export function EstimateLineItemRow({
       }}
     >
       <td className={cn(cellClass, "w-9")}>
-        <button
-          type="button"
-          draggable
-          className="flex size-8 cursor-grab items-center justify-center rounded-md text-muted-foreground/70 transition-colors hover:bg-muted/50 active:cursor-grabbing"
-          aria-label={t("editor.dragHandle")}
-          onDragStart={onDragHandleStart}
-          onDragEnd={onDragHandleEnd}
-        >
-          <GripVertical className="size-4 shrink-0" strokeWidth={1.75} />
-        </button>
+        {!readOnly ? (
+          <button
+            type="button"
+            draggable
+            className="flex size-8 cursor-grab items-center justify-center rounded-md text-muted-foreground/70 transition-colors hover:bg-muted/50 active:cursor-grabbing"
+            aria-label={t("editor.dragHandle")}
+            onDragStart={onDragHandleStart}
+            onDragEnd={onDragHandleEnd}
+          >
+            <GripVertical className="size-4 shrink-0" strokeWidth={1.75} />
+          </button>
+        ) : null}
       </td>
       <td
         className={cn(
@@ -146,6 +150,7 @@ export function EstimateLineItemRow({
           searchQuery={searchQuery}
           onChange={(e) => handleChange("name", e.target.value)}
           onBlur={onBlur}
+          disabled={readOnly}
           className={estimateLineItemFlatInputClassName}
           placeholder={t("editor.itemNamePlaceholder")}
         />
@@ -156,6 +161,7 @@ export function EstimateLineItemRow({
           searchQuery={searchQuery}
           onChange={(e) => handleChange("unit", e.target.value)}
           onBlur={onBlur}
+          disabled={readOnly}
           className={estimateLineItemFlatInputClassName}
           placeholder={t("editor.unitPlaceholder")}
         />
@@ -172,6 +178,7 @@ export function EstimateLineItemRow({
             }
             void onBlur();
           }}
+          disabled={readOnly}
           className={cn(estimateLineItemFlatInputClassName, "text-right tabular-nums")}
         />
       </td>
@@ -188,6 +195,7 @@ export function EstimateLineItemRow({
               }
               void onBlur();
             }}
+            disabled={readOnly}
             className={cn(estimateLineItemFlatInputClassName, "text-right")}
           />
         </td>
@@ -209,6 +217,7 @@ export function EstimateLineItemRow({
               }
               void onBlur();
             }}
+            disabled={readOnly}
             className={cn(estimateLineItemFlatInputClassName, "text-right")}
           />
         )}
@@ -226,6 +235,7 @@ export function EstimateLineItemRow({
           }}
           onBlurCommit={() => void onBlur()}
           emptyZero={false}
+          disabled={readOnly}
           className={cn(estimateLineItemFlatInputClassName, "text-right")}
         />
       </td>
@@ -233,26 +243,28 @@ export function EstimateLineItemRow({
         {formatCurrency(calc.grossValue)}
       </td>
       <td className={cn(cellClass, "w-10")}>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              className="size-8 rounded-md opacity-0 transition-opacity group-hover:opacity-100"
-            >
-              <MoreHorizontal className="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => onDelete(item.id)}
-              className="gap-2 text-destructive"
-            >
-              <Trash2 className="size-4" />
-              {t("editor.deleteItem")}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {!readOnly ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="size-8 rounded-md opacity-0 transition-opacity group-hover:opacity-100"
+              >
+                <MoreHorizontal className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => onDelete(item.id)}
+                className="gap-2 text-destructive"
+              >
+                <Trash2 className="size-4" />
+                {t("editor.deleteItem")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null}
       </td>
     </tr>
   );

@@ -40,6 +40,7 @@ interface EstimateMobileSectionCardProps {
   onOpenItem: (itemId: string) => void;
   searchQuery?: string;
   tableFilter?: EstimateItemsFilterState;
+  readOnly?: boolean;
 }
 
 function EstimateMobileSectionCardComponent({
@@ -58,6 +59,7 @@ function EstimateMobileSectionCardComponent({
   onOpenItem,
   searchQuery = "",
   tableFilter,
+  readOnly = false,
 }: EstimateMobileSectionCardProps) {
   const t = useTranslations("estimates");
   const locale = useLocale();
@@ -104,37 +106,39 @@ function EstimateMobileSectionCardComponent({
           </p>
         </button>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              className="size-8 shrink-0 rounded-lg text-muted-foreground"
-              aria-label={t("editor.mobile.sectionActions")}
-            >
-              <MoreHorizontal className="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={onAddItem} disabled={isAddingItem} className="gap-2">
-              {isAddingItem ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Plus className="size-4" />
-              )}
-              {isAddingItem ? t("editor.addingItem") : t("editor.addItem")}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={onRename} className="gap-2">
-              <Pencil className="size-4" />
-              {t("editor.mobile.renameSection")}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={onDeleteSection} className="gap-2 text-destructive">
-              <Trash2 className="size-4" />
-              {t("editor.deleteSection")}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {!readOnly ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                className="size-8 shrink-0 rounded-lg text-muted-foreground"
+                aria-label={t("editor.mobile.sectionActions")}
+              >
+                <MoreHorizontal className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={onAddItem} disabled={isAddingItem} className="gap-2">
+                {isAddingItem ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <Plus className="size-4" />
+                )}
+                {isAddingItem ? t("editor.addingItem") : t("editor.addItem")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onRename} className="gap-2">
+                <Pencil className="size-4" />
+                {t("editor.mobile.renameSection")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onDeleteSection} className="gap-2 text-destructive">
+                <Trash2 className="size-4" />
+                {t("editor.deleteSection")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : null}
       </div>
 
       {expanded ? (
@@ -153,14 +157,16 @@ function EstimateMobileSectionCardComponent({
               />
             );
           })}
-          <EstimateMobileAddRow
-            variant="item"
-            label={t("editor.addItem")}
-            pendingLabel={t("editor.addingItem")}
-            onClick={onAddItem}
-            isPending={isAddingItem}
-            disabled={isAddingItem}
-          />
+          {!readOnly ? (
+            <EstimateMobileAddRow
+              variant="item"
+              label={t("editor.addItem")}
+              pendingLabel={t("editor.addingItem")}
+              onClick={onAddItem}
+              isPending={isAddingItem}
+              disabled={isAddingItem}
+            />
+          ) : null}
         </div>
       ) : null}
     </section>

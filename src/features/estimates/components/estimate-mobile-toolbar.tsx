@@ -21,6 +21,7 @@ interface EstimateMobileToolbarProps {
   filterActive: boolean;
   onOpenFilter: () => void;
   onClearFilter: () => void;
+  readOnly?: boolean;
 }
 
 export function EstimateMobileToolbar({
@@ -37,6 +38,7 @@ export function EstimateMobileToolbar({
   filterActive,
   onOpenFilter,
   onClearFilter,
+  readOnly = false,
 }: EstimateMobileToolbarProps) {
   return (
     <div
@@ -58,15 +60,17 @@ export function EstimateMobileToolbar({
           onClear={onClearFilter}
           className="size-8"
         />
-        <EstimateToolsMenu
-          advancedMode={advancedMode}
-          onAdvancedModeChange={onAdvancedModeChange}
-          marginPercent={marginPercent}
-          onMarginChange={onMarginChange}
-          onMarginBlur={onMarginBlur}
-          topPanelHidden={topPanelHidden}
-          onToggleTopPanel={onToggleTopPanel}
-        />
+        {!readOnly ? (
+          <EstimateToolsMenu
+            advancedMode={advancedMode}
+            onAdvancedModeChange={onAdvancedModeChange}
+            marginPercent={marginPercent}
+            onMarginChange={onMarginChange}
+            onMarginBlur={onMarginBlur}
+            topPanelHidden={topPanelHidden}
+            onToggleTopPanel={onToggleTopPanel}
+          />
+        ) : null}
       </div>
     </div>
   );

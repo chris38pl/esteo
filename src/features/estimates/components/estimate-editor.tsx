@@ -91,6 +91,7 @@ import type {
 } from "@/features/estimates/lib/serialize-ai-messages";
 import type { ProposeEditResult } from "@/features/estimates/lib/estimate-agent-types";
 import { isEstimateVersionContentEditable, hasActiveSendJob, isEstimateVersionArchived } from "@/features/estimates/lib/version-mutability";
+import type { WorkspaceIndustry } from "@prisma/client";
 import { useEstimateSendPolling } from "@/features/estimates/hooks/use-estimate-send-polling";
 import type { EstimateVersionWorkflowClient } from "@/features/estimates/lib/serialize-estimate-version-workflow";
 import { sectionsToAutoSaveData } from "@/features/estimates/lib/sections-to-autosave";
@@ -135,6 +136,7 @@ interface EstimateEditorProps {
   /** Snapshots currently available to undo (capped by plan). */
   availableUndoSteps?: number;
   versionWorkflow: EstimateVersionWorkflowClient;
+  workspaceIndustry: WorkspaceIndustry;
 }
 
 function lineItemFromServer(
@@ -212,6 +214,7 @@ export function EstimateEditor({
   maxUndoSteps = 1,
   availableUndoSteps = 0,
   versionWorkflow,
+  workspaceIndustry,
 }: EstimateEditorProps) {
   const t = useTranslations("estimates");
   const router = useRouter();
@@ -1145,14 +1148,12 @@ export function EstimateEditor({
                   customerTotalGross={customerTotalGross}
                   installments={paymentInstallments}
                   attachments={initialAttachments}
+                  workspaceIndustry={workspaceIndustry}
                   onOpenTab={setActiveTab}
                   onExportPdf={handleDownloadPdf}
                 />
               ) : activeTab === "items" ? (
-                <fieldset
-                  disabled={isVersionReadOnly}
-                  className="min-w-0 border-0 p-0 disabled:opacity-80"
-                >
+                <div className="min-w-0">
                   {canManualRetryAiDraft && !isGenerating ? (
                     <EstimateAiDraftRecoveryBanner
                       estimateId={estimate.id}
@@ -1168,6 +1169,7 @@ export function EstimateEditor({
                     advancedMode={advancedMode}
                     marginPercent={marginPercent}
                     tableSearchQuery={tableSearchQuery}
+                    readOnly={isVersionReadOnly}
                     onAdvancedModeChange={handleAdvancedModeChange}
                     onMarginChange={handleMarginChange}
                     onMarginBlur={handleMarginBlur}
@@ -1199,7 +1201,7 @@ export function EstimateEditor({
                       />
                     </div>
                   ) : null}
-                </fieldset>
+                </div>
               ) : (
                 <div className="px-4 py-16 text-center text-sm text-muted-foreground">
                   {t("editor.tabPlaceholder")}

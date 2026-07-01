@@ -523,7 +523,17 @@
           },
           "attach_investment_photos": {
             "title": "Attach project photos",
-            "description": "More context means a more confident quote."
+            "description": "More context means a more confident quote.",
+            "byIndustry": {
+              "construction": {
+                "title": "Attach project photos",
+                "description": "More context means a more confident quote."
+              },
+              "services": {
+                "title": "Attach photos or documents",
+                "description": "More context makes it easier to assess the scope of work."
+              }
+            }
           },
           "generate_pdf": {
             "title": "Generate a PDF for the client",
