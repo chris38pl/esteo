@@ -207,6 +207,8 @@ export const termsContent: Record<Locale, LegalPageContent> = {
     fullDocumentLabel: fullDocumentLabel.pl,
     summary: {
       type: "checklist",
+      imageSrc: "/images/marketing/legal/terms-summary.webp",
+      imageAlt: "Podgląd kosztorysu w Esteo",
       items: [
         { text: "Esteo pomaga tworzyć kosztorysy i wyceny" },
         { text: "AI generuje szkice - Ty weryfikujesz treść" },
@@ -263,6 +265,8 @@ export const termsContent: Record<Locale, LegalPageContent> = {
     fullDocumentLabel: fullDocumentLabel.en,
     summary: {
       type: "checklist",
+      imageSrc: "/images/marketing/legal/terms-summary.webp",
+      imageAlt: "Estimate preview in Esteo",
       items: [
         { text: "Esteo helps you create estimates and quotes" },
         { text: "AI generates drafts - you verify the content" },
@@ -322,13 +326,40 @@ export const cookiesContent: Record<Locale, LegalPageContent> = {
     fullDocumentLabel: fullDocumentLabel.pl,
     summary: {
       type: "cards",
+      heading: "Najważniejsze informacje",
+      layout: "grid-3",
+      cardStyle: "highlight",
       items: [
-        { title: "Niezbędne cookies", description: "Logowanie, bezpieczeństwo, podstawowe działanie aplikacji." },
-        { title: "Funkcjonalne", description: "Np. zapamiętanie języka interfejsu." },
-        { title: "Analityka tylko po zgodzie", description: "Zewnętrzna analityka tylko za Twoją zgodą." },
-        { title: "Baner zgody na cookies", description: "Wyświetlamy baner zgodny z tą polityką." },
-        { title: "Brak reklam", description: "Nie sprzedajemy danych reklamodawcom." },
-        { title: "Możesz wyłączyć cookies w swojej przeglądarce" },
+        {
+          id: "essential",
+          title: "Niezbędne cookies",
+          description: "Logowanie, bezpieczeństwo, podstawowe działanie aplikacji.",
+        },
+        {
+          id: "functional",
+          title: "Funkcjonalne",
+          description: "Np. zapamiętanie języka interfejsu.",
+        },
+        {
+          id: "analytics",
+          title: "Analityka tylko po zgodzie",
+          description: "Zewnętrzna analityka tylko za Twoją zgodą.",
+        },
+        {
+          id: "consent-banner",
+          title: "Baner zgody na cookies",
+          description: "Wyświetlamy baner zgodny z tą polityką.",
+        },
+        {
+          id: "no-ads",
+          title: "Brak reklam",
+          description: "Nie sprzedajemy danych reklamodawcom.",
+        },
+        {
+          id: "browser-settings",
+          title: "Możesz wyłączyć cookies w swojej przeglądarce",
+          description: "Ustawienia przeglądarki pozwalają ograniczyć lub usunąć cookies.",
+        },
       ],
     },
     sections: [
@@ -365,13 +396,40 @@ export const cookiesContent: Record<Locale, LegalPageContent> = {
     fullDocumentLabel: fullDocumentLabel.en,
     summary: {
       type: "cards",
+      heading: "Key information",
+      layout: "grid-3",
+      cardStyle: "highlight",
       items: [
-        { title: "Essential cookies", description: "Sign-in, security, core app functionality." },
-        { title: "Functional", description: "E.g. remembering interface language." },
-        { title: "Analytics only with consent", description: "External analytics only with your consent." },
-        { title: "Cookie consent banner", description: "We display a banner aligned with this policy." },
-        { title: "No ads", description: "We do not sell data to advertisers." },
-        { title: "You can disable cookies in your browser" },
+        {
+          id: "essential",
+          title: "Essential cookies",
+          description: "Sign-in, security, core app functionality.",
+        },
+        {
+          id: "functional",
+          title: "Functional",
+          description: "E.g. remembering interface language.",
+        },
+        {
+          id: "analytics",
+          title: "Analytics only with consent",
+          description: "External analytics only with your consent.",
+        },
+        {
+          id: "consent-banner",
+          title: "Cookie consent banner",
+          description: "We display a banner aligned with this policy.",
+        },
+        {
+          id: "no-ads",
+          title: "No ads",
+          description: "We do not sell data to advertisers.",
+        },
+        {
+          id: "browser-settings",
+          title: "You can disable cookies in your browser",
+          description: "Your browser settings let you restrict or remove cookies.",
+        },
       ],
     },
     sections: [
@@ -413,25 +471,35 @@ export const aiDisclaimerContent: Record<Locale, LegalPageContent> = {
     draftNotice: draftNotice.pl,
     fullDocumentLabel: fullDocumentLabel.pl,
     summary: {
-      type: "principles",
+      type: "cards",
+      heading: "Najważniejsze informacje",
+      layout: "grid-5",
+      cardStyle: "highlight",
       items: [
         {
+          id: "ai-draft",
           title: "AI przygotowuje szkic",
-          description: "Funkcje AI generują punkt startu kosztorysu - nie gotowy dokument do wysłania.",
+          description:
+            "Funkcje AI generują punkt startu kosztorysu - nie gotowy dokument do wysłania.",
         },
         {
+          id: "user-decision",
           title: "Ostateczna decyzja należy do Ciebie",
           description: "Ty weryfikujesz pozycje, ceny i opisy przed wysłaniem wyceny do klienta.",
         },
         {
+          id: "verify",
           title: "Zawsze zweryfikuj wycenę",
-          description: "Sprawdź każdą wycenę przed wysłaniem - niezależnie od tego, czy AI pomagała w jej przygotowaniu.",
+          description:
+            "Sprawdź każdą wycenę przed wysłaniem - niezależnie od tego, czy AI pomagała w jej przygotowaniu.",
         },
         {
+          id: "no-guarantee",
           title: "Brak gwarancji dokładności",
           description: "Modele AI mogą się mylić. Esteo nie gwarantuje poprawności szacunków.",
         },
         {
+          id: "data-models",
           title: "Dane i modele",
           description: "Nie wykorzystujemy danych wycen do trenowania publicznych modeli AI.",
         },
@@ -476,25 +544,36 @@ export const aiDisclaimerContent: Record<Locale, LegalPageContent> = {
     draftNotice: draftNotice.en,
     fullDocumentLabel: fullDocumentLabel.en,
     summary: {
-      type: "principles",
+      type: "cards",
+      heading: "Key information",
+      layout: "grid-5",
+      cardStyle: "highlight",
       items: [
         {
+          id: "ai-draft",
           title: "AI prepares a draft",
-          description: "AI features generate a starting point for an estimate - not a final document to send.",
+          description:
+            "AI features generate a starting point for an estimate - not a final document to send.",
         },
         {
+          id: "user-decision",
           title: "The final decision is yours",
-          description: "You verify line items, prices, and descriptions before sending an estimate to a client.",
+          description:
+            "You verify line items, prices, and descriptions before sending an estimate to a client.",
         },
         {
+          id: "verify",
           title: "Always verify the estimate",
-          description: "Review every estimate before sending it - whether or not AI helped prepare it.",
+          description:
+            "Review every estimate before sending it - whether or not AI helped prepare it.",
         },
         {
+          id: "no-guarantee",
           title: "No accuracy guarantee",
           description: "AI models can be wrong. Esteo does not guarantee estimate accuracy.",
         },
         {
+          id: "data-models",
           title: "Data and models",
           description: "We do not use estimate data to train public AI models.",
         },

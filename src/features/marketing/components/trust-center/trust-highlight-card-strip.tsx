@@ -1,4 +1,21 @@
-import { Brain, Lock, Mail, ShieldCheck, User, type LucideIcon } from "lucide-react";
+import {
+  Ban,
+  BarChart3,
+  Brain,
+  ClipboardCheck,
+  Globe,
+  Lock,
+  Mail,
+  PanelTop,
+  Settings,
+  Shield,
+  ShieldCheck,
+  Sparkles,
+  TriangleAlert,
+  User,
+  UserCheck,
+  type LucideIcon,
+} from "lucide-react";
 
 import type { LegalHighlightCard } from "@/features/marketing/components/trust-center/trust-types";
 import { cn } from "@/lib/utils";
@@ -9,6 +26,17 @@ const highlightIcons: Record<string, LucideIcon> = {
   providers: ShieldCheck,
   "delete-account": User,
   contact: Mail,
+  essential: Shield,
+  functional: Globe,
+  analytics: BarChart3,
+  "consent-banner": PanelTop,
+  "no-ads": Ban,
+  "browser-settings": Settings,
+  "ai-draft": Sparkles,
+  "user-decision": UserCheck,
+  verify: ClipboardCheck,
+  "no-guarantee": TriangleAlert,
+  "data-models": Brain,
 };
 
 const layoutClassName = {
@@ -20,9 +48,10 @@ type TrustHighlightCardStripProps = {
   items: LegalHighlightCard[];
   heading?: string;
   layout?: "grid-3" | "grid-5";
+  cardStyle?: "default" | "highlight";
 };
 
-function PrivacyHighlightCard({ item }: { item: LegalHighlightCard }) {
+function HighlightCard({ item }: { item: LegalHighlightCard }) {
   const Icon = item.id ? (highlightIcons[item.id] ?? ShieldCheck) : null;
 
   return (
@@ -78,8 +107,9 @@ export function TrustHighlightCardStrip({
   items,
   heading,
   layout = "grid-3",
+  cardStyle = "default",
 }: TrustHighlightCardStripProps) {
-  const isPrivacyLayout = layout === "grid-5";
+  const useHighlightCards = cardStyle === "highlight" || layout === "grid-5";
 
   return (
     <section className="space-y-4">
@@ -88,8 +118,8 @@ export function TrustHighlightCardStrip({
       ) : null}
       <div className={cn("grid gap-4", layoutClassName[layout])}>
         {items.map((item) =>
-          isPrivacyLayout ? (
-            <PrivacyHighlightCard key={item.id ?? item.title} item={item} />
+          useHighlightCards ? (
+            <HighlightCard key={item.id ?? item.title} item={item} />
           ) : (
             <DefaultHighlightCard key={item.id ?? item.title} item={item} />
           ),

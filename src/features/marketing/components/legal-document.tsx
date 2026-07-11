@@ -26,10 +26,17 @@ function LegalSummary({ content }: { content: LegalPageContent }) {
           items={content.summary.items}
           heading={content.summary.heading}
           layout={content.summary.layout}
+          cardStyle={content.summary.cardStyle}
         />
       );
     case "checklist":
-      return <TrustRulesChecklist items={content.summary.items} />;
+      return (
+        <TrustRulesChecklist
+          items={content.summary.items}
+          imageSrc={content.summary.imageSrc}
+          imageAlt={content.summary.imageAlt}
+        />
+      );
     case "principles":
       return <TrustPrincipleRows items={content.summary.items} />;
     default:

@@ -59,9 +59,15 @@ export type LegalSummaryVariant =
       type: "cards";
       heading?: string;
       layout?: "grid-3" | "grid-5";
+      cardStyle?: "default" | "highlight";
       items: LegalHighlightCard[];
     }
-  | { type: "checklist"; items: LegalChecklistItem[] }
+  | {
+      type: "checklist";
+      items: LegalChecklistItem[];
+      imageSrc?: string;
+      imageAlt?: string;
+    }
   | { type: "principles"; items: LegalPrincipleRow[] };
 
 export type TrustDetailTab = {
