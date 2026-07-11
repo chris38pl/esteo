@@ -35,6 +35,7 @@ export const privacyContent: Record<Locale, LegalPageContent> = {
   pl: {
     pageTitle: "Polityka prywatności",
     pageDescription: "Jak Esteo przetwarza dane osobowe użytkowników i klientów workspace.",
+    pageSubtitle: "Jak przetwarzamy i chronimy Twoje dane.",
     breadcrumbLabel: "Polityka prywatności",
     lastUpdated: "30 czerwca 2026",
     documentVersion: "1.0",
@@ -42,14 +43,36 @@ export const privacyContent: Record<Locale, LegalPageContent> = {
     fullDocumentLabel: fullDocumentLabel.pl,
     summary: {
       type: "cards",
+      heading: "Najważniejsze informacje",
+      layout: "grid-5",
       items: [
-        { title: "Nie sprzedajemy danych" },
         {
-          title: "Twoje wyceny nie są wykorzystywane do trenowania publicznych modeli AI.",
+          id: "no-sell",
+          title: "Nie sprzedajemy danych",
+          description:
+            "Twoje dane nigdy nie są sprzedawane ani udostępniane serwisom trzecim w celach marketingowych.",
         },
-        { title: "Zaufani dostawcy", description: "Clerk, Stripe i infrastruktura chmurowa." },
-        { title: "Możesz usunąć konto", description: "Skontaktuj się z nami w sprawie usunięcia danych." },
-        { title: "Kontakt", description: "support@esteo.app" },
+        {
+          id: "no-ai-training",
+          title: "Nie wykorzystujemy danych do trenowania AI",
+          description:
+            "Nie używamy Twoich wycen, plików ani danych do trenowania publicznych modeli AI.",
+        },
+        {
+          id: "providers",
+          title: "Korzystamy z zaufanych dostawców",
+          description: "Clerk, Stripe, Vercel i inni dostarczają sprawdzone usługi.",
+        },
+        {
+          id: "delete-account",
+          title: "Możesz usunąć swoje konto",
+          description: "W każdej chwili możesz usunąć swoje konto i dane z aplikacji.",
+        },
+        {
+          id: "contact",
+          title: "Skontaktuj się z nami",
+          description: "W sprawach dotyczących danych napisz do nas na support@esteo.app",
+        },
       ],
     },
     sections: [
@@ -93,6 +116,7 @@ export const privacyContent: Record<Locale, LegalPageContent> = {
   en: {
     pageTitle: "Privacy Policy",
     pageDescription: "How Esteo processes personal data of users and workspace customers.",
+    pageSubtitle: "How we process and protect your data.",
     breadcrumbLabel: "Privacy Policy",
     lastUpdated: "June 30, 2026",
     documentVersion: "1.0",
@@ -100,12 +124,36 @@ export const privacyContent: Record<Locale, LegalPageContent> = {
     fullDocumentLabel: fullDocumentLabel.en,
     summary: {
       type: "cards",
+      heading: "Key information",
+      layout: "grid-5",
       items: [
-        { title: "We do not sell your data" },
-        { title: "Your estimates are not used to train public AI models." },
-        { title: "Trusted providers", description: "Clerk, Stripe, and cloud infrastructure." },
-        { title: "You can delete your account", description: "Contact us to request data deletion." },
-        { title: "Contact", description: "support@esteo.app" },
+        {
+          id: "no-sell",
+          title: "We do not sell your data",
+          description:
+            "Your data is never sold or shared with third parties for marketing purposes.",
+        },
+        {
+          id: "no-ai-training",
+          title: "We do not use your data to train AI",
+          description:
+            "We do not use your estimates, files, or data to train public AI models.",
+        },
+        {
+          id: "providers",
+          title: "We use trusted providers",
+          description: "Clerk, Stripe, Vercel, and others deliver proven services.",
+        },
+        {
+          id: "delete-account",
+          title: "You can delete your account",
+          description: "You can delete your account and data from the app at any time.",
+        },
+        {
+          id: "contact",
+          title: "Contact us",
+          description: "For data-related matters, email us at support@esteo.app",
+        },
       ],
     },
     sections: [

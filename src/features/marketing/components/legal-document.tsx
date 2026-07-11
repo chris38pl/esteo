@@ -21,7 +21,13 @@ type LegalDocumentProps = {
 function LegalSummary({ content }: { content: LegalPageContent }) {
   switch (content.summary.type) {
     case "cards":
-      return <TrustHighlightCardStrip items={content.summary.items} />;
+      return (
+        <TrustHighlightCardStrip
+          items={content.summary.items}
+          heading={content.summary.heading}
+          layout={content.summary.layout}
+        />
+      );
     case "checklist":
       return <TrustRulesChecklist items={content.summary.items} />;
     case "principles":
@@ -45,8 +51,7 @@ export function LegalDocument({ content, locale }: LegalDocumentProps) {
 
       <MarketingPageHeader
         title={displayTitle}
-        description={content.pageDescription}
-        subtitle={content.pageSubtitle}
+        description={content.pageSubtitle ?? content.pageDescription}
       />
 
       <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm leading-6 text-amber-900 dark:text-amber-100">
@@ -68,8 +73,9 @@ export function LegalDocument({ content, locale }: LegalDocumentProps) {
 
       <TrustSupportFooter
         heading={shared.supportHeading}
+        subtext={shared.supportSubtext}
+        ctaLabel={shared.supportCtaLabel}
         email={shared.supportEmail}
-        linkLabel={shared.supportLink}
       />
     </article>
   );

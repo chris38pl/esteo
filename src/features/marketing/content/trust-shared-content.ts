@@ -4,6 +4,8 @@ export type TrustSharedContent = {
   securityCenterLabel: string;
   learnMoreHeading: string;
   supportHeading: string;
+  supportSubtext: string;
+  supportCtaLabel: string;
   supportEmail: string;
   supportLink: string;
   lastUpdatedLabel: string;
@@ -21,10 +23,12 @@ export const trustSharedContent: Record<Locale, TrustSharedContent> = {
     securityCenterLabel: "Centrum bezpieczeństwa",
     learnMoreHeading: "Dowiedz się więcej",
     supportHeading: "Czy nie znalazłeś odpowiedzi?",
+    supportSubtext: "Napisz do nas – chętnie pomożemy.",
+    supportCtaLabel: "Napisz do nas",
     supportEmail: "support@esteo.app",
     supportLink: "Skontaktuj się z nami",
     lastUpdatedLabel: "Ostatnia aktualizacja",
-    versionLabel: "Wersja",
+    versionLabel: "Wersja dokumentu",
     promisesSectionTitleBefore: "Dlaczego możesz nam ",
     promisesSectionTitleHighlight: "zaufać?",
     promisesSectionSubtitle:
@@ -38,10 +42,12 @@ export const trustSharedContent: Record<Locale, TrustSharedContent> = {
     securityCenterLabel: "Security Center",
     learnMoreHeading: "Learn more",
     supportHeading: "Didn't find what you were looking for?",
+    supportSubtext: "Write to us – we're happy to help.",
+    supportCtaLabel: "Write to us",
     supportEmail: "support@esteo.app",
     supportLink: "Contact us",
     lastUpdatedLabel: "Last updated",
-    versionLabel: "Version",
+    versionLabel: "Document version",
     promisesSectionTitleBefore: "Why you can ",
     promisesSectionTitleHighlight: "trust us",
     promisesSectionSubtitle:

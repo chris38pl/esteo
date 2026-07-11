@@ -40,6 +40,7 @@ export type TrustHubCardItem = {
 };
 
 export type LegalHighlightCard = {
+  id?: string;
   title: string;
   description?: string;
 };
@@ -54,7 +55,12 @@ export type LegalPrincipleRow = {
 };
 
 export type LegalSummaryVariant =
-  | { type: "cards"; items: LegalHighlightCard[] }
+  | {
+      type: "cards";
+      heading?: string;
+      layout?: "grid-3" | "grid-5";
+      items: LegalHighlightCard[];
+    }
   | { type: "checklist"; items: LegalChecklistItem[] }
   | { type: "principles"; items: LegalPrincipleRow[] };
 
