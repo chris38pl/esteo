@@ -165,7 +165,7 @@ function WorkflowEstimateSectionRow({
                       </span>
                       <span className="text-muted-foreground/70"> · </span>
                       <span className="shrink-0 tabular-nums text-muted-foreground">
-                        {formatEstimateDecimal(entry.quantity, locale)} × {entry.unit ?? "—"}
+                        {formatEstimateDecimal(entry.quantity, locale)} × {entry.unit ?? "-"}
                       </span>
                     </p>
                   </div>

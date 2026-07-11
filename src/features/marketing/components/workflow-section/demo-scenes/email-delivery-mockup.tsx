@@ -385,7 +385,7 @@ export function EmailDeliveryMockup({
       <div className="flex min-h-[14rem] flex-1 flex-col sm:min-h-0 sm:grid sm:grid-cols-[auto_minmax(0,0.88fr)_minmax(0,1.28fr)]">
         <OutlookSidebar copy={copy} />
 
-        {/* Message list — desktop only, stays visible after open */}
+        {/* Message list - desktop only, stays visible after open */}
         <section
           className="hidden min-h-0 min-w-0 flex-col border-r sm:flex"
           style={{ borderColor: outlook.border, backgroundColor: outlook.panel }}
@@ -414,7 +414,7 @@ export function EmailDeliveryMockup({
           className="flex min-h-[14rem] min-w-0 flex-1 flex-col sm:min-h-0"
           style={{ backgroundColor: outlook.shell }}
         >
-          {/* Mobile — mail od razu */}
+          {/* Mobile - mail od razu */}
           <div className="flex min-h-[14rem] flex-1 flex-col sm:hidden">
             <EmailReadingPane
               copy={copy}
@@ -425,7 +425,7 @@ export function EmailDeliveryMockup({
             />
           </div>
 
-          {/* Desktop — najpierw pusty podgląd, potem otwarty mail */}
+          {/* Desktop - najpierw pusty podgląd, potem otwarty mail */}
           <div
             className={cn(
               "hidden min-h-0 flex-1 flex-col",

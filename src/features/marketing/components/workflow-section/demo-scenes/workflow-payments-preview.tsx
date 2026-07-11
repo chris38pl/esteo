@@ -135,7 +135,7 @@ export function WorkflowPaymentsPreview({
             highlight={summary.paid > 0}
           />
           <SummaryMetric label={t("summary.remaining")} value={formatMoney(summary.remaining)} />
-          <SummaryMetric label={t("summary.overdueAmount")} value="—" />
+          <SummaryMetric label={t("summary.overdueAmount")} value="-" />
         </div>
 
         <div className="space-y-1">

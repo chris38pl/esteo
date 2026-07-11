@@ -34,10 +34,10 @@ Asset priorities:
 
 | Asset | Use | Notes |
 | --- | --- | --- |
-| Default OG image | All marketing pages fallback | 1200x630, dark-first, logo + headline |
-| Landing OG image | `/[locale]` | Product screenshot + value proposition |
-| Pricing OG image | `/pricing` | Pricing cards or concise plan message |
-| Security OG image | `/security` | Trust/security visual |
+| Default OG image | All marketing pages fallback | 1200x630, dark-first, logo + headline | **Done** - `public/images/marketing/og/default-og.png` |
+| Landing OG image | `/[locale]` | Product screenshot + value proposition | **Done** - `public/images/marketing/og/landing-og.png` |
+| Pricing OG image | `/pricing` | Pricing cards or concise plan message | Uses default OG until dedicated asset |
+| Security OG image | `/security` | Trust/security visual | Uses default OG until dedicated asset |
 
 ### Product Screenshots
 

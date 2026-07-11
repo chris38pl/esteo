@@ -1,7 +1,7 @@
 import type { LineItemData } from "@/features/estimates/components/estimate-line-item-row";
 import type { Locale } from "@/lib/locale";
 
-/** Marketing phone demo — phase indices (see heroPhonePhaseDurationsMs). */
+/** Marketing phone demo - phase indices (see heroPhonePhaseDurationsMs). */
 export const HERO_PHONE_PHASE = {
   FORM_IDLE: 0,
   FORM_TYPING: 1,
@@ -45,8 +45,8 @@ export const heroPhonePhaseDurationsMs = [
   2000, // AI thinking
   2800, // AI response typing + sheet opens
   600, // AI response hold (sheet visible)
-  2200, // sheet edit — name + price typing animation
-  0, // skip hold — go straight to saving
+  2200, // sheet edit - name + price typing animation
+  0, // skip hold - go straight to saving
   1400, // sheet save
   3400, // totals count-up
   650, // more menu open (3 dots)

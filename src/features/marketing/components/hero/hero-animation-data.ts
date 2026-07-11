@@ -93,7 +93,7 @@ export const heroAnimationContent: Record<Locale, HeroAnimationContent> = {
       title: "Asystent AI",
       status: "Gotowy do pomocy",
       welcome:
-        "Cześć! Pomogę zmienić dowolną pozycję w wycenie — napisz, czego potrzebujesz.",
+        "Cześć! Pomogę zmienić dowolną pozycję w wycenie - napisz, czego potrzebujesz.",
       user: "Zmień prysznic na wannę.",
       thinking: "Analizuję zmianę…",
       generating: "Analizuję zapytanie i generuję kosztorys…",
@@ -154,7 +154,7 @@ export const heroAnimationContent: Record<Locale, HeroAnimationContent> = {
     assistant: {
       title: "AI Assistant",
       status: "Ready to help",
-      welcome: "Hi! Tell me what to change in your estimate — I'll handle the rest.",
+      welcome: "Hi! Tell me what to change in your estimate - I'll handle the rest.",
       user: "Change the shower to a bathtub.",
       thinking: "Reviewing your change…",
       generating: "Analyzing your request and generating the estimate…",

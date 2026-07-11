@@ -10,6 +10,7 @@ import {
   Settings2,
   Sparkles,
   Table2,
+  Wallet,
   type LucideIcon,
 } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
@@ -32,6 +33,7 @@ const featureIcons: Record<FeatureHighlightIconKey, LucideIcon> = {
   mic: Mic,
   palette: Palette,
   globe: Globe,
+  wallet: Wallet,
 };
 
 const MOBILE_MEDIA_QUERY = "(max-width: 639px)";

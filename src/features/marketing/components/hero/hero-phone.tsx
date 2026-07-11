@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
 import { FloatingAssistant } from "@/features/marketing/components/hero/floating-assistant";
@@ -34,17 +34,64 @@ function useHeroPhoneMobile() {
   return isMobile;
 }
 
+function useHeroPhoneInViewRestart(onRestart: () => void) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isInView, setIsInView] = useState(false);
+  const hasEnteredViewRef = useRef(false);
+  const shouldRestartOnEnterRef = useRef(false);
+
+  useEffect(() => {
+    const element = containerRef.current;
+    if (!element) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const inView = entry.isIntersecting;
+        setIsInView(inView);
+
+        if (inView) {
+          if (shouldRestartOnEnterRef.current) {
+            onRestart();
+            shouldRestartOnEnterRef.current = false;
+          }
+          hasEnteredViewRef.current = true;
+          return;
+        }
+
+        if (hasEnteredViewRef.current) {
+          shouldRestartOnEnterRef.current = true;
+        }
+      },
+      { threshold: 0.2, rootMargin: "0px 0px -4% 0px" },
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [onRestart]);
+
+  return { containerRef, isInView };
+}
+
 export function HeroPhone({ locale }: { locale: Locale }) {
   const reducedMotion = useReducedMotion();
   const isMobile = useHeroPhoneMobile();
   const [phase, setPhase] = useState(0);
   const [cycle, setCycle] = useState(0);
+
+  const restartAnimation = useCallback(() => {
+    setPhase(0);
+    setCycle((currentCycle) => currentCycle + 1);
+  }, []);
+
+  const { containerRef, isInView } = useHeroPhoneInViewRestart(restartAnimation);
   const content = heroAnimationContent[locale];
   const displayedPhase = reducedMotion ? HERO_PHONE_PHASE.TOAST_SUCCESS : phase;
   const assistantModalOpen = isHeroAssistantModalOpen(displayedPhase, isMobile);
 
   useEffect(() => {
-    if (reducedMotion) {
+    if (reducedMotion || !isInView) {
       return;
     }
 
@@ -60,10 +107,11 @@ export function HeroPhone({ locale }: { locale: Locale }) {
     }, duration);
 
     return () => window.clearTimeout(timeout);
-  }, [phase, reducedMotion, isMobile]);
+  }, [phase, reducedMotion, isMobile, isInView]);
 
   return (
     <div
+      ref={containerRef}
       className={cn(
         "relative z-[5] flex w-full flex-col overflow-visible pb-0 pt-2 sm:pt-2 lg:h-full lg:min-h-0 lg:pb-0 lg:pt-0",
         assistantModalOpen && "max-lg:z-50",
@@ -113,7 +161,11 @@ export function HeroPhone({ locale }: { locale: Locale }) {
             />
           </motion.div>
           <div className="hidden lg:block">
-            <FloatingAssistant phase={displayedPhase} assistant={content.assistant} />
+            <FloatingAssistant
+              key={cycle}
+              phase={displayedPhase}
+              assistant={content.assistant}
+            />
           </div>
           <PhoneFrame reducedMotion={Boolean(reducedMotion)}>
             <HeroPhoneScene key={cycle} phase={displayedPhase} locale={locale} isMobile={isMobile} />

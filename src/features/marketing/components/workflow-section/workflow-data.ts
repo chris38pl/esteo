@@ -20,7 +20,7 @@ const WORKFLOW_STEPS_PL: WorkflowStep[] = [
     id: 0,
     title: "Zapytanie klienta",
     description:
-      "Klient wypełnia Twój dedykowany formularz kontaktowy — przesyła zdjęcia i wymagania.",
+      "Klient wypełnia Twój dedykowany formularz kontaktowy - przesyła zdjęcia i wymagania.",
   },
   {
     id: 1,
@@ -49,7 +49,7 @@ const WORKFLOW_STEPS_EN: WorkflowStep[] = [
     id: 0,
     title: "Client request",
     description:
-      "The client fills out your dedicated contact form — with photos and requirements.",
+      "The client fills out your dedicated contact form - with photos and requirements.",
   },
   {
     id: 1,
@@ -192,7 +192,7 @@ export function getWorkflowDemoCopy(locale: Locale): WorkflowDemoCopy {
           ready: "Szkic gotowy",
         },
         editor: {
-          estimateTitle: "Kosztorys — Łazienka",
+          estimateTitle: "Kosztorys - Łazienka",
           itemLabel: "2.1 Prysznic walk-in",
           itemValue: "4 200 zł",
           totalLabel: "Suma brutto",
@@ -211,7 +211,7 @@ export function getWorkflowDemoCopy(locale: Locale): WorkflowDemoCopy {
         delivery: {
           inboxLabel: "Odebrane",
           emailFrom: "Esteo Dev Workspace",
-          emailSubject: "Wycena mieszkania — Mariusz Kowalski",
+          emailSubject: "Wycena mieszkania - Mariusz Kowalski",
           emailPreview:
             "Dzień dobry, w załączniku przesyłam przygotowaną wycenę. W razie pytań pozostaję do dyspozycji.",
           emailSent: "Dziś, 14:32",
@@ -260,7 +260,7 @@ export function getWorkflowDemoCopy(locale: Locale): WorkflowDemoCopy {
           ready: "Draft ready",
         },
         editor: {
-          estimateTitle: "Estimate — Bathroom",
+          estimateTitle: "Estimate - Bathroom",
           itemLabel: "2.1 Walk-in shower",
           itemValue: "€980",
           totalLabel: "Gross total",
@@ -279,7 +279,7 @@ export function getWorkflowDemoCopy(locale: Locale): WorkflowDemoCopy {
         delivery: {
           inboxLabel: "Inbox",
           emailFrom: "Esteo Dev Workspace",
-          emailSubject: "Apartment estimate — Mariusz Kowalski",
+          emailSubject: "Apartment estimate - Mariusz Kowalski",
           emailPreview:
             "Hello, please find the prepared estimate attached. Let me know if you have any questions.",
           emailSent: "Today, 2:32 PM",

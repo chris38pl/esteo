@@ -1,4 +1,4 @@
-# Marketing — industry carousel images
+# Marketing - industry carousel images
 
 Place one WebP per card in this folder. Used by the hero industries carousel on the landing page.
 
@@ -29,6 +29,6 @@ Place one WebP per card in this folder. Used by the hero industries carousel on 
 ## Spec
 
 - **Format:** WebP
-- **Size:** **320 × 480 px** (2:3 portrait — taller than wide; do not crop or re-export to landscape)
+- **Size:** **320 × 480 px** (2:3 portrait - taller than wide; do not crop or re-export to landscape)
 - **Display:** top-aligned in the card (`object-contain object-top`); bottom fades into card background via gradient
 - **Style:** real project / trade photography, dark-friendly (landing hero is dark)

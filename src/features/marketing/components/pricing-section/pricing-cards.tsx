@@ -1,3 +1,5 @@
+"use client";
+
 import { Check } from "lucide-react";
 import Link from "next/link";
 
@@ -6,6 +8,8 @@ import type {
   PricingContent,
   PricingPlan,
 } from "@/features/marketing/components/pricing-section/pricing-data";
+import { trackMarketingEvent } from "@/features/marketing/lib/track-marketing-event";
+import { useMarketingAuthCta } from "@/features/marketing/lib/use-marketing-auth-cta";
 import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
@@ -63,9 +67,24 @@ function PricingFeatureGroups({
   );
 }
 
-function PricingPlanCard({ plan, locale }: { plan: PricingPlan; locale: Locale }) {
+function PricingPlanCard({
+  plan,
+  locale,
+  source,
+}: {
+  plan: PricingPlan;
+  locale: Locale;
+  source: string;
+}) {
   const styles = planCardStyles[plan.id];
-  const signUpHref = `/${locale}/sign-up`;
+  const { resolvePrimaryCta } = useMarketingAuthCta(locale);
+  const planCta = resolvePrimaryCta(
+    {
+      href: `/${locale}/sign-up`,
+      label: plan.cta,
+    },
+    "goToApp",
+  );
 
   return (
     <article
@@ -76,7 +95,7 @@ function PricingPlanCard({ plan, locale }: { plan: PricingPlan; locale: Locale }
       )}
     >
       {plan.popularBadge ? (
-        <span className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600 px-3.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-white shadow-lg shadow-blue-600/30">
+        <span className="absolute left-1/2 top-0 flex max-w-[calc(100%-1.5rem)] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-blue-600 px-3.5 py-1 text-center text-[10px] font-bold uppercase leading-snug tracking-[0.14em] text-white shadow-lg shadow-blue-600/30">
           {plan.popularBadge}
         </span>
       ) : null}
@@ -103,18 +122,38 @@ function PricingPlanCard({ plan, locale }: { plan: PricingPlan; locale: Locale }
           variant={plan.id === "FREE" ? "outline" : "default"}
           className={cn("h-11 w-full rounded-lg text-sm font-semibold", styles.button)}
         >
-          <Link href={signUpHref}>{plan.cta}</Link>
+          <Link
+            href={planCta.href}
+            onClick={() =>
+              trackMarketingEvent("pricing_cta_clicked", {
+                locale,
+                plan: plan.id,
+                source,
+                cta: planCta.label,
+              })
+            }
+          >
+            {planCta.label}
+          </Link>
         </Button>
       </div>
     </article>
   );
 }
 
-export function PricingCards({ content, locale }: { content: PricingContent; locale: Locale }) {
+export function PricingCards({
+  content,
+  locale,
+  source = "landing",
+}: {
+  content: PricingContent;
+  locale: Locale;
+  source?: string;
+}) {
   return (
     <div className="grid grid-cols-1 gap-5 sm:gap-6 lg:grid-cols-3 lg:items-stretch lg:gap-5 xl:gap-6">
       {content.plans.map((plan) => (
-        <PricingPlanCard key={plan.id} plan={plan} locale={locale} />
+        <PricingPlanCard key={plan.id} plan={plan} locale={locale} source={source} />
       ))}
     </div>
   );

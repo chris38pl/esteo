@@ -55,7 +55,7 @@ export function PhoneFrame({ children, reducedMotion }: { children: ReactNode; r
             <div className="phone-screen-safe-area">{children}</div>
           </div>
 
-          {/* Hand + bezel overlay — optional visual; layout works without it */}
+          {/* Hand + bezel overlay - optional visual; layout works without it */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={PHONE_FRAME_SRC}

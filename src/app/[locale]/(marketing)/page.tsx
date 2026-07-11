@@ -1,16 +1,26 @@
+import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 
 import { DatabaseUnavailableState } from "@/components/database/database-unavailable-state";
-import { HomeDevAuthButton } from "@/features/landing/components/home-dev-auth-button";
 import { HomeLandingFloatingControls } from "@/features/landing/components/home-landing-floating-controls";
 import { HomeLandingPage } from "@/features/landing/components/home-landing-page";
-import { MarketingShell } from "@/features/marketing/components/marketing-shell";
+import { createMarketingPageMetadata } from "@/features/marketing/seo/create-page-metadata";
 import { DatabaseUnavailableError } from "@/lib/database/database-unavailable-error";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 import { getCurrentUser } from "@/server/auth/get-current-user";
 
-export default async function LocaleHome({
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale: localeParam } = await params;
+  const locale: Locale = isLocale(localeParam) ? localeParam : "pl";
+  return createMarketingPageMetadata(locale, "home");
+}
+
+export default async function MarketingHomePage({
   params,
 }: {
   params: Promise<{ locale: string }>;
@@ -36,10 +46,7 @@ export default async function LocaleHome({
   return (
     <>
       <HomeLandingFloatingControls locale={locale} />
-      {process.env.NODE_ENV === "development" ? <HomeDevAuthButton /> : null}
-      <MarketingShell locale={locale}>
-        <HomeLandingPage locale={locale} />
-      </MarketingShell>
+      <HomeLandingPage locale={locale} />
     </>
   );
 }

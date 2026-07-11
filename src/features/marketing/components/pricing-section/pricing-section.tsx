@@ -5,7 +5,13 @@ import { PricingTrust } from "@/features/marketing/components/pricing-section/pr
 import { MarketingSection } from "@/features/marketing/components/section";
 import type { Locale } from "@/lib/locale";
 
-export function PricingSection({ locale }: { locale: Locale }) {
+export function PricingSection({
+  locale,
+  analyticsSource = "landing",
+}: {
+  locale: Locale;
+  analyticsSource?: string;
+}) {
   const content = getPricingContent(locale);
 
   return (
@@ -20,10 +26,6 @@ export function PricingSection({ locale }: { locale: Locale }) {
 
       <MarketingContainer size="wide" className="space-y-12 sm:space-y-14">
         <div className="mx-auto max-w-3xl space-y-5 text-center">
-          <p className="inline-flex rounded-full border border-primary/25 bg-primary/10 px-3.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-primary">
-            {content.eyebrow}
-          </p>
-
           <h2 className="text-pretty text-[38px] font-semibold leading-[1.1] tracking-[-0.03em]">
             <span className="text-foreground">{content.titleBefore}</span>
             <span className="text-primary">{content.titleHighlight}</span>
@@ -34,7 +36,7 @@ export function PricingSection({ locale }: { locale: Locale }) {
           </p>
         </div>
 
-        <PricingCards content={content} locale={locale} />
+        <PricingCards content={content} locale={locale} source={analyticsSource} />
 
         <PricingTrust content={content} />
       </MarketingContainer>

@@ -4,7 +4,7 @@ import { SignedIn } from "@clerk/nextjs";
 
 import { ClerkUserButton } from "@/components/auth/clerk-user-button";
 
-/** Floating Clerk user menu — rendered only on the homepage in development. */
+/** Floating Clerk user menu - rendered only on the homepage in development. */
 export function HomeDevAuthButton() {
   return (
     <SignedIn>

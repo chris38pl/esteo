@@ -12,7 +12,7 @@ export function MarketingShell({
   locale: Locale;
 }) {
   return (
-    <div className="flex min-h-dvh flex-col bg-background text-foreground">
+    <div className="dark flex min-h-dvh flex-col bg-background text-foreground">
       <MarketingHeader locale={locale} />
       <main className="flex-1">{children}</main>
       <MarketingFooter locale={locale} />

@@ -11,7 +11,7 @@ export type PricingPlanId = SubscriptionPlan;
 export type PricingPlan = {
   id: PricingPlanId;
   name: string;
-  /** Audience positioning — who the plan is for. */
+  /** Audience positioning - who the plan is for. */
   tagline: string;
   price: string;
   pricePeriod: string;
@@ -182,7 +182,7 @@ export function getPricingContent(locale: Locale): PricingContent {
         },
         {
           title: "Jedna subskrypcja",
-          description: "Plan obejmuje cały workspace — nie pojedynczy projekt.",
+          description: "Plan obejmuje cały workspace - nie pojedynczy projekt.",
         },
       ],
       stripeNote: "Płatności obsługuje Stripe. Gwarancja bezpieczeństwa.",
@@ -236,7 +236,7 @@ export function getPricingContent(locale: Locale): PricingContent {
       },
       {
         title: "One subscription",
-        description: "Your plan covers the whole workspace — not a single project.",
+        description: "Your plan covers the whole workspace - not a single project.",
       },
     ],
     stripeNote: "Payments are processed by Stripe. Security guaranteed.",

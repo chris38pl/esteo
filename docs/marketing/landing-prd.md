@@ -350,8 +350,21 @@ See [Analytics Events Plan](analytics-events-plan.md).
 
 - Visitor understands Esteo in the hero without prior context.
 - AI is framed as draft assistance, not final authority.
-- Page includes clear workflow, pricing teaser, FAQ teaser, trust/security, legal footer links, and final CTA.
+- Page includes clear workflow, full pricing section, FAQ teaser, trust/security band, legal footer links, and final CTA.
 - Page is available in `pl` and `en`.
 - Page has metadata, canonical URL, alternates, OpenGraph, and sitemap entry.
 - Page uses marketing design system primitives, not ad hoc layout.
 - Required assets are listed in [Marketing Assets Backlog](marketing-assets-backlog.md).
+
+## Implementation Decisions (Launch MVP, 2026-06-30)
+
+| PRD section | Decision |
+| --- | --- |
+| §3 Solution | **Skipped** - Workflow section carries the solution narrative (Problem → Workflow). |
+| §5 Screenshots / proof strip | **Skipped** - Hero phone mockup + interactive workflow demo (~95% UI coverage) are sufficient proof; no separate screenshot strip. |
+| §6 AI section | **Deferred (P1)** - FAQ + workflow demo address primary AI objections; link to `/legal/ai` from trust band. |
+| §8 Pricing | **Full section on landing** (`#pricing`), not a teaser only; separate `/[locale]/pricing` page for SEO and navigation. |
+| §9 Testimonials | **Skipped** until real customer consent. |
+| §10–12 FAQ / Security / Final CTA | **Implemented** on landing. |
+| Launch MVP pages | **Implemented** under `src/app/[locale]/(marketing)/` with `MarketingShell`, metadata, and sitemap entries. |
+| Analytics | `trackMarketingEvent` stub wired on landing CTAs; no third-party vendor until cookie consent UX. |

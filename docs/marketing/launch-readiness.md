@@ -25,44 +25,44 @@ Launch MVP pages:
 - [ ] [Brand Strategy](brand.md) approved.
 - [ ] [Product Positioning](product-positioning.md) approved.
 - [ ] [Landing PRD](landing-prd.md) implemented.
-- [ ] Landing copy explains product without internal context.
-- [ ] AI copy says "draft" and "review" consistently.
+- [x] Landing copy explains product without internal context.
+- [x] AI copy says "draft" and "review" consistently.
 - [ ] No unsupported claims about AI accuracy, security, or business outcomes.
-- [ ] Footer links to Pricing, FAQ, Contact, Security, Privacy, Terms, Cookies, and AI Disclaimer.
+- [x] Footer links to Pricing, FAQ, Contact, Security, Privacy, Terms, Cookies, and AI Disclaimer.
 - [ ] Polish copy reviewed.
 - [ ] English copy reviewed or intentionally marked as secondary.
 
 ## Legal And Compliance
 
-- [ ] Terms of Service page exists.
-- [ ] Privacy Policy page exists.
-- [ ] Cookie Policy page exists.
-- [ ] AI Disclaimer page exists.
-- [ ] Legal pages include effective date.
-- [ ] Legal pages are marked for final legal review until reviewed.
+- [x] Terms of Service page exists.
+- [x] Privacy Policy page exists.
+- [x] Cookie Policy page exists.
+- [x] AI Disclaimer page exists.
+- [x] Legal pages include effective date.
+- [x] Legal pages are marked for final legal review until reviewed.
 - [ ] Cancellation/refund rules are covered in Terms if no separate Refund Policy exists.
 - [ ] DPA is intentionally excluded from Launch MVP.
 - [ ] Imprint is intentionally excluded from Launch MVP.
-- [ ] Contact page includes support email and company information.
+- [x] Contact page includes support email and company information.
 - [ ] Cookie Policy describes `NEXT_LOCALE`, referral cookie, Clerk cookies, and future analytics cookies.
 
 ## SEO
 
-- [ ] `metadataBase` configured.
-- [ ] Every Launch MVP page has title and description.
-- [ ] Every Launch MVP page has canonical URL.
-- [ ] Every Launch MVP page has `pl` and `en` alternates.
-- [ ] OpenGraph defaults configured.
-- [ ] Twitter card defaults configured.
-- [ ] Default OG image exists.
-- [ ] Landing OG image exists.
-- [ ] `src/app/sitemap.ts` exists.
-- [ ] Sitemap includes public marketing and legal routes.
-- [ ] `src/app/robots.ts` exists.
+- [x] `metadataBase` configured.
+- [x] Every Launch MVP page has title and description.
+- [x] Every Launch MVP page has canonical URL.
+- [x] Every Launch MVP page has `pl` and `en` alternates.
+- [x] OpenGraph defaults configured.
+- [x] Twitter card defaults configured.
+- [x] Default OG image exists.
+- [x] Landing OG image exists.
+- [x] `src/app/sitemap.ts` exists.
+- [x] Sitemap includes public marketing and legal routes.
+- [x] `src/app/robots.ts` exists.
 - [ ] Robots allows public marketing routes.
 - [ ] Robots excludes dashboard, admin, account, API, and private app surfaces where appropriate.
-- [ ] FAQ structure can support FAQ JSON-LD.
-- [ ] Organization/SoftwareApplication JSON-LD decision made.
+- [x] FAQ structure can support FAQ JSON-LD.
+- [x] Organization/SoftwareApplication JSON-LD decision made.
 - [ ] [SEO Content Plan](seo-content-plan.md) used for titles/headings.
 
 ## Assets
@@ -70,8 +70,8 @@ Launch MVP pages:
 - [ ] Logo quality verified.
 - [ ] Favicon verified.
 - [ ] Apple touch icon verified.
-- [ ] Default OG image created.
-- [ ] Landing OG image created.
+- [x] Default OG image created.
+- [x] Landing OG image created.
 - [ ] Estimate editor screenshot captured with demo data.
 - [ ] AI assistant screenshot captured with demo data.
 - [ ] PDF preview screenshot captured with demo data.
@@ -82,13 +82,14 @@ Launch MVP pages:
 
 ## Analytics And Consent
 
-- [ ] [Analytics Events Plan](analytics-events-plan.md) approved.
-- [ ] Event adapter planned or implemented.
-- [ ] No vendor analytics loads before consent if it uses non-essential cookies.
+- [x] [Analytics Events Plan](analytics-events-plan.md) approved.
+- [x] `trackMarketingEvent` client helper exists (no-op / console in dev).
+- [x] Event adapter planned or implemented (vendor behind `NEXT_PUBLIC_MARKETING_ANALYTICS`).
+- [x] No vendor analytics loads before consent if it uses non-essential cookies.
 - [ ] Cookie consent UX exists if analytics vendor requires it.
 - [ ] Cookie Policy matches actual tracking behavior.
-- [ ] `landing_viewed` can be measured.
-- [ ] CTA clicks can be measured.
+- [x] `landing_viewed` can be measured.
+- [x] CTA clicks can be measured.
 - [ ] Sign-up start/completion can be measured or planned.
 - [ ] Workspace created can be measured or planned.
 - [ ] Estimate created can be measured or planned.

@@ -106,7 +106,7 @@
   min-height: 3.75rem;
 }
 
-/* Estimate view — readable marketing mock aligned with hero reference */
+/* Estimate view - readable marketing mock aligned with hero reference */
 .hero-phone-app-surface .hero-phone-estimate {
   font-size: 12px;
   line-height: 1.4;
@@ -134,7 +134,7 @@
   height: 0.7rem;
 }
 
-/* Request form — readable text; global compact rules shrink arbitrary text-[Npx] */
+/* Request form - readable text; global compact rules shrink arbitrary text-[Npx] */
 .hero-phone-app-surface .hero-phone-request {
   font-size: 10px;
   line-height: 1.45;
@@ -208,7 +208,7 @@
   line-height: 1.35;
 }
 
-/* Generating skeleton — readable status + larger placeholders */
+/* Generating skeleton - readable status + larger placeholders */
 .hero-phone-app-surface .hero-phone-generating {
   font-size: 11px;
   line-height: 1.45;
@@ -219,7 +219,7 @@
   line-height: 1.35;
 }
 
-/* Position edit sheet — slightly larger touch targets in phone cutout */
+/* Position edit sheet - slightly larger touch targets in phone cutout */
 .hero-phone-app-surface .hero-phone-position-sheet .estimate-mobile-position-icon {
   width: 2.25rem;
   height: 2.25rem;
@@ -248,7 +248,7 @@
   line-height: 1.35;
 }
 
-/* AI assistant — thin dark scrollbar in chat messages */
+/* AI assistant - thin dark scrollbar in chat messages */
 .hero-assistant-messages-scroll {
   scrollbar-width: thin;
   scrollbar-color: rgba(148, 163, 184, 0.32) transparent;

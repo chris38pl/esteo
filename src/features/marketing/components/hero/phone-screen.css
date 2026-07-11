@@ -1,4 +1,4 @@
-/* Transparent positioning shell — shape comes from .hero-phone-app-surface inside */
+/* Transparent positioning shell - shape comes from .hero-phone-app-surface inside */
 
 .phone-screen-shell {
   overflow: hidden;
@@ -15,6 +15,6 @@
 
 .phone-screen-safe-area > .hero-phone-app-surface {
   height: 100%;
-  border-radius: 1.25rem;
+  border-radius: 1.75rem;
   overflow: hidden;
 }

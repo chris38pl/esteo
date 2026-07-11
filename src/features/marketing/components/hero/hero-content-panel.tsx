@@ -1,6 +1,6 @@
-import { ArrowRight, PlayCircle, Sparkles, Star } from "lucide-react";
+import { Sparkles, Star } from "lucide-react";
 
-import { MarketingCTA } from "@/features/marketing/components/cta";
+import { HeroCtas } from "@/features/marketing/components/hero/hero-ctas";
 import type { HeroContent } from "@/features/marketing/components/hero/hero-content";
 import type { Locale } from "@/lib/locale";
 
@@ -13,7 +13,7 @@ export function HeroContentPanel({
 }) {
   return (
     <div className="relative z-10 mx-auto flex max-w-xl flex-col items-center justify-start space-y-6 text-center sm:space-y-7 lg:mx-0 lg:max-w-lg lg:items-start lg:py-0 lg:text-left">
-      <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border/60 bg-card/50 px-3.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+      <div className="hidden w-fit items-center gap-2 rounded-full border border-border/60 bg-card/50 px-3.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:inline-flex">
         <Sparkles className="size-3 text-primary" />
         {content.badge}
       </div>
@@ -29,25 +29,7 @@ export function HeroContentPanel({
         </p>
       </div>
 
-      <div className="flex w-full flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center lg:justify-start">
-        <MarketingCTA
-          href={`/${locale}/sign-up`}
-          size="lg"
-          className="h-11 w-full rounded-lg px-5 text-sm font-semibold shadow-lg shadow-blue-500/20 sm:h-14 sm:px-7 sm:text-base sm:w-auto"
-        >
-          {content.primaryCta}
-          <ArrowRight className="size-4 sm:size-5" />
-        </MarketingCTA>
-        <MarketingCTA
-          href="#workflow"
-          variant="outline"
-          size="lg"
-          className="h-11 w-full rounded-lg border-border/70 bg-background/60 px-5 text-sm font-semibold backdrop-blur sm:h-14 sm:px-7 sm:text-base sm:w-auto"
-        >
-          <PlayCircle className="size-4 sm:size-5" />
-          {content.secondaryCta}
-        </MarketingCTA>
-      </div>
+      <HeroCtas content={content} locale={locale} />
 
       <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
         <div className="flex -space-x-3">

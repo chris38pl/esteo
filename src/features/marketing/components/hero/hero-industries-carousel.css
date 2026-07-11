@@ -37,7 +37,7 @@
   aspect-ratio: 2 / 3;
 }
 
-/* Portrait 2:3 image — full card width, pinned to top */
+/* Portrait 2:3 image - full card width, pinned to top */
 .hero-industries-card__image {
   position: absolute;
   top: 0;

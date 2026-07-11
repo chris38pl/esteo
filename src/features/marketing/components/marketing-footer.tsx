@@ -1,10 +1,11 @@
-import Link from "next/link";
+import type { ReactNode } from "react";
 
 import type { Locale } from "@/lib/locale";
 import {
   getMarketingFooterNavigation,
   getMarketingLegalNavigation,
 } from "@/features/marketing/lib/navigation";
+import { FooterLinkList } from "@/features/marketing/components/footer-link-list";
 import { siteConfig } from "@/features/marketing/seo/site-config";
 
 export function MarketingFooter({ locale }: { locale: Locale }) {
@@ -29,36 +30,22 @@ export function MarketingFooter({ locale }: { locale: Locale }) {
           </a>
         </div>
 
-        <FooterColumn title={locale === "pl" ? "Produkt" : "Product"} items={footerNavigation} />
-        <FooterColumn title="Legal" items={legalNavigation} />
+        <FooterColumn title={locale === "pl" ? "Produkt" : "Product"}>
+          <FooterLinkList items={footerNavigation} locale={locale} />
+        </FooterColumn>
+        <FooterColumn title="Legal">
+          <FooterLinkList items={legalNavigation} locale={locale} />
+        </FooterColumn>
       </div>
     </footer>
   );
 }
 
-function FooterColumn({
-  title,
-  items,
-}: {
-  title: string;
-  items: Array<{ id: string; href: string; label: string; implemented: boolean }>;
-}) {
+function FooterColumn({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="space-y-3">
       <p className="text-sm font-medium text-foreground">{title}</p>
-      <ul className="space-y-2 text-sm text-muted-foreground">
-        {items.map((item) => (
-          <li key={item.id}>
-            <Link
-              href={item.href}
-              className="transition hover:text-foreground"
-              aria-disabled={!item.implemented}
-            >
-              {item.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {children}
     </div>
   );
 }

@@ -29,7 +29,7 @@ const heroIndustriesPl: HeroIndustryCard[] = [
       "inwestycje mieszkaniowe i komercyjne",
     ],
     ...industryImages("construction", `${ESTIMATE_HERO}/construction/hero-dark.webp`),
-    imageAlt: "Budownictwo — plac budowy",
+    imageAlt: "Budownictwo - plac budowy",
   },
   {
     id: "renovations",

@@ -7,7 +7,8 @@ export type FeatureHighlightIconKey =
   | "file-text"
   | "mic"
   | "palette"
-  | "globe";
+  | "globe"
+  | "wallet";
 
 export type FeatureHighlight = {
   iconKey: FeatureHighlightIconKey;
@@ -46,7 +47,7 @@ export function getFeaturesContent(locale: Locale): FeaturesContent {
           iconKey: "settings",
           title: "Twórz własne reguły",
           description:
-            "Ustaw domyślne sekcje i zasady wyceniania — AI będzie tworzyć kosztorysy tak, jak pracujesz na co dzień.",
+            "Ustaw domyślne sekcje i zasady wyceniania - AI będzie tworzyć kosztorysy tak, jak pracujesz na co dzień.",
         },
         {
           iconKey: "file-text",
@@ -71,6 +72,12 @@ export function getFeaturesContent(locale: Locale): FeaturesContent {
           title: "Klient wysyła zapytanie 24/7",
           description:
             "Udostępnij formularz online i odbieraj kompletne zapytania nawet wtedy, gdy nie pracujesz.",
+        },
+        {
+          iconKey: "wallet",
+          title: "Zarządzaj należnościami",
+          description:
+            "Planuj zaliczki i raty, rejestruj wpłaty i śledź saldo oraz zaległości - w jednym miejscu.",
         },
       ],
     };
@@ -98,7 +105,7 @@ export function getFeaturesContent(locale: Locale): FeaturesContent {
         iconKey: "settings",
         title: "Create your own rules",
         description:
-          "Set default sections and pricing rules — AI will build estimates the way you already work.",
+          "Set default sections and pricing rules - AI will build estimates the way you already work.",
       },
       {
         iconKey: "file-text",
@@ -123,6 +130,12 @@ export function getFeaturesContent(locale: Locale): FeaturesContent {
         title: "Clients submit inquiries 24/7",
         description:
           "Share an online form and receive complete requests even when you are not working.",
+      },
+      {
+        iconKey: "wallet",
+        title: "Manage receivables",
+        description:
+          "Plan deposits and installments, record payments, and track balances and overdue amounts - in one place.",
       },
     ],
   };

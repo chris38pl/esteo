@@ -1,9 +1,9 @@
-import { notFound } from "next/navigation";
-import type { ReactNode } from "react";
 import { setRequestLocale } from "next-intl/server";
+import type { ReactNode } from "react";
 
 import { MarketingShell } from "@/features/marketing/components/marketing-shell";
-import { isLocale, type Locale } from "@/lib/locale";
+import type { Locale } from "@/lib/locale";
+import { isLocale } from "@/lib/locale";
 
 export default async function MarketingLayout({
   children,
@@ -13,12 +13,8 @@ export default async function MarketingLayout({
   params: Promise<{ locale: string }>;
 }) {
   const { locale: localeParam } = await params;
+  const locale: Locale = isLocale(localeParam) ? localeParam : "pl";
 
-  if (!isLocale(localeParam)) {
-    notFound();
-  }
-
-  const locale: Locale = localeParam;
   setRequestLocale(locale);
 
   return <MarketingShell locale={locale}>{children}</MarketingShell>;
