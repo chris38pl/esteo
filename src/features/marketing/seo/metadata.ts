@@ -32,7 +32,7 @@ export function buildMarketingMetadata({
   const imageUrl = image.startsWith("http") ? image : `${siteConfig.url}${image}`;
 
   return {
-    title: pageTitle,
+    title: title ?? siteConfig.name,
     description,
     metadataBase: new URL(siteConfig.url),
     alternates: {
