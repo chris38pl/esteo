@@ -391,6 +391,7 @@ export function getSecurityBandContent(locale: Locale): SecurityBandContent {
     providersPanel: _pp,
     pageSubtitle: _ps,
     promises: _p,
+    learnMoreLinks: _lm,
     footerNote: _fn,
     pageTitle: _pt,
     pageDescription: _pd,

@@ -104,11 +104,11 @@ function HeroIndustryCardItem({
       <div aria-hidden className="hero-industries-card__image-fade" />
 
       <div className="hero-industries-card__body">
-        <h3 className="text-sm font-semibold leading-tight text-foreground sm:text-[0.9375rem]">
+        <h3 className="text-base font-semibold leading-tight text-foreground sm:text-[0.9375rem]">
           {card.title}
         </h3>
 
-        <p className="line-clamp-3 text-[0.6875rem] leading-snug text-muted-foreground sm:text-xs">
+        <p className="line-clamp-3 text-sm leading-6 text-muted-foreground sm:text-xs sm:leading-snug">
           {card.items.join(", ")}
         </p>
       </div>
@@ -307,7 +307,7 @@ export function HeroIndustriesCarousel({
 
         <div
           ref={viewportRef}
-          className="hero-industries-viewport w-full min-w-0 flex-1 overflow-hidden sm:touch-auto"
+          className="hero-industries-viewport w-full min-w-0 flex-1 overflow-hidden px-5 sm:px-0 sm:touch-auto"
         >
           <div
             ref={trackRef}

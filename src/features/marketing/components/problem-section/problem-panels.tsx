@@ -1,14 +1,11 @@
 import {
-  Calculator,
   Clock,
-  Database,
   FileSearch,
-  FileX,
   Frown,
   UserX,
-  Users,
   type LucideIcon,
 } from "lucide-react";
+import Image from "next/image";
 
 import type {
   ProblemBubble,
@@ -27,12 +24,25 @@ const bubbleIcons: Record<ProblemBubbleIconKey, LucideIcon> = {
   clock: Clock,
 };
 
-const featureIcons: Record<ProblemFeatureIconKey, LucideIcon> = {
-  database: Database,
-  calculator: Calculator,
-  users: Users,
-  "file-x": FileX,
+const featureIconSrcs: Record<ProblemFeatureIconKey, string> = {
+  database: "/images/marketing/problem/features/database.webp",
+  calculator: "/images/marketing/problem/features/calculator.webp",
+  users: "/images/marketing/problem/features/users.webp",
+  "file-x": "/images/marketing/problem/features/file-x.webp",
 };
+
+function ProblemFeatureIcon({ src }: { src: string }) {
+  return (
+    <Image
+      src={src}
+      alt=""
+      width={72}
+      height={72}
+      className="size-14 object-contain sm:size-16"
+      aria-hidden
+    />
+  );
+}
 
 export function ProblemVisual({
   content,
@@ -112,9 +122,7 @@ export function ProblemHeadline({
     <div className={cn("space-y-4 text-center lg:text-left", className)}>
       <h2 className="text-pretty text-[38px] font-semibold leading-[1.1] tracking-[-0.03em] text-foreground">
         {content.titleBefore}
-        <span className="bg-gradient-to-r from-blue-400 to-primary bg-clip-text text-transparent">
-          {content.titleHighlight}
-        </span>
+        <span className="text-red-400">{content.titleHighlight}</span>
         {content.titleAfter}
       </h2>
       <p className="mx-auto max-w-lg text-pretty text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7 lg:mx-0">
@@ -139,16 +147,17 @@ export function ProblemFeatureGrid({
       )}
     >
       {features.map((feature) => {
-        const Icon = featureIcons[feature.iconKey] ?? Database;
+        const iconSrc = featureIconSrcs[feature.iconKey];
 
         return (
-          <article key={feature.title} className="text-center lg:text-left">
-            <span className="mb-4 inline-grid size-12 place-items-center rounded-[0.7rem] border border-red-400/25 bg-card/50 p-2.5 sm:mb-[1.125rem] sm:size-[3.25rem] sm:rounded-[0.75rem] sm:p-3">
-              <Icon
-                className="size-[1.375rem] text-red-400 sm:size-6"
-                strokeWidth={1.5}
-                aria-hidden
-              />
+          <article key={feature.title} className="flex flex-col items-center text-center">
+            <span
+              className={cn(
+                "mb-4 flex items-center justify-center rounded-[0.7rem] p-3.5",
+                "sm:mb-[1.125rem] sm:rounded-[0.75rem] sm:p-4",
+              )}
+            >
+              <ProblemFeatureIcon src={iconSrc} />
             </span>
             <h3 className="text-xs font-semibold leading-snug text-foreground sm:text-sm">
               {feature.title}

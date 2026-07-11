@@ -1,6 +1,6 @@
 .hero-industries-track {
   --hero-industries-gap: 0.75rem;
-  --hero-industries-visible: 2;
+  --hero-industries-visible: 1;
   gap: var(--hero-industries-gap);
 }
 
