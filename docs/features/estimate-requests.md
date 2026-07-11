@@ -2,7 +2,7 @@
 
 ## Goal
 
-Allow structured estimate requests that are automatically transformed into AI-generated estimate drafts. Requests are the **entry point** for estimates — see [`estimates.md`](estimates.md).
+Allow structured estimate requests that are automatically transformed into AI-generated estimate drafts. Requests are the **entry point** for estimates - see [`estimates.md`](estimates.md).
 
 ## Two sources
 
@@ -25,7 +25,7 @@ See [`voice-intake.md`](voice-intake.md).
 
 ### Customer (public)
 
-When the workspace **can** create estimates (plan active, under monthly limit), the public form runs the full pipeline below. When it **cannot** (monthly cap, grace, expired read-only, incomplete), the form still accepts the lead but saves **request only** (`estimateId = null`, `aiMetadata.processingMode = "queued_for_manual"`) — no estimate, no AI job, no usage meter increment.
+When the workspace **can** create estimates (plan active, under monthly limit), the public form runs the full pipeline below. When it **cannot** (monthly cap, grace, expired read-only, incomplete), the form still accepts the lead but saves **request only** (`estimateId = null`, `aiMetadata.processingMode = "queued_for_manual"`) - no estimate, no AI job, no usage meter increment.
 
 ```txt
 Customer fills form
@@ -65,7 +65,7 @@ On job failure: `status → FAILED`; user may retry or create estimate manually.
 
 ## Link to estimate
 
-- `EstimateRequest.estimateId` — optional unique FK to `Estimate`.
+- `EstimateRequest.estimateId` - optional unique FK to `Estimate`.
 - Set when draft generation succeeds.
 - Estimate request statuses track processing; the estimate itself has separate draft/sent semantics (planned).
 

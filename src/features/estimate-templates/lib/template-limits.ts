@@ -1,4 +1,4 @@
-/** Caps for AI generation and manual "add section/item" in the editor — not applied on import from estimate. */
+/** Caps for AI generation and manual "add section/item" in the editor - not applied on import from estimate. */
 export const ESTIMATE_TEMPLATE_MAX_SECTIONS = 20;
 export const ESTIMATE_TEMPLATE_MAX_ITEMS_PER_SECTION = 20;
 export const ESTIMATE_TEMPLATE_MAX_ITEMS_TOTAL = 200;

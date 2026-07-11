@@ -92,7 +92,7 @@ export function validateAgentPatch(input: {
     warnings.push({
       code: "budget_price_only_large_gap",
       message:
-        "Large budget gap but patch only updates existing lines — consider scope additions.",
+        "Large budget gap but patch only updates existing lines - consider scope additions.",
     });
   }
 

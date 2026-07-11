@@ -1,8 +1,8 @@
-# Estimate send — toast stuck on loading after server success
+# Estimate send - toast stuck on loading after server success
 
 **Date:** 2026-06-18  
 **Status:** Resolved  
-**Affected:** Estimate editor send flow — `useEstimateSendPolling`, Sonner toasts, send-in-progress banner
+**Affected:** Estimate editor send flow - `useEstimateSendPolling`, Sonner toasts, send-in-progress banner
 
 After a long PDF generation, the server finished the send (version `SENT`, read-only banner visible) but the bottom toast kept spinning (“Przygotowywanie wysyłki…”) and the “Trwa wysyłka…” banner could remain visible alongside the sent-state banner.
 
@@ -44,7 +44,7 @@ When `startPolling` set `activeToastSendId` from `null` → `sendId`, React ran 
 
 ### 2. No client reconciliation when server finished first
 
-If polling died, `router.refresh()` could update props to `SENT` with no active transport job, but client `phase` never reached `completed` — no morph to success toast.
+If polling died, `router.refresh()` could update props to `SENT` with no active transport job, but client `phase` never reached `completed` - no morph to success toast.
 
 ### 3. Send-in-progress banner used client `isSending` alone
 
@@ -66,14 +66,14 @@ The action checked `run.isFailed` but not `run.isCompleted`. When Trigger finish
 
 ## Fix
 
-1. **Unmount-only cleanup** — track toast id in a ref; dismiss only on component unmount, not on every `activeToastSendId` change.
-2. **Server reconciliation** — when `versionWorkflow.status` is `SENT` / `ACCEPTED` / `REJECTED`, or there is no active send job and `lastSentAt` is set, call `handleSuccess` for the tracked send id.
-3. **Banner guard** — `showSendInProgress = serverActiveSend || (isSending && workflowStatus === "DRAFT")`.
-4. **Resume polling** — allow `resumePollingIfNeeded` to restart if polling died (`resumedSendIdsRef` no longer blocks when `!isPollingRef.current`).
-5. **Toast unification** (same PR) — `estimate-async-toast.ts`, bottom-center morph, terminal send ids, poll mutex.
-6. **Terminal poll results after `await`** — apply `handleSuccess` / `handleFailure` for completed/failed poll responses even when `isPollingRef` is already false; only skip progress updates when polling stopped.
-7. **Dead polling watchdog** — `useEffect`: when `activeToastSendId && isSending && !isPollingRef`, restore context from `lastPollingContextRef` or server `activeSend` and resume `pollOnce` + schedule.
-8. **Trigger run completed** — in `pollEstimateSendAction`, after `runs.retrieve`, if `run.isCompleted && !run.isFailed`, re-fetch send from DB and return `completed` when transport is terminal (`PROVIDER_ACCEPTED` / `DELIVERED`).
+1. **Unmount-only cleanup** - track toast id in a ref; dismiss only on component unmount, not on every `activeToastSendId` change.
+2. **Server reconciliation** - when `versionWorkflow.status` is `SENT` / `ACCEPTED` / `REJECTED`, or there is no active send job and `lastSentAt` is set, call `handleSuccess` for the tracked send id.
+3. **Banner guard** - `showSendInProgress = serverActiveSend || (isSending && workflowStatus === "DRAFT")`.
+4. **Resume polling** - allow `resumePollingIfNeeded` to restart if polling died (`resumedSendIdsRef` no longer blocks when `!isPollingRef.current`).
+5. **Toast unification** (same PR) - `estimate-async-toast.ts`, bottom-center morph, terminal send ids, poll mutex.
+6. **Terminal poll results after `await`** - apply `handleSuccess` / `handleFailure` for completed/failed poll responses even when `isPollingRef` is already false; only skip progress updates when polling stopped.
+7. **Dead polling watchdog** - `useEffect`: when `activeToastSendId && isSending && !isPollingRef`, restore context from `lastPollingContextRef` or server `activeSend` and resume `pollOnce` + schedule.
+8. **Trigger run completed** - in `pollEstimateSendAction`, after `runs.retrieve`, if `run.isCompleted && !run.isFailed`, re-fetch send from DB and return `completed` when transport is terminal (`PROVIDER_ACCEPTED` / `DELIVERED`).
 
 ---
 

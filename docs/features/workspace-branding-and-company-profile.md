@@ -2,7 +2,7 @@
 
 Workspace owners can configure a **company logo** and **company contact details** used in the app UI today and on **client-facing PDFs** (PDF generation not implemented yet).
 
-Settings route: `/[locale]/dashboard/[workspaceSlug]/settings` — OWNER only (`settings/layout.tsx`).
+Settings route: `/[locale]/dashboard/[workspaceSlug]/settings` - OWNER only (`settings/layout.tsx`).
 
 ## Settings tabs
 
@@ -25,8 +25,8 @@ Logo metadata lives in `WorkspaceSettings.branding` JSON (no dedicated columns):
 
 | Field | Purpose |
 | --- | --- |
-| `logoStorageKey` | UploadThing file key — **source of truth for PDF/backend** (`storage.download`) |
-| `logoUrl` | Public CDN URL from UploadThing — **UI only** (sidebar, settings preview) |
+| `logoStorageKey` | UploadThing file key - **source of truth for PDF/backend** (`storage.download`) |
+| `logoUrl` | Public CDN URL from UploadThing - **UI only** (sidebar, settings preview) |
 
 Zod: `src/features/workspaces/schemas/branding.ts`
 
@@ -40,7 +40,7 @@ Client FormData → POST /api/workspaces/logo/upload
 ```
 
 - **Not** counted against `Workspace.attachmentStorageUsedBytes` (estimate attachment quota).
-- **Immediate upload** — independent of the General tab “Save changes” button.
+- **Immediate upload** - independent of the General tab “Save changes” button.
 - Replace/delete/remove logo: `removeWorkspaceLogoAction` with confirmation dialog.
 
 ### Logo limits
@@ -60,11 +60,11 @@ Storage key (logical path, logging only):
 {workspaceId}/branding/logo/{fileId}/original-{sanitizedName}
 ```
 
-UploadThing `customId` = short UUID (36 chars), **not** the full path — see [incident: customId batch failure](../incidents/2026-06-07-uploadthing-customid-batch-upload-partial-failure.md).
+UploadThing `customId` = short UUID (36 chars), **not** the full path - see [incident: customId batch failure](../incidents/2026-06-07-uploadthing-customid-batch-upload-partial-failure.md).
 
 ### Display
 
-- Settings preview: `WorkspaceLogoField` — `<Image src={logoUrl} />`
+- Settings preview: `WorkspaceLogoField` - `<Image src={logoUrl} />`
 - Sidebar / workspace switcher: `WorkspaceSummary.logoUrl` from dashboard layout batch load
 - `next.config.ts` `images.remotePatterns`: `utfs.io`, `*.ufs.sh`
 
@@ -86,13 +86,13 @@ Dedicated columns on `WorkspaceSettings` (migration `20260610120000_workspace_co
 
 | Column | UI label (PL) | Notes |
 | --- | --- | --- |
-| — | Nazwa firmy | **`Workspace.name`** — read-only in Dane tab; edit in Ogólne |
+| - | Nazwa firmy | **`Workspace.name`** - read-only in Dane tab; edit in Ogólne |
 | `companyAddress` | Adres | Optional, max 300 chars |
 | `companyTaxId` | NIP | Optional; if set, 10 digits (spaces/dashes stripped on save) |
 | `companyEmail` | E-mail | Optional, valid email |
 | `companyPhone` | Telefon | Optional, 6–40 chars |
 
-All fields optional — empty strings persist as `null`.
+All fields optional - empty strings persist as `null`.
 
 Zod: `src/features/workspaces/schemas/company-profile.ts`  
 Save: `updateWorkspaceCompanyProfileAction` → `updateWorkspaceCompanyProfile` (OWNER, audit `company_profile_updated`).
@@ -103,8 +103,8 @@ UI: `src/features/workspaces/components/workspace-settings-company-tab.tsx`
 
 | Field | Location | Used for |
 | --- | --- | --- |
-| `companyDescription` | `WorkspaceSettings.companyDescription` | AI prompt context (`## Company context`) — edited in **Ogólne** |
-| `companyAddress`, `companyTaxId`, … | `WorkspaceSettings` columns | Client documents / PDF company block — edited in **Dane** |
+| `companyDescription` | `WorkspaceSettings.companyDescription` | AI prompt context (`## Company context`) - edited in **Ogólne** |
+| `companyAddress`, `companyTaxId`, … | `WorkspaceSettings` columns | Client documents / PDF company block - edited in **Dane** |
 
 Do not merge these concerns in the UI or schema.
 
@@ -127,8 +127,8 @@ Returns:
   taxId,          // companyTaxId (NIP)
   email,          // companyEmail
   phone,          // companyPhone
-  logoUrl,        // branding — optional for preview/mockups
-  logoStorageKey, // branding — use storage.download() for PDF bytes
+  logoUrl,        // branding - optional for preview/mockups
+  logoStorageKey, // branding - use storage.download() for PDF bytes
 }
 ```
 
@@ -156,7 +156,7 @@ See also: [`estimate-pdf-export.md`](estimate-pdf-export.md).
 
 ## Related
 
-- [Estimate attachments](estimate-attachments.md) — shared UploadThing / `StorageProvider` pattern
+- [Estimate attachments](estimate-attachments.md) - shared UploadThing / `StorageProvider` pattern
 - [Estimate PDF export](estimate-pdf-export.md)
-- [Database — WorkspaceSettings](../architecture/database.md)
-- [Workspace onboarding](workspace-onboarding.md) — settings access (OWNER)
+- [Database - WorkspaceSettings](../architecture/database.md)
+- [Workspace onboarding](workspace-onboarding.md) - settings access (OWNER)

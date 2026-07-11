@@ -105,7 +105,7 @@ export function createInternalEstimateCreateSchema(industry: WorkspaceIndustry) 
     });
 }
 
-/** Dashboard “New estimate” — same body as public form plus optional title. */
+/** Dashboard “New estimate” - same body as public form plus optional title. */
 export const internalEstimateCreateSchema = createInternalEstimateCreateSchema(
   WorkspaceIndustry.CONSTRUCTION,
 );

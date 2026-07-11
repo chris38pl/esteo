@@ -74,7 +74,7 @@ export function formatEstimateCompletenessBlock(locale: "pl" | "en"): string {
     "## Estimate Completeness",
     "Kosztorys powinien być rozsądnie kompletny względem opisanego projektu.",
     "Uwzględnij wszystkie prace uzasadnione zakresem i standardem branżowym.",
-    "Wnioskuj typowe prace, które kosztorysant uwzględniłby z doświadczenia — klient nie musi wymieniać każdego zadania.",
+    "Wnioskuj typowe prace, które kosztorysant uwzględniłby z doświadczenia - klient nie musi wymieniać każdego zadania.",
     "Stosuj Scope Expansion Rules przy interpretacji briefu.",
     "Nie twórz sztucznych pozycji, aby zwiększyć liczbę wierszy.",
     "Nie wymyślaj prac niezwiązanych z zakresem projektu.",
@@ -101,7 +101,7 @@ export function formatServiceEstimateCompletenessBlock(locale: "pl" | "en"): str
     "## Estimate Completeness",
     "Kosztorys powinien być rozsądnie kompletny względem opisanego projektu.",
     "Uwzględnij wszystkie prace uzasadnione zakresem i standardem branżowym dla tego typu usług.",
-    "Wnioskuj typowe prace, które kosztorysant uwzględniłby z doświadczenia — klient nie musi wymieniać każdego zadania.",
+    "Wnioskuj typowe prace, które kosztorysant uwzględniłby z doświadczenia - klient nie musi wymieniać każdego zadania.",
     "Gdy brief podaje wolumen dokumentów (np. liczba faktur miesięcznie), odzwierciedl to w pozycjach księgowych lub skali usługi.",
     "Gdy brief dotyczy cateringu lub wymagań menu (np. udział menu wegetariańskiego), uwzględnij przygotowanie menu jako wycenioną pozycję lub element zakresu.",
     "Preferuj kilka uzasadnionych pozycji nad jednym ogólnym opisem.",
@@ -125,10 +125,10 @@ export function formatServiceOutputRulesBlock(
       "- A Commercial Section may include items at 0 or negative unitPrice when commercially meaningful (e.g. included transport, promotional discount).",
       "- Do not use Commercial Sections to store narrative information (scope summaries, terms, exclusions). The Project Brief is outside the estimate.",
       "- Do not create narrative section titles: Scope, Notes, Description.",
-      "- Each line item is one commercial service/task with quantity, unit, and unitPrice — not a paragraph restating the brief.",
+      "- Each line item is one commercial service/task with quantity, unit, and unitPrice - not a paragraph restating the brief.",
       ...(dynamic
         ? [
-            "- Propose your own Commercial Section titles — there is no fixed section list.",
+            "- Propose your own Commercial Section titles - there is no fixed section list.",
           ]
         : [
             "- Return all applicable sections from Estimate Structure.",
@@ -153,10 +153,10 @@ export function formatServiceOutputRulesBlock(
     "- Sekcja handlowa może zawierać pozycje o cenie 0 zł lub ujemnej, jeśli mają znaczenie handlowe (np. transport wliczony, rabat).",
     "- Nie używaj sekcji handlowych do przechowywania informacji opisowych (podsumowanie zakresu, warunki, wyłączenia). Brief klienta jest poza kosztorysem.",
     "- Nie twórz sekcji narracyjnych: Zakres, Uwagi, Opis.",
-    "- Każda pozycja to jedna usługa/zadanie handlowe z quantity, unit i unitPrice — nie akapit powtarzający brief.",
+    "- Każda pozycja to jedna usługa/zadanie handlowe z quantity, unit i unitPrice - nie akapit powtarzający brief.",
     ...(dynamic
       ? [
-          "- Zaproponuj własne tytuły sekcji handlowych — brak stałej listy sekcji.",
+          "- Zaproponuj własne tytuły sekcji handlowych - brak stałej listy sekcji.",
         ]
       : [
           "- Zwróć wszystkie sekcje z Estimate Structure, które mają zastosowanie.",

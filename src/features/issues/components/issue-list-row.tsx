@@ -169,7 +169,7 @@ export function IssueListRow({
         <IssueStatusBadge status={issue.status} label={t(`status.${issue.status}`)} />
       </td>
       <td className={cn("hidden px-4 py-3 align-top md:table-cell", cellClassName)}>
-        {hasAttachments ? issue.attachmentCount : "—"}
+        {hasAttachments ? issue.attachmentCount : "-"}
       </td>
     </tr>
   );

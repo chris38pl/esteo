@@ -84,9 +84,9 @@ async function main() {
   for (let i = 0; i < args.runs; i++) {
     const { result } = await runScenarioOnce(scenario, "full");
     runs.push(result);
-    const refSim = result.referenceSimilarityScore ?? "—";
-    const judge = result.judgeScore ?? "—";
-    const context = result.contextAlignmentScore ?? "—";
+    const refSim = result.referenceSimilarityScore ?? "-";
+    const judge = result.judgeScore ?? "-";
+    const context = result.contextAlignmentScore ?? "-";
     console.log(
       `  run ${String(i + 1).padStart(2, "0")}: overall=${result.overallScore}  refSim=${refSim}  judge=${judge}  context=${context}  ${formatPassClassification(result.classification)}`,
     );
@@ -124,8 +124,8 @@ async function main() {
   const overallUnstable = overall.stddev > unstableThreshold;
   const verdict =
     refSimUnstable || overallUnstable
-      ? "UNSTABLE — high judge variance; track RefSim as quality signal"
-      : "STABLE — variance within acceptable range";
+      ? "UNSTABLE - high judge variance; track RefSim as quality signal"
+      : "STABLE - variance within acceptable range";
 
   console.log(`\nVerdict: ${verdict}`);
 

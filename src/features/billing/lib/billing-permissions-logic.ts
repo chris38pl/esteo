@@ -70,7 +70,7 @@ function isExpiredOrNoSubscription(input: {
  *
  * `NORMAL` has two descriptive variants (same enum value):
  * - NORMAL (owner-managed): owner === payer, active billing
- * - NORMAL (free / no active payer): FREE or post-90d timeout — owner !== payer may still be true
+ * - NORMAL (free / no active payer): FREE or post-90d timeout - owner !== payer may still be true
  */
 export function deriveBillingOwnershipState(input: {
   ownerUserId: string;
@@ -132,7 +132,7 @@ export function deriveActiveBillingPayerId(input: {
   }
 }
 
-/** Pure evaluation — used by server helpers and verify script. */
+/** Pure evaluation - used by server helpers and verify script. */
 export function evaluateWorkspaceBillingPermissions(input: {
   userId: string;
   workspaceOwnerId: string;

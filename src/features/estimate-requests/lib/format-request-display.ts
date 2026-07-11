@@ -20,14 +20,14 @@ function isVoivodeshipKey(value: string): value is VoivodeshipKey {
 
 export function formatPreferredStartDate(value: string | undefined, locale: Locale): string {
   if (!value?.trim()) {
-    return "—";
+    return "-";
   }
   return isStartDateKey(value) ? getStartDateLabel(value, locale) : value;
 }
 
 export function formatVoivodeship(value: string | undefined, locale: Locale): string {
   if (!value?.trim()) {
-    return "—";
+    return "-";
   }
   return isVoivodeshipKey(value) ? getVoivodeshipLabel(value, locale) : value;
 }

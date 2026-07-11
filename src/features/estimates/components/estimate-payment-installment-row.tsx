@@ -311,7 +311,7 @@ export function EstimatePaymentInstallmentRow({
             className="min-w-0 flex-1 truncate text-muted-foreground"
             title={installment.note ?? undefined}
           >
-            {installment.note ?? "—"}
+            {installment.note ?? "-"}
           </span>
           <div className="shrink-0">
             <RowMenu {...rowActionProps} />

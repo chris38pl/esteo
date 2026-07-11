@@ -10,7 +10,7 @@ export function dashboardAccountBillingTabHref(locale: Locale) {
 
 /**
  * Workspace billing lives at `/dashboard/{slug}/billing`.
- * Never link to the legacy `/dashboard/billing` path from the client — soft navigation
+ * Never link to the legacy `/dashboard/billing` path from the client - soft navigation
  * there cannot hit the HTTP redirect route handler reliably.
  */
 export function dashboardBillingHref(locale: Locale, workspaceSlug: string) {
@@ -43,12 +43,12 @@ export function dashboardTipsHref(locale: Locale, workspaceSlug: string) {
   return `/${locale}/dashboard/${workspaceSlug}/tips`;
 }
 
-/** Default workspace landing — estimates list (not bare `/dashboard` or workspace overview). */
+/** Default workspace landing - estimates list (not bare `/dashboard` or workspace overview). */
 export function dashboardEstimatesHref(locale: Locale, workspaceSlug: string) {
   return `/${locale}/dashboard/${workspaceSlug}/estimates`;
 }
 
-/** Alias route — redirects to `/billing/manage`. Use for upgrade CTAs. */
+/** Alias route - redirects to `/billing/manage`. Use for upgrade CTAs. */
 export function dashboardUpgradeHref(
   locale: Locale,
   workspaceSlug: string,

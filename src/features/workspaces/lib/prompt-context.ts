@@ -78,7 +78,7 @@ export function formatEstimateStructureBlock(
     "## Estimate Structure",
     "Use the sections below in this order with these exact titles when they apply to the project scope.",
     "Do not invent unrelated section names when configured sections cover the work.",
-    "If a section has no line items, omit that section entirely — do not return empty sections.",
+    "If a section has no line items, omit that section entirely - do not return empty sections.",
     "Only include sections from the list below that apply and have at least one line item.",
     "Do not rename sections arbitrarily.",
     lines.join("\n"),

@@ -9,13 +9,13 @@
   "referralLink": {
     "title": "Your referral link",
     "subtitle": "Share the link anywhere",
-    "alternateShare": "The link is the easiest way — your contact gets the welcome discount right away, and you earn a bonus when they subscribe. If they sign up on their own, they can enter your email or code in company settings (within 30 days or before their first payment). You both still receive the benefits.",
+    "alternateShare": "The link is the easiest way - your contact gets the welcome discount right away, and you earn a bonus when they subscribe. If they sign up on their own, they can enter your email or code in company settings (within 30 days or before their first payment). You both still receive the benefits.",
     "codeLabel": "Referral code",
     "emailLabel": "Referral email"
   },
   "benefits": {
     "youTitle": "You earn",
-    "youFootnote": "When your contact subscribes to PRO, you receive {proAmount}. For BUSINESS — {businessAmount}. Credits are added to your balance and applied to invoices.",
+    "youFootnote": "When your contact subscribes to PRO, you receive {proAmount}. For BUSINESS - {businessAmount}. Credits are added to your balance and applied to invoices.",
     "theyTitle": "Your contact saves",
     "theyValue": "20% off",
     "theyDuration": "for 3 months",
@@ -68,7 +68,7 @@
       "description": "You are on Pro. Upgrade to Business to unlock Esteo's full potential."
     },
     "business": {
-      "description": "You are on Business — all partner program benefits are unlocked."
+      "description": "You are on Business - all partner program benefits are unlocked."
     }
   },
   "tier": {
@@ -112,7 +112,7 @@
       "claimedAt": "Applied on",
       "benefitHint": "When you choose PRO or BUSINESS, you get 20% off for 3 months.",
       "statusAwaitingPayment": "Upgrade to a paid plan to use your referral discount.",
-      "statusActive": "You have an active paid plan — your referral discount applies to billing.",
+      "statusActive": "You have an active paid plan - your referral discount applies to billing.",
       "viewPlans": "View plans"
     },
     "errors": {

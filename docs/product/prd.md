@@ -1,4 +1,4 @@
-# Esteo — Product Requirements Document (PRD)
+# Esteo - Product Requirements Document (PRD)
 
 ## 1. Product Overview
 
@@ -1529,26 +1529,26 @@ Those 4 areas are likely your moat.
 
 # 29. Recommended MVP Timeline
 
-## Phase 1 — Foundation
+## Phase 1 - Foundation
 - Auth
 - Workspace
 - Database
 - Billing
 - Uploads
 
-## Phase 2 — Core Product
+## Phase 2 - Core Product
 - Estimate requests
 - AI draft generation
 - Estimate editor
 - PDF generation
 
-## Phase 3 — Productization
+## Phase 3 - Productization
 - Dashboard
 - Notifications
 - AI assistant
 - Sharing
 
-## Phase 4 — Stabilization
+## Phase 4 - Stabilization
 - Monitoring
 - Rate limiting
 - Cost tracking

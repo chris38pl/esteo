@@ -269,7 +269,7 @@ function formatProtectedTermsSection(): string[] {
       continue;
     }
     for (const item of items) {
-      const note = item.note ? ` — ${item.note}` : "";
+      const note = item.note ? ` - ${item.note}` : "";
       lines.push(`- ${item.scenarioId} / ${item.term}${note}`);
     }
     lines.push("");
@@ -400,7 +400,7 @@ export function writeMatcherDeficiencyReport(
   } else {
     for (const entry of toFix) {
       lines.push(
-        `- **${entry.scenarioId}** / \`${entry.term}\` (${entry.source}) — closest: ${entry.closestWord ?? "—"}`,
+        `- **${entry.scenarioId}** / \`${entry.term}\` (${entry.source}) - closest: ${entry.closestWord ?? "-"}`,
       );
     }
     lines.push("");
@@ -413,7 +413,7 @@ export function writeMatcherDeficiencyReport(
     for (const entry of known) {
       const protectedEntry = getProtectedFixtureTerm(entry.scenarioId, entry.term);
       lines.push(
-        `- **${entry.scenarioId}** / \`${entry.term}\` — ${protectedEntry?.reason ?? "protected"}`,
+        `- **${entry.scenarioId}** / \`${entry.term}\` - ${protectedEntry?.reason ?? "protected"}`,
       );
     }
     lines.push("");
@@ -429,7 +429,7 @@ function formatScenarioRow(
   issueClass: EvaluatorIssueClass,
 ): string {
   const score = result.evalMode === "fast" ? result.fastScore : result.overallScore;
-  return `| ${result.id} | ${score} | ${result.coveragePercent}% | ${result.failReasons.join(", ") || "—"} | ${issueClass} |`;
+  return `| ${result.id} | ${score} | ${result.coveragePercent}% | ${result.failReasons.join(", ") || "-"} | ${issueClass} |`;
 }
 
 export function writeEvaluatorFalsePositivesReport(
@@ -505,8 +505,8 @@ export function writeEvaluatorFalsePositivesReport(
       const explain = explainTermMismatch(corpus, term);
       if (explain.kind !== "not_in_corpus" && !explain.matched) {
         matcherGaps.push(
-          `### ${result.id} — \`${term}\``,
-          `- Closest word: ${explain.closestWord ?? "—"}`,
+          `### ${result.id} - \`${term}\``,
+          `- Closest word: ${explain.closestWord ?? "-"}`,
           `- Kind: ${explain.kind} | common prefix: ${explain.commonPrefixLength}`,
           `- Corpus excerpt: ${corpus.slice(0, 120)}${corpus.length > 120 ? "…" : ""}`,
           "",
@@ -514,14 +514,14 @@ export function writeEvaluatorFalsePositivesReport(
       } else if (!termInBrief(fixture?.request.project.description ?? "", term)) {
         if (!isProtectedFixtureTerm(result.id, term)) {
           fixtureUnrealistic.push(
-            `- **${result.id}** — \`${term}\` (not in brief)`,
+            `- **${result.id}** - \`${term}\` (not in brief)`,
           );
         }
       } else if (
         explain.kind === "not_in_corpus" &&
         (missedCoverage.includes(term) || failedMustHave.includes(term))
       ) {
-        promptGaps.push(`- **${result.id}** — \`${term}\` (in brief, absent from estimate)`);
+        promptGaps.push(`- **${result.id}** - \`${term}\` (in brief, absent from estimate)`);
       }
     }
 
@@ -530,7 +530,7 @@ export function writeEvaluatorFalsePositivesReport(
         const hits = findMustNotHitsInExclusions(output, term);
         if (hits.length > 0) {
           mustNotFalsePositives.push(
-            `- **${result.id}** — \`mustNotHave:${term}\` hit only in exclusion line(s): ${hits.map((h) => `"${h}"`).join(", ")}`,
+            `- **${result.id}** - \`mustNotHave:${term}\` hit only in exclusion line(s): ${hits.map((h) => `"${h}"`).join(", ")}`,
           );
         }
       }
@@ -614,9 +614,9 @@ export function writeEvaluatorFalsePositivesReport(
   lines.push(
     "## Recommended fix order",
     "",
-    "1. Matcher v3 — najem/okna/copy and related stems",
-    "2. Fixture cleanup v2 — remove terms not grounded in brief",
-    "3. Prompt gaps — only after eval noise removed (e.g. accounting `faktur`)",
+    "1. Matcher v3 - najem/okna/copy and related stems",
+    "2. Fixture cleanup v2 - remove terms not grounded in brief",
+    "3. Prompt gaps - only after eval noise removed (e.g. accounting `faktur`)",
     "",
   );
 

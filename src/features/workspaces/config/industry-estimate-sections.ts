@@ -162,8 +162,8 @@ export const INDUSTRY_ESTIMATE_SECTION_TEMPLATES: Record<
       key: "materials",
       title: { pl: "Materiały i komponenty", en: "Materials and components" },
       defaultRule: {
-        pl: "Korpusy, fronty, blaty, okucia, szkło, LED — zgodnie z poziomem budżetu i Company Context.",
-        en: "Carcasses, fronts, worktops, hardware, glass, LED — per budget tier and Company Context.",
+        pl: "Korpusy, fronty, blaty, okucia, szkło, LED - zgodnie z poziomem budżetu i Company Context.",
+        en: "Carcasses, fronts, worktops, hardware, glass, LED - per budget tier and Company Context.",
       },
     },
     {

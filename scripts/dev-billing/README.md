@@ -18,13 +18,13 @@ Requires `.env` with `DATABASE_URL` (and `STRIPE_SECRET_KEY` for `dev:billing-re
 
 ### `dev:set-workspace-plan` vs `dev:billing-reset`
 
-**PRO → FREE for UI testing** — use set-plan (fast, safe, no Stripe):
+**PRO → FREE for UI testing** - use set-plan (fast, safe, no Stripe):
 
 ```bash
 npm run dev:set-workspace-plan -- --slug firma-juniora --plan FREE
 ```
 
-**Return to clean FREE + cancel all Stripe subs for workspace** — use billing-reset (destructive):
+**Return to clean FREE + cancel all Stripe subs for workspace** - use billing-reset (destructive):
 
 ```bash
 npm run dev:billing-reset -- --slug firma-juniora

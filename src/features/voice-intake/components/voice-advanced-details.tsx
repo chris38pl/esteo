@@ -59,7 +59,7 @@ export function VoiceAdvancedDetails({
             <ul className="space-y-1.5 text-xs text-muted-foreground">
               {FIELD_KEYS.map((key) => {
                 const field = extraction[key];
-                const value = "value" in field ? String(field.value ?? "—") : "—";
+                const value = "value" in field ? String(field.value ?? "-") : "-";
                 const confidence = "confidence" in field ? Math.round(field.confidence * 100) : 0;
                 return (
                   <li key={key} className="flex justify-between gap-4">

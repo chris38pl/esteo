@@ -111,7 +111,7 @@ export function formatLargeChangeNoteBlock(
   return [
     "## Large change note",
     `The requested change is ~${Math.abs(target.changePercent)}% of current ${target.kind} total.`,
-    `When |changePercent| exceeds blockPriceOnlyWhenGapExceedsPercent (${threshold}), do NOT rely on unitPrice-only updates — add scope (additions/newSections) and adjust margin only when appropriate.`,
+    `When |changePercent| exceeds blockPriceOnlyWhenGapExceedsPercent (${threshold}), do NOT rely on unitPrice-only updates - add scope (additions/newSections) and adjust margin only when appropriate.`,
   ].join("\n");
 }
 
@@ -125,7 +125,7 @@ export function formatOutputRulesBlock(locale: "pl" | "en"): string {
     "## Output rules",
     `CRITICAL: Every user-visible string in your response MUST be in ${lang}. Never mix languages.`,
     `- Respond in language: ${lang}`,
-    "- Return only a patch — do NOT return the full estimate.",
+    "- Return only a patch - do NOT return the full estimate.",
     "- Reference existing items by id when updating or deleting.",
     "- For additions, use sectionTitle matching existing section titles when possible.",
     "- Use empty arrays for additions, updates, deletions, and newSections when there are no changes.",

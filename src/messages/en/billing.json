@@ -24,7 +24,7 @@
     "statusNotice": {
       "PAST_DUE": "A recent payment failed. Update your payment method to avoid interruption.",
       "GRACE_PERIOD": "Your subscription is in its grace period. New estimates, invites and AI are paused; renew to restore full access.",
-      "EXPIRED": "This workspace is read-only. Existing data is viewable and exportable — reactivate to resume work.",
+      "EXPIRED": "This workspace is read-only. Existing data is viewable and exportable - reactivate to resume work.",
       "ARCHIVED": "This workspace is archived (read-only). Reactivate billing to resume work.",
       "INCOMPLETE": "Payment hasn't completed yet. Finish checkout to activate this workspace.",
       "SUSPENDED": "This workspace is suspended. Contact support.",
@@ -198,12 +198,12 @@
         "referralBalanceCredit": "Referral program balance"
       },
       "referralBalanceAppliedHint": "{amount} applied from your referral program balance",
-      "referralBalanceCreditTooltip": "Referral rewards reduce this invoice amount.\n\nThe balance applies to your PRO/Business subscription — it does not discount add-ons.",
+      "referralBalanceCreditTooltip": "Referral rewards reduce this invoice amount.\n\nThe balance applies to your PRO/Business subscription - it does not discount add-ons.",
       "referralDiscountActive": "{percent}% off until {date}",
-      "referralDiscountTooltip": "Referral promotion — {percent}% off your subscription during the promo period.\n\nAfter {date} the standard price applies:\n{monthlyAmount} / month.",
+      "referralDiscountTooltip": "Referral promotion - {percent}% off your subscription during the promo period.\n\nAfter {date} the standard price applies:\n{monthlyAmount} / month.",
       "empty": {
         "free_plan": "No active paid subscription.",
-        "canceling": "Subscription is ending — no further invoice will be issued.",
+        "canceling": "Subscription is ending - no further invoice will be issued.",
         "no_subscription": "No upcoming invoice scheduled."
       }
     },
@@ -219,8 +219,8 @@
         "subscription": "Subscription (plan + add-ons)",
         "referralBalanceCredit": "Referral program balance"
       },
-      "referralBalanceCreditTooltip": "Referral rewards reduce this invoice amount.\n\nThe balance applies to your PRO/Business subscription — it does not discount add-ons.",
-      "referralBalanceAddonsNote": "Referral balance reduces your next invoice. It does not discount add-ons — it is applied to your subscription first.",
+      "referralBalanceCreditTooltip": "Referral rewards reduce this invoice amount.\n\nThe balance applies to your PRO/Business subscription - it does not discount add-ons.",
+      "referralBalanceAddonsNote": "Referral balance reduces your next invoice. It does not discount add-ons - it is applied to your subscription first.",
       "badge": {
         "oneTimeCharge": "One-time",
         "credit": "Credit"
@@ -298,8 +298,8 @@
         "seats": "Seat packs"
       },
       "addonImpact": {
-        "kept": "{key} ×{after} — kept",
-        "removed": "{key} ×{before} — removed",
+        "kept": "{key} ×{after} - kept",
+        "removed": "{key} ×{before} - removed",
         "changed": "{key} ×{before} → ×{after}"
       },
       "lineItem": {
@@ -313,7 +313,7 @@
       "subtitle": "Choose your plan and add-ons in one place.",
       "backToBilling": "Back to billing",
       "planSection": "Choose a plan",
-      "referralDiscountBanner": "You have {percent}% off for {months} months thanks to a referral — applies to your first PRO or BUSINESS payment.",
+      "referralDiscountBanner": "You have {percent}% off for {months} months thanks to a referral - applies to your first PRO or BUSINESS payment.",
       "referralDiscountUnavailableBanner": "You have a referral linked, but the 20% discount is temporarily unavailable. Please try again later or contact support.",
       "referralCouponNotConfigured": "The referral discount is temporarily unavailable. Please try again later or contact support.",
       "referralSummaryDuration": "for {months} months",
@@ -326,7 +326,7 @@
       "impactColumnTitle": "Impact of changes",
       "monthlyChange": "Monthly change",
       "unchangedItems": "Unchanged",
-      "continueHint": "Your next invoice and any one-time charges will appear in the next step — before you confirm the change.",
+      "continueHint": "Your next invoice and any one-time charges will appear in the next step - before you confirm the change.",
       "continue": "Continue",
       "saveSuccess": "Subscription updated.",
       "effectiveFrom": "Change effective from {date}",

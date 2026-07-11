@@ -1,5 +1,5 @@
 /**
- * Mechanical slug for business type analytics — no synonym grouping in MVP.
+ * Mechanical slug for business type analytics - no synonym grouping in MVP.
  * "Fotograf ślubny" and "Fotografia ślubna" produce different slugs intentionally.
  */
 export function slugifyBusinessType(value: string): string {

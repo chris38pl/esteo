@@ -45,7 +45,7 @@ function formatFloorArea(value: number | null, locale: Locale): string | null {
 }
 
 function displayCell(value: string | null | undefined) {
-  return value && value.trim().length > 0 ? value : "—";
+  return value && value.trim().length > 0 ? value : "-";
 }
 
 function ContactCell({
@@ -59,7 +59,7 @@ function ContactCell({
   const normalizedPhone = phone?.trim() || null;
 
   if (!normalizedEmail && !normalizedPhone) {
-    return <span className="text-muted-foreground">—</span>;
+    return <span className="text-muted-foreground">-</span>;
   }
 
   return (
@@ -279,7 +279,7 @@ export function RequestListRow({
               {request.estimateTitle ?? t("list.linkedEstimate")}
             </Link>
           ) : (
-            <p className="mt-0.5 text-sm text-muted-foreground">—</p>
+            <p className="mt-0.5 text-sm text-muted-foreground">-</p>
           )}
         </div>
       </div>
@@ -300,7 +300,7 @@ export function RequestListRow({
             {request.estimateTitle ?? t("list.linkedEstimate")}
           </Link>
         ) : (
-          <span className="text-xs text-muted-foreground">—</span>
+          <span className="text-xs text-muted-foreground">-</span>
         )}
       </td>
       <td className="px-4 py-3">

@@ -7,12 +7,12 @@
     "initialTitle": "Tell us about your project",
     "initialTitleLine1": "Tell us about your",
     "initialTitleHighlight": "project",
-    "initialSubtitle": "Say everything you know — we'll take care of the rest.",
+    "initialSubtitle": "Say everything you know - we'll take care of the rest.",
     "initialHint": "Describe your project in your own words",
     "speakFreely": "You can mention the property type, location, scope of work, start date, address details, or area.",
     "privacy": "Recording is safe and private",
     "followUpTitle": "Just a few more details",
-    "followUpHint": "Say only what's missing — we already have the rest.",
+    "followUpHint": "Say only what's missing - we already have the rest.",
     "followUpMissingTitle": "Say only what's missing",
     "followUpTitleLine1": "Say only",
     "followUpTitleHighlight": "what's missing",
@@ -76,7 +76,7 @@
     "cancelEdit": "Cancel",
     "summaryLabel": "Project summary",
     "summaryFallbackTitle": "Your project",
-    "summaryHint": "Review the description — you can always refine it before submitting.",
+    "summaryHint": "Review the description - you can always refine it before submitting.",
     "heading": "I understand you need:",
     "apply": "Fill the form",
     "followUp": "Add missing info",
@@ -89,7 +89,7 @@
     "transcriptInitial": "Initial recording",
     "transcriptFollowUp": "Follow-up",
     "privacy": "Your recording is processed by AI. We do not store the audio file.",
-    "noNewInfo": "I didn't hear new information — try again or fill in manually.",
+    "noNewInfo": "I didn't hear new information - try again or fill in manually.",
     "completeHeading": "We know everything we need!",
     "completeSubtitle": "You can fill out the form now.",
     "missingFriendly": {
@@ -122,7 +122,7 @@
     "high": "High recognition quality",
     "recognized": "AI recognized {recognized} of {total} key details",
     "percent": "Recognition confidence: {percent}%",
-    "low": "Partial recognition — please verify before submitting"
+    "low": "Partial recognition - please verify before submitting"
   },
   "errors": {
     "heading": "Something went wrong",
@@ -142,7 +142,7 @@
     "entitlement_exceeded": "Monthly AI assistant limit reached for your plan."
   },
   "portal": {
-    "ariaLabel": "Voice assistant — describe your project",
+    "ariaLabel": "Voice assistant - describe your project",
     "close": "Close"
   },
   "byIndustry": {
@@ -177,11 +177,11 @@
       "recording": {
         "initialTitleLine1": "Tell us about your",
         "initialTitleHighlight": "need",
-        "initialSubtitle": "Say everything you know about the service — we'll take care of the rest.",
+        "initialSubtitle": "Say everything you know about the service - we'll take care of the rest.",
         "maxDuration": "You have 3 minutes to describe the service or need…"
       },
       "portal": {
-        "ariaLabel": "Voice assistant — tell us about your need"
+        "ariaLabel": "Voice assistant - tell us about your need"
       },
       "speakFreely": "You can describe the service, scope, location, preferred timeline, and contact details.",
       "missingFriendly": {

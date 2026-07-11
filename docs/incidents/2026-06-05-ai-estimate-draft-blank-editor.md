@@ -1,4 +1,4 @@
-# AI estimate draft — generation crash and blank editor after completion
+# AI estimate draft - generation crash and blank editor after completion
 
 **Date:** 2026-06-05  
 **Status:** Resolved (commit `19225dc`)  
@@ -9,7 +9,7 @@ Two related bugs appeared in the same flow. Part A prevented draft generation fr
 
 ---
 
-## Part A — Generation never populated sections (FAILED job)
+## Part A - Generation never populated sections (FAILED job)
 
 ### Symptom
 
@@ -30,10 +30,10 @@ After creating an estimate manually (dashboard → Wyceny → new estimate):
 
 ### What was NOT the root cause
 
-- **Redirect timing** — landing on the editor immediately after create is correct.
-- **OpenAI API / network failure** — error occurred before the OpenAI call, during prompt assembly.
-- **Trigger.dev not running** — task did run and wrote `FAILED` status (when worker is down, status stays `PENDING` and skeleton shows indefinitely).
-- **`tasks.trigger()` not firing** — `createInternalEstimate` does call `generate-estimate-draft`.
+- **Redirect timing** - landing on the editor immediately after create is correct.
+- **OpenAI API / network failure** - error occurred before the OpenAI call, during prompt assembly.
+- **Trigger.dev not running** - task did run and wrote `FAILED` status (when worker is down, status stays `PENDING` and skeleton shows indefinitely).
+- **`tasks.trigger()` not firing** - `createInternalEstimate` does call `generate-estimate-draft`.
 
 ### Root cause
 
@@ -53,7 +53,7 @@ flowchart LR
 
 ### Secondary UX gap
 
-Failed-state UI lived only inside [`EstimateGeneratingSkeleton`](../../src/features/estimates/components/estimate-generating-skeleton.tsx), which renders while `requestStatus` is `PENDING` or `PROCESSING`. When status became `FAILED`, `isGenerating` was false, so the skeleton (and its error message) never appeared — only an empty table.
+Failed-state UI lived only inside [`EstimateGeneratingSkeleton`](../../src/features/estimates/components/estimate-generating-skeleton.tsx), which renders while `requestStatus` is `PENDING` or `PROCESSING`. When status became `FAILED`, `isGenerating` was false, so the skeleton (and its error message) never appeared - only an empty table.
 
 ### Fixes (Part A)
 
@@ -69,7 +69,7 @@ Failed-state UI lived only inside [`EstimateGeneratingSkeleton`](../../src/featu
 
 ---
 
-## Part B — Table blank after successful generation until page refresh
+## Part B - Table blank after successful generation until page refresh
 
 ### Symptom
 
@@ -83,8 +83,8 @@ After Part A was fixed (or on a successful first run):
 
 ### What was NOT the root cause
 
-- **Data not saved** — sections existed in DB after refresh; failure was client-side display only.
-- **Polling not detecting completion** — `useGenerationPolling` reached `COMPLETED` and called `router.refresh()`.
+- **Data not saved** - sections existed in DB after refresh; failure was client-side display only.
+- **Polling not detecting completion** - `useGenerationPolling` reached `COMPLETED` and called `router.refresh()`.
 
 ### Root cause (two factors)
 
@@ -138,11 +138,11 @@ So `router.refresh()` fetched new tree data, but React kept the same `EstimateEd
 
 When you see **empty estimate table** or **AI draft not appearing**:
 
-1. **Check `EstimateRequest` in DB** — `status`, `aiMetadata.error`, `projectDescription`. `FAILED` + JS property error → industry AI profile assembly.
-2. **Confirm Trigger.dev worker** — local dev needs `npx trigger.dev@latest dev` alongside `npm run dev`. If worker is down, status stays `PENDING` (skeleton forever), not `FAILED`.
-3. **Inspect industry profiles (admin)** — `/[locale]/dashboard/admin/industry-fields` → “Industry AI profiles” panel; look for `Missing` on `quantityDerivationRules` or other fields.
-4. **Skeleton works but table empty after completion** — compare server `versionTree` (sections in DB) vs client `sections` state; check whether `editorKey` changes on completion; verify `EstimateVersion.updatedAt` after async writes.
-5. **Retry path** — only offered when `FAILED` and section count is zero; resets request to `PENDING` then re-triggers job.
+1. **Check `EstimateRequest` in DB** - `status`, `aiMetadata.error`, `projectDescription`. `FAILED` + JS property error → industry AI profile assembly.
+2. **Confirm Trigger.dev worker** - local dev needs `npx trigger.dev@latest dev` alongside `npm run dev`. If worker is down, status stays `PENDING` (skeleton forever), not `FAILED`.
+3. **Inspect industry profiles (admin)** - `/[locale]/dashboard/admin/industry-fields` → “Industry AI profiles” panel; look for `Missing` on `quantityDerivationRules` or other fields.
+4. **Skeleton works but table empty after completion** - compare server `versionTree` (sections in DB) vs client `sections` state; check whether `editorKey` changes on completion; verify `EstimateVersion.updatedAt` after async writes.
+5. **Retry path** - only offered when `FAILED` and section count is zero; resets request to `PENDING` then re-triggers job.
 
 ## Verification
 
@@ -165,7 +165,7 @@ When you see **empty estimate table** or **AI draft not appearing**:
 
 ## Related incidents
 
-- [Estimate draft stuck PROCESSING / Trigger timeout](./2026-06-05-estimate-draft-stuck-processing.md) — skeleton never finishes; run hits `maxDuration`; DB orphaned at `PROCESSING` (commit `ebf2134`).
+- [Estimate draft stuck PROCESSING / Trigger timeout](./2026-06-05-estimate-draft-stuck-processing.md) - skeleton never finishes; run hits `maxDuration`; DB orphaned at `PROCESSING` (commit `ebf2134`).
 
 ## Optional follow-up
 

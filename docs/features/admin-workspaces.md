@@ -23,9 +23,9 @@ Client panel: `AdminWorkspacesPanel` (`src/features/workspaces/components/admin-
 
 Row actions (⋯ menu or member `+`):
 
-- **Rename** — name + slug
-- **Invite** — email, role `MEMBER`, 7-day expiry
-- **Delete** — soft-delete (see below)
+- **Rename** - name + slug
+- **Invite** - email, role `MEMBER`, 7-day expiry
+- **Delete** - soft-delete (see below)
 
 ## Server
 
@@ -55,5 +55,5 @@ Nested routes under `(dashboard)` resolve locale via `resolveRequestLocale()` (`
 
 ## Related
 
-- [`docs/features/workspace-onboarding.md`](workspace-onboarding.md) — workspace creation flow
-- [`docs/adr/001-workspace-deletion-and-slug-policy.md`](../adr/001-workspace-deletion-and-slug-policy.md) — deletion + slug rules
+- [`docs/features/workspace-onboarding.md`](workspace-onboarding.md) - workspace creation flow
+- [`docs/adr/001-workspace-deletion-and-slug-policy.md`](../adr/001-workspace-deletion-and-slug-policy.md) - deletion + slug rules

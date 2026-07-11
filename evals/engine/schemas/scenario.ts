@@ -204,7 +204,7 @@ export const evalScenarioSchema = z.object({
   request: requestFixtureSchema,
   voiceIntake: voiceIntakeFixtureSchema.nullable().optional(),
   referenceEstimate: referenceEstimateSchema.optional(),
-  /** Stored snapshot (retry / assistant) — overrides live workspace template/price list in prompt. */
+  /** Stored snapshot (retry / assistant) - overrides live workspace template/price list in prompt. */
   configurationSnapshot: configurationSnapshotFixtureSchema.optional(),
   expectations: expectationsSchema,
 });

@@ -12,7 +12,7 @@
     "speakFreely": "Możesz wspomnieć o typie nieruchomości, lokalizacji, zakresie prac, terminie rozpoczęcia, danych adresowych czy powierzchni.",
     "privacy": "Nagrywanie jest bezpieczne i prywatne",
     "followUpTitle": "Jeszcze kilka szczegółów",
-    "followUpHint": "Powiedz tylko to, czego brakuje — resztę już mamy.",
+    "followUpHint": "Powiedz tylko to, czego brakuje - resztę już mamy.",
     "followUpMissingTitle": "Powiedz tylko brakujące informacje",
     "followUpTitleLine1": "Powiedz tylko",
     "followUpTitleHighlight": "brakujące informacje",
@@ -76,7 +76,7 @@
     "cancelEdit": "Anuluj",
     "summaryLabel": "Podsumowanie projektu",
     "summaryFallbackTitle": "Twój projekt",
-    "summaryHint": "Sprawdź opis — przed wysłaniem zawsze możesz coś doprecyzować.",
+    "summaryHint": "Sprawdź opis - przed wysłaniem zawsze możesz coś doprecyzować.",
     "heading": "Rozumiem, że potrzebujesz:",
     "apply": "Wypełnij formularz",
     "followUp": "Dograj informacje",
@@ -89,7 +89,7 @@
     "transcriptInitial": "Początkowe nagranie",
     "transcriptFollowUp": "Dogranie",
     "privacy": "Nagranie jest przetwarzane przez AI. Nie przechowujemy pliku audio.",
-    "noNewInfo": "Nie usłyszałem nowych informacji — spróbuj ponownie lub wypełnij ręcznie.",
+    "noNewInfo": "Nie usłyszałem nowych informacji - spróbuj ponownie lub wypełnij ręcznie.",
     "completeHeading": "Wiemy już wszystko!",
     "completeSubtitle": "Możesz teraz wypełnić formularz.",
     "missingFriendly": {
@@ -122,7 +122,7 @@
     "high": "Wysoka jakość rozpoznania",
     "recognized": "AI rozpoznało {recognized} z {total} kluczowych informacji",
     "percent": "Pewność rozpoznania: {percent}%",
-    "low": "Częściowe rozpoznanie — sprawdź dane przed wysłaniem"
+    "low": "Częściowe rozpoznanie - sprawdź dane przed wysłaniem"
   },
   "errors": {
     "heading": "Coś poszło nie tak",
@@ -142,7 +142,7 @@
     "entitlement_exceeded": "Osiągnięto miesięczny limit asystenta AI w Twoim planie."
   },
   "portal": {
-    "ariaLabel": "Asystent głosowy — opowiedz o projekcie",
+    "ariaLabel": "Asystent głosowy - opowiedz o projekcie",
     "close": "Zamknij"
   },
   "byIndustry": {
@@ -177,11 +177,11 @@
       "recording": {
         "initialTitleLine1": "Opowiedz o swojej",
         "initialTitleHighlight": "potrzebie",
-        "initialSubtitle": "Powiedz wszystko, co wiesz o usłudze — zajmiemy się resztą.",
+        "initialSubtitle": "Powiedz wszystko, co wiesz o usłudze - zajmiemy się resztą.",
         "maxDuration": "Masz 3 minuty na opis usługi lub potrzeby…"
       },
       "portal": {
-        "ariaLabel": "Asystent głosowy — opowiedz o swojej potrzebie"
+        "ariaLabel": "Asystent głosowy - opowiedz o swojej potrzebie"
       },
       "speakFreely": "Możesz opisać usługę, zakres, miejsce realizacji, preferowany termin oraz dane kontaktowe.",
       "missingFriendly": {

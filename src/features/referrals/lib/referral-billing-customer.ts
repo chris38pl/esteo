@@ -19,7 +19,7 @@ export async function selectValidReferrerStripeCustomerId(
         return stripeCustomerId;
       }
     } catch {
-      // Stale or missing customer — try the next billing record.
+      // Stale or missing customer - try the next billing record.
     }
   }
   return null;

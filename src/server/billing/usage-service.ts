@@ -41,7 +41,7 @@ export async function countEstimatesCreatedInPeriod(
 
 /**
  * Heals drift when estimate rows exist but metering was not recorded (e.g. submissions before
- * metering shipped). Only increases the workspace-total aggregate — never decreases.
+ * metering shipped). Only increases the workspace-total aggregate - never decreases.
  */
 export async function reconcileEstimateUsageAggregate(
   workspaceId: string,

@@ -334,7 +334,7 @@ export function PartnerProgramPanel({
 
   function formatDate(iso: string | null): string {
     if (!iso) {
-      return "—";
+      return "-";
     }
     return new Intl.DateTimeFormat(locale === "pl" ? "pl-PL" : "en-GB", {
       day: "2-digit",

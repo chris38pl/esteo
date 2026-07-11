@@ -315,7 +315,7 @@ function EstimateSectionMobileCard({
           <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
             {t("table.rule")}
           </p>
-          <p className="text-sm leading-relaxed text-foreground/85">{row.rule || "—"}</p>
+          <p className="text-sm leading-relaxed text-foreground/85">{row.rule || "-"}</p>
         </div>
 
         <SectionCardControls
@@ -670,7 +670,7 @@ export function WorkspaceEstimateSectionsPanel({
                   </TableCell>
                   <TableCell className="max-w-0 align-top px-2 py-3 whitespace-normal">
                     <p className="min-h-[2.75rem] text-sm leading-relaxed break-words text-muted-foreground">
-                      {row.rule || "—"}
+                      {row.rule || "-"}
                     </p>
                   </TableCell>
                   <TableCell className="align-top px-1 py-3 text-center whitespace-normal">

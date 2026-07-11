@@ -144,7 +144,7 @@ export async function runAssistantEngine(options: RunAssistantEngineOptions): Pr
   mkdirSync(resultsDir, { recursive: true });
 
   let passedCount = 0;
-  console.log(`\nAssistant Evaluation Report — ${scenarios.length} scenario(s)\n`);
+  console.log(`\nAssistant Evaluation Report - ${scenarios.length} scenario(s)\n`);
 
   for (const scenario of scenarios) {
     console.log(`→ ${scenario.id}`);

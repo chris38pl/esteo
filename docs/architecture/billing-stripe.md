@@ -95,7 +95,7 @@ When the owner uses **Manage billing** → Stripe Customer Portal, changes (canc
 2. [`portal-return/route.ts`](../src/app/[locale]/(dashboard)/dashboard/[workspaceSlug]/billing/portal-return/route.ts) calls `syncWorkspaceSubscriptionFromStripe(workspaceId)`
 3. Redirect to `/billing`
 
-`syncWorkspaceSubscriptionFromStripe` retrieves the subscription by **DB `stripeSubscriptionId`** (not “newest active”) — correct for cancel-at-period-end where status stays `active`.
+`syncWorkspaceSubscriptionFromStripe` retrieves the subscription by **DB `stripeSubscriptionId`** (not “newest active”) - correct for cancel-at-period-end where status stays `active`.
 
 Portal cancellation often sets Stripe `cancel_at` (timestamp) **without** `cancel_at_period_end: true`. Sync maps both to DB `cancelAtPeriodEnd`.
 
@@ -127,16 +127,16 @@ Or rely on portal-return route when returning from Stripe Portal in the browser.
 1. `planHint` (checkout session metadata)
 2. `subscription.metadata.plan`
 3. `STRIPE_PRICE_*` env map
-4. **Throws `BillingPlanResolutionError`** — no silent default to PRO
+4. **Throws `BillingPlanResolutionError`** - no silent default to PRO
 
 ## Invariant enforcement
 
-[`subscription-invariants.ts`](../src/features/billing/server/subscription-invariants.ts) — `enforceSingleActiveSubscription()`:
+[`subscription-invariants.ts`](../src/features/billing/server/subscription-invariants.ts) - `enforceSingleActiveSubscription()`:
 
 - Called after successful checkout sync and immediate upgrades
 - Cancels other non-canceled Stripe subscriptions with the same `metadata.workspaceId`
 
-## Migration checklist — duplicated subscriptions
+## Migration checklist - duplicated subscriptions
 
 Use when a workspace was upgraded via legacy Checkout (PRO→BUSINESS created a second sub).
 
@@ -207,7 +207,7 @@ A paid subscription may contain multiple Stripe subscription items:
 
 **Sync path:** `syncSubscriptionFromStripe` → `syncWorkspaceAddonsFromStripe` → `syncWorkspaceEffectiveLimits` (base catalog limits + `WorkspaceAddon` rows → `Workspace` storage/seat caps).
 
-**Add-on mutations:** `changeWorkspaceAddonQuantity()` (`addon-change.ts`) — creates/updates/deletes subscription items with proration. Guards: FREE blocked; seats BUSINESS-only; seat decrease blocked when over cap.
+**Add-on mutations:** `changeWorkspaceAddonQuantity()` (`addon-change.ts`) - creates/updates/deletes subscription items with proration. Guards: FREE blocked; seats BUSINESS-only; seat decrease blocked when over cap.
 
 **Plan changes:**
 
@@ -256,6 +256,6 @@ CI_PRODUCTION=true npm run verify-stripe-prices
 
 Locally / PR CI without the flag: mismatches log `WARNING` and exit `0`. With `CI_PRODUCTION=true`: exit `1`.
 
-Checks: `PRO`, `BUSINESS`, `STORAGE_PACK`, `SEAT_PACK` — `unit_amount` **and** `currency === pln`.
+Checks: `PRO`, `BUSINESS`, `STORAGE_PACK`, `SEAT_PACK` - `unit_amount` **and** `currency === pln`.
 
 Never remove a `planVersion` key from `PLAN_PRICES_PLN` while active subscriptions still pin that version.

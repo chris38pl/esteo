@@ -35,7 +35,7 @@ export function runPrismaMigrateDeploy(datasource, options = {}) {
   }
 
   if (!skipStatus) {
-    // status exits 1 when migrations are pending — still proceed to deploy
+    // status exits 1 when migrations are pending - still proceed to deploy
     runPrisma(["migrate", "status"], { allowFailure: true });
   }
 

@@ -17,7 +17,7 @@ export async function assertIssueViewerAccess(locale: Locale): Promise<User> {
   return user;
 }
 
-/** API guard — returns null when unauthenticated or cannot triage issues. */
+/** API guard - returns null when unauthenticated or cannot triage issues. */
 export async function getIssueViewerUserOrNull(): Promise<User | null> {
   const user = await syncUserFromClerk();
 

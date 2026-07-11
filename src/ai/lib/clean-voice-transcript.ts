@@ -1,5 +1,5 @@
 /**
- * Deterministic transcript cleaning — 100% information preservation.
+ * Deterministic transcript cleaning - 100% information preservation.
  * No LLM, no shortening, no paraphrase.
  */
 

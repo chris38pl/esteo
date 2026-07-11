@@ -41,7 +41,7 @@ async function clearLastActiveWorkspace(userId: string): Promise<void> {
 
 /**
  * Clears stale cookie / lastActive values. Must only run in Server Actions or Route Handlers
- * — never during Server Component render (Next.js forbids cookie mutation there).
+ * - never during Server Component render (Next.js forbids cookie mutation there).
  */
 export async function reconcileStaleActiveWorkspace(userId: string): Promise<void> {
   const accessible = await getAccessibleWorkspaces(userId);

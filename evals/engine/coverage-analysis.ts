@@ -20,7 +20,7 @@ function classifyRootCause(input: {
   if (!input.schemaPassed) {
     return {
       primary: "Schema issue",
-      rationale: "Schema scorer failed — rules/coverage/judge may be skipped or unreliable.",
+      rationale: "Schema scorer failed - rules/coverage/judge may be skipped or unreliable.",
       action: "Fix structured output (empty sections, invalid quantities) before tuning coverage.",
     };
   }
@@ -30,7 +30,7 @@ function classifyRootCause(input: {
     return {
       primary: "Fixture expectation unrealistic",
       rationale: `Missed coverage terms not found in brief: ${unrealisticTerms.join(", ")}.`,
-      action: `Adjust fixture coverageTerms — remove or narrow: ${unrealisticTerms.join(", ")}.`,
+      action: `Adjust fixture coverageTerms - remove or narrow: ${unrealisticTerms.join(", ")}.`,
     };
   }
 
@@ -38,7 +38,7 @@ function classifyRootCause(input: {
     return {
       primary: "Prompt under-generating",
       rationale: `Brief supports missed terms (${input.missedTerms.join(", ")}) but output has only ${input.itemNames.length} line items.`,
-      action: "Review Services Output Rules / Completeness — model may be collapsing scope.",
+      action: "Review Services Output Rules / Completeness - model may be collapsing scope.",
     };
   }
 
@@ -53,7 +53,7 @@ function classifyRootCause(input: {
   return {
     primary: "Other",
     rationale: `Coverage ${input.coveragePercent}% with no missed terms flagged.`,
-    action: "No change — coverage informational only.",
+    action: "No change - coverage informational only.",
   };
 }
 

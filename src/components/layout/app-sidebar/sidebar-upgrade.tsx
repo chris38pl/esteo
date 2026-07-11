@@ -53,7 +53,7 @@ export function SidebarUpgrade({ collapsedOverride }: { collapsedOverride?: bool
 
   const variant = planVariantFromBillingState(billingSidebarState);
 
-  const tooltip = `${tPlan(`${variant}.badge`)} — ${tPlan(`${variant}.title`)}`;
+  const tooltip = `${tPlan(`${variant}.badge`)} - ${tPlan(`${variant}.title`)}`;
   const exitTransition = prefersReducedMotion ? { duration: 0 } : UPGRADE_EXIT;
 
   if (collapsed) {

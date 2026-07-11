@@ -94,7 +94,7 @@
 
       "title": "Upgrade to Pro or Business",
 
-      "description": "Unlock advanced Esteo features — more capacity, team tools, and priority support."
+      "description": "Unlock advanced Esteo features - more capacity, team tools, and priority support."
 
     },
 
@@ -102,7 +102,7 @@
 
       "title": "Customize rules for your estimates",
 
-      "description": "Set your own pricing rules and AI instructions — Esteo applies them on every estimate."
+      "description": "Set your own pricing rules and AI instructions - Esteo applies them on every estimate."
 
     },
 
@@ -126,7 +126,7 @@
 
       "title": "Partner program (Pro/Business)",
 
-      "description": "Refer Esteo and earn — the partner program is available on Pro and Business plans."
+      "description": "Refer Esteo and earn - the partner program is available on Pro and Business plans."
 
     },
 
@@ -150,7 +150,7 @@
 
       "title": "Light and dark theme",
 
-      "description": "Change how the app looks — pick light or dark mode in workspace settings."
+      "description": "Change how the app looks - pick light or dark mode in workspace settings."
 
     },
 
@@ -166,7 +166,7 @@
 
       "title": "Create your first estimate step by step",
 
-      "description": "On the Estimates list, click Create estimate, describe the job — AI will prepare the cost breakdown."
+      "description": "On the Estimates list, click Create estimate, describe the job - AI will prepare the cost breakdown."
 
     },
 
@@ -174,7 +174,7 @@
 
       "title": "Say out loud what you're doing",
 
-      "description": "In the new estimate form, tap the microphone and describe the job in your own words — e.g. \"Bathroom remodel 6 m²\"."
+      "description": "In the new estimate form, tap the microphone and describe the job in your own words - e.g. \"Bathroom remodel 6 m²\"."
 
     },
 
@@ -182,7 +182,7 @@
 
       "title": "Always review the AI draft",
 
-      "description": "AI makes a draft — you decide. Check line items and amounts before sending the PDF to your client."
+      "description": "AI makes a draft - you decide. Check line items and amounts before sending the PDF to your client."
 
     },
 
@@ -196,9 +196,9 @@
 
     "client_sent_inquiry": {
 
-      "title": "Client sent an inquiry — what now?",
+      "title": "Client sent an inquiry - what now?",
 
-      "description": "Go to Requests, open the client's message and click Create estimate — their details fill in automatically."
+      "description": "Go to Requests, open the client's message and click Create estimate - their details fill in automatically."
 
     },
 
@@ -206,7 +206,7 @@
 
       "title": "Send the form link to your client",
 
-      "description": "Copy your estimate request link and send it by text, WhatsApp or email — the client describes the job themselves."
+      "description": "Copy your estimate request link and send it by text, WhatsApp or email - the client describes the job themselves."
 
     },
 
@@ -214,7 +214,7 @@
 
       "title": "See the form as your client sees it",
 
-      "description": "In the sidebar, open Customer acquisition — copy the link or preview the form you share with clients."
+      "description": "In the sidebar, open Customer acquisition - copy the link or preview the form you share with clients."
 
     },
 
@@ -222,7 +222,7 @@
 
       "title": "Fill in company details before PDF",
 
-      "description": "Company name, tax ID and address appear on PDFs. Esteo reminds you on first export — or go to Settings → Company."
+      "description": "Company name, tax ID and address appear on PDFs. Esteo reminds you on first export - or go to Settings → Company."
 
     },
 
@@ -230,7 +230,7 @@
 
       "title": "Edit a single line item",
 
-      "description": "Click a line on the list, change the name or amount and save — you don't have to rewrite everything."
+      "description": "Click a line on the list, change the name or amount and save - you don't have to rewrite everything."
 
     },
 
@@ -238,7 +238,7 @@
 
       "title": "Ask AI in plain language",
 
-      "description": "In the AI panel, type e.g. \"Add 5 outlets\" or \"Remove ceiling painting\" — AI updates the estimate."
+      "description": "In the AI panel, type e.g. \"Add 5 outlets\" or \"Remove ceiling painting\" - AI updates the estimate."
 
     },
 
@@ -246,7 +246,7 @@
 
       "title": "Split payment: deposit and balance",
 
-      "description": "In an estimate → Payments tab, add installments — e.g. 30% deposit and the rest on completion."
+      "description": "In an estimate → Payments tab, add installments - e.g. 30% deposit and the rest on completion."
 
     },
 
@@ -254,7 +254,7 @@
 
       "title": "See who hasn't paid yet",
 
-      "description": "The Payments tab in the menu shows all installments across your workspace — overdue items on one list."
+      "description": "The Payments tab in the menu shows all installments across your workspace - overdue items on one list."
 
     },
 
@@ -262,7 +262,7 @@
 
       "title": "Quick search: Ctrl+K",
 
-      "description": "Press Ctrl+K (Cmd+K on Mac), type a client name or estimate — find it without clicking through menus."
+      "description": "Press Ctrl+K (Cmd+K on Mac), type a client name or estimate - find it without clicking through menus."
 
     },
 
@@ -270,7 +270,7 @@
 
       "title": "Pin an important estimate in the menu",
 
-      "description": "Open an estimate and pin it — get back to it in one click from the left menu without searching the list."
+      "description": "Open an estimate and pin it - get back to it in one click from the left menu without searching the list."
 
     },
 
@@ -278,7 +278,7 @@
 
       "title": "Photos and files from clients",
 
-      "description": "Clients can attach photos in the form — you'll see them in Requests and when creating an estimate."
+      "description": "Clients can attach photos in the form - you'll see them in Requests and when creating an estimate."
 
     },
 
@@ -286,7 +286,7 @@
 
       "title": "Undo your last change",
 
-      "description": "Made a mistake? Use Undo (Ctrl+Z) in the estimate editor — on the Free plan you get one step back."
+      "description": "Made a mistake? Use Undo (Ctrl+Z) in the estimate editor - on the Free plan you get one step back."
 
     },
 
@@ -294,7 +294,7 @@
 
       "title": "What is a workspace?",
 
-      "description": "It's your home in Esteo — all estimates, clients and company settings in one place. You can have separate workspaces for different businesses."
+      "description": "It's your home in Esteo - all estimates, clients and company settings in one place. You can have separate workspaces for different businesses."
 
     },
 
@@ -302,7 +302,7 @@
 
       "title": "Esteo on your phone",
 
-      "description": "Create estimates, dictate by voice and send the link to clients from your phone — handy on site."
+      "description": "Create estimates, dictate by voice and send the link to clients from your phone - handy on site."
 
     },
 
@@ -310,7 +310,7 @@
 
       "title": "Having trouble? Contact us",
 
-      "description": "Use Report issue in the menu — describe what's wrong and the Esteo team will help."
+      "description": "Use Report issue in the menu - describe what's wrong and the Esteo team will help."
 
     }
 

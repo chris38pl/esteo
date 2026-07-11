@@ -96,7 +96,7 @@
     "placeholder": {
       "name": "User",
       "role": "Owner",
-      "email": "—"
+      "email": "-"
     },
     "menu": {
       "account": "Account",

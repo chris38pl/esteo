@@ -120,7 +120,7 @@ export function AdminEstimateListRow({
       label={t(`status.${isArchived ? "ARCHIVED" : versionStatus}`)}
     />
   ) : (
-    <span className="text-xs text-muted-foreground">—</span>
+    <span className="text-xs text-muted-foreground">-</span>
   );
 
   if (layout === "list") {

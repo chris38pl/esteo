@@ -42,20 +42,20 @@ Layout: `max-w-[1400px]` content column (`billing/page.tsx`, `billing/layout.tsx
 ```txt
 WorkspaceBillingPanel
 ├── Status banners (PAST_DUE, GRACE_PERIOD, storage/seat over limit, action errors)
-├── BillingPlanHeroBanner          — plan hero + artwork + link to /billing/plans + manage payment
-├── BillingUsageStatsSection       — 4-column usage grid (AI, estimates, users, storage)
-├── BillingSecondaryCardsSection   — add-ons summary + next invoice (Stripe)
-├── Member usage table             — per-user AI/estimate meters (if any usage)
-└── BillingDangerZone              — cancel at period end / resume (paid plans only)
+├── BillingPlanHeroBanner          - plan hero + artwork + link to /billing/plans + manage payment
+├── BillingUsageStatsSection       - 4-column usage grid (AI, estimates, users, storage)
+├── BillingSecondaryCardsSection   - add-ons summary + next invoice (Stripe)
+├── Member usage table             - per-user AI/estimate meters (if any usage)
+└── BillingDangerZone              - cancel at period end / resume (paid plans only)
 ```
 
 ### Plan hero banner
 
 - Plan-specific badge, gradient title, description, renewal/cancel row, monthly price (i18n placeholders for PRO/BUSINESS amounts)
 - **Artwork:** owl strip on the right, mirrored into left gap on wide viewports (`HeroCardArtwork`, shared with estimates list pattern)
-- Assets: `public/images/billing/hero-{plan}-{light|dark}.webp` — see [`public/images/billing/README.md`](../../public/images/billing/README.md)
-- **Zmień plan** — primary `Button` (design-system `bg-primary`); opens dialog with upgrade targets
-- **Zarządzaj płatnością** — opens Stripe Customer Portal (`openWorkspacePortalAction`)
+- Assets: `public/images/billing/hero-{plan}-{light|dark}.webp` - see [`public/images/billing/README.md`](../../public/images/billing/README.md)
+- **Zmień plan** - primary `Button` (design-system `bg-primary`); opens dialog with upgrade targets
+- **Zarządzaj płatnością** - opens Stripe Customer Portal (`openWorkspacePortalAction`)
 
 Mobile: artwork offset right so owl stays visible; buttons full-width (stacked &lt;640px, side-by-side 640–768px); unified body scrim behind text + actions.
 
@@ -65,17 +65,17 @@ Mobile: artwork offset right so owl stays visible; buttons full-width (stacked &
 | --- | --- |
 | AI | `entitlements.usage.aiCallsThisMonth` / `limits.maxAiAssistantCallsPerMonth` |
 | Estimates | `entitlements.usage.estimatesThisMonth` / `limits.maxEstimatesPerMonth` |
-| Users | `(seats.used + seats.reserved + 1)` / `(seats.limit + 1)` — owner always counts as one user; `null` limit → unlimited |
+| Users | `(seats.used + seats.reserved + 1)` / `(seats.limit + 1)` - owner always counts as one user; `null` limit → unlimited |
 | Storage | `storage.usedFormatted` / `storage.limitFormatted` |
 
 **What increments `ESTIMATE_CREATED`**
 
 | Action | Counts toward limit? |
 | --- | --- |
-| Dashboard create estimate (internal) | Yes — `recordUsageInTx` in create transaction |
+| Dashboard create estimate (internal) | Yes - `recordUsageInTx` in create transaction |
 | Public form (full pipeline, gate allowed) | Yes |
 | Public form (request-only, gate blocked) | No |
-| Manual convert queued request | Yes — at conversion time |
+| Manual convert queued request | Yes - at conversion time |
 
 Usage is recorded atomically with estimate creation via `recordUsageInTx` (`usage-service.ts`).
 
@@ -85,8 +85,8 @@ On billing/entitlement reads, `reconcileEstimateUsageAggregate` heals drift when
 
 | Plan | Users (billing display) | Invites | Storage |
 | --- | --- | --- | --- |
-| FREE | 1 (owner) | — | 250 MB |
-| PRO | 1 (owner) | — | 1 GB |
+| FREE | 1 (owner) | - | 250 MB |
+| PRO | 1 (owner) | - | 1 GB |
 | BUSINESS | 5 (owner + 4 invites) | 4 | 5 GB |
 
 Source: `src/server/billing/plan-catalog.ts`. Only **BUSINESS** may invite additional members (`maxInvitedSeats > 0`). Storage and seat caps are written to `Workspace` on plan/add-on sync via `syncWorkspaceEffectiveLimits`.
@@ -130,7 +130,7 @@ Parsed breakdown (`parse-invoice-preview-lines.ts`):
 | `amountCents` | `amount_due` |
 | `referralBalanceAppliedCents` | Credit consumed from Stripe customer balance (`ending_balance − starting_balance` when starting credit) |
 
-**Referral program balance (referrer rewards):** When the billing customer has Stripe credit from referral rewards, `amount_due` is already reduced. UI shows a breakdown line **„Saldo programu poleceń”** (billing overview + change preview dialog). Distinct from **„Zniżka polecająca (20%)”** — the coupon for users who were referred. Full spec: [referral-program.md](referral-program.md).
+**Referral program balance (referrer rewards):** When the billing customer has Stripe credit from referral rewards, `amount_due` is already reduced. UI shows a breakdown line **„Saldo programu poleceń”** (billing overview + change preview dialog). Distinct from **„Zniżka polecająca (20%)”** - the coupon for users who were referred. Full spec: [referral-program.md](referral-program.md).
 
 UI recurring display uses **catalog** (`WorkspaceBillingPricing.recurringCents` from DB `planVersion` + add-on quantities), not the billing page selection state.
 
@@ -139,7 +139,7 @@ UI recurring display uses **catalog** (`WorkspaceBillingPricing.recurringCents` 
 | Active paid sub | Total + breakdown (proration / referral coupon / **referral balance**) + „Kolejne faktury” |
 | FREE plan | Empty + copy |
 | `cancelAtPeriodEnd` | Empty + „no further invoice” copy |
-| Stripe preview fails | Fallback: catalog recurring + DB `currentPeriodEnd` (no balance line — `referralBalanceAppliedCents: 0`) |
+| Stripe preview fails | Fallback: catalog recurring + DB `currentPeriodEnd` (no balance line - `referralBalanceAppliedCents: 0`) |
 
 ### Change preview (paid workspaces)
 
@@ -148,7 +148,7 @@ UI recurring display uses **catalog** (`WorkspaceBillingPricing.recurringCents` 
 | Kind | UX |
 | --- | --- |
 | `charge` | Full preview dialog (subscription + proration + optional referral balance line) |
-| `credit` | Light credit confirm (proration credit only — referral balance not shown yet) |
+| `credit` | Light credit confirm (proration credit only - referral balance not shown yet) |
 | `none` | Apply immediately (e.g. scheduled downgrade) |
 
 Preview TTL: 5 minutes (client UX only). Apply re-fetches workspace state; preview amounts are not trusted.
@@ -168,7 +168,7 @@ Cancel at period end / resume subscription. Stripe footer lock line. Shown only 
 ```typescript
 WorkspaceBillingPageData = {
   entitlements,           // getWorkspaceEntitlements()
-  pricing,                // WorkspaceBillingPricing — catalog recurring + Stripe preview fields
+  pricing,                // WorkspaceBillingPricing - catalog recurring + Stripe preview fields
   cancelAtPeriodEnd,
   currentPeriodEnd,
   memberUsage,            // per-user AI + estimate meters
@@ -189,9 +189,9 @@ WorkspaceBillingPageData = {
 
 | Action | Stripe / DB effect |
 | --- | --- |
-| `changeWorkspaceAddonQuantityAction(workspaceId, addonKey, quantity)` | → `changeWorkspaceAddonQuantity()` — Stripe subscription item qty |
-| `previewWorkspaceBillingChangeAction(workspaceId, change)` | → `previewWorkspaceBillingChange()` — Stripe preview for UX |
-| `changeWorkspacePlanAction(workspaceId, plan)` | → `changeWorkspaceSubscriptionPlan()` — Checkout or in-app update |
+| `changeWorkspaceAddonQuantityAction(workspaceId, addonKey, quantity)` | → `changeWorkspaceAddonQuantity()` - Stripe subscription item qty |
+| `previewWorkspaceBillingChangeAction(workspaceId, change)` | → `previewWorkspaceBillingChange()` - Stripe preview for UX |
+| `changeWorkspacePlanAction(workspaceId, plan)` | → `changeWorkspaceSubscriptionPlan()` - Checkout or in-app update |
 | `openWorkspacePortalAction(workspaceId)` | Stripe Billing Portal session; `return_url` → portal-return |
 | `cancelWorkspaceSubscriptionAction(workspaceId)` | `cancel_at_period_end` + sync |
 | `reactivateWorkspaceSubscriptionAction(workspaceId)` | Clear cancel flags + sync |
@@ -229,7 +229,7 @@ Full diagrams, plan-change matrix, portal sync, and duplicate-sub cleanup: [`doc
 
 ## Admin & dev tooling
 
-**Admin workspace report** includes billing fields (`currentPeriodEnd` when canceling) — `workspace-billing-report-panel.tsx`, `server/billing/dev-toolkit/report.ts`.
+**Admin workspace report** includes billing fields (`currentPeriodEnd` when canceling) - `workspace-billing-report-panel.tsx`, `server/billing/dev-toolkit/report.ts`.
 
 **Dev CLI** (non-production only): [`scripts/dev-billing/README.md`](../../scripts/dev-billing/README.md)
 
@@ -251,7 +251,7 @@ Namespaces: `billing.workspace.*` in `src/messages/{pl,en}/billing.json`
 
 Sections: `planHero`, `plans`, `usage`, `addons`, `addonPage`, `nextInvoice`, `dangerZone`, `statusNotice`, `memberUsage`, `actions`.
 
-Hero prices (`planHero.price.*`) are **display placeholders** — authoritative amounts come from Stripe on the next-invoice card.
+Hero prices (`planHero.price.*`) are **display placeholders** - authoritative amounts come from Stripe on the next-invoice card.
 
 ---
 

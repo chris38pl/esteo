@@ -41,7 +41,7 @@ export default clerkMiddleware(async (auth, request) => {
     return;
   }
 
-  // Use redirectToSignIn for pages — auth.protect() can return 404 for RSC flight
+  // Use redirectToSignIn for pages - auth.protect() can return 404 for RSC flight
   // requests during client navigations to /dashboard/[workspaceSlug] (Next.js 16).
   if (!isPublicRoute(request)) {
     const { userId, redirectToSignIn } = await auth();

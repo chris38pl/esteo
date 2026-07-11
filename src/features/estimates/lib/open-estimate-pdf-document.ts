@@ -8,7 +8,7 @@ export function isEstimatePdfWindowOpen(win: Window | null | undefined): win is 
   return win != null && !win.closed;
 }
 
-/** Sync — call directly from a click handler before any await (avoids popup blockers). */
+/** Sync - call directly from a click handler before any await (avoids popup blockers). */
 export function openEstimatePdfPlaceholder(input: {
   title: string;
   hint: string;

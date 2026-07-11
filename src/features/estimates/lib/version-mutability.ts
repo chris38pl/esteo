@@ -25,7 +25,7 @@ export function isEstimateVersionContentEditable(input: {
   return !READ_ONLY_STATUSES.includes(input.status);
 }
 
-/** @deprecated Use isEstimateVersionContentEditable — kept for gradual migration */
+/** @deprecated Use isEstimateVersionContentEditable - kept for gradual migration */
 export function isEstimateVersionEditable(status: EstimateVersionStatus): boolean {
   return status === "DRAFT";
 }

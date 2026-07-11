@@ -25,7 +25,7 @@ interface EstimateSummaryRecommendationsCardProps {
   attachments: EstimateAttachmentClient[];
   onOpenTab?: (tab: EstimateEditorTabId) => void;
   onExportPdf?: () => void;
-  /** Wider card layout — split recommendation items into two columns */
+  /** Wider card layout - split recommendation items into two columns */
   wide?: boolean;
   workspaceIndustry: WorkspaceIndustry;
 }

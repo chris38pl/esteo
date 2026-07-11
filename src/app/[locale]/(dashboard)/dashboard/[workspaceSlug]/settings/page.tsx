@@ -24,7 +24,7 @@ export default async function WorkspaceSettingsPage({
 
   const user = await requireAuth(resolvedLocale);
 
-  // Free cache hit — resolved by the parent [workspaceSlug]/layout.tsx already.
+  // Free cache hit - resolved by the parent [workspaceSlug]/layout.tsx already.
   const resolved = await resolveWorkspaceBySlug(workspaceSlug, user.id);
 
   if (!resolved) {

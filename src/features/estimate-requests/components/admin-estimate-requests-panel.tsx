@@ -49,7 +49,7 @@ const STATUS_STYLES: Record<EstimateRequestStatus, string> = {
 };
 
 function formatDateTime(locale: string, value: Date | string | null): string {
-  if (!value) return "—";
+  if (!value) return "-";
   const date = value instanceof Date ? value : new Date(value);
   return new Intl.DateTimeFormat(locale, {
     dateStyle: "medium",
@@ -138,7 +138,7 @@ function AdminEstimateRequestListRow({
   const t = useTranslations("admin.estimateRequests");
   const isDeleted = request.deletedAt !== null;
 
-  const displayName = request.customerFullName ?? request.customerEmail ?? "—";
+  const displayName = request.customerFullName ?? request.customerEmail ?? "-";
   const subLabel =
     request.customerFullName && request.customerEmail ? request.customerEmail : null;
 
@@ -158,7 +158,7 @@ function AdminEstimateRequestListRow({
                 {request.requestNumber}
               </span>
             ) : (
-              <span className="font-mono text-xs text-muted-foreground/50">—</span>
+              <span className="font-mono text-xs text-muted-foreground/50">-</span>
             )}
             {isDeleted ? (
               <Badge
@@ -213,7 +213,7 @@ function AdminEstimateRequestListRow({
         </div>
         <div className="hidden min-w-[88px] [@media(min-width:1150px)]:block">
           <p className="text-xs text-muted-foreground">{t("stats.city")}</p>
-          <p className="mt-1.5 text-sm font-medium">{request.city ?? "—"}</p>
+          <p className="mt-1.5 text-sm font-medium">{request.city ?? "-"}</p>
         </div>
         <div className="hidden min-w-[96px] [@media(min-width:880px)]:block">
           <p className="text-xs text-muted-foreground">{t("stats.status")}</p>

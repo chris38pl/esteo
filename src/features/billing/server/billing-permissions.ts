@@ -104,7 +104,7 @@ export async function getWorkspaceBillingOwnershipState(
   });
 }
 
-/** Single source of truth for active payer checks — use activeBillingPayerId, not raw payerUserId. */
+/** Single source of truth for active payer checks - use activeBillingPayerId, not raw payerUserId. */
 export async function getWorkspaceActiveBillingPayerId(
   workspaceId: string,
 ): Promise<string | null> {
@@ -214,7 +214,7 @@ export async function assertCanPurchaseSubscription(
   }
 }
 
-/** @deprecated Prefer assertCanManageBilling — kept for gradual migration. */
+/** @deprecated Prefer assertCanManageBilling - kept for gradual migration. */
 export async function requireBillingPayer(user: User, workspaceId: string): Promise<void> {
   await assertCanManageBilling(user, workspaceId);
 }

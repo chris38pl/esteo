@@ -74,7 +74,7 @@ export async function getWorkspaceBillingPlansPageData(
 
   if (referralDiscountUnavailable) {
     console.warn(
-      `[referral] Workspace ${workspaceId} has pending referral but STRIPE_REFERRAL_COUPON_ID missing — promo hidden, checkout blocked`,
+      `[referral] Workspace ${workspaceId} has pending referral but STRIPE_REFERRAL_COUPON_ID missing - promo hidden, checkout blocked`,
     );
   }
 

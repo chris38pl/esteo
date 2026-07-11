@@ -17,13 +17,13 @@ Esteo records each attempt in `EstimateVersionSend`, logs activity, and locks ed
 | `ACCEPTED` | User marked client acceptance | No |
 | `REJECTED` | User marked client rejection | No |
 
-`archivedAt` is independent of status — archived versions are always read-only.
+`archivedAt` is independent of status - archived versions are always read-only.
 
 Transport status on `EstimateVersionSend` is separate from version status:
 
 | Transport | Active job? |
 | --- | --- |
-| `QUEUED`, `GENERATING_PDF`, `SENDING` | Yes — editor shows in-progress banner |
+| `QUEUED`, `GENERATING_PDF`, `SENDING` | Yes - editor shows in-progress banner |
 | `PROVIDER_ACCEPTED`, `DELIVERED` | Terminal success |
 | `FAILED` | Terminal failure |
 
@@ -70,13 +70,13 @@ Shared helper: `src/features/estimates/lib/estimate-async-toast.ts`.
 - Morphs loading → success/error (same pattern as PDF export).
 - Hint text: `send.progress.hint` (PL/EN).
 
-Hook: `use-estimate-send-polling.ts` — poll mutex, terminal send ids, `resumePollingIfNeeded` (max once per mount), server-state reconciliation when version is already `SENT` but client toast is stale.
+Hook: `use-estimate-send-polling.ts` - poll mutex, terminal send ids, `resumePollingIfNeeded` (max once per mount), server-state reconciliation when version is already `SENT` but client toast is stale.
 
 ### Banners (editor)
 
 | Banner | When |
 | --- | --- |
-| Read-only (`EstimateReadOnlyVersionBanner`) | Version `SENT` / `ACCEPTED` / `REJECTED` — lock icon, send meta inline |
+| Read-only (`EstimateReadOnlyVersionBanner`) | Version `SENT` / `ACCEPTED` / `REJECTED` - lock icon, send meta inline |
 | Send in progress | Active transport job or client polling while `DRAFT` |
 | Archived | `archivedAt` set |
 
@@ -90,10 +90,10 @@ See `.env.example`. Implementation: `src/server/email/resend-client.ts`.
 
 | Variable | Purpose |
 | --- | --- |
-| `RESEND_API_KEY` | Resend API key — required on **Vercel** and **Trigger.dev** (worker sends mail) |
+| `RESEND_API_KEY` | Resend API key - required on **Vercel** and **Trigger.dev** (worker sends mail) |
 | `EMAIL_FROM` | From address on staging/production (default fallback in code: `estimates@mail.esteo.app`) |
 | `EMAIL_FROM_NAME` | Display name in the From header (e.g. `Esteo`) |
-| `EMAIL_DEV_REDIRECT_TO` | **Development only** — all outbound mail goes to this inbox; subject prefixed `[DEV → …]` |
+| `EMAIL_DEV_REDIRECT_TO` | **Development only** - all outbound mail goes to this inbox; subject prefixed `[DEV → …]` |
 | `EMAIL_USE_PRODUCTION_FROM` | Set `true` on localhost to use `EMAIL_FROM` instead of sandbox |
 | `EMAIL_FROM_DEV` | Optional override for sandbox sender on localhost (default `onboarding@resend.dev`) |
 
@@ -111,14 +111,14 @@ RESEND_API_KEY="re_..."
 
 Set these on:
 
-1. **Vercel** — Environment Variables for Preview (staging) and Production (main).
-2. **Trigger.dev** — **Esteo-Staging** (staging) or **Esteo** (production) → Environment Variables.
+1. **Vercel** - Environment Variables for Preview (staging) and Production (main).
+2. **Trigger.dev** - **Esteo-Staging** (staging) or **Esteo** (production) → Environment Variables.
 
 The `send-estimate-to-customer` task runs on Trigger; without `RESEND_API_KEY` / `EMAIL_FROM` there, sends fail after enqueue.
 
 ### Local dev: slow import warning
 
-`npm run trigger:dev` may warn that `send-estimate-to-customer.ts` has **slow import timing (>1s)**. That is expected: the task file statically imports `processEstimateSendAttempt`, which loads Prisma, React Email, PDF generation, and Resend at worker startup. The worker still starts; send jobs are unaffected. **No fix planned yet** — see [diagnostics note](../diagnostics/trigger-slow-import-send-estimate-to-customer.md).
+`npm run trigger:dev` may warn that `send-estimate-to-customer.ts` has **slow import timing (>1s)**. That is expected: the task file statically imports `processEstimateSendAttempt`, which loads Prisma, React Email, PDF generation, and Resend at worker startup. The worker still starts; send jobs are unaffected. **No fix planned yet** - see [diagnostics note](../diagnostics/trigger-slow-import-send-estimate-to-customer.md).
 
 #### Localhost (development)
 
@@ -140,7 +140,7 @@ EMAIL_USE_PRODUCTION_FROM=true
 
 #### Reply-To
 
-Reply-To is the workspace company email when configured, otherwise the sending user’s email — not `EMAIL_FROM`. See `resolveReplyToEmail` in `resend-client.ts`.
+Reply-To is the workspace company email when configured, otherwise the sending user’s email - not `EMAIL_FROM`. See `resolveReplyToEmail` in `resend-client.ts`.
 
 ### Staging / Preview troubleshooting (#35)
 
@@ -172,9 +172,9 @@ Send and workflow actions require workspace **MEMBER** or higher. Poll/read requ
 
 ## Related documentation
 
-- [`estimate-pdf-export.md`](estimate-pdf-export.md) — PDF generation reused in send pipeline
-- [`estimate-activity-history.md`](estimate-activity-history.md) — `sent_to_customer`, `estimate_resent`, workflow actions
-- [`estimate-summary.md`](estimate-summary.md) — workflow status card (4 steps)
-- [`../architecture/deployment.md`](../architecture/deployment.md) — env mapping, `mail.esteo.app`
+- [`estimate-pdf-export.md`](estimate-pdf-export.md) - PDF generation reused in send pipeline
+- [`estimate-activity-history.md`](estimate-activity-history.md) - `sent_to_customer`, `estimate_resent`, workflow actions
+- [`estimate-summary.md`](estimate-summary.md) - workflow status card (4 steps)
+- [`../architecture/deployment.md`](../architecture/deployment.md) - env mapping, `mail.esteo.app`
 - Incident: [estimate send toast polling stuck](../incidents/2026-06-18-estimate-send-toast-polling-stuck.md)
 - Diagnostics: [Trigger slow import on send task](../diagnostics/trigger-slow-import-send-estimate-to-customer.md)

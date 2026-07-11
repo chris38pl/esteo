@@ -43,8 +43,8 @@ export default async function WorkspaceTransferAcceptPage({
         {!eligibility.eligible ? (
           <p className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
             {resolvedLocale === "pl"
-              ? "Ten transfer nie może zostać zaakceptowany — subskrypcja lub status przestrzeni uległy zmianie."
-              : "This transfer can no longer be accepted — the subscription or workspace status has changed."}
+              ? "Ten transfer nie może zostać zaakceptowany - subskrypcja lub status przestrzeni uległy zmianie."
+              : "This transfer can no longer be accepted - the subscription or workspace status has changed."}
           </p>
         ) : null}
         <WorkspaceTransferCard transfer={transferView} locale={resolvedLocale} variant="hero" />

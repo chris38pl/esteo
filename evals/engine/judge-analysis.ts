@@ -15,7 +15,7 @@ function isFullCoverage(result: ScenarioResult): boolean {
 }
 
 function formatScore(value: number | null): string {
-  return value === null ? "—" : value.toFixed(1);
+  return value === null ? "-" : value.toFixed(1);
 }
 
 function formatBool(passed: boolean): string {
@@ -47,7 +47,7 @@ export function writeJudgeFailureReport(
     "# Judge failure analysis",
     "",
     "Scenarios that **FAIL** with **coverage 100%** and **overall ≥ 7**.",
-    "These are the best candidates for judge-threshold or prompt-quality work — rules and coverage are already green.",
+    "These are the best candidates for judge-threshold or prompt-quality work - rules and coverage are already green.",
     "",
     `Run: \`${summary.runId}\` | Prompt: v${summary.promptVersion}`,
     `Matched scenarios: **${rows.length}**`,
@@ -61,7 +61,7 @@ export function writeJudgeFailureReport(
   } else {
     for (const { result } of rows) {
       lines.push(
-        `| ${result.id} | ${result.overallScore.toFixed(1)} | ${formatBool(result.schemaPassed)} | ${result.coverageMatched}/${result.coverageTotal} (${result.coveragePercent}%) | ${formatScore(result.referenceSimilarityScore)} | ${formatScore(result.contextAlignmentScore)} | ${result.failReasons.join(", ") || "—"} |`,
+        `| ${result.id} | ${result.overallScore.toFixed(1)} | ${formatBool(result.schemaPassed)} | ${result.coverageMatched}/${result.coverageTotal} (${result.coveragePercent}%) | ${formatScore(result.referenceSimilarityScore)} | ${formatScore(result.contextAlignmentScore)} | ${result.failReasons.join(", ") || "-"} |`,
       );
     }
   }
@@ -82,7 +82,7 @@ export function writeJudgeFailureReport(
       lines.push(`- **Reference similarity:** ${formatScore(result.referenceSimilarityScore)}`);
       lines.push(`- **Context alignment:** ${formatScore(result.contextAlignmentScore)}`);
       lines.push(`- **Judge score:** ${formatScore(result.judgeScore)}`);
-      lines.push(`- **failReasons:** ${result.failReasons.join(", ") || "—"}`);
+      lines.push(`- **failReasons:** ${result.failReasons.join(", ") || "-"}`);
       lines.push("");
     }
   }
@@ -92,7 +92,7 @@ export function writeJudgeFailureReport(
     "",
     "- `referenceSimilarity` / `contextAlignment` below scenario judge thresholds are the usual blockers here.",
     "- `overallScore` blends rules (30%) and judge (70%); a high rules score with low refSim/context still fails Full eval.",
-    "- Scenarios with `rules` in failReasons still appear here when coverage is full — fix mustHave/matcher before tuning judge thresholds.",
+    "- Scenarios with `rules` in failReasons still appear here when coverage is full - fix mustHave/matcher before tuning judge thresholds.",
     "",
   );
 

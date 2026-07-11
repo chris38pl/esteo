@@ -42,7 +42,7 @@ export default async function WorkspaceRequestDetailPage({
     (field) => field.key === "property_type",
   );
   const investmentPropertyType =
-    propertyTypeRow && propertyTypeRow.value !== "—" ? propertyTypeRow.value : null;
+    propertyTypeRow && propertyTypeRow.value !== "-" ? propertyTypeRow.value : null;
 
   const breadcrumbLabel = request.requestNumber?.trim() || null;
   const processingGate = await getEstimateProcessingGate(resolved.workspace.id);

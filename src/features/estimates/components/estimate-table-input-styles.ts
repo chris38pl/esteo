@@ -3,19 +3,19 @@ export const estimateFlatInputClassName =
   "h-8 min-w-0 rounded-none border-0! bg-transparent! px-1 text-sm shadow-none! hover:bg-transparent focus-visible:border-0! focus-visible:ring-0! dark:border-0! dark:bg-transparent! dark:shadow-none! dark:hover:bg-transparent dark:focus-visible:border-0! dark:focus-visible:ring-0!";
 
 /**
- * Section header row — slightly lighter than line items.
- * Dark: card (#0a1224), not muted — closer to line-item background (#060b16).
+ * Section header row - slightly lighter than line items.
+ * Dark: card (#0a1224), not muted - closer to line-item background (#060b16).
  */
 export const estimateSectionRowClassName =
   "bg-secondary/45 text-sm dark:bg-card";
 
 /**
- * Line item row — darkest table rows.
+ * Line item row - darkest table rows.
  * Light: secondary (#f1f5f9); dark: background (#060b16).
  */
 export const estimateLineItemRowClassName =
   "group border-b border-border/40 bg-secondary transition-colors dark:bg-background dark:text-muted-foreground hover:bg-secondary/80 dark:hover:bg-background";
 
-/** Line-item cells only — softer text in dark mode (sections keep default). */
+/** Line-item cells only - softer text in dark mode (sections keep default). */
 export const estimateLineItemFlatInputClassName =
   `${estimateFlatInputClassName} dark:text-muted-foreground dark:caret-muted-foreground dark:placeholder:text-muted-foreground/70`;

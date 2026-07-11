@@ -23,7 +23,7 @@ export const BILLING_PLAN_HERO_IMAGES: Record<
   },
 };
 
-/** Card fills — must match artwork edge colors for a seamless blend. */
+/** Card fills - must match artwork edge colors for a seamless blend. */
 export const BILLING_PLAN_HERO_BACKGROUNDS: Record<
   SubscriptionPlan,
   { light: string; dark: string }

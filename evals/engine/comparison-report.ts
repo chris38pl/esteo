@@ -152,12 +152,12 @@ export function writeComparisonReport(
       (previous.summary.promptHash ?? "") !== (current.promptHash ?? "");
     promptSection = [
       `- Version: \`v${previous.summary.promptVersion}\` → \`v${current.promptVersion}\`${versionChanged ? "" : " (unchanged)"}`,
-      `- Reference hash (\`${current.promptHashSource}\`): \`${previous.summary.promptHash || "—"}\` → \`${current.promptHash}\``,
+      `- Reference hash (\`${current.promptHashSource}\`): \`${previous.summary.promptHash || "-"}\` → \`${current.promptHash}\``,
     ].join("\n");
 
     if (!versionChanged && hashChanged) {
       promptSection +=
-        "\n- ⚠ **HOTFIX WITHOUT VERSION BUMP** — prompt content changed at same semver.";
+        "\n- ⚠ **HOTFIX WITHOUT VERSION BUMP** - prompt content changed at same semver.";
     } else if (versionChanged) {
       promptSection += "\n- Expected version bump.";
     }
@@ -174,7 +174,7 @@ export function writeComparisonReport(
     "",
     `Run: \`${current.runId}\` | Prompt: v${current.promptVersion} | Hash: \`${current.promptHash}\``,
     previous
-      ? `Compared to: \`${previous.runId}\` | Prompt: v${previous.summary.promptVersion} | Hash: \`${previous.summary.promptHash || "—"}\``
+      ? `Compared to: \`${previous.runId}\` | Prompt: v${previous.summary.promptVersion} | Hash: \`${previous.summary.promptHash || "-"}\``
       : "Compared to: _none_",
     "",
     "## Key Scenarios",
@@ -244,9 +244,9 @@ export function writeComparisonReport(
           .join("\n")
       : "",
     "",
-    `- Business avg: ${previous?.summary.businessAverageScore ?? "—"} → ${current.businessAverageScore}`,
-    `- Generic avg: ${previous?.summary.genericAverageScore ?? "—"} → ${current.genericAverageScore}`,
-    `- Edge avg: ${previous?.summary.edgeAverageScore ?? "—"} → ${current.edgeAverageScore}`,
+    `- Business avg: ${previous?.summary.businessAverageScore ?? "-"} → ${current.businessAverageScore}`,
+    `- Generic avg: ${previous?.summary.genericAverageScore ?? "-"} → ${current.genericAverageScore}`,
+    `- Edge avg: ${previous?.summary.edgeAverageScore ?? "-"} → ${current.edgeAverageScore}`,
     "",
   ].join("\n");
 

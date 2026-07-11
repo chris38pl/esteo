@@ -83,7 +83,7 @@ export function VoiceExperiencePortal({
       className="fixed inset-0 z-[100] isolate flex flex-col overflow-hidden pointer-events-auto"
       style={{ height: "100dvh" }}
     >
-      {/* Full-screen capture layer — blocks clicks to the page behind the portal */}
+      {/* Full-screen capture layer - blocks clicks to the page behind the portal */}
       <div
         className="absolute inset-0 z-0 bg-background/95 backdrop-blur-xl"
         aria-hidden

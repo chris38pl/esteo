@@ -1,4 +1,4 @@
-# Voice intake — decisions & solved problems
+# Voice intake - decisions & solved problems
 
 Record of non-obvious choices and bugs fixed during the initial voice assistant build (June 2026). Use when changing UX timing, form apply, or mobile layout.
 
@@ -7,7 +7,7 @@ Record of non-obvious choices and bugs fixed during the initial voice assistant 
 | Topic | Problem | Decision / fix |
 | --- | --- | --- |
 | Analyzing steps | Steps cycled too fast; last step visible only briefly while API runs 30–70s | Per-step delays **before** last step only; last step stays until phase changes. Initial: 2.6s + 2.4s + 2.2s. Follow-up: 1.8s. |
-| Form apply WOW | No visible effect — fields already filled | **Never** bulk-set all fields before animation. Reveal field-by-field from empty `working` state. |
+| Form apply WOW | No visible effect - fields already filled | **Never** bulk-set all fields before animation. Reveal field-by-field from empty `working` state. |
 | Form apply WOW | Equal 2.4s per analyzing-style step felt wrong on form | Typewriter per text field; highlight active field with `data-voice-field`. |
 | Description typewriter | Long AI description took ~20s character-by-character | Chunked typewriter for `project.description` >50 chars, cap **3.5s** (`typewriterByChunks`). |
 | Field glow | Too strong, distracting | Reduced opacity, smaller shadow, 2px ring; removed translateY lift. |
@@ -47,7 +47,7 @@ const ANALYZING_STEP_ADVANCE_MS = {
 };
 ```
 
-Tune these constants only — do not tie to API progress without real server-sent step events (not implemented).
+Tune these constants only - do not tie to API progress without real server-sent step events (not implemented).
 
 ---
 
@@ -59,8 +59,8 @@ Tune these constants only — do not tie to API progress without real server-sen
 
 **Fix:**
 
-1. `createEmptyWorkingState` — start from empty contact/address/project strings.
-2. `buildVoiceApplySequence` — only paths with non-empty mapped values, in visual order.
+1. `createEmptyWorkingState` - start from empty contact/address/project strings.
+2. `buildVoiceApplySequence` - only paths with non-empty mapped values, in visual order.
 3. `typewriterReveal` or instant set per field; update `working` then `applyFieldValue`.
 4. Final `applyAllFields(state)` ensures sync with mapped truth.
 
@@ -98,7 +98,7 @@ Content area uses full viewport height; scroll phases get `pt-[max(3.25rem,calc(
 
 Fields mapped to the form only when `confidence >= 0.5` (`shouldApplyField` in `map-extraction-to-form.ts`). Missing-field UI uses the same threshold plus ambiguity list from extraction.
 
-Changing this affects both apply and “missing” hints — keep in sync.
+Changing this affects both apply and “missing” hints - keep in sync.
 
 ---
 
@@ -112,7 +112,7 @@ Follow-up sends `followUpContext` JSON to API. Server runs a dedicated follow-up
 
 | Idea | Status |
 | --- | --- |
-| Real API-driven analyzing progress | Not implemented — UI is cosmetic |
+| Real API-driven analyzing progress | Not implemented - UI is cosmetic |
 | `checklist_reveal` UI between summary and fill | Phase exists; no dedicated screen |
 | Server-sent events / streaming extraction | Single POST round-trip |
 | Voice metadata in estimate editor UI | Stored on request only |

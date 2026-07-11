@@ -1,6 +1,6 @@
 {
   "id": "assistant-template-price-consistency",
-  "name": "Assistant — template price consistency on addition",
+  "name": "Assistant - template price consistency on addition",
   "locale": "pl",
   "quick": true,
   "critical": true,

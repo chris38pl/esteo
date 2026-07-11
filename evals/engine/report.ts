@@ -62,17 +62,17 @@ export function printEvalReport(summary: RunSummary): void {
   console.log("────────────────────────────────────");
   if (summary.evalMode === "full") {
     console.log(
-      `Business Average:   Overall ${summary.businessAverageScore}  |  Context ${summary.businessAverageContextAlignment ?? "—"}  |  Coverage ${summary.businessAverageCoverage}%`,
+      `Business Average:   Overall ${summary.businessAverageScore}  |  Context ${summary.businessAverageContextAlignment ?? "-"}  |  Coverage ${summary.businessAverageCoverage}%`,
     );
     console.log(
-      `Edge Average:       Overall ${summary.edgeAverageScore}  |  Context ${summary.edgeAverageContextAlignment ?? "—"}  |  Coverage ${summary.edgeAverageCoverage}%`,
+      `Edge Average:       Overall ${summary.edgeAverageScore}  |  Context ${summary.edgeAverageContextAlignment ?? "-"}  |  Coverage ${summary.edgeAverageCoverage}%`,
     );
     console.log(
-      `Generic Average:    Overall ${summary.genericAverageScore}  |  Context ${summary.genericAverageContextAlignment ?? "—"}  |  Coverage ${summary.genericAverageCoverage}%`,
+      `Generic Average:    Overall ${summary.genericAverageScore}  |  Context ${summary.genericAverageContextAlignment ?? "-"}  |  Coverage ${summary.genericAverageCoverage}%`,
     );
     if (summary.goldenAverageScore !== null) {
       console.log(
-        `Golden Average:     Overall ${summary.goldenAverageScore}  |  Context ${summary.goldenAverageContextAlignment ?? "—"}`,
+        `Golden Average:     Overall ${summary.goldenAverageScore}  |  Context ${summary.goldenAverageContextAlignment ?? "-"}`,
       );
     }
   } else {
@@ -118,8 +118,8 @@ function printScenarioLine(s: ScenarioResult, mode: RunSummary["evalMode"]): voi
         `Fast: ${s.fastScore.toFixed(1)}  ${coverage}  ${leakage}  items: ${s.length.lineItemCount}  ${status}`,
     );
   } else {
-    const ctx = s.contextAlignmentScore?.toFixed(1) ?? "—";
-    const ref = s.referenceSimilarityScore?.toFixed(1) ?? "—";
+    const ctx = s.contextAlignmentScore?.toFixed(1) ?? "-";
+    const ref = s.referenceSimilarityScore?.toFixed(1) ?? "-";
     console.log(
       `${s.name}${star}`.padEnd(28) +
         `Overall: ${s.overallScore.toFixed(1)}  Context: ${ctx}  RefSim: ${ref}  ${coverage}  ${status}`,
@@ -142,7 +142,7 @@ export function printCompareReport(
   }
 
   if (baseline.promptVersion !== current.promptVersion) {
-    console.log("\nPrompt version changed — review quality deltas below.");
+    console.log("\nPrompt version changed - review quality deltas below.");
   }
 
   const bWords = baseline.summary.promptComplexity.avgWords;

@@ -50,7 +50,7 @@ Derived state via `deriveBillingOwnershipState()` (not stored in DB):
 **`NORMAL` descriptive variants** (same enum):
 
 - **NORMAL (owner-managed):** owner === payer, active billing
-- **NORMAL (free / no active payer):** FREE or post-timeout — `owner !== payer` may still be true in DB (`payerUserId` kept for audit)
+- **NORMAL (free / no active payer):** FREE or post-timeout - `owner !== payer` may still be true in DB (`payerUserId` kept for audit)
 
 **Active billing payer:** `activeBillingPayerId` (derived). Never compare `userId === payerUserId` for permissions outside audit.
 
@@ -92,9 +92,9 @@ After handoff completes or times out, ex-payer loses all billing access to the w
 
 ## Server guards
 
-- `assertCanManageBilling` — portal, cancel, resume
-- `assertCanChangePlanOrAddons` — plan + add-ons
-- `assertCanPurchaseSubscription` — post-expiry checkout (owner only)
+- `assertCanManageBilling` - portal, cancel, resume
+- `assertCanChangePlanOrAddons` - plan + add-ons
+- `assertCanPurchaseSubscription` - post-expiry checkout (owner only)
 - `resolveWorkspaceForBilling` for `/billing*` routes
 
 ## Auto-cancel pending transfer
@@ -116,16 +116,16 @@ When `cancelAtPeriodEnd` changes from `true` → `false` (subscription reactivat
 
 **Billing handoff** (`entityType: BillingHandoff`):
 
-- `billing_handoff_started` — accept when `payerUserId !== newOwnerId`
-- `billing_handoff_expired` — subscription EXPIRED during handoff
-- `billing_handoff_completed` — owner purchased after EXPIRED
-- `billing_handoff_timed_out` — 90-day lazy cleanup (before `handoffExpiredAt` clear)
+- `billing_handoff_started` - accept when `payerUserId !== newOwnerId`
+- `billing_handoff_expired` - subscription EXPIRED during handoff
+- `billing_handoff_completed` - owner purchased after EXPIRED
+- `billing_handoff_timed_out` - 90-day lazy cleanup (before `handoffExpiredAt` clear)
 
 ## Key files
 
 | Area | Path |
 | ---- | ---- |
-| Schema | `prisma/schema.prisma` — `WorkspaceOwnershipTransfer`, `BillingAccount.handoffExpiredAt` |
+| Schema | `prisma/schema.prisma` - `WorkspaceOwnershipTransfer`, `BillingAccount.handoffExpiredAt` |
 | Eligibility | `src/features/workspaces/server/transfer-eligibility.ts` |
 | Service | `src/features/workspaces/server/ownership-transfer.ts` |
 | Billing logic | `src/features/billing/lib/billing-permissions-logic.ts` |

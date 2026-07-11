@@ -8,7 +8,7 @@ export type SidebarSectionId = "pinned" | "team" | "admin" | "qa";
 type SidebarState = {
   collapsed: boolean;
   sectionsOpen: Record<SidebarSectionId, boolean>;
-  /** Estimate IDs — hydrated from server per workspace; local order until refresh. */
+  /** Estimate IDs - hydrated from server per workspace; local order until refresh. */
   pinnedOrder: string[];
   setCollapsed: (collapsed: boolean) => void;
   toggle: () => void;

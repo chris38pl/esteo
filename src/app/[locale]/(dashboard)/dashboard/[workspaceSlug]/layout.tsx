@@ -21,7 +21,7 @@ export default async function WorkspaceLayout({
 
   const user = await requireAuth(resolvedLocale);
 
-  // resolveWorkspaceBySlug is React cache()-wrapped — the outer (dashboard) layout already
+  // resolveWorkspaceBySlug is React cache()-wrapped - the outer (dashboard) layout already
   // called it with the same args, so this is a free cache hit with no extra DB round-trip.
   const resolved = await resolveWorkspaceBySlug(workspaceSlug, user.id);
 

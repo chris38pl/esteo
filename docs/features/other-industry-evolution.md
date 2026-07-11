@@ -4,7 +4,7 @@ OTHER is a **fallback and incubator**, not the permanent home for groomers, phot
 
 ## OTHER v2 (current)
 
-- `hasIndustrySectionDefaults = false` — no Zakres / Usługi / Uwagi template
+- `hasIndustrySectionDefaults = false` - no Zakres / Usługi / Uwagi template
 - `sectionStructureMode: ai_dynamic` when workspace has no section override
 - AI output: **Commercial Sections** only (no narrative sections in the estimate table)
 - Client brief remains a separate block

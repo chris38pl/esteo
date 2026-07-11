@@ -89,7 +89,7 @@ export async function getSeatUsage(
 
 /**
  * Pure feature-state derivation from effective status + plan limits. Single resolver used by
- * server guards and UI gating; never destroys configuration — only degrades behavior.
+ * server guards and UI gating; never destroys configuration - only degrades behavior.
  */
 export function deriveFeatureState(
   effectiveStatus: WorkspaceEffectiveStatus,
@@ -131,7 +131,7 @@ export function deriveFeatureState(
     return "ACTIVE";
   }
 
-  // ACTIVE / PAST_DUE — full access.
+  // ACTIVE / PAST_DUE - full access.
   return "ACTIVE";
 }
 
@@ -144,7 +144,7 @@ export async function getFeatureState(
   return deriveFeatureState(ent.effectiveStatus, ent.plan, ent.limits, feature);
 }
 
-/** Coarse entitlement snapshot — hydrates UI/context once per request. */
+/** Coarse entitlement snapshot - hydrates UI/context once per request. */
 export const getWorkspaceEntitlements = cache(
   async (workspaceId: string): Promise<WorkspaceEntitlements> => {
     const periodKey = currentPeriodKey();
@@ -199,7 +199,7 @@ export type EstimateProcessingGate =
   | { allowed: true }
   | { allowed: false; reason: EstimateProcessingGateReason };
 
-/** Non-throwing gate for public intake — same rules as {@link assertCanCreateEstimateInWorkspace}. */
+/** Non-throwing gate for public intake - same rules as {@link assertCanCreateEstimateInWorkspace}. */
 export function deriveEstimateProcessingGate(
   ent: Pick<WorkspaceEntitlements, "effectiveStatus" | "plan" | "limits" | "usage">,
 ): EstimateProcessingGate {

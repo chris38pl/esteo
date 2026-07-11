@@ -21,7 +21,7 @@ export function EstimateSendEmail({
     <Html>
       <Head />
       <Preview>
-        {estimateName} — wycena od {companyName}
+        {estimateName} - wycena od {companyName}
       </Preview>
       <Body style={main}>
         <Container style={container}>

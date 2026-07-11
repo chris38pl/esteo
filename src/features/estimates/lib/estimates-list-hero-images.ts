@@ -2,10 +2,10 @@
  * Background artwork for estimates list hero cards.
  *
  * Place files in `public/images/estimates-list/`:
- * - hero-create-light.webp — left card, light mode
- * - hero-create-dark.webp  — left card, dark mode
- * - hero-form-light.webp   — right card, light mode
- * - hero-form-dark.webp    — right card, dark mode
+ * - hero-create-light.webp - left card, light mode
+ * - hero-create-dark.webp  - left card, dark mode
+ * - hero-form-light.webp   - right card, light mode
+ * - hero-form-dark.webp    - right card, dark mode
  */
 export const ESTIMATES_LIST_HERO_IMAGES = {
   create: {
@@ -18,7 +18,7 @@ export const ESTIMATES_LIST_HERO_IMAGES = {
   },
 } as const;
 
-/** Card fills — must match artwork edge colors for a seamless blend. */
+/** Card fills - must match artwork edge colors for a seamless blend. */
 export const ESTIMATES_LIST_HERO_BACKGROUNDS = {
   create: {
     light: "#eff6fe",

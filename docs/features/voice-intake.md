@@ -17,7 +17,7 @@ Initial implementation shipped on `staging` (June 2026). Further polish is expec
 | Surface | Component | API |
 | --- | --- | --- |
 | Public estimate form `/[locale]/wycena/[workspaceSlug]` | `VoiceIntakeController` + `VoiceIntakeFooterBar` | `POST /api/public/voice-intake?locale=` |
-| Dashboard — create estimate modal | `VoiceIntakeController` + `VoiceIntakeTrigger` | `POST /api/estimate-requests/voice-intake` |
+| Dashboard - create estimate modal | `VoiceIntakeController` + `VoiceIntakeTrigger` | `POST /api/estimate-requests/voice-intake` |
 | Admin UI gallery | `/dashboard/admin/voice-intake-preview` | Preview only (fixtures, no API) |
 
 Public flow: [`public-estimate-request-client.tsx`](../../src/features/estimate-requests/components/public-estimate-request-client.tsx)  
@@ -65,7 +65,7 @@ On **Wypełnij formularz**:
 
 - Hero: `understand-your-project.webp` + subtle glow ring (not recording glow assets).
 - Scope badges from extraction.
-- **Uzupełnione informacje** — card list after follow-up (framer-motion stagger).
+- **Uzupełnione informacje** - card list after follow-up (framer-motion stagger).
 - Missing fields **or** “Wiemy już wszystko!” when complete.
 - Actions (always three): **Wypełnij formularz** | **Dograj informacje** | **Nagraj od początku**.
 - Privacy line with shield icon.
@@ -89,7 +89,7 @@ Implemented in [`use-voice-form-apply.ts`](../../src/features/voice-intake/hooks
 - Active field: soft glow via `.voice-apply-active` in `globals.css`.
 - `prefers-reduced-motion`: instant fill, no animation.
 
-**Important:** Do not pre-fill all fields before animating — that was an early bug that made the animation invisible.
+**Important:** Do not pre-fill all fields before animating - that was an early bug that made the animation invisible.
 
 ## Extracted → form mapping
 
@@ -99,7 +99,7 @@ Implemented in [`use-voice-form-apply.ts`](../../src/features/voice-intake/hooks
 - Description: prefers cleaned transcript if ≥20 chars, else combined transcript.
 - Title generated for internal create flow via `resolveGeneratedTitle`.
 
-Missing fields for UI: [`detect-missing-fields.ts`](../../src/features/voice-intake/lib/detect-missing-fields.ts) — empty, low confidence (<0.5), or ambiguous.
+Missing fields for UI: [`detect-missing-fields.ts`](../../src/features/voice-intake/lib/detect-missing-fields.ts) - empty, low confidence (<0.5), or ambiguous.
 
 ## Metadata on submit
 
@@ -107,7 +107,7 @@ Missing fields for UI: [`detect-missing-fields.ts`](../../src/features/voice-int
 
 ## i18n
 
-Namespace: `voiceIntake` — [`src/messages/pl/voiceIntake.json`](../../src/messages/pl/voiceIntake.json), [`en/voiceIntake.json`](../../src/messages/en/voiceIntake.json).  
+Namespace: `voiceIntake` - [`src/messages/pl/voiceIntake.json`](../../src/messages/pl/voiceIntake.json), [`en/voiceIntake.json`](../../src/messages/en/voiceIntake.json).  
 Admin preview copy: `admin.voiceIntakePreview`.
 
 ## Audio limits
@@ -131,7 +131,7 @@ Public also requires estimate-request **captcha** (same as public form).
 
 ## Assets
 
-`public/images/voice-intake/` — see [`public/images/voice-intake/README.md`](../../public/images/voice-intake/README.md).
+`public/images/voice-intake/` - see [`public/images/voice-intake/README.md`](../../public/images/voice-intake/README.md).
 
 | File | Use |
 | --- | --- |
@@ -160,7 +160,7 @@ Requires `OPENAI_API_KEY` in env (benchmark loads `.env` via `scripts/load-env.m
 
 These exist in the repo but are **not** wired in the current portal flow:
 
-- `voice-review-stage.tsx` — superseded by `voice-summary-stage.tsx`
-- `voice-follow-up-success-stage.tsx` — follow-up goes directly back to summary
+- `voice-review-stage.tsx` - superseded by `voice-summary-stage.tsx`
+- `voice-follow-up-success-stage.tsx` - follow-up goes directly back to summary
 
 Safe to remove after confirming no external imports.

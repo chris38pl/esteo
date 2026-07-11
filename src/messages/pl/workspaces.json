@@ -238,7 +238,7 @@
       },
       "ai": {
         "dialogTitle": "Generuj szablon z AI",
-        "dialogDescription": "Opisz strukturę szablonu — możesz wkleić listę lub nagrać dyktando. AI zaproponuje sekcje i pozycje dopasowane do Twojej firmy.",
+        "dialogDescription": "Opisz strukturę szablonu - możesz wkleić listę lub nagrać dyktando. AI zaproponuje sekcje i pozycje dopasowane do Twojej firmy.",
         "outlineLabel": "Opis struktury",
         "outlinePlaceholder": "Np.:\n1. Konsultacje\n- Spotkanie wstępne\n- Analiza potrzeb\n2. Realizacja\n- ...",
         "outlineHint": "Minimum 20 znaków. Możesz wkleić numerowaną listę lub dyktować przyciskiem mikrofonu.",
@@ -254,7 +254,7 @@
         "retryPending": "Ponawianie…",
         "promptMissing": "Nie znaleziono opisu szablonu. Wróć i spróbuj ponownie.",
         "backToGenerate": "Wróć do generowania",
-        "promptTooShort": "Opis jest za krótki — dodaj więcej szczegółów."
+        "promptTooShort": "Opis jest za krótki - dodaj więcej szczegółów."
       },
       "import": {
         "dialogTitle": "Importuj z wyceny",
@@ -293,7 +293,7 @@
         "createFromScratch": "Utwórz szablon od zera",
         "createFromScratchHint": "Stwórz własną strukturę krok po kroku.",
         "generateWithAi": "Generuj z AI",
-        "generateWithAiHint": "Wklej lub nagraj listę sekcji — AI ułoży szablon.",
+        "generateWithAiHint": "Wklej lub nagraj listę sekcji - AI ułoży szablon.",
         "systemExample": "Przykładowy szablon branżowy",
         "importFromEstimate": "Importuj z wyceny",
         "importFromEstimateSoon": "Wkrótce",
@@ -399,7 +399,7 @@
       "referral": "Program partnerski",
       "rules": "Reguły",
       "more": "Więcej zakładek",
-      "companyDescription": "Dane firmy widoczne na dokumentach dla klienta — adres, NIP, kontakt.",
+      "companyDescription": "Dane firmy widoczne na dokumentach dla klienta - adres, NIP, kontakt.",
       "usersDescription": "Zarządzaj członkami przestrzeni i zaproszeniami do współpracy.",
       "referralDescription": "Wpisz kod lub e-mail polecającego, aby skorzystać z programu partnerskiego.",
       "rulesDescription": "Definiuj reguły AI używane przy generowaniu wycen i odpowiedzi."
@@ -428,7 +428,7 @@
       "industryLabel": "Branża",
       "businessTypeLabel": "Typ działalności",
       "businessTypePlaceholder": "np. Organizacja wesel",
-      "businessTypeHint": "Krótka etykieta branży — używana w promptach AI i analityce.",
+      "businessTypeHint": "Krótka etykieta branży - używana w promptach AI i analityce.",
       "save": "Zapisz typ działalności",
       "saving": "Zapisywanie…",
       "saved": "Typ działalności zapisany.",

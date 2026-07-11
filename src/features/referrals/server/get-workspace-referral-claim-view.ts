@@ -28,7 +28,7 @@ function displayInputUsed(params: {
   if (params.referrerProfileCode) {
     return params.referrerProfileCode;
   }
-  return "—";
+  return "-";
 }
 
 export async function getWorkspaceReferralClaimView(

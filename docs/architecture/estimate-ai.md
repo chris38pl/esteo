@@ -1,4 +1,4 @@
-# Estimate AI — technical architecture
+# Estimate AI - technical architecture
 
 Esteo uses AI in two distinct estimate workflows. Both require **structured outputs** (Zod + AI SDK), never markdown parsing. See also [`docs/features/estimates.md`](../features/estimates.md) for product flows.
 
@@ -11,7 +11,7 @@ Esteo uses AI in two distinct estimate workflows. Both require **structured outp
 | **Draft generation** | Estimate request submitted (public or internal) | Async via Trigger.dev | New `Estimate` with sections and line items |
 | **Agentic edit** | User prompt in estimate view/edit assistant | Sync or streaming in editor | Proposed patch to existing estimate; user approves or rejects |
 
-Draft generation accelerates the first version. Agentic edit mutates an estimate the user may have already changed manually — the model must treat the **current saved estimate** as source of truth, not the original request alone.
+Draft generation accelerates the first version. Agentic edit mutates an estimate the user may have already changed manually - the model must treat the **current saved estimate** as source of truth, not the original request alone.
 
 ---
 
@@ -24,13 +24,13 @@ Implemented in [`buildEstimateDraftPrompt`](../../src/ai/prompts/estimate-draft.
 ## Estimation Principles     (industry AI profile)
 ## Company Context           (WorkspaceSettings.companyDescription)
 ## Workspace Rules           (WorkspaceSettings.aiInstructions)
-## Estimate Structure        (branding.estimateSections — active only)
+## Estimate Structure        (branding.estimateSections - active only)
 ## Section-Specific Rules    (per-section rule bodies)
 ## System + ESTIMATE rules   (branding toggles + WorkspaceRule type ESTIMATE)
-## Project Brief             (buildProjectBrief — description, customer, address, industry fields)
+## Project Brief             (buildProjectBrief - description, customer, address, industry fields)
 ## Scope Checklist            (industry AI profile)
-## Scope Expansion Rules     (industry AI profile — infer implied work)
-## Estimate Completeness     (shared — no minimum line-item quotas)
+## Scope Expansion Rules     (industry AI profile - infer implied work)
+## Estimate Completeness     (shared - no minimum line-item quotas)
 ## Output Rules              (JSON, locale, vatRate, etc.)
 ```
 
@@ -48,7 +48,7 @@ Industry profiles: [`docs/features/industry-ai-profiles.md`](../features/industr
 
 ### Section and rules context
 
-- Sections: `WorkspaceSettings.branding.estimateSections` (or industry defaults) via `resolveEstimateSectionsForPrompt` — **not** `WorkspaceRule` rows.
+- Sections: `WorkspaceSettings.branding.estimateSections` (or industry defaults) via `resolveEstimateSectionsForPrompt` - **not** `WorkspaceRule` rows.
 - System rules: `branding.estimateSystemRules` toggles → prompt bodies (PL/EN).
 - User rules: `WorkspaceRule` where `type = ESTIMATE`, locale-filtered via `listActiveWorkspaceRules`.
 
@@ -94,7 +94,7 @@ See [`database.md`](database.md) for schema gaps (`margin`, versioning).
 | Public estimate request form | UploadThing (future) | Separate per-submission limits; shares workspace quota when implemented |
 | Workspace / estimate attachments | UploadThing, workspace-scoped | **250 MB** default per workspace (`Workspace.attachmentStorageLimitBytes`) |
 
-Draft job prompt inclusion is **Phase 2**. Phase 1 stores attachments only — see [`docs/features/estimate-attachments.md`](../features/estimate-attachments.md).
+Draft job prompt inclusion is **Phase 2**. Phase 1 stores attachments only - see [`docs/features/estimate-attachments.md`](../features/estimate-attachments.md).
 
 ---
 
@@ -162,13 +162,13 @@ Implemented under `src/features/estimates/lib/`:
 | --- | --- |
 | `estimate-agent-types.ts` | `EditIntent`, `RecommendedStrategy`, `EditConstraints`, `EstimateAgentContext`, `ProposeEditResult` |
 | `build-estimate-agent-context.ts` | Section shares, top cost drivers, summary totals via `calculateEstimate` |
-| `build-compact-estimate-tree.ts` | Minimal tree for LLM (ids, qty, unitPrice — no sortOrder/vatRate in prompt) |
+| `build-compact-estimate-tree.ts` | Minimal tree for LLM (ids, qty, unitPrice - no sortOrder/vatRate in prompt) |
 | `detect-edit-intent.ts` | Deterministic PL/EN patterns |
 | `parse-financial-target.ts` | Absolute amounts (35k, 35 tys) and % adjustments |
 | `derive-recommended-strategy.ts` | Maps intent + target gap → strategy |
 | `build-agent-edit-guidance.ts` | Orchestrates guidance for `proposeEdit` |
 
-Prompt blocks: `src/ai/lib/format-estimate-agent-prompt-blocks.ts` — assembled in [`buildEstimateAgentPrompt`](../../src/ai/prompts/estimate-agent.ts).
+Prompt blocks: `src/ai/lib/format-estimate-agent-prompt-blocks.ts` - assembled in [`buildEstimateAgentPrompt`](../../src/ai/prompts/estimate-agent.ts).
 
 ### Simulation and validation
 
@@ -182,7 +182,7 @@ Deferred: multi-agent flows, planner/executor, LLM-based intent detection, Langf
 
 - **Never auto-apply** agent changes without explicit approval.
 - Manual edits between agent turns remain in DB; next prompt reloads fresh state.
-- Undo stack (see product doc): FREE 1 step, PRO/BUSINESS 3 steps — persist snapshots (recommend `EstimateRevision` or compact JSON stack per estimate version).
+- Undo stack (see product doc): FREE 1 step, PRO/BUSINESS 3 steps - persist snapshots (recommend `EstimateRevision` or compact JSON stack per estimate version).
 
 ---
 
@@ -193,7 +193,7 @@ Deferred: multi-agent flows, planner/executor, LLM-based intent detection, Langf
 | Plan | AI assistant prompts |
 | --- | --- |
 | FREE | 3 per calendar month, **only one estimate** may use the assistant that month |
-| PRO | 10 per estimate (lifetime of that estimate version or rolling — implement per estimate id) |
+| PRO | 10 per estimate (lifetime of that estimate version or rolling - implement per estimate id) |
 | BUSINESS | Unlimited |
 
 **Implemented today (gap):** `BillingAccountUsagePeriod.aiAssistantCalls` is monthly account-wide only. Implementation must add:
@@ -202,7 +202,7 @@ Deferred: multi-agent flows, planner/executor, LLM-based intent detection, Langf
 - FREE: `aiAssistantLockedEstimateId` + monthly count on billing period (or dedicated usage rows).
 - Check before each agent message; increment on **approved** apply (recommended).
 
-Estimate **creation** quota (separate): FREE 3 estimates/month via `estimatesCreated` — see `assertCanCreateEstimate()`.
+Estimate **creation** quota (separate): FREE 3 estimates/month via `estimatesCreated` - see `assertCanCreateEstimate()`.
 
 ---
 

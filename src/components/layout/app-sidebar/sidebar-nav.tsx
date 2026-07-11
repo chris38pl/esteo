@@ -164,13 +164,13 @@ export function SidebarNav({
 
                   let tooltipLabel = label;
                   if (disabled && item.key === "settings") {
-                    tooltipLabel = `${label} — ${t("nav.settingsOwnerOnly")}`;
+                    tooltipLabel = `${label} - ${t("nav.settingsOwnerOnly")}`;
                   } else if (disabled && isConfigurationItem && isOwnerLocked) {
-                    tooltipLabel = `${label} — ${t("nav.configurationOwnerOnly")}`;
+                    tooltipLabel = `${label} - ${t("nav.configurationOwnerOnly")}`;
                   } else if (disabled && item.key === "dashboard") {
-                    tooltipLabel = `${label} — ${t("nav.comingSoon")}`;
+                    tooltipLabel = `${label} - ${t("nav.comingSoon")}`;
                   } else if (isTemplatesFreeLocked) {
-                    tooltipLabel = `${label} — ${t("nav.templatesUpgradeTooltip")}`;
+                    tooltipLabel = `${label} - ${t("nav.templatesUpgradeTooltip")}`;
                   }
 
                   const row = collapsed ? (

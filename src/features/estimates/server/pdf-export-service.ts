@@ -174,7 +174,7 @@ type EstimatePdfDownloadRecord = Pick<
   "status" | "fileKey" | "storageCustomId" | "generatedAt" | "generatedLocale" | "pdfTemplateRevision"
 >;
 
-/** READY row with valid UploadThing keys — used while polling an in-flight export. */
+/** READY row with valid UploadThing keys - used while polling an in-flight export. */
 export function isEstimatePdfAvailableForDownload(
   existing: EstimatePdfDownloadRecord,
   workspaceId: string,

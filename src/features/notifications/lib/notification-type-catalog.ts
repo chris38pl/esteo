@@ -491,7 +491,7 @@ export const NOTIFICATION_TYPE_CATALOG = {
 
 export type CatalogNotificationType = keyof typeof NOTIFICATION_TYPE_CATALOG;
 
-// PlatformNotificationCatalog — future admin notification stream
+// PlatformNotificationCatalog - future admin notification stream
 
 export function getNotificationCategory(
   type: CatalogNotificationType,

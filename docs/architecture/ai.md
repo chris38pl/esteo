@@ -4,12 +4,12 @@
 
 - OpenAI (or configured provider)
 - AI SDK
-- Structured outputs (Zod schemas — no markdown parsing for machine paths)
+- Structured outputs (Zod schemas - no markdown parsing for machine paths)
 
 ### AI protection
 
 - Token limits
-- Request quotas (per feature — see estimate entitlements)
+- Request quotas (per feature - see estimate entitlements)
 - Prompt injection mitigation
 
 ## AI locale awareness
@@ -23,15 +23,15 @@ locale: "pl" | "en"
 ## Prompt system (global)
 
 ```txt
-Base prompt          — same for all application prompts
+Base prompt          - same for all application prompts
 ↓
-Branch prompt        — workspace / industry context
+Branch prompt        - workspace / industry context
 ↓
-Workspace custom     — company description, aiInstructions, rules
+Workspace custom     - company description, aiInstructions, rules
 ↓
-Uploaded files       — when applicable
+Uploaded files       - when applicable
 ↓
-User request         — chat or form-specific input
+User request         - chat or form-specific input
 ```
 
 Implementation for workspace blocks: `src/features/workspaces/lib/prompt-context.ts`.
@@ -40,16 +40,16 @@ Implementation for workspace blocks: `src/features/workspaces/lib/prompt-context
 
 Estimate **draft generation** and **agentic editing** are documented in depth here:
 
-- **[`estimate-ai.md`](estimate-ai.md)** — jobs, prompt assembly, attachments, quotas, structured output, approve/reject flow
+- **[`estimate-ai.md`](estimate-ai.md)** - jobs, prompt assembly, attachments, quotas, structured output, approve/reject flow
 
 Product flows: [`docs/features/estimates.md`](../features/estimates.md).
 
 ## Voice intake AI
 
-Speech-to-form for estimate requests — Whisper transcription + structured extraction (initial and follow-up merge):
+Speech-to-form for estimate requests - Whisper transcription + structured extraction (initial and follow-up merge):
 
-- **[`voice-intake.md`](voice-intake.md)** — API, pipeline, schema
-- **[`docs/features/voice-intake.md`](../features/voice-intake.md)** — product flow
+- **[`voice-intake.md`](voice-intake.md)** - API, pipeline, schema
+- **[`docs/features/voice-intake.md`](../features/voice-intake.md)** - product flow
 
 ## AI cost strategy
 
@@ -61,10 +61,10 @@ Speech-to-form for estimate requests — Whisper transcription + structured extr
 
 ## AI quality evaluation (Services drafts)
 
-Regression harness for estimate draft prompts — not unit/UI tests:
+Regression harness for estimate draft prompts - not unit/UI tests:
 
-- **[`ai-eval-harness.md`](ai-eval-harness.md)** — engine, scorers, fixtures, baseline
-- **[`docs/features/ai-eval-harness.md`](../features/ai-eval-harness.md)** — when to run, workflows, reports
-- **[`evals/README.md`](../../evals/README.md)** — npm scripts quick reference
+- **[`ai-eval-harness.md`](ai-eval-harness.md)** - engine, scorers, fixtures, baseline
+- **[`docs/features/ai-eval-harness.md`](../features/ai-eval-harness.md)** - when to run, workflows, reports
+- **[`evals/README.md`](../../evals/README.md)** - npm scripts quick reference
 
 Analogous to `voice-intake:benchmark` for extraction quality.

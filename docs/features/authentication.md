@@ -8,10 +8,10 @@ Custom sign-in UI built with [Clerk Elements](https://clerk.com/docs/guides/cust
 
 | Item | Value |
 | --- | --- |
-| Packages | `@clerk/nextjs@^6`, `@clerk/elements@0.24.13` (pinned — do not upgrade without re-verifying email second-factor prepare), `@clerk/localizations` |
+| Packages | `@clerk/nextjs@^6`, `@clerk/elements@0.24.13` (pinned - do not upgrade without re-verifying email second-factor prepare), `@clerk/localizations` |
 | Routing | Path-based: `SignIn.Root routing="path" path="/[locale]/sign-in"` |
 | Page | [`src/app/[locale]/(auth)/sign-in/[[...sign-in]]/page.tsx`](../../src/app/[locale]/(auth)/sign-in/[[...sign-in]]/page.tsx) |
-| Layout shell | [`auth-shell.tsx`](../../src/components/auth/auth-shell.tsx) — logo, title, footer (outside Clerk Elements) |
+| Layout shell | [`auth-shell.tsx`](../../src/components/auth/auth-shell.tsx) - logo, title, footer (outside Clerk Elements) |
 
 ## Sign-in flow
 
@@ -41,7 +41,7 @@ sequenceDiagram
 | `SignIn.Step` | Purpose |
 | --- | --- |
 | `start` | Single-screen email + password, OAuth (Google, Apple), forgot-password link |
-| `verifications` | `email_code` only — Client Trust second factor |
+| `verifications` | `email_code` only - Client Trust second factor |
 
 Password reset is **not** implemented in Clerk Elements steps (see below).
 
@@ -64,13 +64,13 @@ sequenceDiagram
   Clerk-->>Session: auto-login redirect dashboard
 ```
 
-Clerk Elements cannot expose forgot-password from a single-screen `start` step (`navigate="forgot-password"` is only valid from `verifications` / `password`). A direct URL such as `/sign-in/forgot-password` also does **not** activate Elements steps — Clerk falls back to `start` while the URL may still show `/forgot-password`.
+Clerk Elements cannot expose forgot-password from a single-screen `start` step (`navigate="forgot-password"` is only valid from `verifications` / `password`). A direct URL such as `/sign-in/forgot-password` also does **not** activate Elements steps - Clerk falls back to `start` while the URL may still show `/forgot-password`.
 
 Implementation: [`forgot-password-form.tsx`](../../src/components/auth/forgot-password-form.tsx) on `useSignIn()` (classic Clerk API), rendered by [`page.tsx`](../../src/app/[locale]/(auth)/sign-in/[[...sign-in]]/page.tsx) when the catch-all segment is `forgot-password`. No `SignIn.Root` on that route.
 
 Flow:
 
-1. `signIn.create({ strategy: "reset_password_email_code", identifier })` — sends OTP email
+1. `signIn.create({ strategy: "reset_password_email_code", identifier })` - sends OTP email
 2. `signIn.attemptFirstFactor({ strategy: "reset_password_email_code", code, password })`
 3. `setActive({ session })` → redirect to `/{locale}/dashboard`
 
@@ -85,17 +85,17 @@ Clerk feedback messages (validation errors, OAuth failures, `UserButton` labels)
 
 Helpers:
 
-- [`clerk-localization.ts`](../../src/lib/clerk-localization.ts) — maps `pl` / `en` → Clerk `LocalizationResource`
-- [`clerk-api-error.ts`](../../src/lib/clerk-api-error.ts) — maps API `error.code` → `unstable__errors` for custom SDK flows and Elements wrappers
+- [`clerk-localization.ts`](../../src/lib/clerk-localization.ts) - maps `pl` / `en` → Clerk `LocalizationResource`
+- [`clerk-api-error.ts`](../../src/lib/clerk-api-error.ts) - maps API `error.code` → `unstable__errors` for custom SDK flows and Elements wrappers
 
 ### Clerk Elements `FieldError` limitation
 
-`@clerk/elements@0.24.13` renders **`error.longMessage` from the API** in `<Clerk.FieldError />` and `<Clerk.GlobalError />` — it does **not** read `ClerkProvider.localization`. Prebuilt Clerk components (`UserButton`, etc.) do use localization; Elements field errors do not.
+`@clerk/elements@0.24.13` renders **`error.longMessage` from the API** in `<Clerk.FieldError />` and `<Clerk.GlobalError />` - it does **not** read `ClerkProvider.localization`. Prebuilt Clerk components (`UserButton`, etc.) do use localization; Elements field errors do not.
 
 Use the app wrappers instead:
 
-- [`localized-clerk-errors.tsx`](../../src/components/auth/localized-clerk-errors.tsx) — `LocalizedClerkFieldError`, `LocalizedClerkGlobalError`
-- These call `getLocalizedClerkFieldError(error, locale)` via the Elements render-prop; children must return a **React element** (e.g. `<span>`), not a bare string — otherwise `FieldError` falls back to English `error.message`.
+- [`localized-clerk-errors.tsx`](../../src/components/auth/localized-clerk-errors.tsx) - `LocalizedClerkFieldError`, `LocalizedClerkGlobalError`
+- These call `getLocalizedClerkFieldError(error, locale)` via the Elements render-prop; children must return a **React element** (e.g. `<span>`), not a bare string - otherwise `FieldError` falls back to English `error.message`.
 - When FAPI returns English `longMessage`, `clerk-api-error.ts` maps known strings to Clerk error codes and resolves Polish text from `@clerk/localizations`.
 
 Do **not** replace wrappers with raw `<Clerk.FieldError />` without re-testing Polish error messages. Do **not** upgrade `@clerk/elements` without verifying this behavior still holds.
@@ -114,19 +114,19 @@ Do **not** replace wrappers with raw `<Clerk.FieldError />` without re-testing P
 
 ### Limitations
 
-- **Clerk Account Portal** (hosted) stays English — `@clerk/localizations` does not apply there.
+- **Clerk Account Portal** (hosted) stays English - `@clerk/localizations` does not apply there.
 - **CAPTCHA** (`#clerk-captcha`) may remain English (third-party widget).
 - **`plPL`** is community-maintained; gaps are patched in `PL_ERROR_OVERRIDES` inside `clerk-localization.ts`.
 
 ### Loading state
 
-`SignIn.Root` receives `fallback={<AuthLoadingIndicator message={t("signIn.loading")} />}`. Shown while Clerk initializes — notably on `/continue` before the active step renders. Do not remove without a replacement.
+`SignIn.Root` receives `fallback={<AuthLoadingIndicator message={t("signIn.loading")} />}`. Shown while Clerk initializes - notably on `/continue` before the active step renders. Do not remove without a replacement.
 
 ## Session lifetime / Remember me
 
 Clerk does **not** expose a per-login “remember me” API. Session duration is configured **globally** in the Clerk Dashboard under **Sessions** (`Maximum lifetime`, `Inactivity timeout`). `setActive()` and Clerk Elements do not accept a parameter to extend or shorten the session for a single sign-in.
 
-A “Remember me” checkbox is shown in [`sign-in-form.tsx`](../../src/components/auth/sign-in-form.tsx) for UX parity with password managers, but it does not change session length. If Clerk ships native support (currently on their [roadmap backlog](https://feedback.clerk.com/roadmap)), wire it to the official API. To change session length for all users, adjust Clerk Dashboard settings only — no app code change required.
+A “Remember me” checkbox is shown in [`sign-in-form.tsx`](../../src/components/auth/sign-in-form.tsx) for UX parity with password managers, but it does not change session length. If Clerk ships native support (currently on their [roadmap backlog](https://feedback.clerk.com/roadmap)), wire it to the official API. To change session length for all users, adjust Clerk Dashboard settings only - no app code change required.
 
 ## Client Trust vs user MFA
 
@@ -134,7 +134,7 @@ Clerk **Client Trust** can require email verification on **untrusted browsers** 
 
 Signals in the Network `sign_in` response:
 
-- `client_trust_state: "new"` — untrusted client, email OTP expected
+- `client_trust_state: "new"` - untrusted client, email OTP expected
 - `status: "needs_second_factor"` with `supported_second_factors: [{ strategy: "email_code" }]`
 
 Google OAuth on a already-trusted client may skip `/continue` entirely.
@@ -143,7 +143,7 @@ Google OAuth on a already-trusted client may skip `/continue` entirely.
 
 `@clerk/elements@0.24.13` does **not** call `prepareSecondFactor` for `email_code` (only `phone_code`). We prepare explicitly in app code.
 
-### Auto-prepare — `SignInSecondFactorPrepare`
+### Auto-prepare - `SignInSecondFactorPrepare`
 
 Mounted inside `SignIn.Strategy name="email_code"` in [`sign-in-form.tsx`](../../src/components/auth/sign-in-form.tsx).
 
@@ -167,14 +167,14 @@ await signIn.prepareSecondFactor({
 Module-level `inFlightAttemptIds` Set prevents concurrent auto-prepare calls (React Strict Mode double-mount in dev):
 
 1. `if (inFlightAttemptIds.has(attemptId)) return`
-2. `inFlightAttemptIds.add(attemptId)` — **before** `await`
+2. `inFlightAttemptIds.add(attemptId)` - **before** `await`
 3. `finally { inFlightAttemptIds.delete(attemptId) }`
 
 Do not replace with a component `useRef` guard set after `await`.
 
-### Resend — `SignInSecondFactorResend`
+### Resend - `SignInSecondFactorResend`
 
-Custom button calling the same `prepareSecondFactor` API. **Do not** use `SignIn.Action resend` for `email_code` — it does not trigger prepare in our Elements version.
+Custom button calling the same `prepareSecondFactor` API. **Do not** use `SignIn.Action resend` for `email_code` - it does not trigger prepare in our Elements version.
 
 60s cooldown UI matches previous UX (`resendCodeWait` i18n).
 
@@ -182,25 +182,25 @@ Custom button calling the same `prepareSecondFactor` API. **Do not** use `SignIn
 
 Sign-up uses Clerk Elements `SignUp.Step name="verifications"` / `SignUp.Strategy name="email_code"`. Unlike sign-in, Elements **does** auto-call `signUp.prepareVerification()` when the strategy mounts.
 
-### Verify step UX — [`sign-up-form.tsx`](../../src/components/auth/sign-up-form.tsx)
+### Verify step UX - [`sign-up-form.tsx`](../../src/components/auth/sign-up-form.tsx)
 
 | Piece | Implementation |
 | --- | --- |
-| Target email | `SignUpVerifyEmail` via `useSignUp().signUp?.emailAddress` — **not** `SignUp.SafeIdentifier` (not exported by `@clerk/elements/sign-up`) |
-| Resend | `SignUp.Action resend` with `fallback={({ resendableAfter }) => …}` — Clerk server cooldown |
-| Submit | `SignUp.Action submit` — Elements handles `attemptVerification` |
+| Target email | `SignUpVerifyEmail` via `useSignUp().signUp?.emailAddress` - **not** `SignUp.SafeIdentifier` (not exported by `@clerk/elements/sign-up`) |
+| Resend | `SignUp.Action resend` with `fallback={({ resendableAfter }) => …}` - Clerk server cooldown |
+| Submit | `SignUp.Action submit` - Elements handles `attemptVerification` |
 
 i18n: `auth.signUp.verifyEmailTitle`, `resendCode`, `resendCodeWait`.
 
-### Prepare dedup — `SignUpVerificationPrepareDedup`
+### Prepare dedup - `SignUpVerificationPrepareDedup`
 
 Path routing + Strict Mode (dev) can fire **multiple concurrent** `prepareVerification` calls for the same `signUp.id`. [`sign-up-verification-prepare-dedup.tsx`](../../src/components/auth/sign-up-verification-prepare-dedup.tsx) wraps `client.signUp.prepareVerification` and coalesces in-flight calls via module-level `Map<attemptId, Promise>`.
 
-Do not remove without an equivalent guard — users receive multiple OTP emails (see [2026-06-20 incident](../incidents/2026-06-20-sign-up-verify-duplicate-emails.md)).
+Do not remove without an equivalent guard - users receive multiple OTP emails (see [2026-06-20 incident](../incidents/2026-06-20-sign-up-verify-duplicate-emails.md)).
 
 ### Code submit
 
-Keep `SignIn.Action submit` on the verifications step. Elements handles `attemptSecondFactor` — do not replace with manual SDK calls unless migrating off Elements entirely.
+Keep `SignIn.Action submit` on the verifications step. Elements handles `attemptSecondFactor` - do not replace with manual SDK calls unless migrating off Elements entirely.
 
 ## Key files
 
@@ -272,8 +272,8 @@ When `NODE_ENV === "development"`, prepare logs to console:
 
 ### Sign-in (Client Trust)
 
-1. Incognito window — untrusted browser triggers Client Trust.
-2. `/pl/sign-in` — email and password visible on one screen; password manager autofill works.
+1. Incognito window - untrusted browser triggers Client Trust.
+2. `/pl/sign-in` - email and password visible on one screen; password manager autofill works.
 3. Do not refresh `/continue` mid-flow.
 4. Avoid HMR during login (can stop Clerk Elements second-factor actor).
 5. Network: one `prepare_second_factor` on `/continue` load; one OTP email.
@@ -294,11 +294,11 @@ When `NODE_ENV === "development"`, prepare logs to console:
 
 ### Clerk localization (after auth changes)
 
-1. `/pl/sign-in` — wrong password → Polish field error via `LocalizedClerkFieldError` (not English `longMessage`).
-2. `/pl/sign-in` — invalid email format → Polish field error.
-3. `/pl/sign-in/continue` — wrong OTP → „Nieprawidłowy kod. Spróbuj ponownie.”
-4. `/en/sign-in` — same scenarios → English.
-5. `/pl/sign-in/forgot-password` — unknown email → Polish (via `getLocalizedClerkErrorMessage`).
+1. `/pl/sign-in` - wrong password → Polish field error via `LocalizedClerkFieldError` (not English `longMessage`).
+2. `/pl/sign-in` - invalid email format → Polish field error.
+3. `/pl/sign-in/continue` - wrong OTP → „Nieprawidłowy kod. Spróbuj ponownie.”
+4. `/en/sign-in` - same scenarios → English.
+5. `/pl/sign-in/forgot-password` - unknown email → Polish (via `getLocalizedClerkErrorMessage`).
 6. Switch locale mid-flow (PL → EN on sign-in URL) → error messages follow new locale after navigation.
 7. `UserButton` on `/pl` home → Polish menu labels.
 

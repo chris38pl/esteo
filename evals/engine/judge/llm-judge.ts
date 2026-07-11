@@ -38,7 +38,7 @@ export async function runLlmJudge(
 
   const prompt = `You evaluate a services estimate draft for a Polish business workspace.
 
-Score from 0-10. Do not nitpick exact PLN prices — evaluate scope, structure, and business fit.
+Score from 0-10. Do not nitpick exact PLN prices - evaluate scope, structure, and business fit.
 
 Criteria:
 - Completeness relative to the project brief

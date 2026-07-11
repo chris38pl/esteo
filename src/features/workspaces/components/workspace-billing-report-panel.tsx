@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 function formatNullable(value: string | null | undefined): string {
-  return value && value.length > 0 ? value : "—";
+  return value && value.length > 0 ? value : "-";
 }
 
 function formatBoolean(value: boolean): string {
@@ -62,7 +62,7 @@ function ReportSection({ title, children }: { title: string; children: ReactNode
 
 function formatReportDate(iso: string | null | undefined, locale: string): string {
   if (!iso) {
-    return "—";
+    return "-";
   }
   return new Date(iso).toLocaleDateString(locale, { dateStyle: "medium" });
 }

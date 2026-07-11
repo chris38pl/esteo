@@ -138,7 +138,7 @@ function buildPreviewSections(locale: Locale) {
           sortOrder: 4,
         },
         {
-          pl: "Instalacja rekuperacji — przyłączenie i kanały w łazience",
+          pl: "Instalacja rekuperacji - przyłączenie i kanały w łazience",
           en: "MVHR unit connection and ducting in bathroom zone",
           unitPl: "kpl.",
           unitEn: "set",

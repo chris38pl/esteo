@@ -3,7 +3,7 @@
 Esteo organizes generated estimates into **ordered sections** (work phases). This feature provides:
 
 - **Default section templates per dedicated industry** (Construction, Electrical, Carpentry, Plumbing)
-- **Dynamic structure for Other (services)** — no industry defaults; AI proposes **Commercial Sections**
+- **Dynamic structure for Other (services)** - no industry defaults; AI proposes **Commercial Sections**
 - **Workspace overrides** so each workspace can tailor sections to its workflow
 - **Prompt injection** so AI generation follows the configured structure consistently
 
@@ -39,7 +39,7 @@ Route:
 
 Under the **Rules** tab, users can manage **Estimate sections**:
 
-- **Other (no defaults):** empty state — AI proposes structure; user may add sections for a fixed override
+- **Other (no defaults):** empty state - AI proposes structure; user may add sections for a fixed override
 - **Dedicated industries:** industry template sections by default
 - Reorder, rename, toggle active, add/delete, reset to defaults
 
@@ -64,7 +64,7 @@ npx tsx scripts/migrate-other-v2-sections.ts
 
 ## Admin transparency
 
-- `/[locale]/dashboard/admin/industry-fields` — section templates (Other shows “no defaults”)
+- `/[locale]/dashboard/admin/industry-fields` - section templates (Other shows “no defaults”)
 
 ## Estimates feature
 

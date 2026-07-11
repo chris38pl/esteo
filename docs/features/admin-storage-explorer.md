@@ -21,10 +21,10 @@ Client shell: `AdminStorageExplorerPanel` (`src/features/admin-storage/component
 | Summary cards | Quota-counted bytes/files, non-quota bytes/files, workspace count, UT orphan count (after scan) |
 | Scan UploadThing | On-demand `UTApi.listFiles` pagination + diff vs DB keys; results cached 5 min in process memory |
 | Left tree | Collapsible categories with file count + byte totals per node |
-| Right table | Paginated file list for selected leaf node — name, source, size, date, health badge |
+| Right table | Paginated file list for selected leaf node - name, source, size, date, health badge |
 | Row actions | Open/download via signed URL, copy storage key, open in context (estimate / request / issue) |
 
-Container nodes (`workspaces`, `platform`, `orphans`, `all`) do not list files — select a workspace or leaf category.
+Container nodes (`workspaces`, `platform`, `orphans`, `all`) do not list files - select a workspace or leaf category.
 
 ### Tree categories
 
@@ -37,10 +37,10 @@ Container nodes (`workspaces`, `platform`, `orphans`, `all`) do not list files �
 | → Generated PDFs | `EstimatePdf.fileKey` | no |
 | → Workspace logo | `WorkspaceSettings.branding.logoStorageKey` | no |
 | **Platform → Issues** | `IssueAttachment` | no |
-| **Orphans → UT only** | UploadThing keys not in DB union | — |
+| **Orphans → UT only** | UploadThing keys not in DB union | - |
 | **Orphans → JSON unpromoted** | `EstimateRequest.attachments` JSON without canonical blob ref | maybe |
 | **Orphans → Legacy** | keys matching `{wsId}/requests/{requestId}/…` | maybe |
-| **Orphans → Duplicate keys** | same `storageKey` in multiple DB rows (excludes expected staging+estimate pairs) | — |
+| **Orphans → Duplicate keys** | same `storageKey` in multiple DB rows (excludes expected staging+estimate pairs) | - |
 
 ### Health badges
 
@@ -54,7 +54,7 @@ Container nodes (`workspaces`, `platform`, `orphans`, `all`) do not list files �
 | `legacy` | Old `requests/{requestId}/` key layout |
 | `duplicate_key` | Same storage key referenced by more than one DB row (anomaly) |
 
-v1 is **read-only** — no delete actions in the UI.
+v1 is **read-only** - no delete actions in the UI.
 
 ## Server
 
@@ -63,11 +63,11 @@ v1 is **read-only** — no delete actions in the UI.
 | `server/storage-explorer-repository.ts` | Tree aggregates + paginated lists per tree node |
 | `server/storage-explorer-db-keys.ts` | Collect all DB storage keys (estimate, staging, issue, PDF, logo, request JSON) |
 | `server/storage-explorer-reconcile.ts` | UploadThing `listAllFiles` + diff; in-memory cache (5 min TTL) |
-| `server/storage-explorer-actions.ts` | Server actions — all guarded with `assertPlatformAdminAccess` |
+| `server/storage-explorer-actions.ts` | Server actions - all guarded with `assertPlatformAdminAccess` |
 | `lib/storage-explorer-node-ids.ts` | Parse/build tree node IDs |
 | `lib/storage-explorer-types.ts` | Shared types for tree, items, reconcile result |
 
-UploadThing listing: `UploadThingStorageProvider.listAllFiles()` in `src/features/attachments/server/storage/uploadthing-provider.ts` — paginates `UTApi.listFiles({ limit: 500, offset })` until `hasMore` is false.
+UploadThing listing: `UploadThingStorageProvider.listAllFiles()` in `src/features/attachments/server/storage/uploadthing-provider.ts` - paginates `UTApi.listFiles({ limit: 500, offset })` until `hasMore` is false.
 
 Signed URLs: `getAdminStorageSignedUrlAction` → `getStorageProvider().getSignedUrl(key, { expiresInSeconds: 900 })`.
 
@@ -106,7 +106,7 @@ orphans:duplicate-keys
 - `WorkspaceSettings.branding.logoStorageKey`
 - `EstimateRequest.attachments` JSON records
 
-`collectCanonicalBlobStorageKeys()` excludes JSON-only refs — used for JSON orphan detection.
+`collectCanonicalBlobStorageKeys()` excludes JSON-only refs - used for JSON orphan detection.
 
 ## i18n
 

@@ -12,7 +12,7 @@ export interface StorageDeleteOptions {
 
 export interface StorageProvider {
   upload(params: {
-    /** Logical storage path — logging/diagnostics only. */
+    /** Logical storage path - logging/diagnostics only. */
     key: string;
     /** Short identifier sent to UploadThing as customId. */
     customId: string;

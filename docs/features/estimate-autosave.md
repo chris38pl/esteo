@@ -1,4 +1,4 @@
-# Autosave kosztorysu — sekcje, pozycje i konflikty
+# Autosave kosztorysu - sekcje, pozycje i konflikty
 
 Dokumentacja problemów z zapisem edytora kosztorysu (czerwiec 2026) oraz wdrożonych poprawek. Kontekst UI: [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md). Model danych: [`estimates.md`](estimates.md).
 
@@ -8,15 +8,15 @@ Dokumentacja problemów z zapisem edytora kosztorysu (czerwiec 2026) oraz wdroż
 
 ```txt
 EstimateEditor (client)
-  ├─ sections / marginPercent — React state (sectionsRef + commitSections)
-  ├─ triggerSave() — debounce 3 s (onChange)
-  ├─ triggerBlurSave() — natychmiast (onBlur pola / mobile Save)
+  ├─ sections / marginPercent - React state (sectionsRef + commitSections)
+  ├─ triggerSave() - debounce 3 s (onChange)
+  ├─ triggerBlurSave() - natychmiast (onBlur pola / mobile Save)
   └─ useEstimateAutosave
         └─ enqueuePersist → kolejka single-flight
               └─ autoSaveAction → autoSave() w repository
 
-Struktura (dodaj/usuń sekcję/pozycję): addSectionAction / addLineItemAction — od razu w DB.
-Treść (tytuł sekcji, pola pozycji, marża): autosave — pełny payload sections + marginPercent.
+Struktura (dodaj/usuń sekcję/pozycję): addSectionAction / addLineItemAction - od razu w DB.
+Treść (tytuł sekcji, pola pozycji, marża): autosave - pełny payload sections + marginPercent.
 ```
 
 ---
@@ -39,7 +39,7 @@ Treść (tytuł sekcji, pola pozycji, marża): autosave — pełny payload secti
 **B. Nadpisywanie stanu klienta po odświeżeniu RSC**
 
 - Commit `19225dc` dodał `useEffect`, który przy każdej zmianie propa `versionTree` wywoływał `applyVersionTree()` i **nadpisywał** lokalny stan serwerem.
-- W App Router **każda server action** (w tym `autoSaveAction`) może odświeżyć payload RSC — nawet bez `revalidatePath`.
+- W App Router **każda server action** (w tym `autoSaveAction`) może odświeżyć payload RSC - nawet bez `revalidatePath`.
 - Po autosave serwer zwracał drzewo z domyślnymi tytułami → UI traciło edycje użytkownika.
 
 Dodatkowo `editorKey` zawierał `updatedAt`, co remountowało edytor po każdym autosave.
@@ -59,7 +59,7 @@ Dodatkowo `editorKey` zawierał `updatedAt`, co remountowało edytor po każdym 
 **Synchronizacja `versionTree` (nie wyłączamy jej całkowicie):**
 
 - Stosuj serwerowe drzewo gdy: koniec generowania AI, `forceApply` (konflikt → Odśwież), AI mutation, edytor „czysty”.
-- Pomiń gdy: `isDirty` lub trwa zapis — chroni przed nadpisaniem w trakcie edycji.
+- Pomiń gdy: `isDirty` lub trwa zapis - chroni przed nadpisaniem w trakcie edycji.
 
 **Tworzenie sekcji/pozycji:**
 
@@ -68,11 +68,11 @@ Dodatkowo `editorKey` zawierał `updatedAt`, co remountowało edytor po każdym 
 
 ---
 
-## Problem 2: Fałszywy „Konflikt — odśwież” przy szybkiej edycji wiersza (desktop)
+## Problem 2: Fałszywy „Konflikt - odśwież” przy szybkiej edycji wiersza (desktop)
 
 ### Objawy
 
-- Szybkie przejście między polami w jednym wierszu (nazwa → jednostka → ilość) powoduje banery **Konflikt — odśwież** / **Błąd zapisu**.
+- Szybkie przejście między polami w jednym wierszu (nazwa → jednostka → ilość) powoduje banery **Konflikt - odśwież** / **Błąd zapisu**.
 - Powolna edycja pole po polu (czekanie na „Zapisano”) działa poprawnie.
 
 ### Przyczyna
@@ -87,7 +87,7 @@ Dodatkowo `editorKey` zawierał `updatedAt`, co remountowało edytor po każdym 
 
 | Element | Opis |
 | --- | --- |
-| **Kolejka single-flight** | Wszystkie zapisy przez `enqueuePersist()` — jeden request na raz, każdy następny używa świeżego `updatedAtRef` po sukcesie poprzedniego |
+| **Kolejka single-flight** | Wszystkie zapisy przez `enqueuePersist()` - jeden request na raz, każdy następny używa świeżego `updatedAtRef` po sukcesie poprzedniego |
 | **Koalescencja** | `queuedPayloadRef` zawsze trzyma najnowszy snapshot |
 | **Blur + debounce** | Ten sam pipeline; blur anuluje timer debounce |
 | **Retry** | Przy `conflict`: `getVersionUpdatedAtAction` + jedna ponowna próba; UI konfliktu dopiero po drugiej porażce |
@@ -135,22 +135,22 @@ sequenceDiagram
 
 ## Zasady na przyszłość
 
-1. **Nie wysyłaj tylko `marginPercent`**, jeśli edytor trzyma treść sekcji/pozycji w stanie klienckim — autosave musi persistować całe drzewo (lub dedykowane akcje per pole).
-2. **Nie wywołuj `applyVersionTree` bezwarunkowo** na każdą zmianę propa — respektuj `isDirty` / `isSaving` albo jawne zdarzenia (AI, generowanie, odśwież po konflikcie).
-3. **Serializuj zapisy** do jednej wersji (`expectedUpdatedAt`) — równoległe `autoSaveAction` z tym samym timestampem dają fałszywy konflikt.
+1. **Nie wysyłaj tylko `marginPercent`**, jeśli edytor trzyma treść sekcji/pozycji w stanie klienckim - autosave musi persistować całe drzewo (lub dedykowane akcje per pole).
+2. **Nie wywołuj `applyVersionTree` bezwarunkowo** na każdą zmianę propa - respektuj `isDirty` / `isSaving` albo jawne zdarzenia (AI, generowanie, odśwież po konflikcie).
+3. **Serializuj zapisy** do jednej wersji (`expectedUpdatedAt`) - równoległe `autoSaveAction` z tym samym timestampem dają fałszywy konflikt.
 4. **Nowe encje:** najpierw server action z ID z DB, potem edycja i autosave; w payloadzie tylko `isPersistedEntityId`.
-5. **`editorKey`:** nie używaj `updatedAt` jeśli autosave go zmienia — powoduje remount i utratę fokusu.
+5. **`editorKey`:** nie używaj `updatedAt` jeśli autosave go zmienia - powoduje remount i utratę fokusu.
 6. **Mobile Save:** `await onBlur()` przed zamknięciem sheetu, żeby RSC refresh nie wygrał wyścigu z persist.
 
 ---
 
 ## Weryfikacja manualna
 
-1. Dodaj sekcję → zmień nazwę → dodaj pozycję → wypełnij pola → Zapisz / blur — wartości zostają; hard refresh potwierdza DB.
-2. Desktop: szybko tabuj przez nazwa / j.m. / ilość / cena — brak „Konflikt”.
-3. Marża tylko — autosave bez remountu edytora.
-4. `?v=` — przełączenie wersji ładuje właściwe drzewo.
-5. Dwa taby, równoczesna edycja — po retry nadal konflikt (prawdziwy multi-user).
+1. Dodaj sekcję → zmień nazwę → dodaj pozycję → wypełnij pola → Zapisz / blur - wartości zostają; hard refresh potwierdza DB.
+2. Desktop: szybko tabuj przez nazwa / j.m. / ilość / cena - brak „Konflikt”.
+3. Marża tylko - autosave bez remountu edytora.
+4. `?v=` - przełączenie wersji ładuje właściwe drzewo.
+5. Dwa taby, równoczesna edycja - po retry nadal konflikt (prawdziwy multi-user).
 
 ---
 

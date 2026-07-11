@@ -53,11 +53,11 @@ import type { Locale } from "@/lib/locale";
 import { cn } from "@/lib/utils";
 
 function displayEstimateTitle(estimate: EstimateImportListItem): string {
-  return estimate.title.trim() || "—";
+  return estimate.title.trim() || "-";
 }
 
 function displayRequestNumber(estimate: EstimateImportListItem): string {
-  return estimate.requestNumber?.trim() || "—";
+  return estimate.requestNumber?.trim() || "-";
 }
 
 function ImportEstimatePickerCard({
@@ -97,11 +97,11 @@ function ImportEstimatePickerCard({
         </div>
         <div className="flex gap-2">
           <dt className="shrink-0">{t("columnInvestment")}:</dt>
-          <dd className="min-w-0 truncate">{estimate.investmentLabel ?? "—"}</dd>
+          <dd className="min-w-0 truncate">{estimate.investmentLabel ?? "-"}</dd>
         </div>
         <div className="flex gap-2">
           <dt className="shrink-0">{t("columnClient")}:</dt>
-          <dd className="min-w-0 truncate">{estimate.customerName ?? "—"}</dd>
+          <dd className="min-w-0 truncate">{estimate.customerName ?? "-"}</dd>
         </div>
       </dl>
     </button>
@@ -384,10 +384,10 @@ export function ImportTemplateFromEstimateDialog({
                         {displayRequestNumber(estimate)}
                       </TableCell>
                       <TableCell className="max-w-[10rem] truncate">
-                        {estimate.investmentLabel ?? "—"}
+                        {estimate.investmentLabel ?? "-"}
                       </TableCell>
                       <TableCell className="max-w-[10rem] truncate">
-                        {estimate.customerName ?? "—"}
+                        {estimate.customerName ?? "-"}
                       </TableCell>
                       <TableCell className="max-w-[12rem] truncate">
                         {displayEstimateTitle(estimate)}

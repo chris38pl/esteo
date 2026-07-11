@@ -253,7 +253,7 @@ export function GlobalSearchDialog() {
           shouldFilter={false}
           className="flex min-h-0 flex-1 flex-col rounded-none bg-transparent outline-none ring-0"
         >
-          {/* Single visual search bar — CommandInputBare has no wrapper; focus/hover on shell only */}
+          {/* Single visual search bar - CommandInputBare has no wrapper; focus/hover on shell only */}
           <div className="shrink-0 border-b border-border/60 px-4 py-3">
             <div
               className={cn(
@@ -553,7 +553,7 @@ function SearchRecentsSidebar({
           ) : null}
         </div>
         {recentSearches.length === 0 ? (
-          <p className="px-1 text-sm text-muted-foreground">—</p>
+          <p className="px-1 text-sm text-muted-foreground">-</p>
         ) : (
           <div className={cn("space-y-1", MOBILE_RECENT_SEARCH_LIST_CLASS)}>
             {recentSearches.map((term) => (
@@ -588,7 +588,7 @@ function SearchRecentsSidebar({
           {t("recentDocuments")}
         </p>
         {visibleRecentDocuments.length === 0 ? (
-          <p className="px-1 text-sm text-muted-foreground">—</p>
+          <p className="px-1 text-sm text-muted-foreground">-</p>
         ) : (
           <div className={cn("space-y-1", MOBILE_RECENT_DOCUMENT_LIST_CLASS)}>
             {visibleRecentDocuments.map((item) => (

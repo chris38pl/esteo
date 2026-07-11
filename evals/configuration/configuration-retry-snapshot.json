@@ -1,6 +1,6 @@
 {
   "id": "configuration-retry-snapshot",
-  "name": "Configuration — retry uses stored snapshot",
+  "name": "Configuration - retry uses stored snapshot",
   "locale": "pl",
   "category": "business",
   "quick": true,

@@ -338,7 +338,7 @@ export function EstimateTemplateDetailHeader({
                   <Clock className="size-5 shrink-0 text-primary" />
                   <div>
                     <p className="text-xs text-muted-foreground">{tWorkspace("kpiUpdated")}</p>
-                    <p className={kpiUpdatedValueClass}>{formattedUpdatedAt ?? "—"}</p>
+                    <p className={kpiUpdatedValueClass}>{formattedUpdatedAt ?? "-"}</p>
                   </div>
                 </div>
               </>

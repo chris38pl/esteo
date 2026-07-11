@@ -60,7 +60,7 @@ export function useGenerationPolling({
           }
         }
       } catch {
-        // Polling errors are non-fatal — keep trying
+        // Polling errors are non-fatal - keep trying
       }
 
       const interval = getIntervalMs(Date.now() - startTime);

@@ -222,7 +222,7 @@ export async function previewWorkspaceBillingChange(params: {
     const targetIndex = planOrder.indexOf(params.change.targetPlan);
 
     if (targetIndex <= currentIndex) {
-      throw new WorkspaceError("Plan downgrades are computed locally — no Stripe preview.");
+      throw new WorkspaceError("Plan downgrades are computed locally - no Stripe preview.");
     }
   }
 

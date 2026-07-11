@@ -1,6 +1,6 @@
 {
   "id": "carpentry-front-replacement",
-  "name": "Carpentry — front replacement (regression)",
+  "name": "Carpentry - front replacement (regression)",
   "locale": "pl",
   "category": "business",
   "quick": true,
@@ -9,7 +9,7 @@
   "workspace": {
     "industry": "CARPENTRY",
     "industryOtherText": "Kuchnie na wymiar",
-    "companyDescription": "Wymiana frontów i okuć. Korpusy pozostają — produkcja frontów na wymiar.",
+    "companyDescription": "Wymiana frontów i okuć. Korpusy pozostają - produkcja frontów na wymiar.",
     "rules": [],
     "systemRules": { "rounding": true, "units": true }
   },
@@ -40,7 +40,7 @@
     "minLineItems": 4,
     "maxLineItems": 25,
     "judge": {
-      "focus": ["front replacement only — no full kitchen production"],
+      "focus": ["front replacement only - no full kitchen production"],
       "minScore": 7,
       "minContextAlignment": 8
     }

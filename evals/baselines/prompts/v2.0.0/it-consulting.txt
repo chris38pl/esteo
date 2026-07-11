@@ -2,10 +2,10 @@
 User interface locale: Polish (pl). All section titles and line item names must match this locale.
 
 ## Company Context
-Konsulting IT — audyt, architektura, roadmapa. Nie wykonujemy developmentu ani utrzymania serwerów.
+Konsulting IT - audyt, architektura, roadmapa. Nie wykonujemy developmentu ani utrzymania serwerów.
 
 ## Workspace Rules
-Nie wyceniaj programowania ani wdrożenia — tylko doradztwo i dokumentacja.
+Nie wyceniaj programowania ani wdrożenia - tylko doradztwo i dokumentacja.
 
 ## Zaokrąglanie cen
 Zaokrąglaj ceny jednostkowe do pełnych kwot, chyba że pozycja wymaga groszy.
@@ -48,7 +48,7 @@ Lokalizacja usługi: Kraków, woj. małopolskie
 ## Estimate Completeness
 Kosztorys powinien być rozsądnie kompletny względem opisanego projektu.
 Uwzględnij wszystkie prace uzasadnione zakresem i standardem branżowym dla tego typu usług.
-Wnioskuj typowe prace, które kosztorysant uwzględniłby z doświadczenia — klient nie musi wymieniać każdego zadania.
+Wnioskuj typowe prace, które kosztorysant uwzględniłby z doświadczenia - klient nie musi wymieniać każdego zadania.
 Gdy brief podaje wolumen dokumentów (np. liczba faktur miesięcznie), odzwierciedl to w pozycjach księgowych lub skali usługi.
 Gdy brief dotyczy cateringu lub wymagań menu (np. udział menu wegetariańskiego), uwzględnij przygotowanie menu jako wycenioną pozycję lub element zakresu.
 Preferuj kilka uzasadnionych pozycji nad jednym ogólnym opisem.
@@ -62,8 +62,8 @@ Nie twórz sztucznych pozycji wyłącznie po to, aby zwiększyć liczbę wierszy
 - Sekcja handlowa może zawierać pozycje o cenie 0 zł lub ujemnej, jeśli mają znaczenie handlowe (np. transport wliczony, rabat).
 - Nie używaj sekcji handlowych do przechowywania informacji opisowych (podsumowanie zakresu, warunki, wyłączenia). Brief klienta jest poza kosztorysem.
 - Nie twórz sekcji narracyjnych: Zakres, Uwagi, Opis.
-- Każda pozycja to jedna usługa/zadanie handlowe z quantity, unit i unitPrice — nie akapit powtarzający brief.
-- Zaproponuj własne tytuły sekcji handlowych — brak stałej listy sekcji.
+- Każda pozycja to jedna usługa/zadanie handlowe z quantity, unit i unitPrice - nie akapit powtarzający brief.
+- Zaproponuj własne tytuły sekcji handlowych - brak stałej listy sekcji.
 - Stosuj Workspace Rules przy rozbiciu pozycji.
 - quantity ≥ 1.
 - Odpowiedź po polsku (nazwy pozycji i sekcji).

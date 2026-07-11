@@ -16,7 +16,7 @@ const PLAN_IMAGES = {
   business: "/sidebar/business-plan-image.png",
 } as const;
 
-/** Dark sidebar surface — fixed so the card matches in light + dark app theme */
+/** Dark sidebar surface - fixed so the card matches in light + dark app theme */
 const PLAN_CARD_SURFACE = "#091224";
 
 const FEATURE_KEYS = {

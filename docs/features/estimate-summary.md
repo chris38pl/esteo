@@ -1,10 +1,10 @@
-# Estimate editor — Summary tab
+# Estimate editor - Summary tab
 
 > **Status:** Implemented (phase 1). UI entry: estimate editor → **Podsumowanie** / **Summary** tab. See also [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md).
 
 ## Goal
 
-Give contractors a **single overview screen** for an estimate before sending or during negotiations: versions, workflow progress, financial snapshot, scope, client brief, and lightweight next-step recommendations — without opening every other tab.
+Give contractors a **single overview screen** for an estimate before sending or during negotiations: versions, workflow progress, financial snapshot, scope, client brief, and lightweight next-step recommendations - without opening every other tab.
 
 Phase 1 is **read-only / navigational**. Several cards surface derived data only; full AI summary generation and detailed version diff drawer are deferred.
 
@@ -94,8 +94,8 @@ Compares the **active version** to a **base version** and shows summary metrics 
 
 Dropdown in header:
 
-- V2+: **Compare to** — pick any older version as base  
-- V1: **Compare with** — pick any newer version as target  
+- V2+: **Compare to** - pick any older version as base  
+- V1: **Compare with** - pick any newer version as target  
 
 Data is loaded lazily via `getVersionComparisonSummaryAction` (server action). **View details** button is disabled (tooltip: coming soon).
 
@@ -103,15 +103,15 @@ Data is loaded lazily via `getVersionComparisonSummaryAction` (server action). *
 
 Title includes active version: **Estimate status (version N)**.
 
-Five-step vertical stepper derived client-side by `deriveEstimateWorkflowStatus()` — **no DB migration**; signals come from request, version tree, version status, and activity logs.
+Five-step vertical stepper derived client-side by `deriveEstimateWorkflowStatus()` - **no DB migration**; signals come from request, version tree, version status, and activity logs.
 
 | Step | Completed when |
 | --- | --- |
 | Inquiry | Estimate has linked `estimateRequest` |
 | Estimate | Active version has ≥1 line item |
 | Sent | Version status `SENT` or `sent_to_customer` activity for this version |
-| Negotiations | Placeholder — current step after sent until acceptance |
-| Acceptance | Placeholder — post-MVP |
+| Negotiations | Placeholder - current step after sent until acceptance |
+| Acceptance | Placeholder - post-MVP |
 
 Connector lines: 2px dashed borders; pending step rings use stronger contrast in light mode (`border-neutral-400`).
 
@@ -217,13 +217,13 @@ Sub-keys: `versions`, `changes`, `workflow`, `scope`, `payments`, `brief`, `reco
 - Negotiations / acceptance workflow tied to real client events  
 - Manage versions sheet (removed from Summary; version actions remain in header menu)
 
-(PDF recommendation → export flow is implemented — see [`estimate-pdf-export.md`](estimate-pdf-export.md).)
+(PDF recommendation → export flow is implemented - see [`estimate-pdf-export.md`](estimate-pdf-export.md).)
 
 ---
 
 ## Related docs
 
-- [`estimate-payments.md`](estimate-payments.md) — installment tab (source of payment metrics)  
-- [`estimate-attachments.md`](estimate-attachments.md) — attachment uploads and thumbnails  
-- [`estimate-activity-history.md`](estimate-activity-history.md) — activity log actions used by workflow derivation  
-- [`estimates.md`](estimates.md) — versions and entitlements
+- [`estimate-payments.md`](estimate-payments.md) - installment tab (source of payment metrics)  
+- [`estimate-attachments.md`](estimate-attachments.md) - attachment uploads and thumbnails  
+- [`estimate-activity-history.md`](estimate-activity-history.md) - activity log actions used by workflow derivation  
+- [`estimates.md`](estimates.md) - versions and entitlements

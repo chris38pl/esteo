@@ -8,8 +8,8 @@
   "workspace": {
     "industry": "OTHER",
     "industryOtherText": "Konsulting IT",
-    "companyDescription": "Konsulting IT — audyt, architektura, roadmapa. Nie wykonujemy developmentu ani utrzymania serwerów.",
-    "aiInstructions": "Nie wyceniaj programowania ani wdrożenia — tylko doradztwo i dokumentacja.",
+    "companyDescription": "Konsulting IT - audyt, architektura, roadmapa. Nie wykonujemy developmentu ani utrzymania serwerów.",
+    "aiInstructions": "Nie wyceniaj programowania ani wdrożenia - tylko doradztwo i dokumentacja.",
     "rules": [],
     "systemRules": {
       "rounding": true,

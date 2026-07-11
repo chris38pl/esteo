@@ -1,4 +1,4 @@
-# AI Evaluation Harness — Services
+# AI Evaluation Harness - Services
 
 Quality evaluation for **Services** (`WorkspaceIndustry.OTHER`) estimate draft generation.
 
@@ -12,7 +12,7 @@ Quality evaluation for **Services** (`WorkspaceIndustry.OTHER`) estimate draft g
 ## Quick start
 
 ```bash
-# No API — verify scorers load
+# No API - verify scorers load
 npm run eval:services:smoke
 
 # PR gate (~30s, 6 scenarios, no judge)
@@ -70,12 +70,12 @@ evals/
 
 ## Scoring (summary)
 
-1. **Schema** — hard fail, skips judge
-2. **Rules** — mustHave, mustNotHave, sections, line items → `fastScore`
-3. **Coverage** — informational only (`coverageTerms`); full estimate corpus + `polishTermMatch`
-4. **Leakage** — construction terms in services estimates
-5. **Length** — section/item/token counts
-6. **Judge** (Full only) — overall, context alignment, reference similarity
+1. **Schema** - hard fail, skips judge
+2. **Rules** - mustHave, mustNotHave, sections, line items → `fastScore`
+3. **Coverage** - informational only (`coverageTerms`); full estimate corpus + `polishTermMatch`
+4. **Leakage** - construction terms in services estimates
+5. **Length** - section/item/token counts
+6. **Judge** (Full only) - overall, context alignment, reference similarity
 
 Full: `overallScore = 0.30 × rules + 0.70 × judge`.
 

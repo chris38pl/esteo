@@ -98,7 +98,7 @@ export function ReferralInvitationListRow({
         </span>
       );
     }
-    return <span className="text-muted-foreground">—</span>;
+    return <span className="text-muted-foreground">-</span>;
   })();
 
   if (layout === "list") {

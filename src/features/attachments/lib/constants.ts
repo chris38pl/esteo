@@ -1,7 +1,7 @@
 /** Maximum raw upload size per file (independent of workspace quota). */
 export const MAX_SINGLE_FILE_BYTES = 20 * 1024 * 1024;
 
-/** Abuse protection for a single upload action — not a workspace quota. */
+/** Abuse protection for a single upload action - not a workspace quota. */
 export const MAX_FILES_PER_UPLOAD_BATCH = 20;
 
 /** Default workspace attachment storage limit: 250 MB. */

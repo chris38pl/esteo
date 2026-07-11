@@ -13,9 +13,9 @@ For **each** issue number in scope, the plan **must** end with a dedicated **Iss
 
 Per issue `{N}`, include these todos (use the real issue number):
 
-1. `closeout-{N}-draft` — Write the **full** implementation summary to `.cursor/issue-comments/{N}.md` (same text as the chat summary; not a stub like `Zaimplementowano:`).
-2. `closeout-{N}-comment` — Run `npm run issue:comment -- --issue={N} --resolve --draft` (omit `--resolve` only if the issue is already `RESOLVED`).
-3. `closeout-{N}-verify` — Confirm CLI success in the final response (paste the `Added comment …` line or explain failure).
+1. `closeout-{N}-draft` - Write the **full** implementation summary to `.cursor/issue-comments/{N}.md` (same text as the chat summary; not a stub like `Zaimplementowano:`).
+2. `closeout-{N}-comment` - Run `npm run issue:comment -- --issue={N} --resolve --draft` (omit `--resolve` only if the issue is already `RESOLVED`).
+3. `closeout-{N}-verify` - Confirm CLI success in the final response (paste the `Added comment …` line or explain failure).
 
 Optional: `--fixed-in=…` when preview URL, deployment, or commit SHA is known.
 
@@ -35,7 +35,7 @@ When any issue was handled, end with an **Issue closeout** section so the user h
 
 | Issue | Draft | Comment CLI | Status |
 | --- | --- | --- | --- |
-| #37 | `.cursor/issue-comments/37.md` | OK — Added comment … | RESOLVED |
+| #37 | `.cursor/issue-comments/37.md` | OK - Added comment … | RESOLVED |
 ```
 
 If a step failed, say which step and why. Do not omit this table.

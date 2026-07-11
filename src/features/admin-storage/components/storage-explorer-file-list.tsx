@@ -214,7 +214,7 @@ export function StorageExplorerFileList({
                       </span>
                     </TableCell>
                     <TableCell className="tabular-nums text-sm">
-                      {item.fileSizeBytes ? formatBytes(BigInt(item.fileSizeBytes)) : "—"}
+                      {item.fileSizeBytes ? formatBytes(BigInt(item.fileSizeBytes)) : "-"}
                     </TableCell>
                     <TableCell className="hidden text-sm text-muted-foreground lg:table-cell">
                       {formatDate(new Date(item.createdAt), locale)}

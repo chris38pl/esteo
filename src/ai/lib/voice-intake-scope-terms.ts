@@ -3,7 +3,7 @@ export type ScopeCanonicalGroup = {
   terms: string[];
 };
 
-/** Canonical scope groups for benchmark scoring and analytics — not for UI label replacement. */
+/** Canonical scope groups for benchmark scoring and analytics - not for UI label replacement. */
 export const SCOPE_CANONICAL_GROUPS: ScopeCanonicalGroup[] = [
   {
     id: "elektryka",

@@ -2,7 +2,7 @@
 
 Staging-only tool for **quick bug capture** during manual testing on Vercel Preview (or localhost). Issues are stored in the Neon **staging** database and can be analyzed in Cursor either via **Copy Cursor Prompt** in the admin panel or via the local **`sync:issues`** script.
 
-This is **not** a full ticket system — no assignees, SLA, or AI triage in v1.
+This is **not** a full ticket system - no assignees, SLA, or AI triage in v1.
 
 Related: [`scripts.md`](../../scripts.md#issue-tracker--sync-do-cursor), [`deployment.md`](../architecture/deployment.md), [`database-migrations.md`](../dev/database-migrations.md).
 
@@ -61,7 +61,7 @@ QA tester UI:
 | --- | --- | --- | --- |
 | `localhost:3000` | `LOCALHOST` | Neon `development` | `ENABLE_ISSUE_TRACKER=true` in `.env.local` |
 | Vercel Preview (`staging` git branch) | `PREVIEW` | Neon `staging` | `ENABLE_ISSUE_TRACKER=true` in Vercel **Preview** env |
-| Vercel Production | — | Neon `production` | **Always off** (guard) |
+| Vercel Production | - | Neon `production` | **Always off** (guard) |
 
 Resolver: `src/lib/app-environment.ts` → `resolveIssueEnvironment()`.
 
@@ -93,10 +93,10 @@ Sidebar footer → "Zgłoś błąd"
 
 **Auto-collected metadata** (`collectIssueMetadata`):
 
-- `pageUrl` — current pathname + search
-- `context` — `{ workspaceSlug }` when active workspace known
+- `pageUrl` - current pathname + search
+- `context` - `{ workspaceSlug }` when active workspace known
 - `locale`, `userAgent`, `deviceType`, `viewportWidth`, `viewportHeight`
-- `environment` — resolved server-side
+- `environment` - resolved server-side
 
 **Voice input:** browser `SpeechRecognition` appends to description (client-only, no backend storage). Hook: `use-speech-recognition.ts`.
 
@@ -111,11 +111,11 @@ Sidebar footer → "Zgłoś błąd"
 
 **Status outside UI (DB / future admin):** `IN_PROGRESS`, `ARCHIVED`.
 
-**Copy Cursor Prompt** — clipboard markdown for Cursor chat (`build-cursor-prompt.ts`).
+**Copy Cursor Prompt** - clipboard markdown for Cursor chat (`build-cursor-prompt.ts`).
 
-**Copy Issue URL** — deep link to admin detail on current origin (`build-issue-admin-url.ts`).
+**Copy Issue URL** - deep link to admin detail on current origin (`build-issue-admin-url.ts`).
 
-**Implementation comments** — after a fix, write the full summary to `.cursor/issue-comments/{number}.md`, then:
+**Implementation comments** - after a fix, write the full summary to `.cursor/issue-comments/{number}.md`, then:
 
 ```bash
 npm run issue:comment -- --issue=123 --resolve --draft
@@ -125,9 +125,9 @@ With `--resolve`, stub placeholders (for example `Zaimplementowano:`) are reject
 
 Without `--author-email` / `ISSUE_COMMENT_AUTHOR_EMAIL`, the CLI writes the comment and activity history as **Cursor AI**.
 
-**Cursor Plan + Built** — project rules (`issue-plan-closeout.mdc`, `issue-workflow.mdc`) require every issue plan to end with per-issue closeout todos (draft `.md` → `issue:comment --draft` → verify). After Built, the agent must reply with an **Issue closeout** table (draft path, CLI output, status).
+**Cursor Plan + Built** - project rules (`issue-plan-closeout.mdc`, `issue-workflow.mdc`) require every issue plan to end with per-issue closeout todos (draft `.md` → `issue:comment --draft` → verify). After Built, the agent must reply with an **Issue closeout** table (draft path, CLI output, status).
 
-**History** — issue detail has a `Pokaż: Komentarze / Historia` switch. History logs title changes, description changes, status changes, and comment add/edit/delete events with actor and timestamp.
+**History** - issue detail has a `Pokaż: Komentarze / Historia` switch. History logs title changes, description changes, status changes, and comment add/edit/delete events with actor and timestamp.
 
 Nav: Admin sidebar → **Issue tracker** (hidden when tracker disabled).
 
@@ -148,7 +148,7 @@ IssueNumberCounter { id: "default", value: Int }
 
 First issue on a fresh DB gets `#1` (counter created on first allocation).
 
-### `folderSlug` — immutable
+### `folderSlug` - immutable
 
 Set **once** in `createIssueAction` via `slugifyIssueTitle(title)`.
 
@@ -160,7 +160,7 @@ docs/issues/{number}-{folderSlug}/
 
 Changing slug after create would duplicate folders and break local workflows.
 
-### `context` — JSON
+### `context` - JSON
 
 Extensible metadata without schema migrations:
 
@@ -175,7 +175,7 @@ type IssueContext = {
 
 v1 writes `{ workspaceSlug }` when reporting from a workspace route. Zod: `issue-context.ts`.
 
-### `fixedIn` — optional (v1 DB only)
+### `fixedIn` - optional (v1 DB only)
 
 String like `"preview-127"` or `"v0.8.4"`. Not in UI v1; set via SQL or future admin. Lives in DB after RESOLVED (sync deletes local folder).
 
@@ -191,7 +191,7 @@ String like `"preview-127"` or `"v0.8.4"`. Not in UI v1; set via SQL or future a
 
 ### Attachments
 
-`IssueAttachment` — images only (JPEG, PNG, WebP), max **10** per issue, no workspace quota, no thumbnails, no activity log.
+`IssueAttachment` - images only (JPEG, PNG, WebP), max **10** per issue, no workspace quota, no thumbnails, no activity log.
 
 Storage key pattern:
 
@@ -208,7 +208,7 @@ Upload reuses estimate pipeline pieces in `upload-service.ts` → `uploadPrepare
 | Status | UI v1 | Local sync (`sync:issues`) |
 | --- | --- | --- |
 | `OPEN` | Visible, default on create | **Upsert** folder |
-| `IN_PROGRESS` | Hidden (set via SQL v1) | **Upsert** folder — folder stays during Cursor analysis |
+| `IN_PROGRESS` | Hidden (set via SQL v1) | **Upsert** folder - folder stays during Cursor analysis |
 | `RESOLVED` | Admin can set | **Delete** folder |
 | `ARCHIVED` | Hidden (DB only v1) | **Delete** folder |
 
@@ -218,7 +218,7 @@ Typical workflow:
 OPEN (reported) → IN_PROGRESS (analyzing in Cursor) → RESOLVED (fixed)
 ```
 
-During analysis, developer adds `notes.md` or fix plan under `docs/issues/{number}-{slug}/` — sync preserves non-managed files.
+During analysis, developer adds `notes.md` or fix plan under `docs/issues/{number}-{slug}/` - sync preserves non-managed files.
 
 ---
 
@@ -249,7 +249,7 @@ Issue branch checks:
 
 1. `assertIssueTrackerEnabled()`
 2. Authenticated user
-3. `uploadPreparedIssueAttachments({ issueId, files, uploadedById })` — reporter must own issue
+3. `uploadPreparedIssueAttachments({ issueId, files, uploadedById })` - reporter must own issue
 
 No dedicated `/api/issues/*` routes in v1.
 
@@ -276,11 +276,11 @@ Output: **`docs/issues/`** (gitignored).
 docs/issues/
   open-issues.md                 ← index (full sync only)
   123-mobile-save-loader/
-    issue.md                     ← managed — overwritten each sync
-    context.json                 ← managed — screenshot cache fingerprints
-    screenshot-1.png             ← managed — from UploadThing
-    notes.md                     ← manual — preserved
-    fix-plan.md                  ← manual — preserved
+    issue.md                     ← managed - overwritten each sync
+    context.json                 ← managed - screenshot cache fingerprints
+    screenshot-1.png             ← managed - from UploadThing
+    notes.md                     ← manual - preserved
+    fix-plan.md                  ← manual - preserved
 ```
 
 ### Upsert rules
@@ -293,16 +293,16 @@ docs/issues/
 
 ### Cursor analysis paths
 
-**Path A — instant (no sync):**
+**Path A - instant (no sync):**
 
 1. Admin detail → **Copy Cursor Prompt**
 2. Paste into Cursor chat
 
-**Path B — local folder (richer, screenshots on disk):**
+**Path B - local folder (richer, screenshots on disk):**
 
 1. `npm run sync:issues -- --issue=123`
 2. Open `docs/issues/123-…/` in Cursor
-3. Add `notes.md` with findings; re-run sync — notes preserved
+3. Add `notes.md` with findings; re-run sync - notes preserved
 
 ---
 
@@ -370,7 +370,7 @@ DIRECT_URL_STAGING="..."
 UPLOADTHING_TOKEN="..."
 ```
 
-See [scripts.md — Issue tracker](../../scripts.md#issue-tracker--sync-do-cursor).
+See [scripts.md - Issue tracker](../../scripts.md#issue-tracker--sync-do-cursor).
 
 ---
 

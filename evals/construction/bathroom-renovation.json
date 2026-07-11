@@ -1,6 +1,6 @@
 {
   "id": "construction-bathroom-renovation",
-  "name": "Construction — bathroom renovation 6 m²",
+  "name": "Construction - bathroom renovation 6 m²",
   "locale": "pl",
   "category": "business",
   "quick": true,
@@ -32,7 +32,7 @@
     "minLineItems": 6,
     "maxLineItems": 40,
     "judge": {
-      "focus": ["Kompleksowy remont łazienki — fazy budowlane, nie usługi ogólne"],
+      "focus": ["Kompleksowy remont łazienki - fazy budowlane, nie usługi ogólne"],
       "minScore": 7,
       "minContextAlignment": 7
     }

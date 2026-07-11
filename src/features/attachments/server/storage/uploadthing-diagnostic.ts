@@ -131,7 +131,7 @@ export function logUploadThingDiagnostic(
 
 /**
  * Wraps fetch to capture HTTP status + body for UploadThing API calls.
- * Dev-only diagnostic aid — gated by isUploadThingUploadDebugEnabled().
+ * Dev-only diagnostic aid - gated by isUploadThingUploadDebugEnabled().
  */
 export function createUploadThingDiagnosticFetch(baseFetch: FetchEsque = fetch): FetchEsque {
   return async (input, init) => {

@@ -36,7 +36,7 @@ Send to client (Phase 2) will reuse the same `EstimatePdf` pipeline and DB lifec
 
 ## Data model
 
-Generated PDFs use **`EstimatePdf`** — separate from user **`EstimateAttachment`** uploads.
+Generated PDFs use **`EstimatePdf`** - separate from user **`EstimateAttachment`** uploads.
 
 ```prisma
 enum EstimatePdfStatus {
@@ -50,8 +50,8 @@ model EstimatePdf {
   id              String            @id @default(cuid())
   estimateId      String
   versionId       String            @unique
-  fileKey         String?           // UploadThing file key — null until READY
-  storageCustomId String?           // UploadThing customId from upload — null until READY
+  fileKey         String?           // UploadThing file key - null until READY
+  storageCustomId String?           // UploadThing customId from upload - null until READY
   status          EstimatePdfStatus @default(PENDING)
   errorMessage    String?
   generatedAt     DateTime          @default(now())
@@ -64,10 +64,10 @@ Migrations: `20260610140000_estimate_pdf`, `20260610180000_estimate_pdf_lifecycl
 
 ### Storage identifiers
 
-- **`fileKey`** — real UploadThing file key returned by `storage.upload()`. Used for signed download URLs and `deleteFiles({ keyType: "fileKey" })`.
-- **`storageCustomId`** — UploadThing `customId` sent with the upload. Used for cleanup on overwrite via `deleteFiles({ keyType: "customId" })`.
-- **`EstimatePdf.id`** — database record ID; **not** reused as UploadThing `customId` (each upload gets a fresh `createId()`).
-- **Logical path** `{workspaceId}/pdfs/{estimatePdfId}/original.pdf` — diagnostic/logging only. Never stored as `fileKey`, never passed to `deleteFiles()`.
+- **`fileKey`** - real UploadThing file key returned by `storage.upload()`. Used for signed download URLs and `deleteFiles({ keyType: "fileKey" })`.
+- **`storageCustomId`** - UploadThing `customId` sent with the upload. Used for cleanup on overwrite via `deleteFiles({ keyType: "customId" })`.
+- **`EstimatePdf.id`** - database record ID; **not** reused as UploadThing `customId` (each upload gets a fresh `createId()`).
+- **Logical path** `{workspaceId}/pdfs/{estimatePdfId}/original.pdf` - diagnostic/logging only. Never stored as `fileKey`, never passed to `deleteFiles()`.
 
 Legacy pre-fix records (logical `fileKey` stored, or missing `storageCustomId`) are auto-healed on next export.
 
@@ -84,10 +84,10 @@ DB status is the source of truth. Trigger.dev `runs.retrieve(runId)` is used for
 
 ### Freshness and overwrite
 
-- **One PDF per version** — re-export of the same version overwrites the previous file and metadata.
+- **One PDF per version** - re-export of the same version overwrites the previous file and metadata.
 - **Freshness:** PDF is reused without regenerating when all of the following hold:
   - `status === READY`
-  - `generatedLocale === request locale` (UI locale at export time — switching PL/EN triggers regen even if the estimate was not edited)
+  - `generatedLocale === request locale` (UI locale at export time - switching PL/EN triggers regen even if the estimate was not edited)
   - `generatedAt >= version.updatedAt`
 - Legacy records with `generatedLocale = null` are regenerated on next export.
 - **Overwrite cleanup** (before upload): delete by stored `fileKey`, then `storageCustomId`, then legacy fallback `customId = EstimatePdf.id`.
@@ -138,15 +138,15 @@ Preview is not logged in v1.
 
 ## PDF template assets (Trigger.dev)
 
-- **Styles:** inlined in [`estimate-pdf-styles.ts`](../../src/pdf/templates/estimate-pdf-styles.ts) and imported by the HTML template. Do **not** read `estimate-pdf.css` from `process.cwd()/src/...` at runtime — Trigger workers have no full repo tree; a silent miss produced unstyled PDFs on Vercel Preview. Keep `estimate-pdf.css` in sync when editing layout.
+- **Styles:** inlined in [`estimate-pdf-styles.ts`](../../src/pdf/templates/estimate-pdf-styles.ts) and imported by the HTML template. Do **not** read `estimate-pdf.css` from `process.cwd()/src/...` at runtime - Trigger workers have no full repo tree; a silent miss produced unstyled PDFs on Vercel Preview. Keep `estimate-pdf.css` in sync when editing layout.
 - **Hero image:** optional `public/images/pdf/hero-house.webp`; copied via `additionalFiles` in [`trigger.config.ts`](../../trigger.config.ts). Missing file → SVG gradient fallback.
 
 ## Trigger.dev
 
 - PDF generation runs on Trigger.dev workers (not on Vercel serverless).
-- Task id: `generate-estimate-pdf` (`trigger.config.ts` — extensions: `additionalFiles` for `public/images/pdf/**`, `puppeteer()`; external: `uploadthing`, `puppeteer-core`, `sharp`).
+- Task id: `generate-estimate-pdf` (`trigger.config.ts` - extensions: `additionalFiles` for `public/images/pdf/**`, `puppeteer()`; external: `uploadthing`, `puppeteer-core`, `sharp`).
 - The Trigger.dev Puppeteer extension installs Chrome in the worker image during deploy.
-- `PUPPETEER_EXECUTABLE_PATH` is injected automatically during deploy — do not set it manually in the Trigger dashboard unless the extension env is missing after redeploy.
+- `PUPPETEER_EXECUTABLE_PATH` is injected automatically during deploy - do not set it manually in the Trigger dashboard unless the extension env is missing after redeploy.
 - For local `trigger:dev`, define `PUPPETEER_EXECUTABLE_PATH` in `.env.local` (path to your local Chrome; the extension does not install Chrome in dev mode).
 - Worker env must include `UPLOADTHING_TOKEN`, `DATABASE_URL` (see [`deployment.md`](../architecture/deployment.md)).
 - Diagnostic log `Launching PDF browser` (with `executablePath`) is emitted in `generate-estimate-pdf` before rendering.
@@ -160,7 +160,7 @@ Optional dev-only diagnostics in `src/features/attachments/server/storage/upload
 
 - Auto-on in local `NODE_ENV=development` unless `UPLOADTHING_UPLOAD_DEBUG=0`.
 - Writes HTTP traces to OS temp file `esteo-ut-upload-debug.jsonl` (dev only).
-- When enabled, `UTApi` uses `logLevel: "Debug"` — very verbose in Trigger.dev terminal.
+- When enabled, `UTApi` uses `logLevel: "Debug"` - very verbose in Trigger.dev terminal.
 
 **Quiet local dev:** set `UPLOADTHING_UPLOAD_DEBUG=0` in `.env.local` and restart `trigger:dev`.
 
@@ -184,7 +184,7 @@ UploadThing uses the Effect-TS library. Duplicate `effect` versions (e.g. Prisma
 ## Related
 
 - [`estimates.md`](estimates.md)
-- [`estimate-attachments.md`](estimate-attachments.md) — user uploads only (separate domain)
+- [`estimate-attachments.md`](estimate-attachments.md) - user uploads only (separate domain)
 - [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md)
 - [`workspace-branding-and-company-profile.md`](workspace-branding-and-company-profile.md)
 - [Incident: PDF Chromium on Trigger worker](../incidents/2026-06-10-estimate-pdf-chromium-trigger-worker.md)

@@ -1,5 +1,5 @@
 const NULL_FRAGMENT = /\b(null|undefined)\b/gi;
-const DANGLING_SEPARATOR = /[\s]*[—–-]\s*$/;
+const DANGLING_SEPARATOR = /[\s]*[-–-]\s*$/;
 
 export function sanitizeGeneratedTitle(value: string | null | undefined): string {
   if (!value) return "";

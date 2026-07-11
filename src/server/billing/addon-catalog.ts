@@ -102,7 +102,7 @@ export function mergePlanLimitsWithAddons(
   };
 }
 
-/** Suggested unit prices (PLN) — mirrored in Stripe Price setup and i18n. */
+/** Suggested unit prices (PLN) - mirrored in Stripe Price setup and i18n. */
 export const ADDON_UNIT_PRICES_PLN: Record<PurchasableAddonKey, number> = {
   STORAGE: 39,
   SEATS: 99,

@@ -50,8 +50,8 @@
       "dateRange": "Zakres dat",
       "export": "Eksport",
       "exportCsv": "CSV",
-      "exportExcel": "Excel (.xlsx) — Wkrótce",
-      "exportPdf": "PDF — Wkrótce",
+      "exportExcel": "Excel (.xlsx) - Wkrótce",
+      "exportPdf": "PDF - Wkrótce",
       "viewSettings": "Ustawienia widoku"
     },
     "settings": {
@@ -162,7 +162,7 @@
     "title": "Nowa wycena",
     "subtitle": "Te same pola co w publicznym formularzu zapytania, plus opcjonalny tytuł wyceny dla zespołu.",
     "titleLabel": "Tytuł (opcjonalnie)",
-    "titlePlaceholder": "Np. Remont mieszkania — Warszawa",
+    "titlePlaceholder": "Np. Remont mieszkania - Warszawa",
     "descriptionLabel": "Opis projektu",
     "descriptionPlaceholder": "Opisz zakres projektu, wymagania klienta, lokalizację itp.",
     "descriptionHint": "AI użyje tego opisu do wygenerowania szkicu wyceny.",
@@ -212,7 +212,7 @@
       "failed": "Generowanie PDF nie powiodło się. Spróbuj ponownie.",
       "companyProfileIncomplete": {
         "title": "Uzupełnij dane firmy",
-        "description": "Przy eksporcie lub wysyłce wyceny na PDF brakuje danych firmy z ustawień przestrzeni. Uzupełnij je, aby dokument wyglądał profesjonalnie — albo kontynuuj z pustymi polami.",
+        "description": "Przy eksporcie lub wysyłce wyceny na PDF brakuje danych firmy z ustawień przestrzeni. Uzupełnij je, aby dokument wyglądał profesjonalnie - albo kontynuuj z pustymi polami.",
         "missingFieldsLabel": "Brakujące elementy:",
         "fields": {
           "logo": "Logo firmy",
@@ -362,7 +362,7 @@
       },
       "recordPayment": {
         "title": "Zarejestruj wpłatę",
-        "subtitle": "{name} — pozostało {remaining}",
+        "subtitle": "{name} - pozostało {remaining}",
         "amountLabel": "Kwota wpłaty",
         "alreadyPaid": "Wpłacono już {paid} z {total}",
         "noteLabel": "Notatka (opcjonalnie)",
@@ -492,7 +492,7 @@
         "acceptance": "Zaakceptowana",
         "acceptanceDesc": "Klient zaakceptował wycenę",
         "acceptanceWaiting": "Czeka na decyzję klienta",
-        "acceptanceWaitingDesc": "Wycena jest u klienta — oczekujemy odpowiedzi",
+        "acceptanceWaitingDesc": "Wycena jest u klienta - oczekujemy odpowiedzi",
         "rejection": "Odrzucona przez klienta",
         "rejectionDesc": "Klient odrzucił wycenę"
       },
@@ -567,7 +567,7 @@
     "itemNamePlaceholder": "Nazwa pozycji",
     "unitPlaceholder": "j.m.",
     "archivedBanner": "Ta wersja jest zarchiwizowana i nie można jej edytować.",
-    "readOnlyBanner": "Wysłano do klienta — nie można już edytować. Utwórz nową wersję, jeśli coś zmieniasz.",
+    "readOnlyBanner": "Wysłano do klienta - nie można już edytować. Utwórz nową wersję, jeśli coś zmieniasz.",
     "sendInProgressBanner": "Trwa wysyłka wyceny… Edycja pozycji jest tymczasowo zablokowana.",
     "conflictBanner": "Inny użytkownik zapisał tę wycenę. Odśwież, aby kontynuować edycję.",
     "reload": "Odśwież",
@@ -666,7 +666,7 @@
       "title": "Zmień nazwę wyceny",
       "description": "Ta nazwa jest widoczna w liście wycen, menu i nagłówku edytora.",
       "label": "Nazwa wyceny",
-      "placeholder": "Np. Remont mieszkania — Warszawa",
+      "placeholder": "Np. Remont mieszkania - Warszawa",
       "counter": "{count}/{max}",
       "save": "Zapisz",
       "cancel": "Anuluj",
@@ -726,7 +726,7 @@
     "saving": "Zapisywanie…",
     "saved": "Zapisano",
     "error": "Błąd zapisu",
-    "conflict": "Konflikt — odśwież"
+    "conflict": "Konflikt - odśwież"
   },
   "margin": {
     "unit": "%"
@@ -739,7 +739,7 @@
   },
   "profitability": {
     "title": "Rentowność",
-    "tooltip": "Szacunki z marży projektu i sumy netto — nie z rzeczywistych kosztów materiałów ani robocizny.",
+    "tooltip": "Szacunki z marży projektu i sumy netto - nie z rzeczywistych kosztów materiałów ani robocizny.",
     "projectMargin": "Marża projektu",
     "cost": "Koszt",
     "profit": "Zysk",
@@ -767,7 +767,7 @@
     "impactBefore": "Brutto przed: {gross} PLN",
     "impactAfter": "Brutto po zmianach: {gross} PLN",
     "impactDiff": "Różnica brutto: {diff} PLN",
-    "targetProgress": "Cel: {target} PLN — po zmianach: ~{after} PLN"
+    "targetProgress": "Cel: {target} PLN - po zmianach: ~{after} PLN"
   },
   "rules": {
     "applied": "Reguły zastosowane",
@@ -799,7 +799,7 @@
     "lastUpdated": "Zaaktualizowano",
     "editedBy": "przez {user}",
     "investmentFallback": "Typ inwestycji",
-    "empty": "—",
+    "empty": "-",
     "noDate": "Brak daty",
     "noAddress": "Brak adresu",
     "noEmail": "Brak e-maila"
@@ -809,7 +809,7 @@
     "storageApproachingLimit": "Zbliżasz się do limitu miejsca na załączniki.",
     "storageExhausted": "Przesyłanie załączników jest niedostępne, ponieważ osiągnięto limit miejsca.",
     "dropzoneTitle": "Prześlij pliki",
-    "dropzoneHint": "Obrazy (JPG, PNG, WEBP), PDF lub DOCX — do 20 MB na plik",
+    "dropzoneHint": "Obrazy (JPG, PNG, WEBP), PDF lub DOCX - do 20 MB na plik",
     "addMore": "Dodaj pliki",
     "uploading": "Przesyłanie… {percent}%",
     "empty": "Brak załączników.",

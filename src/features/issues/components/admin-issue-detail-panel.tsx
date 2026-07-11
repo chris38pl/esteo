@@ -267,7 +267,7 @@ function DescriptionBlock({ description }: { description: string }) {
           ) : null}
         </div>
       ) : (
-        <p className="text-sm text-muted-foreground">—</p>
+        <p className="text-sm text-muted-foreground">-</p>
       )}
     </div>
   );
@@ -315,7 +315,7 @@ export function AdminIssueDetailPanel({
     }).format(new Date(value));
 
   const reportedByLabel =
-    issue.reportedBy.name?.trim() || issue.reportedBy.email || "—";
+    issue.reportedBy.name?.trim() || issue.reportedBy.email || "-";
 
   const hasAdditionalDetails =
     Boolean(issue.reproductionSteps) ||
@@ -842,7 +842,7 @@ export function AdminIssueDetailPanel({
             </SidebarDetailRow>
             <SidebarDetailRow label={t("admin.context")}>
               <span className="break-all font-mono text-xs">
-                {context ? JSON.stringify(context) : "—"}
+                {context ? JSON.stringify(context) : "-"}
               </span>
             </SidebarDetailRow>
             <SidebarDetailRow label={t("admin.detail.locale")}>{issue.locale}</SidebarDetailRow>

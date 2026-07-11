@@ -1,6 +1,6 @@
 {
   "id": "assistant-no-snapshot-fallback",
-  "name": "Assistant — live workspace context without snapshot",
+  "name": "Assistant - live workspace context without snapshot",
   "locale": "pl",
   "quick": true,
   "critical": true,

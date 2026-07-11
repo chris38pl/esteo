@@ -1,4 +1,4 @@
-/** Immutable folder slug — set once at issue creation from title. */
+/** Immutable folder slug - set once at issue creation from title. */
 export function slugifyIssueTitle(title: string): string {
   const slug = title
     .normalize("NFKD")

@@ -13,8 +13,8 @@ void runDevBillingScript(async () => {
 
   for (const group of groups) {
     console.log(`Workspace: ${group.workspaceSlug ?? group.workspaceId}`);
-    console.log(`  DB plan: ${group.dbPlan ?? "—"}`);
-    console.log(`  DB stripeSubscriptionId: ${group.dbStripeSubscriptionId ?? "—"}`);
+    console.log(`  DB plan: ${group.dbPlan ?? "-"}`);
+    console.log(`  DB stripeSubscriptionId: ${group.dbStripeSubscriptionId ?? "-"}`);
     console.log(`  Stripe customer: ${group.stripeCustomerId}`);
     console.log("  Active subscriptions:");
 

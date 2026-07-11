@@ -127,7 +127,7 @@ export const SYSTEM_ESTIMATE_TEMPLATES: SystemEstimateTemplate[] = [
     key: "services-basic",
     industry: "OTHER",
     name: "Usługi standardowe",
-    description: "Uniwersalny szablon dla prostych usług — sekcje definiuje AI lub workspace.",
+    description: "Uniwersalny szablon dla prostych usług - sekcje definiuje AI lub workspace.",
     ...DEFAULT_TEMPLATE_META,
     sections: [
       {

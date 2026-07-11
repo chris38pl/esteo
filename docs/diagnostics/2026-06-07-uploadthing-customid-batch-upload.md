@@ -6,7 +6,7 @@
 
 ## Kontekst
 
-Publiczny formularz estimate request pozwala załączyć do **10 plików** (limit requestu: 10 plików / 10 MB). Użytkownik przesłał **7 obrazów PNG** (w tym pliki ChatGPT z długimi nazwami). W bazie i UI zapisał się **tylko 1 załącznik** — pozostałe 6 zwróciło błąd uploadu.
+Publiczny formularz estimate request pozwala załączyć do **10 plików** (limit requestu: 10 plików / 10 MB). Użytkownik przesłał **7 obrazów PNG** (w tym pliki ChatGPT z długimi nazwami). W bazie i UI zapisał się **tylko 1 załącznik** - pozostałe 6 zwróciło błąd uploadu.
 
 Pipeline (Phase 2):
 
@@ -36,7 +36,7 @@ Kluczowe pliki:
 | Pliki w batchu | 7 |
 | Zapisane (`stored`) | 1 |
 | Nieudane (`failed`) | 6 |
-| HTTP response API | 200 (partial success — ≥1 plik stored) |
+| HTTP response API | 200 (partial success - ≥1 plik stored) |
 | Komunikat SDK | `[UPLOAD_FAILED] Failed to upload file` |
 
 ## Hipotezy wykluczone (fałszywe tropy)
@@ -55,7 +55,7 @@ Przy każdym failu nagłówki: `ratelimit-limit: 20`, `ratelimit-remaining: 19`.
 
 ### 4. `Promise.all` / równoległy upload
 
-Kod używa `for` z `await` — jeden plik na raz.
+Kod używa `for` z `await` - jeden plik na raz.
 
 ### 5. Miniaturki synchroniczne przy submit
 
@@ -63,7 +63,7 @@ Po refaktorze async thumbnails submit wysyła **tylko oryginały** (1× UT per f
 
 ### 6. Losowość / flaki sieci
 
-Wzorzec **deterministyczny**: plik #1 zawsze OK, pliki #2–#7 zawsze fail — ten sam zestaw nazw plików.
+Wzorzec **deterministyczny**: plik #1 zawsze OK, pliki #2–#7 zawsze fail - ten sam zestaw nazw plików.
 
 ## Batch referencyjny (przed fixem)
 
@@ -122,9 +122,9 @@ await utapi.uploadFiles([file]);
 
 Ta wartość trafiała do UT jako `customId` → w ingest jako `x-ut-custom-id` → w DB UT jako `external_id`.
 
-Po sukcesie aplikacja **nadpisywała** `storageKey` w metadata kluczem UT (`YO4vGzP4JADj...`) — to poprawne dla `delete` / `download` / signed URL.
+Po sukcesie aplikacja **nadpisywała** `storageKey` w metadata kluczem UT (`YO4vGzP4JADj...`) - to poprawne dla `delete` / `download` / signed URL.
 
-## Diagnostyka — jak zbieraliśmy dowody
+## Diagnostyka - jak zbieraliśmy dowody
 
 ### Problem: obcięte logi w terminalu
 
@@ -136,7 +136,7 @@ Moduł `uploadthing-diagnostic.ts`:
 
 - Logi per zdarzenie (upload start/success/failure, HTTP request/response)
 - Zapis do `{tmpdir}/esteo-ut-upload-debug.jsonl` (**tylko `NODE_ENV=development`**)
-- `createUploadThingDiagnosticFetch()` — pełne body odpowiedzi ingest
+- `createUploadThingDiagnosticFetch()` - pełne body odpowiedzi ingest
 - Pola: `customId`, `customIdLength`, `logicalKey`, `logicalKeyLength`
 - Jeden plik **nadpisywany** na start batcha (nie append w nieskończoność)
 - Vercel staging/production: **wyłączone** (`NODE_ENV !== "development"`)
@@ -147,9 +147,9 @@ Moduł `uploadthing-diagnostic.ts`:
 | Pytanie | Odpowiedź |
 | --- | --- |
 | Czy wszystkie `customId` unikalne? | Tak |
-| Czy ten sam błąd? | Tak — HTTP 500 + failed INSERT w DB UT |
-| Czy fail zawsze od pliku #2? | Tak — deterministycznie |
-| Czy rate limit? | Nie — remaining 19/20 |
+| Czy ten sam błąd? | Tak - HTTP 500 + failed INSERT w DB UT |
+| Czy fail zawsze od pliku #2? | Tak - deterministycznie |
+| Czy rate limit? | Nie - remaining 19/20 |
 
 ## Root cause (potwierdzony)
 
@@ -193,10 +193,10 @@ Oddzielono identyfikator UT od ścieżki logicznej:
 
 Zmiany:
 
-- `src/features/attachments/server/storage/types.ts` — `upload({ key, customId, ... })`
-- `uploadthing-provider.ts` — `UTFile` z `params.customId`
-- `upload-service.ts` — `customId: item.id` w `uploadBlobToStorage`
-- `thumbnail-generation-service.ts` — `customId: \`${attachment.id}-thumb\`` (~42 znaki)
+- `src/features/attachments/server/storage/types.ts` - `upload({ key, customId, ... })`
+- `uploadthing-provider.ts` - `UTFile` z `params.customId`
+- `upload-service.ts` - `customId: item.id` w `uploadBlobToStorage`
+- `thumbnail-generation-service.ts` - `customId: \`${attachment.id}-thumb\`` (~42 znaki)
 
 Brak migracji Prisma.
 
@@ -239,11 +239,11 @@ Miniatury (Trigger.dev) po promocji: `customIdLength: 42` (`{attachmentId}-thumb
 
 1. **Nigdy nie używaj długiej ścieżki storage jako UploadThing `customId`.** Używaj krótkiego stabilnego ID (UUID rekordu pliku).
 2. **Komunikat `insert into file` ≠ Prisma.** Szukaj w odpowiedzi HTTP ingest UploadThing.
-3. **Partial success w public form jest zamierzony** — loguj `storedCount` / `failedCount` i pokazuj `attachmentWarnings` w UI.
+3. **Partial success w public form jest zamierzony** - loguj `storedCount` / `failedCount` i pokazuj `attachmentWarnings` w UI.
 4. **Przy debugowaniu UT** używaj `getUploadDiagnosticLogPath()` / pliku w katalogu temp OS lokalnie; na Vercel diagnostyka jest wyłączona.
-5. **Po sukcesie UT** w DB trzymamy **klucz UT** (`YO4vGzP4JADj...`), nie logiczną ścieżkę — to poprawne dla operacji storage.
+5. **Po sukcesie UT** w DB trzymamy **klucz UT** (`YO4vGzP4JADj...`), nie logiczną ścieżkę - to poprawne dla operacji storage.
 
 ## Powiązana dokumentacja
 
 - [Estimate attachments (feature)](../features/estimate-attachments.md)
-- [Incydent — skrót i fix](../incidents/2026-06-07-uploadthing-customid-batch-upload-partial-failure.md)
+- [Incydent - skrót i fix](../incidents/2026-06-07-uploadthing-customid-batch-upload-partial-failure.md)

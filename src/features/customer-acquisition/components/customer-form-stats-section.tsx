@@ -49,9 +49,9 @@ function StatItemSkeleton({ className }: { className?: string }) {
 export function CustomerFormStatsSection({ stats, loading, locale }: Props) {
   const t = useTranslations("customerAcquisition");
 
-  const visits = stats ? formatCount(stats.visitCount, locale) : "—";
-  const submissions = stats ? formatCount(stats.submissionCount, locale) : "—";
-  const conversion = stats?.conversionRate ?? "—";
+  const visits = stats ? formatCount(stats.visitCount, locale) : "-";
+  const submissions = stats ? formatCount(stats.submissionCount, locale) : "-";
+  const conversion = stats?.conversionRate ?? "-";
 
   return (
     <CustomerFormSectionShell icon={BarChart3} title={t("stats.title")}>

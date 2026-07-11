@@ -21,7 +21,7 @@ export default async function WorkspaceSettingsLayout({
 
   const user = await requireAuth(resolvedLocale);
 
-  // resolveWorkspaceBySlug is React cache()-wrapped — free hit from parent layout.
+  // resolveWorkspaceBySlug is React cache()-wrapped - free hit from parent layout.
   const resolved = await resolveWorkspaceBySlug(workspaceSlug, user.id);
 
   if (!resolved) {

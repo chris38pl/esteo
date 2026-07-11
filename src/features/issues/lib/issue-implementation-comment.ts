@@ -9,7 +9,7 @@ export function buildIssueCommentDraftRelativePath(issueNumber: number): string 
 }
 
 export const ISSUE_COMMENT_DRAFT_HINT = [
-  "<Pełne podsumowanie implementacji — to samo co w odpowiedzi Cursora.>",
+  "<Pełne podsumowanie implementacji - to samo co w odpowiedzi Cursora.>",
   "",
   "Usuń tę linię i zapisz diagnozę, zmiany w plikach oraz kroki weryfikacji.",
   "",

@@ -39,7 +39,7 @@ import { WorkspaceError } from "@/server/permissions/errors";
 
  * Switching to customer-per-workspace later = change `resolveBillingCustomer` to create one
 
- * BillingCustomer per BillingAccount — no schema/domain change.
+ * BillingCustomer per BillingAccount - no schema/domain change.
 
  */
 
@@ -236,7 +236,7 @@ export async function resolveBillingCustomer(
 
 
 
-/** @deprecated Use changeWorkspaceSubscriptionPlan — single entrypoint for plan changes. */
+/** @deprecated Use changeWorkspaceSubscriptionPlan - single entrypoint for plan changes. */
 
 export async function createCheckout(params: {
 
@@ -387,7 +387,7 @@ export async function reactivate(params: { workspaceId: string }): Promise<void>
 
   if (stripeSub.cancel_at != null) {
 
-    // Portal cancellation sets cancel_at — Stripe rejects cancel_at + cancel_at_period_end together.
+    // Portal cancellation sets cancel_at - Stripe rejects cancel_at + cancel_at_period_end together.
 
     await stripe.subscriptions.update(sub.stripeSubscriptionId, { cancel_at: "" });
 

@@ -29,7 +29,7 @@ import { cn } from "@/lib/utils";
 
 function formatDateTime(locale: string, value: Date | string | null): string {
   if (!value) {
-    return "—";
+    return "-";
   }
 
   const date = value instanceof Date ? value : new Date(value);

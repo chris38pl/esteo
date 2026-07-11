@@ -78,8 +78,8 @@ export function formatEstimateTemplateBlock(
         ? ` [unitPrice: ${item.unitPrice.trim()} ${template.currency}]`
         : "";
       const vat = item.vatRate?.trim() ? ` [vatRate: ${item.vatRate.trim()}]` : "";
-      const note = item.note?.trim() ? ` — ${item.note.trim()}` : "";
-      const guidance = item.guidance?.trim() ? ` — ${item.guidance.trim()}` : "";
+      const note = item.note?.trim() ? ` - ${item.note.trim()}` : "";
+      const guidance = item.guidance?.trim() ? ` - ${item.guidance.trim()}` : "";
       lines.push(`   - ${item.name}${unit}${price}${vat}${note}${guidance}`);
     });
   });

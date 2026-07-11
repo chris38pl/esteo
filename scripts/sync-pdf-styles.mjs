@@ -9,7 +9,7 @@ const css = fs
 const escaped = css.replace(/\\/g, "\\\\").replace(/`/g, "\\`").replace(/\$\{/g, "\\${");
 const out = `/**
  * Bundled estimate PDF styles for Trigger.dev workers.
- * Source of truth: estimate-pdf.css — keep in sync after CSS edits.
+ * Source of truth: estimate-pdf.css - keep in sync after CSS edits.
  */
 export const estimatePdfStyles = \`${escaped}\`;
 `;

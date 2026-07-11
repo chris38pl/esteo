@@ -38,12 +38,12 @@ function isAccountRoute(pathname: string): boolean {
   return pathname.endsWith("/dashboard/account");
 }
 
-/** Bare /{locale}/dashboard landing — ClientRedirect hop before onboarding/invitations. */
+/** Bare /{locale}/dashboard landing - ClientRedirect hop before onboarding/invitations. */
 function isBareDashboardRoute(pathname: string): boolean {
   return /\/dashboard$/.test(pathname);
 }
 
-/** Matches Tailwind `md:` — sidebar is visible from this width up. */
+/** Matches Tailwind `md:` - sidebar is visible from this width up. */
 function useMdUp() {
   return useSyncExternalStore(
     (onStoreChange) => {

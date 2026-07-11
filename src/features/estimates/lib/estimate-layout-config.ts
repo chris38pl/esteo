@@ -1,7 +1,7 @@
 /**
  * Single source of truth for estimate editor layout breakpoints.
  *
- * **Change `breakpoints` only** — most layout CSS is generated via `getEstimateEditorResponsiveCss()`.
+ * **Change `breakpoints` only** - most layout CSS is generated via `getEstimateEditorResponsiveCss()`.
  * Header inline actions, title size, rules label: injected CSS (not dynamic Tailwind).
  * Remaining `tailwind` entries use literal classes or generated CSS where noted.
  */
@@ -9,7 +9,7 @@
 const estimateLayoutBreakpoints = {
   /** Header: Podgląd inline; title text-2xl */
   headerInlineActions: 1424,
-  /** Reguły zastosowane — label visible at/above; icon-only below */
+  /** Reguły zastosowane - label visible at/above; icon-only below */
   headerRulesLabel: 1600,
   /** Status badge min-width in px (limits label jump between autosave states) */
   headerStatusBadgeMinWidthPx: 140,
@@ -47,13 +47,13 @@ const estimateLayoutTabShell = {
 
 /** Top band when advanced: context cards (left) vs summary + profitability (right) */
 const estimateLayoutTopBandAdvanced = {
-  /** Context 2×2 (< `breakpoints.contextFourCol`) — left needs less width; widen summary/profitability */
+  /** Context 2×2 (< `breakpoints.contextFourCol`) - left needs less width; widen summary/profitability */
   whenContextStacked: {
     leftFr: 1,
     rightColumnClampRem: { min: 34, max: 44 },
     rightColumnPreferredPercent: 42,
   },
-  /** Context 4-across (≥ `breakpoints.contextFourCol`) — wider summary/profitability rail */
+  /** Context 4-across (≥ `breakpoints.contextFourCol`) - wider summary/profitability rail */
   whenContextFourCol: {
     leftFr: 1.2,
     rightColumnClampRem: { min: 44, max: 83 },
@@ -77,7 +77,7 @@ function topBandAdvancedGridColumns(
 const b = estimateLayoutBreakpoints;
 
 const estimateLayoutTailwind = {
-  /** Requires injected CSS from `getEstimateEditorResponsiveCss()` — not dynamic Tailwind */
+  /** Requires injected CSS from `getEstimateEditorResponsiveCss()` - not dynamic Tailwind */
   editorMaxWidth: "estimate-editor-max-width",
   headerInlineActionButton: "estimate-header-inline-action",
   headerInlineActionMenuItem: "estimate-header-more-menu-inline-action",
@@ -109,7 +109,7 @@ const estimateLayoutTailwind = {
   headerActionsDivider:
     "estimate-header-actions-divider mx-1 hidden h-9 w-px shrink-0 self-center bg-border",
   rightRailAdvancedGrid: "estimate-right-rail__grid estimate-right-rail__grid--advanced",
-  /** Injected CSS in `getEstimateEditorResponsiveCss()` — not dynamic Tailwind */
+  /** Injected CSS in `getEstimateEditorResponsiveCss()` - not dynamic Tailwind */
   aiSideGrid: "estimate-editor-ai-grid",
 } as const;
 
@@ -496,7 +496,7 @@ export function getEstimateEditorResponsiveCss(): string {
   align-items: start;
   min-width: 0;
 }
-/* PODSUMOWANIE | RENTOWNOŚĆ — side-by-side whenever advanced rail is shown */
+/* PODSUMOWANIE | RENTOWNOŚĆ - side-by-side whenever advanced rail is shown */
 .estimate-right-rail__grid--advanced {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

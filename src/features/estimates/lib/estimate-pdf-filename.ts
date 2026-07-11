@@ -26,8 +26,8 @@ export function buildEstimatePdfViewerTitle(input: {
     input.estimateId.slice(-8);
 
   if (input.locale === "en") {
-    return `Estimate ${reference} — v${input.versionNumber}`;
+    return `Estimate ${reference} - v${input.versionNumber}`;
   }
 
-  return `Wycena ${reference} — v${input.versionNumber}`;
+  return `Wycena ${reference} - v${input.versionNumber}`;
 }

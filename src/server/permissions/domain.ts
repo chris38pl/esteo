@@ -40,7 +40,7 @@ export type EntitlementAction =
   | "use_ai_assistant"
   | "upload_attachment";
 
-/** Machine-readable reason a guard denied an action — drives UI messaging/CTAs. */
+/** Machine-readable reason a guard denied an action - drives UI messaging/CTAs. */
 export type EntitlementReason =
   | "PLAN_LIMIT"
   | "SEAT_LIMIT"

@@ -1,6 +1,6 @@
 import type { SearchEntityType } from "@prisma/client";
 
-/** V2 — wire to posthog-js when NEXT_PUBLIC_POSTHOG_KEY is set */
+/** V2 - wire to posthog-js when NEXT_PUBLIC_POSTHOG_KEY is set */
 export type SearchQueryEvent = {
   workspaceId: string;
   query: string;

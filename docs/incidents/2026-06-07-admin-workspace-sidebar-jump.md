@@ -11,7 +11,7 @@
 
 ## What was NOT the root cause
 
-- Admin delete **intentionally** only soft-deleted `EstimateRequest` initially — no cascade to `Estimate` (fixed separately).
+- Admin delete **intentionally** only soft-deleted `EstimateRequest` initially - no cascade to `Estimate` (fixed separately).
 - Admin URLs do not (and should not) embed a workspace slug; admin layout correctly uses persisted active workspace (`resolveActiveWorkspace`).
 
 ## Root causes
@@ -42,7 +42,7 @@ flowchart LR
 | --- | --- |
 | **Dual resolution** | [`(dashboard)/layout.tsx`](../../src/app/[locale]/(dashboard)/layout.tsx): workspace routes use URL slug; admin routes use cookie / `User.lastActiveWorkspaceId`. |
 | **Stale cookie** | [`switchWorkspace`](../../src/components/layout/app-sidebar/workspace-context.tsx) navigated with `router.push` but did **not** call [`setActiveWorkspaceAction`](../../src/server/workspaces/actions.ts), so persisted workspace could differ from the last URL the user browsed. |
-| **Full layout refresh** | Admin panel called `router.refresh()` after Delete/Restore, forcing the dashboard layout to re-resolve active workspace from cookie on an admin URL — making a mismatch visible as a “jump”. |
+| **Full layout refresh** | Admin panel called `router.refresh()` after Delete/Restore, forcing the dashboard layout to re-resolve active workspace from cookie on an admin URL - making a mismatch visible as a “jump”. |
 
 ## Fixes applied
 

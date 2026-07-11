@@ -50,7 +50,7 @@ function workspaceSettingsPath(locale: Locale, workspaceSlug: string): string {
 
 /**
  * Returns the URL to redirect to when the user has no accessible workspaces,
- * or null if they have at least one. Does NOT throw — safe to use in layouts
+ * or null if they have at least one. Does NOT throw - safe to use in layouts
  * that render <ClientRedirect> instead of calling redirect().
  */
 async function resolveNoAccessUrl(locale: Locale, user: User): Promise<string | null> {
@@ -69,16 +69,16 @@ async function resolveNoAccessUrl(locale: Locale, user: User): Promise<string | 
 // layout components that render <ClientRedirect href={redirectTo} /> so that
 // redirects work reliably during both full-page loads and client-side (RSC)
 // navigations. Server redirect() can stall when called from a nested layout
-// during a soft navigation — ClientRedirect's useLayoutEffect is always reliable.
+// during a soft navigation - ClientRedirect's useLayoutEffect is always reliable.
 
-/** Guard for /dashboard (main app) — requires at least one accessible workspace. */
+/** Guard for /dashboard (main app) - requires at least one accessible workspace. */
 export async function checkDashboardHomeAccess(locale: Locale): Promise<AccessCheckResult> {
   const user = await requireAuth(locale);
   const redirectTo = await resolveNoAccessUrl(locale, user);
   return { user, redirectTo };
 }
 
-/** Guard for /dashboard/onboarding — founders only, not invitees with pending invites. */
+/** Guard for /dashboard/onboarding - founders only, not invitees with pending invites. */
 export async function checkOnboardingAccess(locale: Locale): Promise<AccessCheckResult> {
   const user = await requireAuth(locale);
   const { accessibleCount, hasPendingInbox } = await getDashboardAccessState(user);
@@ -89,7 +89,7 @@ export async function checkOnboardingAccess(locale: Locale): Promise<AccessCheck
   return { user, redirectTo: null };
 }
 
-/** Guard for /dashboard/invitations — users with pending inbox items (invites or transfers). */
+/** Guard for /dashboard/invitations - users with pending inbox items (invites or transfers). */
 export async function checkIncomingInvitationsAccess(locale: Locale): Promise<AccessCheckResult> {
   const user = await requireAuth(locale);
   const [accessibleCount, hasInbox] = await Promise.all([
@@ -107,7 +107,7 @@ export async function checkIncomingInvitationsAccess(locale: Locale): Promise<Ac
   return { user, redirectTo: null };
 }
 
-/** Guard for /dashboard/workspaces/new — owners who can create another workspace. */
+/** Guard for /dashboard/workspaces/new - owners who can create another workspace. */
 export async function checkNewWorkspaceAccess(locale: Locale): Promise<AccessCheckResult> {
   const user = await requireAuth(locale);
   const noAccessUrl = await resolveNoAccessUrl(locale, user);

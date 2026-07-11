@@ -1,10 +1,10 @@
 # Estimate notes (internal threaded comments)
 
-> **Status:** Implemented. UI entry: estimate editor → **Notatki** / **Notes** tab — see [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md).
+> **Status:** Implemented. UI entry: estimate editor → **Notatki** / **Notes** tab - see [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md).
 
 ## Goal
 
-Give workspace members a lightweight place for **internal discussion** on an estimate — context, handoffs, and decisions that should not live in line items or the AI chat.
+Give workspace members a lightweight place for **internal discussion** on an estimate - context, handoffs, and decisions that should not live in line items or the AI chat.
 
 This is **not** a messaging product, Slack clone, or activity feed. Notes are plain text, scoped to the estimate, and visible only inside the dashboard.
 
@@ -28,7 +28,7 @@ The Notes tab is independent of the **Kosztorys** (items) tab and of estimate **
 - Any workspace member with at least **VIEWER** role can add a top-level note.
 - Body: plain text, 1–2000 characters (trimmed).
 - Author is shown with avatar, display name (fallback: email), and `createdAt` timestamp.
-- Notes are **immutable** in MVP — there is no edit action.
+- Notes are **immutable** in MVP - there is no edit action.
 
 ### Reply
 
@@ -39,7 +39,7 @@ The Notes tab is independent of the **Kosztorys** (items) tab and of estimate **
 ### Delete
 
 - Users can delete **only their own** notes or replies.
-- Deletion is **permanent** (hard delete) — no recovery, no audit trail of removed content.
+- Deletion is **permanent** (hard delete) - no recovery, no audit trail of removed content.
 - Deleting a **top-level note** also removes **all replies** in that thread (database cascade). The UI warns when confirming delete on a note that has replies.
 
 ### Empty state
@@ -53,9 +53,9 @@ When no notes exist, the tab shows a short empty-state message and the top-level
 | Aspect | Rule |
 | --- | --- |
 | **Data scope** | One thread per **estimate** (`estimateId`), shared across all versions |
-| **Workspace access** | `requireRole(..., "VIEWER")` — VIEWER, MEMBER, and OWNER can read, post, and reply |
+| **Workspace access** | `requireRole(..., "VIEWER")` - VIEWER, MEMBER, and OWNER can read, post, and reply |
 | **Authorization path** | `EstimateNote` → `Estimate` → `Workspace` (no `workspaceId` stored on the note row) |
-| **Version read-only** | Archived / read-only versions do **not** block notes — collaboration stays enabled |
+| **Version read-only** | Archived / read-only versions do **not** block notes - collaboration stays enabled |
 
 `workspaceId` is passed into server actions only for permission checks and path revalidation; it is not denormalized onto `EstimateNote`.
 
@@ -159,6 +159,6 @@ Keys under `estimates.editor.notes.*` in `src/messages/pl/estimates.json` and `s
 
 ## Related
 
-- [`estimates.md`](estimates.md) — estimate product overview
-- [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md) — editor tabs and layout
-- [`database.md`](../architecture/database.md) — broader schema standards
+- [`estimates.md`](estimates.md) - estimate product overview
+- [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md) - editor tabs and layout
+- [`database.md`](../architecture/database.md) - broader schema standards

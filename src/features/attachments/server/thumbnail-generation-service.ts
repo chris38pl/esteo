@@ -57,7 +57,7 @@ export async function generateAttachmentThumbnail(
   });
 
   if (!attachment) {
-    logger.info("Thumbnail generation skipped — attachment not found", {
+    logger.info("Thumbnail generation skipped - attachment not found", {
       attachmentId: input.attachmentId,
       attempt: input.attempt,
     });
@@ -72,7 +72,7 @@ export async function generateAttachmentThumbnail(
     attachment.thumbnailStatus === AttachmentThumbnailStatus.GENERATED &&
     attachment.thumbnailStorageKey
   ) {
-    logger.info("Thumbnail generation skipped — already generated", {
+    logger.info("Thumbnail generation skipped - already generated", {
       attachmentId: attachment.id,
       estimateId: attachment.estimateId,
       thumbnailStatus: attachment.thumbnailStatus,

@@ -19,6 +19,6 @@ void runDevBillingScript(async () => {
   console.log(`  plan: ${result.plan}`);
   console.log(`  status: ${result.status}`);
   console.log(`  cancelAtPeriodEnd: ${result.cancelAtPeriodEnd}`);
-  console.log(`  currentPeriodEnd: ${result.currentPeriodEnd?.toISOString() ?? "—"}`);
+  console.log(`  currentPeriodEnd: ${result.currentPeriodEnd?.toISOString() ?? "-"}`);
   console.log("Run: npm run dev:workspace-state -- --slug", slug);
 });

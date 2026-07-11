@@ -10,7 +10,7 @@ if (!databaseUrl || !directUrl) {
   console.error(
     "Missing DATABASE_URL_STAGING or DIRECT_URL_STAGING in .env / .env.local.",
   );
-  console.error("Add Neon staging connection strings — see docs/dev/database-migrations.md");
+  console.error("Add Neon staging connection strings - see docs/dev/database-migrations.md");
   process.exit(1);
 }
 

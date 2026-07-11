@@ -149,7 +149,7 @@ function ProjectDescriptionBlock({ description }: { description: string }) {
           ) : null}
         </div>
       ) : (
-        <p className="text-sm text-muted-foreground">—</p>
+        <p className="text-sm text-muted-foreground">-</p>
       )}
     </div>
   );
@@ -262,7 +262,7 @@ export function RequestDetailPanel({
       <div className="grid min-w-0 gap-6 lg:grid-cols-2 lg:items-start">
         <DetailCard icon={User} title={t("detail.customerSection")}>
           <DetailRow label={t("detail.name")}>
-            {request.customerData?.fullName ?? "—"}
+            {request.customerData?.fullName ?? "-"}
           </DetailRow>
           <DetailRow label={t("detail.email")}>
             {request.customerData?.email ? (
@@ -273,21 +273,21 @@ export function RequestDetailPanel({
                 {request.customerData.email}
               </a>
             ) : (
-              "—"
+              "-"
             )}
           </DetailRow>
           <DetailRow label={t("detail.phone")}>
-            {request.customerData?.phone ?? "—"}
+            {request.customerData?.phone ?? "-"}
           </DetailRow>
         </DetailCard>
 
         <DetailCard icon={MapPin} title={t("detail.addressSection")}>
           <DetailRow label={t("detail.streetAddress")}>
-            {request.address?.streetAddress ?? "—"}
+            {request.address?.streetAddress ?? "-"}
           </DetailRow>
-          <DetailRow label={t("detail.city")}>{request.address?.city ?? "—"}</DetailRow>
+          <DetailRow label={t("detail.city")}>{request.address?.city ?? "-"}</DetailRow>
           <DetailRow label={t("detail.postalCode")}>
-            {request.address?.postalCode ?? "—"}
+            {request.address?.postalCode ?? "-"}
           </DetailRow>
           <DetailRow label={t("detail.voivodeship")}>
             {formatVoivodeship(request.address?.voivodeship, locale)}

@@ -102,7 +102,7 @@ function main() {
 
     if (spec.coverage?.length && spec.mustHave?.length) {
       dualRemovals.push(
-        `- **${spec.scenarioId}** — coverage: ${spec.coverage.join(", ")}; mustHave: ${spec.mustHave.join(", ")}`,
+        `- **${spec.scenarioId}** - coverage: ${spec.coverage.join(", ")}; mustHave: ${spec.mustHave.join(", ")}`,
       );
     }
   }

@@ -4,10 +4,10 @@ export const VOICE_RECORDING_GLOW_OFFSET = {
   y: 22,
 } as const;
 
-/** Summary (Podsumowanie) hero — public/images/voice-intake/understand-your-project.webp */
+/** Summary (Podsumowanie) hero - public/images/voice-intake/understand-your-project.webp */
 export const VOICE_SUMMARY_HERO_IMAGE = "/images/voice-intake/understand-your-project.webp";
 
-/** Error screen owl — public/images/voice-intake/error-owl-{light,dark}.webp */
+/** Error screen owl - public/images/voice-intake/error-owl-{light,dark}.webp */
 export const VOICE_ERROR_OWL_IMAGES = {
   light: "/images/voice-intake/error-owl-light.webp",
   dark: "/images/voice-intake/error-owl-dark.webp",

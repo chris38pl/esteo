@@ -26,7 +26,7 @@ export function resolvePlanPrice(planVersion: string): number {
   return cents;
 }
 
-/** Current catalog price for marketing (hero / plans page) — not pinned subscription state. */
+/** Current catalog price for marketing (hero / plans page) - not pinned subscription state. */
 export function resolveCurrentPlanPrice(plan: SubscriptionPlan): number {
   if (plan === "FREE") {
     return 0;
@@ -61,7 +61,7 @@ type SubscriptionPlanVersionInput = {
 
 /**
  * Resolves the pinned catalog version for pricing. Null or unknown versions fall back to the
- * plan's current default — same rule as resolvePlanLimits and the schema comment on planVersion.
+ * plan's current default - same rule as resolvePlanLimits and the schema comment on planVersion.
  */
 export function resolveSubscriptionPlanVersion(
   plan: SubscriptionPlan,

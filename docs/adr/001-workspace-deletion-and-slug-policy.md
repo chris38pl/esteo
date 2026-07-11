@@ -14,22 +14,22 @@ Three common approaches were considered:
 
 | Option | Slug on archive | Recreate same slug? |
 | --- | --- | --- |
-| A — Partial unique index | Unchanged on row | Yes (unique among active only) |
-| B — Tombstone rename | Rewritten (e.g. `acme__archived__id`) | Yes (canonical slug freed) |
-| C — Never reuse | Unchanged on row | No (`acme-2`, `acme-3`, …) |
+| A - Partial unique index | Unchanged on row | Yes (unique among active only) |
+| B - Tombstone rename | Rewritten (e.g. `acme__archived__id`) | Yes (canonical slug freed) |
+| C - Never reuse | Unchanged on row | No (`acme-2`, `acme-3`, …) |
 
 ## Decision
 
 For MVP we adopt:
 
-1. **Soft delete (archive) only** — set `Workspace.deletedAt`; do not hard-delete workspace rows or related documents.
-2. **Option C — slugs are never reused** — global `@unique` on `slug` includes archived workspaces. New workspaces get automatic suffixes via `resolveAvailableSlug()` (`acme`, `acme-2`, …).
-3. **Owner delete via settings** — General tab danger zone; confirmation dialog; `archiveWorkspace` server action.
+1. **Soft delete (archive) only** - set `Workspace.deletedAt`; do not hard-delete workspace rows or related documents.
+2. **Option C - slugs are never reused** - global `@unique` on `slug` includes archived workspaces. New workspaces get automatic suffixes via `resolveAvailableSlug()` (`acme`, `acme-2`, …).
+3. **Owner delete via settings** - General tab danger zone; confirmation dialog; `archiveWorkspace` server action.
 4. **Archive side effects:**
    - Revoke all `PENDING` invitations (`REVOKED`).
    - Reconcile owner active workspace cookie / `lastActiveWorkspaceId`.
    - Members lose access immediately (queries filter `deletedAt IS NULL`).
-5. **Display name is not globally unique** — only the slug is; owners may reuse the same workspace name after delete.
+5. **Display name is not globally unique** - only the slug is; owners may reuse the same workspace name after delete.
 
 ## Rationale
 
@@ -50,7 +50,7 @@ For MVP we adopt:
 ### Negative
 
 - Slug `acme` remains reserved forever after first use, even after delete.
-- Recreating “the same” workspace shows a suffixed URL (`acme-2`) — must be communicated in delete UI copy.
+- Recreating “the same” workspace shows a suffixed URL (`acme-2`) - must be communicated in delete UI copy.
 - Database grows with archived rows (acceptable for MVP scale).
 
 ### Neutral

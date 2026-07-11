@@ -3,7 +3,7 @@ import { FileText } from "lucide-react";
 
 export type PinnedEstimateSidebarItem = {
   estimateId: string;
-  /** User-defined estimate title from DB — not translated in UI. */
+  /** User-defined estimate title from DB - not translated in UI. */
   title: string;
   /** ISO timestamp of last modification from DB. */
   updatedAt: string;

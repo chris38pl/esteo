@@ -56,7 +56,7 @@ enum WorkspaceMemberState {
   REMOVED
 }
 
-/// Why a membership was suspended/removed — drives reactivation logic and messaging.
+/// Why a membership was suspended/removed - drives reactivation logic and messaging.
 enum WorkspaceMemberSuspendedReason {
   SEAT_OVERAGE
   UNPAID
@@ -697,7 +697,7 @@ model Workspace {
   provisioningStatus          WorkspaceProvisioningStatus @default(ACTIVE)
   /// Voluntary end-state (owner archived). Distinct from involuntary EXPIRED and from soft-delete.
   archivedAt                  DateTime?
-  /// Platform/admin hold (ToS/fraud) — overrides billing state in the effective-status resolver.
+  /// Platform/admin hold (ToS/fraud) - overrides billing state in the effective-status resolver.
   platformSuspendedAt         DateTime?
   deletedAt                   DateTime?
   createdAt                   DateTime                    @default(now())

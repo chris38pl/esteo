@@ -363,7 +363,7 @@ body {
   pointer-events: none;
 }
 
-/* Full card artwork — contain + top-right keeps icon uncropped */
+/* Full card artwork - contain + top-right keeps icon uncropped */
 .sidebar-plan-card-bg-frame {
   position: absolute;
   inset: 0;
@@ -412,7 +412,7 @@ button:not(:disabled),
   cursor: pointer;
 }
 
-/* AI setup — one-shot field focus highlight */
+/* AI setup - one-shot field focus highlight */
 [data-ai-setup-field],
 .ai-setup-focus-active {
   position: relative;
@@ -453,7 +453,7 @@ button:not(:disabled),
   }
 }
 
-/* Voice intake — animated form fill */
+/* Voice intake - animated form fill */
 [data-voice-field] {
   position: relative;
   border-radius: 1rem;

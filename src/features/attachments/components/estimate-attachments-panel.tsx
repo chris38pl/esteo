@@ -153,7 +153,7 @@ export function EstimateAttachmentsPanel({
               const url = await fetchSignedUrl(item.id, "thumbnail");
               next[item.id] = url;
             } catch {
-              // Thumbnail unavailable — card falls back to icon.
+              // Thumbnail unavailable - card falls back to icon.
             }
           }),
       );

@@ -1,6 +1,6 @@
 {
   "id": "electrical-commercial-lighting",
-  "name": "Electrical — commercial lighting",
+  "name": "Electrical - commercial lighting",
   "locale": "pl",
   "category": "business",
   "quick": false,
@@ -15,7 +15,7 @@
   },
   "request": {
     "project": {
-      "description": "Oświetlenie sklepu odzieżowego 120 m² — szynoprzewody, oprawy LED, sterowanie DALI, trasy w suficie podwieszanym. Poznań.",
+      "description": "Oświetlenie sklepu odzieżowego 120 m² - szynoprzewody, oprawy LED, sterowanie DALI, trasy w suficie podwieszanym. Poznań.",
       "preferredStartDate": "3_6_months"
     },
     "industryFields": {

@@ -1,6 +1,6 @@
 /**
  * Bundled estimate PDF styles for Trigger.dev workers.
- * Source of truth: estimate-pdf.css — keep in sync after CSS edits.
+ * Source of truth: estimate-pdf.css - keep in sync after CSS edits.
  */
 export const estimatePdfStyles = `@page {
   size: A4;
@@ -439,7 +439,7 @@ body {
 .esteo-promo-inner {
   display: grid;
   width: 100%;
-  /* 12 : 28 : 22 : 20 : 18 — gap subtracted so columns never expand */
+  /* 12 : 28 : 22 : 20 : 18 - gap subtracted so columns never expand */
   grid-template-columns:
     calc((100% - 24px) * 0.16)
     calc((100% - 24px) * 0.24)
@@ -692,7 +692,7 @@ body {
   page-break-inside: avoid;
 }
 
-/* Admin HTML preview — discrete A4 sheets (Paged.js polyfill) */
+/* Admin HTML preview - discrete A4 sheets (Paged.js polyfill) */
 @media screen {
   body.pdf-screen-preview {
     background: #f1f5f9;
@@ -734,7 +734,7 @@ body {
     background: #fff;
   }
 
-  /* Cut line between sheets — real DOM node inserted after Paged.js render */
+  /* Cut line between sheets - real DOM node inserted after Paged.js render */
   body.pdf-screen-preview .pdf-page-separator {
     flex: 0 0 auto;
     width: min(210mm, calc(100% - 32px));

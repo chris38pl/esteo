@@ -94,7 +94,7 @@
 
       "title": "Ulepsz do Pro lub Business",
 
-      "description": "Odblokuj zaawansowane funkcje Esteo — więcej możliwości, zespołu i wsparcia."
+      "description": "Odblokuj zaawansowane funkcje Esteo - więcej możliwości, zespołu i wsparcia."
 
     },
 
@@ -102,7 +102,7 @@
 
       "title": "Dostosuj reguły dla swoich wycen",
 
-      "description": "Ustaw własne reguły cenowe i instrukcje AI — Esteo zastosuje je przy każdej wycenie."
+      "description": "Ustaw własne reguły cenowe i instrukcje AI - Esteo zastosuje je przy każdej wycenie."
 
     },
 
@@ -126,7 +126,7 @@
 
       "title": "Program partnerski (Pro/Business)",
 
-      "description": "Polecaj Esteo i zarabiaj — program partnerski jest dostępny w planach Pro i Business."
+      "description": "Polecaj Esteo i zarabiaj - program partnerski jest dostępny w planach Pro i Business."
 
     },
 
@@ -150,7 +150,7 @@
 
       "title": "Motyw jasny i ciemny",
 
-      "description": "Zmień wygląd aplikacji — wybierz jasny lub ciemny motyw w ustawieniach przestrzeni."
+      "description": "Zmień wygląd aplikacji - wybierz jasny lub ciemny motyw w ustawieniach przestrzeni."
 
     },
 
@@ -166,7 +166,7 @@
 
       "title": "Utwórz pierwszą wycenę krok po kroku",
 
-      "description": "Na liście Wycen kliknij „Utwórz wycenę”, opisz zlecenie — AI przygotuje kosztorys."
+      "description": "Na liście Wycen kliknij „Utwórz wycenę”, opisz zlecenie - AI przygotuje kosztorys."
 
     },
 
@@ -174,7 +174,7 @@
 
       "title": "Powiedz głosowo, co robisz",
 
-      "description": "W formularzu nowej wyceny naciśnij mikrofon i opisz zlecenie swoimi słowami — np. „Remont łazienki 6 m²”."
+      "description": "W formularzu nowej wyceny naciśnij mikrofon i opisz zlecenie swoimi słowami - np. „Remont łazienki 6 m²”."
 
     },
 
@@ -182,7 +182,7 @@
 
       "title": "Zawsze sprawdź wycenę od AI",
 
-      "description": "AI robi szkic — Ty decydujesz. Przejrzyj pozycje i kwoty, zanim wyślesz PDF klientowi."
+      "description": "AI robi szkic - Ty decydujesz. Przejrzyj pozycje i kwoty, zanim wyślesz PDF klientowi."
 
     },
 
@@ -196,9 +196,9 @@
 
     "client_sent_inquiry": {
 
-      "title": "Klient wysłał zapytanie — co teraz?",
+      "title": "Klient wysłał zapytanie - co teraz?",
 
-      "description": "Wejdź w Zapytania, otwórz wiadomość od klienta i kliknij Utwórz wycenę — dane klienta wypełnią się same."
+      "description": "Wejdź w Zapytania, otwórz wiadomość od klienta i kliknij Utwórz wycenę - dane klienta wypełnią się same."
 
     },
 
@@ -206,7 +206,7 @@
 
       "title": "Wyślij klientowi link do formularza",
 
-      "description": "Skopiuj link do formularza wyceny i wyślij go SMS-em, WhatsAppem lub mailem — klient sam opisze zlecenie."
+      "description": "Skopiuj link do formularza wyceny i wyślij go SMS-em, WhatsAppem lub mailem - klient sam opisze zlecenie."
 
     },
 
@@ -214,7 +214,7 @@
 
       "title": "Zobacz formularz oczami klienta",
 
-      "description": "W menu bocznym otwórz Pozyskiwanie klientów — skopiuj link lub zobacz formularz, który wysyłasz klientom."
+      "description": "W menu bocznym otwórz Pozyskiwanie klientów - skopiuj link lub zobacz formularz, który wysyłasz klientom."
 
     },
 
@@ -222,7 +222,7 @@
 
       "title": "Uzupełnij dane firmy przed PDF",
 
-      "description": "Nazwa, NIP i adres firmy pojawią się na PDF. Esteo przypomni o tym przy pierwszym eksporcie — możesz też uzupełnić w Ustawieniach → Firma."
+      "description": "Nazwa, NIP i adres firmy pojawią się na PDF. Esteo przypomni o tym przy pierwszym eksporcie - możesz też uzupełnić w Ustawieniach → Firma."
 
     },
 
@@ -230,7 +230,7 @@
 
       "title": "Popraw pojedynczą pozycję w kosztorysie",
 
-      "description": "Kliknij pozycję na liście, zmień nazwę lub kwotę i zapisz — nie musisz pisać wszystkiego od nowa."
+      "description": "Kliknij pozycję na liście, zmień nazwę lub kwotę i zapisz - nie musisz pisać wszystkiego od nowa."
 
     },
 
@@ -238,7 +238,7 @@
 
       "title": "Poproś AI prostym językiem",
 
-      "description": "W panelu AI napisz np. „Dodaj 5 gniazdek” albo „Usuń malowanie sufitu” — AI zaktualizuje kosztorys."
+      "description": "W panelu AI napisz np. „Dodaj 5 gniazdek” albo „Usuń malowanie sufitu” - AI zaktualizuje kosztorys."
 
     },
 
@@ -246,7 +246,7 @@
 
       "title": "Podziel płatność: zaliczka i reszta",
 
-      "description": "W wycenie → zakładka Płatności dodaj transze — np. 30% zaliczki i reszta po zakończeniu."
+      "description": "W wycenie → zakładka Płatności dodaj transze - np. 30% zaliczki i reszta po zakończeniu."
 
     },
 
@@ -254,7 +254,7 @@
 
       "title": "Sprawdź, kto jeszcze nie zapłacił",
 
-      "description": "Zakładka Płatności w menu pokazuje wszystkie transze z całego workspace — zobaczysz zaległości na jednej liście."
+      "description": "Zakładka Płatności w menu pokazuje wszystkie transze z całego workspace - zobaczysz zaległości na jednej liście."
 
     },
 
@@ -262,7 +262,7 @@
 
       "title": "Szybkie wyszukiwanie: Ctrl+K",
 
-      "description": "Naciśnij Ctrl+K (Cmd+K na Macu), wpisz nazwę klienta lub wyceny — znajdziesz ją bez przeklikiwania menu."
+      "description": "Naciśnij Ctrl+K (Cmd+K na Macu), wpisz nazwę klienta lub wyceny - znajdziesz ją bez przeklikiwania menu."
 
     },
 
@@ -270,7 +270,7 @@
 
       "title": "Przypnij ważną wycenę w menu",
 
-      "description": "Otwórz wycenę i przypnij ją — wrócisz do niej jednym kliknięciem z lewego menu, bez szukania na liście."
+      "description": "Otwórz wycenę i przypnij ją - wrócisz do niej jednym kliknięciem z lewego menu, bez szukania na liście."
 
     },
 
@@ -278,7 +278,7 @@
 
       "title": "Zdjęcia i pliki od klienta",
 
-      "description": "Klient może dołączyć zdjęcia w formularzu — zobaczysz je w Zapytaniu i przy tworzeniu wyceny."
+      "description": "Klient może dołączyć zdjęcia w formularzu - zobaczysz je w Zapytaniu i przy tworzeniu wyceny."
 
     },
 
@@ -286,7 +286,7 @@
 
       "title": "Cofnij ostatnią zmianę",
 
-      "description": "Pomyłka? Użyj Cofnij (Ctrl+Z) w edytorze wyceny — na planie Free masz jeden krok wstecz."
+      "description": "Pomyłka? Użyj Cofnij (Ctrl+Z) w edytorze wyceny - na planie Free masz jeden krok wstecz."
 
     },
 
@@ -294,7 +294,7 @@
 
       "title": "Co to jest workspace?",
 
-      "description": "To Twoje miejsce w Esteo — wszystkie wyceny, klienci i ustawienia firmy w jednym miejscu. Możesz mieć osobne workspace'y na różne firmy."
+      "description": "To Twoje miejsce w Esteo - wszystkie wyceny, klienci i ustawienia firmy w jednym miejscu. Możesz mieć osobne workspace'y na różne firmy."
 
     },
 
@@ -302,7 +302,7 @@
 
       "title": "Esteo na telefonie",
 
-      "description": "Możesz tworzyć wyceny, dyktować głosem i wysyłać link klientowi z telefonu — wygodnie na budowie."
+      "description": "Możesz tworzyć wyceny, dyktować głosem i wysyłać link klientowi z telefonu - wygodnie na budowie."
 
     },
 
@@ -310,7 +310,7 @@
 
       "title": "Masz problem? Napisz do nas",
 
-      "description": "Użyj Zgłoś problem w menu — opisz, co nie działa, a zespół Esteo pomoże."
+      "description": "Użyj Zgłoś problem w menu - opisz, co nie działa, a zespół Esteo pomoże."
 
     }
 

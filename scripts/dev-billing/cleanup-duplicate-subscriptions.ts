@@ -33,7 +33,7 @@ void runDevBillingScript(async () => {
   console.log(`Cancel: ${cancelIds.length === 0 ? "(none)" : cancelIds.join(", ")}`);
 
   if (dryRun) {
-    console.log("Dry run — no Stripe changes.");
+    console.log("Dry run - no Stripe changes.");
     return;
   }
 

@@ -1,4 +1,4 @@
-# Estimate PDF — Chromium launch failure on Trigger.dev worker
+# Estimate PDF - Chromium launch failure on Trigger.dev worker
 
 **Date:** 2026-06-10  
 **Status:** Resolved  
@@ -57,7 +57,7 @@ sequenceDiagram
 | Layer | Cause |
 | --- | --- |
 | **Wrong Chromium stack** | [`render-estimate-pdf.ts`](../../src/pdf/server/render-estimate-pdf.ts) used `@sparticuz/chromium` in non-dev paths. Sparticuz bundles a minimal Lambda Chromium binary; Trigger.dev workers lack the expected NSS shared libraries → exit code 127. |
-| **Missing build extension** | [`trigger.config.ts`](../../trigger.config.ts) had no `puppeteer()` extension — Chrome was never installed in the worker image. |
+| **Missing build extension** | [`trigger.config.ts`](../../trigger.config.ts) had no `puppeteer()` extension - Chrome was never installed in the worker image. |
 | **Deploy gap (earlier)** | New task id requires **`trigger:deploy`** to Esteo-Staging; Vercel redeploy alone does not update Trigger workers. |
 
 ---
@@ -84,9 +84,9 @@ The extension (v4.4.6):
 
 - Installs `google-chrome-stable` in the worker image at deploy time.
 - Injects `PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable` automatically (`deploy.env`, `override: true`).
-- Does **not** run in `trigger:dev` — local dev needs `PUPPETEER_EXECUTABLE_PATH` in `.env.local`.
+- Does **not** run in `trigger:dev` - local dev needs `PUPPETEER_EXECUTABLE_PATH` in `.env.local`.
 
-### 2. PDF renderer — no Sparticuz, no Trigger SDK coupling
+### 2. PDF renderer - no Sparticuz, no Trigger SDK coupling
 
 [`src/pdf/server/render-estimate-pdf.ts`](../../src/pdf/server/render-estimate-pdf.ts):
 
@@ -114,9 +114,9 @@ Successful deploy: **version `20260610.8`**, 3 tasks detected.
 
 ## What was NOT the root cause
 
-- **UploadThing / DATABASE_URL** — worker env was sufficient once the task actually ran.
-- **Vercel Preview env** — PDF rendering happens on Trigger worker, not Vercel serverless.
-- **Pending version** — separate issue (undeployed task); fixed by `trigger:deploy`, not by Chromium change.
+- **UploadThing / DATABASE_URL** - worker env was sufficient once the task actually ran.
+- **Vercel Preview env** - PDF rendering happens on Trigger worker, not Vercel serverless.
+- **Pending version** - separate issue (undeployed task); fixed by `trigger:deploy`, not by Chromium change.
 
 ---
 

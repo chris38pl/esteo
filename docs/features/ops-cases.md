@@ -1,6 +1,6 @@
 # Ops Cases (v1)
 
-Production ops queue for **user-account and transaction failures** — separate from the staging-only [Issue Tracker](./issue-tracker.md).
+Production ops queue for **user-account and transaction failures** - separate from the staging-only [Issue Tracker](./issue-tracker.md).
 
 v1 scope: **`REFERRAL_REWARD_FAILED` only**.
 

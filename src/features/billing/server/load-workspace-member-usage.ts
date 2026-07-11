@@ -31,7 +31,7 @@ export async function loadWorkspaceMemberUsage(
       return {
         userId,
         name: user?.name ?? null,
-        email: user?.email ?? "—",
+        email: user?.email ?? "-",
         aiCalls: aiByUser.find((r) => r.userId === userId)?.quantity ?? 0,
         estimates: estimatesByUserId.get(userId) ?? 0,
       };

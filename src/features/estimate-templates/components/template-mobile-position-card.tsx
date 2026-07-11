@@ -48,7 +48,7 @@ function TemplateMobilePositionCardComponent({
             </span>
           </span>
           <span className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs tabular-nums text-muted-foreground">
-            <span>{item.unit || "—"}</span>
+            <span>{item.unit || "-"}</span>
             <span>{priceLabel}</span>
           </span>
         </span>

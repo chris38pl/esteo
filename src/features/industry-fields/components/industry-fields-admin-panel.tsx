@@ -92,7 +92,7 @@ function translationLabel(
 ): string {
   return (
     definition.translations.find((translation) => translation.locale === locale)?.label ??
-    "—"
+    "-"
   );
 }
 

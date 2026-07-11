@@ -88,7 +88,7 @@ assert(
   "isHandoffTimedOut true after 90 days",
 );
 
-console.log("\nBilling permissions — HANDOFF_ACTIVE:");
+console.log("\nBilling permissions - HANDOFF_ACTIVE:");
 
 const handoffOwner = evaluateWorkspaceBillingPermissions({
   userId: "new-owner",
@@ -119,7 +119,7 @@ assert(handoffPayer.canManageBilling === true, "handoff payer → canManageBilli
 assert(handoffPayer.canChangePlanOrAddons === false, "handoff payer → !canChangePlanOrAddons (add-on fix)");
 assert(handoffPayer.canResumeSubscription === false, "handoff payer → !canResumeSubscription");
 
-console.log("\nBilling permissions — HANDOFF_EXPIRED:");
+console.log("\nBilling permissions - HANDOFF_EXPIRED:");
 
 const expiredOwner = evaluateWorkspaceBillingPermissions({
   userId: "new-owner",
@@ -162,7 +162,7 @@ const expiredMember = evaluateWorkspaceBillingPermissions({
 });
 assert(expiredMember.canPurchaseSubscription === false, "expired member → !canPurchaseSubscription");
 
-console.log("\nBilling permissions — post handoff completed (owner=payer):");
+console.log("\nBilling permissions - post handoff completed (owner=payer):");
 
 const completedOwner = evaluateWorkspaceBillingPermissions({
   userId: "new-owner",
@@ -189,7 +189,7 @@ const exPayerAfterComplete = evaluateWorkspaceBillingPermissions({
 });
 assert(exPayerAfterComplete.canViewBilling === false, "ex-payer after completion → !canViewBilling");
 
-console.log("\nTransfer eligibility — billing handoff unresolved:");
+console.log("\nTransfer eligibility - billing handoff unresolved:");
 
 const blockedActive = evaluateTransferEligibility({
   subscription: {

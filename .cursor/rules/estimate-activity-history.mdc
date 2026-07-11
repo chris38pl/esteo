@@ -11,7 +11,7 @@ alwaysApply: false
 
 **Scope:** only Estimate editor files (see globs). `alwaysApply: false`.
 
-When planning or implementing a **user-visible mutation** on the estimate editor, ask in chat **before wiring History** — standard planning/implementation prompt, wait for reply, do not auto-implement.
+When planning or implementing a **user-visible mutation** on the estimate editor, ask in chat **before wiring History** - standard planning/implementation prompt, wait for reply, do not auto-implement.
 
 Skip the question when: read-only UI, cosmetic-only changes, the task already specifies History, or the user already decided.
 
@@ -19,23 +19,23 @@ Skip the question when: read-only UI, cosmetic-only changes, the task already sp
 
 Adapt labels to the feature being built. Example shape:
 
-> **Historia** — co logować dla [feature]?
+> **Historia** - co logować dla [feature]?
 >
 > **A)** Tylko przy tworzeniu [encji / głównej akcji]  
-> **B)** Tworzenie, edycja i usuwanie — **rekomendowane** dla większości zakładek  
-> **C)** Inne — opisz zakres (np. tylko eksport, bez edycji)
+> **B)** Tworzenie, edycja i usuwanie - **rekomendowane** dla większości zakładek  
+> **C)** Inne - opisz zakres (np. tylko eksport, bez edycji)
 >
 > **D)** Nie logować w Historii
 
 Pick **one recommended option** (usually **B** when the feature has multiple mutations users care about; **A** when only the first/create moment matters; **D** when noise outweighs value).
 
-Do not dump action keys, metadata schemas, or i18n paths in the prompt — handle those after the user chooses.
+Do not dump action keys, metadata schemas, or i18n paths in the prompt - handle those after the user chooses.
 
 ## After the user confirms
 
 Implement per `docs/features/estimate-activity-history.md`:
 
-- `logEstimateActivity()` from orchestration layer (`service.ts`, `*-actions.ts`, Trigger) — not repositories
+- `logEstimateActivity()` from orchestration layer (`service.ts`, `*-actions.ts`, Trigger) - not repositories
 - Minimal metadata; no bodies or field-level diffs
 - EN + PL under `editor.history.actions.*`
 - `router.refresh()` in the client panel when History should update without navigation

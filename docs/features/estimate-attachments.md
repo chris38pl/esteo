@@ -10,9 +10,9 @@ Storage belongs to the **workspace**, not the user or subscription plan.
 | --- | --- | --- |
 | `attachmentStorageUsedBytes` | `Workspace` | Aggregated stored bytes (processed files) |
 | `attachmentStorageLimitBytes` | `Workspace` | Quota cap from plan catalog (`resolvePlanLimits` → `maxStorageBytes`); FREE default **250 MB** (`262144000`) |
-| `attachmentCount` | `Estimate` | Derived cache of `EstimateAttachment` rows — **SET only**, never `+=`/`-=` |
+| `attachmentCount` | `Estimate` | Derived cache of `EstimateAttachment` rows - **SET only**, never `+=`/`-=` |
 
-Future add-ons increase `attachmentStorageLimitBytes` per workspace — no schema change required.
+Future add-ons increase `attachmentStorageLimitBytes` per workspace - no schema change required.
 
 All file sources (editor, public requests, internal requests) share this single counter via `usage-service.ts`.
 
@@ -41,9 +41,9 @@ After async thumbnail job (IMAGE): increment by thumbnail bytes
 
 ## Supported types
 
-**Images:** JPG/JPEG, PNG, WEBP — resized (max width 2000px), compressed; **300px thumbnail generated asynchronously**  
-**Documents:** PDF — stored as-is, no thumbnail (icon in UI)  
-**Documents:** DOCX — stored as-is, no thumbnail (icon in UI)
+**Images:** JPG/JPEG, PNG, WEBP - resized (max width 2000px), compressed; **300px thumbnail generated asynchronously**  
+**Documents:** PDF - stored as-is, no thumbnail (icon in UI)  
+**Documents:** DOCX - stored as-is, no thumbnail (icon in UI)
 
 MIME allowlists: `ALLOWED_IMAGE_MIME_TYPES`, `ALLOWED_DOCUMENT_MIME_TYPES` in `src/features/attachments/lib/allowed-mime-types.ts`.
 
@@ -66,7 +66,7 @@ Two namespaces in UploadThing:
 | --- | --- | --- |
 | Estimate request submit | `{workspaceId}/requests/{requestId}/{fileId}/original-{name}` (+ optional `thumb-`) | Upload before DB create |
 | Estimate editor | `{workspaceId}/{estimateId}/{attachmentId}/original-{name}` | Direct upload to estimate |
-| Workspace logo | `{workspaceId}/branding/logo/{fileId}/original-{name}` | Settings → General; **not** in attachment quota — see [workspace branding](workspace-branding-and-company-profile.md) |
+| Workspace logo | `{workspaceId}/branding/logo/{fileId}/original-{name}` | Settings → General; **not** in attachment quota - see [workspace branding](workspace-branding-and-company-profile.md) |
 
 Helper: `buildRequestStorageKey()` in `upload-service.ts`.
 
@@ -78,9 +78,9 @@ Do **not** send the full logical storage path as UploadThing `customId`. UT stor
 
 | Field | Value sent to UT | Stored in DB after upload |
 | --- | --- | --- |
-| `customId` | `fileId` / attachment UUID (36 chars) | — |
-| Thumbnail `customId` | `{attachmentId}-thumb` | — |
-| `storageKey` | — | UT file key (`YO4vGzP4JADj...`) for delete/download |
+| `customId` | `fileId` / attachment UUID (36 chars) | - |
+| Thumbnail `customId` | `{attachmentId}-thumb` | - |
+| `storageKey` | - | UT file key (`YO4vGzP4JADj...`) for delete/download |
 
 Logical path (`buildRequestStorageKey`) is kept for logging only. See [incident note](../incidents/2026-06-07-uploadthing-customid-batch-upload-partial-failure.md).
 
@@ -107,7 +107,7 @@ Thumbnails are **not** generated during submit or editor upload. A Trigger.dev j
 | 8 images on request submit | 16 UT uploads (8 originals + 8 thumbs) | **8** UT uploads (originals only) |
 | Thumbnails for those 8 images | Synchronous during submit | Async via `generate-attachment-thumbnails` |
 
-**How to verify:** submit 8 images; during submit only, count `original-` uploads — expect **8**, zero `/thumb-` uploads until the Trigger job runs.
+**How to verify:** submit 8 images; during submit only, count `original-` uploads - expect **8**, zero `/thumb-` uploads until the Trigger job runs.
 
 ### `AttachmentThumbnailStatus` lifecycle
 
@@ -138,8 +138,8 @@ Never trigger one job per attachment.
 | `Thumbnail generation started` | info | After setting `PROCESSING` |
 | `Thumbnail generation completed` | info | After `GENERATED` |
 | `Thumbnail generation failed` | error | Catch / non-retryable quota failure |
-| `Thumbnail generation skipped — already generated` | info | Idempotent skip |
-| `Thumbnail generation skipped — attachment not found` | info | Row deleted |
+| `Thumbnail generation skipped - already generated` | info | Idempotent skip |
+| `Thumbnail generation skipped - attachment not found` | info | Row deleted |
 
 All per-attachment events include `attachmentId`, `estimateId`, `thumbnailStatus`, and Trigger `attempt`.
 
@@ -176,8 +176,8 @@ validate payload + file limits
 
 API routes:
 
-- `POST /api/public/estimate-requests` — multipart, honeypot, rate limit, Turnstile
-- `POST /api/estimate-requests/internal` — auth MEMBER, same service
+- `POST /api/public/estimate-requests` - multipart, honeypot, rate limit, Turnstile
+- `POST /api/estimate-requests/internal` - auth MEMBER, same service
 
 If DB create fails after successful uploads, request-scoped UploadThing keys are deleted (compensation).
 
@@ -193,7 +193,7 @@ Stored on `EstimateRequest.attachments` JSON until promotion. Types in `request-
 
 Module: `promote-request-attachments.ts`, invoked early in `generate-estimate-draft.ts`.
 
-**Promotion is independent of AI quality** — runs when `Estimate` + `EstimateVersion` exist, regardless of draft completeness or AI errors. After promotion, a batched `generate-attachment-thumbnails` job is enqueued for promoted IMAGE ids.
+**Promotion is independent of AI quality** - runs when `Estimate` + `EstimateVersion` exist, regardless of draft completeness or AI errors. After promotion, a batched `generate-attachment-thumbnails` job is enqueued for promoted IMAGE ids.
 
 Promotion status on `EstimateRequest.aiMetadata`:
 
@@ -203,7 +203,7 @@ Promotion status on `EstimateRequest.aiMetadata`:
 | `COMPLETED` | Rows created in `EstimateAttachment`, count synced |
 | `FAILED` | Promotion threw; `attachmentsPromotionError` set |
 
-`EstimateAttachment` has **only** `estimateId` FK — no `estimateRequestId`. Anonymous public uploads use nullable `uploadedById`; `uploadSource` is `EDITOR`, `PUBLIC_REQUEST`, or `INTERNAL_REQUEST`.
+`EstimateAttachment` has **only** `estimateId` FK - no `estimateRequestId`. Anonymous public uploads use nullable `uploadedById`; `uploadSource` is `EDITOR`, `PUBLIC_REQUEST`, or `INTERNAL_REQUEST`.
 
 ## Public estimate request forms
 

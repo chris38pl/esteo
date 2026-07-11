@@ -6,7 +6,7 @@ const BOTTOM_GAP_PX = 16;
 
 /**
  * Side-column AI max height from its document position (below header + top-band).
- * Measured only at layout/resize — not on scroll (avoids sticky stretch bugs at page bottom).
+ * Measured only at layout/resize - not on scroll (avoids sticky stretch bugs at page bottom).
  */
 export function useEstimateAiStickyMaxHeight(
   anchorRef: RefObject<HTMLElement | null>,

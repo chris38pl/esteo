@@ -29,9 +29,9 @@ export function computeOverallScore(
 
 export type DeterminePassedResult = {
   classification: EvalPassClassification;
-  /** Strict pass — all gates including referenceSimilarity. */
+  /** Strict pass - all gates including referenceSimilarity. */
   passed: boolean;
-  /** Release gate — schema, rules, coverage, leakage, judge overall/context; excludes refSim. */
+  /** Release gate - schema, rules, coverage, leakage, judge overall/context; excludes refSim. */
   correctnessPassed: boolean;
   failReasons: string[];
   correctnessFailReasons: string[];

@@ -16,7 +16,7 @@ Workspace **owners** who refer other companies earn **PLN credits** (Stripe cust
 | Claim referral (sign-up) | `/sign-up?ref=…` | Public |
 | Billing (balance applied) | `/[locale]/dashboard/[workspaceSlug]/billing` | Owner |
 
-**Who can refer (MVP):** every workspace owner — no paid-plan gate. Link and profile are per **referrer user**, not per workspace.
+**Who can refer (MVP):** every workspace owner - no paid-plan gate. Link and profile are per **referrer user**, not per workspace.
 
 ---
 
@@ -24,7 +24,7 @@ Workspace **owners** who refer other companies earn **PLN credits** (Stripe cust
 
 Nagroda referral jest przypisana do **użytkownika** (`referrerUserId`), nie do konkretnego workspace.
 
-Example: Jan owns workspace A, B, and C — the bonus lands on Jan's Stripe **BillingCustomer** balance (account level). There is no “bonus in workspace B”.
+Example: Jan owns workspace A, B, and C - the bonus lands on Jan's Stripe **BillingCustomer** balance (account level). There is no “bonus in workspace B”.
 
 ### V1 assumption: customer-per-owner
 
@@ -83,7 +83,7 @@ Bonus is granted once per referral when the referred workspace's subscription be
 
 - **20% off** subscription for **3 months** (`STRIPE_REFERRAL_COUPON_ID`)
 - Applied at Stripe Checkout when referral is `PENDING_CLAIM` and coupon env is set
-- UI on billing manage may show promotional prices even without coupon — Stripe charges full price if env missing (dev log: `[referral] … STRIPE_REFERRAL_COUPON_ID missing`)
+- UI on billing manage may show promotional prices even without coupon - Stripe charges full price if env missing (dev log: `[referral] … STRIPE_REFERRAL_COUPON_ID missing`)
 
 Create coupon:
 
@@ -114,7 +114,7 @@ Sign-up with ref link
 
 Migration: `20260619180000_referral_reward_status`.
 
-**Important:** KPI „Przyznane nagrody” counts only `GRANTED` rows. Previously, rows could show as granted in UI without a Stripe balance transaction — v6 fixes this and provides backfill scripts.
+**Important:** KPI „Przyznane nagrody” counts only `GRANTED` rows. Previously, rows could show as granted in UI without a Stripe balance transaction - v6 fixes this and provides backfill scripts.
 
 ---
 
@@ -125,7 +125,7 @@ Migration: `20260619180000_referral_reward_status`.
 | Przyznane nagrody | Sum of `rewardCents` where `rewardStatus = GRANTED` |
 | W trakcie | Sum where `rewardStatus IN (PENDING, FAILED)` |
 | Dostępne saldo | Live Stripe customer balance (abs of negative `customer.balance`) |
-| **Wykorzystane saldo** | `max(0, granted − available)` — consumed on paid invoices |
+| **Wykorzystane saldo** | `max(0, granted − available)` - consumed on paid invoices |
 | Polecone firmy | Count of referrals with `status = ACTIVE` |
 
 Invariant: `usedBalanceCents = grantedRewardsCents − availableBalanceCents` (when Stripe is source of truth for available).
@@ -144,7 +144,7 @@ Columns: email, status, joined date, bonus amount. **PRO/BUSINESS badge** next t
 - Fallback copy: invite by company settings within 30-day claim window (before first payment)
 - Gift hero banner: `public/images/referrals/hero-gift-{light|dark}.webp` with blue mist glow (mobile: right artwork + text scrim)
 
-### Referred user — settings card
+### Referred user - settings card
 
 After claiming a referrer (code, email, or sign-up link), **Ustawienia → Ogólne** shows a persistent **„Twoje polecenie”** card instead of hiding the section:
 
@@ -154,11 +154,11 @@ After claiming a referrer (code, email, or sign-up link), **Ustawienia → Ogól
 - Benefit hint (20% for 3 months on PRO/BUSINESS)
 - CTA to plans while still on FREE
 
-Server: `getWorkspaceReferralClaimView()` — UI: `ReferralClaimSettingsSection`.
+Server: `getWorkspaceReferralClaimView()` - UI: `ReferralClaimSettingsSection`.
 
 ---
 
-## Billing integration — referral balance disclosure
+## Billing integration - referral balance disclosure
 
 Referrer rewards live as **Stripe customer balance** (credit). Stripe automatically reduces `amount_due` on upcoming invoices. The app now **surfaces this in UI** so owners understand why the next invoice is lower than the monthly subscription.
 
@@ -172,8 +172,8 @@ applied = ending_balance - starting_balance  // when starting_balance < 0 (credi
 
 Used in:
 
-- `getWorkspaceUpcomingInvoice()` — billing overview card
-- `previewWorkspaceBillingChange()` — plan/add-on change modal
+- `getWorkspaceUpcomingInvoice()` - billing overview card
+- `previewWorkspaceBillingChange()` - plan/add-on change modal
 
 ### UI surfaces
 
@@ -222,10 +222,10 @@ Tooltip/copy states that referral balance applies to PRO/Business subscription a
 
 | Gap | Severity |
 | --- | --- |
-| `BillingCreditConfirmDialog` (credit/downgrade path) — no balance breakdown | Low |
-| Stripe preview fallback — `referralBalanceAppliedCents: 0` if API fails | Low |
-| Historical invoices in Stripe Portal — no in-app referral context | Low |
-| Shared BillingCustomer — balance applies to any workspace on same owner customer | Edge case |
+| `BillingCreditConfirmDialog` (credit/downgrade path) - no balance breakdown | Low |
+| Stripe preview fallback - `referralBalanceAppliedCents: 0` if API fails | Low |
+| Historical invoices in Stripe Portal - no in-app referral context | Low |
+| Shared BillingCustomer - balance applies to any workspace on same owner customer | Edge case |
 
 ---
 
@@ -251,7 +251,7 @@ Look for `rewardStatus=FAILED`, `ledger=[…→null]`, and `failure:` line.
 npm run prisma:backfill-missing-referral-credits
 ```
 
-Uses `resolveReferrerStripeCustomerId()` — newest `BillingCustomer` first, skips deleted/missing Stripe customers.
+Uses `resolveReferrerStripeCustomerId()` - newest `BillingCustomer` first, skips deleted/missing Stripe customers.
 
 **Fix in code (current):** [`referral-billing-customer.ts`](../src/features/referrals/lib/referral-billing-customer.ts) shared by grant, balance KPI, and backfill. `grantReferralBonus` also re-links existing balance transactions by `referralId` metadata before creating a new one.
 
@@ -337,6 +337,6 @@ Namespaces: `referrals.*`, `billing.workspace.nextInvoice.breakdown.*`, `billing
 | Hero images | `src/features/referrals/lib/referral-hero-images.ts`, `public/images/referrals/` |
 | Billing breakdown UI | `subscription-impact-summary.tsx`, `billing-change-preview-dialog.tsx` |
 | Types | `src/features/billing/billing-page-data.ts` (`referralBalanceAppliedCents`) |
-| Schema | `prisma/schema.prisma` — `ReferralRewardStatus`, `Referral.rewardStatus` |
+| Schema | `prisma/schema.prisma` - `ReferralRewardStatus`, `Referral.rewardStatus` |
 
 See also: [workspace-billing.md](workspace-billing.md) (next invoice section), [billing-stripe.md](../architecture/billing-stripe.md).

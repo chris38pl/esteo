@@ -53,7 +53,7 @@ async function typewriterByCharacter(
   }
 }
 
-/** Fast stepped reveal for long description — same typing feel, capped at ~3.5s. */
+/** Fast stepped reveal for long description - same typing feel, capped at ~3.5s. */
 async function typewriterByChunks(
   text: string,
   onPartial: (partial: string) => void,

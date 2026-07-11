@@ -1,10 +1,10 @@
 # Estimate payment schedule (installment tracker)
 
-> **Status:** Implemented. UI entry: estimate editor → **Płatności** / **Payments** tab — in-tab heading **Harmonogram płatności** / **Payment Schedule**. See also [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md).
+> **Status:** Implemented. UI entry: estimate editor → **Płatności** / **Payments** tab - in-tab heading **Harmonogram płatności** / **Payment Schedule**. See also [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md).
 
 ## Goal
 
-Give contractors a **lightweight payment schedule tracker** attached to an estimate — enough to answer in seconds:
+Give contractors a **lightweight payment schedule tracker** attached to an estimate - enough to answer in seconds:
 
 - How much has the customer already paid?
 - How much is still outstanding?
@@ -32,7 +32,7 @@ The **AI assistant** (side panel and floating) is visible only on the **Kosztory
 
 ### Summary (top of tab)
 
-Four metrics plus a progress bar, all based on the **customer-facing total gross** (`calculateEstimate(...).totalGross` — the price visible to the customer, never internal net/cost/margin metrics):
+Four metrics plus a progress bar, all based on the **customer-facing total gross** (`calculateEstimate(...).totalGross` - the price visible to the customer, never internal net/cost/margin metrics):
 
 | Metric | Calculation |
 | --- | --- |
@@ -58,7 +58,7 @@ Each row is a **payment installment** (transza):
 
 **Mobile:** stacked cards with the same fields.
 
-**Status** (computed in UI — not stored in DB):
+**Status** (computed in UI - not stored in DB):
 
 | Status | Rule |
 | --- | --- |
@@ -113,7 +113,7 @@ Drag-and-drop by grip handle (desktop table and mobile cards). Persists `sortOrd
 | Aspect | Rule |
 | --- | --- |
 | **Data scope** | One schedule per **estimate** (`estimateId`) |
-| **Workspace access** | `requireRole(..., "VIEWER")` — same as notes |
+| **Workspace access** | `requireRole(..., "VIEWER")` - same as notes |
 | **Authorization** | `PaymentInstallment` → `Estimate` → `Workspace` |
 | **Currency** | Uses `estimate.currency` (PLN/EUR formatters) |
 
@@ -136,7 +136,7 @@ Prisma model `PaymentInstallment`:
 | `sortOrder` | `Int` | Default `0`; drag-and-drop order |
 | `createdAt` / `updatedAt` | `DateTime` | |
 
-**No `status` column** — status is derived at read time.
+**No `status` column** - status is derived at read time.
 
 Migrations:
 
@@ -243,7 +243,7 @@ After each successful mutation, `EstimatePaymentsPanel` calls `router.refresh()`
 - Payment gateways and bank integrations
 - Accounting (ledger, VAT reporting, reconciliation)
 - Multi-currency beyond existing `estimate.currency`
-- Partial-payment ledger (multiple payment entries per installment — only cumulative `paidAmount`)
+- Partial-payment ledger (multiple payment entries per installment - only cumulative `paidAmount`)
 - Business-plan entitlement gate
 - REST API routes (server actions only)
 
@@ -251,7 +251,7 @@ After each successful mutation, `EstimatePaymentsPanel` calls `router.refresh()`
 
 ## Related
 
-- [`estimates.md`](estimates.md) — estimate product overview
-- [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md) — editor tabs and layout
-- [`estimate-notes.md`](estimate-notes.md) — parallel satellite-entity pattern
-- [`estimate-activity-history.md`](estimate-activity-history.md) — History tab
+- [`estimates.md`](estimates.md) - estimate product overview
+- [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md) - editor tabs and layout
+- [`estimate-notes.md`](estimate-notes.md) - parallel satellite-entity pattern
+- [`estimate-activity-history.md`](estimate-activity-history.md) - History tab

@@ -53,7 +53,7 @@ export function WorkspaceSettingsForm({
 
   const industryDisplay =
     isServiceWorkspace(workspaceIndustry) && industryOtherText.trim()
-      ? `${tIndustries("OTHER")} — ${industryOtherText.trim()}`
+      ? `${tIndustries("OTHER")} - ${industryOtherText.trim()}`
       : tIndustries(workspaceIndustry);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {

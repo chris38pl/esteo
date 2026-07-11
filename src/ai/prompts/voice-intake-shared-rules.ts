@@ -37,7 +37,7 @@ propertyType mapping:
   return `Today's date: ${today}
 
 Locale rules:
-- The transcript is in ${input.transcriptLocale === "pl" ? "Polish" : "English"} — understand it in that language.
+- The transcript is in ${input.transcriptLocale === "pl" ? "Polish" : "English"} - understand it in that language.
 - projectSummary.value and projectSummary.bullets must be written in ${outputLabel}.
 - generatedTitle must be written in ${outputLabel}.
 - Structured enums and numbers are language-independent.
@@ -65,7 +65,7 @@ If timeline is ambiguous → preferredStartDate: null, confidence: 0.
 city rules:
 - city = a specific city name or service location label (e.g. Poznań, Kraków, Online, Sala Magnolia Poznań).
 - Districts map to parent city (Wilda → Poznań).
-- Regions are NOT cities — set city to null, confidence 0: Mazury, Podhale, Pomorze, Kaszuby, Tatry, Beskidy.
+- Regions are NOT cities - set city to null, confidence 0: Mazury, Podhale, Pomorze, Kaszuby, Tatry, Beskidy.
 - Near-city phrases ("pod Poznaniem", "pod Warszawą", "okolice Krakowa"): set city to the referenced city with confidence 0.3-0.5.
 ${propertyTypeBlock}
 

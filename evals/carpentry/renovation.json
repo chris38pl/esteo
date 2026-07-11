@@ -1,6 +1,6 @@
 {
   "id": "carpentry-renovation",
-  "name": "Carpentry — renovation (regression)",
+  "name": "Carpentry - renovation (regression)",
   "locale": "pl",
   "category": "business",
   "quick": true,
@@ -39,7 +39,7 @@
     "minLineItems": 4,
     "maxLineItems": 20,
     "judge": {
-      "focus": ["renovation scope — partial repair not full kitchen"],
+      "focus": ["renovation scope - partial repair not full kitchen"],
       "minScore": 7,
       "minContextAlignment": 8
     }

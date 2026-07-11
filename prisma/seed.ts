@@ -197,7 +197,7 @@ async function main() {
   console.log(`  Owner:        ${owner.email} (${owner.id})`);
   console.log(`  Platform role: ${owner.platformRole}`);
   console.log(`  Workspace:    ${workspace.name} /${workspace.slug} (${workspace.id})`);
-  console.log(`  Subscription: ${subscriptionPlan} (ACTIVE, local seed — not from Stripe)`);
+  console.log(`  Subscription: ${subscriptionPlan} (ACTIVE, local seed - not from Stripe)`);
 }
 
 main()

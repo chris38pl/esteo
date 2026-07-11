@@ -6,7 +6,7 @@ export function formatFormConversionRate(
   locale: Locale,
 ): string {
   if (visits === 0) {
-    return "—";
+    return "-";
   }
 
   const rate = (submissions / visits) * 100;

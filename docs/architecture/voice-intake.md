@@ -1,4 +1,4 @@
-# Voice intake — architecture
+# Voice intake - architecture
 
 Technical reference for `src/features/voice-intake/` and related AI/server code.
 
@@ -70,7 +70,7 @@ stateDiagram-v2
   error --> review: retry (if extraction exists)
 ```
 
-`applyPhase` (`idle` | `checklist_reveal` | `filling` | `done`) is set during apply but checklist reveal is not a separate UI screen yet — reserved for future checklist animation.
+`applyPhase` (`idle` | `checklist_reveal` | `filling` | `done`) is set during apply but checklist reveal is not a separate UI screen yet - reserved for future checklist animation.
 
 ## API
 
@@ -83,11 +83,11 @@ stateDiagram-v2
 | `audio` | Recording file |
 | `workspaceSlug` | Target workspace |
 | `durationMs` | Client-reported duration |
-| `fieldDefinitions` | JSON — workspace industry fields for prompt |
+| `fieldDefinitions` | JSON - workspace industry fields for prompt |
 | `industry` | Optional override; defaults from workspace record |
 | `industryOtherText` | Optional Business Type for Services workspaces |
 | `captchaToken` | Turnstile / captcha |
-| `followUpContext` | JSON — previous extraction + missing keys (follow-up only) |
+| `followUpContext` | JSON - previous extraction + missing keys (follow-up only) |
 
 ### `POST /api/estimate-requests/voice-intake`
 
@@ -123,18 +123,18 @@ Follow-up path passes `FollowUpContext`: previous transcript, extraction, missin
 
 ## Industry segments
 
-Missing fields, extraction prompts, and form mapping are driven by `getIndustryExperienceConfig(industry)` (`src/features/estimate-requests/config/industry-experience-config.ts`). Use `isServiceWorkspace()` — not raw `industry === OTHER`.
+Missing fields, extraction prompts, and form mapping are driven by `getIndustryExperienceConfig(industry)` (`src/features/estimate-requests/config/industry-experience-config.ts`). Use `isServiceWorkspace()` - not raw `industry === OTHER`.
 
 | Segment | Enum today | Voice collects | Skips |
 | --- | --- | --- | --- |
-| Construction | `CONSTRUCTION` (+ future trade enums) | property type, city, area, scope, timeline, contact | — |
+| Construction | `CONSTRUCTION` (+ future trade enums) | property type, city, area, scope, timeline, contact | - |
 | Services | `OTHER` | service description, service location, scope, timeline, contact | property type, area |
 
 Services prompts include a **Business Type** block (`industryOtherText`) instead of a construction `## Role`. i18n: `voiceIntake.byIndustry.{construction|services}`.
 
 ## Extraction schema
 
-[`voice-intake-extraction.ts`](../../src/ai/schemas/voice-intake-extraction.ts) — Zod object with `{ value, confidence }` per field, plus:
+[`voice-intake-extraction.ts`](../../src/ai/schemas/voice-intake-extraction.ts) - Zod object with `{ value, confidence }` per field, plus:
 
 - `projectSummary` (value + bullets)
 - `scopeOfWork.items[]`
@@ -153,7 +153,7 @@ Apply order (visual top → bottom):
 
 ## Analyzing UI timing
 
-[`voice-analyzing-stage.tsx`](../../src/features/voice-intake/components/voice-analyzing-stage.tsx) — **client-only** progress; not tied to real API substeps.
+[`voice-analyzing-stage.tsx`](../../src/features/voice-intake/components/voice-analyzing-stage.tsx) - **client-only** progress; not tied to real API substeps.
 
 | Flow | Step durations before last | Last step |
 | --- | --- | --- |
@@ -171,11 +171,11 @@ Rationale: API wait is usually 10–70s; user should spend ~90% of wait time on 
 
 ## Analytics
 
-[`voice-analytics.ts`](../../src/features/voice-intake/lib/voice-analytics.ts) — client events e.g. `voice_started`, `voice_apply`, `voice_apply_checklist_reveal`, follow-up applied.
+[`voice-analytics.ts`](../../src/features/voice-intake/lib/voice-analytics.ts) - client events e.g. `voice_started`, `voice_apply`, `voice_apply_checklist_reveal`, follow-up applied.
 
 ## Security
 
-[`server/security.ts`](../../src/features/voice-intake/server/security.ts) — in-memory sliding window rate limits.
+[`server/security.ts`](../../src/features/voice-intake/server/security.ts) - in-memory sliding window rate limits.
 
 Public route: workspace must exist, captcha, fingerprint IP.
 
@@ -189,12 +189,12 @@ Public route: workspace must exist, captcha, fingerprint IP.
 
 ## Environment
 
-- `OPENAI_API_KEY` — transcription + extraction
-- Public captcha env — same as estimate request form
+- `OPENAI_API_KEY` - transcription + extraction
+- Public captcha env - same as estimate request form
 
 ## Testing locally
 
-1. `npm run dev` — use Chrome on localhost (Cursor browser sandbox cannot reach localhost).
+1. `npm run dev` - use Chrome on localhost (Cursor browser sandbox cannot reach localhost).
 2. Test account: `.env.test.local` (`TEST_USER_EMAIL` / `TEST_USER_PASSWORD`).
 3. Admin gallery: `/pl/dashboard/admin/voice-intake-preview`.
 4. Public: `/pl/wycena/{workspaceSlug}` → footer voice bar.
@@ -209,4 +209,4 @@ Clear `.next` if webpack cache corruption warnings appear.
 
 ## Benchmark
 
-`scripts/voice-intake-benchmark/` — runs extraction against JSON fixtures, scores field accuracy. Used to tune prompts; not CI-gated initially.
+`scripts/voice-intake-benchmark/` - runs extraction against JSON fixtures, scores field accuracy. Used to tune prompts; not CI-gated initially.

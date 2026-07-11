@@ -29,7 +29,7 @@ type CursorPromptIssue = Pick<
 
 export function buildCursorPrompt(issue: CursorPromptIssue): string {
   const context = parseIssueContext(issue.context);
-  const contextJson = context ? JSON.stringify(context) : "—";
+  const contextJson = context ? JSON.stringify(context) : "-";
 
   const lines = [
     `Przeanalizuj issue #${issue.number}.`,

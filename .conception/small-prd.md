@@ -104,7 +104,7 @@ The contractor can add comments and manually edit the estimate easily
 - AI assistant: **unlimited** prompts
 - Undo: **3** last changes
 
-## Esteo does not sell AI itself — it sells:
+## Esteo does not sell AI itself - it sells:
 
 - Time savings
 - Faster client closing
@@ -224,7 +224,7 @@ g) Sending to customer
 - Material catalog 
 - Supplier integrations
 
-# Trust Layer — why will users trust Esteo?
+# Trust Layer - why will users trust Esteo?
 
 ## AI transparency
 

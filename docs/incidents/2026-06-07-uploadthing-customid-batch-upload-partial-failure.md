@@ -8,15 +8,15 @@
 
 User submitted **7 PNG attachments** via the public estimate request form. Only **1** was stored; **6** failed with `[UPLOAD_FAILED] Failed to upload file`. The API still returned success (partial success by design).
 
-Reference batch (before fix): request `htaaolihfnzwbca21pxuzpe7` — `storedCount: 1`, `failedCount: 6`.
+Reference batch (before fix): request `htaaolihfnzwbca21pxuzpe7` - `storedCount: 1`, `failedCount: 6`.
 
 ## What was NOT the root cause
 
-- **Prisma / Neon** — error text `insert into file` comes from UploadThing's internal DB, not our schema
-- **Duplicate customId** within the batch — each file had a unique UUID in the path
-- **Rate limiting** — `ratelimit-remaining: 19` on every failure (limit 20)
-- **Parallel uploads** — uploads are sequential (`for` + `await`)
-- **Synchronous thumbnails at submit** — already moved to async Trigger.dev job before diagnosis completed
+- **Prisma / Neon** - error text `insert into file` comes from UploadThing's internal DB, not our schema
+- **Duplicate customId** within the batch - each file had a unique UUID in the path
+- **Rate limiting** - `ratelimit-remaining: 19` on every failure (limit 20)
+- **Parallel uploads** - uploads are sequential (`for` + `await`)
+- **Synchronous thumbnails at submit** - already moved to async Trigger.dev job before diagnosis completed
 
 ## Root cause
 
@@ -30,7 +30,7 @@ UploadThing stores this as `external_id`. Ingest returned **HTTP 500** when the 
 
 ## Fix
 
-**UUID-only `customId`** — send `item.id` (36 chars) to UploadThing; keep the logical path only for logging.
+**UUID-only `customId`** - send `item.id` (36 chars) to UploadThing; keep the logical path only for logging.
 
 | Layer | Change |
 | --- | --- |
@@ -43,7 +43,7 @@ UploadThing stores this as `external_id`. Ingest returned **HTTP 500** when the 
 
 ### Verification
 
-Re-test with the same 7 files: request `xz46wa7vd3u9g4ajmjw97thm` — **`storedCount: 7`, `failedCount: 0`**. All ingest PUTs used short UUID in `x-ut-custom-id`.
+Re-test with the same 7 files: request `xz46wa7vd3u9g4ajmjw97thm` - **`storedCount: 7`, `failedCount: 0`**. All ingest PUTs used short UUID in `x-ut-custom-id`.
 
 ## Dev diagnostics (kept intentionally)
 
@@ -58,7 +58,7 @@ Full investigation write-up: [../diagnostics/2026-06-07-uploadthing-customid-bat
 
 ## Patterns to reuse
 
-- Do **not** use long storage paths as UploadThing `customId` — use a short stable ID (attachment/file UUID)
+- Do **not** use long storage paths as UploadThing `customId` - use a short stable ID (attachment/file UUID)
 - If you see `Failed query: insert into file` during upload, inspect **UploadThing ingest HTTP response**, not Prisma
 - When debugging multi-file uploads locally, use `{tmpdir}/esteo-ut-upload-debug.jsonl` and compare `customIdLength` vs outcome
 

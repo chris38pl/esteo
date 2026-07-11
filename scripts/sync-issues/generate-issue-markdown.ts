@@ -41,7 +41,7 @@ export function generateIssueMarkdown(
     issue.pageUrl,
     "",
     `Workspace:`,
-    context?.workspaceSlug ?? "—",
+    context?.workspaceSlug ?? "-",
     "",
     `Device:`,
     `${issue.deviceType} (${issue.viewportWidth}x${issue.viewportHeight})`,

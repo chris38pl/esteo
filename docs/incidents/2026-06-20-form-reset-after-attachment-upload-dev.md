@@ -10,7 +10,7 @@ After adding an attachment (pre-upload flow):
 
 - Page shows **“Compiling/Rendering…”** at the bottom
 - Form fields and attachments are cleared
-- Upload API returns **200 OK** — upload itself succeeds
+- Upload API returns **200 OK** - upload itself succeeds
 - Happens on almost every file add in `npm run dev`
 
 ## What was NOT the root cause
@@ -25,7 +25,7 @@ Dev-only UploadThing diagnostics wrote **`logs/ut-upload-debug.jsonl`** inside t
 
 Pre-upload (Etap 2) amplified this: one file per request instead of one batch log per multipart submit.
 
-**Staging/production:** diagnostics disabled (`NODE_ENV !== "development"`) — bug did not occur there.
+**Staging/production:** diagnostics disabled (`NODE_ENV !== "development"`) - bug did not occur there.
 
 ## Root cause (secondary)
 
@@ -39,7 +39,7 @@ Pre-upload (Etap 2) amplified this: one file per request instead of one batch lo
 
 ## Patterns to reuse
 
-- **Never write runtime logs under project `src/` or repo root during request handling in dev** — use temp dir or `.next/cache`
+- **Never write runtime logs under project `src/` or repo root during request handling in dev** - use temp dir or `.next/cache`
 - Disable locally: `UPLOADTHING_UPLOAD_DEBUG=0` in `.env.local`
 
 ## Related

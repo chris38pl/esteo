@@ -48,7 +48,7 @@
   min-height: 100%;
 }
 
-/* Mobile stack — horizontal divider, 75% width */
+/* Mobile stack - horizontal divider, 75% width */
 .estimate-context-grid > *:not(:last-child)::before {
   content: "";
   position: absolute;
@@ -66,7 +66,7 @@
 }
 
 /**
- * Sticky AI panel — aligns below dashboard top bar (h-14 / 3.5rem).
+ * Sticky AI panel - aligns below dashboard top bar (h-14 / 3.5rem).
  * Uses top + bottom (not fixed height) so at page top the panel stays compact;
  * while scrolling it stretches to fill the viewport between top bar and bottom gap.
  *
@@ -91,7 +91,7 @@
 }
 
 /**
- * Floating AI popup — fixed FAB + dialog (below `breakpoints.aiSideLayout` in config).
+ * Floating AI popup - fixed FAB + dialog (below `breakpoints.aiSideLayout` in config).
  */
 .estimate-ai-panel--floating {
   display: flex;
@@ -147,7 +147,7 @@
   min-height: 7rem;
 }
 
-/* Mobile position sheet — icon wells + borderless inline fields */
+/* Mobile position sheet - icon wells + borderless inline fields */
 .estimate-mobile-position-icon {
   background: color-mix(in oklab, var(--primary) 8%, var(--card));
   box-shadow: 0 0 0 1px color-mix(in oklab, var(--primary) 10%, transparent);

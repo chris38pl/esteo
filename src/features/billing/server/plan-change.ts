@@ -124,7 +124,7 @@ async function createCheckoutSession(params: {
 
   if (hasPendingReferralClaim && !referralCouponId) {
     console.error(
-      `[referral] PENDING_CLAIM referral for workspace ${params.workspaceId} but STRIPE_REFERRAL_COUPON_ID missing — blocking checkout`,
+      `[referral] PENDING_CLAIM referral for workspace ${params.workspaceId} but STRIPE_REFERRAL_COUPON_ID missing - blocking checkout`,
     );
     throw new BillingError(
       "Referral discount is temporarily unavailable. Please try again later or contact support.",

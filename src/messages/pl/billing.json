@@ -23,8 +23,8 @@
     "currentPlan": "Aktualny plan: {plan} · {status}",
     "statusNotice": {
       "PAST_DUE": "Ostatnia płatność nie powiodła się. Zaktualizuj metodę płatności, aby uniknąć przerwania usługi.",
-      "GRACE_PERIOD": "Subskrypcja jest w okresie karencji. Nowe kosztorysy, zaproszenia i AI są wstrzymane — odnów subskrypcję, aby przywrócić pełny dostęp.",
-      "EXPIRED": "Ta przestrzeń jest tylko do odczytu. Istniejące dane można przeglądać i eksportować — reaktywuj subskrypcję, aby wznowić pracę.",
+      "GRACE_PERIOD": "Subskrypcja jest w okresie karencji. Nowe kosztorysy, zaproszenia i AI są wstrzymane - odnów subskrypcję, aby przywrócić pełny dostęp.",
+      "EXPIRED": "Ta przestrzeń jest tylko do odczytu. Istniejące dane można przeglądać i eksportować - reaktywuj subskrypcję, aby wznowić pracę.",
       "ARCHIVED": "Ta przestrzeń jest zarchiwizowana (tylko do odczytu). Reaktywuj rozliczenia, aby wznowić pracę.",
       "INCOMPLETE": "Płatność nie została ukończona. Dokończ checkout, aby aktywować tę przestrzeń.",
       "SUSPENDED": "Ta przestrzeń jest zawieszona. Skontaktuj się z pomocą techniczną.",
@@ -158,7 +158,7 @@
     },
     "addonPage": {
       "title": "Dodatki do planu",
-      "subtitle": "Rozszerz miejsce na pliki lub zespół — bez zmiany planu.",
+      "subtitle": "Rozszerz miejsce na pliki lub zespół - bez zmiany planu.",
       "backToBilling": "Wróć do płatności",
       "freeGate": "Dodatki są dostępne w planach Pro i Business.",
       "viewPlans": "Zobacz plany",
@@ -198,12 +198,12 @@
         "referralBalanceCredit": "Saldo programu poleceń"
       },
       "referralBalanceAppliedHint": "Zastosowano {amount} z salda programu poleceń",
-      "referralBalanceCreditTooltip": "Nagrody za polecenia zmniejszają kwotę tej faktury.\n\nSaldo obejmuje abonament PRO/Business — nie daje zniżki na dodatki.",
+      "referralBalanceCreditTooltip": "Nagrody za polecenia zmniejszają kwotę tej faktury.\n\nSaldo obejmuje abonament PRO/Business - nie daje zniżki na dodatki.",
       "referralDiscountActive": "Zniżka {percent}% do {date}",
-      "referralDiscountTooltip": "Promocja polecająca — {percent}% zniżki na abonament przez okres promocji.\n\nPo {date} obowiązuje standardowa cena:\n{monthlyAmount} / miesiąc.",
+      "referralDiscountTooltip": "Promocja polecająca - {percent}% zniżki na abonament przez okres promocji.\n\nPo {date} obowiązuje standardowa cena:\n{monthlyAmount} / miesiąc.",
       "empty": {
         "free_plan": "Brak aktywnej subskrypcji płatnej.",
-        "canceling": "Subskrypcja kończy się — kolejna faktura nie zostanie wystawiona.",
+        "canceling": "Subskrypcja kończy się - kolejna faktura nie zostanie wystawiona.",
         "no_subscription": "Brak zaplanowanej faktury."
       }
     },
@@ -219,8 +219,8 @@
         "subscription": "Abonament (plan + dodatki)",
         "referralBalanceCredit": "Saldo programu poleceń"
       },
-      "referralBalanceCreditTooltip": "Nagrody za polecenia zmniejszają kwotę tej faktury.\n\nSaldo obejmuje abonament PRO/Business — nie daje zniżki na dodatki.",
-      "referralBalanceAddonsNote": "Saldo z poleceń pomniejsza najbliższą fakturę. Nie obejmuje zniżki na dodatki — rozliczane jest w pierwszej kolejności z abonamentem.",
+      "referralBalanceCreditTooltip": "Nagrody za polecenia zmniejszają kwotę tej faktury.\n\nSaldo obejmuje abonament PRO/Business - nie daje zniżki na dodatki.",
+      "referralBalanceAddonsNote": "Saldo z poleceń pomniejsza najbliższą fakturę. Nie obejmuje zniżki na dodatki - rozliczane jest w pierwszej kolejności z abonamentem.",
       "badge": {
         "oneTimeCharge": "Jednorazowa",
         "credit": "Kredyt"
@@ -298,8 +298,8 @@
         "seats": "Pakiety miejsc"
       },
       "addonImpact": {
-        "kept": "{key} ×{after} — bez zmian",
-        "removed": "{key} ×{before} — usunięte",
+        "kept": "{key} ×{after} - bez zmian",
+        "removed": "{key} ×{before} - usunięte",
         "changed": "{key} ×{before} → ×{after}"
       },
       "lineItem": {
@@ -313,7 +313,7 @@
       "subtitle": "Wybierz plan i dodatki w jednym miejscu.",
       "backToBilling": "Wróć do płatności",
       "planSection": "Wybierz plan",
-      "referralDiscountBanner": "Masz {percent}% zniżki przez {months} miesiące dzięki poleceniu — obowiązuje przy pierwszej płatności za PRO lub BUSINESS.",
+      "referralDiscountBanner": "Masz {percent}% zniżki przez {months} miesiące dzięki poleceniu - obowiązuje przy pierwszej płatności za PRO lub BUSINESS.",
       "referralDiscountUnavailableBanner": "Masz przypisane polecenie, ale zniżka 20% jest chwilowo niedostępna. Spróbuj ponownie później lub skontaktuj się z nami.",
       "referralCouponNotConfigured": "Zniżka polecająca jest chwilowo niedostępna. Spróbuj ponownie później lub skontaktuj się z nami.",
       "referralSummaryDuration": "przez {months} miesiące",
@@ -326,7 +326,7 @@
       "impactColumnTitle": "Wpływ zmian",
       "monthlyChange": "Zmiana miesięczna",
       "unchangedItems": "Zostanie bez zmian",
-      "continueHint": "Najbliższa faktura oraz jednorazowe opłaty zobaczysz w następnym kroku — przed potwierdzeniem zmiany.",
+      "continueHint": "Najbliższa faktura oraz jednorazowe opłaty zobaczysz w następnym kroku - przed potwierdzeniem zmiany.",
       "continue": "Kontynuuj",
       "saveSuccess": "Subskrypcja została zaktualizowana.",
       "effectiveFrom": "Zmiana od {date}",

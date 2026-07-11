@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 
-/** ~20 bars — tallest at center, slight irregularities at the edges. */
+/** ~20 bars - tallest at center, slight irregularities at the edges. */
 const WAVE_BARS = [
   { height: 22, duration: 0.82, delay: -0.15 },
   { height: 30, duration: 1.05, delay: -0.42 },

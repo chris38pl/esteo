@@ -2,7 +2,7 @@
 
 ## Goal
 
-Let workspace users create, review, and edit professional cost estimates. AI produces a **draft** from an estimate request; the user remains responsible for final numbers and approval. AI in the editor **proposes** changes — it does not replace manual control.
+Let workspace users create, review, and edit professional cost estimates. AI produces a **draft** from an estimate request; the user remains responsible for final numbers and approval. AI in the editor **proposes** changes - it does not replace manual control.
 
 Esteo sells time savings and faster client response, not unattended quoting.
 
@@ -36,7 +36,7 @@ EstimateRequest (COMPLETED) + estimateId set
 | Source | Who | How |
 | --- | --- | --- |
 | **Customer** | External visitor | Public page `/[locale]/wycena/[workspaceSlug]` |
-| **Workspace user** | Owner / Member | Estimate creation panel in dashboard — fills same logical fields; system **auto-creates** `EstimateRequest` in the background, then runs the same processing job |
+| **Workspace user** | Owner / Member | Estimate creation panel in dashboard - fills same logical fields; system **auto-creates** `EstimateRequest` in the background, then runs the same processing job |
 
 Internal creation does not skip the request entity: it keeps one pipeline, audit trail, and link between inquiry and estimate.
 
@@ -57,7 +57,7 @@ Internal creation does not skip the request entity: it keeps one pipeline, audit
 
 - An estimate can have multiple versions (e.g. Version 1, Version 2) for the same project.
 - User creates a new version from the view/edit screen when permitted (Owner / Member with edit access).
-- **Planned schema:** version number, parent estimate or version group id — not in Prisma yet. See [`database.md`](../architecture/database.md).
+- **Planned schema:** version number, parent estimate or version group id - not in Prisma yet. See [`database.md`](../architecture/database.md).
 
 New version typically copies prior structure; user edits independently. PDF export references a specific version ([`estimate-pdf-export.md`](estimate-pdf-export.md)).
 
@@ -69,7 +69,7 @@ New version typically copies prior structure; user edits independently. PDF expo
 | --- | --- |
 | Draft from job | Marked as draft; user must review before sending to client |
 | Manual edits | Save explicitly (“Zapisz zmiany”) |
-| AI assistant | Shows proposed changes; **Approve** or **Reject** — no silent apply |
+| AI assistant | Shows proposed changes; **Approve** or **Reject** - no silent apply |
 | Undo | Revert last change(s) from stack after save or approved AI apply |
 
 AI accelerates work; pricing and scope remain the user’s responsibility (align with legal AI disclaimer).
@@ -122,7 +122,7 @@ FREE users may see undo affordance with upgrade tooltip where applicable.
 | Undo steps | 1 | 3 | 3 |
 | PDF watermark | Yes | No | No |
 
-Billing is evaluated on the **logged-in user’s** `BillingAccount`, not the workspace owner’s plan, for sidebar and AI limits. Workspace owner plan applies to invite seats only — see [`database.md`](../architecture/database.md).
+Billing is evaluated on the **logged-in user’s** `BillingAccount`, not the workspace owner’s plan, for sidebar and AI limits. Workspace owner plan applies to invite seats only - see [`database.md`](../architecture/database.md).
 
 Implementation reference: `src/server/permissions/entitlements.ts` (extend for per-estimate AI counters).
 
@@ -144,7 +144,7 @@ Implementation reference: `src/server/permissions/entitlements.ts` (extend for p
 ### Post-MVP (documented, not first ship)
 
 - Tabs: History, Payments, Notes
-- Share link (send to client shipped — see [`estimate-send-workflow.md`](estimate-send-workflow.md))
+- Share link (send to client shipped - see [`estimate-send-workflow.md`](estimate-send-workflow.md))
 - Price list import, templates, statements dropdown
 - Full key indicators (cost per m², duration, point count)
 - Duplicate estimate, extended header actions
@@ -168,8 +168,8 @@ Platform admin: internal routes only, not workspace member role.
 
 ## Related documentation
 
-- [`estimate-requests.md`](estimate-requests.md) — public and internal request intake
-- [`estimate-sections.md`](estimate-sections.md) — section templates and AI structure
-- [`estimate-ai.md`](../architecture/estimate-ai.md) — jobs, prompts, quotas
-- [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md) — screen specification
-- [`estimate-pdf-export.md`](estimate-pdf-export.md) — PDF export, preview, storage lifecycle
+- [`estimate-requests.md`](estimate-requests.md) - public and internal request intake
+- [`estimate-sections.md`](estimate-sections.md) - section templates and AI structure
+- [`estimate-ai.md`](../architecture/estimate-ai.md) - jobs, prompts, quotas
+- [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md) - screen specification
+- [`estimate-pdf-export.md`](estimate-pdf-export.md) - PDF export, preview, storage lifecycle

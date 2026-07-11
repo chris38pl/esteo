@@ -55,7 +55,7 @@ function estimateToCsvCells(
     [ctx.investmentStreet, ctx.investmentCity].filter(Boolean).join(", "),
   ]
     .filter(Boolean)
-    .join(" — ");
+    .join(" - ");
   const client = [ctx.customerName, ctx.customerEmail].filter(Boolean).join(" / ");
 
   const baseCells = [

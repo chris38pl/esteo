@@ -64,7 +64,7 @@ Source of truth: `evals/scripts/seed-services-scenarios.ts`
 
 ## Dual coverage + mustHave removals
 
-- **marketing-agency** — coverage: content; mustHave: content
-- **recruitment-agency** — coverage: sourcing, interview; mustHave: sourcing, interview
-- **personal-trainer** — coverage: sesja; mustHave: sesj
-- **law-firm** — coverage: prawn; mustHave: prawn, konsultac
+- **marketing-agency** - coverage: content; mustHave: content
+- **recruitment-agency** - coverage: sourcing, interview; mustHave: sourcing, interview
+- **personal-trainer** - coverage: sesja; mustHave: sesj
+- **law-firm** - coverage: prawn; mustHave: prawn, konsultac

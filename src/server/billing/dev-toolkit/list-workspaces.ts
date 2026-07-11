@@ -89,7 +89,7 @@ export function formatWorkspaceList(entries: WorkspaceListEntry[]): string {
 
 function formatBillingLine(entry: WorkspaceListEntry): string {
   if (entry.plan === "FREE") {
-    return "billing: —";
+    return "billing: -";
   }
 
   const periodEnd = entry.currentPeriodEnd
@@ -102,7 +102,7 @@ function formatBillingLine(entry: WorkspaceListEntry): string {
       : "billing: canceling (active until period end)";
   }
 
-  return periodEnd ? `billing: renews ${periodEnd}` : "billing: renews —";
+  return periodEnd ? `billing: renews ${periodEnd}` : "billing: renews -";
 }
 
 function formatDateOnly(value: Date): string {

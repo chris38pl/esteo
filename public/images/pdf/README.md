@@ -1,6 +1,6 @@
 Assets for the estimate PDF template. Copied to Trigger.dev workers via `additionalFiles` in `trigger.config.ts`.
 
-Runtime loaders also resize these via `optimizePdfImage` before inlining — keep source files close to display size to reduce worker memory.
+Runtime loaders also resize these via `optimizePdfImage` before inlining - keep source files close to display size to reduce worker memory.
 
 | File | Purpose | Target size |
 |------|---------|-------------|

@@ -156,7 +156,7 @@ export async function reactivateWorkspaceSubscriptionAction(
   }
 }
 
-/** Post-expiry or FREE upgrade checkout — owner only when HANDOFF_EXPIRED. */
+/** Post-expiry or FREE upgrade checkout - owner only when HANDOFF_EXPIRED. */
 export async function purchaseWorkspaceSubscriptionAction(
   workspaceId: string,
   plan: Exclude<SubscriptionPlan, "FREE">,

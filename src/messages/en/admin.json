@@ -137,7 +137,7 @@
       "estimateUsage": "Estimate usage",
       "seats": "Seats",
       "storage": "Storage",
-      "noVersion": "—"
+      "noVersion": "-"
     },
     "empty": "No workspaces match your search.",
     "bar": {
@@ -441,7 +441,7 @@
   },
   "pdfPreview": {
     "title": "PDF template preview",
-    "subtitle": "HTML render with fixture data — same template as estimate export (no Puppeteer).",
+    "subtitle": "HTML render with fixture data - same template as estimate export (no Puppeteer).",
     "locale": "Document locale",
     "primaryColor": "Primary color",
     "watermark": "Watermark (Free plan)",
@@ -451,7 +451,7 @@
   },
   "voiceIntakePreview": {
     "title": "Voice intake preview",
-    "subtitle": "Gallery of recording and review screens with fixture data — no microphone or API.",
+    "subtitle": "Gallery of recording and review screens with fixture data - no microphone or API.",
     "phase": "Screen",
     "scenario": "Data scenario",
     "locale": "UI locale",
@@ -471,8 +471,8 @@
     "phases": {
       "trigger": "Trigger (card)",
       "footer_trigger": "Trigger (footer)",
-      "recording_initial": "Recording — initial",
-      "recording_follow_up": "Recording — follow-up",
+      "recording_initial": "Recording - initial",
+      "recording_follow_up": "Recording - follow-up",
       "summary": "Summary",
       "analyzing": "Analyzing",
       "analyzing_follow_up": "Analyzing follow-up",
@@ -487,7 +487,7 @@
   },
   "activationPreview": {
     "title": "Activation preview (Phase 1)",
-    "subtitle": "Gallery of owner first-step banners, toasts, and modals — no localStorage side effects.",
+    "subtitle": "Gallery of owner first-step banners, toasts, and modals - no localStorage side effects.",
     "selectLabel": "Element",
     "previewLabel": "Preview",
     "metaLabel": "Metadata",
@@ -580,12 +580,12 @@
         "label": "Company profile modal",
         "meta": {
           "type": "Dialog (inline form)",
-          "what": "“Add your company details” — logo, tax ID, address, contact",
+          "what": "“Add your company details” - logo, tax ID, address, contact",
           "notes": "Activation: inline modal instead of settings redirect",
           "when": "First PDF export attempt with incomplete company profile",
           "frequency": "On each PDF attempt with missing fields until profile complete"
         },
-        "portalNote": "Modal uses a portal — may overlay the admin page."
+        "portalNote": "Modal uses a portal - may overlay the admin page."
       },
       "pdf_export_toast": {
         "label": "PDF export toast (loading)",
@@ -609,7 +609,7 @@
         }
       },
       "pdf_popup_blocked_toast": {
-        "label": "PDF — popup blocked toast (info)",
+        "label": "PDF - popup blocked toast (info)",
         "meta": {
           "type": "AppToast (info)",
           "what": "Info that PDF opened in a new tab or was downloaded",

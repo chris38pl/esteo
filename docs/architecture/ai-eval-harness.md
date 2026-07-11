@@ -1,11 +1,11 @@
-# AI Evaluation Harness — architecture
+# AI Evaluation Harness - architecture
 
 Quality evaluation system for AI estimate draft generation. **One engine, many fixture suites.**
 
 ```txt
 evals/
   engine/           ← Schema, Rules, Coverage, Leakage, Length, Judge, Baseline, Compare
-  services/         ← Services (OTHER) fixtures — v1
+  services/         ← Services (OTHER) fixtures - v1
   construction/     ← Future fixtures (README only)
   runners/
     services-eval.ts
@@ -20,11 +20,11 @@ Cross-link product flows: [`docs/features/ai-eval-harness.md`](../features/ai-ev
 
 ## Design principles
 
-1. **No prompt duplication** — runner woła produkcyjne `buildEstimateDraftPrompt` i `generateObject` z tym samym schematem co Trigger.dev.
-2. **No database** — `buildEvalGenerationContext` + `buildEvalProjectBrief` budują kontekst z JSON fixture.
-3. **Determinism where possible** — Fast Eval i warstwy 0–1b są powtarzalne; Judge ma `temperature: 0`.
-4. **Fixtures in repo** — scenariusze to commitowane JSON; seed: `evals/scripts/seed-services-scenarios.ts`.
-5. **Separation of concerns** — engine nie zna „Services” poza typami; runner ładuje `evals/services/`.
+1. **No prompt duplication** - runner woła produkcyjne `buildEstimateDraftPrompt` i `generateObject` z tym samym schematem co Trigger.dev.
+2. **No database** - `buildEvalGenerationContext` + `buildEvalProjectBrief` budują kontekst z JSON fixture.
+3. **Determinism where possible** - Fast Eval i warstwy 0–1b są powtarzalne; Judge ma `temperature: 0`.
+4. **Fixtures in repo** - scenariusze to commitowane JSON; seed: `evals/scripts/seed-services-scenarios.ts`.
+5. **Separation of concerns** - engine nie zna „Services” poza typami; runner ładuje `evals/services/`.
 
 ---
 
@@ -61,8 +61,8 @@ evals/services/<scenario>.json
 Walidacja semantycznej kompletności **po** Zod w `generateObject`:
 
 - Niepuste sekcje i pozycje, `title` / `name`
-- `quantity`, `unitPrice`, `vatRate` — liczby, zakresy
-- `sortOrder` — integer
+- `quantity`, `unitPrice`, `vatRate` - liczby, zakresy
+- `sortOrder` - integer
 
 **Hard fail:** `overallScore = 0`, Judge **nie jest wywoływany**.
 
@@ -80,9 +80,9 @@ Tekst: `normalizeEvalText` (lowercase + NFD). Sekcje: fuzzy match tytułów.
 
 ### Layer 1b: Coverage (`evals/engine/scorers/coverage-scorer.ts`)
 
-`coverageTerms` z briefu — **wyłącznie informacyjny**. Nigdy nie wpływa na PASS.
+`coverageTerms` z briefu - **wyłącznie informacyjny**. Nigdy nie wpływa na PASS.
 
-Korpus: **cały kosztorys** — tytuły sekcji + nazwy wszystkich pozycji (Usługi, Zakres, wyłączenia w Uwagi itd.) przez `buildEstimateCoverageCorpus`. Nie tylko pozycje wyceniane.
+Korpus: **cały kosztorys** - tytuły sekcji + nazwy wszystkich pozycji (Usługi, Zakres, wyłączenia w Uwagi itd.) przez `buildEstimateCoverageCorpus`. Nie tylko pozycje wyceniane.
 
 Dopasowanie: `polishTermMatch` (odmiana PL, bez stemmera NLP).
 
@@ -90,8 +90,8 @@ Dopasowanie: `polishTermMatch` (odmiana PL, bez stemmera NLP).
 
 Słowniki w `evals/engine/config/domain-leakage-terms.ts`:
 
-- `construction` — terminy budowlane w wycenach Services (v1 default)
-- `services` — terminy usługowe w wycenach Construction (przyszłość)
+- `construction` - terminy budowlane w wycenach Services (v1 default)
+- `services` - terminy usługowe w wycenach Construction (przyszłość)
 
 `leakage.passed === false` → cap `overallScore` at 4.0.
 
@@ -119,7 +119,7 @@ Schema output:
 }
 ```
 
-`referenceEstimate` w fixture — wzorzec zakresu (nie exact match cen/nazw).
+`referenceEstimate` w fixture - wzorzec zakresu (nie exact match cen/nazw).
 
 ---
 
@@ -143,17 +143,17 @@ export const ESTIMATE_PROMPT_VERSION = "1.1.0";
 
 Bump **semver** przy każdej zmianie treści promptu:
 
-- **MAJOR** — struktura output / rola
-- **MINOR** — nowe bloki, profile
-- **PATCH** — wording
+- **MAJOR** - struktura output / rola
+- **MINOR** - nowe bloki, profile
+- **PATCH** - wording
 
 Zapisywane w: `prompt-meta.json`, `summary.json`, baseline, compare report.
 
 Run-level `summary.json` fields:
 
-- `promptVersion` — semver z `estimate-draft.ts`
-- `promptHash` — SHA-256 promptu scenariusza referencyjnego (`promptHashSource`, domyślnie `wedding-planner`)
-- `promptHashes` — mapa `scenarioId → hash` (wykrywa hotfixy wpływające tylko na część kontekstu)
+- `promptVersion` - semver z `estimate-draft.ts`
+- `promptHash` - SHA-256 promptu scenariusza referencyjnego (`promptHashSource`, domyślnie `wedding-planner`)
+- `promptHashes` - mapa `scenarioId → hash` (wykrywa hotfixy wpływające tylko na część kontekstu)
 
 `promptHash` wykrywa zmiany wewnątrz tej samej wersji (np. dynamiczny kontekst). W `comparison-report.md` sekcja **Prompt Version Changes** ostrzega: `⚠ HOTFIX WITHOUT VERSION BUMP` gdy wersja bez zmian, hash się zmienił.
 
@@ -161,14 +161,14 @@ Run-level `summary.json` fields:
 
 ## Polish term matcher (`polishTermMatch`)
 
-`evals/engine/lib/text-utils.ts` — dopasowanie odmian PL w rule/coverage scorerach (bez stemmera NLP):
+`evals/engine/lib/text-utils.ts` - dopasowanie odmian PL w rule/coverage scorerach (bez stemmera NLP):
 
 1. Dokładne dopasowanie słowa
 2. Prefiks + dozwolona końcówka fleksyjna (`post` → `posty`, `postów`, `postami`; `kelner` → `kelnerska`)
 3. Częściowy rdzeń (`podwykonawc` → `podwykonawcami`)
 4. Wspólny rdzeń / liczba pojedyncza–mnoga (`spotkanie`/`spotkania`, `zdjęcia`/`zdjęciowa`)
 
-Blokada fałszywych trafień angielskich (`market` ≠ `marketing` — sufiks `ing`).
+Blokada fałszywych trafień angielskich (`market` ≠ `marketing` - sufiks `ing`).
 
 ---
 
@@ -193,7 +193,7 @@ npm run eval:services:coverage-dive
 npm run eval:services:coverage-dive -- --run=2026-06-18-224652
 ```
 
-Output: `evals/results/<runId>/coverage-root-cause.md` — per scenariusz z coverage &lt; 75%: evidence, checkbox root cause, recommended action, rationale (heurystyka + weryfikacja ręczna).
+Output: `evals/results/<runId>/coverage-root-cause.md` - per scenariusz z coverage &lt; 75%: evidence, checkbox root cause, recommended action, rationale (heurystyka + weryfikacja ręczna).
 
 ---
 
@@ -206,7 +206,7 @@ npm run eval:services:eval-audit
 npm run eval:services:eval-audit -- --run=2026-06-18-233607
 ```
 
-Output: `evals/results/<runId>/evaluator-false-positives.md` — strict/extended FAIL buckets, matcher gaps, fixture unrealistic, mustNot false positives, prompt gaps. Używa `buildEstimateCoverageCorpus` + `explainTermMismatch`.
+Output: `evals/results/<runId>/evaluator-false-positives.md` - strict/extended FAIL buckets, matcher gaps, fixture unrealistic, mustNot false positives, prompt gaps. Używa `buildEstimateCoverageCorpus` + `explainTermMismatch`.
 
 ---
 
@@ -233,7 +233,7 @@ Per scenariusz + agregat runu. Compare raportuje **cost regression** i **prompt 
 | `evals/baselines/services/<timestamp>.json` | Pełny `RunSummary` |
 | `evals/baselines/prompts/v<version>/*.txt` | Prompty golden scenarios |
 
-`evals/engine/baseline/prompt-diff.ts` — diff bloków `## ` między wersjami.
+`evals/engine/baseline/prompt-diff.ts` - diff bloków `## ` między wersjami.
 
 Progi (`evals/engine/config/regression-thresholds.ts`):
 
@@ -346,14 +346,14 @@ Services prompt block order (production): Company Context → Workspace Rules �
 
 ★ = golden (`critical: true`) + `referenceEstimate`
 
-### Generic (9) — fallback `industryOtherText`
+### Generic (9) - fallback `industryOtherText`
 
 Scenariusze z minimalnym kontekstem firmy (`industryOtherText: "Usługi"`, pusty `companyDescription`). Osobna **Generic Average** w raporcie.
 
 | ID | Focus |
 | --- | --- |
 | `generic-uslugi` ★ quick | Ogólna wycena, zakres do ustalenia |
-| `generic-remont-mieszkania` | Brief remontowy przy generycznym typie firmy — leakage |
+| `generic-remont-mieszkania` | Brief remontowy przy generycznym typie firmy - leakage |
 | `generic-konsulting` | Warsztaty, audyt |
 | `generic-uslugi-kreatywne` | Logo, identyfikacja |
 | `generic-organizacja-eventu` | Konferencja, koordynacja |

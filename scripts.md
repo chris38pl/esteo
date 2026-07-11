@@ -1,10 +1,10 @@
 
 |                            |                                                                             |                                                                                                                                                                                                                                                                                                   |                                                                                                                                                                                                       |                                                                                                                                                                                     |
 | -------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `dev:list-workspaces`      | Lista workspace’ów testowych z planem, statusem, ownerem, seatami i billingiem | `npm run dev:list-workspaces` `npm run dev:list-workspaces -- --owner juniorkrawiec@wp.pl`                                                                                                                                                                                                        | Bloki per workspace: `firma-juniora` `BUSINESS` `ACTIVE` `owner@…` `seats: 0` `billing: renews 2026-07-14` lub `billing: canceling (active until 2026-07-14)` … `Total: 8` | Na początku sesji testowej — nie musisz znać slugów ani otwierać Prisma Studio. Filtr `--owner` gdy user ma wiele workspace’ów. |
+| `dev:list-workspaces`      | Lista workspace’ów testowych z planem, statusem, ownerem, seatami i billingiem | `npm run dev:list-workspaces` `npm run dev:list-workspaces -- --owner juniorkrawiec@wp.pl`                                                                                                                                                                                                        | Bloki per workspace: `firma-juniora` `BUSINESS` `ACTIVE` `owner@…` `seats: 0` `billing: renews 2026-07-14` lub `billing: canceling (active until 2026-07-14)` … `Total: 8` | Na początku sesji testowej - nie musisz znać slugów ani otwierać Prisma Studio. Filtr `--owner` gdy user ma wiele workspace’ów. |
 | `dev:workspace-state`      | Pełny raport billingowy: plan, entitlementy, usage, storage, Stripe         | `npm run dev:workspace-state -- --slug firma-juniora`                                                                                                                                                                                                                                             | Raport tekstowy: Owner, Plan, Plan Version, Subscription Status, Effective Status, Provisioning Status, isActiveFree, Features (AI, ESTIMATES, PDF…), usage, seats, storage, Stripe IDs, cancel/grace | **Główne narzędzie debugowania.** Przed i po każdej mutacji. Gdy UI pokazuje zły plan, banner lub limit.                                                                            |
-| `dev:set-workspace-plan`   | Natychmiastowa zmiana planu w DB (bez Stripe)                               | `npm run dev:set-workspace-plan -- --slug firma-juniora --plan PRO` `npm run dev:set-workspace-plan -- --slug firma-juniora --plan FREE`                                                                                                                                                          | `Set firma-juniora to PRO (PRO_2026).` `No Stripe interaction.`                                                                                                                                       | **Domyślna komenda do testów UI.** PRO→FREE, FREE→PRO, upgrade BUSINESS. Szybko, bezpiecznie. Stripe ID zostają (możliwy drift — widać w `workspace-state`).                        |
-| `dev:set-workspace-status` | Ustawienie lifecycle subscription (ACTIVE, PAST_DUE, GRACE_PERIOD, EXPIRED) | `npm run dev:set-workspace-status -- --slug firma-juniora --status GRACE_PERIOD` `npm run dev:set-workspace-status -- --slug firma-juniora --status EXPIRED`                                                                                                                                      | `Set firma-juniora subscription status to GRACE_PERIOD.` + `graceEndsAt` przy GRACE_PERIOD                                                                                                            | Test bannerów, read-only, degradacji Features, client portal. Bez Stripe Dashboard i bez czekania na okres rozliczeniowy. **GRACE_PERIOD** — tu, nie przez webhook.                 |
+| `dev:set-workspace-plan`   | Natychmiastowa zmiana planu w DB (bez Stripe)                               | `npm run dev:set-workspace-plan -- --slug firma-juniora --plan PRO` `npm run dev:set-workspace-plan -- --slug firma-juniora --plan FREE`                                                                                                                                                          | `Set firma-juniora to PRO (PRO_2026).` `No Stripe interaction.`                                                                                                                                       | **Domyślna komenda do testów UI.** PRO→FREE, FREE→PRO, upgrade BUSINESS. Szybko, bezpiecznie. Stripe ID zostają (możliwy drift - widać w `workspace-state`).                        |
+| `dev:set-workspace-status` | Ustawienie lifecycle subscription (ACTIVE, PAST_DUE, GRACE_PERIOD, EXPIRED) | `npm run dev:set-workspace-status -- --slug firma-juniora --status GRACE_PERIOD` `npm run dev:set-workspace-status -- --slug firma-juniora --status EXPIRED`                                                                                                                                      | `Set firma-juniora subscription status to GRACE_PERIOD.` + `graceEndsAt` przy GRACE_PERIOD                                                                                                            | Test bannerów, read-only, degradacji Features, client portal. Bez Stripe Dashboard i bez czekania na okres rozliczeniowy. **GRACE_PERIOD** - tu, nie przez webhook.                 |
 | `dev:clear-usage`          | Zeruje liczniki usage (AI, wyceny, agregaty)                                | `npm run dev:clear-usage -- --slug firma-juniora`                                                                                                                                                                                                                                                 | `Cleared usage for firma-juniora.` Liczby usuniętych rekordów UsageEvent / Aggregate                                                                                                                  | Ponowne testowanie limitów FREE (3 wyceny, 10 AI). **Nie** resetuje storage (`attachmentStorageUsedBytes`).                                                                         |
 | `dev:billing-reset`        | Destrukcyjny reset: cancel **wszystkich** Stripe subs workspace + FREE + czysty billing | `npm run dev:billing-reset -- --slug firma-juniora`                                                                                                                                                                                                                                               | `Reset firma-juniora to FREE.` `Canceled Stripe subscription(s): sub_a, sub_b` | Po checkout Stripe, gdy chcesz **całkowicie** odpiąć workspace od Stripe. |
 | `dev:sync-workspace-billing` | Ręczny sync stanu subskrypcji ze Stripe do DB (portal / brak webhooka) | `npm run dev:sync-workspace-billing -- --slug firma-juniora`                                                                                                                                                                                                                                      | `Synced firma-juniora from Stripe.` + plan, status, cancelAtPeriodEnd | Po anulowaniu w Stripe Portal gdy DB nie odświeżyła się (localhost bez `stripe listen`). |
@@ -13,17 +13,17 @@
 
 ---
 
-## **Baza danych — Neon development vs staging**
+## **Baza danych - Neon development vs staging**
 
 Środowiska mają **osobne** branche Neon: localhost → `development`, Vercel Preview → `staging`.  
 W `.env` trzymaj `DATABASE_URL_STAGING` + `DIRECT_URL_STAGING` (tylko lokalnie, nie commituj).
 
 |                            |                                                                                    |                                                                                                                                                                      |                                                                                                                                                          |                                                                                                                                                                                                 |
 | -------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `prisma:migrate`           | Tworzy i aplikuje migracje na **development** (`migrate dev`)                    | `npm run prisma:migrate`                                                                                                                                             | Nowy folder w `prisma/migrations/`, schema na dev zsynchronizowana                                                                                        | Codzienna praca lokalna. **Nie** uruchamiaj na staging — używa `DIRECT_URL` z `.env`.                                                                                                          |
+| `prisma:migrate`           | Tworzy i aplikuje migracje na **development** (`migrate dev`)                    | `npm run prisma:migrate`                                                                                                                                             | Nowy folder w `prisma/migrations/`, schema na dev zsynchronizowana                                                                                        | Codzienna praca lokalna. **Nie** uruchamiaj na staging - używa `DIRECT_URL` z `.env`.                                                                                                          |
 | `prisma:migrate:staging`   | `migrate deploy` na Neon **staging** (ręcznie)                                     | `npm run prisma:migrate:staging`                                                                                                                                     | `Applying migrations to Neon staging branch…` → `All migrations have been successfully applied` lub brak pending                                           | Przed pierwszym przełączeniem Preview, albo debug schemy. Wymaga `DATABASE_URL_STAGING` + `DIRECT_URL_STAGING` w `.env`. Na Preview deploy migracje lecą **automatycznie** (`build:vercel`). |
-| `prisma:seed:catalog`      | Seed **katalogu platformowego** (industry fields) — bez userów/workspace’ów      | `npm run prisma:seed:catalog`                                                                                                                                        | `Industry fields: N created, M updated (2 in repo catalog)`                                                                                              | Uzupełnia `IndustryFieldDefinition` z `prisma/seed-industry-fields.ts`. Idempotentny (upsert).                                                                                                  |
-| `prisma:seed:catalog:staging` | To samo na Neon **staging**                                                     | `npm run prisma:seed:catalog:staging`                                                                                                                                  | Jak wyżej, na branchu staging                                                                                                                            | Po `migrate:staging` gdy Preview nie ma pól branżowych. **Nie** kopiuje pól dodanych tylko w adminie na dev — dodaj je do `INDUSTRY_FIELD_CATALOG` w repo.                                    |
+| `prisma:seed:catalog`      | Seed **katalogu platformowego** (industry fields) - bez userów/workspace’ów      | `npm run prisma:seed:catalog`                                                                                                                                        | `Industry fields: N created, M updated (2 in repo catalog)`                                                                                              | Uzupełnia `IndustryFieldDefinition` z `prisma/seed-industry-fields.ts`. Idempotentny (upsert).                                                                                                  |
+| `prisma:seed:catalog:staging` | To samo na Neon **staging**                                                     | `npm run prisma:seed:catalog:staging`                                                                                                                                  | Jak wyżej, na branchu staging                                                                                                                            | Po `migrate:staging` gdy Preview nie ma pól branżowych. **Nie** kopiuje pól dodanych tylko w adminie na dev - dodaj je do `INDUSTRY_FIELD_CATALOG` w repo.                                    |
 | `prisma:seed`              | Pełny seed dev: user, workspace `esteo-dev`, billing FREE/PRO, + katalog           | `npm run prisma:seed` `npm run prisma:seed:pro`                                                                                                                      | `Seed completed.` + owner, workspace, plan                                                                                                               | Tylko **development** (`DATABASE_URL`).                                                                                                                                                         |
 | `prisma:seed:staging`      | Pełny seed na Neon **staging** (admin + workspace `esteo-dev`)                     | `npm run prisma:seed:staging` `npm run prisma:seed:staging -- --plan PRO`                                                                                            | `Platform role: PLATFORM_ADMIN`, workspace `/esteo-dev`                                                                                                  | Używa `DATABASE_URL_STAGING`. Owner z `prisma/seed.ts` (`chris38pl@gmail.com` + Clerk ID z seed).                                                                                             |
 | `trigger:deploy:staging`   | Deploy tasków Trigger.dev do projektu **Esteo-Staging**                            | `npm run trigger:deploy:staging`                                                                                                                                     | `Version … was deployed` w CLI                                                                                                                           | Po zmianie kodu w `src/trigger/`. Używa `--native-build-server` (Windows). Zsynchronizuj `package-lock.json` przed deployem.                                                                 |
@@ -38,10 +38,10 @@ W `.env` trzymaj `DATABASE_URL_STAGING` + `DIRECT_URL_STAGING` (tylko lokalnie, 
 
 **Typowy workflow (schema + katalog na Preview):**
 
-1. `npm run prisma:migrate` — lokalnie na dev
-2. commit + push na `staging` — Vercel robi `migrate deploy` przy buildzie
-3. `npm run prisma:seed:catalog:staging` — industry fields na staging
-4. `npm run trigger:deploy:staging` — gdy zmienił się kod tasków
+1. `npm run prisma:migrate` - lokalnie na dev
+2. commit + push na `staging` - Vercel robi `migrate deploy` przy buildzie
+3. `npm run prisma:seed:catalog:staging` - industry fields na staging
+4. `npm run trigger:deploy:staging` - gdy zmienił się kod tasków
 
 Więcej: `docs/dev/database-migrations.md`.
 
@@ -65,7 +65,7 @@ Indeks `SearchDocument` wymaga **jednorazowego backfillu** po pierwszym deployu 
 | ------------------------------------- | ------------------------------------ | ----------------------------- |
 | PRO → FREE (test UI, sidebar, limity) | `dev:set-workspace-plan --plan FREE` | Bez zmian                     |
 | Upgrade PRO bez checkoutu             | `dev:set-workspace-plan --plan PRO`  | Bez zmian                     |
-| Po checkout — pełny cleanup           | `dev:billing-reset`                  | Cancel sub + wyczyszczenie DB |
+| Po checkout - pełny cleanup           | `dev:billing-reset`                  | Cancel sub + wyczyszczenie DB |
 
 
 ---
@@ -90,18 +90,18 @@ Indeks `SearchDocument` wymaga **jednorazowego backfillu** po pierwszym deployu 
 
 ---
 
-## **Issue tracker — sync do Cursor**
+## **Issue tracker - sync do Cursor**
 
-Lokalny eksport issue ze staging (lub dev) do `docs/issues/` — do analizy w Cursorze. Output **gitignored**, nie commituj.
+Lokalny eksport issue ze staging (lub dev) do `docs/issues/` - do analizy w Cursorze. Output **gitignored**, nie commituj.
 
 **Wymagane env w `.env` / `.env.local`:**
 
 | Zmienna | Domyślnie (`sync:issues`) | Z flagą `--local` |
 | --- | --- | --- |
-| `DATABASE_URL_STAGING` | tak | — |
-| `DIRECT_URL_STAGING` | tak | — |
-| `DATABASE_URL` | — | tak |
-| `DIRECT_URL` | — | opcjonalnie (fallback: `DATABASE_URL`) |
+| `DATABASE_URL_STAGING` | tak | - |
+| `DIRECT_URL_STAGING` | tak | - |
+| `DATABASE_URL` | - | tak |
+| `DIRECT_URL` | - | opcjonalnie (fallback: `DATABASE_URL`) |
 | `UPLOADTHING_TOKEN` | tak (pobieranie screenshotów) | tak |
 
 **Neon branch → skrypt:**
@@ -113,7 +113,7 @@ Lokalny eksport issue ze staging (lub dev) do `docs/issues/` — do analizy w Cu
 
 | | | | | |
 | --- | --- | --- | --- | --- |
-| `sync:issues` | Upsert folderów OPEN + IN_PROGRESS ze staging; usuwa RESOLVED/ARCHIVED; regeneruje `open-issues.md` | `npm run sync:issues` | `Syncing issues from Neon staging branch…` → `Sync complete. N issue folder(s) updated.` | Po testach na Preview — pełny sync otwartych issue do Cursora. |
+| `sync:issues` | Upsert folderów OPEN + IN_PROGRESS ze staging; usuwa RESOLVED/ARCHIVED; regeneruje `open-issues.md` | `npm run sync:issues` | `Syncing issues from Neon staging branch…` → `Sync complete. N issue folder(s) updated.` | Po testach na Preview - pełny sync otwartych issue do Cursora. |
 | | Pojedyncze issue | `npm run sync:issues -- --issue=123` | Upsert tylko `#123` (musi być OPEN lub IN_PROGRESS) | Szybki re-sync jednego buga po edycji w adminie. |
 | | Wiele issue | `npm run sync:issues -- --issue=123,124,130` | Jak wyżej, lista numerów | Kilka issue naraz bez pełnego sync. |
 | | Dev DB zamiast staging | `npm run sync:issues -- --local` | `Syncing issues from default DATABASE_URL…` | Gdy testujesz issue tracker lokalnie (`ENABLE_ISSUE_TRACKER=true`). |
@@ -126,47 +126,47 @@ Lokalny eksport issue ze staging (lub dev) do `docs/issues/` — do analizy w Cu
 docs/issues/
   open-issues.md              ← indeks OPEN + IN_PROGRESS (tylko przy pełnym sync)
   123-mobile-save-loader/
-    issue.md                    ← managed — nadpisywany
-    context.json                ← managed — fingerprint screenshotów (cache)
-    screenshot-1.png            ← managed — pobierany z UploadThing
-    notes.md                    ← ręczny — zachowany między syncami
+    issue.md                    ← managed - nadpisywany
+    context.json                ← managed - fingerprint screenshotów (cache)
+    screenshot-1.png            ← managed - pobierany z UploadThing
+    notes.md                    ← ręczny - zachowany między syncami
 ```
 
-Format katalogu: `{number}-{folderSlug}/` — `folderSlug` immutable (ustawiany przy create).
+Format katalogu: `{number}-{folderSlug}/` - `folderSlug` immutable (ustawiany przy create).
 
 **Co sync robi:**
 
 - **OPEN / IN_PROGRESS** → upsert folderu (`issue.md`, `context.json`, screenshoty)
 - **RESOLVED / ARCHIVED** → usuwa folder
 - Komentarze z DB są dopisywane do `issue.md`
-- Screenshoty: **cache-aware** — pomija download gdy `context.json` + plik lokalny aktualne
-- Ręczne pliki (np. `notes.md`, plan naprawczy) poza listą managed — **zachowane**
+- Screenshoty: **cache-aware** - pomija download gdy `context.json` + plik lokalny aktualne
+- Ręczne pliki (np. `notes.md`, plan naprawczy) poza listą managed - **zachowane**
 
 **Typowy workflow (Preview → Cursor):**
 
-1. Test na Vercel Preview — zgłoś issue przez sidebar „Zgłoś błąd”
-2. (Opcjonalnie) Admin → Copy Cursor Prompt — analiza bez sync
-3. `npm run sync:issues -- --issue=123` — szybki sync jednego issue
-4. Otwórz `docs/issues/123-…/` w Cursorze — `issue.md` + screenshoty + własne `notes.md`
+1. Test na Vercel Preview - zgłoś issue przez sidebar „Zgłoś błąd”
+2. (Opcjonalnie) Admin → Copy Cursor Prompt - analiza bez sync
+3. `npm run sync:issues -- --issue=123` - szybki sync jednego issue
+4. Otwórz `docs/issues/123-…/` w Cursorze - `issue.md` + screenshoty + własne `notes.md`
 5. Po poprawce: zapisz podsumowanie w `.cursor/issue-comments/123.md`, potem `npm run issue:comment -- --issue=123 --resolve --draft`
 
 **Create Plan + Built (Cursor):** reguły `.cursor/rules/issue-plan-closeout.mdc` wymuszają w planie todo closeout per issue oraz tabelę „Issue closeout” w odpowiedzi po Built (draft + CLI + status).
 
-Alternatywa: admin → **Copy Cursor Prompt** / **Copy Issue URL** — bez `sync:issues`.
+Alternatywa: admin → **Copy Cursor Prompt** / **Copy Issue URL** - bez `sync:issues`.
 
 **Ograniczenia:** blokowane przy `VERCEL_ENV=production`. Issue tracker na Preview wymaga `ENABLE_ISSUE_TRACKER=true` w Vercel Preview env.
 
 ---
 
-## **AI eval harness — Services (jakość wycen AI)**
+## **AI eval harness - Services (jakość wycen AI)**
 
-Regresje promptów i kontekstu dla segmentu **Usługi** (`WorkspaceIndustry.OTHER`). Nie zastępuje `validate:ai-schemas` ani testów jednostkowych — ocenia merytoryczną jakość wygenerowanych wycen.
+Regresje promptów i kontekstu dla segmentu **Usługi** (`WorkspaceIndustry.OTHER`). Nie zastępuje `validate:ai-schemas` ani testów jednostkowych - ocenia merytoryczną jakość wygenerowanych wycen.
 
 **Wymagane env w `.env` / `.env.local`:**
 
 | Zmienna | Domyślnie | Uwagi |
 | --- | --- | --- |
-| `OPENAI_API_KEY` | — | Wymagany dla generacji i judge (oprócz `smoke`) |
+| `OPENAI_API_KEY` | - | Wymagany dla generacji i judge (oprócz `smoke`) |
 | `EVAL_GENERATION_MODEL` | `gpt-4o` | Model draftu w eval |
 | `EVAL_JUDGE_MODEL` | `gpt-4o-mini` | Model LLM-as-Judge (tylko Full) |
 
@@ -174,12 +174,12 @@ Env ładowany przez `scripts/load-env.mjs` (jak `voice-intake:benchmark`).
 
 | | | | | |
 | --- | --- | --- | --- | --- |
-| `eval:services:quick` | **Fast** eval — 6 scenariuszy z quick manifest, bez judge | `npm run eval:services:quick` | Raport `Services Evaluation Report [FAST]`, exit `0` gdy PASS | **Każdy PR** (~30 s). Deterministyczne scorery: schema, rules, leakage, length. |
-| `eval:services` | **Full** eval — wszystkie 35 scenariuszy + LLM judge | `npm run eval:services` | Raport `[FULL]`, koszt w USD, Business / Generic / Edge Average | Przed release zmian w `estimate-draft.ts` lub profilach AI. |
+| `eval:services:quick` | **Fast** eval - 6 scenariuszy z quick manifest, bez judge | `npm run eval:services:quick` | Raport `Services Evaluation Report [FAST]`, exit `0` gdy PASS | **Każdy PR** (~30 s). Deterministyczne scorery: schema, rules, leakage, length. |
+| `eval:services` | **Full** eval - wszystkie 35 scenariuszy + LLM judge | `npm run eval:services` | Raport `[FULL]`, koszt w USD, Business / Generic / Edge Average | Przed release zmian w `estimate-draft.ts` lub profilach AI. |
 | `eval:services:baseline` | Full eval + zapis baseline | `npm run eval:services:baseline` | `Baseline saved: evals/baselines/services/<timestamp>.json` | Po akceptowanym Full run; opcjonalny commit `evals/baselines/`. |
-| `eval:services:compare` | Full eval + diff vs baseline | `npm run eval:services:compare` | Prompt diff, delty score, WARNING / CRITICAL / golden regression | Po zmianie promptu — przed merge. Exit `1` przy regresji. |
+| `eval:services:compare` | Full eval + diff vs baseline | `npm run eval:services:compare` | Prompt diff, delty score, WARNING / CRITICAL / golden regression | Po zmianie promptu - przed merge. Exit `1` przy regresji. |
 | `eval:services:smoke` | Test scorerów bez API | `npm run eval:services:smoke` | `Scorer smoke test passed.` | CI / lokalnie bez klucza OpenAI. |
-| `eval:types` | Type-check katalogu `evals/` (osobny `tsconfig`) | `npm run eval:types` | Brak outputu = OK; błędy TS z `evals/**/*.ts` | Po zmianach w `evals/` — **bez** pełnego `next build`. Katalog `evals/` jest wykluczony z type-checku Vercel (`tsconfig.json` → `exclude: evals`). |
+| `eval:types` | Type-check katalogu `evals/` (osobny `tsconfig`) | `npm run eval:types` | Brak outputu = OK; błędy TS z `evals/**/*.ts` | Po zmianach w `evals/` - **bez** pełnego `next build`. Katalog `evals/` jest wykluczony z type-checku Vercel (`tsconfig.json` → `exclude: evals`). |
 | `eval:services:seed` | Regeneracja fixture JSON | `npm run eval:services:seed` | Pliki w `evals/services/` nadpisane z seed script | Po zmianie katalogu scenariuszy w `evals/scripts/seed-services-scenarios.ts`. |
 
 **Flagi (po `--`, głównie `eval:services`):**
@@ -201,25 +201,25 @@ Env ładowany przez `scripts/load-env.mjs` (jak `voice-intake:benchmark`).
 | Score | `fastScore` = rules | `0.30 × rules + 0.70 × judge` |
 | Koszt API | Niski | ~$1–2 / pełny run |
 
-**Artefakty:** `evals/results/<timestamp>/` — `prompt.txt`, `generated-estimate.json`, `summary.json`, scorer JSON (gitignored).
+**Artefakty:** `evals/results/<timestamp>/` - `prompt.txt`, `generated-estimate.json`, `summary.json`, scorer JSON (gitignored).
 
 **Wersja promptu:** bump `ESTIMATE_PROMPT_VERSION` w `src/ai/prompts/estimate-draft.ts` przy każdej zmianie treści promptu.
 
 **Typowy workflow (zmiana promptu):**
 
-0. `npm run eval:types` — gdy edytujesz pliki w `evals/` (szybsze niż `npm run build`)
-1. `npm run eval:services:quick` — szybka bramka lokalnie / w PR
-2. `npm run eval:services` — Full eval, review `evals/results/…/summary.json`
-3. `npm run eval:services:baseline` — zapis baseline po akceptacji
-4. (Kolejny PR) `npm run eval:services:compare` — regresja przed merge
+0. `npm run eval:types` - gdy edytujesz pliki w `evals/` (szybsze niż `npm run build`)
+1. `npm run eval:services:quick` - szybka bramka lokalnie / w PR
+2. `npm run eval:services` - Full eval, review `evals/results/…/summary.json`
+3. `npm run eval:services:baseline` - zapis baseline po akceptacji
+4. (Kolejny PR) `npm run eval:services:compare` - regresja przed merge
 
 Więcej: [`docs/features/ai-eval-harness.md`](docs/features/ai-eval-harness.md), [`docs/architecture/ai-eval-harness.md`](docs/architecture/ai-eval-harness.md), [`evals/README.md`](evals/README.md).
 
 ---
 
-## **Program partnerski — zniżka 20% i aktywacja bonusów**
+## **Program partnerski - zniżka 20% i aktywacja bonusów**
 
-Kupon Stripe dla poleconych (20% przez 3 miesiące) — wymagany do checkout ze zniżką:
+Kupon Stripe dla poleconych (20% przez 3 miesiące) - wymagany do checkout ze zniżką:
 
 ```bash
 stripe coupons create --percent-off=20 --duration=repeating --duration-in-months=3 --name="Referral 20% 3 months"
@@ -239,9 +239,9 @@ STRIPE_REFERRAL_COUPON_ID="..."
 | `prisma:backfill-referral-activations` | Aktywacja bonusów dla poleconych z opłaconą subskrypcją (localhost bez webhooka) | `npm run prisma:backfill-referral-activations` |
 | `prisma:backfill-missing-referral-credits` | Dopisanie brakujących kredytów Stripe balance dla wpisów ledger bez `stripeBalanceTxnId` | `npm run prisma:backfill-missing-referral-credits` |
 
-Pełna dokumentacja: [`docs/features/referral-program.md`](docs/features/referral-program.md) — KPI v6, saldo na fakturze, skrypty, checklista.
+Pełna dokumentacja: [`docs/features/referral-program.md`](docs/features/referral-program.md) - KPI v6, saldo na fakturze, skrypty, checklista.
 
-**Localhost:** bez `STRIPE_REFERRAL_COUPON_ID` UI na `/billing/manage` nadal pokazuje ceny promocyjne (gdy referral `PENDING_CLAIM`), ale Stripe Checkout pobierze pełną kwotę — w logach dev: `[referral] … STRIPE_REFERRAL_COUPON_ID missing`.
+**Localhost:** bez `STRIPE_REFERRAL_COUPON_ID` UI na `/billing/manage` nadal pokazuje ceny promocyjne (gdy referral `PENDING_CLAIM`), ale Stripe Checkout pobierze pełną kwotę - w logach dev: `[referral] … STRIPE_REFERRAL_COUPON_ID missing`.
 
 ---
 
@@ -249,6 +249,6 @@ Pełna dokumentacja: [`docs/features/referral-program.md`](docs/features/referra
 
 - **Produkcja:** wszystkie komendy blokowane przy `VERCEL_ENV=production`
 - `dev:billing-reset`**:** wymaga `STRIPE_SECRET_KEY` do cancelu w Stripe test mode
-- `dev:simulate-webhook`**:** wymaga wiersza `subscription` w DB; `deleted` czyści `stripeSubscriptionId` — potem `set-workspace-status --status ACTIVE` lub `set-plan`, żeby przywrócić stan
+- `dev:simulate-webhook`**:** wymaga wiersza `subscription` w DB; `deleted` czyści `stripeSubscriptionId` - potem `set-workspace-status --status ACTIVE` lub `set-plan`, żeby przywrócić stan
 
 Więcej: `scripts/dev-billing/README.md`.

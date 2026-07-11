@@ -65,7 +65,7 @@ export function EstimatesListStatsCards({ estimates, locale }: EstimatesListStat
       (estimate) => estimate.latestVersion?.status === "ACCEPTED",
     ).length;
     const winRate =
-      sentCount > 0 ? `${Math.round((acceptedCount / sentCount) * 100)}%` : "—";
+      sentCount > 0 ? `${Math.round((acceptedCount / sentCount) * 100)}%` : "-";
     const wonValue = estimates.reduce((sum, estimate) => {
       if (estimate.latestVersion?.status !== "ACCEPTED") {
         return sum;

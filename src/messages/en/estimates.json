@@ -50,8 +50,8 @@
       "dateRange": "Date range",
       "export": "Export",
       "exportCsv": "CSV",
-      "exportExcel": "Excel (.xlsx) — Coming soon",
-      "exportPdf": "PDF — Coming soon",
+      "exportExcel": "Excel (.xlsx) - Coming soon",
+      "exportPdf": "PDF - Coming soon",
       "viewSettings": "View settings"
     },
     "settings": {
@@ -162,7 +162,7 @@
     "title": "New estimate",
     "subtitle": "Same fields as the public request form, plus an optional estimate title for your team.",
     "titleLabel": "Title (optional)",
-    "titlePlaceholder": "E.g. Apartment renovation — Warsaw",
+    "titlePlaceholder": "E.g. Apartment renovation - Warsaw",
     "descriptionLabel": "Project description",
     "descriptionPlaceholder": "Describe the project scope, client requirements, location, etc.",
     "descriptionHint": "AI will use this description to generate the estimate draft.",
@@ -212,7 +212,7 @@
       "failed": "PDF generation failed. Please try again.",
       "companyProfileIncomplete": {
         "title": "Complete company details",
-        "description": "Your workspace is missing company details used when exporting or sending the estimate as PDF. Add them for a professional document — or continue with empty fields.",
+        "description": "Your workspace is missing company details used when exporting or sending the estimate as PDF. Add them for a professional document - or continue with empty fields.",
         "missingFieldsLabel": "Missing items:",
         "fields": {
           "logo": "Company logo",
@@ -362,7 +362,7 @@
       },
       "recordPayment": {
         "title": "Record payment",
-        "subtitle": "{name} — remaining {remaining}",
+        "subtitle": "{name} - remaining {remaining}",
         "amountLabel": "Payment amount",
         "alreadyPaid": "Already paid {paid} of {total}",
         "noteLabel": "Note (optional)",
@@ -492,7 +492,7 @@
         "acceptance": "Accepted",
         "acceptanceDesc": "Customer accepted the estimate",
         "acceptanceWaiting": "Awaiting customer decision",
-        "acceptanceWaitingDesc": "The estimate is with the customer — waiting for a response",
+        "acceptanceWaitingDesc": "The estimate is with the customer - waiting for a response",
         "rejection": "Rejected by customer",
         "rejectionDesc": "The customer rejected the estimate"
       },
@@ -567,7 +567,7 @@
     "itemNamePlaceholder": "Item name",
     "unitPlaceholder": "unit",
     "archivedBanner": "This version is archived and cannot be edited.",
-    "readOnlyBanner": "Sent to the client — editing is locked. Create a new version if you need to make changes.",
+    "readOnlyBanner": "Sent to the client - editing is locked. Create a new version if you need to make changes.",
     "sendInProgressBanner": "Sending estimate… Line-item editing is temporarily locked.",
     "conflictBanner": "Another user saved this estimate. Reload to continue editing.",
     "reload": "Reload",
@@ -666,7 +666,7 @@
       "title": "Rename estimate",
       "description": "This name appears in the estimates list, sidebar pins, and editor header.",
       "label": "Estimate name",
-      "placeholder": "E.g. Apartment renovation — Warsaw",
+      "placeholder": "E.g. Apartment renovation - Warsaw",
       "counter": "{count}/{max}",
       "save": "Save",
       "cancel": "Cancel",
@@ -726,7 +726,7 @@
     "saving": "Saving…",
     "saved": "Saved",
     "error": "Save error",
-    "conflict": "Conflict — reload"
+    "conflict": "Conflict - reload"
   },
   "margin": {
     "unit": "%"
@@ -739,7 +739,7 @@
   },
   "profitability": {
     "title": "Profitability",
-    "tooltip": "Estimates from project margin and net total — not actual material or labor costs.",
+    "tooltip": "Estimates from project margin and net total - not actual material or labor costs.",
     "projectMargin": "Project margin",
     "cost": "Cost",
     "profit": "Profit",
@@ -767,7 +767,7 @@
     "impactBefore": "Gross before: {gross}",
     "impactAfter": "Gross after changes: {gross}",
     "impactDiff": "Gross difference: {diff}",
-    "targetProgress": "Target: {target} — after changes: ~{after}"
+    "targetProgress": "Target: {target} - after changes: ~{after}"
   },
   "rules": {
     "applied": "Rules applied",
@@ -799,7 +799,7 @@
     "lastUpdated": "Last updated",
     "editedBy": "by {user}",
     "investmentFallback": "Investment type",
-    "empty": "—",
+    "empty": "-",
     "noDate": "No date",
     "noAddress": "No address",
     "noEmail": "No email"
@@ -809,7 +809,7 @@
     "storageApproachingLimit": "You are approaching your attachment storage limit.",
     "storageExhausted": "Attachment uploads are unavailable because your storage limit has been reached.",
     "dropzoneTitle": "Upload files",
-    "dropzoneHint": "Images (JPG, PNG, WEBP), PDF, or DOCX — up to 20 MB per file",
+    "dropzoneHint": "Images (JPG, PNG, WEBP), PDF, or DOCX - up to 20 MB per file",
     "addMore": "Add files",
     "uploading": "Uploading… {percent}%",
     "empty": "No attachments yet.",

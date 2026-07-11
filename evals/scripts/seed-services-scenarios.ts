@@ -109,7 +109,7 @@ function businessScenario(
   };
 }
 
-/** Fallback workspace: vague industryOtherText, no company profile — tests Services prompt without niche context. */
+/** Fallback workspace: vague industryOtherText, no company profile - tests Services prompt without niche context. */
 function genericScenario(
   id: string,
   name: string,
@@ -189,7 +189,7 @@ const genericScenarios: ScenarioDef[] = [
   }),
   genericScenario("generic-organizacja-eventu", "Generic: Organizacja eventu", {
     description:
-      "Organizacja konferencji branżowej dla 150 uczestników w Krakowie — koordynacja merytoryczna i logistyka. Catering po stronie klienta.",
+      "Organizacja konferencji branżowej dla 150 uczestników w Krakowie - koordynacja merytoryczna i logistyka. Catering po stronie klienta.",
     mustHave: ["konferenc", "koordynac"],
     mustNotHave: ["catering"],
     coverageTerms: ["konferenc", "koordynac", "logistyk"],
@@ -202,7 +202,7 @@ const genericScenarios: ScenarioDef[] = [
   }),
   genericScenario("generic-niejednoznaczny-opis", "Generic: Niejednoznaczny opis", {
     description:
-      "Potrzebuję wyceny dla mojej firmy. Co dokładnie — zobaczymy na spotkaniu wstępnym, zależy od budżetu i terminu.",
+      "Potrzebuję wyceny dla mojej firmy. Co dokładnie - zobaczymy na spotkaniu wstępnym, zależy od budżetu i terminu.",
     coverageTerms: ["usług"],
     minLineItems: 2,
     judge: { minScore: 4, minContextAlignment: 4, minReferenceSimilarity: 4 },
@@ -234,7 +234,7 @@ const scenarios: ScenarioDef[] = [
       {
         title: "Wyłączenia",
         content:
-          "Nigdy nie wyceniaj cateringu, transportu gości ani oprawy muzycznej — to poza zakresem firmy.",
+          "Nigdy nie wyceniaj cateringu, transportu gości ani oprawy muzycznej - to poza zakresem firmy.",
       },
     ],
     description:
@@ -312,7 +312,7 @@ const scenarios: ScenarioDef[] = [
   businessScenario("law-firm", "Law Firm", {
     industryOtherText: "Kancelaria prawna",
     companyDescription:
-      "Kancelaria prawna — prawo gospodarcze i umowy B2B. Nie prowadzimy spraw karnych ani nie wykonujemy remontów.",
+      "Kancelaria prawna - prawo gospodarcze i umowy B2B. Nie prowadzimy spraw karnych ani nie wykonujemy remontów.",
     description:
       "Potrzebuję przygotowania i negocjacji umowy najmu lokalu użytkowego 200 m² w Warszawie, z terminem 2 miesięcy.",
     mustHave: ["umow", "negocjac"],
@@ -322,7 +322,7 @@ const scenarios: ScenarioDef[] = [
   businessScenario("marketing-agency", "Marketing Agency", {
     industryOtherText: "Agencja marketingowa",
     companyDescription:
-      "Agencja marketingowa B2B — strategia, content, kampanie. Nie produkujemy oprogramowania ani nie wykonujemy remontów biur.",
+      "Agencja marketingowa B2B - strategia, content, kampanie. Nie produkujemy oprogramowania ani nie wykonujemy remontów biur.",
     description:
       "Kampania wprowadzenia nowego produktu SaaS na rynek polski, 3 miesiące, budżet mediowy po stronie klienta, potrzebuję strategii i kreacji.",
     mustHave: ["strateg", { term: "kampan", scope: "any_section" }],
@@ -362,8 +362,8 @@ const scenarios: ScenarioDef[] = [
   businessScenario("it-consulting", "IT Consulting", {
     industryOtherText: "Konsulting IT",
     companyDescription:
-      "Konsulting IT — audyt, architektura, roadmapa. Nie wykonujemy developmentu ani utrzymania serwerów.",
-    aiInstructions: "Nie wyceniaj programowania ani wdrożenia — tylko doradztwo i dokumentacja.",
+      "Konsulting IT - audyt, architektura, roadmapa. Nie wykonujemy developmentu ani utrzymania serwerów.",
+    aiInstructions: "Nie wyceniaj programowania ani wdrożenia - tylko doradztwo i dokumentacja.",
     description:
       "Audyt architektury systemu ERP przed migracją do chmury, 80 użytkowników, warsztaty z zespołem IT klienta.",
     mustHave: [{ term: "audyt", scope: "any_section" }, "architektur", "warsztat"],
@@ -421,7 +421,7 @@ const scenarios: ScenarioDef[] = [
   }),
   businessScenario("interior-designer", "Interior Designer", {
     industryOtherText: "Projektant wnętrz",
-    companyDescription: "Projektowanie wnętrz mieszkalnych — koncepcja i dokumentacja. Nie wykonujemy prac budowlanych.",
+    companyDescription: "Projektowanie wnętrz mieszkalnych - koncepcja i dokumentacja. Nie wykonujemy prac budowlanych.",
     description: "Projekt mieszkania 65 m², styl skandynawski, wizualizacje 3D i lista materiałów.",
     mustHave: ["projekt", "wizualizac", "koncepc"],
     mustNotHave: ["wykonawstw", "płytki", "tynk"],
@@ -437,7 +437,7 @@ const scenarios: ScenarioDef[] = [
   }),
   businessScenario("copywriter", "Copywriter", {
     industryOtherText: "Copywriter",
-    companyDescription: "Copywriting B2B — strony, blog, case studies. Nie zajmujemy się SEO technicznym.",
+    companyDescription: "Copywriting B2B - strony, blog, case studies. Nie zajmujemy się SEO technicznym.",
     description: "Teksty na nową stronę firmową SaaS, 8 podstron + 4 artykuły blogowe, ton profesjonalny.",
     mustHave: ["tekst", "copy", "stron"],
     mustNotHave: ["SEO technicz", "programowanie"],
@@ -461,7 +461,7 @@ const scenarios: ScenarioDef[] = [
   }),
   businessScenario("business-consultant", "Business Consultant", {
     industryOtherText: "Konsulting biznesowy",
-    companyDescription: "Doradztwo strategiczne dla MŚP — warsztaty, analiza, raport wdrożeniowy.",
+    companyDescription: "Doradztwo strategiczne dla MŚP - warsztaty, analiza, raport wdrożeniowy.",
     description: "Warsztaty strategiczne dla zarządu firmy produkcyjnej 50 osób, analiza procesów sprzedaży.",
     mustHave: ["warsztat", "analiz", "raport"],
     mustNotHave: ["programowanie", "remont"],
@@ -482,7 +482,7 @@ const scenarios: ScenarioDef[] = [
   }),
   businessScenario("catering-company", "Catering Company", {
     industryOtherText: "Catering",
-    companyDescription: "Catering eventowy — menu, obsługa kelnerska. Nie wynajmujemy sal ani nie organizujemy wesel.",
+    companyDescription: "Catering eventowy - menu, obsługa kelnerska. Nie wynajmujemy sal ani nie organizujemy wesel.",
     description: "Catering dla konferencji 150 osób, przerwa kawowa i lunch, menu wegetariańskie w 30%.",
     mustHave: ["catering", "menu", "obsługa"],
     mustNotHave: ["wynajem sali", "koordynac"],
@@ -631,7 +631,7 @@ const edgeAndStress: ScenarioDef[] = [
       workspace: {
         industry: "OTHER",
         industryOtherText: "Organizacja wesel",
-        companyDescription: "Kompleksowa organizacja wesel — koordynacja, harmonogram, dostawcy.",
+        companyDescription: "Kompleksowa organizacja wesel - koordynacja, harmonogram, dostawcy.",
       },
       request: {
         project: {
@@ -671,7 +671,7 @@ const edgeAndStress: ScenarioDef[] = [
           key: `section_${i + 1}`,
           titlePl: `Sekcja ${i + 1}`,
           titleEn: `Section ${i + 1}`,
-          rulePl: `Reguła sekcji ${i + 1} — szczegóły wyliczeń.`,
+          rulePl: `Reguła sekcji ${i + 1} - szczegóły wyliczeń.`,
           active: true,
         })),
         rules: Array.from({ length: 10 }, (_, i) => ({

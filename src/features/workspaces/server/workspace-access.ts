@@ -2,7 +2,7 @@ import { prisma } from "@/db/client";
 
 /**
  * Returns whether a user can access a workspace (owner or active member).
- * Lightweight check by workspace id — does not resolve slug or load full workspace data.
+ * Lightweight check by workspace id - does not resolve slug or load full workspace data.
  */
 export async function viewerHasWorkspaceAccess(
   userId: string,

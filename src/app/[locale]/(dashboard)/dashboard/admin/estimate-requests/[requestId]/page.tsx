@@ -139,7 +139,7 @@ export default async function AdminEstimateRequestDetailPage({
         <div className="space-y-6">
           <DetailCard title={t("detail.customerSection")}>
             <DetailRow label={t("detail.name")}>
-              {request.customerData?.fullName ?? "—"}
+              {request.customerData?.fullName ?? "-"}
             </DetailRow>
             <DetailRow label={t("detail.email")}>
               {request.customerData?.email ? (
@@ -150,11 +150,11 @@ export default async function AdminEstimateRequestDetailPage({
                   {request.customerData.email}
                 </a>
               ) : (
-                "—"
+                "-"
               )}
             </DetailRow>
             <DetailRow label={t("detail.phone")}>
-              {request.customerData?.phone ?? "—"}
+              {request.customerData?.phone ?? "-"}
             </DetailRow>
           </DetailCard>
 
@@ -165,20 +165,20 @@ export default async function AdminEstimateRequestDetailPage({
               </span>
             </DetailRow>
             <DetailRow label={t("detail.preferredStartDate")}>
-              {request.customerData?.project?.preferredStartDate ?? "—"}
+              {request.customerData?.project?.preferredStartDate ?? "-"}
             </DetailRow>
           </DetailCard>
 
           <DetailCard title={t("detail.addressSection")}>
             <DetailRow label={t("detail.streetAddress")}>
-              {request.address?.streetAddress ?? "—"}
+              {request.address?.streetAddress ?? "-"}
             </DetailRow>
-            <DetailRow label={t("detail.city")}>{request.address?.city ?? "—"}</DetailRow>
+            <DetailRow label={t("detail.city")}>{request.address?.city ?? "-"}</DetailRow>
             <DetailRow label={t("detail.postalCode")}>
-              {request.address?.postalCode ?? "—"}
+              {request.address?.postalCode ?? "-"}
             </DetailRow>
             <DetailRow label={t("detail.voivodeship")}>
-              {request.address?.voivodeship ?? "—"}
+              {request.address?.voivodeship ?? "-"}
             </DetailRow>
           </DetailCard>
         </div>

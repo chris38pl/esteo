@@ -68,7 +68,7 @@ function catalogSummary(): void {
 async function main(): Promise<void> {
   const secretKey = process.env.STRIPE_SECRET_KEY;
   if (!secretKey) {
-    console.warn("WARNING: STRIPE_SECRET_KEY is not set — skipping Stripe price verification.");
+    console.warn("WARNING: STRIPE_SECRET_KEY is not set - skipping Stripe price verification.");
     catalogSummary();
     process.exit(0);
   }
@@ -134,7 +134,7 @@ async function main(): Promise<void> {
   }
 
   if (!strict) {
-    console.warn("(build continues — set CI_PRODUCTION=true in prod CI to enforce)");
+    console.warn("(build continues - set CI_PRODUCTION=true in prod CI to enforce)");
   }
 
   process.exit(strict ? 1 : 0);

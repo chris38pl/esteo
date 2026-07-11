@@ -90,7 +90,7 @@ type CatalogFieldDefinition = {
   translations: CatalogFieldTranslation[];
 };
 
-/** Built-in platform catalog — versioned in repo, safe to re-run (upsert). */
+/** Built-in platform catalog - versioned in repo, safe to re-run (upsert). */
 export const INDUSTRY_FIELD_CATALOG: CatalogFieldDefinition[] = [
   {
     industry: WorkspaceIndustry.CONSTRUCTION,
@@ -219,7 +219,7 @@ export const INDUSTRY_FIELD_CATALOG: CatalogFieldDefinition[] = [
   },
 ];
 
-/** Removed from catalog — deactivated on seed so existing DB rows stop appearing in forms. */
+/** Removed from catalog - deactivated on seed so existing DB rows stop appearing in forms. */
 const RETIRED_CATALOG_FIELDS: Pick<
   CatalogFieldDefinition,
   "industry" | "documentType" | "key"
@@ -328,7 +328,7 @@ export async function seedIndustryFieldCatalog(
   return { created, updated, total: INDUSTRY_FIELD_CATALOG.length };
 }
 
-/** @deprecated Use seedIndustryFieldCatalog — kept for prisma/seed.ts */
+/** @deprecated Use seedIndustryFieldCatalog - kept for prisma/seed.ts */
 export async function seedConstructionEstimateRequestFields(prisma: PrismaClient) {
   await seedIndustryFieldCatalog(prisma);
 }

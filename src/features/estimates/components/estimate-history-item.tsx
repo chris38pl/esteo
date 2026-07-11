@@ -250,7 +250,7 @@ export function EstimateHistoryItem({ log }: EstimateHistoryItemProps) {
         </div>
         <p className="text-sm">
           <span className="font-medium">{label}</span>
-          <span className="text-muted-foreground"> — </span>
+          <span className="text-muted-foreground"> - </span>
           <span>{description}</span>
         </p>
       </div>

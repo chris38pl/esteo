@@ -1,4 +1,4 @@
-# Estimate view / edit — UI specification
+# Estimate view / edit - UI specification
 
 Central screen for creating, reviewing, and editing estimates. Reference mock: workspace assets (`UI_kosztorys` estimate editor).
 
@@ -67,11 +67,11 @@ Purpose: context without leaving the screen. Data from `EstimateRequest` + estim
 | Tab | Purpose | MVP |
 | --- | --- | --- |
 | **Estimate** | Items table + toolbar | Yes |
-| **Summary** | Versions, workflow, scope, payments snapshot, client brief, recommendations — see [`estimate-summary.md`](estimate-summary.md) | Yes |
+| **Summary** | Versions, workflow, scope, payments snapshot, client brief, recommendations - see [`estimate-summary.md`](estimate-summary.md) | Yes |
 | **Attachments** | Files for this estimate / request | Yes |
-| History | Activity log (who / when / roughly what) | Yes — see [`estimate-activity-history.md`](estimate-activity-history.md) |
-| Payments | Payment schedule (installment tracker) | Yes — see [`estimate-payments.md`](estimate-payments.md) |
-| Notes | Internal threaded notes | Yes — see [`estimate-notes.md`](estimate-notes.md) |
+| History | Activity log (who / when / roughly what) | Yes - see [`estimate-activity-history.md`](estimate-activity-history.md) |
+| Payments | Payment schedule (installment tracker) | Yes - see [`estimate-payments.md`](estimate-payments.md) |
+| Notes | Internal threaded notes | Yes - see [`estimate-notes.md`](estimate-notes.md) |
 
 ---
 
@@ -82,7 +82,7 @@ Purpose: context without leaving the screen. Data from `EstimateRequest` + estim
 | + Add position | Yes |
 | Import from price list | Post-MVP |
 | Statements (dropdown) | Post-MVP |
-| **AI assistant toggle** | Yes — shows/hides panel |
+| **AI assistant toggle** | Yes - shows/hides panel |
 | Search / filter | Optional MVP |
 | Table settings | Optional MVP |
 
@@ -116,8 +116,8 @@ Core editable grid.
 
 ### Footer actions (table)
 
-- “Dodaj pozycję” — add line to active section.
-- “Dodaj sekcję” — new section at end or after selection.
+- “Dodaj pozycję” - add line to active section.
+- “Dodaj sekcję” - new section at end or after selection.
 
 ### Interactions
 
@@ -127,7 +127,7 @@ Core editable grid.
 
 ---
 
-## 6. Right rail — financial panels
+## 6. Right rail - financial panels
 
 ### Summary (Podsumowanie)
 
@@ -187,9 +187,9 @@ Storage: UploadThing; workspace **500 MB** cap (see [`estimate-ai.md`](../archit
 
 | Action | MVP |
 | --- | --- |
-| Podgląd | Yes — modal with blob URL iframe; shared PDF pipeline |
+| Podgląd | Yes - modal with blob URL iframe; shared PDF pipeline |
 | Udostępnij | Post-MVP |
-| **Zapisz jako PDF** | Yes — More menu; Trigger.dev generation |
+| **Zapisz jako PDF** | Yes - More menu; Trigger.dev generation |
 | Wyślij | Post-MVP (Phase 2) |
 
 ## Documents tab
@@ -204,7 +204,7 @@ Generated PDFs appear under **Dokumenty** / **Documents** (powered by `EstimateP
 | --- | --- |
 | Wróć do listy | Yes |
 | Duplikuj | Post-MVP |
-| **Zapisz zmiany** | Yes — primary persist (autosave) |
+| **Zapisz zmiany** | Yes - primary persist (autosave) |
 
 Unsaved changes: warn on navigate away.
 
@@ -230,7 +230,7 @@ Unsaved changes: warn on navigate away.
 | --- | --- | --- | --- | --- | --- |
 | Owner | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Member | ✓ | ✓ | ✓ | ✓ | ✓ (if entitled) |
-| Viewer | ✓ | — | — | — | — |
+| Viewer | ✓ | - | - | - | - |
 
 ---
 

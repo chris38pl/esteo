@@ -25,7 +25,7 @@ Localhost and Preview use **separate** Neon branches so `prisma migrate dev` on 
 | `npm run prisma:migrate` | localhost (`development`) | Creating and applying migrations during feature work |
 | `npm run prisma:migrate:staging` | Neon `staging` | Manual apply before first Preview switch, or debugging staging schema |
 | `npm run prisma:seed:catalog` | localhost (`development`) | Platform catalog only (industry field definitions) |
-| `npm run prisma:seed:catalog:staging` | Neon `staging` | Same — uses `DATABASE_URL_STAGING` / `DIRECT_URL_STAGING` |
+| `npm run prisma:seed:catalog:staging` | Neon `staging` | Same - uses `DATABASE_URL_STAGING` / `DIRECT_URL_STAGING` |
 | Vercel Preview build (`build:vercel`) | Neon `staging` | **Automatic** on every Preview deploy |
 
 ### Local staging migrate
@@ -43,7 +43,7 @@ Run:
 npm run prisma:migrate:staging
 ```
 
-Runs `prisma migrate status` then `prisma migrate deploy` against the staging branch. Idempotent — exits quickly when there are no pending migrations.
+Runs `prisma migrate status` then `prisma migrate deploy` against the staging branch. Idempotent - exits quickly when there are no pending migrations.
 
 ---
 
@@ -72,14 +72,14 @@ Local `npm run build` is unchanged (`next build` only).
 
 2. **Commit** migration files with your feature branch.
 
-3. **Merge / push to `staging`** — Vercel Preview build runs `migrate deploy` on Neon `staging` automatically, then deploys the app.
+3. **Merge / push to `staging`** - Vercel Preview build runs `migrate deploy` on Neon `staging` automatically, then deploys the app.
 
 4. **Optional manual step** before changing Vercel env vars for the first time:
    ```powershell
    npm run prisma:migrate:staging
    ```
 
-`migrate deploy` applies **schema only** — it does not copy rows from `development` to `staging`. Seed platform catalog on staging:
+`migrate deploy` applies **schema only** - it does not copy rows from `development` to `staging`. Seed platform catalog on staging:
 
 ```powershell
 npm run prisma:seed:catalog:staging
@@ -106,5 +106,5 @@ For full dev workspace data use `npm run prisma:seed` (development only) or Neon
 | --- | --- |
 | Preview build fails at migrate step | Vercel Preview has `DATABASE_URL` + `DIRECT_URL` for Neon staging |
 | `Missing DATABASE_URL_STAGING` locally | Add `_STAGING` vars to `.env` |
-| Migration failed mid-deploy | Fix SQL/state, then `prisma migrate resolve` — see [Prisma docs](https://www.prisma.io/docs/guides/migrate/production-troubleshooting) |
-| Preview app errors after deploy | Schema may be ahead of code or vice versa — check `_prisma_migrations` on staging vs `prisma/migrations/` in git |
+| Migration failed mid-deploy | Fix SQL/state, then `prisma migrate resolve` - see [Prisma docs](https://www.prisma.io/docs/guides/migrate/production-troubleshooting) |
+| Preview app errors after deploy | Schema may be ahead of code or vice versa - check `_prisma_migrations` on staging vs `prisma/migrations/` in git |

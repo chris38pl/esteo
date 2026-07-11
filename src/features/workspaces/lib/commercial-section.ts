@@ -1,4 +1,4 @@
-/** Commercial Section (Sekcja handlowa) — shared vocabulary for prompts and validation. */
+/** Commercial Section (Sekcja handlowa) - shared vocabulary for prompts and validation. */
 
 export const NARRATIVE_SECTION_TITLE_PATTERNS = [
   /^zakres(\s+prac)?$/i,

@@ -1,6 +1,6 @@
 # Industry AI profiles
 
-Estimate draft generation and the estimate AI assistant inject **industry-specific** guidance from a central registry — not separate prompt files per industry.
+Estimate draft generation and the estimate AI assistant inject **industry-specific** guidance from a central registry - not separate prompt files per industry.
 
 ## Registry
 
@@ -16,7 +16,7 @@ Each profile defines (localized `pl` / `en`):
 | `estimationPrinciples` | Units, pricing, VAT, materials vs labor |
 | `scopeChecklist` | What to analyze in the project brief |
 | `scopeExpansionRules` | Infer implied work (e.g. bathroom tiles → waterproofing, grout) |
-| `quantityDerivationRules` | Optional — how to derive quantities from brief data; omitted from draft prompts when absent |
+| `quantityDerivationRules` | Optional - how to derive quantities from brief data; omitted from draft prompts when absent |
 
 Resolver: `resolveIndustryAiProfileForPrompt(industry, locale)`.
 
@@ -50,5 +50,5 @@ Workspace context is loaded via [`loadEstimateGenerationContext`](../../src/feat
 
 ## Related docs
 
-- [Estimate sections](estimate-sections.md) — section templates in branding  
+- [Estimate sections](estimate-sections.md) - section templates in branding  
 - [Estimate AI architecture](../architecture/estimate-ai.md)

@@ -1,4 +1,4 @@
-# AI estimate draft — Trigger timeout and perpetual generating skeleton
+# AI estimate draft - Trigger timeout and perpetual generating skeleton
 
 **Date:** 2026-06-05  
 **Status:** Resolved (commit `ebf2134`)  
@@ -18,7 +18,7 @@ After creating a large estimate manually (dashboard → Wyceny → new estimate,
 - Skeleton loader bars pulse; no sections appear.
 - Trigger.dev dashboard: run `run_cmq15jutn57c80on2arwh277v` stays **Executing** for ~5 minutes, then **Error**.
 - OpenAI dashboard: **no request** logged for that run.
-- Browser console may show `A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received` — this is Chrome extension noise, unrelated to the app.
+- Browser console may show `A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received` - this is Chrome extension noise, unrelated to the app.
 
 **Example IDs (Esteo Dev Workspace):**
 
@@ -44,11 +44,11 @@ Prior runs the same day completed in **5–11 seconds**.
 
 ## What was NOT the root cause
 
-- **Trigger.dev worker not running** — the run dequeued, started, and executed for 5 minutes. When the worker is down, status stays `PENDING` (skeleton forever) without a failed run in the dashboard.
-- **Industry AI profile crash** — see [Part A of the related incident](./2026-06-05-ai-estimate-draft-blank-editor.md): that fails in ~2s with `FAILED` and `Cannot read properties of undefined (reading 'pl')`.
-- **Frontend polling broken** — `getGenerationStatusAction` correctly returned `PROCESSING`; the UI behaved as designed for that status.
-- **Blank editor after successful generation** — see [Part B of the related incident](./2026-06-05-ai-estimate-draft-blank-editor.md): sections exist in DB but client state is stale.
-- **Browser console extension errors** — unrelated Chrome extension message-passing failures.
+- **Trigger.dev worker not running** - the run dequeued, started, and executed for 5 minutes. When the worker is down, status stays `PENDING` (skeleton forever) without a failed run in the dashboard.
+- **Industry AI profile crash** - see [Part A of the related incident](./2026-06-05-ai-estimate-draft-blank-editor.md): that fails in ~2s with `FAILED` and `Cannot read properties of undefined (reading 'pl')`.
+- **Frontend polling broken** - `getGenerationStatusAction` correctly returned `PROCESSING`; the UI behaved as designed for that status.
+- **Blank editor after successful generation** - see [Part B of the related incident](./2026-06-05-ai-estimate-draft-blank-editor.md): sections exist in DB but client state is stale.
+- **Browser console extension errors** - unrelated Chrome extension message-passing failures.
 
 ---
 
@@ -78,14 +78,14 @@ sequenceDiagram
 
 ---
 
-## Root cause (hang — open investigation)
+## Root cause (hang - open investigation)
 
 **Where the 300 seconds was spent is not confirmed.** At incident time there was no milestone logging between `PROCESSING` and task completion.
 
 Likely stall points (in order of suspicion):
 
-1. **`generateObject()`** — large CONSTRUCTION prompt with scope-expansion rules for turnkey developer apartments may produce a very large structured output. Absence of OpenAI logs is suspicious but not definitive (wrong project/time window, or request never completed handshake).
-2. **Pre-OpenAI Prisma I/O** — `loadEstimateGenerationContext` / `buildProjectBrief` (~8 queries). Less likely given fast prior runs the same day on the same workspace.
+1. **`generateObject()`** - large CONSTRUCTION prompt with scope-expansion rules for turnkey developer apartments may produce a very large structured output. Absence of OpenAI logs is suspicious but not definitive (wrong project/time window, or request never completed handshake).
+2. **Pre-OpenAI Prisma I/O** - `loadEstimateGenerationContext` / `buildProjectBrief` (~8 queries). Less likely given fast prior runs the same day on the same workspace.
 
 **After fix (`ebf2134`):** check Trigger.dev logs for the last milestone message:
 
@@ -127,10 +127,10 @@ Dev worker also logs `[generateEstimateDraft] prompt length: N` before the OpenA
 When the generating skeleton runs **5+ minutes** and Trigger shows a long-running or failed run:
 
 1. **Compare run duration to `maxDuration`** (300s) in Trigger dashboard.
-2. **Check `EstimateRequest.status` in DB** — `PROCESSING` after a failed run = orphaned state.
+2. **Check `EstimateRequest.status` in DB** - `PROCESSING` after a failed run = orphaned state.
 3. **Read milestone logs** (post-fix) to find the last completed step before stall.
 4. **Check OpenAI logs** only after confirming `Calling OpenAI for estimate draft` appeared in Trigger logs.
-5. **Confirm local worker** — `npm run trigger:dev` alongside `npm run dev`.
+5. **Confirm local worker** - `npm run trigger:dev` alongside `npm run dev`.
 6. **Distinguish related incidents:**
    - `FAILED` in ~2s + `reading 'pl'` → [profile crash / blank editor Part A](./2026-06-05-ai-estimate-draft-blank-editor.md)
    - Skeleton disappears, table empty, refresh fixes → [blank editor Part B](./2026-06-05-ai-estimate-draft-blank-editor.md)

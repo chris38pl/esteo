@@ -20,7 +20,7 @@
   "preferences": {
     "title": "Notification preferences",
     "description": "Choose which in-app notification categories you receive. Email notifications are coming soon.",
-    "emailSoon": "Email — coming soon",
+    "emailSoon": "Email - coming soon",
     "categories": {
       "MEMBERSHIP": "Team & invitations",
       "BILLING": "Billing & plans",
@@ -61,9 +61,9 @@
     "estimate_request_ai_completed": "AI draft ready: {requestTitle}",
     "estimate_request_ai_failed": "AI failed for: {requestTitle}",
     "referral_signup_pending": "New signup via your referral link",
-    "referral_activated": "Referral activated — reward pending",
+    "referral_activated": "Referral activated - reward pending",
     "referral_reward_granted": "Referral reward granted",
-    "referral_reward_failed": "Referral reward failed — action needed",
+    "referral_reward_failed": "Referral reward failed - action needed",
     "issue_status_changed": "Issue #{issueNumber} → {newStatus}: {issueTitle}",
     "ops_case_opened": "Ops case #{caseNumber}: {caseTitle}"
   }

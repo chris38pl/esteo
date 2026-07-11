@@ -17,7 +17,7 @@ interface WorkspaceReadyBannerProps {
   onDismissed: () => void;
   onCreateClick: () => void;
   onCopyFormLink: () => void;
-  /** Admin preview — no analytics or localStorage side effects. */
+  /** Admin preview - no analytics or localStorage side effects. */
   preview?: boolean;
 }
 

@@ -2,7 +2,7 @@
 
 ## Goal
 
-Workspace-scoped command palette (Ctrl/Cmd+K) to find estimates, inquiries, and attachments quickly. V1 uses a PostgreSQL `SearchDocument` index with ILIKE — no Meilisearch / FTS.
+Workspace-scoped command palette (Ctrl/Cmd+K) to find estimates, inquiries, and attachments quickly. V1 uses a PostgreSQL `SearchDocument` index with ILIKE - no Meilisearch / FTS.
 
 ---
 
@@ -40,7 +40,7 @@ Workspace index row per entity (`ESTIMATE`, `INQUIRY`, `ATTACHMENT`). Soft delet
 
 ### `UserRecentDocument`
 
-Per-user snapshots: `titleSnapshot`, `subtitleSnapshot`, `iconTypeSnapshot`. **No URL stored** — `buildSearchUrl()` at read/navigate time.
+Per-user snapshots: `titleSnapshot`, `subtitleSnapshot`, `iconTypeSnapshot`. **No URL stored** - `buildSearchUrl()` at read/navigate time.
 
 ---
 
@@ -58,7 +58,7 @@ In-memory `pending` Set deduplicates in-flight upserts per `(workspaceId, entity
 
 ### Backfill (required after first deploy)
 
-Existing rows are **not** indexed automatically when the `SearchDocument` migration lands — only entities touched after deploy get index rows via hooks. Run backfill once per environment:
+Existing rows are **not** indexed automatically when the `SearchDocument` migration lands - only entities touched after deploy get index rows via hooks. Run backfill once per environment:
 
 | Command | Database |
 | --- | --- |
@@ -78,7 +78,7 @@ Expect `missingIndexCount: 0` and `targetIndexed: true` for known estimates.
 
 1. Push migration to `staging` (Vercel runs `migrate deploy`)
 2. `npm run prisma:backfill-search-index:staging`
-3. `npm run audit:search-index:staging` — confirm zero drift
+3. `npm run audit:search-index:staging` - confirm zero drift
 
 ---
 
@@ -96,11 +96,11 @@ src/features/search/
 
 ## i18n
 
-Namespace `search` — `src/messages/{pl,en}/search.json`, registered in `src/i18n/messages.ts`.
+Namespace `search` - `src/messages/{pl,en}/search.json`, registered in `src/i18n/messages.ts`.
 
 ---
 
 ## Related
 
 - Plan: global search V1 (command palette)
-- Incident pattern: global `.dark input` styles vs palette — see exclusion in `src/app/globals.css` (`MINIMAL PREMIUM FIELDS`)
+- Incident pattern: global `.dark input` styles vs palette - see exclusion in `src/app/globals.css` (`MINIMAL PREMIUM FIELDS`)

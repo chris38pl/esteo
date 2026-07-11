@@ -345,7 +345,7 @@ export async function syncSubscriptionFromStripe(
 
 /**
 
- * Handles `customer.subscription.deleted`. NEVER downgrades the plan to FREE — instead winds the
+ * Handles `customer.subscription.deleted`. NEVER downgrades the plan to FREE - instead winds the
 
  * workspace down through GRACE_PERIOD -> EXPIRED while keeping the plan, so reactivation restores it.
 

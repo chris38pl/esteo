@@ -17,7 +17,7 @@ export async function assertPlatformAdminAccess(locale: Locale): Promise<User> {
   return user;
 }
 
-/** API guard — returns null when unauthenticated or not a platform admin. */
+/** API guard - returns null when unauthenticated or not a platform admin. */
 export async function getPlatformAdminUserOrNull(): Promise<User | null> {
   const user = await syncUserFromClerk();
 

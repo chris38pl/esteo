@@ -1,6 +1,6 @@
 {
   "id": "construction-demolition-work",
-  "name": "Construction — demolition work",
+  "name": "Construction - demolition work",
   "locale": "pl",
   "category": "business",
   "quick": true,
@@ -8,7 +8,7 @@
   "profileVersion": "CONSTRUCTION_V1",
   "workspace": {
     "industry": "CONSTRUCTION",
-    "companyDescription": "Firma remontowa — prace rozbiórkowe i przygotowawcze.",
+    "companyDescription": "Firma remontowa - prace rozbiórkowe i przygotowawcze.",
     "rules": [],
     "systemRules": { "rounding": true, "units": true }
   },

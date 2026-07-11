@@ -1,8 +1,8 @@
 # Estimate activity history
 
-> **Status:** Implemented (v1). UI entry: estimate editor → **Historia** / **History** tab — see [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md).
+> **Status:** Implemented (v1). UI entry: estimate editor → **Historia** / **History** tab - see [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md).
 >
-> **Living document:** This feature will be revisited as more estimate actions ship (send to customer, preview, PDF/XLSX export, price-list import, status transitions, etc.). Extend this doc when wiring new `logEstimateActivity` calls — do not treat the action list as frozen.
+> **Living document:** This feature will be revisited as more estimate actions ship (send to customer, preview, PDF/XLSX export, price-list import, status transitions, etc.). Extend this doc when wiring new `logEstimateActivity` calls - do not treat the action list as frozen.
 
 ## Goal
 
@@ -10,9 +10,9 @@ Give workspace members a **readable activity feed** for an estimate: who (or sys
 
 This is **user-facing history**, not an admin audit trail. It is separate from:
 
-- [`AuditLog`](../architecture/database.md) — workspace/admin technical audit (write-only elsewhere)
-- **Notes** — threaded internal discussion ([`estimate-notes.md`](estimate-notes.md))
-- **`EstimateRevision`** — short undo snapshots for AI-approved edits (internal, max 3 per version)
+- [`AuditLog`](../architecture/database.md) - workspace/admin technical audit (write-only elsewhere)
+- **Notes** - threaded internal discussion ([`estimate-notes.md`](estimate-notes.md))
+- **`EstimateRevision`** - short undo snapshots for AI-approved edits (internal, max 3 per version)
 
 ---
 
@@ -32,18 +32,18 @@ History is scoped to the **estimate** (`estimateId`). It is not filtered by the 
 ### Row layout
 
 ```txt
-{date}, {time}  [{category badge}]  {actor} — {description}
+{date}, {time}  [{category badge}]  {actor} - {description}
 ```
 
 Examples:
 
 ```txt
-07.06.2026, 14:38  [Estimate]   Krzysztof Krawiec — Estimate renamed
-07.06.2026, 14:40  [AI]         AI — AI generated estimate draft
-07.06.2026, 14:41  [AI]         Jan Nowak — AI suggestions applied
-07.06.2026, 14:42  [Financial]  Krzysztof Krawiec — Margin changed from 10% to 15%
-07.06.2026, 15:10  [Financial]  Krzysztof Krawiec — Generated payment schedule (50 / 50)
-07.06.2026, 15:12  [Financial]  Krzysztof Krawiec — Recorded payment of PLN 2,500.00 for installment "Advance payment"
+07.06.2026, 14:38  [Estimate]   Krzysztof Krawiec - Estimate renamed
+07.06.2026, 14:40  [AI]         AI - AI generated estimate draft
+07.06.2026, 14:41  [AI]         Jan Nowak - AI suggestions applied
+07.06.2026, 14:42  [Financial]  Krzysztof Krawiec - Margin changed from 10% to 15%
+07.06.2026, 15:10  [Financial]  Krzysztof Krawiec - Generated payment schedule (50 / 50)
+07.06.2026, 15:12  [Financial]  Krzysztof Krawiec - Recorded payment of PLN 2,500.00 for installment "Advance payment"
 ```
 
 ### Category badges
@@ -80,7 +80,7 @@ Payment mutations from the **Payments** tab call `router.refresh()` in `Estimate
 
 ## Payment schedule logging
 
-All payment installment mutations log under category **FINANCIAL**. Logged from `payment-installments-actions.ts` after the repository call succeeds — not from the repository itself.
+All payment installment mutations log under category **FINANCIAL**. Logged from `payment-installments-actions.ts` after the repository call succeeds - not from the repository itself.
 
 | User action (Payments tab) | Action key | Metadata |
 | --- | --- | --- |
@@ -112,10 +112,10 @@ See also [`estimate-payments.md`](estimate-payments.md) → **Activity history**
 
 ### Principles
 
-1. **Who, when, roughly what** — not field-level diffs.
-2. **Orchestration-layer logging only** — `logEstimateActivity()` from `service.ts`, payment server actions, or the Trigger task; never from repositories.
-3. **No per-operation structural logging** — add/delete/reorder line items are not logged individually.
-4. **Coalescing (5 min)** — `version_modified`, `margin_changed`, and `payment_installment_reordered` merge repeated edits in a short window.
+1. **Who, when, roughly what** - not field-level diffs.
+2. **Orchestration-layer logging only** - `logEstimateActivity()` from `service.ts`, payment server actions, or the Trigger task; never from repositories.
+3. **No per-operation structural logging** - add/delete/reorder line items are not logged individually.
+4. **Coalescing (5 min)** - `version_modified`, `margin_changed`, and `payment_installment_reordered` merge repeated edits in a short window.
 
 ### Metadata (strictly minimal)
 
@@ -188,7 +188,7 @@ Keeps the **first** `oldMargin` and updates `newMargin` to the latest value.
 
 ### Attachment logging (editor manual)
 
-Logged from the attachments orchestration layer — not from request-form promotion or public upload.
+Logged from the attachments orchestration layer - not from request-form promotion or public upload.
 
 | User action (Attachments tab) | Action key | Metadata |
 | --- | --- | --- |
@@ -210,10 +210,10 @@ See also [`estimate-attachments.md`](estimate-attachments.md) → **Activity his
 | Action | Category | Intended trigger |
 | --- | --- | --- |
 | `imported_from_price_list` | VERSION | Price-list import service method |
-| `estimate_exported` | SHARING | Export action — extend later with `metadata.format: "pdf" \| "xlsx"` |
+| `estimate_exported` | SHARING | Export action - extend later with `metadata.format: "pdf" \| "xlsx"` |
 | `sent_to_customer` | SHARING | Mutation that sets version/estimate sent state |
 
-### `version_modified` — deferred for manual editing
+### `version_modified` - deferred for manual editing
 
 There is **no high-level bulk save** for estimate tree content today. Manual cell/row edits are mostly client-side; persistence is split across discrete structural ops and margin-only autosave.
 
@@ -277,7 +277,7 @@ List cap: **100** entries per estimate (newest first). No backfill for pre-deplo
 3. Call `logEstimateActivity()` from the orchestration layer (estimate `service.ts`, payment server actions, or Trigger task) after the business operation succeeds.
 4. If the action should coalesce, add rules in `activity-log.ts` (`COALESCED_ACTIONS`, merge keys).
 5. Add a `case` in `activityDescription()` in `estimate-history-item.tsx`.
-6. Update **this document** — action catalog and any metadata notes.
+6. Update **this document** - action catalog and any metadata notes.
 
 ---
 
@@ -288,10 +288,10 @@ Document and implement when the product ships the underlying feature:
 | Topic | Likely actions / notes |
 | --- | --- |
 | **Send to customer** | `sent_to_customer` (SHARING); may tie to `EstimateVersionStatus.SENT` |
-| **Preview** | Optional `estimate_previewed` — not logged in v1 (export logs `estimate_exported`) |
-| **Export PDF** | `estimate_exported` with `metadata.format: "pdf"` — wired in `generate-estimate-pdf` task |
+| **Preview** | Optional `estimate_previewed` - not logged in v1 (export logs `estimate_exported`) |
+| **Export PDF** | `estimate_exported` with `metadata.format: "pdf"` - wired in `generate-estimate-pdf` task |
 | **Price-list import** | `imported_from_price_list` or `version_modified` + `source: price_list` |
-| **Status changes** | e.g. draft → sent → archived at estimate or version level — new actions or extend version lifecycle |
+| **Status changes** | e.g. draft → sent → archived at estimate or version level - new actions or extend version lifecycle |
 | **Manual version edits** | `version_modified` via `recordVersionContentSaved()` after bulk persistence |
 | **Estimate-level archive** | Not in v1; distinct from `version_archived` if product adds estimate soft-archive |
 | **Address / customer data edit** | New ESTIMATE action when request context becomes editable |
@@ -302,9 +302,9 @@ Document and implement when the product ships the underlying feature:
 
 ## Related docs
 
-- [`estimates.md`](estimates.md) — estimate flows and versions
-- [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md) — editor tabs and layout
-- [`estimate-notes.md`](estimate-notes.md) — internal notes (not activity)
-- [`estimate-payments.md`](estimate-payments.md) — payment schedule + history wiring
-- [`estimate-pdf-export.md`](estimate-pdf-export.md) — export + preview; `estimate_exported` activity
-- [`estimate-ai.md`](../architecture/estimate-ai.md) — AI draft and `approveEdit`
+- [`estimates.md`](estimates.md) - estimate flows and versions
+- [`estimates-view-edit-ui.md`](estimates-view-edit-ui.md) - editor tabs and layout
+- [`estimate-notes.md`](estimate-notes.md) - internal notes (not activity)
+- [`estimate-payments.md`](estimate-payments.md) - payment schedule + history wiring
+- [`estimate-pdf-export.md`](estimate-pdf-export.md) - export + preview; `estimate_exported` activity
+- [`estimate-ai.md`](../architecture/estimate-ai.md) - AI draft and `approveEdit`

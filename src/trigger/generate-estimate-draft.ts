@@ -50,7 +50,7 @@ async function runAttachmentPromotion(payload: GenerateEstimateDraftPayload): Pr
   });
 
   if (!estimate || !version) {
-    logger.warn("Skipping attachment promotion — estimate or version missing", {
+    logger.warn("Skipping attachment promotion - estimate or version missing", {
       estimateRequestId: payload.estimateRequestId,
     });
     return;
@@ -203,7 +203,7 @@ export const generateEstimateDraftTask = task({
     }
 
     if (request.status === "COMPLETED") {
-      logger.info("Skipping — request already completed", {
+      logger.info("Skipping - request already completed", {
         estimateRequestId,
         status: request.status,
       });
@@ -219,7 +219,7 @@ export const generateEstimateDraftTask = task({
           ? (request.aiMetadata as { error: string }).error
           : null;
 
-      logger.warn("Skipping retry — request already failed", {
+      logger.warn("Skipping retry - request already failed", {
         estimateRequestId,
         status: request.status,
         priorError,

@@ -15,6 +15,6 @@ export const estimatePrimaryButtonClassName =
 export const estimateHeaderActionsDividerClassName =
   ESTIMATE_LAYOUT_CONFIG.tailwind.headerActionsDivider;
 
-/** Status / autosave badge — same footprint as header outline buttons. */
+/** Status / autosave badge - same footprint as header outline buttons. */
 export const estimateHeaderStatusBadgeClassName =
   "inline-flex h-10 min-h-10 shrink-0 items-center justify-center gap-1.5 rounded-md border border-blue-200 bg-background px-4 text-sm font-medium shadow-xs dark:border-input dark:bg-card sm:min-w-[7.25rem] sm:px-5 [&_svg]:size-4 [&_svg]:shrink-0";

@@ -83,9 +83,9 @@ export function PaymentListRow({
   const subline = formatDate(item.installment.dueDate);
   const estimateTitle = item.estimate.title ?? t("list.estimateFallback");
   const estimateSubline =
-    item.estimate.requestNumber ?? item.listContext.investmentDescription ?? "—";
+    item.estimate.requestNumber ?? item.listContext.investmentDescription ?? "-";
   const customerName = item.listContext.customerName ?? t("list.unknownClient");
-  const customerSubline = item.listContext.customerLocation ?? "—";
+  const customerSubline = item.listContext.customerLocation ?? "-";
 
   const titleCell = (linkTitle: boolean) => (
     <div className="flex min-w-0 items-center gap-3">

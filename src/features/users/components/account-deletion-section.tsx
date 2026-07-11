@@ -40,7 +40,7 @@ export function AccountDeletionSection({
             <ul className="mt-3 space-y-1 text-sm">
               {ownedWorkspacesBlockingDeletion.map((workspace) => (
                 <li key={workspace.id}>
-                  {workspace.name} ({workspace.slug}) — {workspace.plan}
+                  {workspace.name} ({workspace.slug}) - {workspace.plan}
                 </li>
               ))}
             </ul>

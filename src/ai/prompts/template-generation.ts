@@ -37,7 +37,7 @@ function formatCompanyStyleBlock(
   const lines = [
     "## Company style",
     "Adapt section titles, line item names, and tone to match how this company works.",
-    "Use company context and AI instructions below — avoid generic buckets like \"Usługi\", \"Opcje\", or \"Uwagi\" when a more specific professional structure fits.",
+    "Use company context and AI instructions below - avoid generic buckets like \"Usługi\", \"Opcje\", or \"Uwagi\" when a more specific professional structure fits.",
     company,
     instructions,
   ].filter(Boolean);
@@ -70,7 +70,7 @@ function formatOutputRulesBlock(locale: Locale): string {
   return [
     "## Output rules",
     `All section titles and item names must be in ${lang}.`,
-    "Return JSON only — no prices, quantities, or VAT.",
+    "Return JSON only - no prices, quantities, or VAT.",
     "Maximum 20 sections, maximum 20 items per section, maximum 200 items total.",
     "Use sortOrder starting at 0 within sections and items.",
     "Set unit to null when not obvious; use kpl, m², h, szt. when clear from context.",

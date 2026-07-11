@@ -19,9 +19,9 @@ Workspace {
   billingAccountId
   ownerId
   name
-  slug              // lowercase, immutable in MVP — use normalizeWorkspaceSlug()
-  industry          // WorkspaceIndustry enum — required, immutable after create
-  industryOtherText // String? — required when industry = OTHER (analytics)
+  slug              // lowercase, immutable in MVP - use normalizeWorkspaceSlug()
+  industry          // WorkspaceIndustry enum - required, immutable after create
+  industryOtherText // String? - required when industry = OTHER (analytics)
   defaultLocale     // WorkspaceLocale enum (PL | EN)
   deletedAt         // soft delete only in MVP
   createdAt
@@ -33,7 +33,7 @@ Workspace {
 
 **Current:** required `WorkspaceIndustry` enum (`CONSTRUCTION`, `ELECTRICAL`, `CARPENTRY`, `PLUMBING`, `OTHER`).
 
-- Set at workspace creation only — **immutable** after create (no update path in service layer).
+- Set at workspace creation only - **immutable** after create (no update path in service layer).
 - When `industry = OTHER`, `industryOtherText` stores the free-text description for analytics.
 
 ### Industry field catalog & document values
@@ -79,7 +79,7 @@ See `docs/features/industry-fields.md`.
 Owner-only: Settings → General → Delete workspace (`archiveWorkspace`).
 
 1. Revoke all `PENDING` invitations.
-2. Set `deletedAt` on `Workspace` (soft delete — estimates and audit data retained).
+2. Set `deletedAt` on `Workspace` (soft delete - estimates and audit data retained).
 3. Reconcile owner active workspace; redirect to dashboard, onboarding, or invitations if none remain.
 4. Members lose access immediately (all queries filter `deletedAt IS NULL`).
 
@@ -111,7 +111,7 @@ Map invite → member role with `inviteRoleToWorkspaceRole()` in `src/features/w
 
 ## Platform roles (`PlatformRole`)
 
-Global roles on `User.platformRole` — separate from workspace RBAC:
+Global roles on `User.platformRole` - separate from workspace RBAC:
 
 ```
 NONE | PLATFORM_ADMIN | QA_TESTER
@@ -176,11 +176,11 @@ Implementation: `src/server/billing/plan-catalog.ts` (`resolvePlanLimits`). Work
 
 ## Related entities
 
-- `WorkspaceSettings` — branding JSON (`logoStorageKey`, `logoUrl`, estimate sections/rules), `aiInstructions`, `companyDescription`, company profile columns (`companyAddress`, `companyTaxId`, `companyEmail`, `companyPhone`) — see [`workspace-branding-and-company-profile.md`](../features/workspace-branding-and-company-profile.md)
-- `WorkspaceInvitation` — email invites with `InviteRole`; status `PENDING | ACCEPTED | REVOKED | EXPIRED | DECLINED`; optional `promptDismissedAt` for modal dismissal
-- `WorkspaceOwnershipTransfer` — ownership handoff to another user; optional `promptDismissedAt` for modal dismissal (same queue as invitations)
-- `BillingAccountUsagePeriod` — Phase 2 quota counters
-- `AuditLog` — Phase 3 change tracking
+- `WorkspaceSettings` - branding JSON (`logoStorageKey`, `logoUrl`, estimate sections/rules), `aiInstructions`, `companyDescription`, company profile columns (`companyAddress`, `companyTaxId`, `companyEmail`, `companyPhone`) - see [`workspace-branding-and-company-profile.md`](../features/workspace-branding-and-company-profile.md)
+- `WorkspaceInvitation` - email invites with `InviteRole`; status `PENDING | ACCEPTED | REVOKED | EXPIRED | DECLINED`; optional `promptDismissedAt` for modal dismissal
+- `WorkspaceOwnershipTransfer` - ownership handoff to another user; optional `promptDismissedAt` for modal dismissal (same queue as invitations)
+- `BillingAccountUsagePeriod` - Phase 2 quota counters
+- `AuditLog` - Phase 3 change tracking
 
 ---
 
@@ -279,7 +279,7 @@ Workspace {
   attachmentStorageLimitBytes BigInt @default(262144000)  // 250 MB default
 }
 
-// Attachments — see docs/features/estimate-attachments.md
+// Attachments - see docs/features/estimate-attachments.md
 EstimateAttachment {
   estimateId
   workspaceId
@@ -293,11 +293,11 @@ EstimateAttachment {
   thumbnailStorageKey // images only
 }
 
-// Generated estimate PDFs — separate from user attachments; see docs/features/estimate-pdf-export.md
+// Generated estimate PDFs - separate from user attachments; see docs/features/estimate-pdf-export.md
 EstimatePdf {
   estimateId
   versionId           @unique   // one PDF per version
-  fileKey             // UploadThing file key — null until READY
+  fileKey             // UploadThing file key - null until READY
   storageCustomId     // UploadThing customId from upload
   status              // PENDING | GENERATING | READY | FAILED
   errorMessage
@@ -306,7 +306,7 @@ EstimatePdf {
   createdById
 }
 
-// Undo / agent approve — recommend EstimateRevision snapshots
+// Undo / agent approve - recommend EstimateRevision snapshots
 EstimateRevision {
   estimateId
   versionNumber
@@ -324,7 +324,7 @@ EstimateAiMessage {
 }
 ```
 
-Versioning recommendation: **`EstimateVersion`** table (or `versionNumber` + snapshot) rather than only soft-delete history — supports PDF per version and agent undo stack.
+Versioning recommendation: **`EstimateVersion`** table (or `versionNumber` + snapshot) rather than only soft-delete history - supports PDF per version and agent undo stack.
 
 See [`estimate-ai.md`](estimate-ai.md) and [`docs/features/estimates.md`](../features/estimates.md).
 

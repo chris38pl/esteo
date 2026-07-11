@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 
 function formatDate(value: Date | string | null | undefined): string {
   if (!value) {
-    return "—";
+    return "-";
   }
 
   return new Intl.DateTimeFormat(undefined, {
@@ -58,7 +58,7 @@ function UserLink({
   locale: Locale;
 }) {
   if (!user) {
-    return <>—</>;
+    return <>-</>;
   }
 
   return (
@@ -210,7 +210,7 @@ export function AdminOpsCaseDetailPanel({
           <DetailRow label={t("detail.fields.entity")}>
             {opsCase.entityKind && opsCase.entityId
               ? `${opsCase.entityKind}:${opsCase.entityId}`
-              : "—"}
+              : "-"}
           </DetailRow>
         </DetailCard>
 
@@ -230,7 +230,7 @@ export function AdminOpsCaseDetailPanel({
                 {opsCase.workspace.name} ({opsCase.workspace.slug})
               </Link>
             ) : (
-              "—"
+              "-"
             )}
           </DetailRow>
         </DetailCard>
@@ -299,7 +299,7 @@ export function AdminOpsCaseDetailPanel({
             />
           </DetailRow>
           <DetailRow label={t("detail.resolutionNotesLabel")}>
-            {opsCase.resolutionNotes ?? "—"}
+            {opsCase.resolutionNotes ?? "-"}
           </DetailRow>
           <DetailRow label={t("detail.fields.lastSeenAt")}>{formatDate(opsCase.resolvedAt)}</DetailRow>
           <DetailRow label="Resolved by">

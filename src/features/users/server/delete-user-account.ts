@@ -63,7 +63,7 @@ export async function deleteUserAccount(user: User): Promise<void> {
       isClerkAPIResponseError(error) &&
       (error.status === 404 || error.errors?.[0]?.code === "resource_not_found")
     ) {
-      // User already deleted in Clerk — treat as success.
+      // User already deleted in Clerk - treat as success.
       return;
     }
 

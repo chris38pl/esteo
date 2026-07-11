@@ -1,4 +1,4 @@
-# Voice intake — image assets
+# Voice intake - image assets
 
 Place WebP files in this folder. Paths are defined in `src/features/voice-intake/lib/recording-visual-assets.ts`.
 
@@ -6,12 +6,12 @@ Place WebP files in this folder. Paths are defined in `src/features/voice-intake
 
 | File | Use |
 | --- | --- |
-| `recording-glow-dark.webp` | Recording halo — dark mode (fallback in light) |
-| `recording-glow-light.webp` | Recording halo — light mode |
+| `recording-glow-dark.webp` | Recording halo - dark mode (fallback in light) |
+| `recording-glow-light.webp` | Recording halo - light mode |
 | `recording-glow.webp` | Optional single-file fallback |
 | `understand-your-project.webp` | Summary (“Podsumowanie”) hero |
-| `error-owl-dark.webp` | Error screen — dark mode |
-| `error-owl-light.webp` | Error screen — light mode |
+| `error-owl-dark.webp` | Error screen - dark mode |
+| `error-owl-light.webp` | Error screen - light mode |
 
 ## Requirements
 

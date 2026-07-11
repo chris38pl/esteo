@@ -1,6 +1,6 @@
 {
   "id": "construction-apartment-painting",
-  "name": "Construction — apartment painting",
+  "name": "Construction - apartment painting",
   "locale": "pl",
   "category": "business",
   "quick": true,
@@ -8,7 +8,7 @@
   "profileVersion": "CONSTRUCTION_V1",
   "workspace": {
     "industry": "CONSTRUCTION",
-    "companyDescription": "Firma remontowa — malowanie i prace wykończeniowe w mieszkaniach.",
+    "companyDescription": "Firma remontowa - malowanie i prace wykończeniowe w mieszkaniach.",
     "rules": [],
     "systemRules": { "rounding": true, "units": true }
   },
@@ -35,7 +35,7 @@
     "minLineItems": 4,
     "maxLineItems": 25,
     "judge": {
-      "focus": ["Malowanie mieszkania — bez pełnej rozbiórki"],
+      "focus": ["Malowanie mieszkania - bez pełnej rozbiórki"],
       "minScore": 7,
       "minContextAlignment": 7
     }

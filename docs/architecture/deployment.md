@@ -1,6 +1,6 @@
 # Deployment and environments
 
-Central reference for how Esteo runs across **localhost**, **Vercel Preview (staging)**, and **Vercel Production (main)** — domain architecture, which external services are involved, where environment variables live, and how Trigger.dev background jobs connect.
+Central reference for how Esteo runs across **localhost**, **Vercel Preview (staging)**, and **Vercel Production (main)** - domain architecture, which external services are involved, where environment variables live, and how Trigger.dev background jobs connect.
 
 Related: [estimate-requests](../features/estimate-requests.md), [estimate-ai](estimate-ai.md), [database](database.md), [backend](backend.md), [authentication](../features/authentication.md), [database migrations](../dev/database-migrations.md). Incident: [Trigger.dev + Vercel Preview](../incidents/2026-06-08-trigger-dev-vercel-preview.md).
 
@@ -34,7 +34,7 @@ This approach keeps URLs simple for customers while maintaining a fully isolated
 
 ### Application URLs
 
-**Production** — canonical URL: `https://esteo.app`
+**Production** - canonical URL: `https://esteo.app`
 
 Examples:
 
@@ -49,7 +49,7 @@ Example deep link:
 
 `https://esteo.app/pl/dashboard/ogrodzenia/estimates/t1unby250se3c77222h3jkx2`
 
-**Preview** — canonical URL: `https://preview.esteo.app`
+**Preview** - canonical URL: `https://preview.esteo.app`
 
 Examples:
 
@@ -169,7 +169,7 @@ No application changes are required to support this future split.
 
 | Model | Git branch | Vercel environment | Typical URL | Purpose |
 | --- | --- | --- | --- | --- |
-| **localhost** | any (local) | — | `http://localhost:3000` | Developer machine |
+| **localhost** | any (local) | - | `http://localhost:3000` | Developer machine |
 | **staging** | `staging` | **Preview** | **`https://preview.esteo.app`** (also `*.vercel.app`) | Pre-production, QA, acceptance testing |
 | **main** | `main` | **Production** | **`https://esteo.app`** | Live production application |
 
@@ -177,10 +177,10 @@ No application changes are required to support this future split.
 
 Configured **2026-06-18**:
 
-1. **OVHcloud** — add CNAME `preview` → `br8eaxzzss8333u.vercel-dns.com` (propagation up to ~24 h).
-2. **Vercel** — add `preview.esteo.app` to the Esteo project; assign to **Preview** (branch `staging`), not Production.
-3. **GitHub** — push to `staging` triggers Preview deploy (unchanged).
-4. **Trigger.dev** — **Esteo-Staging** project, Production env, GitHub branch `staging` (unchanged).
+1. **OVHcloud** - add CNAME `preview` → `br8eaxzzss8333u.vercel-dns.com` (propagation up to ~24 h).
+2. **Vercel** - add `preview.esteo.app` to the Esteo project; assign to **Preview** (branch `staging`), not Production.
+3. **GitHub** - push to `staging` triggers Preview deploy (unchanged).
+4. **Trigger.dev** - **Esteo-Staging** project, Production env, GitHub branch `staging` (unchanged).
 
 After DNS propagates, testers use `https://preview.esteo.app` instead of the auto-generated `*.vercel.app` hostname. Both URLs serve the same Preview deployment.
 
@@ -257,7 +257,7 @@ Setting `DATABASE_URL` on Vercel does **not** automatically give it to Trigger w
 
 | Service | Role in Esteo | localhost | Vercel Preview (staging) | Vercel Production (main) |
 | --- | --- | --- | --- | --- |
-| **Vercel** | Host Next.js app | — | Preview deploys from `staging` | Production deploys from `main` |
+| **Vercel** | Host Next.js app | - | Preview deploys from `staging` | Production deploys from `main` |
 | **GitHub** (`chris38pl/esteo`) | Source repo | local clone | connected | connected |
 | **Neon Postgres** | Prisma database | **development** branch | **staging** branch | **production** branch |
 | **Clerk** | Authentication | test keys (shared with Preview) | same test keys | production keys |
@@ -270,33 +270,33 @@ Setting `DATABASE_URL` on Vercel does **not** automatically give it to Trigger w
 
 `DATABASE_URL` and `DIRECT_URL` must target the **same Neon branch** for a given environment. See [database.md](database.md).
 
-### Email (`EMAIL_FROM`) — quick reference
+### Email (`EMAIL_FROM`) - quick reference
 
 Official outbound address: **`estimates@mail.esteo.app`** on the verified domain **`mail.esteo.app`** (Resend). Other reserved addresses: `billing@mail.esteo.app`, `support@mail.esteo.app`.
 
 | Environment | `EMAIL_FROM` | Where to set |
 | --- | --- | --- |
-| **localhost** | Not used by default — code sends from `onboarding@resend.dev` (Resend sandbox). Set `EMAIL_DEV_REDIRECT_TO` to your inbox. Optional: `EMAIL_USE_PRODUCTION_FROM=true` to use `estimates@mail.esteo.app` locally. | `.env` |
+| **localhost** | Not used by default - code sends from `onboarding@resend.dev` (Resend sandbox). Set `EMAIL_DEV_REDIRECT_TO` to your inbox. Optional: `EMAIL_USE_PRODUCTION_FROM=true` to use `estimates@mail.esteo.app` locally. | `.env` |
 | **staging** (Vercel Preview + Trigger **Esteo-Staging**) | `estimates@mail.esteo.app` | Vercel Preview env vars **and** Trigger.dev → Esteo-Staging → Environment Variables |
 | **production** (Vercel Production + Trigger **Esteo**) | `estimates@mail.esteo.app` | Vercel Production env vars **and** Trigger.dev → Esteo → Environment Variables |
 
-Also set `RESEND_API_KEY` and `EMAIL_FROM_NAME` (`Esteo`) in both Vercel and Trigger for each environment. The send job runs on the **Trigger worker**, not on Vercel — missing keys there cause send failures even when the UI enqueue succeeds.
+Also set `RESEND_API_KEY` and `EMAIL_FROM_NAME` (`Esteo`) in both Vercel and Trigger for each environment. The send job runs on the **Trigger worker**, not on Vercel - missing keys there cause send failures even when the UI enqueue succeeds.
 
 Full behaviour (sandbox, redirect, reply-to): [`estimate-send-workflow.md`](../features/estimate-send-workflow.md#email-from-address).
 
 ---
 
-## Trigger.dev — two projects
+## Trigger.dev - two projects
 
 On the Trigger.dev free tier, **Staging** and **Preview** cloud environments are not available. We use **two separate Trigger.dev projects** instead of mixing staging data into one Production bucket.
 
 | Trigger.dev project | Trigger environment | Used by | Worker env vars (examples) |
 | --- | --- | --- | --- |
-| **Esteo** (main) | **Development** | localhost + `npm run trigger:dev` | N/A — worker reads local `.env` |
+| **Esteo** (main) | **Development** | localhost + `npm run trigger:dev` | N/A - worker reads local `.env` |
 | **Esteo** (main) | **Production** | Vercel Production (`main` branch) | prod `DATABASE_URL`, prod OpenAI, prod UploadThing |
 | **Esteo-Staging** | **Production** | Vercel Preview (`staging` branch) | staging `DATABASE_URL`, staging OpenAI, staging UploadThing |
 
-The name **Production** inside Trigger.dev is only a deployment bucket — Esteo-Staging Production intentionally points at **staging** infrastructure.
+The name **Production** inside Trigger.dev is only a deployment bucket - Esteo-Staging Production intentionally points at **staging** infrastructure.
 
 ```mermaid
 flowchart TB
@@ -330,15 +330,15 @@ flowchart TB
 
 ### Configuration files and scripts
 
-- [`trigger.config.ts`](../../trigger.config.ts) — `project: process.env.TRIGGER_PROJECT_ID ?? "proj_..."`
+- [`trigger.config.ts`](../../trigger.config.ts) - `project: process.env.TRIGGER_PROJECT_ID ?? "proj_..."`
 - [`package.json`](../../package.json):
-  - `npm run dev` — Next.js local server
-  - `npm run trigger:dev` — local Trigger worker (Development, main Esteo project)
-  - `npm run trigger:deploy` — deploy tasks to cloud (`npx trigger.dev@4.4.6 deploy`)
-  - `npm run build` — `next build` (local)
-  - `npm run build:vercel` — Preview migrate deploy + `next build` (Vercel via [`vercel.json`](../../vercel.json))
-  - `npm run prisma:migrate:staging` — manual `migrate deploy` to Neon staging (local `.env` `_STAGING` vars)
-  - `postinstall` — `prisma generate`
+  - `npm run dev` - Next.js local server
+  - `npm run trigger:dev` - local Trigger worker (Development, main Esteo project)
+  - `npm run trigger:deploy` - deploy tasks to cloud (`npx trigger.dev@4.4.6 deploy`)
+  - `npm run build` - `next build` (local)
+  - `npm run build:vercel` - Preview migrate deploy + `next build` (Vercel via [`vercel.json`](../../vercel.json))
+  - `npm run prisma:migrate:staging` - manual `migrate deploy` to Neon staging (local `.env` `_STAGING` vars)
+  - `postinstall` - `prisma generate`
 
 ### GitHub integration
 
@@ -356,7 +356,7 @@ $env:TRIGGER_PROJECT_ID="proj_<staging_ref>"
 npm run trigger:deploy
 ```
 
-Or: `npm run trigger:deploy:staging` (uses `--native-build-server` — required on Windows; local Depot build often fails with `spawn UNKNOWN`).
+Or: `npm run trigger:deploy:staging` (uses `--native-build-server` - required on Windows; local Depot build often fails with `spawn UNKNOWN`).
 
 ```powershell
 npx trigger.dev@4.4.6 deploy --project-ref proj_lkorkbyjorynapnptmqa --native-build-server
@@ -368,13 +368,13 @@ Project ref is shown in the Trigger.dev dashboard (e.g. check **Esteo-Staging �
 
 ### Vercel integration (optional)
 
-Trigger.dev Vercel integration can sync env vars and trigger deploys. **Not required** when GitHub integration on Esteo-Staging is active. Avoid connecting both main Esteo and Esteo-Staging to the same Vercel project without a clear mapping — use one Trigger project per Vercel deployment target.
+Trigger.dev Vercel integration can sync env vars and trigger deploys. **Not required** when GitHub integration on Esteo-Staging is active. Avoid connecting both main Esteo and Esteo-Staging to the same Vercel project without a clear mapping - use one Trigger project per Vercel deployment target.
 
 ### What not to do
 
-- `npx trigger.dev build` — **does not exist** (valid command is `deploy`)
-- `tr_prod_` from **main Esteo** + staging Neon in **one** Trigger Production — conflicts at launch
-- `tr_dev_` on Vercel Preview without a local `trigger:dev` worker — tasks will not run for external testers
+- `npx trigger.dev build` - **does not exist** (valid command is `deploy`)
+- `tr_prod_` from **main Esteo** + staging Neon in **one** Trigger Production - conflicts at launch
+- `tr_dev_` on Vercel Preview without a local `trigger:dev` worker - tasks will not run for external testers
 
 ---
 
@@ -382,13 +382,13 @@ Trigger.dev Vercel integration can sync env vars and trigger deploys. **Not requ
 
 ### a) localhost
 
-**Config file:** `.env` (or `.env.local`) in repo root — never commit secrets.
+**Config file:** `.env` (or `.env.local`) in repo root - never commit secrets.
 
 | Variable | Value source | Required |
 | --- | --- | --- |
 | `DATABASE_URL` | Neon **development** branch (pooler) | Yes |
 | `DIRECT_URL` | Neon **development** branch (direct) | Yes for migrations |
-| `DATABASE_URL_STAGING`, `DIRECT_URL_STAGING` | Neon **staging** branch | Optional — for `npm run prisma:migrate:staging` only |
+| `DATABASE_URL_STAGING`, `DIRECT_URL_STAGING` | Neon **staging** branch | Optional - for `npm run prisma:migrate:staging` only |
 | `NEXT_PUBLIC_CLERK_*`, `CLERK_SECRET_KEY` | Clerk test app | Yes |
 | `OPENAI_API_KEY` | OpenAI | Yes (worker uses via `.env` in dev) |
 | `UPLOADTHING_TOKEN` | UploadThing | Yes if testing attachments |
@@ -409,17 +409,17 @@ npm run trigger:dev
 
 Without `trigger:dev`, tasks queue in Development and expire (no cloud worker on free tier for dev without local process).
 
-**Known warning:** `send-estimate-to-customer.ts` may log **Slow import timing detected (>1s)** on worker start — expected, not a failure. See [diagnostics](../diagnostics/trigger-slow-import-send-estimate-to-customer.md).
+**Known warning:** `send-estimate-to-customer.ts` may log **Slow import timing detected (>1s)** on worker start - expected, not a failure. See [diagnostics](../diagnostics/trigger-slow-import-send-estimate-to-customer.md).
 
 **Isolated from Preview:** localhost uses Neon **development**; Vercel Preview uses Neon **staging**. See [database migrations](../dev/database-migrations.md).
 
 ---
 
-### b) staging — Vercel Preview
+### b) staging - Vercel Preview
 
 **Git:** branch `staging` → Vercel **Preview** deployment.
 
-**Vercel → Project → Environment Variables** — ensure **Preview** checkbox is enabled for each variable.
+**Vercel → Project → Environment Variables** - ensure **Preview** checkbox is enabled for each variable.
 
 | Variable | Value source | Preview checkbox |
 | --- | --- | --- |
@@ -431,7 +431,7 @@ Without `trigger:dev`, tasks queue in Development and expire (no cloud worker on
 | `TRIGGER_SECRET_KEY` | **Esteo-Staging → Production** API key (`tr_prod_...`) | **Preview** |
 | `OPENAI_API_KEY` | Optional on Vercel (submit API does not call OpenAI directly) | Preview |
 | Stripe test keys | If testing billing on Preview | Preview |
-| `STRIPE_REFERRAL_COUPON_ID` | Stripe coupon (20% off, 3 months) — required for referred-user checkout discount | Preview |
+| `STRIPE_REFERRAL_COUPON_ID` | Stripe coupon (20% off, 3 months) - required for referred-user checkout discount | Preview |
 
 **Trigger.dev → Esteo-Staging → Production → Environment Variables:**
 
@@ -449,11 +449,11 @@ Without `trigger:dev`, tasks queue in Development and expire (no cloud worker on
 
 ---
 
-### c) main — Vercel Production
+### c) main - Vercel Production
 
 **Git:** branch `main` → Vercel **Production** deployment at **`https://esteo.app`**.
 
-**Vercel → Project → Environment Variables** — ensure **Production** checkbox is enabled for each variable.
+**Vercel → Project → Environment Variables** - ensure **Production** checkbox is enabled for each variable.
 
 | Variable | Value source | Production checkbox |
 | --- | --- | --- |
@@ -477,7 +477,7 @@ Without `trigger:dev`, tasks queue in Development and expire (no cloud worker on
 
 **Build on Vercel:** `npm run build:vercel` on Production uses `next build` (migrations run on Preview only via `build:vercel`). Task deploy via GitHub integration on push to `main`.
 
-**Esteo-Staging** remains unchanged — continues to serve Preview only (`preview.esteo.app`).
+**Esteo-Staging** remains unchanged - continues to serve Preview only (`preview.esteo.app`).
 
 ---
 
@@ -490,10 +490,10 @@ End-to-end path when Preview is configured correctly:
 3. **Vercel env:** UploadThing upload (if attachments)
 4. **Vercel env:** Prisma writes (`DATABASE_URL`)
 5. **Vercel env:** `tasks.trigger('generate-estimate-draft')` using `TRIGGER_SECRET_KEY` → **Esteo-Staging Production**
-6. **Trigger dashboard env:** worker runs task — Prisma, OpenAI, attachment promotion
+6. **Trigger dashboard env:** worker runs task - Prisma, OpenAI, attachment promotion
 7. User sees estimate with AI-generated sections
 
-If step 5 fails → HTTP 500, user message „Nie udało się wysłać zgłoszenia…”. If step 6 fails → submit may succeed but request stays `PROCESSING` / `FAILED` — check **Esteo-Staging → Runs**.
+If step 5 fails → HTTP 500, user message „Nie udało się wysłać zgłoszenia…”. If step 6 fails → submit may succeed but request stays `PROCESSING` / `FAILED` - check **Esteo-Staging → Runs**.
 
 ---
 
@@ -563,7 +563,7 @@ If step 5 fails → HTTP 500, user message „Nie udało się wysłać zgłoszen
 1. Vercel Logs → filter `POST /api/public/estimate-requests`
 2. Find line `[public estimate-requests]` with actual error
 3. Common causes:
-   - `ApiClientMissingError` — `TRIGGER_SECRET_KEY` missing on **Preview** (not only Production)
+   - `ApiClientMissingError` - `TRIGGER_SECRET_KEY` missing on **Preview** (not only Production)
    - `TRIGGER_PROJECT_ID` / `TRIGGER_SECRET_KEY` from different Trigger projects
    - `UPLOADTHING_TOKEN` missing when uploading files
    - `DATABASE_URL` wrong or unreachable

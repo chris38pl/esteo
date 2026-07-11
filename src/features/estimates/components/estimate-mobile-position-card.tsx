@@ -34,7 +34,7 @@ function EstimateMobilePositionCardComponent({
 
   const metaParts = [
     formatEstimateDecimal(item.quantity, locale),
-    item.unit ?? "—",
+    item.unit ?? "-",
     formatEstimateCurrency(item.unitPrice, currency, locale),
   ];
 

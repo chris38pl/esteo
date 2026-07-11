@@ -109,10 +109,10 @@ export function IndustryAiProfilesAdminPanel({
                       {index + 1}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {quantityRules.pl[index] ?? "—"}
+                      {quantityRules.pl[index] ?? "-"}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {quantityRules.en[index] ?? "—"}
+                      {quantityRules.en[index] ?? "-"}
                     </TableCell>
                   </TableRow>
                 ))}

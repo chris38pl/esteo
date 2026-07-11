@@ -1,4 +1,4 @@
-# Referral grant — stale Stripe customer on oldest workspace
+# Referral grant - stale Stripe customer on oldest workspace
 
 **Date:** 2026-06-21  
 **Status:** Resolved  
@@ -10,10 +10,10 @@ Referrer `chazychaz38@wp.pl` received notification **„Nie udało się przyzna�
 
 ## Symptom
 
-- Referred user claimed referral code in settings and upgraded to BUSINESS — referral row `ACTIVE`, bonus 80 zł projected.
+- Referred user claimed referral code in settings and upgraded to BUSINESS - referral row `ACTIVE`, bonus 80 zł projected.
 - Referrer dashboard: third invitation **W przygotowaniu** (not **Przyznana**).
 - Notification: **Nie udało się przyznać nagrody**.
-- Hero KPI: **Przyznane nagrody 110 zł** / **Dostępne saldo 110 zł** (unchanged — only two Stripe credits applied).
+- Hero KPI: **Przyznane nagrody 110 zł** / **Dostępne saldo 110 zł** (unchanged - only two Stripe credits applied).
 - `npm run audit:referral-kpi -- --email chazychaz38@wp.pl` showed `budmar`: `rewardStatus=FAILED`, `failure: No such customer: 'cus_UhdGtNM1uyBGHb'`.
 
 Claim and activation were correct; only the Stripe balance credit step failed.
@@ -43,12 +43,12 @@ Meanwhile `getReferrerStripeBalanceCents` read balance from the **newest** `Bill
 ## Fix
 
 1. **Shared helper** [`referral-billing-customer.ts`](../../src/features/referrals/lib/referral-billing-customer.ts):
-   - `resolveReferrerStripeCustomerId()` — newest `BillingCustomer` first, skip deleted/missing Stripe customers.
-   - `findReferralBalanceTransactionId()` — idempotent re-link before creating a new balance transaction.
+   - `resolveReferrerStripeCustomerId()` - newest `BillingCustomer` first, skip deleted/missing Stripe customers.
+   - `findReferralBalanceTransactionId()` - idempotent re-link before creating a new balance transaction.
 
-2. **`grantReferralBonus`** — use helper instead of oldest-workspace `resolveBillingCustomer`; retry ledger rows missing `stripeBalanceTxnId`.
+2. **`grantReferralBonus`** - use helper instead of oldest-workspace `resolveBillingCustomer`; retry ledger rows missing `stripeBalanceTxnId`.
 
-3. **Backfill + audit scripts** — same helper for consistency.
+3. **Backfill + audit scripts** - same helper for consistency.
 
 4. **Data repair** for chaz:
 
@@ -77,9 +77,9 @@ Expected: all referrals `GRANTED` with cbtxn; `processingBalanceCents: 0`; `gran
 | --- | --- |
 | Per-referral grant state | `npm run audit:referral-kpi -- --email <referrer>` |
 | Missing Stripe credits | `npm run prisma:backfill-missing-referral-credits` |
-| Product docs | [`docs/features/referral-program.md`](../features/referral-program.md) — Troubleshooting |
+| Product docs | [`docs/features/referral-program.md`](../features/referral-program.md) - Troubleshooting |
 
-When debugging similar cases: if KPI balance looks correct but a new referral stays in processing, compare `rewardFailureReason` on the `Referral` row — **`No such customer`** strongly suggests stale workspace-scoped billing customer vs owner-level resolution.
+When debugging similar cases: if KPI balance looks correct but a new referral stays in processing, compare `rewardFailureReason` on the `Referral` row - **`No such customer`** strongly suggests stale workspace-scoped billing customer vs owner-level resolution.
 
 ---
 

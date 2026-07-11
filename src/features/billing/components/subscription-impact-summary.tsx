@@ -643,7 +643,7 @@ export function SubscriptionImpactSummary(props: SubscriptionImpactSummaryProps)
   return <AddonsSummary {...props} />;
 }
 
-/** Compact subline for plan cards — recurring total with current add-ons. */
+/** Compact subline for plan cards - recurring total with current add-ons. */
 export function PlanCardAddonSubline({
   plan,
   currentAddons,

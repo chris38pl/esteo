@@ -1,8 +1,8 @@
-# Estimate PDF — missing CSS on Trigger.dev worker
+# Estimate PDF - missing CSS on Trigger.dev worker
 
 **Date:** 2026-06-11  
 **Status:** Resolved  
-**Affected:** `generate-estimate-pdf` on Vercel Preview / Trigger Production — PDF generated but layout unstyled  
+**Affected:** `generate-estimate-pdf` on Vercel Preview / Trigger Production - PDF generated but layout unstyled  
 **Related:** [Estimate PDF export](../features/estimate-pdf-export.md), [PDF Chromium incident](./2026-06-10-estimate-pdf-chromium-trigger-worker.md)
 
 ---
@@ -10,7 +10,7 @@
 ## Symptom
 
 - **Localhost:** PDF preview/export shows full branded layout (grid, cards, table styles).
-- **Vercel Preview (staging):** PDF generates successfully but looks like raw HTML — stacked blocks, default serif font, only hero gradient visible (SVG fallback).
+- **Vercel Preview (staging):** PDF generates successfully but looks like raw HTML - stacked blocks, default serif font, only hero gradient visible (SVG fallback).
 
 ---
 
@@ -24,7 +24,7 @@ readFileSync(join(process.cwd(), "src", "pdf", "templates", "estimate-pdf.css"),
 
 with a **silent `catch` returning `""`**.
 
-On Trigger.dev workers the bundled task has **no `src/` directory** at runtime — only compiled JS. The read failed, Puppeteer rendered HTML without `<style>` content.
+On Trigger.dev workers the bundled task has **no `src/` directory** at runtime - only compiled JS. The read failed, Puppeteer rendered HTML without `<style>` content.
 
 Hero image used the same `process.cwd()` pattern; missing file fell back to gradient SVG (expected when `hero-house.jpg` is not committed).
 
@@ -42,7 +42,7 @@ Hero image used the same `process.cwd()` pattern; missing file fell back to grad
 ## Verification
 
 1. Redeploy Trigger worker (`npm run trigger:deploy` to staging project).
-2. Export/preview PDF on Vercel Preview — layout matches localhost.
+2. Export/preview PDF on Vercel Preview - layout matches localhost.
 3. Mobile preview shows Open PDF instead of broken iframe.
 
 ---

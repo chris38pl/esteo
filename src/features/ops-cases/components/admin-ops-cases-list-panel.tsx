@@ -174,7 +174,7 @@ export function AdminOpsCasesListPanel({
                     </td>
                     <td className="px-4 py-3 tabular-nums">{item.occurrenceCount}</td>
                     <td className="px-4 py-3 text-xs text-muted-foreground">
-                      {item.affectedUserEmail ?? "—"}
+                      {item.affectedUserEmail ?? "-"}
                     </td>
                     <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">
                       {formatDate(item.createdAt)}

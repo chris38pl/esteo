@@ -1,6 +1,6 @@
-# AI Evaluation Harness — Services
+# AI Evaluation Harness - Services
 
-Automated **quality evaluation** for AI-generated estimate drafts in the **Services** segment (`WorkspaceIndustry.OTHER`). Detects regressions after changes to prompts, company context, workspace rules, business type, estimate sections, or voice intake — without unit tests, UI tests, or JSON parsing checks.
+Automated **quality evaluation** for AI-generated estimate drafts in the **Services** segment (`WorkspaceIndustry.OTHER`). Detects regressions after changes to prompts, company context, workspace rules, business type, estimate sections, or voice intake - without unit tests, UI tests, or JSON parsing checks.
 
 Operational quick reference: [`evals/README.md`](../../evals/README.md).
 
@@ -54,7 +54,7 @@ Analogia w repo: [`voice-intake:benchmark`](../../package.json) ocenia ekstrakcj
 
 ## Scenariusze (35)
 
-Fixtures w `evals/services/` — samowystarczalne JSON, zero DB.
+Fixtures w `evals/services/` - samowystarczalne JSON, zero DB.
 
 | Kategoria | Katalog | Liczba | Średnia w raporcie |
 | --- | --- | --- | --- |
@@ -63,7 +63,7 @@ Fixtures w `evals/services/` — samowystarczalne JSON, zero DB.
 | `edge` | `evals/services/edge/` | 4 | Edge Average |
 | `stress` | `evals/services/stress/` | 2 | Edge Average |
 
-**Golden scenarios** (`critical: true`): wedding-planner, marketing-agency, accounting-office, it-consulting — regresja na golden blokuje CI nawet gdy średnia jest OK.
+**Golden scenarios** (`critical: true`): wedding-planner, marketing-agency, accounting-office, it-consulting - regresja na golden blokuje CI nawet gdy średnia jest OK.
 
 **Quick manifest** (6 scenariuszy): `evals/manifests/services-quick-mode.json`.
 
@@ -124,9 +124,9 @@ Baseline: `evals/baselines/services.json` (pointer) + `evals/baselines/services/
 
 1. Zmiana w `src/ai/prompts/estimate-draft.ts` (lub profile / prompt-context).
 2. **Bump** `ESTIMATE_PROMPT_VERSION` (semver) w tym samym PR.
-3. `npm run eval:services` — Full eval, review artefaktów.
-4. `npm run eval:services:baseline` — zapis baseline (opcjonalny commit `evals/baselines/` przy release).
-5. Kolejny PR: `npm run eval:services:compare` — sprawdź regresję przed merge.
+3. `npm run eval:services` - Full eval, review artefaktów.
+4. `npm run eval:services:baseline` - zapis baseline (opcjonalny commit `evals/baselines/` przy release).
+5. Kolejny PR: `npm run eval:services:compare` - sprawdź regresję przed merge.
 
 ---
 
@@ -134,7 +134,7 @@ Baseline: `evals/baselines/services.json` (pointer) + `evals/baselines/services/
 
 | Variable | Default | Role |
 | --- | --- | --- |
-| `OPENAI_API_KEY` | — | Wymagany do generacji i judge |
+| `OPENAI_API_KEY` | - | Wymagany do generacji i judge |
 | `EVAL_GENERATION_MODEL` | `gpt-4o` | Model draftu |
 | `EVAL_JUDGE_MODEL` | `gpt-4o-mini` | Model judge |
 
@@ -167,9 +167,9 @@ npm run eval:services:compare -- --compare=evals/baselines/services/2026-06-18-1
 
 ## Przyszłość
 
-- **`evals/construction/`** — ten sam silnik (`evals/engine/`), inne fixtures, `leakageDomain: "services"`.
-- Scenariusze `locale: "en"` — schema i runner gotowe; brak fixture EN w v1.
-- Agent eval (`buildEstimateAgentPrompt`) — osobna suite po stabilizacji draft eval.
+- **`evals/construction/`** - ten sam silnik (`evals/engine/`), inne fixtures, `leakageDomain: "services"`.
+- Scenariusze `locale: "en"` - schema i runner gotowe; brak fixture EN w v1.
+- Agent eval (`buildEstimateAgentPrompt`) - osobna suite po stabilizacji draft eval.
 
 ---
 

@@ -9,13 +9,13 @@
   "referralLink": {
     "title": "Twój link polecający",
     "subtitle": "Udostępniaj link w dowolnym miejscu",
-    "alternateShare": "Najlepiej wyślij link — znajomy od razu dostaje zniżkę na start, a Ty bonus, gdy wykupi plan. Jeśli założy konto sam, może wpisać Twój e-mail lub kod w ustawieniach firmy (w ciągu 30 dni lub przed pierwszą płatnością). Oboje wtedy skorzystacie z programu.",
+    "alternateShare": "Najlepiej wyślij link - znajomy od razu dostaje zniżkę na start, a Ty bonus, gdy wykupi plan. Jeśli założy konto sam, może wpisać Twój e-mail lub kod w ustawieniach firmy (w ciągu 30 dni lub przed pierwszą płatnością). Oboje wtedy skorzystacie z programu.",
     "codeLabel": "Kod polecający",
     "emailLabel": "Email polecający"
   },
   "benefits": {
     "youTitle": "Ty zarabiasz",
-    "youFootnote": "Gdy znajomy wykupi plan PRO, otrzymasz {proAmount}. Przy planie BUSINESS — {businessAmount}. Bonus trafia na saldo do wykorzystania na fakturach.",
+    "youFootnote": "Gdy znajomy wykupi plan PRO, otrzymasz {proAmount}. Przy planie BUSINESS - {businessAmount}. Bonus trafia na saldo do wykorzystania na fakturach.",
     "theyTitle": "Twój znajomy zyskuje",
     "theyValue": "20% zniżki",
     "theyDuration": "przez 3 miesiące",
@@ -68,7 +68,7 @@
       "description": "Korzystasz z planu Pro. Przejdź na Business, aby odblokować pełny potencjał Esteo."
     },
     "business": {
-      "description": "Masz plan Business — wszystkie korzyści programu partnerskiego są odblokowane."
+      "description": "Masz plan Business - wszystkie korzyści programu partnerskiego są odblokowane."
     }
   },
   "tier": {
@@ -112,7 +112,7 @@
       "claimedAt": "Data przypisania",
       "benefitHint": "Po wyborze planu PRO lub BUSINESS otrzymasz 20% zniżki przez 3 miesiące.",
       "statusAwaitingPayment": "Aktywuj płatny plan, aby skorzystać ze zniżki polecającej.",
-      "statusActive": "Masz aktywny płatny plan — zniżka polecająca obowiązuje przy rozliczeniach.",
+      "statusActive": "Masz aktywny płatny plan - zniżka polecająca obowiązuje przy rozliczeniach.",
       "viewPlans": "Zobacz plany"
     },
     "errors": {

@@ -17,7 +17,7 @@ export function VoiceIntakeFooterBar({
   onClick: () => void;
   disabled?: boolean;
   className?: string;
-  /** Elevated card over hero imagery — same bar shape as the create-estimate modal footer. */
+  /** Elevated card over hero imagery - same bar shape as the create-estimate modal footer. */
   floating?: boolean;
   industry: WorkspaceIndustry;
 }) {

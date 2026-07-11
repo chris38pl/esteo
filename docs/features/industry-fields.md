@@ -12,7 +12,7 @@ Industry-specific attributes for business documents (estimate requests, estimate
 
 Workspace `industry` (enum, immutable) determines which definition set applies.
 
-**Product segments:** use `isServiceWorkspace(industry)` in `src/features/workspaces/lib/industries.ts` — today `WorkspaceIndustry.OTHER` maps to the **Services** segment (wedding planning, photography, marketing, etc.). A future enum rename to `SERVICES` is a one-line change in that helper. Do not branch on `industry === OTHER` in feature code.
+**Product segments:** use `isServiceWorkspace(industry)` in `src/features/workspaces/lib/industries.ts` - today `WorkspaceIndustry.OTHER` maps to the **Services** segment (wedding planning, photography, marketing, etc.). A future enum rename to `SERVICES` is a one-line change in that helper. Do not branch on `industry === OTHER` in feature code.
 
 Services workspaces use a free-text **Business Type** (`industryOtherText`, min 3 chars) instead of catalog fields like `property_type` / `area_size` on the public form.
 
@@ -35,7 +35,7 @@ Route: `/dashboard/admin/industry-fields` (platform admin only).
 
 - Filter by industry (Construction, Electrical, Carpentry, Plumbing) and document type tab (`ESTIMATE_REQUEST` active; `ESTIMATE` tab reserved). Services (`OTHER`) uses Business Type + company context instead of the construction field catalog on the public form.
 - Create/edit definitions and PL/EN translations.
-- Catalog only in MVP — user-submitted values are not browsed here.
+- Catalog only in MVP - user-submitted values are not browsed here.
 
 ## Server API (for future estimate form)
 
@@ -62,7 +62,7 @@ Construction + `ESTIMATE_REQUEST` fields are defined in `prisma/seed-industry-fi
 | `npm run prisma:seed:catalog` | `DATABASE_URL` (development) | Platform catalog only (industry fields) |
 | `npm run prisma:seed:catalog:staging` | `DATABASE_URL_STAGING` | Same catalog on Neon **staging** |
 
-Catalog seed is **idempotent** (upsert). It does **not** copy admin-defined fields created only on another branch — add those to `INDUSTRY_FIELD_CATALOG` in git or export via SQL.
+Catalog seed is **idempotent** (upsert). It does **not** copy admin-defined fields created only on another branch - add those to `INDUSTRY_FIELD_CATALOG` in git or export via SQL.
 
 Run `npm run prisma:seed` after reset for full dev workspace.
 
@@ -70,10 +70,10 @@ Run `npm run prisma:seed` after reset for full dev workspace.
 
 `getWorkspacePromptContext()` assembles workspace-specific AI instructions:
 
-1. `WorkspaceSettings.companyDescription` — `## Company Context` block (stored max 1500 chars, prompt cap 1200)
-2. `WorkspaceSettings.aiInstructions` + active `WorkspaceRule` rows (ESTIMATE type) — `## Workspace Rules`
-3. Estimate section templates — `## Estimate Structure` + section rules (defaults in `src/features/workspaces/config/industry-estimate-sections.ts`; Services uses Zakres / Usługi / Opcje dodatkowe / Uwagi)
-4. Services only: `industryOtherText` (Business Type) — `## Business Type` block in estimate prompts (no dynamic `## Role`)
+1. `WorkspaceSettings.companyDescription` - `## Company Context` block (stored max 1500 chars, prompt cap 1200)
+2. `WorkspaceSettings.aiInstructions` + active `WorkspaceRule` rows (ESTIMATE type) - `## Workspace Rules`
+3. Estimate section templates - `## Estimate Structure` + section rules (defaults in `src/features/workspaces/config/industry-estimate-sections.ts`; Services uses Zakres / Usługi / Opcje dodatkowe / Uwagi)
+4. Services only: `industryOtherText` (Business Type) - `## Business Type` block in estimate prompts (no dynamic `## Role`)
 
 Segment logic: `isServiceWorkspace()` in `src/features/workspaces/lib/industries.ts`. Future enum rename `OTHER` → `SERVICES` is a one-line change.
 
@@ -83,5 +83,5 @@ Module: `src/features/workspaces/lib/prompt-context.ts`, `src/features/estimate-
 
 ## Related docs
 
-- [`docs/architecture/database.md`](../architecture/database.md) — schema reference
-- [`docs/features/estimate-requests.md`](estimate-requests.md) — future form consumer
+- [`docs/architecture/database.md`](../architecture/database.md) - schema reference
+- [`docs/features/estimate-requests.md`](estimate-requests.md) - future form consumer

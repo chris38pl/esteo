@@ -36,7 +36,7 @@ export function formatPlanLimitLabels(
       limits.maxInvitedSeats === null
         ? unlimitedLabel
         : limits.maxInvitedSeats === 0
-          ? "—"
+          ? "-"
           : String(limits.maxInvitedSeats),
     undo: String(limits.maxUndoSteps),
   };

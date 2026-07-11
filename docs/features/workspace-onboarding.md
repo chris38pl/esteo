@@ -8,8 +8,8 @@ Onboarding exists only for **founders with zero accessible workspaces and no pen
 
 | User | Experience |
 | --- | --- |
-| Founder (no invites, no access) | `/dashboard/onboarding` — create organization |
-| Invited user (zero accessible workspaces) | `/dashboard/invitations` — explicit accept/decline |
+| Founder (no invites, no access) | `/dashboard/onboarding` - create organization |
+| Invited user (zero accessible workspaces) | `/dashboard/invitations` - explicit accept/decline |
 | Existing member with new invite | Dashboard + one-at-a-time invitation modal |
 | Existing member | Dashboard directly |
 
@@ -19,7 +19,7 @@ A workspace the user can enter **right now**:
 
 ```
 accessible workspace =
-  (workspace.ownerId = userId)   // owner path — independent of membership row
+  (workspace.ownerId = userId)   // owner path - independent of membership row
   OR
   (active WorkspaceMember for userId)
   AND workspace.deletedAt IS NULL
@@ -34,7 +34,7 @@ Implementation: `src/features/workspaces/server/accessible-workspaces.ts`
 ### Leaving a workspace
 
 - **Non-owner members** (MEMBER/VIEWER) can leave via the sidebar workspace card menu → soft-deletes their `WorkspaceMember` row
-- **Owners** cannot leave; they must delete (archive) the workspace instead — Settings → General → Delete workspace
+- **Owners** cannot leave; they must delete (archive) the workspace instead - Settings → General → Delete workspace
 - After leaving or deleting, active workspace cookie/DB is reconciled; if no accessible workspaces remain, routing falls back to invitations or onboarding
 
 ### Deleting a workspace (owner archive)
@@ -59,8 +59,8 @@ When the user has at least one accessible workspace, pending **workspace invitat
 
 Accepting runs two entitlement checks (either can fail with different UX):
 
-1. **Invitee plan** — `assertCanAcceptInvitation(userId)` → user's `maxAccessibleWorkspaces`
-2. **Owner workspace seats** — `assertCanInviteMember(workspaceId)` → owner's `maxInvitedSeats`
+1. **Invitee plan** - `assertCanAcceptInvitation(userId)` → user's `maxAccessibleWorkspaces`
+2. **Owner workspace seats** - `assertCanInviteMember(workspaceId)` → owner's `maxInvitedSeats`
 
 Failure copy:
 
@@ -95,10 +95,10 @@ FREE and PRO workspace owners cannot send invites (UI gated in settings + server
 
 Guards: `src/server/workspaces/dashboard-route.ts`
 
-- `(main)/layout.tsx` — requires accessible workspaces
-- `onboarding/layout.tsx` — founders only; redirects invitees with pending invites to `/dashboard/invitations`
-- `invitations/layout.tsx` — users with zero accessible workspaces and pending invites
-- `/dashboard/pending-access` — deprecated; redirects to `/dashboard/invitations`
+- `(main)/layout.tsx` - requires accessible workspaces
+- `onboarding/layout.tsx` - founders only; redirects invitees with pending invites to `/dashboard/invitations`
+- `invitations/layout.tsx` - users with zero accessible workspaces and pending invites
+- `/dashboard/pending-access` - deprecated; redirects to `/dashboard/invitations`
 
 ## Active workspace resolution
 
@@ -117,7 +117,7 @@ Resolution chain (`resolveActiveWorkspace` in `src/server/workspaces/active-work
 
 If cookie or `lastActiveWorkspaceId` points to an inaccessible workspace (deleted, membership removed, ownership lost):
 
-1. **During render (layouts):** ignore stale cookie/DB values and fall through the resolution chain — no cookie mutation (Next.js only allows cookie writes in Server Actions or Route Handlers).
+1. **During render (layouts):** ignore stale cookie/DB values and fall through the resolution chain - no cookie mutation (Next.js only allows cookie writes in Server Actions or Route Handlers).
 2. **During Server Actions:** `reconcileStaleActiveWorkspace()` clears invalid cookie and `lastActiveWorkspaceId`, then `persistActiveWorkspace()` sets the new active workspace.
 
 Never serve dashboard content against an inaccessible workspace ID.
@@ -139,12 +139,12 @@ After create: set active workspace cookie + `lastActiveWorkspaceId`, redirect to
 - Route: `/[locale]/dashboard/[workspaceSlug]/settings` (workspace **owner** only)
 - Tabs: **General**, **Company** (`?tab=company`), Users, Rules
 - General: workspace name, appearance theme, `companyDescription` (AI context), company logo upload
-- Company (Dane): optional address, NIP, email, phone for client documents / future PDF — see [workspace-branding-and-company-profile.md](workspace-branding-and-company-profile.md)
+- Company (Dane): optional address, NIP, email, phone for client documents / future PDF - see [workspace-branding-and-company-profile.md](workspace-branding-and-company-profile.md)
 - Rules tab also contains **estimate section templates**:
   - Defaults are derived from immutable `Workspace.industry` (shipped in `src/features/workspaces/config/industry-estimate-sections.ts`)
-  - Workspaces can override section list (rename, reorder — drag & drop on desktop, up/down on mobile, toggle active, add/remove) under settings → Rules
+  - Workspaces can override section list (rename, reorder - drag & drop on desktop, up/down on mobile, toggle active, add/remove) under settings → Rules
   - Overrides are stored in `WorkspaceSettings.branding.estimateSections` and injected into AI prompt context (`## Estimate structure` + `## Section-specific rules`)
-- Member invites: gated on owner plan (`maxInvitedSeats > 0`) — **BUSINESS only** (FREE and PRO are owner-only)
+- Member invites: gated on owner plan (`maxInvitedSeats > 0`) - **BUSINESS only** (FREE and PRO are owner-only)
 
 ## Account inbox
 

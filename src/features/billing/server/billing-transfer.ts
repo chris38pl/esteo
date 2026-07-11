@@ -43,7 +43,7 @@ export async function getBillingTransferState(workspaceId: string): Promise<{
 /**
  * Initiates billing transfer to a new payer. V1: records the intended payer; the new payer must
  * complete checkout (creating their own Stripe subscription) before the old subscription is cancelled.
- * Stripe subscriptions cannot move between customers — cancel + recreate is required.
+ * Stripe subscriptions cannot move between customers - cancel + recreate is required.
  */
 export async function initiateBillingTransfer(
   actor: User,

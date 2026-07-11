@@ -203,7 +203,7 @@ function formatIndustryFieldValue(
   locale: Locale,
 ): string {
   if (raw === null || raw === undefined || raw === "") {
-    return "—";
+    return "-";
   }
 
   if (valueType === "SELECT" && typeof raw === "string") {

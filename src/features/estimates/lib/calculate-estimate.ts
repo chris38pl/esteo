@@ -20,7 +20,7 @@ export interface EstimateCalcResult {
   profit: number;
   /** Cost as fraction of net revenue: costBasis / totalNet (0 when no revenue) */
   costRatio: number;
-  /** Profit as % of net revenue — user-facing profitability metric */
+  /** Profit as % of net revenue - user-facing profitability metric */
   profitMarginOnNetPercent: number;
 }
 

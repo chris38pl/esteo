@@ -65,7 +65,7 @@ export function getDashboardPlaceholderInsights(): DashboardInsightsData {
         actorName: "Marta Wiśniewska",
         isCurrentUser: false,
         kind: "estimate_sent",
-        estimateTitle: "Remont łazienki — wersja 2",
+        estimateTitle: "Remont łazienki - wersja 2",
         occurredAt: PLACEHOLDER_TIMESTAMPS.days3,
         actor: {
           name: "Marta Wiśniewska",
@@ -128,7 +128,7 @@ export function getDashboardPlaceholderInsights(): DashboardInsightsData {
       {
         id: "pay-1",
         estimateId: "est-1",
-        estimateTitle: "Remont łazienki — etap I",
+        estimateTitle: "Remont łazienki - etap I",
         dueDate: PLACEHOLDER_TIMESTAMPS.days12Overdue,
         amount: 12_480,
         currency: "PLN",
@@ -146,7 +146,7 @@ export function getDashboardPlaceholderInsights(): DashboardInsightsData {
       {
         id: "pay-3",
         estimateId: "est-3",
-        estimateTitle: "Malowanie biura — faktura końcowa",
+        estimateTitle: "Malowanie biura - faktura końcowa",
         dueDate: PLACEHOLDER_TIMESTAMPS.days2,
         amount: 6_000,
         currency: "PLN",

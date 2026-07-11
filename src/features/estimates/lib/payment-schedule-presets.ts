@@ -43,7 +43,7 @@ function roundMoney(value: number): number {
 }
 
 // IMPORTANT: base all installment amounts on the customer-facing estimate total (totalGross).
-// Never use totalNet, cost basis, or margin-internal values — installments must match what the customer sees.
+// Never use totalNet, cost basis, or margin-internal values - installments must match what the customer sees.
 export function buildPaymentScheduleFromPreset(
   presetId: PaymentSchedulePresetId,
   customerTotalGross: number,

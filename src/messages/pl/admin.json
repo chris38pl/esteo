@@ -137,7 +137,7 @@
       "estimateUsage": "Wykorzystanie kosztorysów",
       "seats": "Miejsca",
       "storage": "Magazyn",
-      "noVersion": "—"
+      "noVersion": "-"
     },
     "empty": "Brak przestrzeni pasujących do wyszukiwania.",
     "bar": {
@@ -441,7 +441,7 @@
   },
   "pdfPreview": {
     "title": "Podgląd szablonu PDF",
-    "subtitle": "Render HTML z danymi testowymi — ten sam pipeline co eksport wyceny (bez Puppeteera).",
+    "subtitle": "Render HTML z danymi testowymi - ten sam pipeline co eksport wyceny (bez Puppeteera).",
     "locale": "Język dokumentu",
     "primaryColor": "Kolor primary",
     "watermark": "Znak wodny (plan Free)",
@@ -451,7 +451,7 @@
   },
   "voiceIntakePreview": {
     "title": "Podgląd voice intake",
-    "subtitle": "Galeria ekranów nagrywania i podsumowania z danymi testowymi — bez mikrofonu i API.",
+    "subtitle": "Galeria ekranów nagrywania i podsumowania z danymi testowymi - bez mikrofonu i API.",
     "phase": "Ekran",
     "scenario": "Scenariusz danych",
     "locale": "Język UI",
@@ -471,8 +471,8 @@
     "phases": {
       "trigger": "Trigger (karta)",
       "footer_trigger": "Trigger (footer)",
-      "recording_initial": "Nagrywanie — start",
-      "recording_follow_up": "Nagrywanie — dogranie",
+      "recording_initial": "Nagrywanie - start",
+      "recording_follow_up": "Nagrywanie - dogranie",
       "summary": "Podsumowanie",
       "analyzing": "Analiza",
       "analyzing_follow_up": "Analiza follow-up",
@@ -487,7 +487,7 @@
   },
   "activationPreview": {
     "title": "Podgląd aktywacji (Phase 1)",
-    "subtitle": "Galeria banerów, toastów i modalów z pierwszych kroków ownera — bez side-effectów localStorage.",
+    "subtitle": "Galeria banerów, toastów i modalów z pierwszych kroków ownera - bez side-effectów localStorage.",
     "selectLabel": "Element",
     "previewLabel": "Podgląd",
     "metaLabel": "Metadane",
@@ -543,7 +543,7 @@
           "what": "Pulsujący wskaźnik + szkielet sekcji wyceny",
           "notes": "Zastępuje edytor podczas joba AI",
           "when": "Po utworzeniu wyceny, dopóki status joba ≠ COMPLETED",
-          "frequency": "Przy każdym generowaniu; w aktywacji — pierwsze ma znaczenie onboardingowe"
+          "frequency": "Przy każdym generowaniu; w aktywacji - pierwsze ma znaczenie onboardingowe"
         }
       },
       "estimate_send_toast_loading": {
@@ -580,12 +580,12 @@
         "label": "Modal profilu firmy",
         "meta": {
           "type": "Dialog (inline form)",
-          "what": "„Dodaj dane swojej firmy” — logo, NIP, adres, kontakt",
+          "what": "„Dodaj dane swojej firmy” - logo, NIP, adres, kontakt",
           "notes": "Aktywacja: inline modal zamiast redirectu do ustawień",
           "when": "Pierwsza próba eksportu PDF przy niekompletnym profilu firmy",
           "frequency": "Przy każdej próbie PDF z brakującymi polami (do uzupełnienia profilu)"
         },
-        "portalNote": "Modal renderowany przez portal — może nakładać się na stronę admina."
+        "portalNote": "Modal renderowany przez portal - może nakładać się na stronę admina."
       },
       "pdf_export_toast": {
         "label": "Toast PDF export (loading)",
@@ -609,7 +609,7 @@
         }
       },
       "pdf_popup_blocked_toast": {
-        "label": "Toast PDF — popup zablokowany (info)",
+        "label": "Toast PDF - popup zablokowany (info)",
         "meta": {
           "type": "AppToast (info)",
           "what": "Informacja, że PDF otworzył się w nowej karcie lub został pobrany",

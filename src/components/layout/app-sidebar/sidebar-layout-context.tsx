@@ -30,7 +30,7 @@ export function useSidebarLayout() {
   return useContext(SidebarLayoutContext);
 }
 
-/** Width constraints for mobile drawer only — no-op on desktop sidebar. */
+/** Width constraints for mobile drawer only - no-op on desktop sidebar. */
 export function sidebarContainClass(inDrawer: boolean, className?: string) {
   return cn(inDrawer && "w-full min-w-0 max-w-full overflow-hidden", className);
 }

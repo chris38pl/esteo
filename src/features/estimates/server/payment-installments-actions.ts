@@ -404,7 +404,7 @@ export async function generatePaymentScheduleAction(
 
     const { user, currency } = await authorize(input);
 
-    // Customer-facing total gross only — see buildPaymentScheduleFromPreset() for the same rule.
+    // Customer-facing total gross only - see buildPaymentScheduleFromPreset() for the same rule.
     const generated = buildPaymentScheduleFromPreset(
       parsed.data.presetId,
       parsed.data.customerTotalGross,

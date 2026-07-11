@@ -1,6 +1,6 @@
 # Electrical eval suite
 
-Scenarios for **ELECTRICAL_V1** — residential and commercial electrical estimates.
+Scenarios for **ELECTRICAL_V1** - residential and commercial electrical estimates.
 
 ## Run
 

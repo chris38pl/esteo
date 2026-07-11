@@ -3,7 +3,7 @@ import type { ScenarioCategory } from "@evals/engine/schemas/scenario";
 
 export type EvalMode = "fast" | "full";
 
-/** Release gate vs quality signal — see composite-score.determinePassed */
+/** Release gate vs quality signal - see composite-score.determinePassed */
 export type EvalPassClassification = "PASS" | "PASS_WITH_LOW_REFSIM" | "FAIL";
 
 export type TokenUsage = {
@@ -108,7 +108,7 @@ export type ScenarioResult = {
   classification: EvalPassClassification;
   /** Strict pass (classification === PASS). */
   passed: boolean;
-  /** Release gate — correctness without referenceSimilarity block. */
+  /** Release gate - correctness without referenceSimilarity block. */
   correctnessPassed: boolean;
   failReasons: string[];
   correctnessFailReasons: string[];
@@ -123,7 +123,7 @@ export type RunSummary = {
   /** Representative hash (wedding-planner) for quick diff */
   promptHash: string;
   promptHashSource: string;
-  /** Per-scenario prompt hashes — detects partial hotfixes */
+  /** Per-scenario prompt hashes - detects partial hotfixes */
   promptHashes: Record<string, string>;
   gitSha: string | null;
   startedAt: string;

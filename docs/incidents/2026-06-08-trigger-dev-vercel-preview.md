@@ -1,4 +1,4 @@
-# Trigger.dev + Vercel Preview — public estimate submit 500
+# Trigger.dev + Vercel Preview - public estimate submit 500
 
 **Date:** 2026-06-08  
 **Status:** Resolved  
@@ -14,7 +14,7 @@ Submitting a public estimate request on Vercel Preview returned HTTP 500 with �
 On Vercel Preview (branch `staging`):
 
 - User fills public estimate request form and submits.
-- Response: **500** — „Nie udało się wysłać zgłoszenia…”.
+- Response: **500** - „Nie udało się wysłać zgłoszenia…”.
 - Vercel function logs show failure during submit flow.
 - Trigger.dev dashboard: **no runs** in the environment we were checking (or runs in wrong project).
 - After fix: successful submit, **3 attachments** promoted, **AI draft** generated on Preview.
@@ -27,11 +27,11 @@ These steps were tried before the final solution. Each addressed a real problem 
 
 | Step | What we tried | Result |
 | --- | --- | --- |
-| 1 | Add `trigger:build` / `npx trigger.dev build` to Vercel build | **Vercel build failed** — `build` is not a valid Trigger.dev CLI command |
+| 1 | Add `trigger:build` / `npx trigger.dev build` to Vercel build | **Vercel build failed** - `build` is not a valid Trigger.dev CLI command |
 | 2 | Briefly add `trigger:deploy` to Vercel build | Build issues; reverted to `next build` only |
-| 3 | Use **main Esteo** `tr_prod_` key + staging Neon in one Trigger Production | Architectural conflict — staging Preview and future prod launch cannot share one Production bucket |
-| 4 | Set `TRIGGER_SECRET_KEY` on Vercel **Production** only | **`ApiClientMissingError`** on Preview — key missing for Preview-scoped deployments |
-| 5 | Misleading logs | Effect version warnings and UploadThing rollback messages during failed trigger — **noise**, not root cause |
+| 3 | Use **main Esteo** `tr_prod_` key + staging Neon in one Trigger Production | Architectural conflict - staging Preview and future prod launch cannot share one Production bucket |
+| 4 | Set `TRIGGER_SECRET_KEY` on Vercel **Production** only | **`ApiClientMissingError`** on Preview - key missing for Preview-scoped deployments |
+| 5 | Misleading logs | Effect version warnings and UploadThing rollback messages during failed trigger - **noise**, not root cause |
 
 ---
 
@@ -60,7 +60,7 @@ sequenceDiagram
 
 ## Solution applied
 
-### 1. Separate Trigger.dev project — **Esteo-Staging**
+### 1. Separate Trigger.dev project - **Esteo-Staging**
 
 | Trigger project | Environment | Serves |
 | --- | --- | --- |
@@ -83,13 +83,13 @@ Both variables must have the **Preview** checkbox enabled:
 
 Worker secrets (not Vercel):
 
-- `DATABASE_URL` — staging Neon (same as Vercel Preview)
+- `DATABASE_URL` - staging Neon (same as Vercel Preview)
 - `OPENAI_API_KEY`
 - `UPLOADTHING_TOKEN`
 
 ### 4. GitHub integration
 
-**Esteo-Staging** → Production → branch `staging` — auto-deploy tasks on push.
+**Esteo-Staging** → Production → branch `staging` - auto-deploy tasks on push.
 
 ### 5. Redeploy Preview
 
@@ -101,10 +101,10 @@ After env changes, redeploy latest Preview deployment so runtime picks up new va
 
 ## What was NOT the root cause
 
-- **UploadThing ingest errors in logs** — appeared during rollback after trigger failure; uploads succeeded when trigger was fixed.
-- **Effect version mismatch warnings** — SDK noise in Vercel logs.
-- **Missing `trigger deploy` in Vercel build** — task deploy is via GitHub integration or manual CLI; build should remain `next build` only.
-- **Clerk / Neon misconfiguration** — shared test/staging values were already correct for Preview.
+- **UploadThing ingest errors in logs** - appeared during rollback after trigger failure; uploads succeeded when trigger was fixed.
+- **Effect version mismatch warnings** - SDK noise in Vercel logs.
+- **Missing `trigger deploy` in Vercel build** - task deploy is via GitHub integration or manual CLI; build should remain `next build` only.
+- **Clerk / Neon misconfiguration** - shared test/staging values were already correct for Preview.
 
 ---
 
@@ -117,7 +117,7 @@ After env changes, redeploy latest Preview deployment so runtime picks up new va
 | Worker env ≠ Vercel env | Set `DATABASE_URL`, `OPENAI_API_KEY`, `UPLOADTHING_TOKEN` in Trigger dashboard for the worker project |
 | Free tier: no Trigger Preview env | Use **two Trigger projects** instead of one project with mixed staging/prod |
 | Invalid CLI commands break CI | `npx trigger.dev build` does not exist; use `deploy` |
-| Debug submit 500 | Filter Vercel logs for `[public estimate-requests]` — shows actual error, not Effect noise |
+| Debug submit 500 | Filter Vercel logs for `[public estimate-requests]` - shows actual error, not Effect noise |
 
 ---
 
@@ -127,10 +127,10 @@ When public estimate submit returns 500 on Vercel Preview:
 
 1. **Vercel Logs** → `POST /api/public/estimate-requests` → `[public estimate-requests]` line.
 2. **`ApiClientMissingError`** → add `TRIGGER_SECRET_KEY` with **Preview** scope; redeploy.
-3. **Verify pair** — `TRIGGER_PROJECT_ID` and `TRIGGER_SECRET_KEY` from the **same** Trigger project (Esteo-Staging for Preview).
-4. **Trigger dashboard** — Esteo-Staging → Production → Runs (not main Esteo unless localhost dev).
-5. **Worker env** — confirm `DATABASE_URL`, `OPENAI_API_KEY`, `UPLOADTHING_TOKEN` in Trigger Staging Production.
-6. **GitHub integration** — Esteo-Staging Production mapped to branch `staging`.
+3. **Verify pair** - `TRIGGER_PROJECT_ID` and `TRIGGER_SECRET_KEY` from the **same** Trigger project (Esteo-Staging for Preview).
+4. **Trigger dashboard** - Esteo-Staging → Production → Runs (not main Esteo unless localhost dev).
+5. **Worker env** - confirm `DATABASE_URL`, `OPENAI_API_KEY`, `UPLOADTHING_TOKEN` in Trigger Staging Production.
+6. **GitHub integration** - Esteo-Staging Production mapped to branch `staging`.
 7. See full env map: [deployment.md](../architecture/deployment.md).
 
 ---

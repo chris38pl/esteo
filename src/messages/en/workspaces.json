@@ -238,7 +238,7 @@
       },
       "ai": {
         "dialogTitle": "Generate template with AI",
-        "dialogDescription": "Describe the template structure — paste a list or dictate. AI will propose sections and items aligned with your company.",
+        "dialogDescription": "Describe the template structure - paste a list or dictate. AI will propose sections and items aligned with your company.",
         "outlineLabel": "Structure outline",
         "outlinePlaceholder": "E.g.:\n1. Consultation\n- Initial meeting\n- Needs analysis\n2. Delivery\n- ...",
         "outlineHint": "At least 20 characters. Paste a numbered list or use the microphone button.",
@@ -254,7 +254,7 @@
         "retryPending": "Retrying…",
         "promptMissing": "Template outline not found. Go back and try again.",
         "backToGenerate": "Back to generation",
-        "promptTooShort": "Outline is too short — add more detail."
+        "promptTooShort": "Outline is too short - add more detail."
       },
       "import": {
         "dialogTitle": "Import from estimate",
@@ -293,7 +293,7 @@
         "createFromScratch": "Create template from scratch",
         "createFromScratchHint": "Build your own structure step by step.",
         "generateWithAi": "Generate with AI",
-        "generateWithAiHint": "Paste or dictate a section list — AI will shape the template.",
+        "generateWithAiHint": "Paste or dictate a section list - AI will shape the template.",
         "systemExample": "Industry example template",
         "importFromEstimate": "Import from estimate",
         "importFromEstimateSoon": "Coming soon",
@@ -399,7 +399,7 @@
       "referral": "Partner program",
       "rules": "Rules",
       "more": "More tabs",
-      "companyDescription": "Company details shown on client-facing documents — address, tax ID, contact.",
+      "companyDescription": "Company details shown on client-facing documents - address, tax ID, contact.",
       "usersDescription": "Manage workspace members and collaboration invites.",
       "referralDescription": "Enter a referrer email or code to join the partner program.",
       "rulesDescription": "Define AI rules used when generating estimates and responses."
@@ -428,7 +428,7 @@
       "industryLabel": "Industry",
       "businessTypeLabel": "Business type",
       "businessTypePlaceholder": "e.g. Wedding planning",
-      "businessTypeHint": "Short industry label — used in AI prompts and analytics.",
+      "businessTypeHint": "Short industry label - used in AI prompts and analytics.",
       "save": "Save business type",
       "saving": "Saving…",
       "saved": "Business type saved.",

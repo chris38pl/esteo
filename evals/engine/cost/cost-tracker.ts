@@ -1,6 +1,6 @@
 import type { TokenUsage } from "@evals/engine/types";
 
-/** OpenAI gpt-4o approximate pricing (USD per 1M tokens) — update when models change. */
+/** OpenAI gpt-4o approximate pricing (USD per 1M tokens) - update when models change. */
 const PRICING: Record<string, { input: number; output: number }> = {
   "gpt-4o": { input: 2.5, output: 10 },
   "gpt-4o-mini": { input: 0.15, output: 0.6 },

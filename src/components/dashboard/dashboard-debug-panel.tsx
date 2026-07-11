@@ -7,7 +7,7 @@ import type { Locale } from "@/lib/locale";
 
 function formatValue(value: unknown, locale: Locale): string {
   if (value === null || value === undefined || value === "") {
-    return "—";
+    return "-";
   }
 
   if (value instanceof Date) {

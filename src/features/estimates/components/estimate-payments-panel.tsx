@@ -405,7 +405,7 @@ export function EstimatePaymentsPanel({
   const overdueAmountLabel =
     summary.overdueAmount > 0
       ? formatCurrency(summary.overdueAmount, locale, currency)
-      : "—";
+      : "-";
 
   return (
     <div className="px-4 py-4 space-y-6">
