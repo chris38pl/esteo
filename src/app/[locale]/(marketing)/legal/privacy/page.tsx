@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 
-import { MarketingContainer } from "@/features/marketing/components/container";
+import { TrustCenterContainer } from "@/features/marketing/components/trust-center";
 import { LegalDocument } from "@/features/marketing/components/legal-document";
+import { TrustBreadcrumbJsonLd } from "@/features/marketing/components/trust-center";
 import { privacyContent } from "@/features/marketing/content/legal-content";
+import { getTrustSharedContent } from "@/features/marketing/content/trust-shared-content";
 import { createMarketingPageMetadata } from "@/features/marketing/seo/create-page-metadata";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
@@ -28,9 +30,21 @@ export default async function PrivacyPage({
 
   setRequestLocale(locale);
 
+  const content = privacyContent[locale];
+  const shared = getTrustSharedContent(locale);
+
   return (
-    <MarketingContainer size="narrow" className="py-14 sm:py-20">
-      <LegalDocument content={privacyContent[locale]} />
-    </MarketingContainer>
+    <>
+      <TrustBreadcrumbJsonLd
+        locale={locale}
+        items={[
+          { name: shared.securityCenterLabel, path: "/legal" },
+          { name: content.breadcrumbLabel, path: "/legal/privacy" },
+        ]}
+      />
+      <TrustCenterContainer>
+        <LegalDocument content={content} locale={locale} />
+      </TrustCenterContainer>
+    </>
   );
 }

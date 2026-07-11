@@ -33,7 +33,7 @@ export function MarketingFooter({ locale }: { locale: Locale }) {
         <FooterColumn title={locale === "pl" ? "Produkt" : "Product"}>
           <FooterLinkList items={footerNavigation} locale={locale} />
         </FooterColumn>
-        <FooterColumn title="Legal">
+        <FooterColumn title={locale === "pl" ? "Centrum bezpieczeństwa" : "Security Center"}>
           <FooterLinkList items={legalNavigation} locale={locale} />
         </FooterColumn>
       </div>

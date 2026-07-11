@@ -1,12 +1,20 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FileText, Sparkles, Table2, Wallet, type LucideIcon } from "lucide-react";
+import Image from "next/image";
 
 import type { HeroFeature } from "@/features/marketing/components/hero/hero-content";
 import { cn } from "@/lib/utils";
 
-const featureIcons: LucideIcon[] = [Sparkles, Table2, FileText, Wallet];
+const featureIconSrcs = [
+  "/images/marketing/hero-features/ai.webp",
+  "/images/marketing/hero-features/control.webp",
+  "/images/marketing/hero-features/pdf.webp",
+  "/images/marketing/hero-features/payments.webp",
+] as const;
+
+// Normalize perceived size — source art fills each canvas differently.
+const featureIconScales = [1, 1.12, 0.9, 1.06] as const;
 
 const iconGridVariants = {
   hidden: {},
@@ -31,16 +39,23 @@ const iconVariants = {
   },
 };
 
-function HeroFeatureIcon({ Icon }: { Icon: LucideIcon }) {
+function HeroFeatureIcon({ src, scale }: { src: string; scale: number }) {
   return (
     <span
       className={cn(
-        "grid size-12 shrink-0 place-items-center rounded-full sm:size-14",
-        "bg-[radial-gradient(circle_at_50%_32%,rgba(59,130,246,0.32),rgba(30,64,175,0.12)_58%,rgba(15,23,42,0.28)_100%)]",
-        "shadow-[0_0_18px_-14px_rgba(59,130,246,0.38)]",
+        "grid shrink-0 place-items-center",
+        "size-14 sm:size-[4.25rem] lg:size-20",
       )}
     >
-      <Icon className="size-5 text-primary sm:size-6" strokeWidth={1.5} aria-hidden />
+      <Image
+        src={src}
+        alt=""
+        width={80}
+        height={80}
+        className="size-full object-contain"
+        style={scale === 1 ? undefined : { transform: `scale(${scale})` }}
+        aria-hidden
+      />
     </span>
   );
 }
@@ -51,8 +66,8 @@ export function HeroFeatures({ features }: { features: HeroFeature[] }) {
       className={cn(
         "relative z-30 overflow-hidden bg-card/95 shadow-md backdrop-blur-md",
         "-mx-5 w-[calc(100%+2.5rem)] rounded-none border-x-0 border-y border-border/50",
-        "sm:mx-0 sm:w-full sm:min-h-[11.25rem] sm:rounded-2xl sm:border",
-        "lg:min-h-[7.75rem]",
+        "sm:mx-0 sm:w-full sm:min-h-[11.5rem] sm:rounded-2xl sm:border",
+        "lg:min-h-[8.5rem]",
       )}
     >
       <motion.div
@@ -62,13 +77,14 @@ export function HeroFeatures({ features }: { features: HeroFeature[] }) {
         variants={iconGridVariants}
       >
         {features.map((feature, index) => {
-          const Icon = featureIcons[index] ?? Sparkles;
+          const iconSrc = featureIconSrcs[index] ?? featureIconSrcs[0];
+          const iconScale = featureIconScales[index] ?? 1;
 
           return (
             <article
               key={feature.title}
               className={cn(
-                "relative flex items-center gap-4 px-5 py-5 sm:gap-4 sm:px-6 sm:py-7",
+                "relative flex items-center gap-3.5 px-5 py-5 sm:gap-4 sm:px-6 sm:py-6",
                 index >= 2 && "sm:border-t sm:border-border/40",
                 index < features.length - 1 && [
                   "after:absolute after:right-0 after:top-1/2 after:hidden after:h-3/4 after:w-px after:-translate-y-1/2 after:bg-border/40",
@@ -77,8 +93,8 @@ export function HeroFeatures({ features }: { features: HeroFeature[] }) {
                 ],
               )}
             >
-              <motion.div variants={iconVariants}>
-                <HeroFeatureIcon Icon={Icon} />
+              <motion.div variants={iconVariants} className="shrink-0">
+                <HeroFeatureIcon src={iconSrc} scale={iconScale} />
               </motion.div>
               <div className="min-w-0 space-y-2.5 py-0.5">
                 <h2 className="text-sm font-semibold leading-snug tracking-tight text-foreground sm:text-[15px]">

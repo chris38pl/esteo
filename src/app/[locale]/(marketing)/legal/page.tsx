@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { setRequestLocale } from "next-intl/server";
 
-import { MarketingContainer } from "@/features/marketing/components/container";
 import { MarketingPageHeader } from "@/features/marketing/components/marketing-page-header";
-import { buildLocalizedPath } from "@/features/marketing/lib/build-url";
-import { getMarketingLegalNavigation } from "@/features/marketing/lib/navigation";
+import {
+  TrustCenterContainer,
+  TrustHubGrid,
+} from "@/features/marketing/components/trust-center";
+import { getTrustHubContent } from "@/features/marketing/content/trust-hub-content";
+import { getTrustSharedContent } from "@/features/marketing/content/trust-shared-content";
 import { createMarketingPageMetadata } from "@/features/marketing/seo/create-page-metadata";
-import { marketingPageSeo } from "@/features/marketing/seo/page-seo";
 import type { Locale } from "@/lib/locale";
 import { isLocale } from "@/lib/locale";
 
@@ -31,29 +32,19 @@ export default async function LegalIndexPage({
 
   setRequestLocale(locale);
 
-  const seo = marketingPageSeo.legal[locale];
-  const legalNavigation = getMarketingLegalNavigation(locale).filter((item) => item.id !== "legal");
+  const hubContent = getTrustHubContent(locale);
+  const shared = getTrustSharedContent(locale);
 
   return (
-    <MarketingContainer size="narrow" className="space-y-8 py-14 sm:py-20">
-      <MarketingPageHeader title={seo.title} description={seo.description} />
-      <ul className="space-y-3">
-        {legalNavigation.map((item) => (
-          <li key={item.id}>
-            <Link
-              href={item.href}
-              className="text-sm font-medium text-primary transition hover:underline"
-            >
-              {item.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
-      <p className="text-sm text-muted-foreground">
-        <Link href={buildLocalizedPath(locale, "/legal/privacy")} className="text-primary hover:underline">
-          {locale === "pl" ? "Przejdź do Polityki prywatności" : "Go to Privacy Policy"}
-        </Link>
-      </p>
-    </MarketingContainer>
+    <TrustCenterContainer className="space-y-10 sm:space-y-12">
+      <div className="mx-auto max-w-3xl text-center">
+        <MarketingPageHeader
+          title={hubContent.pageTitle}
+          description={hubContent.pageDescription}
+        />
+      </div>
+
+      <TrustHubGrid items={hubContent.cards} ctaLabel={shared.hubCtaLabel} />
+    </TrustCenterContainer>
   );
 }

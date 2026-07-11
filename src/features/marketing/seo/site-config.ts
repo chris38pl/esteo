@@ -84,7 +84,7 @@ export const siteConfig = {
       implemented: true,
       includeInSitemap: true,
       nav: { footer: true, legal: true },
-      label: { pl: "Legal", en: "Legal" },
+      label: { pl: "Centrum bezpieczenstwa", en: "Security Center" },
     },
     {
       id: "privacy",
@@ -92,15 +92,7 @@ export const siteConfig = {
       implemented: true,
       includeInSitemap: true,
       nav: { footer: true, legal: true },
-      label: { pl: "Prywatnosc", en: "Privacy" },
-    },
-    {
-      id: "terms",
-      path: "/legal/terms",
-      implemented: true,
-      includeInSitemap: true,
-      nav: { footer: true, legal: true },
-      label: { pl: "Regulamin", en: "Terms" },
+      label: { pl: "Polityka prywatnosci", en: "Privacy Policy" },
     },
     {
       id: "cookies",
@@ -116,7 +108,15 @@ export const siteConfig = {
       implemented: true,
       includeInSitemap: true,
       nav: { footer: true, legal: true },
-      label: { pl: "AI", en: "AI" },
+      label: { pl: "AI i odpowiedzialnosc", en: "AI & Responsibility" },
+    },
+    {
+      id: "terms",
+      path: "/legal/terms",
+      implemented: true,
+      includeInSitemap: true,
+      nav: { footer: true, legal: true },
+      label: { pl: "Regulamin", en: "Terms" },
     },
   ] satisfies MarketingRoute[],
 } as const;

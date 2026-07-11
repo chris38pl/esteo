@@ -1,36 +1,76 @@
 import type { LegalPageContent } from "@/features/marketing/content/legal-content";
+import { getTrustSharedContent } from "@/features/marketing/content/trust-shared-content";
+import {
+  LegalDocumentAccordion,
+  LegalDocumentMeta,
+  TrustDocumentDivider,
+  TrustHighlightCardStrip,
+  TrustLegalBreadcrumb,
+  TrustPrincipleRows,
+  TrustRulesChecklist,
+  TrustSupportFooter,
+} from "@/features/marketing/components/trust-center";
 import { MarketingPageHeader } from "@/features/marketing/components/marketing-page-header";
+import type { Locale } from "@/lib/locale";
 
-export function LegalDocument({ content }: { content: LegalPageContent }) {
+type LegalDocumentProps = {
+  content: LegalPageContent;
+  locale: Locale;
+};
+
+function LegalSummary({ content }: { content: LegalPageContent }) {
+  switch (content.summary.type) {
+    case "cards":
+      return <TrustHighlightCardStrip items={content.summary.items} />;
+    case "checklist":
+      return <TrustRulesChecklist items={content.summary.items} />;
+    case "principles":
+      return <TrustPrincipleRows items={content.summary.items} />;
+    default:
+      return null;
+  }
+}
+
+export function LegalDocument({ content, locale }: LegalDocumentProps) {
+  const shared = getTrustSharedContent(locale);
+  const displayTitle = content.pageTitleUI ?? content.pageTitle;
+
   return (
     <article className="space-y-8">
-      <MarketingPageHeader title={content.pageTitle} description={content.pageDescription} />
+      <TrustLegalBreadcrumb
+        locale={locale}
+        hubLabel={shared.securityCenterLabel}
+        currentLabel={content.breadcrumbLabel}
+      />
+
+      <MarketingPageHeader
+        title={displayTitle}
+        description={content.pageDescription}
+        subtitle={content.pageSubtitle}
+      />
 
       <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm leading-6 text-amber-900 dark:text-amber-100">
         {content.draftNotice}
       </p>
 
-      <p className="text-xs text-muted-foreground">
-        {content.lastUpdated}
-      </p>
+      <LegalSummary content={content} />
 
-      <div className="space-y-8">
-        {content.sections.map((section) => (
-          <section key={section.title} className="space-y-3">
-            <h2 className="text-lg font-semibold tracking-tight text-foreground">{section.title}</h2>
-            <div className="space-y-3">
-              {section.paragraphs.map((paragraph) => (
-                <p
-                  key={paragraph}
-                  className="text-sm leading-7 text-muted-foreground sm:text-[0.9375rem]"
-                >
-                  {paragraph}
-                </p>
-              ))}
-            </div>
-          </section>
-        ))}
-      </div>
+      <TrustDocumentDivider label={content.fullDocumentLabel} />
+
+      <LegalDocumentMeta
+        lastUpdatedLabel={shared.lastUpdatedLabel}
+        lastUpdated={content.lastUpdated}
+        versionLabel={shared.versionLabel}
+        documentVersion={content.documentVersion}
+      />
+
+      <LegalDocumentAccordion sections={content.sections} />
+
+      <TrustSupportFooter
+        heading={shared.supportHeading}
+        email={shared.supportEmail}
+        linkLabel={shared.supportLink}
+      />
     </article>
   );
 }

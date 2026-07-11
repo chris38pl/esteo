@@ -41,7 +41,7 @@ function MarketingHeaderInner({ locale }: { locale: Locale }) {
           scrolled ? "h-14" : "h-16",
         )}
       >
-        <div className="flex min-w-0 items-center gap-2 sm:gap-2.5">
+        <div className="flex min-w-0 items-center gap-3.5 sm:gap-4">
           <Link href={buildLocalizedPath(locale)} className="flex min-w-0 items-center gap-3">
             <span
               className={cn(

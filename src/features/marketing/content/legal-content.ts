@@ -1,5 +1,7 @@
 import type { Locale } from "@/lib/locale";
 
+import type { LegalSummaryVariant } from "@/features/marketing/components/trust-center/trust-types";
+
 export type LegalSection = {
   title: string;
   paragraphs: string[];
@@ -8,8 +10,14 @@ export type LegalSection = {
 export type LegalPageContent = {
   pageTitle: string;
   pageDescription: string;
+  pageTitleUI?: string;
+  pageSubtitle?: string;
+  breadcrumbLabel: string;
   lastUpdated: string;
+  documentVersion: string;
   draftNotice: string;
+  fullDocumentLabel: string;
+  summary: LegalSummaryVariant;
   sections: LegalSection[];
 };
 
@@ -18,12 +26,32 @@ const draftNotice: Record<Locale, string> = {
   en: "Draft version - this document requires legal review before production publication.",
 };
 
+const fullDocumentLabel: Record<Locale, string> = {
+  pl: "Pełny dokument",
+  en: "Full document",
+};
+
 export const privacyContent: Record<Locale, LegalPageContent> = {
   pl: {
     pageTitle: "Polityka prywatności",
     pageDescription: "Jak Esteo przetwarza dane osobowe użytkowników i klientów workspace.",
+    breadcrumbLabel: "Polityka prywatności",
     lastUpdated: "30 czerwca 2026",
+    documentVersion: "1.0",
     draftNotice: draftNotice.pl,
+    fullDocumentLabel: fullDocumentLabel.pl,
+    summary: {
+      type: "cards",
+      items: [
+        { title: "Nie sprzedajemy danych" },
+        {
+          title: "Twoje wyceny nie są wykorzystywane do trenowania publicznych modeli AI.",
+        },
+        { title: "Zaufani dostawcy", description: "Clerk, Stripe i infrastruktura chmurowa." },
+        { title: "Możesz usunąć konto", description: "Skontaktuj się z nami w sprawie usunięcia danych." },
+        { title: "Kontakt", description: "support@esteo.app" },
+      ],
+    },
     sections: [
       {
         title: "Administrator danych",
@@ -65,8 +93,21 @@ export const privacyContent: Record<Locale, LegalPageContent> = {
   en: {
     pageTitle: "Privacy Policy",
     pageDescription: "How Esteo processes personal data of users and workspace customers.",
+    breadcrumbLabel: "Privacy Policy",
     lastUpdated: "June 30, 2026",
+    documentVersion: "1.0",
     draftNotice: draftNotice.en,
+    fullDocumentLabel: fullDocumentLabel.en,
+    summary: {
+      type: "cards",
+      items: [
+        { title: "We do not sell your data" },
+        { title: "Your estimates are not used to train public AI models." },
+        { title: "Trusted providers", description: "Clerk, Stripe, and cloud infrastructure." },
+        { title: "You can delete your account", description: "Contact us to request data deletion." },
+        { title: "Contact", description: "support@esteo.app" },
+      ],
+    },
     sections: [
       {
         title: "Data controller",
@@ -111,8 +152,21 @@ export const termsContent: Record<Locale, LegalPageContent> = {
   pl: {
     pageTitle: "Regulamin",
     pageDescription: "Warunki korzystania z aplikacji Esteo i subskrypcji workspace.",
+    breadcrumbLabel: "Regulamin",
     lastUpdated: "30 czerwca 2026",
+    documentVersion: "1.0",
     draftNotice: draftNotice.pl,
+    fullDocumentLabel: fullDocumentLabel.pl,
+    summary: {
+      type: "checklist",
+      items: [
+        { text: "Esteo pomaga tworzyć kosztorysy i wyceny" },
+        { text: "AI generuje szkice - Ty weryfikujesz treść" },
+        { text: "Ty odpowiadasz za wysyłane wyceny do klientów" },
+        { text: "Subskrypcję można anulować w ustawieniach rozliczeń" },
+        { text: "Działa jako subskrypcja" },
+      ],
+    },
     sections: [
       {
         title: "Postanowienia ogólne",
@@ -145,7 +199,7 @@ export const termsContent: Record<Locale, LegalPageContent> = {
       {
         title: "Odpowiedzialność",
         paragraphs: [
-          "Usługa świadczona jest w modelu SaaS „as is” w zakresie dozwolonym prawem.",
+          "Usługa świadczona jest w modelu subskrypcji „as is” w zakresie dozwolonym prawem.",
           "Odpowiedzialność operatora jest ograniczona zgodnie z obowiązującymi przepisami.",
         ],
       },
@@ -154,8 +208,21 @@ export const termsContent: Record<Locale, LegalPageContent> = {
   en: {
     pageTitle: "Terms of Service",
     pageDescription: "Terms of use for the Esteo app and workspace subscriptions.",
+    breadcrumbLabel: "Terms of Service",
     lastUpdated: "June 30, 2026",
+    documentVersion: "1.0",
     draftNotice: draftNotice.en,
+    fullDocumentLabel: fullDocumentLabel.en,
+    summary: {
+      type: "checklist",
+      items: [
+        { text: "Esteo helps you create estimates and quotes" },
+        { text: "AI generates drafts - you verify the content" },
+        { text: "You are responsible for estimates sent to clients" },
+        { text: "You can cancel your subscription in billing settings" },
+        { text: "Works as a subscription" },
+      ],
+    },
     sections: [
       {
         title: "General",
@@ -188,8 +255,8 @@ export const termsContent: Record<Locale, LegalPageContent> = {
       {
         title: "Liability",
         paragraphs: [
-          "The service is provided as SaaS “as is” to the extent permitted by law.",
-          "The operator’s liability is limited as permitted by applicable law.",
+          "The service is provided as a subscription “as is” to the extent permitted by law.",
+          "The operator's liability is limited as permitted by applicable law.",
         ],
       },
     ],
@@ -200,8 +267,22 @@ export const cookiesContent: Record<Locale, LegalPageContent> = {
   pl: {
     pageTitle: "Polityka cookies",
     pageDescription: "Informacje o plikach cookies i podobnych technologiach w Esteo.",
+    breadcrumbLabel: "Cookies",
     lastUpdated: "30 czerwca 2026",
+    documentVersion: "1.0",
     draftNotice: draftNotice.pl,
+    fullDocumentLabel: fullDocumentLabel.pl,
+    summary: {
+      type: "cards",
+      items: [
+        { title: "Niezbędne cookies", description: "Logowanie, bezpieczeństwo, podstawowe działanie aplikacji." },
+        { title: "Funkcjonalne", description: "Np. zapamiętanie języka interfejsu." },
+        { title: "Analityka tylko po zgodzie", description: "Zewnętrzna analityka tylko za Twoją zgodą." },
+        { title: "Baner zgody na cookies", description: "Wyświetlamy baner zgodny z tą polityką." },
+        { title: "Brak reklam", description: "Nie sprzedajemy danych reklamodawcom." },
+        { title: "Możesz wyłączyć cookies w swojej przeglądarce" },
+      ],
+    },
     sections: [
       {
         title: "Czym są cookies",
@@ -220,7 +301,7 @@ export const cookiesContent: Record<Locale, LegalPageContent> = {
       {
         title: "Zarządzanie zgodą",
         paragraphs: [
-          "Przed załadowaniem nieistotnych cookies analitycznych planujemy baner zgody zgodny z tą polityką.",
+          "Wyświetlamy baner zgody na cookies zgodny z tą polityką.",
           "Możesz też zarządzać cookies w ustawieniach przeglądarki.",
         ],
       },
@@ -229,8 +310,22 @@ export const cookiesContent: Record<Locale, LegalPageContent> = {
   en: {
     pageTitle: "Cookie Policy",
     pageDescription: "Information about cookies and similar technologies in Esteo.",
+    breadcrumbLabel: "Cookies",
     lastUpdated: "June 30, 2026",
+    documentVersion: "1.0",
     draftNotice: draftNotice.en,
+    fullDocumentLabel: fullDocumentLabel.en,
+    summary: {
+      type: "cards",
+      items: [
+        { title: "Essential cookies", description: "Sign-in, security, core app functionality." },
+        { title: "Functional", description: "E.g. remembering interface language." },
+        { title: "Analytics only with consent", description: "External analytics only with your consent." },
+        { title: "Cookie consent banner", description: "We display a banner aligned with this policy." },
+        { title: "No ads", description: "We do not sell data to advertisers." },
+        { title: "You can disable cookies in your browser" },
+      ],
+    },
     sections: [
       {
         title: "What cookies are",
@@ -249,7 +344,7 @@ export const cookiesContent: Record<Locale, LegalPageContent> = {
       {
         title: "Managing consent",
         paragraphs: [
-          "Before loading non-essential analytics cookies we plan a consent banner aligned with this policy.",
+          "We display a cookie consent banner aligned with this policy.",
           "You can also manage cookies in your browser settings.",
         ],
       },
@@ -260,9 +355,40 @@ export const cookiesContent: Record<Locale, LegalPageContent> = {
 export const aiDisclaimerContent: Record<Locale, LegalPageContent> = {
   pl: {
     pageTitle: "AI Disclaimer",
-    pageDescription: "Zasady korzystania z funkcji AI w Esteo i odpowiedzialność użytkownika.",
+    pageTitleUI: "AI i odpowiedzialność",
+    pageDescription: "Zasady korzystania z funkcji AI w Esteo.",
+    pageSubtitle:
+      "Dowiedz się, jak Esteo wykorzystuje AI i jaka odpowiedzialność pozostaje po stronie użytkownika.",
+    breadcrumbLabel: "AI i odpowiedzialność",
     lastUpdated: "30 czerwca 2026",
+    documentVersion: "1.0",
     draftNotice: draftNotice.pl,
+    fullDocumentLabel: fullDocumentLabel.pl,
+    summary: {
+      type: "principles",
+      items: [
+        {
+          title: "AI przygotowuje szkic",
+          description: "Funkcje AI generują punkt startu kosztorysu - nie gotowy dokument do wysłania.",
+        },
+        {
+          title: "Ostateczna decyzja należy do Ciebie",
+          description: "Ty weryfikujesz pozycje, ceny i opisy przed wysłaniem wyceny do klienta.",
+        },
+        {
+          title: "Zawsze zweryfikuj wycenę",
+          description: "Sprawdź każdą wycenę przed wysłaniem - niezależnie od tego, czy AI pomagała w jej przygotowaniu.",
+        },
+        {
+          title: "Brak gwarancji dokładności",
+          description: "Modele AI mogą się mylić. Esteo nie gwarantuje poprawności szacunków.",
+        },
+        {
+          title: "Dane i modele",
+          description: "Nie wykorzystujemy danych wycen do trenowania publicznych modeli AI.",
+        },
+      ],
+    },
     sections: [
       {
         title: "Szkic, nie decyzja",
@@ -292,9 +418,40 @@ export const aiDisclaimerContent: Record<Locale, LegalPageContent> = {
   },
   en: {
     pageTitle: "AI Disclaimer",
-    pageDescription: "Rules for using AI features in Esteo and user responsibility.",
+    pageTitleUI: "AI & Responsibility",
+    pageDescription: "Rules for using AI features in Esteo.",
+    pageSubtitle:
+      "Learn how Esteo uses AI and which responsibilities remain with you as the user.",
+    breadcrumbLabel: "AI & Responsibility",
     lastUpdated: "June 30, 2026",
+    documentVersion: "1.0",
     draftNotice: draftNotice.en,
+    fullDocumentLabel: fullDocumentLabel.en,
+    summary: {
+      type: "principles",
+      items: [
+        {
+          title: "AI prepares a draft",
+          description: "AI features generate a starting point for an estimate - not a final document to send.",
+        },
+        {
+          title: "The final decision is yours",
+          description: "You verify line items, prices, and descriptions before sending an estimate to a client.",
+        },
+        {
+          title: "Always verify the estimate",
+          description: "Review every estimate before sending it - whether or not AI helped prepare it.",
+        },
+        {
+          title: "No accuracy guarantee",
+          description: "AI models can be wrong. Esteo does not guarantee estimate accuracy.",
+        },
+        {
+          title: "Data and models",
+          description: "We do not use estimate data to train public AI models.",
+        },
+      ],
+    },
     sections: [
       {
         title: "Draft, not a decision",

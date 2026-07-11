@@ -62,22 +62,24 @@ export const marketingPageSeo: Record<MarketingRouteId, Record<Locale, Marketing
     pl: {
       title: "Bezpieczeństwo",
       description:
-        "Jak Esteo chroni dane workspace: Clerk, Stripe, polityka prywatności i zasady AI.",
+        "Jak Esteo chroni Twoje dane, logowanie i płatności. Konkretnie i transparentnie.",
     },
     en: {
       title: "Security",
       description:
-        "How Esteo protects workspace data: Clerk, Stripe, privacy policy, and AI rules.",
+        "How Esteo protects your data, sign-in, and payments. Clear and transparent.",
     },
   },
   legal: {
     pl: {
-      title: "Informacje prawne",
-      description: "Polityka prywatności, regulamin, cookies i AI Disclaimer Esteo.",
+      title: "Centrum bezpieczeństwa",
+      description:
+        "Wszystkie informacje dotyczące bezpieczeństwa, prywatności oraz zasad korzystania z Esteo w jednym miejscu.",
     },
     en: {
-      title: "Legal",
-      description: "Esteo privacy policy, terms, cookies, and AI disclaimer.",
+      title: "Trust Center",
+      description:
+        "Security, privacy, cookies, AI responsibility, and terms of use for Esteo in one place.",
     },
   },
   privacy: {
@@ -112,12 +114,14 @@ export const marketingPageSeo: Record<MarketingRouteId, Record<Locale, Marketing
   },
   ai: {
     pl: {
-      title: "AI Disclaimer",
-      description: "Zasady korzystania z AI w Esteo - szkic, weryfikacja, odpowiedzialność.",
+      title: "AI i odpowiedzialność",
+      description:
+        "Jak Esteo wykorzystuje AI w kosztorysach i jaka odpowiedzialność pozostaje po stronie użytkownika.",
     },
     en: {
-      title: "AI Disclaimer",
-      description: "Rules for AI in Esteo - drafts, review, and responsibility.",
+      title: "AI & Responsibility",
+      description:
+        "How Esteo uses AI in estimates and which responsibilities remain with you as the user.",
     },
   },
 };
