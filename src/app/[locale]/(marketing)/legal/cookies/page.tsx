@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 
+import { CookieConsentStatusCard } from "@/features/marketing/components/cookie-consent";
 import { TrustCenterContainer } from "@/features/marketing/components/trust-center";
 import { LegalDocument } from "@/features/marketing/components/legal-document";
 import { TrustBreadcrumbJsonLd } from "@/features/marketing/components/trust-center";
@@ -43,7 +44,10 @@ export default async function CookiesPage({
         ]}
       />
       <TrustCenterContainer>
-        <LegalDocument content={content} locale={locale} />
+        <div className="space-y-8">
+          <CookieConsentStatusCard locale={locale} />
+          <LegalDocument content={content} locale={locale} />
+        </div>
       </TrustCenterContainer>
     </>
   );

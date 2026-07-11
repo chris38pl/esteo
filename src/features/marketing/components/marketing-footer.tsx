@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { Locale } from "@/lib/locale";
+import { CookieConsentFooterAction } from "@/features/marketing/components/cookie-consent";
 import {
   getMarketingFooterNavigation,
   getMarketingLegalNavigation,
@@ -34,7 +35,9 @@ export function MarketingFooter({ locale }: { locale: Locale }) {
           <FooterLinkList items={footerNavigation} locale={locale} />
         </FooterColumn>
         <FooterColumn title={locale === "pl" ? "Centrum bezpieczeństwa" : "Security Center"}>
-          <FooterLinkList items={legalNavigation} locale={locale} />
+          <FooterLinkList items={legalNavigation} locale={locale}>
+            <CookieConsentFooterAction locale={locale} />
+          </FooterLinkList>
         </FooterColumn>
       </div>
     </footer>

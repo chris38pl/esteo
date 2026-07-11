@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 
 import { TrackedFooterLink } from "@/features/marketing/components/tracked-footer-link";
@@ -9,9 +10,11 @@ import type { Locale } from "@/lib/locale";
 export function FooterLinkList({
   items,
   locale,
+  children,
 }: {
   items: MarketingNavigationItem[];
   locale: Locale;
+  children?: ReactNode;
 }) {
   const pathname = usePathname();
   const page = pathname ?? "unknown";
@@ -25,6 +28,7 @@ export function FooterLinkList({
           </TrackedFooterLink>
         </li>
       ))}
+      {children}
     </ul>
   );
 }
