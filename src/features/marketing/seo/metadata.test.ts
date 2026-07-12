@@ -13,11 +13,14 @@ assert.notEqual(faqMetadata.title, `FAQ | ${siteConfig.name} | ${siteConfig.name
 const homeMetadata = buildMarketingMetadata({
   locale: "pl",
   path: "/",
-  title: "Program do wycen i kosztorysów z AI",
+  title: "Platforma do wycen i kosztorysów dla firm usługowych",
 });
 
-assert.equal(homeMetadata.title, "Program do wycen i kosztorysów z AI");
-assert.equal(homeMetadata.openGraph?.title, "Program do wycen i kosztorysów z AI | Esteo");
+assert.equal(homeMetadata.title, "Platforma do wycen i kosztorysów dla firm usługowych");
+assert.equal(
+  homeMetadata.openGraph?.title,
+  "Platforma do wycen i kosztorysów dla firm usługowych | Esteo",
+);
 
 const defaultMetadata = buildMarketingMetadata({ locale: "pl" });
 

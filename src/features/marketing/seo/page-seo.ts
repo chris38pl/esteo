@@ -12,7 +12,7 @@ export type MarketingPageSeo = {
 export const marketingPageSeo: Record<MarketingRouteId, Record<Locale, MarketingPageSeo>> = {
   home: {
     pl: {
-      title: "Program do wycen i kosztorysów z AI",
+      title: "Platforma do wycen i kosztorysów dla firm usługowych",
       description:
         "Esteo - AI-assisted workspace dla firm usługowych. Od zapytania klienta do profesjonalnego PDF w kilka minut. Szkic AI, pełna kontrola, eksport PDF.",
       ogImage: "/images/marketing/og/landing-og.png",
