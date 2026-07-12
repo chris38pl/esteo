@@ -120,7 +120,8 @@ export type PatchValidationWarningCode =
 
 export type PatchValidationWarning = {
   code: PatchValidationWarningCode;
-  message: string;
+  params?: Record<string, string | number>;
+  message?: string;
   itemId?: string;
 };
 

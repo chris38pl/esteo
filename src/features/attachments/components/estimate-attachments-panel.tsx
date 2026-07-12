@@ -105,6 +105,10 @@ export function EstimateAttachmentsPanel({
   useEffect(() => {
     setAttachments(initialAttachments);
   }, [initialAttachments]);
+
+  useEffect(() => {
+    onAttachmentsCountChange?.(attachments.length);
+  }, [attachments.length, onAttachmentsCountChange]);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [uploadState, setUploadState] = useState<UploadState>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -230,11 +234,7 @@ export function EstimateAttachmentsPanel({
 
     try {
       const result = await uploadWithProgress(formData, setUploadProgress);
-      setAttachments((current) => {
-        const next = [...current, ...result.attachments];
-        onAttachmentsCountChange?.(next.length);
-        return next;
-      });
+      setAttachments((current) => [...current, ...result.attachments]);
       setUploadState("idle");
       setUploadProgress(null);
       refreshHistory();
@@ -282,11 +282,7 @@ export function EstimateAttachmentsPanel({
       return;
     }
 
-    setAttachments((current) => {
-      const next = current.filter((item) => item.id !== attachmentId);
-      onAttachmentsCountChange?.(next.length);
-      return next;
-    });
+    setAttachments((current) => current.filter((item) => item.id !== attachmentId));
     setDeleteTarget(null);
     refreshHistory();
   }

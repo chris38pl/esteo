@@ -7,10 +7,6 @@ import type {
   PatchValidationWarning,
 } from "@/features/estimates/lib/estimate-agent-types";
 
-function formatMoney(value: number, currency: string): string {
-  return `${value.toLocaleString("pl-PL", { maximumFractionDigits: 0 })} ${currency}`;
-}
-
 export function validateAgentPatch(input: {
   snapshot: EstimateVersionSnapshot;
   patch: EstimateAgentPatch;
@@ -42,7 +38,11 @@ export function validateAgentPatch(input: {
     if (changePercent > constraints.maxSingleLinePriceIncreasePercent) {
       warnings.push({
         code: "unit_price_change_exceeds_limit",
-        message: `Unit price increase on "${existing.name}" exceeds ${constraints.maxSingleLinePriceIncreasePercent}% (+${Math.round(changePercent)}%).`,
+        params: {
+          itemName: existing.name,
+          limitPercent: constraints.maxSingleLinePriceIncreasePercent,
+          changePercent: Math.round(changePercent),
+        },
         itemId: u.itemId,
       });
     }
@@ -58,7 +58,11 @@ export function validateAgentPatch(input: {
     if (missPercent > 15) {
       warnings.push({
         code: "target_gross_missed",
-        message: `Simulated gross (${formatMoney(afterGross, currency)}) is more than 15% away from target (${formatMoney(target.targetValue, currency)}).`,
+        params: {
+          afterGross,
+          targetGross: target.targetValue,
+          currency,
+        },
       });
     }
   }
@@ -76,7 +80,9 @@ export function validateAgentPatch(input: {
   if (beforeGross > 0 && deletedGross / beforeGross > 0.2) {
     warnings.push({
       code: "large_value_deleted",
-      message: `Deletions remove about ${Math.round((deletedGross / beforeGross) * 100)}% of gross value.`,
+      params: {
+        deletedPercent: Math.round((deletedGross / beforeGross) * 100),
+      },
     });
   }
 
@@ -91,8 +97,6 @@ export function validateAgentPatch(input: {
   ) {
     warnings.push({
       code: "budget_price_only_large_gap",
-      message:
-        "Large budget gap but patch only updates existing lines - consider scope additions.",
     });
   }
 
@@ -103,7 +107,10 @@ export function validateAgentPatch(input: {
   ) {
     warnings.push({
       code: "too_many_price_updates",
-      message: `Budget adjustment changes unit prices on ${priceUpdates.length} lines (limit ${constraints.maxLinesToModifyForBudgetAdjustment}).`,
+      params: {
+        count: priceUpdates.length,
+        limit: constraints.maxLinesToModifyForBudgetAdjustment,
+      },
     });
   }
 

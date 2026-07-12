@@ -37,6 +37,7 @@ import {
 } from "@/features/estimates/server/actions";
 
 import type { ProposeEditResult } from "@/features/estimates/lib/estimate-agent-types";
+import { formatPatchWarning } from "@/features/estimates/lib/format-patch-warning";
 import type { AiMessageClient } from "@/features/estimates/lib/serialize-ai-messages";
 import { useSpeechRecognition } from "@/features/issues/hooks/use-speech-recognition";
 
@@ -468,7 +469,9 @@ export function EstimateAiPanel({
             {pendingEdit.warnings.length > 0 && (
               <ul className="mt-2 list-disc pl-4 text-xs text-amber-800 dark:text-amber-200">
                 {pendingEdit.warnings.map((warning, index) => (
-                  <li key={`${warning.code}-${index}`}>{warning.message}</li>
+                  <li key={`${warning.code}-${index}`}>
+                    {formatPatchWarning(warning, t, locale)}
+                  </li>
                 ))}
               </ul>
             )}

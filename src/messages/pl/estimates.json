@@ -767,7 +767,14 @@
     "impactBefore": "Brutto przed: {gross} PLN",
     "impactAfter": "Brutto po zmianach: {gross} PLN",
     "impactDiff": "Różnica brutto: {diff} PLN",
-    "targetProgress": "Cel: {target} PLN - po zmianach: ~{after} PLN"
+    "targetProgress": "Cel: {target} PLN - po zmianach: ~{after} PLN",
+    "warnings": {
+      "unit_price_change_exceeds_limit": "Wzrost ceny jednostkowej pozycji „{itemName}” przekracza {limitPercent}% (+{changePercent}%).",
+      "target_gross_missed": "Symulowane brutto ({afterGross}) odbiega o więcej niż 15% od celu ({targetGross}).",
+      "large_value_deleted": "Usunięcia obejmują ok. {deletedPercent}% wartości brutto.",
+      "budget_price_only_large_gap": "Duża luka budżetowa, a zmiany dotyczą tylko istniejących pozycji — rozważ dodanie zakresu.",
+      "too_many_price_updates": "Korekta budżetu zmienia ceny na {count} pozycjach (limit {limit})."
+    }
   },
   "rules": {
     "applied": "Reguły zastosowane",

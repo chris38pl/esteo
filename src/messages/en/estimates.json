@@ -767,7 +767,14 @@
     "impactBefore": "Gross before: {gross}",
     "impactAfter": "Gross after changes: {gross}",
     "impactDiff": "Gross difference: {diff}",
-    "targetProgress": "Target: {target} - after changes: ~{after}"
+    "targetProgress": "Target: {target} - after changes: ~{after}",
+    "warnings": {
+      "unit_price_change_exceeds_limit": "Unit price increase on \"{itemName}\" exceeds {limitPercent}% (+{changePercent}%).",
+      "target_gross_missed": "Simulated gross ({afterGross}) is more than 15% away from target ({targetGross}).",
+      "large_value_deleted": "Deletions remove about {deletedPercent}% of gross value.",
+      "budget_price_only_large_gap": "Large budget gap but changes only update existing lines — consider scope additions.",
+      "too_many_price_updates": "Budget adjustment changes unit prices on {count} lines (limit {limit})."
+    }
   },
   "rules": {
     "applied": "Rules applied",
