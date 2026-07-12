@@ -5,6 +5,7 @@ import { cache } from "react";
 
 import { prisma } from "@/db/client";
 import { isAvatarPreset, pickDefaultAvatarPreset } from "@/lib/avatars/user-avatar-presets";
+import { isUniqueConstraintError } from "@/lib/database/is-unique-constraint-error";
 import { resolveUserDisplayName } from "@/server/auth/resolve-user-display-name";
 import { throwIfDatabaseUnavailable } from "@/server/db/log-database-unavailable";
 
@@ -57,6 +58,95 @@ function resolveAvatarFields(
   };
 }
 
+async function syncUserRecord(input: {
+  clerkUser: NonNullable<Awaited<ReturnType<typeof currentUser>>>;
+  email: string;
+  name: string | null;
+}): Promise<User | null> {
+  const { clerkUser, email, name } = input;
+
+  const existingByClerkId = await prisma.user.findUnique({
+    where: { clerkId: clerkUser.id },
+    select: { id: true, avatarPreset: true, avatarSource: true, deletedAt: true },
+  });
+
+  if (existingByClerkId?.deletedAt) {
+    return null;
+  }
+
+  const avatarFields = resolveAvatarFields(clerkUser, existingByClerkId);
+
+  if (existingByClerkId) {
+    return prisma.user.update({
+      where: { id: existingByClerkId.id },
+      data: {
+        email,
+        name,
+        ...avatarFields,
+      },
+    });
+  }
+
+  const existingByEmail = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true, avatarPreset: true, avatarSource: true, deletedAt: true },
+  });
+
+  if (existingByEmail) {
+    if (existingByEmail.deletedAt) {
+      return null;
+    }
+
+    // Same email, new Clerk user id — re-link after dev re-registration or auth path change.
+    const relinkAvatarFields = resolveAvatarFields(clerkUser, existingByEmail);
+    return prisma.user.update({
+      where: { id: existingByEmail.id },
+      data: {
+        clerkId: clerkUser.id,
+        name,
+        ...relinkAvatarFields,
+      },
+    });
+  }
+
+  try {
+    return await prisma.user.create({
+      data: {
+        clerkId: clerkUser.id,
+        email,
+        name,
+        ...avatarFields,
+      },
+    });
+  } catch (error) {
+    if (!isUniqueConstraintError(error)) {
+      throw error;
+    }
+
+    const racedUser = await prisma.user.findFirst({
+      where: {
+        OR: [{ clerkId: clerkUser.id }, { email }],
+      },
+      select: { id: true, avatarPreset: true, avatarSource: true, deletedAt: true },
+    });
+
+    if (!racedUser || racedUser.deletedAt) {
+      throw error;
+    }
+
+    const racedAvatarFields = resolveAvatarFields(clerkUser, racedUser);
+    return prisma.user.update({
+      where: { id: racedUser.id },
+      data: {
+        clerkId: clerkUser.id,
+        email,
+        name,
+        ...racedAvatarFields,
+      },
+    });
+  }
+}
+
 export const syncUserFromClerk = cache(async (): Promise<User | null> => {
   let clerkUser: Awaited<ReturnType<typeof currentUser>>;
   try {
@@ -84,31 +174,11 @@ export const syncUserFromClerk = cache(async (): Promise<User | null> => {
   const name = resolveUserDisplayName(clerkUser);
 
   try {
-    const existing = await prisma.user.findUnique({
-      where: { clerkId: clerkUser.id },
-      select: { avatarPreset: true, avatarSource: true, deletedAt: true },
-    });
+    const user = await syncUserRecord({ clerkUser, email, name });
 
-    if (existing?.deletedAt) {
+    if (!user) {
       return null;
     }
-
-    const avatarFields = resolveAvatarFields(clerkUser, existing);
-
-    const user = await prisma.user.upsert({
-      where: { clerkId: clerkUser.id },
-      create: {
-        clerkId: clerkUser.id,
-        email,
-        name,
-        ...avatarFields,
-      },
-      update: {
-        email,
-        name,
-        ...avatarFields,
-      },
-    });
 
     const { linkPendingTransfersToUser } = await import(
       "@/features/workspaces/server/ownership-transfer"

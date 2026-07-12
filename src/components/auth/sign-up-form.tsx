@@ -4,9 +4,11 @@ import * as Clerk from "@clerk/elements/common";
 import * as SignUp from "@clerk/elements/sign-up";
 import { useSignUp } from "@clerk/nextjs";
 import Link from "next/link";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { SignUpContinue } from "@/components/auth/sign-up-continue";
+import { SignUpTermsAcceptance } from "@/components/auth/sign-up-terms-acceptance";
 import {
   SignUpVerificationErrorBanner,
   SignUpVerificationErrorProvider,
@@ -21,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { authCrossLinkPath } from "@/lib/auth-cross-link";
+import type { Locale } from "@/lib/locale";
 
 function SignUpVerifyEmail() {
   const { isLoaded, signUp } = useSignUp();
@@ -37,11 +40,12 @@ export function SignUpForm({
   locale,
   queryString = "",
 }: {
-  locale: string;
+  locale: Locale;
   queryString?: string;
 }) {
   const t = useTranslations("auth");
   const c = useTranslations("common");
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   return (
     <SignUpVerificationErrorProvider
@@ -93,8 +97,14 @@ export function SignUpForm({
             <LocalizedClerkFieldError className="text-xs text-destructive" />
           </Clerk.Field>
 
+          <SignUpTermsAcceptance
+            locale={locale}
+            accepted={termsAccepted}
+            onAcceptedChange={setTermsAccepted}
+          />
+
           <SignUp.Action submit asChild>
-            <Button type="submit" className="h-11 w-full">
+            <Button type="submit" className="h-11 w-full" disabled={!termsAccepted}>
               {t("signUp.submit")}
             </Button>
           </SignUp.Action>
@@ -109,6 +119,7 @@ export function SignUpForm({
             <Button
               type="button"
               variant="outline"
+              disabled={!termsAccepted}
               className="h-11 w-full gap-2 rounded-lg border-border/40 text-muted-foreground hover:text-foreground"
             >
               <svg
@@ -141,6 +152,7 @@ export function SignUpForm({
             <Button
               type="button"
               variant="outline"
+              disabled={!termsAccepted}
               className="h-11 w-full gap-2 rounded-lg border-border/40 text-muted-foreground hover:text-foreground"
             >
               <svg

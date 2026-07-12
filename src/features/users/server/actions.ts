@@ -5,8 +5,8 @@ import { revalidatePath } from "next/cache";
 import type { AvatarPreset } from "@/components/avatars/user-avatar";
 import { isAvatarPreset } from "@/lib/avatars/user-avatar-presets";
 import type { Locale } from "@/lib/locale";
-import { prisma } from "@/db/client";
 import { requireAuth } from "@/server/auth/require-auth";
+import { updateUserAvatarPreset } from "@/features/users/server/profile-service";
 
 type ActionResult<T> =
   | { success: true; data: T }
@@ -23,14 +23,7 @@ export async function updateUserAvatarPresetAction(
 
     const user = await requireAuth(locale);
 
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        avatarPreset: preset,
-        avatarSource: "PRESET",
-        avatarUrl: null,
-      },
-    });
+    await updateUserAvatarPreset(user.id, preset);
 
     revalidatePath(`/${locale}/dashboard`, "layout");
 

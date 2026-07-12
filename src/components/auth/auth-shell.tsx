@@ -31,11 +31,13 @@ export function AuthShell({
   title,
   subtitle,
   children,
+  showTermsNotice = true,
 }: {
   locale: Locale;
   title: string;
   subtitle: string;
   children: ReactNode;
+  showTermsNotice?: boolean;
 }) {
   const [logoOk, setLogoOk] = useState(true);
   const t = useTranslations("auth");
@@ -114,11 +116,13 @@ export function AuthShell({
                     {children}
                   </CardContent>
 
-                  <CardFooter className="px-0 pt-6">
-                    <p className="pb-1 text-center text-xs text-muted-foreground">
-                      {t("termsNotice")}
-                    </p>
-                  </CardFooter>
+                  {showTermsNotice ? (
+                    <CardFooter className="px-0 pt-6">
+                      <p className="pb-1 text-center text-xs text-muted-foreground">
+                        {t("termsNotice")}
+                      </p>
+                    </CardFooter>
+                  ) : null}
                 </Card>
               </div>
             </div>
