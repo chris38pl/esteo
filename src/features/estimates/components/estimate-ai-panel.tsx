@@ -470,7 +470,11 @@ export function EstimateAiPanel({
               <ul className="mt-2 list-disc pl-4 text-xs text-amber-800 dark:text-amber-200">
                 {pendingEdit.warnings.map((warning, index) => (
                   <li key={`${warning.code}-${index}`}>
-                    {formatPatchWarning(warning, t, locale)}
+                    {formatPatchWarning(
+                      warning,
+                      (key, values) => t(key as Parameters<typeof t>[0], values),
+                      locale,
+                    )}
                   </li>
                 ))}
               </ul>
