@@ -101,6 +101,8 @@ function HeroIndustryCardItem({
         />
       </div>
 
+      <div aria-hidden className="hero-industries-card__image-vignette" />
+
       <div aria-hidden className="hero-industries-card__image-fade" />
 
       <div className="hero-industries-card__body">
