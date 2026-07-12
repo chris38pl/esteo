@@ -14,7 +14,7 @@ const componentLabels: Record<string, Record<Locale, string>> = {
 const statusLabels: Record<Locale, Record<ComponentStatus, string>> = {
   pl: {
     operational: "Działa prawidłowo",
-    degraded: "Ograniczona dostępność",
+    degraded: "Utrudnienia",
     outage: "Awaria",
     maintenance: "Prace serwisowe",
   },
@@ -48,6 +48,14 @@ const pageCopy: Record<
     bannerNoIncidentsValue: string;
     bannerNoIncidentsSub: string;
     bannerDaysAgo: string;
+    componentsHeading: string;
+    legendOperational: string;
+    legendDegraded: string;
+    legendOutage: string;
+    availabilityLabelWithPeriod: string;
+    contactFooterText: string;
+    contactFooterCta: string;
+    resolvedLabel: string;
   }
 > = {
   pl: {
@@ -70,6 +78,14 @@ const pageCopy: Record<
     bannerNoIncidentsValue: "Brak",
     bannerNoIncidentsSub: "Brak zgłoszonych incydentów",
     bannerDaysAgo: "{count} dni temu",
+    componentsHeading: "Komponenty systemu",
+    legendOperational: "Działa prawidłowo",
+    legendDegraded: "Utrudnienia",
+    legendOutage: "Awaria",
+    availabilityLabelWithPeriod: "Dostępność ({period})",
+    contactFooterText: "Masz problem? Skontaktuj się z naszym zespołem.",
+    contactFooterCta: "Kontakt",
+    resolvedLabel: "Rozwiązano",
   },
   en: {
     pageTitle: "System status",
@@ -91,6 +107,14 @@ const pageCopy: Record<
     bannerNoIncidentsValue: "None",
     bannerNoIncidentsSub: "No reported incidents",
     bannerDaysAgo: "{count} days ago",
+    componentsHeading: "System components",
+    legendOperational: "Operational",
+    legendDegraded: "Degraded",
+    legendOutage: "Outage",
+    availabilityLabelWithPeriod: "Availability ({period})",
+    contactFooterText: "Having an issue? Contact our team.",
+    contactFooterCta: "Contact",
+    resolvedLabel: "Resolved",
   },
 };
 
@@ -261,13 +285,14 @@ export function getStatusBannerContent(locale: Locale) {
 export type StatusPageContent = {
   pageTitle: string;
   pageDescription: string;
-  overallHeading: string;
   overallStatus: ComponentStatus;
   overallLabel: string;
   overallMessage: string;
   lastUpdated: string;
-  componentColumn: string;
-  statusColumn: string;
+  availabilityValue: string;
+  availabilityLabel: string;
+  componentsHeading: string;
+  legend: { operational: string; degraded: string; outage: string };
   components: { id: string; name: string; status: ComponentStatus; statusLabel: string }[];
   maintenanceHeading: string;
   maintenanceEmpty: string;
@@ -286,22 +311,34 @@ export type StatusPageContent = {
     occurredAt: string;
     resolvedAt?: string;
   }[];
+  contactFooterText: string;
+  contactFooterCta: string;
+  resolvedLabel: string;
 };
 
 export function getStatusPageContent(locale: Locale): StatusPageContent {
   const copy = pageCopy[locale];
   const overall = getOverallStatusMessage(locale);
+  const banner = statusPageConfig.banner;
 
   return {
     pageTitle: copy.pageTitle,
     pageDescription: copy.pageDescription,
-    overallHeading: copy.overallHeading,
     overallStatus: overall.status,
     overallLabel: overall.label,
     overallMessage: overall.message,
     lastUpdated: `${copy.lastUpdatedPrefix} ${formatLastUpdated(locale, statusPageConfig.lastUpdatedAt)}`,
-    componentColumn: copy.componentColumn,
-    statusColumn: copy.statusColumn,
+    availabilityValue: banner.availability.value[locale],
+    availabilityLabel: copy.availabilityLabelWithPeriod.replace(
+      "{period}",
+      banner.availability.period[locale],
+    ),
+    componentsHeading: copy.componentsHeading,
+    legend: {
+      operational: copy.legendOperational,
+      degraded: copy.legendDegraded,
+      outage: copy.legendOutage,
+    },
     components: statusPageConfig.components.map((component) => ({
       id: component.id,
       name: componentLabels[component.id]?.[locale] ?? component.id,
@@ -338,5 +375,8 @@ export function getStatusPageContent(locale: Locale): StatusPageContent {
         ? formatLastUpdated(locale, incident.resolvedAt)
         : undefined,
     })),
+    contactFooterText: copy.contactFooterText,
+    contactFooterCta: copy.contactFooterCta,
+    resolvedLabel: copy.resolvedLabel,
   };
 }

@@ -21,6 +21,13 @@ export { TrustLegalTable } from "./trust-legal-table";
 export type { LegalTable } from "./trust-legal-table";
 export { StatusIndicator } from "./status-indicator";
 export { TrustStatusBanner } from "./trust-status-banner";
+export { StatusUptimeSparkline } from "./status-uptime-sparkline";
+export {
+  StatusBottomSections,
+  StatusComponentsGrid,
+  StatusContactFooter,
+  StatusPageHero,
+} from "./status-page-sections";
 export type {
   LegalChecklistItem,
   LegalHighlightCard,
