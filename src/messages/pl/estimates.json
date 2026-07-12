@@ -497,7 +497,7 @@
         "rejectionDesc": "Klient odrzucił wycenę"
       },
       "scope": {
-        "title": "Zakres prac",
+        "title": "Zakres wyceny",
         "empty": "Brak sekcji w tej wersji kosztorysu.",
         "showMore": "Pokaż więcej",
         "showLess": "Pokaż mniej"
