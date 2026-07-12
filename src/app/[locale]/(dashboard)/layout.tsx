@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { headers } from "next/headers";
 import { setRequestLocale } from "next-intl/server";
 
+import { createAppMetadata } from "@/features/app/metadata/create-app-metadata";
+import { resolvePageTitle } from "@/features/app/metadata/resolve-page-title";
 import { resolveRequestLocale } from "@/i18n/request-locale";
 import type { Locale } from "@/lib/locale";
 import { DashboardShell } from "@/components/layout/app-sidebar/dashboard-shell";
@@ -38,6 +41,18 @@ import {
   resolveActiveWorkspace,
   resolveWorkspaceBySlug,
 } from "@/server/workspaces/active-workspace";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale: localeParam } = await params;
+  const locale = await resolveRequestLocale(localeParam);
+  const pathname = (await headers()).get("x-pathname") ?? "";
+  const title = await resolvePageTitle({ locale, pathname });
+  return createAppMetadata({ title });
+}
 
 export default async function DashboardLayout({
   children,

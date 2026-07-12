@@ -1,7 +1,10 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { setRequestLocale } from "next-intl/server";
+import type { Metadata } from "next";
 
+import { createAppMetadata } from "@/features/app/metadata/create-app-metadata";
+import { resolvePageTitle } from "@/features/app/metadata/resolve-page-title";
 import { WorkspaceSettingsPanel } from "@/features/workspaces/components/workspace-settings-panel";
 import { getWorkspaceSettingsPageData } from "@/features/workspaces/server/get-workspace-settings-page-data";
 import { workspaceBrandingSchema } from "@/features/workspaces/schemas/branding";
@@ -11,6 +14,35 @@ import { isLocale } from "@/lib/locale";
 import { isAvatarPreset } from "@/lib/avatars/user-avatar-presets";
 import { requireAuth } from "@/server/auth/require-auth";
 import { resolveWorkspaceBySlug } from "@/server/workspaces/active-workspace";
+import { resolveRequestLocale } from "@/i18n/request-locale";
+import { prisma } from "@/db/client";
+
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string; workspaceSlug: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}): Promise<Metadata> {
+  const { locale: localeParam, workspaceSlug } = await params;
+  const resolvedLocale: Locale = await resolveRequestLocale(localeParam);
+  const query = await searchParams;
+  const pathname = `/${resolvedLocale}/dashboard/${workspaceSlug}/settings`;
+
+  const workspace = await prisma.workspace.findUnique({
+    where: { slug: workspaceSlug },
+    select: { name: true },
+  });
+
+  const title = await resolvePageTitle({
+    locale: resolvedLocale,
+    pathname,
+    searchParams: query,
+    workspaceName: workspace?.name ?? null,
+  });
+
+  return createAppMetadata({ title });
+}
 
 export default async function WorkspaceSettingsPage({
   params,

@@ -1,7 +1,10 @@
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
+import type { Metadata } from "next";
 
 import { SyncDashboardBreadcrumbDetail } from "@/components/layout/dashboard-top-nav/sync-dashboard-breadcrumb-detail";
+import { createAppMetadata } from "@/features/app/metadata/create-app-metadata";
+import { getIssueDocumentTitle } from "@/features/app/metadata/get-entity-document-title";
 import {
   AdminIssueDetailPanel,
   type AdminIssueCurrentUserClient,
@@ -37,6 +40,28 @@ function serializeCurrentUserForClient(
     avatarUrl: user.avatarUrl,
     avatarPreset: isAvatarPreset(user.avatarPreset) ? user.avatarPreset : null,
   };
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; number: string }>;
+}): Promise<Metadata> {
+  const { locale: localeParam, number: numberParam } = await params;
+  const locale = await resolveRequestLocale(localeParam);
+  const parsedNumber = Number.parseInt(numberParam, 10);
+
+  if (!Number.isFinite(parsedNumber)) {
+    return createAppMetadata({ title: "Esteo" });
+  }
+
+  const title = await getIssueDocumentTitle({
+    number: parsedNumber,
+    locale,
+    fallbackTitleKey: "navbar.breadcrumbs.qaIssues",
+  });
+
+  return createAppMetadata({ title });
 }
 
 export default async function QaIssueDetailPage({

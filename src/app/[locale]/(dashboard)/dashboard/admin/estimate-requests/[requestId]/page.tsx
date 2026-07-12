@@ -3,9 +3,12 @@ import { ArrowLeft, Paperclip } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
+import type { Metadata } from "next";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { createAppMetadata } from "@/features/app/metadata/create-app-metadata";
+import { getAdminEstimateRequestDocumentTitle } from "@/features/app/metadata/get-entity-document-title";
 import { getAdminEstimateRequestDetail } from "@/features/estimate-requests/server/admin-estimate-requests";
 import { AdminEstimateRequestDetailActions } from "@/features/estimate-requests/components/admin-estimate-request-detail-actions";
 import { getServerTranslations, resolveRequestLocale } from "@/i18n/request-locale";
@@ -78,6 +81,17 @@ function DetailRow({
       </dd>
     </div>
   );
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; requestId: string }>;
+}): Promise<Metadata> {
+  const { locale: localeParam, requestId } = await params;
+  const locale = await resolveRequestLocale(localeParam);
+  const title = await getAdminEstimateRequestDocumentTitle({ requestId, locale });
+  return createAppMetadata({ title });
 }
 
 export default async function AdminEstimateRequestDetailPage({

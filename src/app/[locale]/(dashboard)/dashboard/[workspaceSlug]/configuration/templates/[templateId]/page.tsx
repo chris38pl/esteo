@@ -1,7 +1,10 @@
 import { redirect } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
+import type { Metadata } from "next";
 
 import { SyncDashboardBreadcrumbDetail } from "@/components/layout/dashboard-top-nav/sync-dashboard-breadcrumb-detail";
+import { createAppMetadata } from "@/features/app/metadata/create-app-metadata";
+import { getTemplateDocumentTitle } from "@/features/app/metadata/get-entity-document-title";
 import { EstimateTemplateEditor } from "@/features/estimate-templates/components/estimate-template-editor";
 import { templateToEditorDraft } from "@/features/estimate-templates/lib/template-editor-draft";
 import { hasSystemEstimateTemplateForIndustry } from "@/features/estimate-templates/config/system-templates";
@@ -11,6 +14,34 @@ import { isLocale } from "@/lib/locale";
 import { requireAuth } from "@/server/auth/require-auth";
 import { WorkspaceError } from "@/server/permissions/errors";
 import { resolveWorkspaceBySlug } from "@/server/workspaces/active-workspace";
+import { resolveRequestLocale } from "@/i18n/request-locale";
+import { prisma } from "@/db/client";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; workspaceSlug: string; templateId: string }>;
+}): Promise<Metadata> {
+  const { locale: localeParam, workspaceSlug, templateId } = await params;
+  const locale = await resolveRequestLocale(localeParam);
+
+  const workspace = await prisma.workspace.findUnique({
+    where: { slug: workspaceSlug },
+    select: { id: true, name: true },
+  });
+
+  if (!workspace) {
+    return createAppMetadata({ title: "Esteo" });
+  }
+
+  const title = await getTemplateDocumentTitle({
+    templateId,
+    workspaceId: workspace.id,
+    locale,
+  });
+
+  return createAppMetadata({ title });
+}
 
 export default async function EditEstimateTemplatePage({
   params,

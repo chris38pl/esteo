@@ -5,6 +5,13 @@ import { NextResponse } from "next/server";
 
 import { defaultLocale, LOCALE_COOKIE_NAME, locales } from "@/lib/locale";
 import { applyReferralAttributionCookie } from "@/features/referrals/lib/apply-referral-attribution-cookie";
+import { shouldNoIndexPath } from "@/features/app/metadata/should-no-index-path";
+
+function applyNoIndexHeader(response: NextResponse, pathname: string) {
+  if (shouldNoIndexPath(pathname)) {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  }
+}
 
 const isPublicRoute = createRouteMatcher([
   "/",
@@ -36,6 +43,13 @@ export default clerkMiddleware(async (auth, request) => {
 
   // API routes are not locale-prefixed; skip next-intl to avoid /pl/api/* redirects.
   if (pathname.startsWith("/api")) {
+    // Client API (tRPC) enforces auth in its own layer via requireApiUser(),
+    // returning a clean 401 JSON instead of a middleware redirect/404. Clerk
+    // still parses the cookie/Bearer token here, so the handler can resolve
+    // the caller.
+    if (pathname.startsWith("/api/trpc")) {
+      return;
+    }
     if (!isPublicRoute(request)) {
       await auth.protect();
     }
@@ -80,6 +94,7 @@ export default clerkMiddleware(async (auth, request) => {
   });
 
   applyReferralAttributionCookie(request, response);
+  applyNoIndexHeader(response, pathname);
 
   return response;
 });

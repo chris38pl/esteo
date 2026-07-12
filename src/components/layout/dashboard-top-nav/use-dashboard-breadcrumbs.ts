@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 
 import { useWorkspaceContext } from "@/components/layout/app-sidebar/workspace-context";
 import { useDashboardBreadcrumbDetail } from "@/components/layout/dashboard-top-nav/dashboard-breadcrumb-detail-context";
+import { parseRouteContext } from "@/features/app/navigation/parse-route-context";
+import { matchAppRoute } from "@/features/app/navigation/route-registry";
 import type { Locale } from "@/lib/locale";
 
 export type BreadcrumbItem = {
@@ -434,7 +436,15 @@ export function useDashboardBreadcrumbs(locale: Locale): BreadcrumbItem[] {
   }
 
   if (pageKey) {
-    crumbs.push({ label: t(pageKey) });
+    const registryContext = parseRouteContext(pathname, {
+      tab: searchParams?.get("tab") ?? undefined,
+    });
+    const registryRoute = registryContext ? matchAppRoute(registryContext) : null;
+    const registryBreadcrumbKey = registryRoute?.breadcrumbKey?.replace(/^navbar\.breadcrumbs\./, "");
+
+    crumbs.push({
+      label: registryBreadcrumbKey ? t(registryBreadcrumbKey as Parameters<typeof t>[0]) : t(pageKey),
+    });
   }
 
   return crumbs;
