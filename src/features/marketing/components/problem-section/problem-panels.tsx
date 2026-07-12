@@ -153,8 +153,10 @@ export function ProblemFeatureGrid({
           <article key={feature.title} className="flex flex-col items-center text-center">
             <span
               className={cn(
-                "mb-4 flex items-center justify-center rounded-[0.7rem] p-3.5",
+                "relative isolate mb-4 flex items-center justify-center rounded-[0.7rem] p-3.5",
                 "sm:mb-[1.125rem] sm:rounded-[0.75rem] sm:p-4",
+                "after:pointer-events-none after:absolute after:left-1/2 after:top-[58%] after:-z-10 after:h-10 after:w-[88%] after:-translate-x-1/2 after:rounded-full",
+                "after:bg-[radial-gradient(ellipse_at_center,rgba(248,113,113,0.28),transparent_72%)] after:blur-md",
               )}
             >
               <ProblemFeatureIcon src={iconSrc} />

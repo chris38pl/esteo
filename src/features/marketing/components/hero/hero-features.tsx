@@ -43,8 +43,10 @@ function HeroFeatureIcon({ src, scale }: { src: string; scale: number }) {
   return (
     <span
       className={cn(
-        "grid shrink-0 place-items-center",
+        "relative isolate grid shrink-0 place-items-center",
         "size-14 sm:size-[4.25rem] lg:size-20",
+        "after:pointer-events-none after:absolute after:left-1/2 after:top-[58%] after:-z-10 after:h-10 after:w-[88%] after:-translate-x-1/2 after:rounded-full",
+        "after:bg-[radial-gradient(ellipse_at_center,rgba(96,165,250,0.28),transparent_72%)] after:blur-md",
       )}
     >
       <Image
@@ -52,7 +54,7 @@ function HeroFeatureIcon({ src, scale }: { src: string; scale: number }) {
         alt=""
         width={80}
         height={80}
-        className="size-full object-contain"
+        className="relative z-10 size-full object-contain"
         style={scale === 1 ? undefined : { transform: `scale(${scale})` }}
         aria-hidden
       />
