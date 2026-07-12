@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 
-import { TrustCenterContainer } from "@/features/marketing/components/trust-center";
-import { LegalDocument } from "@/features/marketing/components/legal-document";
+import { SubprocessorsPageContent } from "@/features/marketing/components/subprocessors-page-content";
 import { TrustBreadcrumbJsonLd } from "@/features/marketing/components/trust-center";
-import { termsContent } from "@/features/marketing/content/legal-content";
+import { getSubprocessorsPageContent } from "@/features/marketing/content/subprocessors-content";
 import { getTrustSharedContent } from "@/features/marketing/content/trust-shared-content";
 import { createMarketingPageMetadata } from "@/features/marketing/seo/create-page-metadata";
 import type { Locale } from "@/lib/locale";
@@ -17,10 +16,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale: localeParam } = await params;
   const locale: Locale = isLocale(localeParam) ? localeParam : "pl";
-  return createMarketingPageMetadata(locale, "terms");
+  return createMarketingPageMetadata(locale, "subprocessors");
 }
 
-export default async function TermsPage({
+export default async function SubprocessorsPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
@@ -30,7 +29,7 @@ export default async function TermsPage({
 
   setRequestLocale(locale);
 
-  const content = termsContent[locale];
+  const content = getSubprocessorsPageContent(locale);
   const shared = getTrustSharedContent(locale);
 
   return (
@@ -39,12 +38,10 @@ export default async function TermsPage({
         locale={locale}
         items={[
           { name: shared.securityCenterLabel, path: "/security" },
-          { name: content.breadcrumbLabel, path: "/legal/terms" },
+          { name: content.breadcrumbLabel, path: "/legal/subprocessors" },
         ]}
       />
-      <TrustCenterContainer>
-        <LegalDocument content={content} locale={locale} />
-      </TrustCenterContainer>
+      <SubprocessorsPageContent locale={locale} />
     </>
   );
 }

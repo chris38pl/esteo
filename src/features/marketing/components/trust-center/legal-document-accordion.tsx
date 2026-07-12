@@ -4,6 +4,7 @@ import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
 
 import type { LegalSection } from "@/features/marketing/content/legal-content";
+import { TrustLegalTable } from "@/features/marketing/components/trust-center/trust-legal-table";
 import { cn } from "@/lib/utils";
 
 type LegalDocumentAccordionProps = {
@@ -78,6 +79,11 @@ export function LegalDocumentAccordion({ sections }: LegalDocumentAccordionProps
                     {paragraph}
                   </p>
                 ))}
+                {section.table ? (
+                  <div className="pl-10 sm:pl-11">
+                    <TrustLegalTable table={section.table} />
+                  </div>
+                ) : null}
               </div>
             ) : null}
           </div>

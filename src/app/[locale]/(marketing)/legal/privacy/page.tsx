@@ -38,7 +38,7 @@ export default async function PrivacyPage({
       <TrustBreadcrumbJsonLd
         locale={locale}
         items={[
-          { name: shared.securityCenterLabel, path: "/legal" },
+          { name: shared.securityCenterLabel, path: "/security" },
           { name: content.breadcrumbLabel, path: "/legal/privacy" },
         ]}
       />

@@ -25,6 +25,7 @@ export function ContactPageContent({ locale }: { locale: Locale }) {
           {content.email}
         </a>
         <p className="mt-4 text-sm leading-6 text-muted-foreground">{content.responseTime}</p>
+        <p className="mt-4 text-sm leading-6 text-muted-foreground">{content.operatorNote}</p>
       </div>
 
       <div className="space-y-3">

@@ -5,12 +5,15 @@ export type MarketingRouteId =
   | "pricing"
   | "faq"
   | "contact"
+  | "workflow-demo"
   | "security"
+  | "status"
   | "legal"
   | "privacy"
   | "terms"
   | "cookies"
-  | "ai";
+  | "ai"
+  | "subprocessors";
 
 export type MarketingRoute = {
   id: MarketingRouteId;
@@ -32,7 +35,11 @@ export const siteConfig = {
   url: siteUrl,
   companyName: "Esteo",
   supportEmail: "support@esteo.app",
-  socials: {},
+  socials: {
+    facebook: "",
+    linkedin: "",
+    youtube: "",
+  },
   locales: [...locales],
   defaultLocale,
   description: "AI-assisted estimating workspace for service companies.",
@@ -45,6 +52,14 @@ export const siteConfig = {
       includeInSitemap: true,
       nav: { header: false, footer: false },
       label: { pl: "Start", en: "Home" },
+    },
+    {
+      id: "workflow-demo",
+      path: "/#workflow",
+      implemented: true,
+      includeInSitemap: false,
+      nav: { footer: true },
+      label: { pl: "Zobacz jak to działa", en: "See how it works" },
     },
     {
       id: "pricing",
@@ -75,16 +90,24 @@ export const siteConfig = {
       path: "/security",
       implemented: true,
       includeInSitemap: true,
-      nav: { header: false, footer: true },
-      label: { pl: "Bezpieczenstwo", en: "Security" },
+      nav: { footer: true, legal: true },
+      label: { pl: "Bezpieczeństwo", en: "Security" },
+    },
+    {
+      id: "status",
+      path: "/status",
+      implemented: true,
+      includeInSitemap: true,
+      nav: {},
+      label: { pl: "Status systemu", en: "System status" },
     },
     {
       id: "legal",
       path: "/legal",
       implemented: true,
-      includeInSitemap: true,
-      nav: { footer: true, legal: true },
-      label: { pl: "Centrum bezpieczenstwa", en: "Security Center" },
+      includeInSitemap: false,
+      nav: {},
+      label: { pl: "Centrum bezpieczeństwa", en: "Security Center" },
     },
     {
       id: "privacy",
@@ -107,7 +130,7 @@ export const siteConfig = {
       path: "/legal/ai",
       implemented: true,
       includeInSitemap: true,
-      nav: { footer: true, legal: true },
+      nav: {},
       label: { pl: "AI i odpowiedzialnosc", en: "AI & Responsibility" },
     },
     {
@@ -117,6 +140,14 @@ export const siteConfig = {
       includeInSitemap: true,
       nav: { footer: true, legal: true },
       label: { pl: "Regulamin", en: "Terms" },
+    },
+    {
+      id: "subprocessors",
+      path: "/legal/subprocessors",
+      implemented: true,
+      includeInSitemap: true,
+      nav: {},
+      label: { pl: "Dostawcy uslug", en: "Service providers" },
     },
   ] satisfies MarketingRoute[],
 } as const;

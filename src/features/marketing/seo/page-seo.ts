@@ -24,6 +24,18 @@ export const marketingPageSeo: Record<MarketingRouteId, Record<Locale, Marketing
       ogImage: "/images/marketing/og/landing-og.png",
     },
   },
+  "workflow-demo": {
+    pl: {
+      title: "Zobacz jak to działa",
+      description:
+        "Interaktywna prezentacja przepływu pracy w Esteo — od zapytania klienta do gotowej wyceny PDF.",
+    },
+    en: {
+      title: "See how it works",
+      description:
+        "Interactive walkthrough of the Esteo workflow — from customer request to a finished PDF estimate.",
+    },
+  },
   pricing: {
     pl: {
       title: "Cennik",
@@ -60,14 +72,14 @@ export const marketingPageSeo: Record<MarketingRouteId, Record<Locale, Marketing
   },
   security: {
     pl: {
-      title: "Bezpieczeństwo",
+      title: "Centrum bezpieczeństwa",
       description:
-        "Jak Esteo chroni Twoje dane, logowanie i płatności. Konkretnie i transparentnie.",
+        "Wszystkie informacje dotyczące bezpieczeństwa, prywatności oraz zasad korzystania z Esteo w jednym miejscu.",
     },
     en: {
-      title: "Security",
+      title: "Security Center",
       description:
-        "How Esteo protects your data, sign-in, and payments. Clear and transparent.",
+        "All information about security, privacy, and the rules for using Esteo in one place.",
     },
   },
   legal: {
@@ -77,9 +89,9 @@ export const marketingPageSeo: Record<MarketingRouteId, Record<Locale, Marketing
         "Wszystkie informacje dotyczące bezpieczeństwa, prywatności oraz zasad korzystania z Esteo w jednym miejscu.",
     },
     en: {
-      title: "Trust Center",
+      title: "Security Center",
       description:
-        "Security, privacy, cookies, AI responsibility, and terms of use for Esteo in one place.",
+        "All information about security, privacy, and the rules for using Esteo in one place.",
     },
   },
   privacy: {
@@ -122,6 +134,26 @@ export const marketingPageSeo: Record<MarketingRouteId, Record<Locale, Marketing
       title: "AI & Responsibility",
       description:
         "How Esteo uses AI in estimates and which responsibilities remain with you as the user.",
+    },
+  },
+  subprocessors: {
+    pl: {
+      title: "Dostawcy usług",
+      description: "Z jakich zewnętrznych usług korzysta Esteo i w jakim celu.",
+    },
+    en: {
+      title: "Service providers",
+      description: "Which external services Esteo uses and for what purpose.",
+    },
+  },
+  status: {
+    pl: {
+      title: "Status systemu",
+      description: "Aktualny stan wszystkich kluczowych usług Esteo.",
+    },
+    en: {
+      title: "System status",
+      description: "Current status of all key Esteo services.",
     },
   },
 };

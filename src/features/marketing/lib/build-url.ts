@@ -9,11 +9,14 @@ export function normalizeMarketingPath(path: string = "/"): string {
 }
 
 export function buildLocalizedPath(locale: Locale, path: string = "/"): string {
-  const normalizedPath = normalizeMarketingPath(path);
+  const hashIndex = path.indexOf("#");
+  const hash = hashIndex >= 0 ? path.slice(hashIndex) : "";
+  const pathWithoutHash = hashIndex >= 0 ? path.slice(0, hashIndex) : path;
+  const normalizedPath = normalizeMarketingPath(pathWithoutHash || "/");
 
   if (normalizedPath === "/") {
-    return `/${locale}`;
+    return `/${locale}${hash}`;
   }
 
-  return `/${locale}${normalizedPath}`;
+  return `/${locale}${normalizedPath}${hash}`;
 }

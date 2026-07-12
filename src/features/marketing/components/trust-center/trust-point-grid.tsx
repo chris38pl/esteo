@@ -1,4 +1,4 @@
-import { CreditCard, FolderOpen, Shield, Sparkles, type LucideIcon } from "lucide-react";
+import { CreditCard, FolderOpen, HardDrive, Lock, Shield, Sparkles, type LucideIcon } from "lucide-react";
 
 import type { TrustPoint } from "@/features/marketing/components/trust-center/trust-types";
 import { TrustIconShell } from "@/features/marketing/components/trust-center/trust-icon-shell";
@@ -9,11 +9,13 @@ const pointIcons: Record<string, LucideIcon> = {
   billing: CreditCard,
   workspace: FolderOpen,
   ai: Sparkles,
+  https: Lock,
+  backups: HardDrive,
 };
 
 export function TrustPointGrid({ points }: { points: TrustPoint[] }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
       {points.map((point) => {
         const Icon = pointIcons[point.id] ?? Shield;
 

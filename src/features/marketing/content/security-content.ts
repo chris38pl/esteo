@@ -6,7 +6,9 @@ import type {
   TrustPromise,
   TrustTechnologyProvider,
 } from "@/features/marketing/components/trust-center/trust-types";
+import { legalOperatorCopy, serviceProviders } from "@/features/marketing/content/legal.config";
 import { buildLocalizedPath } from "@/features/marketing/lib/build-url";
+import { siteConfig } from "@/features/marketing/seo/site-config";
 
 export type SecurityTrustPoint = TrustPoint;
 
@@ -41,7 +43,13 @@ export type SecurityLearnMoreLink = {
   label: string;
   description: string;
   accent: TrustDocLink["accent"];
-  path: "/legal/privacy" | "/legal/cookies" | "/legal/ai";
+  path:
+    | "/legal/privacy"
+    | "/legal/cookies"
+    | "/legal/ai"
+    | "/legal/subprocessors"
+    | "/legal/terms"
+    | "/contact";
 };
 
 export type SecurityPageContent = SecurityBandContent & {
@@ -64,9 +72,10 @@ const securityContentBase: Record<
     eyebrow: "Bezpieczeństwo",
     titleBefore: "Twoje dane ",
     titleHighlight: "pod kontrolą",
-    pageTitle: "Bezpieczeństwo",
-    pageDescription: "Esteo dba o Twoje dane, logowanie i płatności.",
-    pageSubtitle: "Poniżej znajdziesz najważniejsze informacje.",
+    pageTitle: "Centrum bezpieczeństwa",
+    pageDescription:
+      "Wszystkie informacje dotyczące bezpieczeństwa, prywatności oraz zasad korzystania z Esteo w jednym miejscu.",
+    pageSubtitle: "Esteo dba o Twoje dane, logowanie i płatności.",
     description:
       "Twoje wyceny, zapytania i ustawienia firmy należą do Twojego workspace. Ty zatwierdzasz każdą wycenę przed wysłaniem do klienta.",
     points: [
@@ -78,9 +87,9 @@ const securityContentBase: Record<
       },
       {
         id: "auth",
-        title: "Bezpieczne logowanie",
+        title: "Uwierzytelnianie",
         description:
-          "Uwierzytelnianie obsługuje Clerk - nie budujemy własnego systemu haseł ani nie przechowujemy haseł w Esteo.",
+          "Bezpieczne logowanie i zarządzanie sesją (m.in. przez Clerk). Esteo nie przechowuje haseł użytkowników.",
       },
       {
         id: "billing",
@@ -93,6 +102,16 @@ const securityContentBase: Record<
         title: "AI pomaga, Ty decydujesz",
         description:
           "AI przygotowuje szkic kosztorysu. Ostateczna treść wyceny i odpowiedzialność za wysłanie pozostają po Twojej stronie.",
+      },
+      {
+        id: "https",
+        title: "Szyfrowane połączenie",
+        description: legalOperatorCopy.pl.securityHttpsLine,
+      },
+      {
+        id: "backups",
+        title: "Kopie zapasowe",
+        description: legalOperatorCopy.pl.securityBackupLine,
       },
     ],
     promises: [
@@ -135,38 +154,11 @@ const securityContentBase: Record<
       intro: "Korzystamy wyłącznie z zaufanych dostawców i sprawdzonych technologii.",
       disclaimer:
         "Nie sprzedajemy danych. Nie wykorzystujemy Twoich danych ani wycen do trenowania publicznych modeli AI.",
-      providers: [
-        {
-          id: "clerk",
-          name: "Clerk",
-          description: "Uwierzytelnianie i zarządzanie sesjami użytkowników.",
-        },
-        {
-          id: "stripe",
-          name: "Stripe",
-          description: "Płatności i zarządzanie subskrypcjami.",
-        },
-        {
-          id: "vercel",
-          name: "Vercel",
-          description: "Hosting aplikacji i infrastruktura.",
-        },
-        {
-          id: "neon",
-          name: "Neon",
-          description: "Baza danych PostgreSQL w chmurze.",
-        },
-        {
-          id: "uploadthing",
-          name: "UploadThing",
-          description: "Bezpieczne przechowywanie plików.",
-        },
-        {
-          id: "openai",
-          name: "OpenAI",
-          description: "Modele AI wspierające tworzenie szkiców.",
-        },
-      ],
+      providers: serviceProviders.pl.map((provider) => ({
+        id: provider.id,
+        name: provider.name,
+        description: provider.description,
+      })),
     },
     detailSections: [
       {
@@ -185,30 +177,51 @@ const securityContentBase: Record<
         id: "incidents",
         label: "Zgłaszanie incydentów",
         title: "Zgłaszanie incydentów",
-        body: "W razie problemów z bezpieczeństwem lub dostępem do danych napisz na support@esteo.app. Traktujemy zgłoszenia priorytetowo w dni robocze.",
+        body: `W razie problemów z bezpieczeństwem lub dostępem do danych napisz na ${siteConfig.supportEmail}. Traktujemy zgłoszenia priorytetowo w dni robocze.`,
       },
     ],
     learnMoreLinks: [
       {
         id: "privacy",
         label: "Polityka prywatności",
-        description: "Dowiedz się, jak chronimy Twoje dane osobowe.",
+        description: "Dowiedz się, jak przetwarzamy i chronimy dane osobowe.",
         accent: "blue",
         path: "/legal/privacy",
       },
       {
+        id: "subprocessors",
+        label: "Dostawcy usług",
+        description: "Z jakich zewnętrznych usług korzysta Esteo.",
+        accent: "blue",
+        path: "/legal/subprocessors",
+      },
+      {
         id: "cookies",
         label: "Cookies",
-        description: "Sprawdź, jakich cookies używamy i jak możesz nimi zarządzać.",
+        description: "Informacje o plikach cookies i Twoich preferencjach.",
         accent: "teal",
         path: "/legal/cookies",
       },
       {
         id: "ai",
         label: "AI i odpowiedzialność",
-        description: "Poznaj zasady działania AI w Esteo i Twoją odpowiedzialność.",
+        description: "Jak działa AI w Esteo i za co odpowiada użytkownik.",
         accent: "purple",
         path: "/legal/ai",
+      },
+      {
+        id: "terms",
+        label: "Regulamin",
+        description: "Zasady korzystania z aplikacji Esteo i subskrypcji.",
+        accent: "teal",
+        path: "/legal/terms",
+      },
+      {
+        id: "contact",
+        label: "Kontakt",
+        description: "Masz pytania dotyczące bezpieczeństwa lub danych?",
+        accent: "purple",
+        path: "/contact",
       },
     ],
     privacyLink: "Polityka prywatności",
@@ -221,9 +234,10 @@ const securityContentBase: Record<
     eyebrow: "Security",
     titleBefore: "Your data ",
     titleHighlight: "under your control",
-    pageTitle: "Security",
-    pageDescription: "Esteo protects your data, sign-in, and payments.",
-    pageSubtitle: "Below you'll find the most important information.",
+    pageTitle: "Security Center",
+    pageDescription:
+      "All information about security, privacy, and the rules for using Esteo in one place.",
+    pageSubtitle: "Esteo protects your data, sign-in, and payments.",
     description:
       "Your estimates, requests, and company settings belong to your workspace. You approve every estimate before sending it to a client.",
     points: [
@@ -235,9 +249,9 @@ const securityContentBase: Record<
       },
       {
         id: "auth",
-        title: "Secure sign-in",
+        title: "Authentication",
         description:
-          "Authentication is handled by Clerk - we do not build a custom password system or store passwords in Esteo.",
+          "Secure sign-in and session management (including via Clerk). Esteo does not store user passwords.",
       },
       {
         id: "billing",
@@ -250,6 +264,16 @@ const securityContentBase: Record<
         title: "AI assists, you decide",
         description:
           "AI prepares an estimate draft. The final content and responsibility for sending it stay with you.",
+      },
+      {
+        id: "https",
+        title: "Encrypted connection",
+        description: legalOperatorCopy.en.securityHttpsLine,
+      },
+      {
+        id: "backups",
+        title: "Backups",
+        description: legalOperatorCopy.en.securityBackupLine,
       },
     ],
     promises: [
@@ -291,38 +315,11 @@ const securityContentBase: Record<
       intro: "We rely only on trusted providers and proven technologies.",
       disclaimer:
         "We do not sell data. We do not use your data or estimates to train public AI models.",
-      providers: [
-        {
-          id: "clerk",
-          name: "Clerk",
-          description: "Authentication and user session management.",
-        },
-        {
-          id: "stripe",
-          name: "Stripe",
-          description: "Payments and subscription management.",
-        },
-        {
-          id: "vercel",
-          name: "Vercel",
-          description: "App hosting and infrastructure.",
-        },
-        {
-          id: "neon",
-          name: "Neon",
-          description: "Cloud PostgreSQL database.",
-        },
-        {
-          id: "uploadthing",
-          name: "UploadThing",
-          description: "Secure file storage.",
-        },
-        {
-          id: "openai",
-          name: "OpenAI",
-          description: "AI models supporting draft generation.",
-        },
-      ],
+      providers: serviceProviders.en.map((provider) => ({
+        id: provider.id,
+        name: provider.name,
+        description: provider.description,
+      })),
     },
     detailSections: [
       {
@@ -341,30 +338,51 @@ const securityContentBase: Record<
         id: "incidents",
         label: "Incident reporting",
         title: "Incident reporting",
-        body: "If you notice a security or access issue, email support@esteo.app. We treat reports as a priority on business days.",
+        body: `If you notice a security or access issue, email ${siteConfig.supportEmail}. We treat reports as a priority on business days.`,
       },
     ],
     learnMoreLinks: [
       {
         id: "privacy",
         label: "Privacy Policy",
-        description: "Learn how we protect your personal data.",
+        description: "How we process and protect personal data.",
         accent: "blue",
         path: "/legal/privacy",
       },
       {
+        id: "subprocessors",
+        label: "Service providers",
+        description: "Which external services Esteo uses.",
+        accent: "blue",
+        path: "/legal/subprocessors",
+      },
+      {
         id: "cookies",
         label: "Cookies",
-        description: "See which cookies we use and how you can manage them.",
+        description: "Information about cookies and your preferences.",
         accent: "teal",
         path: "/legal/cookies",
       },
       {
         id: "ai",
         label: "AI & Responsibility",
-        description: "Understand how AI works in Esteo and your responsibilities.",
+        description: "How AI works in Esteo and what you are responsible for.",
         accent: "purple",
         path: "/legal/ai",
+      },
+      {
+        id: "terms",
+        label: "Terms of Service",
+        description: "Rules for using the Esteo app and subscription.",
+        accent: "teal",
+        path: "/legal/terms",
+      },
+      {
+        id: "contact",
+        label: "Contact",
+        description: "Questions about security or your data?",
+        accent: "purple",
+        path: "/contact",
       },
     ],
     privacyLink: "Privacy Policy",

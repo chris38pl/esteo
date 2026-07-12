@@ -1,5 +1,6 @@
 import type { Locale } from "@/lib/locale";
 
+import { legalOperatorCopy } from "@/features/marketing/content/legal.config";
 import { siteConfig } from "@/features/marketing/seo/site-config";
 
 export type ContactContent = {
@@ -11,6 +12,7 @@ export type ContactContent = {
   emailLabel: string;
   email: string;
   responseTime: string;
+  operatorNote: string;
   faqHint: string;
   faqCta: string;
 };
@@ -26,6 +28,7 @@ export const contactContent: Record<Locale, ContactContent> = {
     emailLabel: "E-mail",
     email: siteConfig.supportEmail,
     responseTime: "Zwykle odpowiadamy w ciągu 1–2 dni roboczych.",
+    operatorNote: legalOperatorCopy.pl.contactOperatorNote,
     faqHint: "Sprawdź też FAQ - wiele pytań o AI, PDF i plany jest tam już opisanych.",
     faqCta: "Przejdź do FAQ",
   },
@@ -39,6 +42,7 @@ export const contactContent: Record<Locale, ContactContent> = {
     emailLabel: "Email",
     email: siteConfig.supportEmail,
     responseTime: "We usually reply within 1–2 business days.",
+    operatorNote: legalOperatorCopy.en.contactOperatorNote,
     faqHint: "Check the FAQ - many questions about AI, PDF, and plans are already answered there.",
     faqCta: "Go to FAQ",
   },

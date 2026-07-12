@@ -6,6 +6,7 @@ import {
   TrustPointGrid,
   TrustPromisesSection,
   TrustProviderGrid,
+  TrustStatusBanner,
 } from "@/features/marketing/components/trust-center";
 import { getSecurityPageContent } from "@/features/marketing/content/security-content";
 import { getTrustSharedContent } from "@/features/marketing/content/trust-shared-content";
@@ -72,6 +73,8 @@ export function SecurityPageContent({ locale }: { locale: Locale }) {
         subtitle={shared.promisesSectionSubtitle}
         promises={content.promises}
       />
+
+      <TrustStatusBanner locale={locale} />
 
       <TrustDetailSidebar
         title={shared.technicalDetailsTitle}

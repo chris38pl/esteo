@@ -17,6 +17,10 @@ export { TrustIconShell, trustIconShellClassName } from "./trust-icon-shell";
 export { getTrustProviderHref, getTrustProviderLogoSrc, TRUST_PROVIDER_LOGO_SRC } from "./provider-logo-src";
 export { TrustProviderLogo } from "./trust-provider-logo";
 export { TrustProviderGrid, TrustTechnologyFootnote } from "./trust-technology-grid";
+export { TrustLegalTable } from "./trust-legal-table";
+export type { LegalTable } from "./trust-legal-table";
+export { StatusIndicator } from "./status-indicator";
+export { TrustStatusBanner } from "./trust-status-banner";
 export type {
   LegalChecklistItem,
   LegalHighlightCard,

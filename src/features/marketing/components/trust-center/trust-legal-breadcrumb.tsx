@@ -16,7 +16,7 @@ export function TrustLegalBreadcrumb({ locale, hubLabel, currentLabel }: TrustLe
       <ol className="flex flex-wrap items-center gap-1.5">
         <li>
           <Link
-            href={buildLocalizedPath(locale, "/legal")}
+            href={buildLocalizedPath(locale, "/security")}
             className="transition hover:text-foreground"
           >
             {hubLabel}

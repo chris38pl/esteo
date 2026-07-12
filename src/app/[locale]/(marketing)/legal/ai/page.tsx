@@ -38,7 +38,7 @@ export default async function AiDisclaimerPage({
       <TrustBreadcrumbJsonLd
         locale={locale}
         items={[
-          { name: shared.securityCenterLabel, path: "/legal" },
+          { name: shared.securityCenterLabel, path: "/security" },
           { name: content.breadcrumbLabel, path: "/legal/ai" },
         ]}
       />

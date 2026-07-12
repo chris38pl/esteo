@@ -1,4 +1,4 @@
-import { ArrowRight, Brain, Cookie, Shield, type LucideIcon } from "lucide-react";
+import { ArrowRight, Brain, Cookie, FileText, Mail, Server, Shield, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 
 import type {
@@ -11,6 +11,9 @@ const linkIcons: Record<string, LucideIcon> = {
   privacy: Shield,
   cookies: Cookie,
   ai: Brain,
+  subprocessors: Server,
+  terms: FileText,
+  contact: Mail,
 };
 
 const accentStyles: Record<
@@ -43,7 +46,7 @@ export function TrustDocLinkList({ heading, links }: { heading: string; links: T
       <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
         {heading}
       </h2>
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {links.map((link) => {
           const Icon = linkIcons[link.id] ?? Shield;
           const accent = accentStyles[link.accent];

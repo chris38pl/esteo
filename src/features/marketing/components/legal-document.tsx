@@ -72,8 +72,6 @@ export function LegalDocument({ content, locale }: LegalDocumentProps) {
       <LegalDocumentMeta
         lastUpdatedLabel={shared.lastUpdatedLabel}
         lastUpdated={content.lastUpdated}
-        versionLabel={shared.versionLabel}
-        documentVersion={content.documentVersion}
       />
 
       <LegalDocumentAccordion sections={content.sections} />

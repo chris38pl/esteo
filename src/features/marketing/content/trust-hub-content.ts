@@ -1,4 +1,4 @@
-import { Cookie, FileText, Lock, Mail, Shield, Sparkles } from "lucide-react";
+import { Cookie, FileText, Lock, Mail, Server, Shield, Sparkles } from "lucide-react";
 
 import type { TrustHubCardItem } from "@/features/marketing/components/trust-center/trust-types";
 import { buildLocalizedPath } from "@/features/marketing/lib/build-url";
@@ -23,6 +23,12 @@ const hubCards: Record<Locale, Omit<TrustHubCardItem, "href">[]> = {
       title: "Polityka prywatności",
       description: "Jak przetwarzamy i chronimy dane osobowe.",
       icon: Lock,
+    },
+    {
+      id: "subprocessors",
+      title: "Dostawcy usług",
+      description: "Z jakich zewnętrznych usług korzysta Esteo.",
+      icon: Server,
     },
     {
       id: "cookies",
@@ -63,6 +69,12 @@ const hubCards: Record<Locale, Omit<TrustHubCardItem, "href">[]> = {
       icon: Lock,
     },
     {
+      id: "subprocessors",
+      title: "Service providers",
+      description: "Which external services Esteo uses.",
+      icon: Server,
+    },
+    {
       id: "cookies",
       title: "Cookies",
       description: "Information about cookies and your preferences.",
@@ -92,6 +104,7 @@ const hubCards: Record<Locale, Omit<TrustHubCardItem, "href">[]> = {
 const hubPaths: Record<string, string> = {
   security: "/security",
   privacy: "/legal/privacy",
+  subprocessors: "/legal/subprocessors",
   cookies: "/legal/cookies",
   ai: "/legal/ai",
   terms: "/legal/terms",
@@ -101,7 +114,7 @@ const hubPaths: Record<string, string> = {
 export function getTrustHubContent(locale: Locale): TrustHubPageContent {
   const cards = hubCards[locale].map((card) => ({
     ...card,
-    href: buildLocalizedPath(locale, hubPaths[card.id] ?? "/legal"),
+    href: buildLocalizedPath(locale, hubPaths[card.id] ?? "/security"),
   }));
 
   return locale === "pl"

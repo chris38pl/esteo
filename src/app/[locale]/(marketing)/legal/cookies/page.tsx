@@ -39,7 +39,7 @@ export default async function CookiesPage({
       <TrustBreadcrumbJsonLd
         locale={locale}
         items={[
-          { name: shared.securityCenterLabel, path: "/legal" },
+          { name: shared.securityCenterLabel, path: "/security" },
           { name: content.breadcrumbLabel, path: "/legal/cookies" },
         ]}
       />
