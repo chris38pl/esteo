@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { WorkspaceIntegrationsPanel } from "@/features/integrations/components/workspace-integrations-panel";
 import type { ApiKeyListItem } from "@/server/integrations/keys/service";
+import type { listIntegrationRequestLogs } from "@/server/integrations/logs/service";
 import type { IntegrationSchemaResponse } from "@/server/integrations/schema/builder";
 import { WorkspaceSettingsCompanyTab } from "@/features/workspaces/components/workspace-settings-company-tab";
 import { WorkspaceSettingsForm } from "@/features/workspaces/components/workspace-settings-form";
@@ -54,22 +55,7 @@ import { useAiSetupFieldFocus } from "@/features/workspaces/hooks/use-ai-setup-f
 
 type SettingsTab = "general" | "company" | "users" | "referral" | "integrations";
 
-type IntegrationLogRow = {
-  id: string;
-  httpRequestId: string;
-  correlationId: string;
-  method: string;
-  path: string;
-  statusCode: number;
-  durationMs: number;
-  errorCode: string | null;
-  errorSummary: string | null;
-  estimateRequestId: string | null;
-  estimateId: string | null;
-  idempotencyKey: string | null;
-  apiKeyId: string | null;
-  createdAt: string;
-};
+type IntegrationLogRow = Awaited<ReturnType<typeof listIntegrationRequestLogs>>[number];
 
 type MemberRow = {
   id: string;

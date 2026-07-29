@@ -23,64 +23,72 @@ function describeReceived(value: unknown): string {
   return typeof value;
 }
 
+function readIssueField(issue: ZodIssue, key: string): unknown {
+  return (issue as unknown as Record<string, unknown>)[key];
+}
+
 function humanizeZodIssue(issue: ZodIssue, locale: Locale): IntegrationValidationIssue {
-  const path = issue.path.join(".") || "(root)";
+  const path = issue.path.map(String).join(".") || "(root)";
+  const code = String(issue.code);
   const base: IntegrationValidationIssue = {
     path,
-    code: issue.code,
+    code,
     message: issue.message,
   };
 
-  if (issue.code === "invalid_type") {
-    base.expected = issue.expected;
-    base.received = describeReceived(issue.received);
-    if (issue.received === undefined) {
+  if (code === "invalid_type") {
+    const expected = readIssueField(issue, "expected");
+    const received = readIssueField(issue, "received");
+    base.expected = expected === undefined ? undefined : String(expected);
+    base.received = describeReceived(received);
+    if (received === undefined) {
       base.code = "required";
       base.message =
         locale === "pl"
-          ? `Pole wymagane (oczekiwano: ${issue.expected}).`
-          : `Required field (expected: ${issue.expected}).`;
+          ? `Pole wymagane (oczekiwano: ${base.expected ?? "value"}).`
+          : `Required field (expected: ${base.expected ?? "value"}).`;
     } else {
       base.message =
         locale === "pl"
-          ? `Nieprawidłowy typ (oczekiwano: ${issue.expected}, otrzymano: ${base.received}).`
-          : `Invalid type (expected: ${issue.expected}, received: ${base.received}).`;
+          ? `Nieprawidłowy typ (oczekiwano: ${base.expected ?? "value"}, otrzymano: ${base.received}).`
+          : `Invalid type (expected: ${base.expected ?? "value"}, received: ${base.received}).`;
     }
     return base;
   }
 
-  if (issue.code === "too_small") {
-    const minimum = "minimum" in issue ? String(issue.minimum) : "?";
+  if (code === "too_small") {
+    const minimum = readIssueField(issue, "minimum");
     base.message =
       locale === "pl"
-        ? `Wartość za krótka/za mała (min. ${minimum}).`
-        : `Value too small/short (min ${minimum}).`;
+        ? `Wartość za krótka/za mała (min. ${minimum === undefined ? "?" : String(minimum)}).`
+        : `Value too small/short (min ${minimum === undefined ? "?" : String(minimum)}).`;
     return base;
   }
 
-  if (issue.code === "too_big") {
-    const maximum = "maximum" in issue ? String(issue.maximum) : "?";
+  if (code === "too_big") {
+    const maximum = readIssueField(issue, "maximum");
     base.message =
       locale === "pl"
-        ? `Wartość za długa/za duża (max. ${maximum}).`
-        : `Value too large/long (max ${maximum}).`;
+        ? `Wartość za długa/za duża (max. ${maximum === undefined ? "?" : String(maximum)}).`
+        : `Value too large/long (max ${maximum === undefined ? "?" : String(maximum)}).`;
     return base;
   }
 
-  if (issue.code === "invalid_string") {
-    const validation = "validation" in issue ? String(issue.validation) : "format";
+  if (code === "invalid_format" || code === "invalid_string") {
+    const format =
+      readIssueField(issue, "format") ??
+      readIssueField(issue, "validation") ??
+      "format";
     base.message =
       locale === "pl"
-        ? `Nieprawidłowy format (${validation}).`
-        : `Invalid string format (${validation}).`;
+        ? `Nieprawidłowy format (${String(format)}).`
+        : `Invalid string format (${String(format)}).`;
     return base;
   }
 
-  if (issue.code === "invalid_enum_value") {
-    const options =
-      "options" in issue && Array.isArray(issue.options)
-        ? issue.options.map(String).join(", ")
-        : "";
+  if (code === "invalid_value" || code === "invalid_enum_value") {
+    const values = readIssueField(issue, "values") ?? readIssueField(issue, "options");
+    const options = Array.isArray(values) ? values.map(String).join(", ") : "";
     base.message =
       locale === "pl"
         ? `Niedozwolona wartość.${options ? ` Dozwolone: ${options}.` : ""}`
