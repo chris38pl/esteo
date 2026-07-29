@@ -397,12 +397,85 @@
       "company": "Company details",
       "users": "Users",
       "referral": "Partner program",
+      "integrations": "Integrations",
       "rules": "Rules",
       "more": "More tabs",
       "companyDescription": "Company details shown on client-facing documents - address, tax ID, contact.",
       "usersDescription": "Manage workspace members and collaboration invites.",
       "referralDescription": "Enter a referrer email or code to join the partner program.",
+      "integrationsDescription": "API keys, schema, tests, and Integration Platform logs.",
       "rulesDescription": "Define AI rules used when generating estimates and responses."
+    },
+    "integrations": {
+      "upsell": {
+        "title": "Integrations on Business",
+        "description": "Generate API keys, preview schemas, and test external form integrations.",
+        "cta": "View plans"
+      },
+      "sections": {
+        "keys": "API Keys",
+        "schema": "Schema",
+        "try": "Try it",
+        "logs": "Logs"
+      },
+      "keys": {
+        "createTitle": "New API key",
+        "name": "Name",
+        "mode": "Mode",
+        "origins": "Allowed origins",
+        "originsHelp": "Applies only to browser calls. It is not a security control for server-side integrations.",
+        "create": "Generate key",
+        "regenerate": "Regenerate",
+        "revoke": "Revoke",
+        "revoked": "Revoked",
+        "copyOnce": "Copy now - plaintext is shown only once.",
+        "copy": "Copy key",
+        "copied": "Copied",
+        "createdAt": "Created",
+        "lastUsed": "Last used"
+      },
+      "docs": {
+        "title": "Examples (live)",
+        "warning": "The Public API is for server-side or trusted apps only. Never put API keys in public JavaScript.",
+        "industryFieldsNote": "industryFields depend on the workspace industry. Always call GET /schema - it returns a fields dictionary with allowedValues (e.g. property_type: apartment, house, …). Do not hardcode these fields in your integration.",
+        "keyForSnippets": "Key used in examples",
+        "curl": "curl",
+        "fetchJs": "fetch()",
+        "vanilla": "JavaScript"
+      },
+      "schema": {
+        "refresh": "Refresh schema",
+        "example": "Example",
+        "fields": "Industry fields (dictionary)",
+        "fieldsHelp": "Depending on the workspace industry, required and optional fields appear here (e.g. property_type) together with their allowedValues. Integrators must include them in the payload.",
+        "limits": "Limits",
+        "schema": "Schema"
+      },
+      "try": {
+        "useTestKey": "Use test key (recommended)",
+        "key": "Key",
+        "payload": "JSON payload",
+        "attachments": "Attachments",
+        "attachmentsHelp": "Drop or choose files to test the full multipart flow.",
+        "submit": "Send test",
+        "requestOnlyNote": "Try it creates a request only (no AI estimate, no credit usage). The full pipeline (estimate + usage) runs for external Public API calls - including test keys."
+      },
+      "logs": {
+        "help": "Logs cover Public API (HTTP) calls and the Try it tab. Opening Schema in the panel alone does not create an entry.",
+        "empty": "No logs yet. Send a request from an external integration or use Try it, then refresh.",
+        "refresh": "Refresh logs",
+        "time": "Time",
+        "status": "Status",
+        "method": "Method",
+        "path": "Path",
+        "reference": "Reference",
+        "duration": "Duration",
+        "requestId": "X-Request-Id",
+        "error": "Error"
+      },
+      "errors": {
+        "generic": "Something went wrong. Please try again."
+      }
     },
     "basicInfo": {
       "title": "Basic information",

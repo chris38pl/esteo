@@ -25,7 +25,8 @@ export type Feature =
   | "PDF"
   | "INVITES"
   | "STORAGE"
-  | "CLIENT_PORTAL";
+  | "CLIENT_PORTAL"
+  | "INTEGRATIONS";
 
 /** How a feature behaves for a given workspace state. */
 export type FeatureState = "ACTIVE" | "READ_ONLY" | "DISABLED";

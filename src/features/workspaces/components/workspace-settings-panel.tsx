@@ -10,12 +10,13 @@ import {
   Handshake,
   LayoutDashboard,
   MoreHorizontal,
+  Plug,
   Users,
   type LucideIcon,
 } from "lucide-react";
 
 import type { WorkspaceBranding } from "@/features/workspaces/schemas/branding";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 
@@ -26,6 +27,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { WorkspaceIntegrationsPanel } from "@/features/integrations/components/workspace-integrations-panel";
+import type { ApiKeyListItem } from "@/server/integrations/keys/service";
+import type { IntegrationSchemaResponse } from "@/server/integrations/schema/builder";
 import { WorkspaceSettingsCompanyTab } from "@/features/workspaces/components/workspace-settings-company-tab";
 import { WorkspaceSettingsForm } from "@/features/workspaces/components/workspace-settings-form";
 import { WorkspaceSettingsDeleteSection } from "@/features/workspaces/components/workspace-settings-delete-section";
@@ -48,7 +52,24 @@ import {
 } from "@/features/workspaces/lib/ai-setup-focus";
 import { useAiSetupFieldFocus } from "@/features/workspaces/hooks/use-ai-setup-field-focus";
 
-type SettingsTab = "general" | "company" | "users" | "referral";
+type SettingsTab = "general" | "company" | "users" | "referral" | "integrations";
+
+type IntegrationLogRow = {
+  id: string;
+  httpRequestId: string;
+  correlationId: string;
+  method: string;
+  path: string;
+  statusCode: number;
+  durationMs: number;
+  errorCode: string | null;
+  errorSummary: string | null;
+  estimateRequestId: string | null;
+  estimateId: string | null;
+  idempotencyKey: string | null;
+  apiKeyId: string | null;
+  createdAt: string;
+};
 
 type MemberRow = {
   id: string;
@@ -70,7 +91,7 @@ type InvitationRow = {
   invitedAt: string;
 };
 
-const TABS: SettingsTab[] = ["general", "company", "users", "referral"];
+const TABS: SettingsTab[] = ["general", "company", "users", "referral", "integrations"];
 
 const MOBILE_PRIMARY_TABS: SettingsTab[] = ["general", "company"];
 
@@ -79,13 +100,15 @@ const TAB_ICONS: Record<SettingsTab, LucideIcon> = {
   company: Briefcase,
   users: Users,
   referral: Handshake,
+  integrations: Plug,
 };
 
 function parseTab(value: string | null): SettingsTab {
   if (
     value === "company" ||
     value === "users" ||
-    value === "referral"
+    value === "referral" ||
+    value === "integrations"
   ) {
     return value;
   }
@@ -94,7 +117,10 @@ function parseTab(value: string | null): SettingsTab {
 
 function resolveActiveTab(value: string | null, isOwner: boolean): SettingsTab {
   const raw = parseTab(value);
-  return raw === "referral" && !isOwner ? "general" : raw;
+  if ((raw === "referral" || raw === "integrations") && !isOwner) {
+    return "general";
+  }
+  return raw;
 }
 
 function resolveTabForFocus(focus: string | null): SettingsTab | null {
@@ -105,13 +131,15 @@ function resolveTabForFocus(focus: string | null): SettingsTab | null {
 }
 
 function getVisibleTabs(isOwner: boolean): SettingsTab[] {
-  return TABS.filter((tab) => tab !== "referral" || isOwner);
+  return TABS.filter(
+    (tab) => (tab !== "referral" && tab !== "integrations") || isOwner,
+  );
 }
 
 function getMobileOverflowTabs(isOwner: boolean): SettingsTab[] {
   const overflow: SettingsTab[] = ["users"];
   if (isOwner) {
-    overflow.push("referral");
+    overflow.push("referral", "integrations");
   }
   return overflow;
 }
@@ -132,6 +160,7 @@ function SettingsTabButton({
   onSelect: (tab: SettingsTab) => void;
 }) {
   const Icon = TAB_ICONS[tab];
+  const showBeta = tab === "integrations";
 
   return (
     <button
@@ -151,6 +180,11 @@ function SettingsTabButton({
     >
       <Icon className="size-4 shrink-0" aria-hidden />
       <span className={cn(compact && "truncate")}>{label}</span>
+      {showBeta ? (
+        <span className="rounded-md bg-primary/12 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-primary">
+          BETA
+        </span>
+      ) : null}
       {isActive ? (
         <span className="absolute inset-x-0 bottom-0 h-0.5 bg-primary" aria-hidden />
       ) : null}
@@ -210,7 +244,12 @@ function SettingsTabOverflowMenu({
               )}
             >
               <Icon className="size-4 shrink-0" aria-hidden />
-              {tabLabel(tab)}
+              <span className="flex-1">{tabLabel(tab)}</span>
+              {tab === "integrations" ? (
+                <span className="rounded-md bg-primary/12 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-primary">
+                  BETA
+                </span>
+              ) : null}
             </DropdownMenuItem>
           );
         })}
@@ -300,6 +339,11 @@ export function WorkspaceSettingsPanel({
   pendingTransfer,
   deleteEligibility,
   referralClaim = null,
+  integrationsEnabled = false,
+  billingPlansHref,
+  initialApiKeys = [],
+  initialIntegrationSchema = null,
+  initialIntegrationLogs = [],
 }: {
   workspaceId: string;
   workspaceIndustry: WorkspaceIndustry;
@@ -323,9 +367,15 @@ export function WorkspaceSettingsPanel({
   pendingTransfer: PendingOutboundTransferView | null;
   deleteEligibility: WorkspaceDeleteEligibility;
   referralClaim?: WorkspaceReferralClaimView | null;
+  integrationsEnabled?: boolean;
+  billingPlansHref: string;
+  initialApiKeys?: ApiKeyListItem[];
+  initialIntegrationSchema?: IntegrationSchemaResponse | null;
+  initialIntegrationLogs?: IntegrationLogRow[];
 }) {
   const t = useTranslations("workspaces.settings");
   const pathname = usePathname();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const focusParam = searchParams.get(AI_SETUP_FOCUS_PARAM);
   const [activeTab, setActiveTab] = useState<SettingsTab>(() => {
@@ -341,18 +391,6 @@ export function WorkspaceSettingsPanel({
     setActiveTab(focusTab ?? resolveActiveTab(searchParams.get("tab"), isOwner));
   }, [focusParam, searchParams, isOwner]);
 
-  useEffect(() => {
-    function handlePopState() {
-      const params = new URLSearchParams(window.location.search);
-      startTabTransition(() => {
-        setActiveTab(resolveActiveTab(params.get("tab"), isOwner));
-      });
-    }
-
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, [isOwner]);
-
   const setTab = useCallback(
     (tab: SettingsTab) => {
       if (tab === activeTab) {
@@ -362,7 +400,7 @@ export function WorkspaceSettingsPanel({
       startTabTransition(() => {
         setActiveTab(tab);
 
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(searchParams.toString());
         if (tab === "general") {
           params.delete("tab");
         } else {
@@ -371,10 +409,12 @@ export function WorkspaceSettingsPanel({
 
         const query = params.toString();
         const nextUrl = query ? `${pathname}?${query}` : pathname;
-        window.history.replaceState(window.history.state, "", nextUrl);
+        // Keep Next.js searchParams in sync so server-action refreshes
+        // do not reset the active settings tab (e.g. after API key create).
+        router.replace(nextUrl, { scroll: false });
       });
     },
-    [activeTab, pathname],
+    [activeTab, pathname, router, searchParams],
   );
 
   const tabDescription =
@@ -384,7 +424,9 @@ export function WorkspaceSettingsPanel({
         ? t("tabs.companyDescription")
         : activeTab === "users"
           ? t("tabs.usersDescription")
-          : t("tabs.referralDescription");
+          : activeTab === "integrations"
+            ? t("tabs.integrationsDescription")
+            : t("tabs.referralDescription");
 
   return (
     <>
@@ -478,6 +520,18 @@ export function WorkspaceSettingsPanel({
             workspaceSlug={workspaceSlug}
             locale={locale}
             referralClaim={referralClaim}
+          />
+        ) : null}
+
+        {activeTab === "integrations" && isOwner ? (
+          <WorkspaceIntegrationsPanel
+            workspaceId={workspaceId}
+            locale={locale}
+            enabled={integrationsEnabled}
+            billingPlansHref={billingPlansHref}
+            initialKeys={initialApiKeys}
+            initialSchema={initialIntegrationSchema}
+            initialLogs={initialIntegrationLogs}
           />
         ) : null}
         </div>

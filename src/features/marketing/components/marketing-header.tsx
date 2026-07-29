@@ -13,7 +13,13 @@ import { MarketingMobileNav } from "@/features/marketing/components/marketing-mo
 import { MarketingPolishProductBadge } from "@/features/marketing/components/marketing-polish-product-badge";
 import { cn } from "@/lib/utils";
 
-function MarketingHeaderInner({ locale }: { locale: Locale }) {
+function MarketingHeaderInner({
+  locale,
+  isSignedIn,
+}: {
+  locale: Locale;
+  isSignedIn: boolean;
+}) {
   const navigation = getMarketingHeaderNavigation(locale);
   const pathname = usePathname() ?? "";
   const [scrolled, setScrolled] = useState(false);
@@ -72,19 +78,29 @@ function MarketingHeaderInner({ locale }: { locale: Locale }) {
         </nav>
 
         <div className="flex items-center gap-2">
-          <MarketingHeaderAuth locale={locale} />
+          <MarketingHeaderAuth locale={locale} isSignedIn={isSignedIn} />
 
-          <MarketingMobileNav locale={locale} navigation={navigation} />
+          <MarketingMobileNav
+            locale={locale}
+            navigation={navigation}
+            isSignedIn={isSignedIn}
+          />
         </div>
       </div>
     </header>
   );
 }
 
-export function MarketingHeader({ locale }: { locale: Locale }) {
+export function MarketingHeader({
+  locale,
+  isSignedIn,
+}: {
+  locale: Locale;
+  isSignedIn: boolean;
+}) {
   return (
     <Suspense fallback={null}>
-      <MarketingHeaderInner locale={locale} />
+      <MarketingHeaderInner locale={locale} isSignedIn={isSignedIn} />
     </Suspense>
   );
 }

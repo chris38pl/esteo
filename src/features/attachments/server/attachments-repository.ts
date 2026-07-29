@@ -118,7 +118,7 @@ export async function createAttachmentRecords(
 
     uploadedById: string | null;
 
-    uploadSource?: "EDITOR" | "PUBLIC_REQUEST" | "INTERNAL_REQUEST";
+    uploadSource?: "EDITOR" | "PUBLIC_REQUEST" | "INTERNAL_REQUEST" | "PUBLIC_API";
 
     attachmentType: "IMAGE" | "PDF" | "DOCX";
 

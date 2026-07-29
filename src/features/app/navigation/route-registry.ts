@@ -36,6 +36,7 @@ const SETTINGS_TAB_TITLE_KEYS: Record<string, string> = {
   users: "workspaces.settings.tabs.users",
   company: "workspaces.settings.tabs.company",
   referral: "workspaces.settings.tabs.referral",
+  integrations: "workspaces.settings.tabs.integrations",
   rules: "workspaces.settings.tabs.rules",
   general: "workspaces.settings.tabs.general",
 };

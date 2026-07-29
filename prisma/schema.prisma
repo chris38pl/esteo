@@ -204,6 +204,12 @@ enum AttachmentUploadSource {
   EDITOR
   PUBLIC_REQUEST
   INTERNAL_REQUEST
+  PUBLIC_API
+}
+
+enum WorkspaceApiKeyMode {
+  LIVE
+  TEST
 }
 
 enum AttachmentThumbnailStatus {
@@ -272,6 +278,7 @@ model User {
   opsCasesOwned        OpsCase[]                    @relation("OpsCaseOwner")
   opsCasesAssigned     OpsCase[]                    @relation("OpsCaseAssignee")
   opsCasesResolved     OpsCase[]                    @relation("OpsCaseResolver")
+  createdApiKeys       WorkspaceApiKey[]            @relation("WorkspaceApiKeyCreatedBy")
 
   @@index([deletedAt])
 }
@@ -735,10 +742,88 @@ model Workspace {
   notifications        UserNotification[]
   opsCases             OpsCase[]
   estimateTemplates    EstimateTemplate[]
+  apiKeys              WorkspaceApiKey[]
+  integrationRequestLogs IntegrationRequestLog[]
+  integrationIdempotencyRecords IntegrationIdempotencyRecord[]
 
   @@index([billingAccountId])
   @@index([ownerId])
   @@index([deletedAt])
+}
+
+/// Workspace-scoped Integration Platform API key (est_live_ / est_test_).
+model WorkspaceApiKey {
+  id                 String              @id @default(cuid())
+  workspaceId        String
+  name               String
+  mode               WorkspaceApiKeyMode
+  /// Visible prefix for UI, e.g. est_live_…abcd
+  keyPrefix          String
+  keyHash            String              @unique
+  scopes             String[]
+  allowedOrigins     String[]            @default([])
+  allowedIps         String[]            @default([])
+  rateLimitPerMinute Int                 @default(100)
+  rateLimitPerDay    Int                 @default(1000)
+  lastUsedAt         DateTime?
+  revokedAt          DateTime?
+  createdByUserId    String
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  workspace              Workspace                     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdBy              User                          @relation("WorkspaceApiKeyCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  requestLogs            IntegrationRequestLog[]
+  idempotencyRecords     IntegrationIdempotencyRecord[]
+
+  @@index([workspaceId, revokedAt])
+  @@index([workspaceId, mode])
+}
+
+model IntegrationRequestLog {
+  id                 String   @id @default(cuid())
+  workspaceId        String
+  apiKeyId           String?
+  httpRequestId      String
+  correlationId      String
+  method             String
+  path               String
+  statusCode         Int
+  durationMs         Int
+  errorCode          String?
+  errorSummary       String?
+  estimateRequestId  String?
+  estimateId         String?
+  /// Flexible business reference, e.g. { type: "estimate_request", requestNumber: "REQ-…" }
+  reference          Json?
+  idempotencyKey     String?
+  createdAt          DateTime @default(now())
+
+  workspace Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  apiKey    WorkspaceApiKey? @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
+
+  @@index([workspaceId, createdAt])
+  @@index([httpRequestId])
+  @@index([correlationId])
+}
+
+model IntegrationIdempotencyRecord {
+  id             String   @id @default(cuid())
+  workspaceId    String
+  apiKeyId       String
+  key            String
+  requestHash    String?
+  responseStatus Int
+  responseBody   Json
+  createdAt      DateTime @default(now())
+  expiresAt      DateTime
+
+  workspace Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  apiKey    WorkspaceApiKey @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+
+  @@unique([apiKeyId, key])
+  @@index([workspaceId])
+  @@index([expiresAt])
 }
 
 model UserNotification {

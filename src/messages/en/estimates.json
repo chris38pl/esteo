@@ -837,6 +837,7 @@
     "uploadSource": {
       "PUBLIC_REQUEST": "Public request",
       "INTERNAL_REQUEST": "Internal request",
+      "PUBLIC_API": "API integration",
       "EDITOR": "Uploaded in editor"
     },
     "errors": {

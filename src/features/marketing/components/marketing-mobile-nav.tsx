@@ -4,7 +4,6 @@ import { ArrowRight, Globe, Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { SignedIn, SignedOut } from "@clerk/nextjs";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,9 +24,14 @@ import { cn } from "@/lib/utils";
 type MarketingMobileNavProps = {
   locale: Locale;
   navigation: MarketingNavigationItem[];
+  isSignedIn: boolean;
 };
 
-export function MarketingMobileNav({ locale, navigation }: MarketingMobileNavProps) {
+export function MarketingMobileNav({
+  locale,
+  navigation,
+  isSignedIn,
+}: MarketingMobileNavProps) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname() ?? "";
@@ -126,26 +130,24 @@ export function MarketingMobileNav({ locale, navigation }: MarketingMobileNavPro
         </div>
 
         <div className="mt-auto space-y-3 border-t border-border/40 px-5 py-6">
-          <SignedOut>
+          {!isSignedIn ? (
             <Button asChild variant="ghost" className="h-11 w-full justify-center text-sm font-semibold">
               <Link href={`/${locale}/sign-in`} onClick={handleNavClick}>
                 {copy.headerSignIn}
               </Link>
             </Button>
-          </SignedOut>
-
-          <SignedIn>
+          ) : (
             <div className="flex justify-center pb-1">
               <MarketingUserAvatarButton />
             </div>
-          </SignedIn>
+          )}
 
           <MarketingCTA
-            href={primaryCta.href}
+            href={isSignedIn ? appHref : primaryCta.href}
             className="h-11 w-full justify-center text-sm font-semibold shadow-lg shadow-blue-500/20"
             onClick={handleNavClick}
           >
-            {primaryCta.label}
+            {isSignedIn ? copy.goToApp : primaryCta.label}
             <ArrowRight className="size-4" />
           </MarketingCTA>
         </div>

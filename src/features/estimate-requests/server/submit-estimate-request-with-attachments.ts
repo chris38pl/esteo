@@ -44,6 +44,7 @@ import { getIndustryFieldsForDocument } from "@/features/industry-fields/server/
 import {
   upsertDocumentFieldValues,
   validateDocumentFieldValues,
+  DocumentFieldValidationError,
 } from "@/features/industry-fields/server/validate-document-values";
 import type { Locale } from "@/lib/locale";
 import { getEstimateProcessingGate } from "@/server/billing/entitlement-service";
@@ -156,7 +157,10 @@ async function validateIndustryFields(input: {
 
 export async function submitEstimateRequestWithAttachments(input: {
   locale: Locale;
-  source: Extract<AttachmentUploadSource, "PUBLIC_REQUEST" | "INTERNAL_REQUEST">;
+  source: Extract<
+    AttachmentUploadSource,
+    "PUBLIC_REQUEST" | "INTERNAL_REQUEST" | "PUBLIC_API"
+  >;
   body: SharedBody;
   attachmentIds?: string[];
   workspaceSlug?: string;
@@ -166,6 +170,17 @@ export async function submitEstimateRequestWithAttachments(input: {
   userId?: string;
   explicitTitle?: string;
   voiceIntakeMetadata?: Record<string, unknown>;
+  /**
+   * When source is PUBLIC_API: marks metadata as TEST vs LIVE.
+   * Does **not** skip estimate creation - use `requestOnly` for that (dashboard Try it).
+   */
+  apiMode?: "live" | "test";
+  /**
+   * Dashboard Try it only: create EstimateRequest without Estimate / Trigger / usage.
+   * External Public API calls must leave this false/undefined so the full pipeline runs
+   * (including with `est_test_` keys - AI usage is counted normally).
+   */
+  requestOnly?: boolean;
 }): Promise<SubmitEstimateRequestResult> {
   const attachmentWarnings: string[] = [];
   const attachmentIds = input.attachmentIds ?? [];
@@ -190,19 +205,29 @@ export async function submitEstimateRequestWithAttachments(input: {
     await assertCanCreateEstimate(workspace.id);
   }
 
-  const processingGate =
-    input.source === AttachmentUploadSource.PUBLIC_REQUEST
+  const forceRequestOnly = Boolean(input.requestOnly);
+
+  const processingGate = forceRequestOnly
+    ? ({ allowed: true } as const)
+    : input.source === AttachmentUploadSource.PUBLIC_REQUEST ||
+        input.source === AttachmentUploadSource.PUBLIC_API
       ? await getEstimateProcessingGate(workspace.id)
       : ({ allowed: true } as const);
 
-  const runFullPipeline = processingGate.allowed;
+  const runFullPipeline = processingGate.allowed && !forceRequestOnly;
 
   const { dynamicValues, fieldKeys } = await validateIndustryFields({
     workspaceId: workspace.id,
     industry: workspace.industry,
     locale: input.locale,
     industryFields: input.body.industryFields,
-    intakeSurface: input.source === "INTERNAL_REQUEST" ? "internal" : "public",
+    intakeSurface:
+      input.source === AttachmentUploadSource.INTERNAL_REQUEST ? "internal" : "public",
+  }).catch((error: unknown) => {
+    if (error instanceof DocumentFieldValidationError) {
+      throw new SubmitEstimateRequestError(error.message, "VALIDATION");
+    }
+    throw error;
   });
 
   if (attachmentIds.length > 0) {
@@ -256,10 +281,17 @@ export async function submitEstimateRequestWithAttachments(input: {
           locale: input.locale,
           security: input.requestMeta,
         }
-      : {
-          source: "internal_dashboard",
-          createdByUserId: input.userId,
-        };
+      : input.source === AttachmentUploadSource.PUBLIC_API
+        ? {
+            source: input.apiMode === "test" ? "public_api_test" : "public_api",
+            mode: input.apiMode === "test" ? "TEST" : "LIVE",
+            locale: input.locale,
+            security: input.requestMeta,
+          }
+        : {
+            source: "internal_dashboard",
+            createdByUserId: input.userId,
+          };
 
   if (attachmentIds.length > 0) {
     baseAiMetadata.attachmentsPromotionStatus = "PENDING";
@@ -270,7 +302,9 @@ export async function submitEstimateRequestWithAttachments(input: {
   }
 
   if (!runFullPipeline) {
-    baseAiMetadata.processingMode = "queued_for_manual";
+    baseAiMetadata.processingMode = forceRequestOnly
+      ? "integration_try"
+      : "queued_for_manual";
   }
 
   const requestCustomerData = {
@@ -388,9 +422,9 @@ export async function submitEstimateRequestWithAttachments(input: {
         action: ESTIMATE_ACTIVITY_ACTIONS.estimate_created,
         metadata: {
           source:
-            input.source === AttachmentUploadSource.PUBLIC_REQUEST
-              ? "public_request"
-              : "manual",
+            input.source === AttachmentUploadSource.INTERNAL_REQUEST
+              ? "manual"
+              : "public_request",
         },
       });
     }
@@ -401,17 +435,19 @@ export async function submitEstimateRequestWithAttachments(input: {
       scheduleUpsertSearchDocumentForEstimate(estimateId);
     }
 
-    fireNotification(
-      notifyEstimateRequestSubmitted({
-        locale: workspaceLocaleToAppLocale(workspace.defaultLocale),
-        workspaceId: workspace.id,
-        workspaceSlug: workspace.slug,
-        workspaceName: workspace.name,
-        requestId,
-        requestTitle: estimateTitle ?? input.body.customer.fullName,
-        queuedManual: !runFullPipeline,
-      }),
-    );
+    if (!forceRequestOnly) {
+      fireNotification(
+        notifyEstimateRequestSubmitted({
+          locale: workspaceLocaleToAppLocale(workspace.defaultLocale),
+          workspaceId: workspace.id,
+          workspaceSlug: workspace.slug,
+          workspaceName: workspace.name,
+          requestId,
+          requestTitle: estimateTitle ?? input.body.customer.fullName,
+          queuedManual: !runFullPipeline,
+        }),
+      );
+    }
 
     return {
       requestId,

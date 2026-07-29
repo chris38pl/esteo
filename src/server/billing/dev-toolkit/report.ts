@@ -11,6 +11,7 @@ export const FEATURE_REPORT_ORDER: ReadonlyArray<{
   { label: "INVITES", feature: "INVITES" },
   { label: "STORAGE", feature: "STORAGE" },
   { label: "CLIENT_PORTAL", feature: "CLIENT_PORTAL" },
+  { label: "INTEGRATIONS", feature: "INTEGRATIONS" },
 ];
 
 export type WorkspaceBillingReport = {

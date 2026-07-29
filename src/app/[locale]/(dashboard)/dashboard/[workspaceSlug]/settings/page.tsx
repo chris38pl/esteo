@@ -88,6 +88,35 @@ export default async function WorkspaceSettingsPage({
       )
     : null;
 
+  const integrationsFeatureState = isOwner
+    ? await import("@/server/billing/entitlement-service").then((m) =>
+        m.getFeatureState(workspace.id, "INTEGRATIONS"),
+      )
+    : "DISABLED";
+
+  const integrationsEnabled = integrationsFeatureState === "ACTIVE";
+
+  const [initialApiKeys, initialIntegrationSchema, initialIntegrationLogs] = isOwner
+    ? await Promise.all([
+        import("@/server/integrations/keys/service").then((m) =>
+          m.listWorkspaceApiKeys(workspace.id),
+        ),
+        integrationsEnabled
+          ? import("@/server/integrations/schema/builder").then((m) =>
+              m.buildIntegrationSchemaForWorkspace({
+                workspaceId: workspace.id,
+                locale: resolvedLocale,
+              }),
+            )
+          : Promise.resolve(null),
+        integrationsEnabled
+          ? import("@/server/integrations/logs/service").then((m) =>
+              m.listIntegrationRequestLogs({ workspaceId: workspace.id, take: 50 }),
+            )
+          : Promise.resolve([]),
+      ])
+    : [[], null, []];
+
   const brandingResult = workspaceBrandingSchema.safeParse(
     workspace.settings?.branding ?? {},
   );
@@ -154,6 +183,11 @@ export default async function WorkspaceSettingsPage({
         }
         deleteEligibility={deleteEligibility}
         referralClaim={referralClaim}
+        integrationsEnabled={integrationsEnabled}
+        billingPlansHref={`/${resolvedLocale}/dashboard/${workspace.slug}/billing/plans`}
+        initialApiKeys={initialApiKeys}
+        initialIntegrationSchema={initialIntegrationSchema}
+        initialIntegrationLogs={initialIntegrationLogs}
       />
     </Suspense>
   );

@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs/server";
 import { setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 
@@ -17,5 +18,11 @@ export default async function MarketingLayout({
 
   setRequestLocale(locale);
 
-  return <MarketingShell locale={locale}>{children}</MarketingShell>;
+  const { userId } = await auth();
+
+  return (
+    <MarketingShell locale={locale} isSignedIn={Boolean(userId)}>
+      {children}
+    </MarketingShell>
+  );
 }

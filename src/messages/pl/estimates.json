@@ -837,6 +837,7 @@
     "uploadSource": {
       "PUBLIC_REQUEST": "Formularz publiczny",
       "INTERNAL_REQUEST": "Formularz wewnętrzny",
+      "PUBLIC_API": "Integracja API",
       "EDITOR": "Dodane w edytorze"
     },
     "errors": {

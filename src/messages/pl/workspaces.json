@@ -397,12 +397,85 @@
       "company": "Dane firmy",
       "users": "Użytkownicy",
       "referral": "Program partnerski",
+      "integrations": "Integracje",
       "rules": "Reguły",
       "more": "Więcej zakładek",
       "companyDescription": "Dane firmy widoczne na dokumentach dla klienta - adres, NIP, kontakt.",
       "usersDescription": "Zarządzaj członkami przestrzeni i zaproszeniami do współpracy.",
       "referralDescription": "Wpisz kod lub e-mail polecającego, aby skorzystać z programu partnerskiego.",
+      "integrationsDescription": "Klucze API, schema, testy i logi Integration Platform.",
       "rulesDescription": "Definiuj reguły AI używane przy generowaniu wycen i odpowiedzi."
+    },
+    "integrations": {
+      "upsell": {
+        "title": "Integrations w planie Business",
+        "description": "Generuj klucze API, podglądaj schema i testuj integracje formularzy zewnętrznych.",
+        "cta": "Zobacz plany"
+      },
+      "sections": {
+        "keys": "API Keys",
+        "schema": "Schema",
+        "try": "Try it",
+        "logs": "Logs"
+      },
+      "keys": {
+        "createTitle": "Nowy klucz API",
+        "name": "Nazwa",
+        "mode": "Tryb",
+        "origins": "Allowed origins",
+        "originsHelp": "Dotyczy wyłącznie wywołań z przeglądarki. Nie stanowi zabezpieczenia dla integracji serwerowych.",
+        "create": "Wygeneruj klucz",
+        "regenerate": "Regenerate",
+        "revoke": "Revoke",
+        "revoked": "Unieważniony",
+        "copyOnce": "Skopiuj teraz - plaintext jest widoczny tylko raz.",
+        "copy": "Kopiuj klucz",
+        "copied": "Skopiowano",
+        "createdAt": "Utworzono",
+        "lastUsed": "Ostatnie użycie"
+      },
+      "docs": {
+        "title": "Przykłady (aktualizowane na żywo)",
+        "warning": "Public API jest przeznaczone wyłącznie dla integracji serwerowych lub zaufanych aplikacji. Nie umieszczaj kluczy API w publicznym JavaScript.",
+        "industryFieldsNote": "Pola w industryFields zależą od branży workspace. Zawsze pobierz GET /schema - tam jest słownik fields z allowedValues (np. property_type: apartment, house, …). Nie hardkoduj tych pól w integracji.",
+        "keyForSnippets": "Klucz w przykładach",
+        "curl": "curl",
+        "fetchJs": "fetch()",
+        "vanilla": "JavaScript"
+      },
+      "schema": {
+        "refresh": "Odśwież schema",
+        "example": "Example",
+        "fields": "Pola branżowe (słownik)",
+        "fieldsHelp": "Zależnie od branży workspace tutaj pojawiają się wymagane i opcjonalne pola (np. property_type) oraz ich dozwolone wartości (allowedValues). Integrator musi je uwzględnić w payloadzie.",
+        "limits": "Limits",
+        "schema": "Schema"
+      },
+      "try": {
+        "useTestKey": "Use test key (zalecane)",
+        "key": "Klucz",
+        "payload": "Payload JSON",
+        "attachments": "Załączniki",
+        "attachmentsHelp": "Przeciągnij lub wybierz pliki, aby przetestować pełny multipart flow.",
+        "submit": "Wyślij test",
+        "requestOnlyNote": "Try it tworzy tylko zapytanie (bez wyceny AI i bez zużycia kredytów). Pełny pipeline (wycena + usage) uruchamia Public API z zewnątrz - także na kluczu testowym."
+      },
+      "logs": {
+        "help": "Logi dotyczą wywołań Public API (HTTP) oraz zakładki Try it. Samo otwarcie Schema w panelu nie tworzy wpisu.",
+        "empty": "Brak logów. Wyślij request z zewnętrznej integracji albo użyj Try it, potem odśwież.",
+        "refresh": "Odśwież logi",
+        "time": "Czas",
+        "status": "Status",
+        "method": "Method",
+        "path": "Path",
+        "reference": "Referencja",
+        "duration": "Czas trwania",
+        "requestId": "X-Request-Id",
+        "error": "Błąd"
+      },
+      "errors": {
+        "generic": "Nie udało się wykonać operacji. Spróbuj ponownie."
+      }
     },
     "basicInfo": {
       "title": "Informacje podstawowe",

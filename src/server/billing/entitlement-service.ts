@@ -108,6 +108,9 @@ export function deriveFeatureState(
   if (feature === "CLIENT_PORTAL" && plan === "FREE") {
     return "DISABLED";
   }
+  if (feature === "INTEGRATIONS" && plan !== "BUSINESS") {
+    return "DISABLED";
+  }
 
   // Read-only lifecycle states: existing data viewable, no new actions.
   if (
@@ -124,7 +127,8 @@ export function deriveFeatureState(
       feature === "ESTIMATES" ||
       feature === "AI_ASSISTANT" ||
       feature === "PDF" ||
-      feature === "INVITES"
+      feature === "INVITES" ||
+      feature === "INTEGRATIONS"
     ) {
       return "READ_ONLY";
     }

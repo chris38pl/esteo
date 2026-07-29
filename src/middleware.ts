@@ -34,6 +34,7 @@ const isPublicRoute = createRouteMatcher([
   "/api/public/estimate-requests",
   "/api/public/request-attachments/upload",
   "/api/public/request-attachments/(.*)",
+  "/api/v1/public/(.*)",
   // Stripe webhooks authenticate via signature, not Clerk session.
   "/api/webhooks/stripe",
 ]);
@@ -48,6 +49,10 @@ export default clerkMiddleware(async (auth, request) => {
     // still parses the cookie/Bearer token here, so the handler can resolve
     // the caller.
     if (pathname.startsWith("/api/trpc")) {
+      return;
+    }
+    // Integration Platform Public API authenticates via workspace API keys.
+    if (pathname.startsWith("/api/v1/public")) {
       return;
     }
     if (!isPublicRoute(request)) {

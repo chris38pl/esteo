@@ -8,14 +8,16 @@ import { MarketingHeader } from "@/features/marketing/components/marketing-heade
 export function MarketingShell({
   children,
   locale,
+  isSignedIn,
 }: {
   children: ReactNode;
   locale: Locale;
+  isSignedIn: boolean;
 }) {
   return (
     <CookieConsentProvider locale={locale}>
       <div className="dark flex min-h-dvh flex-col bg-background text-foreground">
-        <MarketingHeader locale={locale} />
+        <MarketingHeader locale={locale} isSignedIn={isSignedIn} />
         <main className="flex-1">{children}</main>
         <MarketingFooter locale={locale} />
       </div>
