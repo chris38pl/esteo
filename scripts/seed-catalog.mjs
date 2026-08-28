@@ -5,11 +5,33 @@ import { loadEnvFiles } from "./load-env.mjs";
 loadEnvFiles();
 
 const useStaging = process.argv.includes("--staging");
+const useProduction = process.argv.includes("--production");
+
+if (useStaging && useProduction) {
+  console.error("Pass only one of --staging or --production.");
+  process.exit(1);
+}
 
 let databaseUrl = process.env.DATABASE_URL;
 let directUrl = process.env.DIRECT_URL;
 
-if (useStaging) {
+if (useProduction) {
+  const { config } = await import("dotenv");
+  const { resolve } = await import("node:path");
+  config({ path: resolve(process.cwd(), ".env.production.local") });
+  databaseUrl = process.env.DATABASE_URL;
+  directUrl = process.env.DIRECT_URL;
+
+  if (!databaseUrl || !directUrl) {
+    console.error(
+      "Missing DATABASE_URL or DIRECT_URL in .env.production.local.",
+    );
+    console.error("See docs/dev/database-migrations.md");
+    process.exit(1);
+  }
+
+  console.log("Seeding platform catalog on Neon production branch…");
+} else if (useStaging) {
   databaseUrl = process.env.DATABASE_URL_STAGING;
   directUrl = process.env.DIRECT_URL_STAGING;
 
