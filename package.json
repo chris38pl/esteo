@@ -10,6 +10,7 @@
     "trigger:dev": "npx trigger.dev@latest dev",
     "trigger:deploy": "npx trigger.dev@4.4.6 deploy",
     "trigger:deploy:staging": "npx trigger.dev@4.4.6 deploy --project-ref proj_lkorkbyjorynapnptmqa --native-build-server",
+    "trigger:deploy:production": "npx trigger.dev@4.4.6 deploy --project-ref proj_qoakmklufatitghsdkqt --native-build-server",
     "build": "next build",
     "build:vercel": "node scripts/vercel-build.mjs",
     "start": "next start",
